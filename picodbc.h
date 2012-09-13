@@ -71,7 +71,7 @@ namespace detail
 	}
 
 	// attempts to get the last ODBC error as a string.
-	std::string last_error(SQLHANDLE handle, SQLSMALLINT handle_type)
+	inline std::string last_error(SQLHANDLE handle, SQLSMALLINT handle_type)
 	{
 		SQLCHAR sql_state[6];
 		SQLCHAR sql_message[SQL_MAX_MESSAGE_LENGTH];
@@ -96,7 +96,7 @@ namespace detail
 	}
 
 	// allocates the native ODBC handles.
-	void allocate_handle(HENV& env, HDBC& conn)
+	inline void allocate_handle(HENV& env, HDBC& conn)
 	{
 		SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &env);
 		SQLSetEnvAttr(env, SQL_ATTR_ODBC_VERSION, reinterpret_cast<void*>(SQL_OV_ODBC3), 0);
@@ -104,7 +104,7 @@ namespace detail
 	}
 
 	// Tests if the given db_data indicates NULL data.
-	bool is_null(SQLLEN cb_data)
+	inline bool is_null(SQLLEN cb_data)
 	{
 		return (cb_data == SQL_NULL_DATA || cb_data < 0);
 	}
@@ -151,16 +151,22 @@ namespace detail
 
 	// Converts the given string to the given type T.
 	template<class T>
-	T convert(const std::string& s)
+	inline T convert(const std::string& s)
 	{
 		T value;
 		std::sscanf(s.c_str(), sql_type_info<T>::format, &value);
 		return value;
 	}
 
+	template<>
+	inline std::string convert<std::string>(const std::string& s)
+	{
+		return s;
+	}
+
 	// Binds the given column as an input parameter, the parameter value is written into the given output buffer.
 	template<class T>
-	const T& bind_param(HSTMT stmt, long column, const T& value, void* output)
+	inline const T& bind_param(HSTMT stmt, long column, const T& value, void* output)
 	{
 		std::memcpy(output, &value, sizeof(value));
 		SQLLEN StrLenOrInPoint = 0;
