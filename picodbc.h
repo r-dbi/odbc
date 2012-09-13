@@ -235,7 +235,7 @@ public:
 
 	//! \brief Create new connection object and immediately connect to the given data source.
 	//! \param dsn The name of the data source.
-	//! vparam user The username for authenticating to the data source.
+	//! \param user The username for authenticating to the data source.
 	//! \param pass the password for authenticating to the data source.
 	//! \throws database_error
 	//! \see connected(), connect()
