@@ -322,7 +322,7 @@ public:
 
 //! \brief Manages and encapsulates ODBC resources such as the connection and environment handles.
 //!
-//! For unicode operations use the wconnection variant, otherwise just connection.
+//! For unicode operations use the wconnection variant, otherwise use connection.
 //! \see connection, wconnection
 //! \note connections are non-copyable.
 template<class String>
@@ -476,7 +476,7 @@ private:
 
 //! \brief A resource for managing transaction commits and rollbacks.
 //!
-//! For unicode operations use the wtransaction variant, otherwise just transaction.
+//! For unicode operations use the wtransaction variant, otherwise use transaction.
 //! \see transaction, wtransaction
 //! \not transactions are non-copyable.
 template<class String>
@@ -640,7 +640,7 @@ namespace detail
 
 //! \brief Represents a statement on the database.
 //!
-//! For unicode operations use the wstatement variant, otherwise just statement.
+//! For unicode operations use the wstatement variant, otherwise use statement.
 //! \see statement, wstatement
 //! \note statements are non-copyable.
 template<class String>
