@@ -1,10 +1,9 @@
 var searchData=
 [
-  ['close',['close',['../classpicodbc_1_1statement.html#a171dfa9ffca19e1131c964641e080e89',1,'picodbc::statement']]],
-  ['columns',['columns',['../classpicodbc_1_1statement.html#a05c02185c7d657ff5f50cafb14c5be1c',1,'picodbc::statement']]],
-  ['commit',['commit',['../classpicodbc_1_1transaction.html#ac858084a511fcb8fa0215777c39cfb8b',1,'picodbc::transaction']]],
-  ['connect',['connect',['../classpicodbc_1_1connection.html#a70a42115fe96f131fcceece2afa9504e',1,'picodbc::connection::connect(const std::string &amp;dsn, const std::string &amp;user, const std::string &amp;pass)'],['../classpicodbc_1_1connection.html#a485c3ee10d87fbcbbcf459ad756abfca',1,'picodbc::connection::connect(const std::string &amp;connection_string)']]],
-  ['connected',['connected',['../classpicodbc_1_1connection.html#a480fdd3907012945b6675cf40fda2da4',1,'picodbc::connection']]],
-  ['connection',['connection',['../classpicodbc_1_1connection.html',1,'picodbc']]],
-  ['connection',['connection',['../classpicodbc_1_1connection.html#a6e452779e5720fdaf077b28fa333cb0a',1,'picodbc::connection::connection()'],['../classpicodbc_1_1connection.html#a4e7ae1e89265702da62b36e0e6afe48b',1,'picodbc::connection::connection(const std::string &amp;dsn, const std::string &amp;user, const std::string &amp;pass)'],['../classpicodbc_1_1connection.html#abdc88ae21a1ac6db6af557b06005ddc6',1,'picodbc::connection::connection(const std::string &amp;connection_string)']]]
+  ['close',['close',['../classpicodbc_1_1basic__statement.html#a48f0d639c1007c861988b12b67a25ea8',1,'picodbc::basic_statement']]],
+  ['columns',['columns',['../classpicodbc_1_1basic__statement.html#ae54e508077d376d9dc7e16e8061dea01',1,'picodbc::basic_statement']]],
+  ['commit',['commit',['../classpicodbc_1_1basic__transaction.html#a912f4b1d15ebec3525a2e976cb780e00',1,'picodbc::basic_transaction']]],
+  ['connect',['connect',['../classpicodbc_1_1basic__connection.html#ab623c7c812a3dabd0517655c5d2006c9',1,'picodbc::basic_connection::connect(const string_type &amp;dsn, const string_type &amp;user, const string_type &amp;pass)'],['../classpicodbc_1_1basic__connection.html#ae6accc156028b2a0b520f9c30a6aa3c4',1,'picodbc::basic_connection::connect(const string_type &amp;connection_string)']]],
+  ['connected',['connected',['../classpicodbc_1_1basic__connection.html#acb467180c82a3308518ec410f0c47f31',1,'picodbc::basic_connection']]],
+  ['connection',['connection',['../namespacepicodbc.html#a0bff1f1e52e06da739dfa0477bde884b',1,'picodbc']]]
 ];

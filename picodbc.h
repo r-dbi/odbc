@@ -114,40 +114,64 @@ namespace detail
 	struct sql_type_info { };
 
 	template<>
-	struct sql_type_info<short> { static const SQLSMALLINT ctype = SQL_C_SSHORT; static const SQLSMALLINT sqltype = SQL_SMALLINT; static const char* const format; };
+	struct sql_type_info<short> { static const SQLSMALLINT ctype = SQL_C_SSHORT; static const SQLSMALLINT sqltype = SQL_SMALLINT; 
+		static const char* const format; static const wchar_t* const wformat; };
 	const char* const sql_type_info<short>::format = "%hd";
+	const wchar_t* const sql_type_info<short>::wformat = L"%hd";
 
 	template<>
-	struct sql_type_info<unsigned short> { static const SQLSMALLINT ctype = SQL_C_USHORT; static const SQLSMALLINT sqltype = SQL_SMALLINT; static const char* const format; };
+	struct sql_type_info<unsigned short> { static const SQLSMALLINT ctype = SQL_C_USHORT; static const SQLSMALLINT sqltype = SQL_SMALLINT;
+		static const char* const format; static const wchar_t* const wformat; };
 	const char* const sql_type_info<unsigned short>::format = "%hu";
+	const wchar_t* const sql_type_info<unsigned short>::wformat = L"%hu";
 
 	template<>
-	struct sql_type_info<long> { static const SQLSMALLINT ctype = SQL_C_SLONG; static const SQLSMALLINT sqltype = SQL_INTEGER; static const char* const format; };
+	struct sql_type_info<long> { static const SQLSMALLINT ctype = SQL_C_SLONG; static const SQLSMALLINT sqltype = SQL_INTEGER;
+		static const char* const format; static const wchar_t* const wformat; };
 	const char* const sql_type_info<long>::format = "%ld";
+	const wchar_t* const sql_type_info<long>::wformat = L"%ld";
 
 	template<>
-	struct sql_type_info<unsigned long> { static const SQLSMALLINT ctype = SQL_C_ULONG; static const SQLSMALLINT sqltype = SQL_INTEGER; static const char* const format; };
+	struct sql_type_info<unsigned long> { static const SQLSMALLINT ctype = SQL_C_ULONG; static const SQLSMALLINT sqltype = SQL_INTEGER;
+		static const char* const format; static const wchar_t* const wformat; };
 	const char* const sql_type_info<unsigned long>::format = "%lu";
+	const wchar_t* const sql_type_info<unsigned long>::wformat = L"%lu";
 
 	template<>
-	struct sql_type_info<int> { static const SQLSMALLINT ctype = SQL_C_SLONG; static const SQLSMALLINT sqltype = SQL_INTEGER; static const char* const format; };
+	struct sql_type_info<int> { static const SQLSMALLINT ctype = SQL_C_SLONG; static const SQLSMALLINT sqltype = SQL_INTEGER;
+		static const char* const format; static const wchar_t* const wformat; };
 	const char* const sql_type_info<int>::format = "%d";
+	const wchar_t* const sql_type_info<int>::wformat = L"%d";
 
 	template<>
-	struct sql_type_info<unsigned int> { static const SQLSMALLINT ctype = SQL_C_ULONG; static const SQLSMALLINT sqltype = SQL_INTEGER; static const char* const format; };
+	struct sql_type_info<unsigned int> { static const SQLSMALLINT ctype = SQL_C_ULONG; static const SQLSMALLINT sqltype = SQL_INTEGER;
+		static const char* const format; static const wchar_t* const wformat; };
 	const char* const sql_type_info<unsigned int>::format = "%u";
+	const wchar_t* const sql_type_info<unsigned int>::wformat = L"%u";
 
 	template<>
-	struct sql_type_info<float> { static const SQLSMALLINT ctype = SQL_C_FLOAT; static const SQLSMALLINT sqltype = SQL_REAL; static const char* const format; };
+	struct sql_type_info<float> { static const SQLSMALLINT ctype = SQL_C_FLOAT; static const SQLSMALLINT sqltype = SQL_REAL;
+		static const char* const format; static const wchar_t* const wformat; };
 	const char* const sql_type_info<float>::format = "%f";
+	const wchar_t* const sql_type_info<float>::wformat = L"%f";
 
 	template<>
-	struct sql_type_info<double> { static const SQLSMALLINT ctype = SQL_C_DOUBLE; static const SQLSMALLINT sqltype = SQL_DOUBLE; static const char* const format; };
+	struct sql_type_info<double> { static const SQLSMALLINT ctype = SQL_C_DOUBLE; static const SQLSMALLINT sqltype = SQL_DOUBLE;
+		static const char* const format; static const wchar_t* const wformat; };
 	const char* const sql_type_info<double>::format = "%ld";
+	const wchar_t* const sql_type_info<double>::wformat = L"%ld";
 
 	template<>
-	struct sql_type_info<std::string> { static const SQLSMALLINT ctype = SQL_C_CHAR; static const SQLSMALLINT sqltype = SQL_CHAR; static const char* const format; };
+	struct sql_type_info<std::string> { static const SQLSMALLINT ctype = SQL_C_CHAR; static const SQLSMALLINT sqltype = SQL_CHAR;
+		static const char* const format; static const wchar_t* const wformat; };
 	const char* const sql_type_info<std::string>::format = "%s";
+	const wchar_t* const sql_type_info<std::string>::wformat = L"%s";
+
+	template<>
+	struct sql_type_info<std::wstring> { static const SQLSMALLINT ctype = SQL_C_WCHAR; static const SQLSMALLINT sqltype = SQL_CHAR;
+		static const char* const format; static const wchar_t* const wformat; };
+	const char* const sql_type_info<std::wstring>::format = "%ls";
+	const wchar_t* const sql_type_info<std::wstring>::wformat = L"%ls";
 
 	// Converts the given string to the given type T.
 	template<class T>
@@ -160,6 +184,19 @@ namespace detail
 
 	template<>
 	inline std::string convert<std::string>(const std::string& s)
+	{
+		return s;
+	}
+
+	template<class T>
+	inline T convert(const std::wstring& s)
+	{
+		T value;
+		std::swscanf(s.c_str(), sql_type_info<T>::wformat, &value);
+		return value;
+	}
+	template<>
+	inline std::wstring convert<std::wstring>(const std::wstring& s)
 	{
 		return s;
 	}
@@ -218,18 +255,22 @@ public:
 	}
 };
 
-// We should use picoDBC_THROW_DATABASE_ERROR() to throw database_errors so that we provide additional information like file and line number.
-#define picoDBC_STRINGIZE_I(text) #text
-#define picoDBC_STRINGIZE(text) picoDBC_STRINGIZE_I(text)
-#define picoDBC_THROW_DATABASE_ERROR(handle, handle_type) throw database_error(handle, handle_type, __FILE__ ":" picoDBC_STRINGIZE(__LINE__) ": ")
+// We should use PICODBC_THROW_DATABASE_ERROR() to throw database_errors so that we provide additional information like file and line number.
+#define PICODBC_STRINGIZE_I(text) #text
+#define PICODBC_STRINGIZE(text) PICODBC_STRINGIZE_I(text)
+#define PICODBC_THROW_DATABASE_ERROR(handle, handle_type) throw database_error(handle, handle_type, __FILE__ ":" PICODBC_STRINGIZE(__LINE__) ": ")
 
 //! \brief Manages and encapsulates ODBC resources such as the connection and environment handles.
 //! \note connection is non-copyable.
-class connection
+template<class String>
+class basic_connection
 {
 public:
+	typedef String string_type;
+
+public:
 	//! \brief Create new connection object, initially not connected.
-	connection()
+	basic_connection()
 	: env_(NULL)
 	, conn_(NULL)
 	, connected_(false)
@@ -245,7 +286,7 @@ public:
 	//! \param pass the password for authenticating to the data source.
 	//! \throws database_error
 	//! \see connected(), connect()
-	connection(const std::string& dsn, const std::string& user, const std::string& pass)
+	basic_connection(const string_type& dsn, const string_type& user, const string_type& pass)
 	: env_(NULL)
 	, conn_(NULL)
 	, connected_(false)
@@ -260,7 +301,7 @@ public:
 	//! \param connection_string The connection string for establishing a connection.
 	//! \throws database_error
 	//! \see connected(), connect()
-	connection(const std::string& connection_string)
+	basic_connection(const string_type& connection_string)
 	: env_(NULL)
 	, conn_(NULL)
 	, connected_(false)
@@ -272,7 +313,7 @@ public:
 	}
 
 	//! \brief Automatically disconnects from the database and frees all associated resources.
-	~connection()
+	~basic_connection()
 	{
 		disconnect();
 		SQLFreeHandle(SQL_HANDLE_DBC, conn_);
@@ -285,7 +326,7 @@ public:
 	//! \param pass the password for authenticating to the data source.
 	//! \throws database_error
 	//! \see connected()
-	void connect(const std::string& dsn, const std::string& user, const std::string& pass)
+	void connect(const string_type& dsn, const string_type& user, const string_type& pass)
 	{
 		disconnect();
 		SQLFreeHandle(SQL_HANDLE_DBC, conn_);
@@ -297,14 +338,14 @@ public:
 			, pass.empty() ? (SQLCHAR*)pass.c_str() : NULL, SQL_NTS);
 		connected_ = detail::success(rc);
 		if (!connected_)
-			picoDBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+			PICODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 	}
 
 	//! \brief Create new connection object and immediately connect using the given connection string.
 	//! \param connection_string The connection string for establishing a connection.
 	//! \throws database_error
 	//! \see connected()
-	void connect(const std::string& connection_string)
+	void connect(const string_type& connection_string)
 	{
 		disconnect();
 		SQLFreeHandle(SQL_HANDLE_DBC, conn_);
@@ -320,7 +361,7 @@ public:
 			, SQL_DRIVER_NOPROMPT);
 		connected_ = detail::success(rc);
 		if (!connected_)
-			picoDBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+			PICODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 	}
 
 	//! \brief Returns true if connected to the database.
@@ -356,11 +397,11 @@ public:
 	}
 
 private:
-	connection(const connection&); // not defined
-	connection& operator=(const connection&); // not defined
+	basic_connection(const basic_connection&); // not defined
+	basic_connection& operator=(const basic_connection&); // not defined
 
 private:
-	friend class transaction;
+	template<class> friend class basic_transaction;
 	HENV env_;
 	HDBC conn_;
 	bool connected_;
@@ -369,13 +410,17 @@ private:
 };
 
 //! \brief A resource for managing transaction commits and rollbacks.
-class transaction
+template<class String>
+class basic_transaction
 {
+public:
+	typedef String string_type;
+
 public:
 	//! \brief Begin a transaction on the given connection object.
 	//! \post Operations that modify the database must now be committed before taking effect.
 	//! \throws database_error
-	explicit transaction(connection& conn)
+	explicit basic_transaction(basic_connection<string_type>& conn)
 	: conn_(conn)
 	, committed_(false)
 	{
@@ -387,14 +432,14 @@ public:
 				, static_cast<SQLPOINTER>(SQL_AUTOCOMMIT_OFF)
 				, SQL_IS_UINTEGER);
 			if (!detail::success(rc))
-				picoDBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
+				PICODBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
 		}
 		++conn_.transactions_;
 	}
 
 	//! \brief If this transaction has not been committed, will will rollback any modifying operations.
 	//! \throws database_error
-	~transaction()
+	~basic_transaction()
 	{
 		if(!committed_)
 		{
@@ -414,7 +459,7 @@ public:
 				, reinterpret_cast<SQLPOINTER>(SQL_AUTOCOMMIT_ON)
 				, SQL_IS_UINTEGER);
 			if (!detail::success(rc))
-				picoDBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
+				PICODBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
 		}
 	}
 
@@ -437,40 +482,51 @@ public:
 	}
 
 private:
-	transaction(const transaction&); // not defined
-	transaction& operator=(const transaction&); // not defined
+	basic_transaction(const basic_transaction&); // not defined
+	basic_transaction& operator=(const basic_transaction&); // not defined
 
 private:
-	connection& conn_;
+	basic_connection<string_type>& conn_;
 	bool committed_;
 };
 
-class statement;
+template<class> class basic_statement;
 
 namespace detail
 {
-	class param
+	template<class String>
+	class basic_param
 	{
-	private:	
-		param(const param& rhs)
+	private:
+		typedef String string_type;
+
+	private:
+		basic_param(HSTMT stmt, long column)
+		: stmt_(stmt)
+		, column_(column)
+		{
+
+		}
+
+		basic_param(const basic_param& rhs)
 		: stmt_(rhs.stmt_)
 		, column_(rhs.column_)
 		{
 
 		}
 
-		~param()
+		~basic_param()
 		{
 
 		}
 
-		param& operator=(param rhs)
+		basic_param& operator=(basic_param rhs)
 		{
 			swap(rhs);
 			return *this;
 		}
 
-		void swap(param& rhs)
+		void swap(basic_param& rhs)
 		{
 			using std::swap;
 			swap(stmt_, rhs.stmt_);
@@ -483,50 +539,68 @@ namespace detail
 			return bind_param(stmt_, column_, value, value_buffer_);
 		}
 
-		param(HSTMT stmt, long column)
-		: stmt_(stmt)
-		, column_(column)
+		const string_type& set(const string_type& str)
 		{
-
+			string_buffer_ = str;
+			string_buffer_len_ = SQL_NTS;
+			RETCODE rc = SQLBindParameter(
+				stmt_
+				, column_ + 1
+				, SQL_PARAM_INPUT
+				, detail::sql_type_info<string_type>::ctype
+				, detail::sql_type_info<string_type>::sqltype
+				, (SQLUINTEGER)string_buffer_.size()
+				, 0
+				, (SQLPOINTER*)string_buffer_.c_str()
+				, (SQLLEN)string_buffer_.size() + 1
+				, &string_buffer_len_);
+			if (!detail::success(rc))
+				PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+			return string_buffer_;
 		}
 
 	private:
-		friend class picodbc::statement;
+		friend class picodbc::basic_statement<string_type>;
 		HSTMT stmt_;
 		long column_;
-		char value_buffer_[512];
-		std::string string_buffer_;
+		typename string_type::value_type value_buffer_[512];
+		string_type string_buffer_;
 		SQLLEN string_buffer_len_;
 	};
 
-	template<>
-	inline const std::string& param::set<std::string>(const std::string& str)
-	{
-		string_buffer_ = str;
-		string_buffer_len_ = SQL_NTS;
-		RETCODE rc = SQLBindParameter(
-			stmt_
-			, column_ + 1
-			, SQL_PARAM_INPUT
-			, detail::sql_type_info<std::string>::ctype
-			, detail::sql_type_info<std::string>::sqltype
-			, (SQLUINTEGER)string_buffer_.size()
-			, 0
-			, (SQLPOINTER*)string_buffer_.c_str()
-			, (SQLLEN)string_buffer_.size() + 1
-			, &string_buffer_len_);
-		if (!detail::success(rc))
-			picoDBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-		return string_buffer_;
-	}
+	// template<class String>
+	// template<>
+	// inline const std::string& basic_param<String>::set<String>(const String& str)
+	// {
+	// 	string_buffer_ = str;
+	// 	string_buffer_len_ = SQL_NTS;
+	// 	RETCODE rc = SQLBindParameter(
+	// 		stmt_
+	// 		, column_ + 1
+	// 		, SQL_PARAM_INPUT
+	// 		, detail::sql_type_info<String>::ctype
+	// 		, detail::sql_type_info<String>::sqltype
+	// 		, (SQLUINTEGER)string_buffer_.size()
+	// 		, 0
+	// 		, (SQLPOINTER*)string_buffer_.c_str()
+	// 		, (SQLLEN)string_buffer_.size() + 1
+	// 		, &string_buffer_len_);
+	// 	if (!detail::success(rc))
+	// 		PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+	// 	return string_buffer_;
+	// }
 }
 
 //! \brief Represents a statement on the database.
 //! \note statement is non-copyable.
-class statement
+template<class String>
+class basic_statement
 {
+public:
+	typedef String string_type;
+
 private:
-	typedef std::map<long, detail::param*> params_type;
+	typedef std::map<long, detail::basic_param<string_type>*> params_type;
 
 private:
 	template<class T>
@@ -537,9 +611,8 @@ private:
 	}
 
 	template<class T>
-	T get_direct(long column, bool error_on_null)
+	void get_direct(long column, bool error_on_null, T& value)
 	{
-		T value;
 		SQLLEN cb_needed;
 		RETCODE rc = SQLGetData(stmt_, column + 1, detail::sql_type_info<T>::sqltype, &value, sizeof(value), &cb_needed);
 		if(detail::is_null(cb_needed))
@@ -547,14 +620,46 @@ private:
 		if(detail::is_null(cb_needed) && error_on_null)
 			throw null_access_error();
 		if (!detail::success(rc))
-			picoDBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-		return value;
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+	}
+
+	void get_direct(long column, bool error_on_null, string_type& value)
+	{
+		SQLLEN cb_needed = 0;
+		char small_buff[256];				
+		RETCODE rc = SQLGetData(stmt_, column + 1, detail::sql_type_info<string_type>::ctype, small_buff, sizeof(small_buff), &cb_needed);
+		if(detail::is_null(cb_needed))
+			null_[column] = 1;
+		if(detail::is_null(cb_needed) && error_on_null)
+		{
+			throw null_access_error();
+		}
+		else if(!detail::success(rc))
+		{
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+		}
+		else if(detail::success(rc) && cb_needed < sizeof(small_buff))
+		{
+			value = small_buff;
+		}
+		else if(cb_needed > 0)
+		{
+			SQLLEN sz_buff = cb_needed + 1;
+			typedef typename string_type::value_type char_type;
+			char_type p_data[sz_buff];
+			std::size_t offset = sizeof(small_buff) * sizeof(char_type) - 1;
+			std::memcpy(p_data, small_buff, offset);
+			rc = SQLGetData(stmt_, column + 1, detail::sql_type_info<string_type>::ctype, (char_type*)(p_data + offset), sz_buff - offset, &cb_needed);
+	        if (!detail::success(rc))
+				PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+			value = p_data;
+		}
 	}
 
 public:
 	//! \brief Creates a new un-prepared statement.
 	//! \see execute(), execute_direct(), open(), prepare()
-	statement()
+	basic_statement()
 	: stmt_(NULL)
 	, open_(false)
 	, position_(-1)
@@ -568,7 +673,7 @@ public:
 	//! \param conn The connection to use.
 	//! \param stmt The SQL query statement.
 	//! \see execute(), execute_direct(), open(), prepare()
-	statement(connection& conn, const std::string& stmt)
+	basic_statement(basic_connection<string_type>& conn, const string_type& stmt)
 	: stmt_(NULL)
 	, open_(false)
 	{
@@ -577,7 +682,7 @@ public:
 
 	//! \brief Closes the statement.
 	//! \see close()
-	~statement()
+	~basic_statement()
 	{
 		close();
 	}
@@ -585,7 +690,7 @@ public:
 	//! \brief Creates a statement for the given connection.
 	//! \param conn The connection where the statement will be executed.
 	//! \throws database_error
-	void open(connection& conn)
+	void open(basic_connection<string_type>& conn)
 	{
 		close();
 		RETCODE rc = SQLAllocHandle(SQL_HANDLE_STMT, conn.native_dbc_handle(), &stmt_);
@@ -593,7 +698,7 @@ public:
 		if (!open_)
 		{
 			stmt_ = NULL;
-			picoDBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 		}
 	}
 
@@ -615,7 +720,7 @@ public:
 		if(!open())
 			return;
 		open_ = false;
-		for(params_type::iterator i = params_.begin(), end = params_.end(); i != end; ++i)
+		for(typename params_type::iterator i = params_.begin(), end = params_.end(); i != end; ++i)
 			delete i->second;
 		params_.clear();
 		free_results();
@@ -628,12 +733,12 @@ public:
 	//! \param stmt The SQL query that will be executed.
 	//! \see open()
 	//! \throws database_error
-	void prepare(connection& conn, const std::string& stmt)
+	void prepare(basic_connection<string_type>& conn, const string_type& stmt)
 	{
 		open(conn);
 		RETCODE rc = SQLPrepare(stmt_, (SQLCHAR*)stmt.c_str(), SQL_NTS);
 		if (!detail::success(rc))
-			picoDBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 	}
 
 	//! \brief Immediately opens, prepares, and executes the given query directly on the given connection.
@@ -641,12 +746,12 @@ public:
 	//! \param stmt The SQL query that will be executed.
 	//! \see open(), prepare(), execute()
 	//! \throws database_error
-	void execute_direct(connection& conn, const std::string& query)
+	void execute_direct(basic_connection<string_type>& conn, const string_type& query)
 	{
 		open(conn);
 		RETCODE rc = SQLExecDirect(stmt_, (SQLCHAR*)query.c_str(), SQL_NTS);
 		if (!detail::success(rc))
-			picoDBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 	}
 
 	//! \brief Execute the previously prepared query now.
@@ -657,7 +762,7 @@ public:
 			return;
 		RETCODE rc = SQLExecute(stmt_);
 		if (!detail::success(rc))
-			picoDBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 	}
 
 	//! \brief Returns the current position in the current result set, or -1 on error.
@@ -710,7 +815,7 @@ public:
 		if (rc == SQL_NO_DATA)
         	return false;
         if (!detail::success(rc))
-			picoDBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 		return true;
 	}
 
@@ -738,7 +843,7 @@ public:
 	const T& bind(long column, const T& value)
 	{
 		if(!params_.count(column))
-			params_[column] = new class detail::param(stmt_, column);
+			params_[column] = new class detail::basic_param<string_type>(stmt_, column);
 		return params_[column]->set(value);
 	}
 
@@ -753,15 +858,30 @@ public:
 	//! \brief Gets data from the given column in the selected row of the current result set.
 	//! \throws database_error
 	template<class T>
-	T get(long column);
+	T get(long column)
+	{
+		if(null_.count(column))
+			throw null_access_error();
+		if(cache_.count(column))
+			return get_from_cache<T>(column);
+		T value;
+		get_direct(column, true, value);
+		return value;		
+	}
 
 	//! \brief Returns true if and only if the given column in the selected row of the current results set is NULL.
 	//! \throws database_error
-	bool is_null(long column);
+	bool is_null(long column)
+	{
+		string_type value;
+		get_direct(column, false, value);
+		cache_[column] = value;
+		return null_.count(column);
+	}
 
 private:
-	statement(const statement&); // not defined
-	statement& operator=(const statement&); // not defined
+	basic_statement(const basic_statement&); // not defined
+	basic_statement& operator=(const basic_statement&); // not defined
 
 private:
 	HSTMT stmt_;
@@ -769,65 +889,22 @@ private:
 	long position_;
 	mutable long rows_;
 	mutable long columns_;
-	mutable std::map<long, std::string> cache_;
+	mutable std::map<long, string_type> cache_;
 	mutable std::map<long, bool> null_;
 	params_type params_;
 };
 
-template<>
-inline std::string statement::get_direct<std::string>(long column, bool error_on_null)
-{
-	SQLLEN cb_needed = 0;
-	char small_buff[256];				
-	RETCODE rc = SQLGetData(stmt_, column + 1, SQL_C_CHAR, small_buff, sizeof(small_buff), &cb_needed);
-	if(detail::is_null(cb_needed))
-		null_[column] = 1;
-	if(detail::is_null(cb_needed) && error_on_null)
-	{
-		throw null_access_error();
-	}
-	else if(!detail::success(rc))
-	{
-		picoDBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-	}
-	else if(detail::success(rc) && cb_needed < sizeof(small_buff))
-	{
-		return std::string(small_buff);
-	}
-	else if(cb_needed > 0)
-	{
-		SQLLEN sz_buff = cb_needed + 1;
-		char p_data[sz_buff];
-		std::size_t offset = sizeof(small_buff) - 1 ;
-		std::memcpy(p_data, small_buff, offset);
-		rc = SQLGetData(stmt_, column + 1, SQL_C_CHAR, (SQLCHAR*)(p_data + offset), sz_buff - offset, &cb_needed);
-        if (!detail::success(rc))
-			picoDBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-		return std::string(p_data);
-	}
-	return std::string();
-}
-
-template<class T>
-inline T statement::get(long column)
-{
-	if(null_.count(column))
-		throw null_access_error();
-	if(cache_.count(column))
-		return get_from_cache<T>(column);
-	return get_direct<T>(column, true);
-}
-
-inline bool statement::is_null(long column)
-{
-	std::string value = get_direct<std::string>(column, false);
-	cache_[column] = value;
-	return null_.count(column);
-}
-
-#undef picoDBC_THROW_DATABASE_ERROR
+#undef PICODBC_THROW_DATABASE_ERROR
 #undef picoDBC_STRINGIZE
 #undef picoDBC_STRINGIZE_I
+
+typedef basic_connection<std::string> connection;		//!< Non-unicode connection.
+typedef basic_transaction<std::string> transaction;		//!< Non-unicode transaction.
+typedef basic_statement<std::string> statement;			//!< Non-unicode statment.
+
+typedef basic_connection<std::wstring> wconnection;		//!< Unicode connection.
+typedef basic_transaction<std::wstring> wtransaction;	//!< Unicode transaction.
+typedef basic_statement<std::wstring> wstatement;		//!< Unicode statment.
 
 } // namespace picodbc
 

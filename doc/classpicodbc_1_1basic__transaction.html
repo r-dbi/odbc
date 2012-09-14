@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>picodbc: picodbc::database_error Class Reference</title>
+<title>picodbc: picodbc::basic_transaction&lt; String &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -81,63 +81,57 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacepicodbc.html">picodbc</a></li><li class="navelem"><a class="el" href="classpicodbc_1_1database__error.html">database_error</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacepicodbc.html">picodbc</a></li><li class="navelem"><a class="el" href="classpicodbc_1_1basic__transaction.html">basic_transaction</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="classpicodbc_1_1database__error-members.html">List of all members</a>  </div>
+<a href="classpicodbc_1_1basic__transaction-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">picodbc::database_error Class Reference</div>  </div>
+<div class="title">picodbc::basic_transaction&lt; String &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>General database error.  
- <a href="classpicodbc_1_1database__error.html#details">More...</a></p>
+<p>A resource for managing transaction commits and rollbacks.  
+ <a href="classpicodbc_1_1basic__transaction.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="picodbc_8h_source.html">picodbc.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a895648f7c943fd3b80cd12c0ec135f21"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1database__error.html#a895648f7c943fd3b80cd12c0ec135f21">database_error</a> (SQLHANDLE handle, SQLSMALLINT handle_type, const std::string &amp;info=&quot;&quot;)</td></tr>
-<tr class="memdesc:a895648f7c943fd3b80cd12c0ec135f21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a runtime_error with a message describing the last ODBC error generated for the given handle and handle_type.  <a href="#a895648f7c943fd3b80cd12c0ec135f21"></a><br/></td></tr>
-<tr class="memitem:aa62006df5cebaeaeb1c644736df0e2ea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa62006df5cebaeaeb1c644736df0e2ea"></a>
-const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1database__error.html#aa62006df5cebaeaeb1c644736df0e2ea">what</a> () const   throw ()</td></tr>
-<tr class="memdesc:aa62006df5cebaeaeb1c644736df0e2ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the explanatory string. <br/></td></tr>
+<tr class="memitem:a2b60305db56c45e82f0c7a45f7f914dc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__transaction.html#a2b60305db56c45e82f0c7a45f7f914dc">basic_transaction</a> (<a class="el" href="classpicodbc_1_1basic__connection.html">basic_connection</a>&lt; string_type &gt; &amp;conn)</td></tr>
+<tr class="memdesc:a2b60305db56c45e82f0c7a45f7f914dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begin a transaction on the given connection object.  <a href="#a2b60305db56c45e82f0c7a45f7f914dc"></a><br/></td></tr>
+<tr class="memitem:a5bcef57d42d72e0ad34d39593b46a887"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__transaction.html#a5bcef57d42d72e0ad34d39593b46a887">~basic_transaction</a> ()</td></tr>
+<tr class="memdesc:a5bcef57d42d72e0ad34d39593b46a887"><td class="mdescLeft">&#160;</td><td class="mdescRight">If this transaction has not been committed, will will rollback any modifying operations.  <a href="#a5bcef57d42d72e0ad34d39593b46a887"></a><br/></td></tr>
+<tr class="memitem:a912f4b1d15ebec3525a2e976cb780e00"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a912f4b1d15ebec3525a2e976cb780e00"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__transaction.html#a912f4b1d15ebec3525a2e976cb780e00">commit</a> ()  throw ()</td></tr>
+<tr class="memdesc:a912f4b1d15ebec3525a2e976cb780e00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks this transaction for commit. <br/></td></tr>
+<tr class="memitem:a9486d7abbb9b27b93da86565517f2639"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9486d7abbb9b27b93da86565517f2639"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__transaction.html#a9486d7abbb9b27b93da86565517f2639">rollback</a> ()  throw ()</td></tr>
+<tr class="memdesc:a9486d7abbb9b27b93da86565517f2639"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks this transaction for rollback. <br/></td></tr>
 </table>
 <a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>General database error. </p>
+<div class="textblock"><h3>template&lt;class String&gt;<br/>
+class picodbc::basic_transaction&lt; String &gt;</h3>
+
+<p>A resource for managing transaction commits and rollbacks. </p>
 </div><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a895648f7c943fd3b80cd12c0ec135f21"></a>
+<a class="anchor" id="a2b60305db56c45e82f0c7a45f7f914dc"></a>
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;class String &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">picodbc::database_error::database_error </td>
+          <td class="memname"><a class="el" href="classpicodbc_1_1basic__transaction.html">picodbc::basic_transaction</a>&lt; String &gt;::<a class="el" href="classpicodbc_1_1basic__transaction.html">basic_transaction</a> </td>
           <td>(</td>
-          <td class="paramtype">SQLHANDLE&#160;</td>
-          <td class="paramname"><em>handle</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype"><a class="el" href="classpicodbc_1_1basic__connection.html">basic_connection</a>&lt; string_type &gt; &amp;&#160;</td>
+          <td class="paramname"><em>conn</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">SQLSMALLINT&#160;</td>
-          <td class="paramname"><em>handle_type</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>info</em> = <code>&quot;&quot;</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -147,12 +141,44 @@ const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 </table>
 </div><div class="memdoc">
 
-<p>Creates a runtime_error with a message describing the last ODBC error generated for the given handle and handle_type. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>The native ODBC statement or connection handle. </td></tr>
-    <tr><td class="paramname">handle_type</td><td>The native ODBC handle type code for the given handle. </td></tr>
-    <tr><td class="paramname">info</td><td>Additional information that will be appended to the beginning of the error message. </td></tr>
+<p>Begin a transaction on the given connection object. </p>
+<dl class="section post"><dt>Postcondition</dt><dd>Operations that modify the database must now be committed before taking effect. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a5bcef57d42d72e0ad34d39593b46a887"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class String &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpicodbc_1_1basic__transaction.html">picodbc::basic_transaction</a>&lt; String &gt;::~<a class="el" href="classpicodbc_1_1basic__transaction.html">basic_transaction</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>If this transaction has not been committed, will will rollback any modifying operations. </p>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
   </table>
   </dd>
 </dl>

@@ -84,7 +84,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="#index_o"><span>o</span></a></li>
       <li><a href="#index_p"><span>p</span></a></li>
       <li><a href="#index_r"><span>r</span></a></li>
-      <li><a href="#index_s"><span>s</span></a></li>
       <li><a href="#index_t"><span>t</span></a></li>
       <li><a href="#index_w"><span>w</span></a></li>
       <li><a href="#index_0x7e"><span>~</span></a></li>
@@ -96,7 +95,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -109,30 +108,36 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="textblock">Here is a list of all documented class members with links to the class documentation for each member:</div>
 
 <h3><a class="anchor" id="index_b"></a>- b -</h3><ul>
+<li>basic_connection()
+: <a class="el" href="classpicodbc_1_1basic__connection.html#aebfc710c2b549c472999e19cde52081a">picodbc::basic_connection&lt; String &gt;</a>
+</li>
+<li>basic_statement()
+: <a class="el" href="classpicodbc_1_1basic__statement.html#a9da00c7c6882b535fc60be7ba77890d4">picodbc::basic_statement&lt; String &gt;</a>
+</li>
+<li>basic_transaction()
+: <a class="el" href="classpicodbc_1_1basic__transaction.html#a2b60305db56c45e82f0c7a45f7f914dc">picodbc::basic_transaction&lt; String &gt;</a>
+</li>
 <li>bind()
-: <a class="el" href="classpicodbc_1_1statement.html#a0e72adc5073411ac7b52144010fb7c80">picodbc::statement</a>
+: <a class="el" href="classpicodbc_1_1basic__statement.html#a1ad718a7480c8999dc4a2253b3523649">picodbc::basic_statement&lt; String &gt;</a>
 </li>
 </ul>
 
 
 <h3><a class="anchor" id="index_c"></a>- c -</h3><ul>
 <li>close()
-: <a class="el" href="classpicodbc_1_1statement.html#a171dfa9ffca19e1131c964641e080e89">picodbc::statement</a>
+: <a class="el" href="classpicodbc_1_1basic__statement.html#a48f0d639c1007c861988b12b67a25ea8">picodbc::basic_statement&lt; String &gt;</a>
 </li>
 <li>columns()
-: <a class="el" href="classpicodbc_1_1statement.html#a05c02185c7d657ff5f50cafb14c5be1c">picodbc::statement</a>
+: <a class="el" href="classpicodbc_1_1basic__statement.html#ae54e508077d376d9dc7e16e8061dea01">picodbc::basic_statement&lt; String &gt;</a>
 </li>
 <li>commit()
-: <a class="el" href="classpicodbc_1_1transaction.html#ac858084a511fcb8fa0215777c39cfb8b">picodbc::transaction</a>
+: <a class="el" href="classpicodbc_1_1basic__transaction.html#a912f4b1d15ebec3525a2e976cb780e00">picodbc::basic_transaction&lt; String &gt;</a>
 </li>
 <li>connect()
-: <a class="el" href="classpicodbc_1_1connection.html#a70a42115fe96f131fcceece2afa9504e">picodbc::connection</a>
+: <a class="el" href="classpicodbc_1_1basic__connection.html#ab623c7c812a3dabd0517655c5d2006c9">picodbc::basic_connection&lt; String &gt;</a>
 </li>
 <li>connected()
-: <a class="el" href="classpicodbc_1_1connection.html#a480fdd3907012945b6675cf40fda2da4">picodbc::connection</a>
-</li>
-<li>connection()
-: <a class="el" href="classpicodbc_1_1connection.html#abdc88ae21a1ac6db6af557b06005ddc6">picodbc::connection</a>
+: <a class="el" href="classpicodbc_1_1basic__connection.html#acb467180c82a3308518ec410f0c47f31">picodbc::basic_connection&lt; String &gt;</a>
 </li>
 </ul>
 
@@ -142,57 +147,57 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classpicodbc_1_1database__error.html#a895648f7c943fd3b80cd12c0ec135f21">picodbc::database_error</a>
 </li>
 <li>disconnect()
-: <a class="el" href="classpicodbc_1_1connection.html#ae23d15c0938262aef46e3ba4683a7236">picodbc::connection</a>
+: <a class="el" href="classpicodbc_1_1basic__connection.html#ad965ca7c3007898102e00b8e1f7bc9f9">picodbc::basic_connection&lt; String &gt;</a>
 </li>
 </ul>
 
 
 <h3><a class="anchor" id="index_e"></a>- e -</h3><ul>
 <li>end()
-: <a class="el" href="classpicodbc_1_1statement.html#a5844b8f78890305b90c48b8ce91abfce">picodbc::statement</a>
+: <a class="el" href="classpicodbc_1_1basic__statement.html#acca0bfacec69e562b6ae86da109b7dbe">picodbc::basic_statement&lt; String &gt;</a>
 </li>
 <li>execute()
-: <a class="el" href="classpicodbc_1_1statement.html#a1a5ad09e72aecce9cd47801696f79231">picodbc::statement</a>
+: <a class="el" href="classpicodbc_1_1basic__statement.html#a6cb3d6bd70a9dc4f0ec41183818b3111">picodbc::basic_statement&lt; String &gt;</a>
 </li>
 <li>execute_direct()
-: <a class="el" href="classpicodbc_1_1statement.html#af3c584af500a2de798be595bd055e30a">picodbc::statement</a>
+: <a class="el" href="classpicodbc_1_1basic__statement.html#a54863129db07cfb9dd53def0c9951035">picodbc::basic_statement&lt; String &gt;</a>
 </li>
 </ul>
 
 
 <h3><a class="anchor" id="index_f"></a>- f -</h3><ul>
 <li>free_results()
-: <a class="el" href="classpicodbc_1_1statement.html#a9a01f3a77b43f5b9ce966591c4e5e4ed">picodbc::statement</a>
+: <a class="el" href="classpicodbc_1_1basic__statement.html#ad8f9a3c2742e22cfb71c1cb1edbd07fa">picodbc::basic_statement&lt; String &gt;</a>
 </li>
 </ul>
 
 
 <h3><a class="anchor" id="index_g"></a>- g -</h3><ul>
 <li>get()
-: <a class="el" href="classpicodbc_1_1statement.html#a82aa2bfb2b4c573b6e4d005d4ded0d51">picodbc::statement</a>
+: <a class="el" href="classpicodbc_1_1basic__statement.html#a20d996cdcd590203e3247265fe0727a8">picodbc::basic_statement&lt; String &gt;</a>
 </li>
 </ul>
 
 
 <h3><a class="anchor" id="index_i"></a>- i -</h3><ul>
 <li>is_null()
-: <a class="el" href="classpicodbc_1_1statement.html#ae4c76dd942d4f65cafeb8935c3d98e3c">picodbc::statement</a>
+: <a class="el" href="classpicodbc_1_1basic__statement.html#a047ebd8c344d2581f0f5db2609b72552">picodbc::basic_statement&lt; String &gt;</a>
 </li>
 </ul>
 
 
 <h3><a class="anchor" id="index_n"></a>- n -</h3><ul>
 <li>native_dbc_handle()
-: <a class="el" href="classpicodbc_1_1connection.html#a8299940115a807b663513e76db4ae546">picodbc::connection</a>
+: <a class="el" href="classpicodbc_1_1basic__connection.html#aeabe944e1c93d279d90540fa6a0a50b4">picodbc::basic_connection&lt; String &gt;</a>
 </li>
 <li>native_evn_handle()
-: <a class="el" href="classpicodbc_1_1connection.html#a313cafa146bb5e4811860d8371dd38fd">picodbc::connection</a>
+: <a class="el" href="classpicodbc_1_1basic__connection.html#a0c5f17646cde36e33c65020228568ae1">picodbc::basic_connection&lt; String &gt;</a>
 </li>
 <li>native_handle()
-: <a class="el" href="classpicodbc_1_1statement.html#a9b6838cce3090a83665af471f87ec54b">picodbc::statement</a>
+: <a class="el" href="classpicodbc_1_1basic__statement.html#a15e7df22db2bdd2100ded6c4eb58761c">picodbc::basic_statement&lt; String &gt;</a>
 </li>
 <li>next()
-: <a class="el" href="classpicodbc_1_1statement.html#aea8cbf87004a8b0d99e1b2055fb6c648">picodbc::statement</a>
+: <a class="el" href="classpicodbc_1_1basic__statement.html#a9eb07d5b76b7416d9cae7c99246ed85a">picodbc::basic_statement&lt; String &gt;</a>
 </li>
 <li>null_access_error()
 : <a class="el" href="classpicodbc_1_1null__access__error.html#a39cb24d3fd6a71df5f6dab0acc952b07">picodbc::null_access_error</a>
@@ -202,47 +207,37 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <h3><a class="anchor" id="index_o"></a>- o -</h3><ul>
 <li>open()
-: <a class="el" href="classpicodbc_1_1statement.html#a56099cd8bb97a58f2d6b874f7ed4f512">picodbc::statement</a>
+: <a class="el" href="classpicodbc_1_1basic__statement.html#ab157d8d6f6f1add86aedeeea8d4d430d">picodbc::basic_statement&lt; String &gt;</a>
 </li>
 </ul>
 
 
 <h3><a class="anchor" id="index_p"></a>- p -</h3><ul>
 <li>position()
-: <a class="el" href="classpicodbc_1_1statement.html#a6047918c963f6df293374801839c0ef8">picodbc::statement</a>
+: <a class="el" href="classpicodbc_1_1basic__statement.html#aa1a1ed797d4ae272a44a0d4f102b44e2">picodbc::basic_statement&lt; String &gt;</a>
 </li>
 <li>prepare()
-: <a class="el" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68">picodbc::statement</a>
+: <a class="el" href="classpicodbc_1_1basic__statement.html#a1ac525a8a4eb0a1f6608467355282b4e">picodbc::basic_statement&lt; String &gt;</a>
 </li>
 </ul>
 
 
 <h3><a class="anchor" id="index_r"></a>- r -</h3><ul>
 <li>reset_parameters()
-: <a class="el" href="classpicodbc_1_1statement.html#ad0092410e4daad75dfaaf019654ec83b">picodbc::statement</a>
+: <a class="el" href="classpicodbc_1_1basic__statement.html#a2dbcc97986387e24965edb1cc153fcb7">picodbc::basic_statement&lt; String &gt;</a>
 </li>
 <li>rollback()
-: <a class="el" href="classpicodbc_1_1transaction.html#a236a5be15ab2a60662bb68b9709191e1">picodbc::transaction</a>
+: <a class="el" href="classpicodbc_1_1basic__transaction.html#a9486d7abbb9b27b93da86565517f2639">picodbc::basic_transaction&lt; String &gt;</a>
 </li>
 <li>rows()
-: <a class="el" href="classpicodbc_1_1statement.html#a660592da3f2b0ebcd9a84c53b4b6ff9e">picodbc::statement</a>
-</li>
-</ul>
-
-
-<h3><a class="anchor" id="index_s"></a>- s -</h3><ul>
-<li>statement()
-: <a class="el" href="classpicodbc_1_1statement.html#a8ea6d0e50ae1b165aa4d5db71bb7ef3a">picodbc::statement</a>
+: <a class="el" href="classpicodbc_1_1basic__statement.html#aa8b33cd01d0033054f70099f604ca91c">picodbc::basic_statement&lt; String &gt;</a>
 </li>
 </ul>
 
 
 <h3><a class="anchor" id="index_t"></a>- t -</h3><ul>
-<li>transaction()
-: <a class="el" href="classpicodbc_1_1transaction.html#a31a0d738b689ae9df198b0b75e03ca7c">picodbc::transaction</a>
-</li>
 <li>transactions()
-: <a class="el" href="classpicodbc_1_1connection.html#a3573eff459df0c457d2d63de90e619c1">picodbc::connection</a>
+: <a class="el" href="classpicodbc_1_1basic__connection.html#a52d79717419ff49875f7dc668223e45b">picodbc::basic_connection&lt; String &gt;</a>
 </li>
 </ul>
 
@@ -256,20 +251,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <h3><a class="anchor" id="index_0x7e"></a>- ~ -</h3><ul>
-<li>~connection()
-: <a class="el" href="classpicodbc_1_1connection.html#ae92e3edfdfeaf35282dbbc5979c4deb3">picodbc::connection</a>
+<li>~basic_connection()
+: <a class="el" href="classpicodbc_1_1basic__connection.html#acbc68b3cac844ee178edceea49cc37f5">picodbc::basic_connection&lt; String &gt;</a>
 </li>
-<li>~statement()
-: <a class="el" href="classpicodbc_1_1statement.html#af0fa4dbb9e84dbb262600f888ca3469f">picodbc::statement</a>
+<li>~basic_statement()
+: <a class="el" href="classpicodbc_1_1basic__statement.html#af8ccf44096fb65482e0676afca0ea8c8">picodbc::basic_statement&lt; String &gt;</a>
 </li>
-<li>~transaction()
-: <a class="el" href="classpicodbc_1_1transaction.html#a117c80e78024292a955da2569192d518">picodbc::transaction</a>
+<li>~basic_transaction()
+: <a class="el" href="classpicodbc_1_1basic__transaction.html#a5bcef57d42d72e0ad34d39593b46a887">picodbc::basic_transaction&lt; String &gt;</a>
 </li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Sep 13 2012 17:04:43 for picodbc by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Sep 13 2012 20:37:35 for picodbc by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1.2
 </small></address>

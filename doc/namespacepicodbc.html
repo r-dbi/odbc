@@ -61,6 +61,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow2" class="tabs2">
     <ul class="tablist">
       <li><a href="namespaces.html"><span>Namespace&#160;List</span></a></li>
+      <li><a href="namespacemembers.html"><span>Namespace&#160;Members</span></a></li>
     </ul>
   </div>
 <!-- window showing the filter options -->
@@ -68,7 +69,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -80,7 +81,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle">
 <div class="title">picodbc Namespace Reference</div>  </div>
 </div><!--header-->
@@ -95,19 +97,46 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accessed NULL data.  <a href="classpicodbc_1_1null__access__error.html#details">More...</a><br/></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1database__error.html">database_error</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">General database error.  <a href="classpicodbc_1_1database__error.html#details">More...</a><br/></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1connection.html">connection</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manages and encapsulates ODBC resources such as the connection and environment handles.  <a href="classpicodbc_1_1connection.html#details">More...</a><br/></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1transaction.html">transaction</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A resource for managing transaction commits and rollbacks.  <a href="classpicodbc_1_1transaction.html#details">More...</a><br/></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html">statement</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a statement on the database.  <a href="classpicodbc_1_1statement.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__connection.html">basic_connection</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manages and encapsulates ODBC resources such as the connection and environment handles.  <a href="classpicodbc_1_1basic__connection.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__transaction.html">basic_transaction</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A resource for managing transaction commits and rollbacks.  <a href="classpicodbc_1_1basic__transaction.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__statement.html">basic_statement</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a statement on the database.  <a href="classpicodbc_1_1basic__statement.html#details">More...</a><br/></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a0bff1f1e52e06da739dfa0477bde884b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0bff1f1e52e06da739dfa0477bde884b"></a>
+typedef <a class="el" href="classpicodbc_1_1basic__connection.html">basic_connection</a><br class="typebreak"/>
+&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepicodbc.html#a0bff1f1e52e06da739dfa0477bde884b">connection</a></td></tr>
+<tr class="memdesc:a0bff1f1e52e06da739dfa0477bde884b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-unicode connection. <br/></td></tr>
+<tr class="memitem:a6b2c4564abdf7b4948b59396d6ffec23"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6b2c4564abdf7b4948b59396d6ffec23"></a>
+typedef <a class="el" href="classpicodbc_1_1basic__transaction.html">basic_transaction</a><br class="typebreak"/>
+&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepicodbc.html#a6b2c4564abdf7b4948b59396d6ffec23">transaction</a></td></tr>
+<tr class="memdesc:a6b2c4564abdf7b4948b59396d6ffec23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-unicode transaction. <br/></td></tr>
+<tr class="memitem:a51c8dae2ec1ea8921ab9aba2ab7a4c08"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a51c8dae2ec1ea8921ab9aba2ab7a4c08"></a>
+typedef <a class="el" href="classpicodbc_1_1basic__statement.html">basic_statement</a><br class="typebreak"/>
+&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepicodbc.html#a51c8dae2ec1ea8921ab9aba2ab7a4c08">statement</a></td></tr>
+<tr class="memdesc:a51c8dae2ec1ea8921ab9aba2ab7a4c08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-unicode statment. <br/></td></tr>
+<tr class="memitem:abb176809576dd3717089508034a1003d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abb176809576dd3717089508034a1003d"></a>
+typedef <a class="el" href="classpicodbc_1_1basic__connection.html">basic_connection</a><br class="typebreak"/>
+&lt; std::wstring &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepicodbc.html#abb176809576dd3717089508034a1003d">wconnection</a></td></tr>
+<tr class="memdesc:abb176809576dd3717089508034a1003d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unicode connection. <br/></td></tr>
+<tr class="memitem:a8918683c6e21cabb75ce9fd689d0aefc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8918683c6e21cabb75ce9fd689d0aefc"></a>
+typedef <a class="el" href="classpicodbc_1_1basic__transaction.html">basic_transaction</a><br class="typebreak"/>
+&lt; std::wstring &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepicodbc.html#a8918683c6e21cabb75ce9fd689d0aefc">wtransaction</a></td></tr>
+<tr class="memdesc:a8918683c6e21cabb75ce9fd689d0aefc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unicode transaction. <br/></td></tr>
+<tr class="memitem:a2c29857792025b1a4d588c5e9a7b195d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2c29857792025b1a4d588c5e9a7b195d"></a>
+typedef <a class="el" href="classpicodbc_1_1basic__statement.html">basic_statement</a><br class="typebreak"/>
+&lt; std::wstring &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepicodbc.html#a2c29857792025b1a4d588c5e9a7b195d">wstatement</a></td></tr>
+<tr class="memdesc:a2c29857792025b1a4d588c5e9a7b195d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unicode statment. <br/></td></tr>
 </table>
 <a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>The entirety of picodbc can be found within this one namespace. </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Sep 13 2012 17:04:43 for picodbc by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Sep 13 2012 20:37:35 for picodbc by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1.2
 </small></address>

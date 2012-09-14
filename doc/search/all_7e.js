@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['_7econnection',['~connection',['../classpicodbc_1_1connection.html#ae92e3edfdfeaf35282dbbc5979c4deb3',1,'picodbc::connection']]],
-  ['_7estatement',['~statement',['../classpicodbc_1_1statement.html#af0fa4dbb9e84dbb262600f888ca3469f',1,'picodbc::statement']]],
-  ['_7etransaction',['~transaction',['../classpicodbc_1_1transaction.html#a117c80e78024292a955da2569192d518',1,'picodbc::transaction']]]
+  ['_7ebasic_5fconnection',['~basic_connection',['../classpicodbc_1_1basic__connection.html#acbc68b3cac844ee178edceea49cc37f5',1,'picodbc::basic_connection']]],
+  ['_7ebasic_5fstatement',['~basic_statement',['../classpicodbc_1_1basic__statement.html#af8ccf44096fb65482e0676afca0ea8c8',1,'picodbc::basic_statement']]],
+  ['_7ebasic_5ftransaction',['~basic_transaction',['../classpicodbc_1_1basic__transaction.html#a5bcef57d42d72e0ad34d39593b46a887',1,'picodbc::basic_transaction']]]
 ];
