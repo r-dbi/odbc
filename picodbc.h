@@ -261,15 +261,15 @@ namespace detail
 		return s;
 	}
 
-	// Binds the given column as an input parameter, the parameter value is written into the given output buffer.
+	// Binds the given parameter number to the provided value.
 	template<class T>
-	inline const T& bind_param(HSTMT stmt, long column, const T& value, void* output)
+	inline const T& bind_param(HSTMT stmt, long param, const T& value, void* output)
 	{
 		std::memcpy(output, &value, sizeof(value));
 		SQLLEN str_len_or_ind_ptr = 0;
 		SQLBindParameter(
 			stmt
-			, column + 1
+			, param + 1
 			, SQL_PARAM_INPUT
 			, sql_type_info<T>::ctype
 			, sql_type_info<T>::sqltype
@@ -329,7 +329,7 @@ template<class String>
 class basic_connection
 {
 public:
-	typedef String string_type;
+	typedef String string_type;		//!< Connection string type, typically std::string or std::wstring for unicode operation.
 
 public:
 	//! \brief Create new connection object, initially not connected.
@@ -483,7 +483,7 @@ template<class String>
 class basic_transaction
 {
 public:
-	typedef String string_type;
+	typedef String string_type;		//!< Connection string type, typically std::string or std::wstring for unicode operation.
 
 public:
 	//! \brief Begin a transaction on the given connection object.
@@ -570,16 +570,16 @@ namespace detail
 		typedef String string_type;
 
 	private:
-		basic_param(HSTMT stmt, long column)
+		basic_param(HSTMT stmt, long param)
 		: stmt_(stmt)
-		, column_(column)
+		, param_(param)
 		{
 
 		}
 
 		basic_param(const basic_param& rhs)
 		: stmt_(rhs.stmt_)
-		, column_(rhs.column_)
+		, param_(rhs.param_)
 		{
 
 		}
@@ -599,13 +599,13 @@ namespace detail
 		{
 			using std::swap;
 			swap(stmt_, rhs.stmt_);
-			swap(column_, rhs.column_);
+			swap(param_, rhs.param_);
 		}
 
 		template<class T>
 		const T& set(const T& value)
 		{
-			return bind_param(stmt_, column_, value, value_buffer_);
+			return bind_param(stmt_, param_, value, value_buffer_);
 		}
 
 		const string_type& set(const string_type& str)
@@ -614,7 +614,7 @@ namespace detail
 			string_buffer_len_ = SQL_NTS;
 			RETCODE rc = SQLBindParameter(
 				stmt_
-				, column_ + 1
+				, param_ + 1
 				, SQL_PARAM_INPUT
 				, detail::sql_type_info<string_type>::ctype
 				, detail::sql_type_info<string_type>::sqltype
@@ -631,7 +631,7 @@ namespace detail
 	private:
 		friend class picodbc::basic_statement<string_type>;
 		HSTMT stmt_;
-		long column_;
+		long param_;
 		typename string_type::value_type value_buffer_[512];
 		string_type string_buffer_;
 		SQLLEN string_buffer_len_;
@@ -647,7 +647,7 @@ template<class String>
 class basic_statement
 {
 public:
-	typedef String string_type;
+	typedef String string_type;		//!< Connection string type, typically std::string or std::wstring for unicode operation.
 
 private:
 	typedef std::map<long, detail::basic_param<string_type>*> params_type;
@@ -888,21 +888,28 @@ public:
 			SQLCloseCursor(stmt_);
 	}
 
-	//! \brief Binds the given value to the given column in the prepared statement.
+	//! \brief Binds the given value to the given parameter placeholder number in the prepared statement.
 	//!
 	//! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
+	//! Placeholder numbers count from left to right and are 0-indexed.
+	//! \param param Placeholder position.
+	//! \param value Value to substitute into placeholder.
+	//! \return The bound value.
 	//! \throws database_error
 	template<class T>
-	const T& bind_value(long column, const T& value)
+	const T& bind_param(long param, const T& value)
 	{
-		if(!params_.count(column))
-			params_[column] = new class detail::basic_param<string_type>(stmt_, column);
-		return params_[column]->set(value);
+		if(!params_.count(param))
+			params_[param] = new class detail::basic_param<string_type>(stmt_, param);
+		return params_[param]->set(value);
 	}
 
 	//! \brief Binds the given column to the supplied output parameter.
 	//!
 	//! Each call to next() will fill the output parameter with the next value.
+	//! Columns are numbered from left to right and 0-indexed.
+	//! \param column Column position.
+	//! \param output Bound storage value.
 	//! \note You can not bind a string_type to a column, use bind_column_str() instead.
 	//! \see bind_column_str
 	//! \throws database_error
@@ -923,6 +930,10 @@ public:
 	//! \brief Binds the given column to the supplied output character buffer.
 	//!
 	//! Each call to next() will fill the output parameter with the next value.
+	//! Columns are numbered from left to right and 0-indexed.
+	//! \param column Column position.
+	//! \param output Bound output buffer.
+	//! \param length Size of output buffer.
 	//! \note Unless you want to fetch string data you should use bind_column() instead.
 	//! \see bind_column
 	//! \throws database_error
@@ -934,7 +945,7 @@ public:
 			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 	}
 
-	//! \brief Resets all currently bound value parameters and bound columns.
+	//! \brief Resets all currently bound parameters and columns.
 	void reset_parameters()
 	{
 		if(!open())
@@ -944,6 +955,9 @@ public:
 	}
 
 	//! \brief Gets data from the given column in the selected row of the current result set.
+	//!
+	//! Columns are numbered from left to right and 0-indexed.
+	//! \param Column position. 
 	//! \throws database_error
 	template<class T>
 	T get(long column)
@@ -958,6 +972,9 @@ public:
 	}
 
 	//! \brief Returns true if and only if the given column in the selected row of the current results set is NULL.
+	//!
+	//! Columns are numbered from left to right and 0-indexed.
+	//! \param Column position. 
 	//! \throws database_error
 	bool is_null(long column)
 	{
