@@ -5,5 +5,5 @@ var searchData=
   ['basic_5ftransaction',['basic_transaction',['../classpicodbc_1_1basic__transaction.html#a2b60305db56c45e82f0c7a45f7f914dc',1,'picodbc::basic_transaction']]],
   ['bind_5fcolumn',['bind_column',['../classpicodbc_1_1basic__statement.html#a21699c21be3975af11da39ee685e16a8',1,'picodbc::basic_statement']]],
   ['bind_5fcolumn_5fstr',['bind_column_str',['../classpicodbc_1_1basic__statement.html#ac96747e2e3f7509d25c639ced17ec052',1,'picodbc::basic_statement']]],
-  ['bind_5fvalue',['bind_value',['../classpicodbc_1_1basic__statement.html#a284212abe5ebfef32e874443ec7ec8c0',1,'picodbc::basic_statement']]]
+  ['bind_5fparam',['bind_param',['../classpicodbc_1_1basic__statement.html#abed79249a73c7353346ec2de370996a5',1,'picodbc::basic_statement']]]
 ];

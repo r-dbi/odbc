@@ -86,6 +86,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classpicodbc_1_1basic__transaction-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -98,9 +99,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p><code>#include &lt;<a class="el" href="picodbc_8h_source.html">picodbc.h</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a37f9d0e4edf9b4bb66a2bea9de0a2986"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a37f9d0e4edf9b4bb66a2bea9de0a2986"></a>
+typedef String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__transaction.html#a37f9d0e4edf9b4bb66a2bea9de0a2986">string_type</a></td></tr>
+<tr class="memdesc:a37f9d0e4edf9b4bb66a2bea9de0a2986"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connection string type, typically std::string or std::wstring for unicode operation. <br/></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2b60305db56c45e82f0c7a45f7f914dc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__transaction.html#a2b60305db56c45e82f0c7a45f7f914dc">basic_transaction</a> (<a class="el" href="classpicodbc_1_1basic__connection.html">basic_connection</a>&lt; string_type &gt; &amp;conn)</td></tr>
+<tr class="memitem:a2b60305db56c45e82f0c7a45f7f914dc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__transaction.html#a2b60305db56c45e82f0c7a45f7f914dc">basic_transaction</a> (<a class="el" href="classpicodbc_1_1basic__connection.html">basic_connection</a>&lt; <a class="el" href="classpicodbc_1_1basic__transaction.html#a37f9d0e4edf9b4bb66a2bea9de0a2986">string_type</a> &gt; &amp;conn)</td></tr>
 <tr class="memdesc:a2b60305db56c45e82f0c7a45f7f914dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begin a transaction on the given connection object.  <a href="#a2b60305db56c45e82f0c7a45f7f914dc"></a><br/></td></tr>
 <tr class="memitem:a5bcef57d42d72e0ad34d39593b46a887"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__transaction.html#a5bcef57d42d72e0ad34d39593b46a887">~basic_transaction</a> ()</td></tr>
 <tr class="memdesc:a5bcef57d42d72e0ad34d39593b46a887"><td class="mdescLeft">&#160;</td><td class="mdescRight">If this transaction has not been committed, will will rollback any modifying operations.  <a href="#a5bcef57d42d72e0ad34d39593b46a887"></a><br/></td></tr>
@@ -131,7 +138,7 @@ template&lt;class String &gt; </div>
         <tr>
           <td class="memname"><a class="el" href="classpicodbc_1_1basic__transaction.html">picodbc::basic_transaction</a>&lt; String &gt;::<a class="el" href="classpicodbc_1_1basic__transaction.html">basic_transaction</a> </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classpicodbc_1_1basic__connection.html">basic_connection</a>&lt; string_type &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classpicodbc_1_1basic__connection.html">basic_connection</a>&lt; <a class="el" href="classpicodbc_1_1basic__transaction.html#a37f9d0e4edf9b4bb66a2bea9de0a2986">string_type</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>conn</em></td><td>)</td>
           <td></td>
         </tr>
@@ -193,7 +200,7 @@ template&lt;class String &gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Sep 14 2012 01:19:38 for picodbc by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Sep 14 2012 01:59:10 for picodbc by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1.2
 </small></address>

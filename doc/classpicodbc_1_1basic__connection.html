@@ -86,6 +86,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classpicodbc_1_1basic__connection-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -98,21 +99,27 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p><code>#include &lt;<a class="el" href="picodbc_8h_source.html">picodbc.h</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a8379d60801d2ea2f1dcfacb94557d311"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8379d60801d2ea2f1dcfacb94557d311"></a>
+typedef String&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311">string_type</a></td></tr>
+<tr class="memdesc:a8379d60801d2ea2f1dcfacb94557d311"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connection string type, typically std::string or std::wstring for unicode operation. <br/></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aebfc710c2b549c472999e19cde52081a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aebfc710c2b549c472999e19cde52081a"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__connection.html#aebfc710c2b549c472999e19cde52081a">basic_connection</a> ()</td></tr>
 <tr class="memdesc:aebfc710c2b549c472999e19cde52081a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create new connection object, initially not connected. <br/></td></tr>
-<tr class="memitem:adcbefc772814e4e538f0070f3d9ebc42"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__connection.html#adcbefc772814e4e538f0070f3d9ebc42">basic_connection</a> (const string_type &amp;dsn, const string_type &amp;user, const string_type &amp;pass, int timeout=5)</td></tr>
+<tr class="memitem:adcbefc772814e4e538f0070f3d9ebc42"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__connection.html#adcbefc772814e4e538f0070f3d9ebc42">basic_connection</a> (const <a class="el" href="classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311">string_type</a> &amp;dsn, const <a class="el" href="classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311">string_type</a> &amp;user, const <a class="el" href="classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311">string_type</a> &amp;pass, int timeout=5)</td></tr>
 <tr class="memdesc:adcbefc772814e4e538f0070f3d9ebc42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create new connection object and immediately connect to the given data source.  <a href="#adcbefc772814e4e538f0070f3d9ebc42"></a><br/></td></tr>
-<tr class="memitem:a0830acf8ab6cca3997da76f191fa3517"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__connection.html#a0830acf8ab6cca3997da76f191fa3517">basic_connection</a> (const string_type &amp;connection_string, int timeout=5)</td></tr>
+<tr class="memitem:a0830acf8ab6cca3997da76f191fa3517"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__connection.html#a0830acf8ab6cca3997da76f191fa3517">basic_connection</a> (const <a class="el" href="classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311">string_type</a> &amp;connection_string, int timeout=5)</td></tr>
 <tr class="memdesc:a0830acf8ab6cca3997da76f191fa3517"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create new connection object and immediately connect using the given connection string.  <a href="#a0830acf8ab6cca3997da76f191fa3517"></a><br/></td></tr>
 <tr class="memitem:acbc68b3cac844ee178edceea49cc37f5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acbc68b3cac844ee178edceea49cc37f5"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__connection.html#acbc68b3cac844ee178edceea49cc37f5">~basic_connection</a> ()</td></tr>
 <tr class="memdesc:acbc68b3cac844ee178edceea49cc37f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Automatically disconnects from the database and frees all associated resources. <br/></td></tr>
-<tr class="memitem:ad5a1e233569e3fe29029ca9ba53d9c91"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__connection.html#ad5a1e233569e3fe29029ca9ba53d9c91">connect</a> (const string_type &amp;dsn, const string_type &amp;user, const string_type &amp;pass, int timeout=5)</td></tr>
+<tr class="memitem:ad5a1e233569e3fe29029ca9ba53d9c91"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__connection.html#ad5a1e233569e3fe29029ca9ba53d9c91">connect</a> (const <a class="el" href="classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311">string_type</a> &amp;dsn, const <a class="el" href="classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311">string_type</a> &amp;user, const <a class="el" href="classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311">string_type</a> &amp;pass, int timeout=5)</td></tr>
 <tr class="memdesc:ad5a1e233569e3fe29029ca9ba53d9c91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create new connection object and immediately connect to the given data source.  <a href="#ad5a1e233569e3fe29029ca9ba53d9c91"></a><br/></td></tr>
-<tr class="memitem:a94c06e4c3614d65ae53b7e30fa6415dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__connection.html#a94c06e4c3614d65ae53b7e30fa6415dd">connect</a> (const string_type &amp;connection_string, int timeout=5)</td></tr>
+<tr class="memitem:a94c06e4c3614d65ae53b7e30fa6415dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__connection.html#a94c06e4c3614d65ae53b7e30fa6415dd">connect</a> (const <a class="el" href="classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311">string_type</a> &amp;connection_string, int timeout=5)</td></tr>
 <tr class="memdesc:a94c06e4c3614d65ae53b7e30fa6415dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create new connection object and immediately connect using the given connection string.  <a href="#a94c06e4c3614d65ae53b7e30fa6415dd"></a><br/></td></tr>
 <tr class="memitem:acb467180c82a3308518ec410f0c47f31"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acb467180c82a3308518ec410f0c47f31"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1basic__connection.html#acb467180c82a3308518ec410f0c47f31">connected</a> () const </td></tr>
@@ -151,19 +158,19 @@ template&lt;class String&gt; </div>
         <tr>
           <td class="memname"><a class="el" href="classpicodbc_1_1basic__connection.html">picodbc::basic_connection</a>&lt; String &gt;::<a class="el" href="classpicodbc_1_1basic__connection.html">basic_connection</a> </td>
           <td>(</td>
-          <td class="paramtype">const string_type &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311">string_type</a> &amp;&#160;</td>
           <td class="paramname"><em>dsn</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const string_type &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311">string_type</a> &amp;&#160;</td>
           <td class="paramname"><em>user</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const string_type &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311">string_type</a> &amp;&#160;</td>
           <td class="paramname"><em>pass</em>, </td>
         </tr>
         <tr>
@@ -216,7 +223,7 @@ template&lt;class String&gt; </div>
         <tr>
           <td class="memname"><a class="el" href="classpicodbc_1_1basic__connection.html">picodbc::basic_connection</a>&lt; String &gt;::<a class="el" href="classpicodbc_1_1basic__connection.html">basic_connection</a> </td>
           <td>(</td>
-          <td class="paramtype">const string_type &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311">string_type</a> &amp;&#160;</td>
           <td class="paramname"><em>connection_string</em>, </td>
         </tr>
         <tr>
@@ -268,19 +275,19 @@ template&lt;class String&gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="classpicodbc_1_1basic__connection.html">picodbc::basic_connection</a>&lt; String &gt;::connect </td>
           <td>(</td>
-          <td class="paramtype">const string_type &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311">string_type</a> &amp;&#160;</td>
           <td class="paramname"><em>dsn</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const string_type &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311">string_type</a> &amp;&#160;</td>
           <td class="paramname"><em>user</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const string_type &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311">string_type</a> &amp;&#160;</td>
           <td class="paramname"><em>pass</em>, </td>
         </tr>
         <tr>
@@ -333,7 +340,7 @@ template&lt;class String&gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="classpicodbc_1_1basic__connection.html">picodbc::basic_connection</a>&lt; String &gt;::connect </td>
           <td>(</td>
-          <td class="paramtype">const string_type &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311">string_type</a> &amp;&#160;</td>
           <td class="paramname"><em>connection_string</em>, </td>
         </tr>
         <tr>
@@ -378,7 +385,7 @@ template&lt;class String&gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Sep 14 2012 01:19:38 for picodbc by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Sep 14 2012 01:59:10 for picodbc by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1.2
 </small></address>
