@@ -55,15 +55,22 @@ License: The MIT License<br/>
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <tr1/type_traits>
 
 //! \file picodbc.h The entirety of picodbc can be found within this one file.
 
-//! The entirety of picodbc can be found within this one namespace.
+//! \brief The entirety of picodbc can be found within this one namespace.
 namespace picodbc
 {
 
 namespace detail
 {
+	// simple enable if utility taken from boost
+	template <bool B, class T = void> struct enable_if_c { typedef T type; };
+	template <class T> struct enable_if_c<false, T> { };
+	template <bool B, class T = void> struct disable_if_c { typedef T type; };
+	template <class T> struct disable_if_c<true, T> { };
+
 	// easy way to check if a return code signifies success.
 	inline bool success(RETCODE rc)
 	{
@@ -109,7 +116,7 @@ namespace detail
 		return (cb_data == SQL_NULL_DATA || cb_data < 0);
 	}
 
-	// A utility for calculating the ctype, sqltype, and format specifier for the given type T.
+	// A utility for calculating the ctype, sqltype, and format specifiers for the given type T.
 	template<class T>
 	struct sql_type_info { };
 
@@ -195,6 +202,7 @@ namespace detail
 		std::swscanf(s.c_str(), sql_type_info<T>::wformat, &value);
 		return value;
 	}
+
 	template<>
 	inline std::wstring convert<std::wstring>(const std::wstring& s)
 	{
@@ -206,7 +214,7 @@ namespace detail
 	inline const T& bind_param(HSTMT stmt, long column, const T& value, void* output)
 	{
 		std::memcpy(output, &value, sizeof(value));
-		SQLLEN StrLenOrInPoint = 0;
+		SQLLEN str_len_or_ind_ptr = 0;
 		SQLBindParameter(
 			stmt
 			, column + 1
@@ -217,8 +225,8 @@ namespace detail
 			, 0
 			, (SQLPOINTER*)output
 			, 0
-			, &StrLenOrInPoint);
-		return *(T*)output;
+			, &str_len_or_ind_ptr);
+		return *reinterpret_cast<T*>(output);
 	}
 } // namespace detail
 
@@ -261,7 +269,10 @@ public:
 #define PICODBC_THROW_DATABASE_ERROR(handle, handle_type) throw database_error(handle, handle_type, __FILE__ ":" PICODBC_STRINGIZE(__LINE__) ": ")
 
 //! \brief Manages and encapsulates ODBC resources such as the connection and environment handles.
-//! \note connection is non-copyable.
+//!
+//! For unicode operations use the wconnection variant, otherwise just connection.
+//! \see connection, wconnection
+//! \note connections are non-copyable.
 template<class String>
 class basic_connection
 {
@@ -286,7 +297,7 @@ public:
 	//! \param pass the password for authenticating to the data source.
 	//! \throws database_error
 	//! \see connected(), connect()
-	basic_connection(const string_type& dsn, const string_type& user, const string_type& pass)
+	basic_connection(const string_type& dsn, const string_type& user, const string_type& pass, int timeout = 5)
 	: env_(NULL)
 	, conn_(NULL)
 	, connected_(false)
@@ -294,14 +305,14 @@ public:
 	, rollback_(false)
 	{
 		detail::allocate_handle(env_, conn_);
-		connect(dsn, user, pass);
+		connect(dsn, user, pass, timeout);
 	}
 
 	//! \brief Create new connection object and immediately connect using the given connection string.
 	//! \param connection_string The connection string for establishing a connection.
 	//! \throws database_error
 	//! \see connected(), connect()
-	basic_connection(const string_type& connection_string)
+	basic_connection(const string_type& connection_string, int timeout = 5)
 	: env_(NULL)
 	, conn_(NULL)
 	, connected_(false)
@@ -309,7 +320,7 @@ public:
 	, rollback_(false)
 	{
 		detail::allocate_handle(env_, conn_);
-		connect(connection_string);
+		connect(connection_string, timeout);
 	}
 
 	//! \brief Automatically disconnects from the database and frees all associated resources.
@@ -326,11 +337,12 @@ public:
 	//! \param pass the password for authenticating to the data source.
 	//! \throws database_error
 	//! \see connected()
-	void connect(const string_type& dsn, const string_type& user, const string_type& pass)
+	void connect(const string_type& dsn, const string_type& user, const string_type& pass, int timeout = 5)
 	{
 		disconnect();
 		SQLFreeHandle(SQL_HANDLE_DBC, conn_);
 		SQLAllocHandle(SQL_HANDLE_DBC, env_, &conn_);
+		SQLSetConnectAttr(conn_, SQL_LOGIN_TIMEOUT, reinterpret_cast<SQLPOINTER*>(timeout), 0);
 		RETCODE rc = SQLConnect(
 			conn_
 			, (SQLCHAR*)dsn.c_str(), SQL_NTS
@@ -345,13 +357,14 @@ public:
 	//! \param connection_string The connection string for establishing a connection.
 	//! \throws database_error
 	//! \see connected()
-	void connect(const string_type& connection_string)
+	void connect(const string_type& connection_string, int timeout = 5)
 	{
 		disconnect();
 		SQLFreeHandle(SQL_HANDLE_DBC, conn_);
 		SQLAllocHandle(SQL_HANDLE_DBC, env_, &conn_);
 		SQLCHAR dsn[1024];
 		SQLSMALLINT dsn_size = 0;
+		SQLSetConnectAttr(conn_, SQL_LOGIN_TIMEOUT, reinterpret_cast<SQLPOINTER*>(timeout), 0);
 		RETCODE rc = SQLDriverConnect(
 			conn_
 			, 0
@@ -410,6 +423,10 @@ private:
 };
 
 //! \brief A resource for managing transaction commits and rollbacks.
+//!
+//! For unicode operations use the wtransaction variant, otherwise just transaction.
+//! \see transaction, wtransaction
+//! \not transactions are non-copyable.
 template<class String>
 class basic_transaction
 {
@@ -592,7 +609,10 @@ namespace detail
 }
 
 //! \brief Represents a statement on the database.
-//! \note statement is non-copyable.
+//!
+//! For unicode operations use the wstatement variant, otherwise just statement.
+//! \see statement, wstatement
+//! \note statements are non-copyable.
 template<class String>
 class basic_statement
 {
@@ -724,6 +744,7 @@ public:
 			delete i->second;
 		params_.clear();
 		free_results();
+		SQLCancel(stmt_);
 		SQLFreeHandle(SQL_HANDLE_STMT, stmt_);
 		stmt_ = NULL;
 	}
@@ -838,21 +859,58 @@ public:
 	}
 
 	//! \brief Binds the given value to the given column in the prepared statement.
+	//!
+	//! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
 	//! \throws database_error
 	template<class T>
-	const T& bind(long column, const T& value)
+	const T& bind_value(long column, const T& value)
 	{
 		if(!params_.count(column))
 			params_[column] = new class detail::basic_param<string_type>(stmt_, column);
 		return params_[column]->set(value);
 	}
 
-	//! \brief Resets all currently bound parameters.
+	//! \brief Binds the given column to the supplied output parameter.
+	//!
+	//! Each call to next() will fill the output parameter with the next value.
+	//! \note You can not bind a string_type to a column, use bind_column_str() instead.
+	//! \see bind_column_str
+	//! \throws database_error
+	template<class T>
+	#ifdef DOXYGEN
+		void
+	#else
+		typename detail::disable_if_c<std::tr1::is_same<T, string_type>::value, void>::type
+	#endif
+	bind_column(long column, T& output)
+	{
+		SQLLEN cb_data = 0;
+		RETCODE rc = SQLBindCol(stmt_, column + 1, detail::sql_type_info<T>::ctype, &output, sizeof(T), &cb_data);
+        if (!detail::success(rc))
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+	}
+
+	//! \brief Binds the given column to the supplied output character buffer.
+	//!
+	//! Each call to next() will fill the output parameter with the next value.
+	//! \note Unless you want to fetch string data you should use bind_column() instead.
+	//! \see bind_column
+	//! \throws database_error
+	void bind_column_str(long column, typename string_type::value_type* output, typename string_type::size_type length)
+	{
+		SQLLEN cb_data = 0;
+		RETCODE rc = SQLBindCol(stmt_, column + 1, detail::sql_type_info<string_type>::ctype, output, length, &cb_data);
+        if (!detail::success(rc))
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+	}
+
+	//! \brief Resets all currently bound value parameters and bound columns.
 	void reset_parameters()
 	{
 		if(!open())
 			return;
 		SQLFreeStmt(stmt_, SQL_RESET_PARAMS);
+		SQLFreeStmt(stmt_, SQL_UNBIND);
 	}
 
 	//! \brief Gets data from the given column in the selected row of the current result set.
