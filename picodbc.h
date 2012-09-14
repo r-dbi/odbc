@@ -117,66 +117,118 @@ namespace detail
 	}
 
 	// A utility for calculating the ctype, sqltype, and format specifiers for the given type T.
+	// I essentially create a lookup table based on the MSDN ODBC documentation.
+	// See http://msdn.microsoft.com/en-us/library/windows/desktop/ms714556(v=vs.85).aspx for details.
 	template<class T>
 	struct sql_type_info { };
 
 	template<>
-	struct sql_type_info<short> { static const SQLSMALLINT ctype = SQL_C_SSHORT; static const SQLSMALLINT sqltype = SQL_SMALLINT; 
-		static const char* const format; static const wchar_t* const wformat; };
+	struct sql_type_info<short>
+	{
+		static const SQLSMALLINT ctype = SQL_C_SSHORT;
+		static const SQLSMALLINT sqltype = SQL_SMALLINT; 
+		static const char* const format;
+		static const wchar_t* const wformat;
+	};
 	const char* const sql_type_info<short>::format = "%hd";
 	const wchar_t* const sql_type_info<short>::wformat = L"%hd";
 
 	template<>
-	struct sql_type_info<unsigned short> { static const SQLSMALLINT ctype = SQL_C_USHORT; static const SQLSMALLINT sqltype = SQL_SMALLINT;
-		static const char* const format; static const wchar_t* const wformat; };
+	struct sql_type_info<unsigned short>
+	{ 
+		static const SQLSMALLINT ctype = SQL_C_USHORT; 
+		static const SQLSMALLINT sqltype = SQL_SMALLINT;	
+		static const char* const format; 
+		static const wchar_t* const wformat;
+	};
 	const char* const sql_type_info<unsigned short>::format = "%hu";
 	const wchar_t* const sql_type_info<unsigned short>::wformat = L"%hu";
 
 	template<>
-	struct sql_type_info<long> { static const SQLSMALLINT ctype = SQL_C_SLONG; static const SQLSMALLINT sqltype = SQL_INTEGER;
-		static const char* const format; static const wchar_t* const wformat; };
+	struct sql_type_info<long>
+	{ 
+		static const SQLSMALLINT ctype = SQL_C_SLONG; 
+		static const SQLSMALLINT sqltype = SQL_INTEGER;	
+		static const char* const format; 
+		static const wchar_t* const wformat;
+	};
 	const char* const sql_type_info<long>::format = "%ld";
 	const wchar_t* const sql_type_info<long>::wformat = L"%ld";
 
 	template<>
-	struct sql_type_info<unsigned long> { static const SQLSMALLINT ctype = SQL_C_ULONG; static const SQLSMALLINT sqltype = SQL_INTEGER;
-		static const char* const format; static const wchar_t* const wformat; };
+	struct sql_type_info<unsigned long>
+	{ 
+		static const SQLSMALLINT ctype = SQL_C_ULONG; 
+		static const SQLSMALLINT sqltype = SQL_INTEGER;	
+		static const char* const format; 
+		static const wchar_t* const wformat;
+	};
 	const char* const sql_type_info<unsigned long>::format = "%lu";
 	const wchar_t* const sql_type_info<unsigned long>::wformat = L"%lu";
 
 	template<>
-	struct sql_type_info<int> { static const SQLSMALLINT ctype = SQL_C_SLONG; static const SQLSMALLINT sqltype = SQL_INTEGER;
-		static const char* const format; static const wchar_t* const wformat; };
+	struct sql_type_info<int>
+	{ 
+		static const SQLSMALLINT ctype = SQL_C_SLONG; 
+		static const SQLSMALLINT sqltype = SQL_INTEGER;	
+		static const char* const format; 
+		static const wchar_t* const wformat;
+	};
 	const char* const sql_type_info<int>::format = "%d";
 	const wchar_t* const sql_type_info<int>::wformat = L"%d";
 
 	template<>
-	struct sql_type_info<unsigned int> { static const SQLSMALLINT ctype = SQL_C_ULONG; static const SQLSMALLINT sqltype = SQL_INTEGER;
-		static const char* const format; static const wchar_t* const wformat; };
+	struct sql_type_info<unsigned int>
+	{ 
+		static const SQLSMALLINT ctype = SQL_C_ULONG; 
+		static const SQLSMALLINT sqltype = SQL_INTEGER;	
+		static const char* const format; 
+		static const wchar_t* const wformat;
+	};
 	const char* const sql_type_info<unsigned int>::format = "%u";
 	const wchar_t* const sql_type_info<unsigned int>::wformat = L"%u";
 
 	template<>
-	struct sql_type_info<float> { static const SQLSMALLINT ctype = SQL_C_FLOAT; static const SQLSMALLINT sqltype = SQL_REAL;
-		static const char* const format; static const wchar_t* const wformat; };
+	struct sql_type_info<float>
+	{ 
+		static const SQLSMALLINT ctype = SQL_C_FLOAT; 
+		static const SQLSMALLINT sqltype = SQL_REAL;
+		static const char* const format; 
+		static const wchar_t* const wformat;
+	};
 	const char* const sql_type_info<float>::format = "%f";
 	const wchar_t* const sql_type_info<float>::wformat = L"%f";
 
 	template<>
-	struct sql_type_info<double> { static const SQLSMALLINT ctype = SQL_C_DOUBLE; static const SQLSMALLINT sqltype = SQL_DOUBLE;
-		static const char* const format; static const wchar_t* const wformat; };
+	struct sql_type_info<double>
+	{ 
+		static const SQLSMALLINT ctype = SQL_C_DOUBLE; 
+		static const SQLSMALLINT sqltype = SQL_DOUBLE;
+		static const char* const format; 
+		static const wchar_t* const wformat;
+	};
 	const char* const sql_type_info<double>::format = "%ld";
 	const wchar_t* const sql_type_info<double>::wformat = L"%ld";
 
 	template<>
-	struct sql_type_info<std::string> { static const SQLSMALLINT ctype = SQL_C_CHAR; static const SQLSMALLINT sqltype = SQL_CHAR;
-		static const char* const format; static const wchar_t* const wformat; };
+	struct sql_type_info<std::string>
+	{ 
+		static const SQLSMALLINT ctype = SQL_C_CHAR; 
+		static const SQLSMALLINT sqltype = SQL_CHAR;
+		static const char* const format; 
+		static const wchar_t* const wformat;
+	};
 	const char* const sql_type_info<std::string>::format = "%s";
 	const wchar_t* const sql_type_info<std::string>::wformat = L"%s";
 
 	template<>
-	struct sql_type_info<std::wstring> { static const SQLSMALLINT ctype = SQL_C_WCHAR; static const SQLSMALLINT sqltype = SQL_CHAR;
-		static const char* const format; static const wchar_t* const wformat; };
+	struct sql_type_info<std::wstring>
+	{ 
+		static const SQLSMALLINT ctype = SQL_C_WCHAR; 
+		static const SQLSMALLINT sqltype = SQL_CHAR;
+		static const char* const format; 
+		static const wchar_t* const wformat;
+	};
 	const char* const sql_type_info<std::wstring>::format = "%ls";
 	const wchar_t* const sql_type_info<std::wstring>::wformat = L"%ls";
 
@@ -648,7 +700,7 @@ private:
 			std::size_t offset = sizeof(small_buff) * sizeof(char_type) - 1;
 			std::memcpy(p_data, small_buff, offset);
 			rc = SQLGetData(stmt_, column + 1, detail::sql_type_info<string_type>::ctype, (char_type*)(p_data + offset), sz_buff - offset, &cb_needed);
-	        if (!detail::success(rc))
+			if (!detail::success(rc))
 				PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 			value = p_data;
 		}
@@ -812,8 +864,8 @@ public:
 		null_.clear();
 		RETCODE rc = SQLFetch(stmt_);
 		if (rc == SQL_NO_DATA)
-        	return false;
-        if (!detail::success(rc))
+			return false;
+		if (!detail::success(rc))
 			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 		return true;
 	}
@@ -864,7 +916,7 @@ public:
 	{
 		SQLLEN cb_data = 0;
 		RETCODE rc = SQLBindCol(stmt_, column + 1, detail::sql_type_info<T>::ctype, &output, sizeof(T), &cb_data);
-        if (!detail::success(rc))
+		if (!detail::success(rc))
 			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 	}
 
@@ -878,7 +930,7 @@ public:
 	{
 		SQLLEN cb_data = 0;
 		RETCODE rc = SQLBindCol(stmt_, column + 1, detail::sql_type_info<string_type>::ctype, output, length, &cb_data);
-        if (!detail::success(rc))
+		if (!detail::success(rc))
 			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 	}
 
