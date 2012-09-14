@@ -584,28 +584,6 @@ namespace detail
 		string_type string_buffer_;
 		SQLLEN string_buffer_len_;
 	};
-
-	// template<class String>
-	// template<>
-	// inline const std::string& basic_param<String>::set<String>(const String& str)
-	// {
-	// 	string_buffer_ = str;
-	// 	string_buffer_len_ = SQL_NTS;
-	// 	RETCODE rc = SQLBindParameter(
-	// 		stmt_
-	// 		, column_ + 1
-	// 		, SQL_PARAM_INPUT
-	// 		, detail::sql_type_info<String>::ctype
-	// 		, detail::sql_type_info<String>::sqltype
-	// 		, (SQLUINTEGER)string_buffer_.size()
-	// 		, 0
-	// 		, (SQLPOINTER*)string_buffer_.c_str()
-	// 		, (SQLLEN)string_buffer_.size() + 1
-	// 		, &string_buffer_len_);
-	// 	if (!detail::success(rc))
-	// 		PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-	// 	return string_buffer_;
-	// }
 }
 
 //! \brief Represents a statement on the database.
