@@ -8,13 +8,13 @@ void show(picodbc::statement& statement)
 {
 	long row = 0;
 	cout << "row\t";
-	for(long i = 0; i < statement.columns(); ++i)
+	for(short i = 0; i < statement.columns(); ++i)
 		cout << statement.column_name(i) << "\t";
 	cout << endl;
 	while(statement.next())
 	{
 		cout << row++ << "\t";
-		for(long i = 0; i < statement.columns(); ++i)
+		for(short i = 0; i < statement.columns(); ++i)
 		{
 			if(statement.is_null(i))
 				cout << "null";
