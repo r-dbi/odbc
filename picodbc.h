@@ -312,7 +312,6 @@ public:
 
 //! \brief Manages and encapsulates ODBC resources such as the connection and environment handles.
 //!
-//! \see connection
 //! \note connections are non-copyable.
 class connection
 {
@@ -461,7 +460,6 @@ private:
 
 //! \brief A resource for managing transaction commits and rollbacks.
 //!
-//! \see transaction
 //! \not transactions are non-copyable.
 class transaction
 {
@@ -673,7 +671,6 @@ struct timestamp_type
 
 //! \brief Represents a statement on the database.
 //!
-//! \see statement
 //! \note statements are non-copyable.
 class statement
 {
