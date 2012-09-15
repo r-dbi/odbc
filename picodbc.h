@@ -1,5 +1,13 @@
 /*! \mainpage
 
+\section toc Table of Contents
+\li \ref license "License"
+\li \ref credits "Credits"
+\li \ref examples "Example Usage"
+\li \ref picodbc "Namespace Reference"
+\li <a href="https://picodbc.googlecode.com">Project Homepage</a>
+
+\section license License
 Copyright (C) 2012 Amy Troschinetz amy@lexicalunit.com
 
 The MIT License
@@ -22,10 +30,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Much of the code in this file was originally derived from TinyODBC.<br/>
-TinyODBC is hosted at http://code.google.com/p/tiodbc/<br/>
-Copyright (C) 2008 SqUe squarious@gmail.com<br/>
-License: The MIT License<br/>
+\section credits Credits
+Much of the code in this file was originally derived from TinyODBC.<br />
+TinyODBC is hosted at http://code.google.com/p/tiodbc/<br />
+Copyright (C) 2008 SqUe squarious@gmail.com<br />
+License: The MIT License<br />
 
 Transaction support was based on the implementation in SimpleDB: C++ ODBC database API.<br/>
 SimpleDB is hosted at http://simpledb.sourceforge.net<br/>
@@ -41,7 +50,12 @@ Implementation of column binding inspired by Nick E. Geht's source code posted t
 GSODBC hosted at http://www.codeguru.com/mfc_database/gsodbc.html<br />
 Copyright (C) 2002 Nick E. Geht<br />
 License: Perpetual license to reproduce, distribute, adapt, perform, display, and sublicense.<br/>
-See http://www.codeguru.com/submission-guidelines.php for details.
+See http://www.codeguru.com/submission-guidelines.php for details.<br />
+*/
+
+/*! \page examples Example Usage
+\brief Example library usage.
+\include example.cpp
 */
 
 #ifndef PICODBC_H
@@ -242,7 +256,17 @@ namespace detail
 	}
 } // namespace detail
 
+//! \addtogroup exceptions Exception Types
+//! \brief Possible error conditions.
+//!
+//! Specific errors such as type_incompatible_error, null_access_error, and index_range_error can arise
+//! from improper use of the picodbc library. The general database_error is for all other situations
+//! in which the ODBC driver or C API reports an error condition. The explanatory string for database_error
+//! will, if possible, contain a diagnostic message obtained from SQLGetDiagRec().
+//! @{
+
 //! \brief Type incompatible.
+//! \see exceptions
 class type_incompatible_error : public std::runtime_error
 {
 public:
@@ -258,6 +282,7 @@ public:
 };
 
 //! \brief Accessed NULL data.
+//! \see exceptions
 class null_access_error : public std::runtime_error
 {
 public:
@@ -273,6 +298,7 @@ public:
 };
 
 //! \brief Index out of range.
+//! \see exceptions
 class index_range_error : public std::runtime_error
 {
 public:
@@ -288,6 +314,7 @@ public:
 };
 
 //! \brief General database error.
+//! \see exceptions
 class database_error : public std::runtime_error
 {
 public:
@@ -309,6 +336,40 @@ public:
 #define PICODBC_STRINGIZE_I(text) #text
 #define PICODBC_STRINGIZE(text) PICODBC_STRINGIZE_I(text)
 #define PICODBC_THROW_DATABASE_ERROR(handle, handle_type) throw database_error(handle, handle_type, __FILE__ ":" PICODBC_STRINGIZE(__LINE__) ": ")
+
+//! @}
+
+//! \addtogroup utility Utility Classes
+//! \brief Additional picodbc utility classes.
+//!
+//! \{
+
+//! \brief A type for representing date data.
+struct date_type
+{
+	std::tr1::int16_t year; //!< Year.
+	std::tr1::int16_t month; //!< Month.
+	std::tr1::int16_t day; //!< Day.
+};
+
+//! \brief A type for representing timestamp data.
+struct timestamp_type
+{
+	std::tr1::int16_t year; //!< Year.
+	std::tr1::int16_t month; //!< Month.
+	std::tr1::int16_t day; //!< Day.
+	std::tr1::int16_t hour; //!< 24 Hour.
+	std::tr1::int16_t min; //!< Min.
+	std::tr1::int16_t sec; //!< Seconds.
+	std::tr1::int32_t fract; //!< Fractional seconds.
+};
+
+//! \}
+
+//! \addtogroup main Main Classes
+//! \brief Main picodbc classes.
+//!
+//! @{
 
 //! \brief Manages and encapsulates ODBC resources such as the connection and environment handles.
 //!
@@ -648,26 +709,6 @@ namespace detail
 		std::string::value_type* pdata;
 	};
 }
-
-//! \brief A type for representing date data.
-struct date_type
-{
-	std::tr1::int16_t year; //!< Year.
-	std::tr1::int16_t month; //!< Month.
-	std::tr1::int16_t day; //!< Day.
-};
-
-//! \brief A type for representing timestamp data.
-struct timestamp_type
-{
-	std::tr1::int16_t year; //!< Year.
-	std::tr1::int16_t month; //!< Month.
-	std::tr1::int16_t day; //!< Day.
-	std::tr1::int16_t hour; //!< 24 Hour.
-	std::tr1::int16_t min; //!< Min.
-	std::tr1::int16_t sec; //!< Seconds.
-	std::tr1::int32_t fract; //!< Fractional seconds.
-};
 
 //! \brief Represents a statement on the database.
 //!
@@ -1217,23 +1258,6 @@ inline std::string statement::get<std::string>(short column)
 			return buffer;
 
 		case SQL_C_DATE:
-
-			
-			
-			SQL_TIMESTAMP_STRUCT t;
-
-
-            // std::memset(&st, 0, sizeof(st));
-            // st.wYear = ((CGOdbcStmt::DATE *)(m_pColumns[iCol].pData))->iYear;
-            // st.wMonth = ((CGOdbcStmt::DATE *)(m_pColumns[iCol].pData))->iMonth;
-            // st.wDay = ((CGOdbcStmt::DATE *)(m_pColumns[iCol].pData))->iDay;
-            // GetDateFormat(LOCALE_USER_DEFAULT,
-            //               DATE_SHORTDATE,
-            //               &st, NULL, szBuff, 1024);
-            // m_sLastStr = szBuff;
-            // return m_sLastStr;
-
-
 			throw std::runtime_error("date not implemented yet"); // #T
 
 		case SQL_C_TIMESTAMP:
@@ -1245,6 +1269,8 @@ inline std::string statement::get<std::string>(short column)
 #undef PICODBC_THROW_DATABASE_ERROR
 #undef PICODBC_STRINGIZE
 #undef PICODBC_STRINGIZE_I
+
+//! @}
 
 } // namespace picodbc
 

@@ -37,6 +37,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
@@ -70,7 +72,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -89,7 +91,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classpicodbc_1_1statement-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">picodbc::statement Class Reference</div>  </div>
+<div class="title">picodbc::statement Class Reference<div class="ingroups"><a class="el" href="group__main.html">Main Classes</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -167,9 +169,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:a76f1f52a828cd5d039d56b8179174c7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name of the specified column.  <a href="#a76f1f52a828cd5d039d56b8179174c7f"></a><br/></td></tr>
 </table>
 <a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>Represents a statement on the database. </p>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html" title="Represents a statement on the database.">statement</a> </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>statements are non-copyable. </dd></dl>
+<div class="textblock"><dl class="section note"><dt>Note</dt><dd>statements are non-copyable. </dd></dl>
 </div><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a8ea6d0e50ae1b165aa4d5db71bb7ef3a"></a>
 <div class="memitem">
@@ -191,8 +191,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Creates a new un-prepared statement. </p>
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a1a5ad09e72aecce9cd47801696f79231" title="Execute the previously prepared query now.">execute()</a>, <a class="el" href="classpicodbc_1_1statement.html#af3c584af500a2de798be595bd055e30a" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct()</a>, <a class="el" href="classpicodbc_1_1statement.html#a56099cd8bb97a58f2d6b874f7ed4f512" title="Creates a statement for the given connection.">open()</a>, <a class="el" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare()</a> </dd></dl>
 
 </div>
@@ -228,8 +226,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Constructs and prepares a statement using the given connection and query. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">conn</td><td>The connection to use. </td></tr>
@@ -261,8 +257,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Closes the statement. </p>
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a171dfa9ffca19e1131c964641e080e89" title="Closes the statement and frees all associated resources.">close()</a> </dd></dl>
 
 </div>
@@ -301,8 +295,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Binds the given column to the supplied output parameter. </p>
 <p>A statement must be executed before attempting to bind, otherwise <a class="el" href="classpicodbc_1_1index__range__error.html" title="Index out of range.">index_range_error</a> will be thrown. Each call to <a class="el" href="classpicodbc_1_1statement.html#aea8cbf87004a8b0d99e1b2055fb6c648" title="Fetches the next row in the current result set.">next()</a> will fill the output parameter with the next value. Columns are numbered from left to right and 0-indexed. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -359,8 +351,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Binds the given column to the supplied output character buffer. </p>
 <p>A statement must be executed before attempting to bind, otherwise <a class="el" href="classpicodbc_1_1index__range__error.html" title="Index out of range.">index_range_error</a> will be thrown. Each call to <a class="el" href="classpicodbc_1_1statement.html#aea8cbf87004a8b0d99e1b2055fb6c648" title="Fetches the next row in the current result set.">next()</a> will fill the output buffer with the next value. Columns are numbered from left to right and 0-indexed. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -413,8 +403,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Binds the given value to the given parameter placeholder number in the prepared statement. </p>
 <p>If your prepared SQL query has any ? placeholders, this is how you bind values to them. Placeholder numbers count from left to right and are 0-indexed. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -454,8 +442,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Returns the name of the specified column. </p>
 <p>Columns are numbered from left to right and 0-indexed. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -492,8 +478,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Returns the number of columns in the current result set. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
@@ -523,8 +507,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Returns true if there are no more results in the current result set. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
@@ -554,8 +536,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Execute the previously prepared query now. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
@@ -596,8 +576,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Immediately opens, prepares, and executes the given query directly on the given connection. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">conn</td><td>The connection where the statement will be executed. </td></tr>
@@ -635,8 +613,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Fetches the first row in the current result set. </p>
 <dl class="section return"><dt>Returns</dt><dd>true if there are more results or false otherwise. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
@@ -670,8 +646,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Gets data from the given column in the selected row of the current result set. </p>
 <p>Columns are numbered from left to right and 0-indexed. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -709,8 +683,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Returns true if and only if the given column in the selected row of the current results set is NULL. </p>
 <p>Columns are numbered from left to right and 0-indexed. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -747,8 +719,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Fetches the last row in the current result set. </p>
 <dl class="section return"><dt>Returns</dt><dd>true if there are more results or false otherwise. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
@@ -780,8 +750,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Moves to and fetches the specified row in the current result set. </p>
 <dl class="section return"><dt>Returns</dt><dd>true if there are results or false otherwise. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
@@ -812,8 +780,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Fetches the next row in the current result set. </p>
 <dl class="section return"><dt>Returns</dt><dd>true if there are more results or false otherwise. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
@@ -845,8 +811,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Creates a statement for the given connection. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">conn</td><td>The connection where the statement will be executed. </td></tr>
@@ -893,8 +857,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Opens and prepares the given statement to execute on the given connection. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">conn</td><td>The connection where the statement will be executed. </td></tr>
@@ -932,8 +894,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Fetches the prior row in the current result set. </p>
 <dl class="section return"><dt>Returns</dt><dd>true if there are more results or false otherwise. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
@@ -964,8 +924,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Returns the number of affected rows or rows in the current result set. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
@@ -996,8 +954,6 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Skips a number of rows and then fetches the resulting row in the current result set. </p>
 <dl class="section return"><dt>Returns</dt><dd>true if there are results or false otherwise. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
@@ -1013,10 +969,15 @@ template&lt;class T &gt; </div>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated on Sat Sep 15 2012 13:39:46 for picodbc by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.1.2
-</small></address>
+<hr class="footer"/>
+<address class="footer">
+	<div style="float:left; padding-left: 1em;">
+		<small><a href="index.html">Copyright (C) 2012 Amy Troschinetz</a></small>
+	</div>
+	<small>
+		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
+		<a href="http://www.doxygen.org/index.html">Generated on Sat Sep 15 2012 17:38:40 for picodbc by doxygen 1.8.1.2</a>
+	</small>
+</address>
 </body>
 </html>

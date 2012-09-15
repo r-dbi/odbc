@@ -37,6 +37,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
@@ -70,7 +72,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -89,7 +91,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classpicodbc_1_1connection-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">picodbc::connection Class Reference</div>  </div>
+<div class="title">picodbc::connection Class Reference<div class="ingroups"><a class="el" href="group__main.html">Main Classes</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -131,9 +133,7 @@ HDBC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:a313cafa146bb5e4811860d8371dd38fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the native ODBC environment handle. <br/></td></tr>
 </table>
 <a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>Manages and encapsulates ODBC resources such as the connection and environment handles. </p>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1connection.html" title="Manages and encapsulates ODBC resources such as the connection and environment handles.">connection</a> </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>connections are non-copyable. </dd></dl>
+<div class="textblock"><dl class="section note"><dt>Note</dt><dd>connections are non-copyable. </dd></dl>
 </div><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="ae71324481062a98953c6ca055e62a34c"></a>
 <div class="memitem">
@@ -178,8 +178,6 @@ HDBC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Create new connection object and immediately connect to the given data source. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dsn</td><td>The name of the data source. </td></tr>
@@ -229,8 +227,6 @@ HDBC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Create new connection object and immediately connect using the given connection string. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">connection_string</td><td>The connection string for establishing a connection. </td></tr>
@@ -291,8 +287,6 @@ HDBC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Create new connection object and immediately connect to the given data source. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dsn</td><td>The name of the data source. </td></tr>
@@ -342,8 +336,6 @@ HDBC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Create new connection object and immediately connect using the given connection string. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">connection_string</td><td>The connection string for establishing a connection. </td></tr>
@@ -365,10 +357,15 @@ HDBC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated on Sat Sep 15 2012 13:39:46 for picodbc by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.1.2
-</small></address>
+<hr class="footer"/>
+<address class="footer">
+	<div style="float:left; padding-left: 1em;">
+		<small><a href="index.html">Copyright (C) 2012 Amy Troschinetz</a></small>
+	</div>
+	<small>
+		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
+		<a href="http://www.doxygen.org/index.html">Generated on Sat Sep 15 2012 17:38:40 for picodbc by doxygen 1.8.1.2</a>
+	</small>
+</address>
 </body>
 </html>

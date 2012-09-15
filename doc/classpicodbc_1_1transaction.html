@@ -37,6 +37,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
@@ -70,7 +72,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -89,7 +91,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classpicodbc_1_1transaction-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">picodbc::transaction Class Reference</div>  </div>
+<div class="title">picodbc::transaction Class Reference<div class="ingroups"><a class="el" href="group__main.html">Main Classes</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -112,8 +114,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:a236a5be15ab2a60662bb68b9709191e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks this transaction for rollback. <br/></td></tr>
 </table>
 <a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>A resource for managing transaction commits and rollbacks. </p>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">transaction</a>  transactions are non-copyable. </dd></dl>
+<div class="textblock"><p>transactions are non-copyable. </p>
 </div><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a31a0d738b689ae9df198b0b75e03ca7c"></a>
 <div class="memitem">
@@ -136,8 +137,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Begin a transaction on the given connection object. </p>
 <dl class="section post"><dt>Postcondition</dt><dd>Operations that modify the database must now be committed before taking effect. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
@@ -168,8 +167,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>If this transaction has not been committed, will will rollback any modifying operations. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
@@ -184,10 +181,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated on Sat Sep 15 2012 13:39:46 for picodbc by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.1.2
-</small></address>
+<hr class="footer"/>
+<address class="footer">
+	<div style="float:left; padding-left: 1em;">
+		<small><a href="index.html">Copyright (C) 2012 Amy Troschinetz</a></small>
+	</div>
+	<small>
+		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
+		<a href="http://www.doxygen.org/index.html">Generated on Sat Sep 15 2012 17:38:40 for picodbc by doxygen 1.8.1.2</a>
+	</small>
+</address>
 </body>
 </html>
