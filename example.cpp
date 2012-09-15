@@ -60,7 +60,7 @@ int main()
 		int some_int;
 		char some_string[512];
 		statement.bind_column(0, some_int);
-		statement.bind_column(1, some_string, sizeof(some_string));
+		statement.bind_column_buffer(1, some_string, sizeof(some_string));
 		while(statement.next())
 			cout << some_int << "\t" << some_string << endl;
 
