@@ -1220,6 +1220,23 @@ inline std::string statement::get<std::string>(short column)
 			return buffer;
 
 		case SQL_C_DATE:
+
+			
+			
+			SQL_TIMESTAMP_STRUCT t;
+
+
+            // std::memset(&st, 0, sizeof(st));
+            // st.wYear = ((CGOdbcStmt::DATE *)(m_pColumns[iCol].pData))->iYear;
+            // st.wMonth = ((CGOdbcStmt::DATE *)(m_pColumns[iCol].pData))->iMonth;
+            // st.wDay = ((CGOdbcStmt::DATE *)(m_pColumns[iCol].pData))->iDay;
+            // GetDateFormat(LOCALE_USER_DEFAULT,
+            //               DATE_SHORTDATE,
+            //               &st, NULL, szBuff, 1024);
+            // m_sLastStr = szBuff;
+            // return m_sLastStr;
+
+
 			throw std::runtime_error("date not implemented yet"); // #T
 
 		case SQL_C_TIMESTAMP:
