@@ -1,7 +1,6 @@
 /*! \mainpage
 
-\verbatim
-Copyright (C) 2012 Amy Troschinetz <amy [at] lexicalunit [dot] com>
+Copyright (C) 2012 Amy Troschinetz amy@lexicalunit.com
 
 The MIT License
 
@@ -22,25 +21,27 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-\endverbatim
 
-\note
 Much of the code in this file was originally derived from TinyODBC.<br/>
 TinyODBC is hosted at http://code.google.com/p/tiodbc/<br/>
-Copyright (C) 2008 SqUe <squarious [at] gmail [dot] com><br/>
+Copyright (C) 2008 SqUe squarious@gmail.com<br/>
 License: The MIT License<br/>
 
-\note
 Transaction support was based on the implementation in SimpleDB: C++ ODBC database API.<br/>
 SimpleDB is hosted at http://simpledb.sourceforge.net<br/>
 Copyright (C) 2006 Eminence Technology Pty Ltd<br/>
-Copyright (C) 2008-2010,2012 Russell Kliese <russell [at] kliese [dot] id [dot] au><br/>
+Copyright (C) 2008-2010,2012 Russell Kliese russell@kliese.id.au<br/>
 License: GNU Lesser General Public version 2.1<br/>
 
-\note
 Some improvements and features are based on The Python ODBC Library.<br/>
 The Python ODBC Library is hosted at http://code.google.com/p/pyodbc/<br/>
 License: The MIT License<br/>
+
+Implementation of column binding inspired by Nick E. Geht's source code posted to on CodeGuru.<br />
+GSODBC hosted at http://www.codeguru.com/mfc_database/gsodbc.html<br />
+Copyright (C) 2002 Nick E. Geht<br />
+License: Perpetual license to reproduce, distribute, adapt, perform, display, and sublicense.<br/>
+See http://www.codeguru.com/submission-guidelines.php for details.
 */
 
 #ifndef PICODBC_H
@@ -57,6 +58,7 @@ License: The MIT License<br/>
 #include <string>
 #include <tr1/cstdint>
 #include <tr1/type_traits>
+#include <vector>
 
 //! \file picodbc.h The entirety of picodbc can be found within this one file.
 
@@ -111,10 +113,10 @@ namespace detail
 		SQLAllocHandle(SQL_HANDLE_DBC, env, &conn);	
 	}
 
-	// Tests if the given db_data indicates NULL data.
-	inline bool is_null(SQLLEN cb_data)
+	// Tests if the given return data indicates NULL data.
+	inline bool data_is_null(SQLLEN cbdata)
 	{
-		return (cb_data == SQL_NULL_DATA);
+		return (cbdata == SQL_NULL_DATA);
 	}
 
 	// A utility for calculating the ctype, sqltype, and format specifiers for the given type T.
@@ -221,7 +223,7 @@ namespace detail
 
 	// Binds the given parameter number to the provided value.
 	template<class T>
-	inline const T& bind_param(HSTMT stmt, long param, const T& value, void* output)
+	inline const T& bind_parameter(HSTMT stmt, long param, const T& value, void* output)
 	{
 		std::memcpy(output, &value, sizeof(value));
 		SQLLEN str_len_or_ind_ptr = 0;
@@ -240,6 +242,21 @@ namespace detail
 	}
 } // namespace detail
 
+//! \brief Type incompatible.
+class type_incompatible_error : public std::runtime_error
+{
+public:
+	//! \brief Constructor.
+	type_incompatible_error()
+	: std::runtime_error("type incompatible") { }
+	
+	//! \brief Returns the explanatory string.
+	const char* what() const throw()
+	{
+		return std::runtime_error::what();
+	}
+};
+
 //! \brief Accessed NULL data.
 class null_access_error : public std::runtime_error
 {
@@ -247,6 +264,21 @@ public:
 	//! \brief Constructor.
 	null_access_error()
 	: std::runtime_error("null access") { }
+	
+	//! \brief Returns the explanatory string.
+	const char* what() const throw()
+	{
+		return std::runtime_error::what();
+	}
+};
+
+//! \brief Index out of range.
+class index_range_error : public std::runtime_error
+{
+public:
+	//! \brief Constructor.
+	index_range_error()
+	: std::runtime_error("index out of range") { }
 	
 	//! \brief Returns the explanatory string.
 	const char* what() const throw()
@@ -511,35 +543,36 @@ class statement;
 
 namespace detail
 {
-	class param
+	class param_type
 	{
+	public:
+		~param_type()
+		{
+
+		}
+
 	private:
-		param(HSTMT stmt, long param)
+		param_type(HSTMT stmt, long param)
 		: stmt_(stmt)
 		, param_(param)
 		{
 
 		}
 
-		param(const param& rhs)
+		param_type(const param_type& rhs)
 		: stmt_(rhs.stmt_)
 		, param_(rhs.param_)
 		{
 
 		}
 
-		~param()
-		{
-
-		}
-
-		param& operator=(param rhs)
+		param_type& operator=(param_type rhs)
 		{
 			swap(rhs);
 			return *this;
 		}
 
-		void swap(param& rhs)
+		void swap(param_type& rhs)
 		{
 			using std::swap;
 			swap(stmt_, rhs.stmt_);
@@ -549,7 +582,7 @@ namespace detail
 		template<class T>
 		const T& set(const T& value)
 		{
-			return bind_param(stmt_, param_, value, value_buffer_);
+			return bind_parameter(stmt_, param_, value, value_buffer_);
 		}
 
 		const std::string& set(const std::string& str)
@@ -580,58 +613,62 @@ namespace detail
 		std::string string_buffer_;
 		SQLLEN string_buffer_len_;
 	};
+
+	class column_type
+	{
+	public:
+		~column_type()
+		{
+			delete[] pdata;
+		}
+
+	private:
+		column_type()
+		: name()
+		, sqltype(0)
+		, sqlsize(0)
+		, scale(0)
+		, ctype(0)
+		, clen(0)
+		, blob(false)
+		, cbdata(0)
+		, pdata(NULL)
+		{
+
+		}
+
+	private:
+		friend class picodbc::statement;
+		std::string name;
+		SQLSMALLINT sqltype;
+		SQLULEN sqlsize;
+		SQLSMALLINT scale;
+		SQLSMALLINT ctype;
+		SQLSMALLINT clen;
+		bool blob;
+		long cbdata;
+		std::string::value_type* pdata;
+	};
 }
 
+//! \brief A type for representing date data.
 struct date_type
 {
-	std::tr1::int16_t year;
-	std::tr1::int16_t month;
-	std::tr1::int16_t day;
+	std::tr1::int16_t year; //!< Year.
+	std::tr1::int16_t month; //!< Month.
+	std::tr1::int16_t day; //!< Day.
 };
 
+//! \brief A type for representing timestamp data.
 struct timestamp_type
 {
-	std::tr1::int16_t year;
-	std::tr1::int16_t month;
-	std::tr1::int16_t day;
-	std::tr1::int16_t hour;
-	std::tr1::int16_t min;
-	std::tr1::int16_t sec;
-	std::tr1::int32_t fract;
-};
-
-class column_type
-{
-public:
-	std::string name;
-	SQLSMALLINT sqltype;
-	SQLULEN sqlsize;
-	SQLSMALLINT scale;
-	SQLSMALLINT ctype;
-	SQLSMALLINT clen;
-	bool blob;
-	long cbdata;
-	std::string::value_type* pdata;
-
-	column_type()
-	: name()
-	, sqltype(0)
-	, sqlsize(0)
-	, scale(0)
-	, ctype(0)
-	, clen(0)
-	, blob(false)
-	, cbdata(0)
-	, pdata(NULL)
-	{
-
-	}
-
-	~column_type()
-	{
-		delete[] pdata;
-	}
-
+	std::tr1::int16_t year; //!< Year.
+	std::tr1::int16_t month; //!< Month.
+	std::tr1::int16_t day; //!< Day.
+	std::tr1::int16_t hour; //!< 24 Hour.
+	std::tr1::int16_t min; //!< Min.
+	std::tr1::int16_t sec; //!< Seconds.
+	std::tr1::int32_t fract; //!< Fractional seconds.
 };
 
 //! \brief Represents a statement on the database.
@@ -641,29 +678,400 @@ public:
 class statement
 {
 private:
-	typedef std::map<long, detail::param*> params_type;
+	typedef std::map<long, detail::param_type*> params_type;
+	typedef std::vector<detail::column_type> columns_type;
 
-/////////////////////////////////////////////
 public:
-	std::map<short, column_type> columns_;
-
-	void _beforeMove()
+	//! \brief Creates a new un-prepared statement.
+	//! \see execute(), execute_direct(), open(), prepare()
+	statement()
+	: stmt_(NULL)
+	, open_(false)
 	{
-	    for (std::size_t i = 0; i < columns_.size(); ++i)
-	    {
-	        columns_[i].cbdata = 0;
-	        if(columns_[i].blob && columns_[i].pdata)
-	        {
-	            delete[] columns_[i].pdata;
-	            columns_[i].pdata = 0;
-	            columns_[i].clen = 0;
-	        }
-	    }
+
 	}
 
-	void autobind()
+	//! \brief Constructs and prepares a statement using the given connection and query.
+	//! \param conn The connection to use.
+	//! \param stmt The SQL query statement.
+	//! \see execute(), execute_direct(), open(), prepare()
+	statement(connection& conn, const std::string& stmt)
+	: stmt_(NULL)
+	, open_(false)
 	{
-		std::map<short, column_type>().swap(columns_);
+		prepare(conn, stmt);
+	}
+
+	//! \brief Closes the statement.
+	//! \see close()
+	~statement()
+	{
+		before_move();
+		close();
+	}
+
+	//! \brief Creates a statement for the given connection.
+	//! \param conn The connection where the statement will be executed.
+	//! \throws database_error
+	void open(connection& conn)
+	{
+		close();
+		RETCODE rc = SQLAllocHandle(SQL_HANDLE_STMT, conn.native_dbc_handle(), &stmt_);
+		open_ = detail::success(rc);
+		if (!open_)
+		{
+			stmt_ = NULL;
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+		}
+	}
+
+	//! \brief Returns true if connection is open.
+	bool open() const
+	{
+		return open_;
+	}
+
+	//! \brief Returns the native ODBC statement handle.
+	HDBC native_stmt_handle() const
+	{
+		return stmt_;
+	}
+
+	//! \brief Closes the statement and frees all associated resources.
+	void close()
+	{
+		if(!open())
+			return;
+		open_ = false;
+		for(params_type::iterator i = params_.begin(), end = params_.end(); i != end; ++i)
+			delete i->second;
+		params_.clear();
+		free_results();
+		SQLCancel(stmt_);
+		SQLFreeHandle(SQL_HANDLE_STMT, stmt_);
+		stmt_ = NULL;
+	}
+
+	//! \brief Opens and prepares the given statement to execute on the given connection.
+	//! \param conn The connection where the statement will be executed.
+	//! \param stmt The SQL query that will be executed.
+	//! \see open()
+	//! \throws database_error
+	void prepare(connection& conn, const std::string& stmt)
+	{
+		open(conn);
+		RETCODE rc = SQLPrepare(stmt_, (SQLCHAR*)stmt.c_str(), SQL_NTS);
+		if (!detail::success(rc))
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+	}
+
+	//! \brief Immediately opens, prepares, and executes the given query directly on the given connection.
+	//! \param conn The connection where the statement will be executed.
+	//! \param stmt The SQL query that will be executed.
+	//! \see open(), prepare(), execute()
+	//! \throws database_error
+	void execute_direct(connection& conn, const std::string& query)
+	{
+		open(conn);
+		RETCODE rc = SQLExecDirect(stmt_, (SQLCHAR*)query.c_str(), SQL_NTS);
+		if (!detail::success(rc))
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+		auto_bind();
+	}
+
+	//! \brief Execute the previously prepared query now.
+	//! \throws database_error
+	void execute()
+	{
+		if(!open())
+			return;
+		RETCODE rc = SQLExecute(stmt_);
+		if (!detail::success(rc))
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+		auto_bind();
+	}
+
+	//! \brief Returns the number of affected rows or rows in the current result set.
+	//! \throws database_error
+	long rows() const
+	{
+		SQLLEN rows;
+		RETCODE rc = SQLRowCount(stmt_, &rows);
+		if (!detail::success(rc))
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+		return rows;
+	}
+
+	//! \brief Returns the number of columns in the current result set.
+	//! \throws database_error
+	short columns() const
+	{
+		SQLSMALLINT cols;
+		RETCODE rc = SQLNumResultCols(stmt_, &cols);
+		if (!detail::success(rc))
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+		return cols;
+	}
+
+	//! \brief Fetches the first row in the current result set.
+	//! \return true if there are more results or false otherwise.
+	//! \throws database_error
+	bool first()
+	{
+		return fetch(0, SQL_FETCH_FIRST);
+	}
+
+	//! \brief Fetches the last row in the current result set.
+	//! \return true if there are more results or false otherwise.
+	//! \throws database_error
+	bool last()
+	{
+		return fetch(0, SQL_FETCH_LAST);
+	}
+
+	//! \brief Fetches the next row in the current result set.
+	//! \return true if there are more results or false otherwise.
+	//! \throws database_error
+	bool next()
+	{
+		return fetch(0, SQL_FETCH_NEXT);
+	}
+
+	//! \brief Fetches the prior row in the current result set.
+	//! \return true if there are more results or false otherwise.
+	//! \throws database_error
+	bool prior()
+	{
+		return fetch(0, SQL_FETCH_PRIOR);
+	}
+
+	//! \brief Moves to and fetches the specified row in the current result set.
+	//! \return true if there are results or false otherwise.
+	//! \throws database_error
+	bool move(unsigned long row)
+	{
+		return fetch(row, SQL_FETCH_ABSOLUTE);
+	}
+
+	//! \brief Skips a number of rows and then fetches the resulting row in the current result set.
+	//! \return true if there are results or false otherwise.
+	//! \throws database_error
+	bool skip(unsigned long rows)
+	{
+		return fetch(rows, SQL_FETCH_RELATIVE);
+	}
+
+	//! \brief Returns the current position in the current result set, or -1 on error.
+	unsigned long position() const
+	{
+		SQLULEN pos;
+		RETCODE rc = SQLGetStmtAttr(
+			stmt_
+			, SQL_ATTR_ROW_NUMBER
+			, &pos
+			, SQL_IS_UINTEGER
+			, NULL);
+		if (!detail::success(rc))
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+		return pos;
+	}
+
+	//! \brief Returns true if there are no more results in the current result set.
+	//! \throws database_error
+	bool end() const
+	{
+		return (position() > static_cast<unsigned long>(rows()));
+	}
+
+	//! \brief Frees the current result set.
+	void free_results()
+	{
+		if(open())
+			SQLCloseCursor(stmt_);
+	}
+
+	//! \brief Binds the given value to the given parameter placeholder number in the prepared statement.
+	//!
+	//! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
+	//! Placeholder numbers count from left to right and are 0-indexed.
+	//! \param param Placeholder position.
+	//! \param value Value to substitute into placeholder.
+	//! \return The bound value.
+	//! \throws database_error
+	template<class T>
+	const T& bind_parameter(long param, const T& value)
+	{
+		if(!params_.count(param))
+			params_[param] = new class detail::param_type(stmt_, param);
+		return params_[param]->set(value);
+	}
+
+	//! \brief Binds the given column to the supplied output parameter.
+	//!
+	//! A statement must be executed before attempting to bind, otherwise index_range_error will be thrown.
+	//! Each call to next() will fill the output parameter with the next value.
+	//! Columns are numbered from left to right and 0-indexed.
+	//! \param column Column position.
+	//! \param output Bound storage value.
+	//! \note You can not bind a std::string to a column, use bind_column_buffer() instead.
+	//! \see bind_column_buffer
+	//! \throws database_error, index_range_error
+	template<class T>
+	#ifdef DOXYGEN
+		void
+	#else
+		typename detail::disable_if_c<std::tr1::is_same<T, std::string>::value, void>::type
+	#endif
+	bind_column(short column, T& output)
+	{
+		release_bind(column);
+		columns_[column].clen = sizeof(T);
+		SQLLEN cbdata = 0;
+		RETCODE rc = SQLBindCol(
+			stmt_
+			, column + 1
+			, detail::sql_type_info<T>::ctype
+			, &output
+			, columns_[column].clen
+			, &columns_[column].cbdata);
+		if (!detail::success(rc))
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+	}
+
+	//! \brief Binds the given column to the supplied output character buffer.
+	//!
+	//! A statement must be executed before attempting to bind, otherwise index_range_error will be thrown.
+	//! Each call to next() will fill the output buffer with the next value.
+	//! Columns are numbered from left to right and 0-indexed.
+	//! \param column Column position.
+	//! \param output Bound output buffer.
+	//! \param length Size of output buffer.
+	//! \see bind_column
+	//! \throws database_error, index_range_error
+	void bind_column_buffer(short column, char* buffer, long length)
+	{
+		release_bind(column);
+		columns_[column].clen = length;
+		columns_[column].ctype = detail::sql_type_info<std::string>::ctype;
+		RETCODE rc = SQLBindCol(
+			stmt_
+			, column + 1
+			, columns_[column].ctype
+			, buffer
+			, columns_[column].clen
+			, &columns_[column].cbdata);
+
+		if (!detail::success(rc))
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+	}
+
+	//! \brief Resets all currently bound parameters.
+	void reset_parameters()
+	{
+		if(!open())
+			return;
+		SQLFreeStmt(stmt_, SQL_RESET_PARAMS);
+	}
+
+	//! \brief Gets data from the given column in the selected row of the current result set.
+	//!
+	//! Columns are numbered from left to right and 0-indexed.
+	//! \param Column position. 
+	//! \throws database_error, index_range_error, type_incompatible_error
+	template<class T>
+	T get(short column)
+	{
+		if(column >= columns_.size())
+			throw index_range_error();
+		if(is_null(column))
+			throw null_access_error();
+		const detail::column_type& col = columns_[column];
+		switch(col.ctype)
+		{
+			case SQL_C_SSHORT:
+				return (T)*(short*)col.pdata;
+			case SQL_C_USHORT:
+				return (T)*(unsigned short*)col.pdata;
+			case SQL_C_SLONG:
+				return (T)*(long*)col.pdata;
+			case SQL_C_ULONG:
+				return (T)*(unsigned long *)col.pdata;
+			case SQL_C_FLOAT:
+				return (T)*(float*)col.pdata;
+			case SQL_C_DOUBLE:
+				return (T)*(double*)col.pdata;
+			case SQL_C_CHAR:
+				if (!col.blob)
+					return detail::convert<T>(columns_[column].pdata);
+		}
+		throw type_incompatible_error();
+	}
+
+	//! \brief Returns true if and only if the given column in the selected row of the current results set is NULL.
+	//!
+	//! Columns are numbered from left to right and 0-indexed.
+	//! \param Column position. 
+	//! \throws database_error, index_range_error
+	bool is_null(short column)
+	{
+		if(column >= columns_.size())
+			throw index_range_error();
+		return detail::data_is_null(columns_[column].cbdata);
+	}
+
+	//! \brief Returns the name of the specified column.
+	//!
+	//! Columns are numbered from left to right and 0-indexed.
+	//! \param Column position. 
+	//! \throws index_range_error
+	std::string column_name(short column)
+	{
+		if(column >= columns_.size())
+			throw index_range_error();
+		return columns_[column].name;
+	}
+
+private:
+	statement(const statement&); // not defined
+	statement& operator=(const statement&); // not defined
+
+	void before_move()
+	{
+		for (std::size_t i = 0; i < columns_.size(); ++i)
+		{
+			columns_[i].cbdata = 0;
+			if(columns_[i].blob && columns_[i].pdata)
+				release_bind(i);
+		}
+	}
+
+	bool fetch(unsigned long rows, SQLUSMALLINT orientation)
+	{
+		if(!open())
+			return false;
+		SQLULEN row_out = 0;
+		SQLUSMALLINT status;
+		before_move();
+		RETCODE rc = SQLExtendedFetch(stmt_, orientation, rows, &row_out, &status);
+		if (rc == SQL_NO_DATA)
+			return false;
+		if (!detail::success(rc))
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+		return true;
+	}
+
+	void release_bind(short column)
+	{
+		if(column >= columns_.size())
+			throw index_range_error();
+		delete[] columns_[column].pdata;
+		columns_[column].pdata = 0;
+		columns_[column].clen = 0;
+	}
+
+	void auto_bind()
+	{
+		columns_type().swap(columns_);
 
 		SQLSMALLINT n_columns = 0;
 		RETCODE rc = SQLNumResultCols(stmt_, &n_columns);
@@ -673,7 +1081,7 @@ public:
 		if(n_columns < 1)
 			return;
 
-		// columns_.reserve(n_columns);
+		columns_.reserve(n_columns);
 
 		typedef std::string::value_type char_type;
 		SQLCHAR column_name[1024];
@@ -696,7 +1104,7 @@ public:
 			if(!detail::success(rc))
 				PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
-			column_type col;
+			detail::column_type col;
 			col.name = reinterpret_cast<char*>(column_name);
 			col.sqltype = sqltype;
 			col.sqlsize = sqlsize;
@@ -742,7 +1150,7 @@ public:
 				case SQL_BINARY:
 				case SQL_VARBINARY:
 					col.ctype = SQL_C_BINARY;
-					col.clen = col.sqlsize;
+					col.clen = col.sqlsize + 1;
 					break;
 				case SQL_LONGVARBINARY:
 					col.ctype = SQL_C_BINARY;
@@ -755,468 +1163,69 @@ public:
 					break;
 			}
 
-			columns_[i] = col;
+			columns_.push_back(col);
 		}
 
 		for(SQLSMALLINT i = 0; i < n_columns; ++i)
 		{
-			column_type& col = columns_[i];
+			detail::column_type& col = columns_[i];
 			if(col.blob)
 			{
-				rc = SQLBindCol(
-					stmt_
-					, i + 1
-					, col.ctype
-					, 0
-					, 0
-					, &col.cbdata);
+				rc = SQLBindCol(stmt_, i + 1, col.ctype, 0, 0, &col.cbdata);
 			}
 			else
 			{
 				col.pdata = new char_type[col.clen];
-				rc = SQLBindCol(
-					stmt_
-					, i + 1
-					, col.ctype
-					, col.pdata
-					, col.clen
-					, &col.cbdata);
+				rc = SQLBindCol(stmt_, i + 1, col.ctype, col.pdata, col.clen, &col.cbdata);
 			}
 			if(!detail::success(rc))
 				PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 		}
 	}
 
-/////////////////////////////////////////////
-
-private:
-	// template<class T>
-	// T get_from_cache(short column)
-	// {
-	// 	assert(cache_.count(column));
-	// 	return detail::convert<T>(cache_[column]);
-	// }
-
-	// template<class T>
-	// void get_direct(short column, bool error_on_null, T& value)
-	// {
-	// 	SQLLEN cb_needed;
-	// 	RETCODE rc = SQLGetData(
-	// 		stmt_
-	// 		, column + 1
-	// 		, detail::sql_type_info<T>::sqltype
-	// 		, &value
-	// 		, sizeof(value)
-	// 		, &cb_needed);
-	// 	if(detail::is_null(cb_needed))
-	// 		null_[column] = 1;
-	// 	if(detail::is_null(cb_needed) && error_on_null)
-	// 		throw null_access_error();
-	// 	if (!detail::success(rc))
-	// 		PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-	// }
-
-	// void get_direct(short column, bool error_on_null, std::string& value)
-	// {
-	// 	SQLLEN cb_needed = 0;
-	// 	typedef std::string::value_type char_type;
-	// 	char_type small_buff[256];				
-	// 	RETCODE rc = SQLGetData(
-	// 		stmt_
-	// 		, column + 1
-	// 		, detail::sql_type_info<std::string>::ctype
-	// 		, small_buff
-	// 		, sizeof(small_buff) / sizeof(char_type)
-	// 		, &cb_needed);
-	// 	if(detail::is_null(cb_needed))
-	// 		null_[column] = 1;
-	// 	if(detail::is_null(cb_needed) && error_on_null)
-	// 	{
-	// 		throw null_access_error();
-	// 	}
-	// 	else if(!detail::success(rc))
-	// 	{
-	// 		PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-	// 	}
-	// 	else if(detail::success(rc) && cb_needed < sizeof(small_buff))
-	// 	{
-	// 		value = small_buff;
-	// 	}
-	// 	else if(cb_needed > 0)
-	// 	{
-	// 		SQLLEN sz_buff = cb_needed + 1;
-	// 		typedef std::string::value_type char_type;
-	// 		char_type p_data[sz_buff];
-	// 		std::size_t offset = sizeof(small_buff) / sizeof(char_type) - 1;
-	// 		std::memcpy(p_data, small_buff, offset);
-	// 		rc = SQLGetData(
-	// 			stmt_
-	// 			, column + 1
-	// 			, detail::sql_type_info<std::string>::ctype
-	// 			, (char_type*)(p_data + offset)
-	// 			, sz_buff - offset
-	// 			, &cb_needed);
-	// 		if (!detail::success(rc))
-	// 			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-	// 		value = p_data;
-	// 	}
-	// }
-
-public:
-	//! \brief Creates a new un-prepared statement.
-	//! \see execute(), execute_direct(), open(), prepare()
-	statement()
-	: stmt_(NULL)
-	, open_(false)
-	{
-
-	}
-
-	//! \brief Constructs and prepares a statement using the given connection and query.
-	//! \param conn The connection to use.
-	//! \param stmt The SQL query statement.
-	//! \see execute(), execute_direct(), open(), prepare()
-	statement(connection& conn, const std::string& stmt)
-	: stmt_(NULL)
-	, open_(false)
-	{
-		prepare(conn, stmt);
-	}
-
-	//! \brief Closes the statement.
-	//! \see close()
-	~statement()
-	{
-		_beforeMove();
-		close();
-	}
-
-	//! \brief Creates a statement for the given connection.
-	//! \param conn The connection where the statement will be executed.
-	//! \throws database_error
-	void open(connection& conn)
-	{
-		close();
-		RETCODE rc = SQLAllocHandle(SQL_HANDLE_STMT, conn.native_dbc_handle(), &stmt_);
-		open_ = detail::success(rc);
-		if (!open_)
-		{
-			stmt_ = NULL;
-			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-		}
-	}
-
-	//! \brief Returns true if connection is open.
-	bool open() const
-	{
-		return open_;
-	}
-
-	//! \brief Returns the native ODBC statement handle.
-	HDBC native_handle() const
-	{
-		return stmt_;
-	}
-
-	//! \brief Closes the statement and frees all associated resources.
-	void close()
-	{
-		if(!open())
-			return;
-		open_ = false;
-		for(params_type::iterator i = params_.begin(), end = params_.end(); i != end; ++i)
-			delete i->second;
-		params_.clear();
-		free_results();
-		SQLCancel(stmt_);
-		SQLFreeHandle(SQL_HANDLE_STMT, stmt_);
-		stmt_ = NULL;
-	}
-
-	//! \brief Opens and prepares the given statement to execute on the given connection.
-	//! \param conn The connection where the statement will be executed.
-	//! \param stmt The SQL query that will be executed.
-	//! \see open()
-	//! \throws database_error
-	void prepare(connection& conn, const std::string& stmt)
-	{
-		open(conn);
-		RETCODE rc = SQLPrepare(stmt_, (SQLCHAR*)stmt.c_str(), SQL_NTS);
-		if (!detail::success(rc))
-			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-		autobind();
-	}
-
-	//! \brief Immediately opens, prepares, and executes the given query directly on the given connection.
-	//! \param conn The connection where the statement will be executed.
-	//! \param stmt The SQL query that will be executed.
-	//! \see open(), prepare(), execute()
-	//! \throws database_error
-	void execute_direct(connection& conn, const std::string& query)
-	{
-		open(conn);
-		RETCODE rc = SQLExecDirect(stmt_, (SQLCHAR*)query.c_str(), SQL_NTS);
-		if (!detail::success(rc))
-			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-		autobind();
-	}
-
-	//! \brief Execute the previously prepared query now.
-	//! \throws database_error
-	void execute()
-	{
-		if(!open())
-			return;
-		RETCODE rc = SQLExecute(stmt_);
-		if (!detail::success(rc))
-			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-	}
-
-	//! \brief Returns the current position in the current result set, or -1 on error.
-	unsigned long position() const
-	{
-		SQLULEN pos;
-		RETCODE rc = SQLGetStmtAttr(
-			stmt_
-			, SQL_ATTR_ROW_NUMBER
-			, &pos
-			, SQL_IS_UINTEGER
-			, NULL);
-		if (!detail::success(rc))
-			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-		return pos;
-	}
-
-	//! \brief Returns the number of affected rows or rows in the current result set.
-	//! \throws database_error
-	long rows() const
-	{
-		SQLLEN rows;
-		RETCODE rc = SQLRowCount(stmt_, &rows);
-		if (!detail::success(rc))
-			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-		return rows;
-	}
-
-	//! \brief Returns the number of columns in the current result set.
-	//! \throws database_error
-	short columns() const
-	{
-		SQLSMALLINT cols;
-		RETCODE rc = SQLNumResultCols(stmt_, &cols);
-		if (!detail::success(rc))
-			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-		return cols;
-	}
-
-	//! \brief Fetches the next row in the current result set.
-	//! \return true if there are more results or false otherwise.
-	//! \throws database_error
-	bool next()
-	{
-		if(!open())
-			return false;
-		SQLULEN row = 0;
-		SQLUSMALLINT status;
-		_beforeMove();
-		RETCODE rc = SQLExtendedFetch(
-			stmt_
-			, SQL_FETCH_NEXT
-			, 0
-			, &row
-			, &status);
-		if (rc == SQL_NO_DATA)
-			return false;
-		if (!detail::success(rc))
-			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-		return true;
-	}
-
-	//! \brief Returns true if there are no more results in the current result set.
-	//! \throws database_error
-	bool end() const
-	{
-		return (position() > static_cast<unsigned long>(rows()));
-	}
-
-	//! \brief Frees the current result set.
-	void free_results()
-	{
-		if(open())
-			SQLCloseCursor(stmt_);
-	}
-
-	//! \brief Binds the given value to the given parameter placeholder number in the prepared statement.
-	//!
-	//! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
-	//! Placeholder numbers count from left to right and are 0-indexed.
-	//! \param param Placeholder position.
-	//! \param value Value to substitute into placeholder.
-	//! \return The bound value.
-	//! \throws database_error
-	template<class T>
-	const T& bind_param(long param, const T& value)
-	{
-		if(!params_.count(param))
-			params_[param] = new class detail::param(stmt_, param);
-		return params_[param]->set(value);
-	}
-
-	// #T refactor to work with auto binding
-	//! \brief Binds the given column to the supplied output parameter.
-	//!
-	//! Each call to next() will fill the output parameter with the next value.
-	//! Columns are numbered from left to right and 0-indexed.
-	//! \param column Column position.
-	//! \param output Bound storage value.
-	//! \note You can not bind a std::string to a column, use bind_column_str() instead.
-	//! \see bind_column_str
-	//! \throws database_error
-	// template<class T>
-	// #ifdef DOXYGEN
-	// 	void
-	// #else
-	// 	typename detail::disable_if_c<std::tr1::is_same<T, std::string>::value, void>::type
-	// #endif
-	// bind_column(short column, T& output)
-	// {
-	// 	SQLLEN cb_data = 0;
-	// 	RETCODE rc = SQLBindCol(
-	// 		stmt_
-	// 		, column + 1
-	// 		, detail::sql_type_info<T>::ctype
-	// 		, &output
-	// 		, sizeof(T)
-	// 		, &cb_data);
-	// 	if (!detail::success(rc))
-	// 		PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-	// }
-
-	// #T refactor to work with autobinding
-	//! \brief Binds the given column to the supplied output character buffer.
-	//!
-	//! Each call to next() will fill the output parameter with the next value.
-	//! Columns are numbered from left to right and 0-indexed.
-	//! \param column Column position.
-	//! \param output Bound output buffer.
-	//! \param length Size of output buffer.
-	//! \note Unless you want to fetch string data you should use bind_column() instead.
-	//! \see bind_column
-	//! \throws database_error
-	// void bind_column_str(short column, char* output, long length)
-	// {
-	// 	column_type col;
-	// 	col.name = "unk";
-	// 	col.sqltype = -1;
-	// 	col.sqlsize = -1;
-	// 	col.scale = -1;
-	// 	col.ctype = detail::sql_type_info<std::string>::ctype;
-	// 	col.clen = -1;
-	// 	col.blob = false;
-	// 	col.pdata = 0;
-	// 	columns_[column] = col;
-
-	// 	RETCODE rc = SQLBindCol(
-	// 		stmt_
-	// 		, column + 1
-	// 		, col.ctype
-	// 		, output
-	// 		, length
-	// 		, &col.cbdata);
-
-	// 	if (!detail::success(rc))
-	// 		PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-	// }
-
-	//! \brief Resets all currently bound parameters.
-	void reset_parameters()
-	{
-		if(!open())
-			return;
-		SQLFreeStmt(stmt_, SQL_RESET_PARAMS);
-	}
-
-	// #T test blob data
-	//! \brief Gets data from the given column in the selected row of the current result set.
-	//!
-	//! Columns are numbered from left to right and 0-indexed.
-	//! \param Column position. 
-	//! \throws database_error #T
-	template<class T>
-	T get(short column)
-	{
-		if(column >= columns_.size())
-			throw std::runtime_error("index out of range"); // #T use real error
-		if(is_null(column))
-			throw null_access_error();
-		const column_type& col = columns_[column];
-		switch(col.ctype)
-		{
-			case SQL_C_SSHORT:	return (T)*(short*)col.pdata;
-			case SQL_C_USHORT:	return (T)*(unsigned short*)col.pdata;
-			case SQL_C_SLONG:	return (T)*(long*)col.pdata;
-			case SQL_C_ULONG:	return (T)*(unsigned long *)col.pdata;
-			case SQL_C_FLOAT:	return (T)*(float*)col.pdata;
-			case SQL_C_DOUBLE:	return (T)*(double*)col.pdata;
-			case SQL_C_CHAR:
-				if (!col.blob)
-					return detail::convert<T>(columns_[column].pdata);
-			default:
-				throw std::runtime_error("type incompatible"); // #T use real error
-		}
-	}
-
-	//! \brief Returns true if and only if the given column in the selected row of the current results set is NULL.
-	//!
-	//! Columns are numbered from left to right and 0-indexed.
-	//! \param Column position. 
-	//! \throws database_error #T
-	bool is_null(short column)
-	{
-		if(column >= columns_.size())
-			throw std::runtime_error("index out of range"); // #T
-		return detail::is_null(columns_[column].cbdata);
-	}
-
-	//! #T dox
-	std::string column_name(short column)
-	{
-		if(column >= columns_.size())
-			throw std::runtime_error("index out of range"); // #T
-		return columns_[column].name;
-	}
-
-private:
-	statement(const statement&); // not defined
-	statement& operator=(const statement&); // not defined
-
 private:
 	HSTMT stmt_;
 	bool open_;
 	params_type params_;
+	columns_type columns_;
 };
 
 template<>
 inline std::string statement::get<std::string>(short column)
 {
 	if(column >= columns_.size())
-		throw std::runtime_error("index out of range");
+		throw index_range_error();
 	if(is_null(column))
 		throw null_access_error();
-	const column_type& col = columns_[column];
+	const detail::column_type& col = columns_[column];
+    char buffer[1024];
 	switch(col.ctype)
 	{
 		case SQL_C_CHAR:
+		case SQL_C_GUID:
+		case SQL_C_BINARY:
 			if(col.blob)
-				// _loadBlob(iCol); // #T implement
-				throw std::runtime_error("blob not implemented yet");
+				// load_blob(column);
+				throw std::runtime_error("blob not implemented yet"); // #T
 			return col.pdata;
 
-			// #T INCOMPLETE!!!
+		case SQL_C_LONG:
+			if(std::snprintf(buffer, sizeof(buffer), "%ld", *(long*)col.pdata) != 1)
+				throw type_incompatible_error();
+			return buffer;
 
-		default:
-			throw std::runtime_error("type incompatible"); // #T use real error
+		case SQL_C_DOUBLE:
+			if(std::snprintf(buffer, sizeof(buffer), "%lf", *(double*)col.pdata) != 1)
+				throw type_incompatible_error();
+			return buffer;
+
+		case SQL_C_DATE:
+			throw std::runtime_error("date not implemented yet"); // #T
+
+		case SQL_C_TIMESTAMP:
+			throw std::runtime_error("timestamp not implemented yet"); // #T
 	}
+	throw type_incompatible_error();
 }
 
 #undef PICODBC_THROW_DATABASE_ERROR

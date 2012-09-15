@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['open',['open',['../classpicodbc_1_1basic__statement.html#ab157d8d6f6f1add86aedeeea8d4d430d',1,'picodbc::basic_statement::open(basic_connection&lt; string_type &gt; &amp;conn)'],['../classpicodbc_1_1basic__statement.html#a4e3875cb65b14e16c0f398fbdb809165',1,'picodbc::basic_statement::open() const ']]]
+  ['open',['open',['../classpicodbc_1_1statement.html#a56099cd8bb97a58f2d6b874f7ed4f512',1,'picodbc::statement::open(connection &amp;conn)'],['../classpicodbc_1_1statement.html#a4fb79ed1fd229faec02a8b6405bb9ef2',1,'picodbc::statement::open() const ']]]
 ];

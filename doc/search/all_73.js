@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['statement',['statement',['../namespacepicodbc.html#a51c8dae2ec1ea8921ab9aba2ab7a4c08',1,'picodbc']]],
-  ['string_5ftype',['string_type',['../classpicodbc_1_1basic__connection.html#a8379d60801d2ea2f1dcfacb94557d311',1,'picodbc::basic_connection::string_type()'],['../classpicodbc_1_1basic__transaction.html#a37f9d0e4edf9b4bb66a2bea9de0a2986',1,'picodbc::basic_transaction::string_type()'],['../classpicodbc_1_1basic__statement.html#ab57243547f4ab081affef5d0c562790a',1,'picodbc::basic_statement::string_type()']]]
+  ['sec',['sec',['../structpicodbc_1_1timestamp__type.html#af9a49b84b42c5a370941958e5db4244c',1,'picodbc::timestamp_type']]],
+  ['skip',['skip',['../classpicodbc_1_1statement.html#a67d45e45e6760364e8808c9a38bc38e1',1,'picodbc::statement']]],
+  ['statement',['statement',['../classpicodbc_1_1statement.html#a8ea6d0e50ae1b165aa4d5db71bb7ef3a',1,'picodbc::statement::statement()'],['../classpicodbc_1_1statement.html#a0747f4f0414283343e5c98de934ff48d',1,'picodbc::statement::statement(connection &amp;conn, const std::string &amp;stmt)']]],
+  ['statement',['statement',['../classpicodbc_1_1statement.html',1,'picodbc']]]
 ];
