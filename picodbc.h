@@ -123,7 +123,7 @@ namespace detail
 	inline void allocate_handle(HENV& env, HDBC& conn)
 	{
 		SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &env);
-		SQLSetEnvAttr(env, SQL_ATTR_ODBC_VERSION, reinterpret_cast<void*>(SQL_OV_ODBC3), 0);
+		SQLSetEnvAttr(env, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)(SQL_OV_ODBC3), 0);
 		SQLAllocHandle(SQL_HANDLE_DBC, env, &conn);	
 	}
 
@@ -237,7 +237,7 @@ namespace detail
 
 	// Binds the given parameter number to the provided value.
 	template<class T>
-	inline const T& bind_parameter(HSTMT stmt, long param, const T& value, void* output)
+	inline const T& bind_parameter(HSTMT stmt, long param, const T& value, SQLPOINTER output)
 	{
 		std::memcpy(output, &value, sizeof(value));
 		SQLLEN str_len_or_ind_ptr = 0;
@@ -322,7 +322,7 @@ public:
 	//! \param handle The native ODBC statement or connection handle.
 	//! \param handle_type The native ODBC handle type code for the given handle.
 	//! \param info Additional information that will be appended to the beginning of the error message.
-	explicit database_error(SQLHANDLE handle, SQLSMALLINT handle_type, const std::string& info = "")
+	database_error(SQLHANDLE handle, SQLSMALLINT handle_type, const std::string& info = "")
 	: std::runtime_error(info + detail::last_error(handle, handle_type)) { }
 
 	//! \brief Returns the explanatory string.
@@ -668,7 +668,7 @@ namespace detail
 		friend class picodbc::statement;
 		HSTMT stmt_;
 		long param_;
-		std::string::value_type value_buffer_[512];
+		char value_buffer_[512];
 		std::string string_buffer_;
 		SQLLEN string_buffer_len_;
 	};
@@ -706,9 +706,131 @@ namespace detail
 		SQLSMALLINT clen;
 		bool blob;
 		long cbdata;
-		std::string::value_type* pdata;
+		char* pdata;
 	};
 }
+
+//! \brief Represents a bulk result set from a fetch operation.
+//!
+//! \see statement::bulk_fetch
+//! \note result_sets are non-copyable.
+class result_set
+{
+private:
+	typedef std::vector<SQLLEN> indicator_type;
+	typedef std::map<short, indicator_type> indicators_type;
+
+public:
+	//! \brief Binds the given column to the given output buffer.
+	//! 
+	//! \warning If the row size of the output buffer is not equal to this result set's rowset size, bad things will happen!
+	//! \see rowset_size
+	//! \throws databse_error
+	template<class T>
+	void bind_column(short column, T* output)
+	{
+		indicators_[column] = indicator_type();
+		indicators_[column].reserve(rowset_size_);
+		indicators_[column].resize(rowset_size_);
+
+		RETCODE rc = SQLBindCol(stmt_, column + 1, detail::sql_type_info<T>::ctype, output, 0, &indicators_[column].front());
+		if(!detail::success(rc))
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+	}
+
+	//! \brief Batch fetches the next rowset_size rows.
+	//! \throws database_error
+	bool next()
+	{
+		RETCODE rc = SQLFetchScroll(stmt_, SQL_FETCH_NEXT, 0);
+		if (rc == SQL_NO_DATA)
+			return false;
+		if (!detail::success(rc))
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+		return true;
+	}
+
+	//! \brief Number of rows fetched by the last call to next.
+	unsigned long rows() const
+	{
+		return row_count_;
+	}
+
+	//! \brief The bulk rowset size for this result_set object. This is constant for this object's entire lifetime.
+	unsigned long rowset_size() const
+	{
+		return rowset_size_;
+	}
+
+	//! \brief Returns true if the given position in the result set for the given column is null.
+	//! \throws index_range_error
+	bool is_null(short column, unsigned long position) const
+	{
+		if(!indicators_.count(column))
+			throw index_range_error();
+		return detail::data_is_null(indicators_.find(column)->second[position]);
+	}
+
+private:
+	friend class statement;
+
+	result_set& operator=(const result_set&); // not defined
+	result_set(const result_set& rhs); // not defined
+
+	result_set()
+	: valid_(false)
+	, stmt_(0)
+	, rowset_size_(0)
+	, row_count_(0)
+	, indicators_()
+	{
+
+	}
+
+	void init(HDBC stmt, unsigned long rowset_size)
+	{
+		stmt_ = stmt;
+		rowset_size_ = rowset_size;
+		row_count_ = 0;
+		indicators_.clear();
+		valid_ = true;
+
+		RETCODE rc = SQLSetStmtAttr(stmt_, SQL_ATTR_ROW_ARRAY_SIZE, (SQLPOINTER)rowset_size_, 0);
+		if(!detail::success(rc))
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+
+		rc = SQLSetStmtAttr(stmt_, SQL_ATTR_ROWS_FETCHED_PTR, &row_count_, 0);
+		if(!detail::success(rc)) 
+			PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+	}
+
+	bool init() const
+	{
+		return valid_;
+	}
+
+	void uninit()
+	{
+		if(!init())
+			return;
+
+		SQLSetStmtAttr(stmt_, SQL_ATTR_ROW_ARRAY_SIZE, (SQLPOINTER)1, 0);
+		SQLSetStmtAttr(stmt_, SQL_ATTR_ROWS_FETCHED_PTR, NULL, 0);
+
+		stmt_ = 0;
+		rowset_size_ = 0;
+		row_count_ = 0;
+		indicators_.clear();
+		valid_ = false;
+	}
+
+private:
+	bool valid_;
+	HDBC stmt_;
+	unsigned long rowset_size_;
+	unsigned long row_count_;
+	indicators_type indicators_;
+};
 
 //! \brief Represents a statement on the database.
 //!
@@ -725,6 +847,7 @@ public:
 	statement()
 	: stmt_(NULL)
 	, open_(false)
+	, result_set_()
 	{
 
 	}
@@ -736,6 +859,7 @@ public:
 	statement(connection& conn, const std::string& stmt)
 	: stmt_(NULL)
 	, open_(false)
+	, result_set_()
 	{
 		prepare(conn, stmt);
 	}
@@ -924,6 +1048,7 @@ public:
 	//! \brief Frees the current result set.
 	void free_results()
 	{
+		result_set_.uninit();
 		if(open())
 			SQLCloseCursor(stmt_);
 	}
@@ -962,7 +1087,7 @@ public:
 	#endif
 	bind_column(short column, T& output)
 	{
-		release_bind(column);
+		release_bound_resources(column);
 		columns_[column].clen = sizeof(T);
 		SQLLEN cbdata = 0;
 		RETCODE rc = SQLBindCol(
@@ -986,9 +1111,9 @@ public:
 	//! \param length Size of output buffer.
 	//! \see bind_column
 	//! \throws database_error, index_range_error
-	void bind_column_buffer(short column, char* buffer, long length)
+	void bind_column_buffer(short column, char* buffer, short length)
 	{
-		release_bind(column);
+		release_bound_resources(column);
 		columns_[column].clen = length;
 		columns_[column].ctype = detail::sql_type_info<std::string>::ctype;
 		RETCODE rc = SQLBindCol(
@@ -1069,6 +1194,19 @@ public:
 		return columns_[column].name;
 	}
 
+	//! \brief Returns a bulk result_set object for fetching multiple rows at a time.
+	//! 
+	//! The result_set object is owned by the statement object, do not delete the returned pointer.
+	//! The result set's resources are managed automatically. The result_set object is only valid
+	//! for the duration of the lifetime of the statement object that created it.
+	//! \warning Using the bulk_fetch operation with the normal statement bind and fetch operations will result in undefined behavior.
+	result_set* bulk_fetch(unsigned long rowset_size)
+	{
+		result_set_.uninit();
+		result_set_.init(stmt_, rowset_size);
+		return &result_set_;
+	}
+
 private:
 	statement(const statement&); // not defined
 	statement& operator=(const statement&); // not defined
@@ -1079,7 +1217,7 @@ private:
 		{
 			columns_[i].cbdata = 0;
 			if(columns_[i].blob && columns_[i].pdata)
-				release_bind(i);
+				release_bound_resources(i);
 		}
 	}
 
@@ -1098,7 +1236,7 @@ private:
 		return true;
 	}
 
-	void release_bind(short column)
+	void release_bound_resources(short column)
 	{
 		if(column >= columns_.size())
 			throw index_range_error();
@@ -1121,7 +1259,6 @@ private:
 
 		columns_.reserve(n_columns);
 
-		typedef std::string::value_type char_type;
 		SQLCHAR column_name[1024];
 		SQLSMALLINT sqltype, scale, nullable, len;
 		SQLULEN sqlsize;
@@ -1197,7 +1334,7 @@ private:
 					break;
 				default:
 					col.ctype = detail::sql_type_info<std::string>::ctype;
-					col.clen = 128 * sizeof(char_type);
+					col.clen = 128;
 					break;
 			}
 
@@ -1213,7 +1350,7 @@ private:
 			}
 			else
 			{
-				col.pdata = new char_type[col.clen];
+				col.pdata = new char[col.clen];
 				rc = SQLBindCol(stmt_, i + 1, col.ctype, col.pdata, col.clen, &col.cbdata);
 			}
 			if(!detail::success(rc))
@@ -1224,6 +1361,7 @@ private:
 private:
 	HSTMT stmt_;
 	bool open_;
+	result_set result_set_;
 	params_type params_;
 	columns_type columns_;
 };

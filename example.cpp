@@ -64,6 +64,23 @@ int main()
         while(statement.next())
             cout << some_int << "\t" << some_string << endl;
 
+        // Bulk fetching multiple rows at a time
+        statement.execute_direct(connection, "select some_int from public.example_table;");
+        const unsigned long rowset_size = 10;
+        int data[rowset_size];
+        picodbc::result_set* results = statement.bulk_fetch(rowset_size);
+        results->bind_column(0, data);
+        while(results->next())
+        {
+            for(unsigned long i = 0; i < results->rows(); ++i)
+            {
+                if(results->is_null(0, i))
+                    cout << "null" << endl;
+                else
+                    cout << data[i] << endl;
+            }
+        }
+
         // The resources used by connection and statement are cleaned up automatically or
         // you can explicitly call statement.close() and/or connection.disconnect().
     }

@@ -143,9 +143,26 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">        <span class="keywordtype">int</span> some_int;</div>
 <div class="line">        <span class="keywordtype">char</span> some_string[512];</div>
 <div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#a759a1df14aa2faf31a12149c4c98525a" title="Binds the given column to the supplied output parameter.">bind_column</a>(0, some_int);</div>
-<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#a5a03b62525805c8f965abf4a5f521654" title="Binds the given column to the supplied output character buffer.">bind_column_buffer</a>(1, some_string, <span class="keyword">sizeof</span>(some_string));</div>
+<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#a378fa5a69cf3b943baa468ccdb7602bc" title="Binds the given column to the supplied output character buffer.">bind_column_buffer</a>(1, some_string, <span class="keyword">sizeof</span>(some_string));</div>
 <div class="line">        <span class="keywordflow">while</span>(statement.<a class="code" href="classpicodbc_1_1statement.html#aea8cbf87004a8b0d99e1b2055fb6c648" title="Fetches the next row in the current result set.">next</a>())</div>
 <div class="line">            cout &lt;&lt; some_int &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span> &lt;&lt; some_string &lt;&lt; endl;</div>
+<div class="line"></div>
+<div class="line">        <span class="comment">// Bulk fetching multiple rows at a time</span></div>
+<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#af3c584af500a2de798be595bd055e30a" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select some_int from public.example_table;&quot;</span>);</div>
+<div class="line">        <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> rowset_size = 10;</div>
+<div class="line">        <span class="keywordtype">int</span> data[rowset_size];</div>
+<div class="line">        <a class="code" href="classpicodbc_1_1result__set.html" title="Represents a bulk result set from a fetch operation.">picodbc::result_set</a>* results = statement.<a class="code" href="classpicodbc_1_1statement.html#a3943a22f566ea32001a4166efcca458b" title="Returns a bulk result_set object for fetching multiple rows at a time.">bulk_fetch</a>(rowset_size);</div>
+<div class="line">        results-&gt;<a class="code" href="classpicodbc_1_1result__set.html#ae11177bd560c0b799d9fd565d5e85274" title="Binds the given column to the given output buffer.">bind_column</a>(0, data);</div>
+<div class="line">        <span class="keywordflow">while</span>(results-&gt;<a class="code" href="classpicodbc_1_1result__set.html#af573ace9cd293d71f151efa01e8291af" title="Batch fetches the next rowset_size rows.">next</a>())</div>
+<div class="line">        {</div>
+<div class="line">            <span class="keywordflow">for</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> i = 0; i &lt; results-&gt;<a class="code" href="classpicodbc_1_1result__set.html#a64e4235b965b40ed3970c8886e67a87e" title="Number of rows fetched by the last call to next.">rows</a>(); ++i)</div>
+<div class="line">            {</div>
+<div class="line">                <span class="keywordflow">if</span>(results-&gt;<a class="code" href="classpicodbc_1_1result__set.html#afcb02edbb3a0ade02013acd3d13e67a2" title="Returns true if the given position in the result set for the given column is null.">is_null</a>(0, i))</div>
+<div class="line">                    cout &lt;&lt; <span class="stringliteral">&quot;null&quot;</span> &lt;&lt; endl;</div>
+<div class="line">                <span class="keywordflow">else</span></div>
+<div class="line">                    cout &lt;&lt; data[i] &lt;&lt; endl;</div>
+<div class="line">            }</div>
+<div class="line">        }</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// The resources used by connection and statement are cleaned up automatically or</span></div>
 <div class="line">        <span class="comment">// you can explicitly call statement.close() and/or connection.disconnect().</span></div>
@@ -164,7 +181,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Sat Sep 15 2012 17:38:40 for picodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Sun Sep 16 2012 13:52:21 for picodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>

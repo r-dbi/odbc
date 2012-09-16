@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>picodbc: picodbc::transaction Class Reference</title>
+<title>picodbc: picodbc::result_set Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -83,71 +83,88 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacepicodbc.html">picodbc</a></li><li class="navelem"><a class="el" href="classpicodbc_1_1transaction.html">transaction</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacepicodbc.html">picodbc</a></li><li class="navelem"><a class="el" href="classpicodbc_1_1result__set.html">result_set</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="classpicodbc_1_1transaction-members.html">List of all members</a>  </div>
+<a href="classpicodbc_1_1result__set-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">picodbc::transaction Class Reference<div class="ingroups"><a class="el" href="group__main.html">Main Classes</a></div></div>  </div>
+<div class="title">picodbc::result_set Class Reference<div class="ingroups"><a class="el" href="group__main.html">Main Classes</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>A resource for managing transaction commits and rollbacks.  
- <a href="classpicodbc_1_1transaction.html#details">More...</a></p>
+<p>Represents a bulk result set from a fetch operation.  
+ <a href="classpicodbc_1_1result__set.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="picodbc_8h_source.html">picodbc.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a31a0d738b689ae9df198b0b75e03ca7c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1transaction.html#a31a0d738b689ae9df198b0b75e03ca7c">transaction</a> (<a class="el" href="classpicodbc_1_1connection.html">connection</a> &amp;conn)</td></tr>
-<tr class="memdesc:a31a0d738b689ae9df198b0b75e03ca7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begin a transaction on the given connection object.  <a href="#a31a0d738b689ae9df198b0b75e03ca7c"></a><br/></td></tr>
-<tr class="memitem:a117c80e78024292a955da2569192d518"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1transaction.html#a117c80e78024292a955da2569192d518">~transaction</a> ()</td></tr>
-<tr class="memdesc:a117c80e78024292a955da2569192d518"><td class="mdescLeft">&#160;</td><td class="mdescRight">If this transaction has not been committed, will will rollback any modifying operations.  <a href="#a117c80e78024292a955da2569192d518"></a><br/></td></tr>
-<tr class="memitem:ac858084a511fcb8fa0215777c39cfb8b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac858084a511fcb8fa0215777c39cfb8b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1transaction.html#ac858084a511fcb8fa0215777c39cfb8b">commit</a> ()  throw ()</td></tr>
-<tr class="memdesc:ac858084a511fcb8fa0215777c39cfb8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks this transaction for commit. <br/></td></tr>
-<tr class="memitem:a236a5be15ab2a60662bb68b9709191e1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a236a5be15ab2a60662bb68b9709191e1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1transaction.html#a236a5be15ab2a60662bb68b9709191e1">rollback</a> ()  throw ()</td></tr>
-<tr class="memdesc:a236a5be15ab2a60662bb68b9709191e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks this transaction for rollback. <br/></td></tr>
+<tr class="memitem:ae11177bd560c0b799d9fd565d5e85274"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:ae11177bd560c0b799d9fd565d5e85274"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result__set.html#ae11177bd560c0b799d9fd565d5e85274">bind_column</a> (short column, T *output)</td></tr>
+<tr class="memdesc:ae11177bd560c0b799d9fd565d5e85274"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given column to the given output buffer.  <a href="#ae11177bd560c0b799d9fd565d5e85274"></a><br/></td></tr>
+<tr class="memitem:af573ace9cd293d71f151efa01e8291af"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result__set.html#af573ace9cd293d71f151efa01e8291af">next</a> ()</td></tr>
+<tr class="memdesc:af573ace9cd293d71f151efa01e8291af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Batch fetches the next rowset_size rows.  <a href="#af573ace9cd293d71f151efa01e8291af"></a><br/></td></tr>
+<tr class="memitem:a64e4235b965b40ed3970c8886e67a87e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a64e4235b965b40ed3970c8886e67a87e"></a>
+unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result__set.html#a64e4235b965b40ed3970c8886e67a87e">rows</a> () const </td></tr>
+<tr class="memdesc:a64e4235b965b40ed3970c8886e67a87e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of rows fetched by the last call to next. <br/></td></tr>
+<tr class="memitem:a94b6dc90ee6b9e921b83c1cff0675744"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a94b6dc90ee6b9e921b83c1cff0675744"></a>
+unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result__set.html#a94b6dc90ee6b9e921b83c1cff0675744">rowset_size</a> () const </td></tr>
+<tr class="memdesc:a94b6dc90ee6b9e921b83c1cff0675744"><td class="mdescLeft">&#160;</td><td class="mdescRight">The bulk rowset size for this <a class="el" href="classpicodbc_1_1result__set.html" title="Represents a bulk result set from a fetch operation.">result_set</a> object. This is constant for this object's entire lifetime. <br/></td></tr>
+<tr class="memitem:afcb02edbb3a0ade02013acd3d13e67a2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result__set.html#afcb02edbb3a0ade02013acd3d13e67a2">is_null</a> (short column, unsigned long position) const </td></tr>
+<tr class="memdesc:afcb02edbb3a0ade02013acd3d13e67a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the given position in the result set for the given column is null.  <a href="#afcb02edbb3a0ade02013acd3d13e67a2"></a><br/></td></tr>
 </table>
 <a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>transactions are non-copyable. </p>
-</div><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a31a0d738b689ae9df198b0b75e03ca7c"></a>
+<div class="textblock"><dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a3943a22f566ea32001a4166efcca458b" title="Returns a bulk result_set object for fetching multiple rows at a time.">statement::bulk_fetch</a> </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>result_sets are non-copyable. </dd></dl>
+</div><h2>Member Function Documentation</h2>
+<a class="anchor" id="ae11177bd560c0b799d9fd565d5e85274"></a>
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">picodbc::transaction::transaction </td>
+          <td class="memname">void picodbc::result_set::bind_column </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classpicodbc_1_1connection.html">connection</a> &amp;&#160;</td>
-          <td class="paramname"><em>conn</em></td><td>)</td>
+          <td class="paramtype">short&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">T *&#160;</td>
+          <td class="paramname"><em>output</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="section post"><dt>Postcondition</dt><dd>Operations that modify the database must now be committed before taking effect. </dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>If the row size of the output buffer is not equal to this result set's rowset size, bad things will happen! </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1result__set.html#a94b6dc90ee6b9e921b83c1cff0675744" title="The bulk rowset size for this result_set object. This is constant for this object&#39;s entire lifetime...">rowset_size</a> </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
+    <tr><td class="paramname">databse_error</td><td></td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="a117c80e78024292a955da2569192d518"></a>
+<a class="anchor" id="afcb02edbb3a0ade02013acd3d13e67a2"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -155,7 +172,47 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">picodbc::transaction::~transaction </td>
+          <td class="memname">bool picodbc::result_set::is_null </td>
+          <td>(</td>
+          <td class="paramtype">short&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned long&#160;</td>
+          <td class="paramname"><em>position</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1index__range__error.html" title="Index out of range.">index_range_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="af573ace9cd293d71f151efa01e8291af"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool picodbc::result_set::next </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>

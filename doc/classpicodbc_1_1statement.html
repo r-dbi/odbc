@@ -155,8 +155,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a759a1df14aa2faf31a12149c4c98525a"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
 <tr class="memitem:a759a1df14aa2faf31a12149c4c98525a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a759a1df14aa2faf31a12149c4c98525a">bind_column</a> (short column, T &amp;output)</td></tr>
 <tr class="memdesc:a759a1df14aa2faf31a12149c4c98525a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given column to the supplied output parameter.  <a href="#a759a1df14aa2faf31a12149c4c98525a"></a><br/></td></tr>
-<tr class="memitem:a5a03b62525805c8f965abf4a5f521654"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a5a03b62525805c8f965abf4a5f521654">bind_column_buffer</a> (short column, char *buffer, long length)</td></tr>
-<tr class="memdesc:a5a03b62525805c8f965abf4a5f521654"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given column to the supplied output character buffer.  <a href="#a5a03b62525805c8f965abf4a5f521654"></a><br/></td></tr>
+<tr class="memitem:a378fa5a69cf3b943baa468ccdb7602bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a378fa5a69cf3b943baa468ccdb7602bc">bind_column_buffer</a> (short column, char *buffer, short length)</td></tr>
+<tr class="memdesc:a378fa5a69cf3b943baa468ccdb7602bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given column to the supplied output character buffer.  <a href="#a378fa5a69cf3b943baa468ccdb7602bc"></a><br/></td></tr>
 <tr class="memitem:ad0092410e4daad75dfaaf019654ec83b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad0092410e4daad75dfaaf019654ec83b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#ad0092410e4daad75dfaaf019654ec83b">reset_parameters</a> ()</td></tr>
 <tr class="memdesc:ad0092410e4daad75dfaaf019654ec83b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets all currently bound parameters. <br/></td></tr>
@@ -167,6 +167,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:a86f3b5cc5f8f11ea0459a1b016580f64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if and only if the given column in the selected row of the current results set is NULL.  <a href="#a86f3b5cc5f8f11ea0459a1b016580f64"></a><br/></td></tr>
 <tr class="memitem:a76f1f52a828cd5d039d56b8179174c7f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a76f1f52a828cd5d039d56b8179174c7f">column_name</a> (short column)</td></tr>
 <tr class="memdesc:a76f1f52a828cd5d039d56b8179174c7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name of the specified column.  <a href="#a76f1f52a828cd5d039d56b8179174c7f"></a><br/></td></tr>
+<tr class="memitem:a3943a22f566ea32001a4166efcca458b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpicodbc_1_1result__set.html">result_set</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a3943a22f566ea32001a4166efcca458b">bulk_fetch</a> (unsigned long rowset_size)</td></tr>
+<tr class="memdesc:a3943a22f566ea32001a4166efcca458b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a bulk <a class="el" href="classpicodbc_1_1result__set.html" title="Represents a bulk result set from a fetch operation.">result_set</a> object for fetching multiple rows at a time.  <a href="#a3943a22f566ea32001a4166efcca458b"></a><br/></td></tr>
 </table>
 <a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><dl class="section note"><dt>Note</dt><dd>statements are non-copyable. </dd></dl>
@@ -303,8 +305,8 @@ template&lt;class T &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>You can not bind a std::string to a column, use <a class="el" href="classpicodbc_1_1statement.html#a5a03b62525805c8f965abf4a5f521654" title="Binds the given column to the supplied output character buffer.">bind_column_buffer()</a> instead. </dd></dl>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a5a03b62525805c8f965abf4a5f521654" title="Binds the given column to the supplied output character buffer.">bind_column_buffer</a> </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>You can not bind a std::string to a column, use <a class="el" href="classpicodbc_1_1statement.html#a378fa5a69cf3b943baa468ccdb7602bc" title="Binds the given column to the supplied output character buffer.">bind_column_buffer()</a> instead. </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a378fa5a69cf3b943baa468ccdb7602bc" title="Binds the given column to the supplied output character buffer.">bind_column_buffer</a> </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a>,<a class="el" href="classpicodbc_1_1index__range__error.html" title="Index out of range.">index_range_error</a></td><td></td></tr>
@@ -314,7 +316,7 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a5a03b62525805c8f965abf4a5f521654"></a>
+<a class="anchor" id="a378fa5a69cf3b943baa468ccdb7602bc"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -336,7 +338,7 @@ template&lt;class T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">long&#160;</td>
+          <td class="paramtype">short&#160;</td>
           <td class="paramname"><em>length</em>&#160;</td>
         </tr>
         <tr>
@@ -418,6 +420,32 @@ template&lt;class T &gt; </div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="a3943a22f566ea32001a4166efcca458b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpicodbc_1_1result__set.html">result_set</a>* picodbc::statement::bulk_fetch </td>
+          <td>(</td>
+          <td class="paramtype">unsigned long&#160;</td>
+          <td class="paramname"><em>rowset_size</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The <a class="el" href="classpicodbc_1_1result__set.html" title="Represents a bulk result set from a fetch operation.">result_set</a> object is owned by the statement object, do not delete the returned pointer. The result set's resources are managed automatically. The <a class="el" href="classpicodbc_1_1result__set.html" title="Represents a bulk result set from a fetch operation.">result_set</a> object is only valid for the duration of the lifetime of the statement object that created it. </p>
+<dl class="section warning"><dt>Warning</dt><dd>Using the bulk_fetch operation with the normal statement bind and fetch operations will result in undefined behavior. </dd></dl>
 
 </div>
 </div>
@@ -976,7 +1004,7 @@ template&lt;class T &gt; </div>
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Sat Sep 15 2012 17:38:40 for picodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Sun Sep 16 2012 13:52:21 for picodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>
