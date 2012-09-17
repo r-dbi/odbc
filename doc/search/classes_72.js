@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['result_5fset',['result_set',['../classpicodbc_1_1result__set.html',1,'picodbc']]]
+  ['result',['result',['../classpicodbc_1_1result.html',1,'picodbc']]]
 ];

@@ -81,28 +81,33 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Example library usage.</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="picodbc_8h.html" title="The entirety of picodbc can be found within this one file.">picodbc.h</a>&quot;</span></div>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="picodbc_8h.html" title="The entirety of picodbc can be found within this file and picodbc.cpp.">picodbc.h</a>&quot;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
 <div class="line"></div>
 <div class="line"><span class="keyword">using namespace </span>std;</div>
 <div class="line"></div>
 <div class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><span class="keywordtype">void</span> show(<a class="code" href="classpicodbc_1_1statement.html" title="Represents a statement on the database.">picodbc::statement</a>&amp; statement)</div>
+<div class="line"><span class="keywordtype">void</span> show(<a class="code" href="classpicodbc_1_1result.html" title="A resource for managing result sets from statement execution.">picodbc::result</a> results)</div>
 <div class="line">{</div>
-<div class="line">    <span class="keywordtype">long</span> row = 0;</div>
+<div class="line">    cout &lt;&lt; <span class="stringliteral">&quot;displaying &quot;</span> &lt;&lt; results.<a class="code" href="classpicodbc_1_1result.html#a996215ac1678e7890e4fa538d4aab95f" title="Returns the number of affected rows or rows in the current result set.">rows</a>() &lt;&lt; <span class="stringliteral">&quot; rows:&quot;</span> &lt;&lt; endl;</div>
+<div class="line"></div>
+<div class="line">    <span class="keyword">const</span> <span class="keywordtype">short</span> columns = results.<a class="code" href="classpicodbc_1_1result.html#a66022f74b4d02c8257b12efd6ad7aa33" title="Returns the number of columns in the current result set.">columns</a>();</div>
+<div class="line"></div>
 <div class="line">    cout &lt;&lt; <span class="stringliteral">&quot;row\t&quot;</span>;</div>
-<div class="line">    <span class="keywordflow">for</span>(<span class="keywordtype">short</span> i = 0; i &lt; statement.<a class="code" href="classpicodbc_1_1statement.html#ac32f337acf530cf19bf2427ec98bf2dc" title="Returns the number of columns in the current result set.">columns</a>(); ++i)</div>
-<div class="line">        cout &lt;&lt; statement.<a class="code" href="classpicodbc_1_1statement.html#a76f1f52a828cd5d039d56b8179174c7f" title="Returns the name of the specified column.">column_name</a>(i) &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
+<div class="line">    <span class="keywordflow">for</span>(<span class="keywordtype">short</span> i = 0; i &lt; columns; ++i)</div>
+<div class="line">        cout &lt;&lt; results.<a class="code" href="classpicodbc_1_1result.html#a3612cb327a30e9c39b5e88674ccfbca3" title="Returns the name of the specified column.">column_name</a>(i) &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
 <div class="line">    cout &lt;&lt; endl;</div>
-<div class="line">    <span class="keywordflow">while</span>(statement.<a class="code" href="classpicodbc_1_1statement.html#aea8cbf87004a8b0d99e1b2055fb6c648" title="Fetches the next row in the current result set.">next</a>())</div>
+<div class="line"></div>
+<div class="line">    <span class="keywordtype">long</span> row = 0;</div>
+<div class="line">    <span class="keywordflow">while</span>(results.<a class="code" href="classpicodbc_1_1result.html#a14ec1560eccc8aca08437825849b7d88" title="Fetches the next row in the current result set.">next</a>())</div>
 <div class="line">    {</div>
 <div class="line">        cout &lt;&lt; row++ &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
-<div class="line">        <span class="keywordflow">for</span>(<span class="keywordtype">short</span> i = 0; i &lt; statement.<a class="code" href="classpicodbc_1_1statement.html#ac32f337acf530cf19bf2427ec98bf2dc" title="Returns the number of columns in the current result set.">columns</a>(); ++i)</div>
+<div class="line">        <span class="keywordflow">for</span>(<span class="keywordtype">short</span> i = 0; i &lt; columns; ++i)</div>
 <div class="line">        {</div>
-<div class="line">            <span class="keywordflow">if</span>(statement.<a class="code" href="classpicodbc_1_1statement.html#a86f3b5cc5f8f11ea0459a1b016580f64" title="Returns true if and only if the given column in the selected row of the current results set is NULL...">is_null</a>(i))</div>
-<div class="line">                cout &lt;&lt; <span class="stringliteral">&quot;null&quot;</span>;</div>
+<div class="line">            <span class="keywordflow">if</span>(results.<a class="code" href="classpicodbc_1_1result.html#a3c7695fa9220cf6a090ce0927f889e2b" title="Returns true if and only if the given column in the selected row of the current results set is NULL...">is_null</a>(i))</div>
+<div class="line">                cout &lt;&lt; <span class="stringliteral">&quot;(null)&quot;</span>;</div>
 <div class="line">            <span class="keywordflow">else</span></div>
-<div class="line">                cout &lt;&lt; statement.<a class="code" href="classpicodbc_1_1statement.html#a04b534fc268b561bd56d94b9f1a4f295" title="Gets data from the given column in the selected row of the current result set.">get</a>&lt;T&gt;(i);</div>
+<div class="line">                cout &lt;&lt; <span class="stringliteral">&quot;(&quot;</span> &lt;&lt; results.<a class="code" href="classpicodbc_1_1result.html#a728bd423e8427e418691ec4989b29bf6" title="Gets data from the given column in the selected row of the current result set.">get</a>&lt;T&gt;(i) &lt;&lt; <span class="stringliteral">&quot;)&quot;</span>;</div>
 <div class="line">            cout &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
 <div class="line">        }</div>
 <div class="line">        cout &lt;&lt; endl;</div>
@@ -111,57 +116,36 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"></div>
 <div class="line"><span class="keywordtype">int</span> main()</div>
 <div class="line">{</div>
+<div class="line">    <span class="keyword">const</span> <span class="keywordtype">char</span>* connection_string = <span class="stringliteral">&quot;a SQLDriverConnect connection string&quot;</span>;</div>
+<div class="line"><span class="preprocessor">    #define EXAMPLE_TABLE &quot;public.example_table&quot;</span></div>
+<div class="line"><span class="preprocessor"></span></div>
 <div class="line">    <span class="keywordflow">try</span></div>
 <div class="line">    {</div>
 <div class="line">        <span class="comment">// Establishing connections</span></div>
-<div class="line">        <a class="code" href="classpicodbc_1_1connection.html" title="Manages and encapsulates ODBC resources such as the connection and environment handles.">picodbc::connection</a> connection(<span class="stringliteral">&quot;data source name&quot;</span>, <span class="stringliteral">&quot;username&quot;</span>, <span class="stringliteral">&quot;password&quot;</span>);</div>
-<div class="line">        <span class="comment">// or picodbc::connection connection(&quot;a SQLDriverConnect connection string&quot;);</span></div>
+<div class="line">        <a class="code" href="classpicodbc_1_1connection.html" title="Manages and encapsulates ODBC resources such as the connection and environment handles.">picodbc::connection</a> connection(connection_string);</div>
+<div class="line">        <span class="comment">// or picodbc::connection connection(connection_string, timeout_seconds);</span></div>
+<div class="line">        <span class="comment">// or picodbc::connection connection(&quot;data source name&quot;, &quot;username&quot;, &quot;password&quot;);</span></div>
 <div class="line">        <span class="comment">// or picodbc::connection connection(&quot;data source name&quot;, &quot;username&quot;, &quot;password&quot;, timeout_seconds);</span></div>
 <div class="line"></div>
 <div class="line">        <a class="code" href="classpicodbc_1_1statement.html" title="Represents a statement on the database.">picodbc::statement</a> statement;</div>
+<div class="line">        <a class="code" href="classpicodbc_1_1result.html" title="A resource for managing result sets from statement execution.">picodbc::result</a> results;</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Direct execution</span></div>
-<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#af3c584af500a2de798be595bd055e30a" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from public.example_table;&quot;</span>);</div>
-<div class="line">        show&lt;string&gt;(statement);</div>
+<div class="line">        results = statement.<a class="code" href="classpicodbc_1_1statement.html#a6b6e8e2272d99587d67c3cac49cc336a" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>);</div>
+<div class="line">        show&lt;string&gt;(results);</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Binding parameters</span></div>
-<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;select * from public.example_table where cast(col as float) = ?;&quot;</span>);</div>
-<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#a1a5ad09e72aecce9cd47801696f79231" title="Execute the previously prepared query now.">execute</a>();</div>
-<div class="line">        statement.bind_param(0, 1.0);</div>
-<div class="line">        show(statement);</div>
+<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;select * from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot; where cast(a as float) = ?;&quot;</span>);</div>
+<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#a4b441894415762f058bc936489bba844" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(0, 1.0);</div>
+<div class="line"></div>
+<div class="line">        results = statement.<a class="code" href="classpicodbc_1_1statement.html#a843158c462d74406072e984e67f22218" title="Execute the previously prepared query now.">execute</a>();</div>
+<div class="line">        show&lt;string&gt;(results);</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Transactions</span></div>
 <div class="line">        {</div>
 <div class="line">            <a class="code" href="classpicodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">picodbc::transaction</a> transaction(connection);</div>
-<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#af3c584af500a2de798be595bd055e30a" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;delete from public.example_table where true;&quot;</span>);</div>
+<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a6b6e8e2272d99587d67c3cac49cc336a" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;delete from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot; where true;&quot;</span>);</div>
 <div class="line">            <span class="comment">// transaction will be rolled back if we don&#39;t call transaction.commit()</span></div>
-<div class="line">        }</div>
-<div class="line"></div>
-<div class="line">        <span class="comment">// Preparing statements and manually binding columns</span></div>
-<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;select some_int, some_string from public.example_table;&quot;</span>)</div>
-<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#a1a5ad09e72aecce9cd47801696f79231" title="Execute the previously prepared query now.">execute</a>()</div>
-<div class="line">        <span class="keywordtype">int</span> some_int;</div>
-<div class="line">        <span class="keywordtype">char</span> some_string[512];</div>
-<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#a759a1df14aa2faf31a12149c4c98525a" title="Binds the given column to the supplied output parameter.">bind_column</a>(0, some_int);</div>
-<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#a378fa5a69cf3b943baa468ccdb7602bc" title="Binds the given column to the supplied output character buffer.">bind_column_buffer</a>(1, some_string, <span class="keyword">sizeof</span>(some_string));</div>
-<div class="line">        <span class="keywordflow">while</span>(statement.<a class="code" href="classpicodbc_1_1statement.html#aea8cbf87004a8b0d99e1b2055fb6c648" title="Fetches the next row in the current result set.">next</a>())</div>
-<div class="line">            cout &lt;&lt; some_int &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span> &lt;&lt; some_string &lt;&lt; endl;</div>
-<div class="line"></div>
-<div class="line">        <span class="comment">// Bulk fetching multiple rows at a time</span></div>
-<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#af3c584af500a2de798be595bd055e30a" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select some_int from public.example_table;&quot;</span>);</div>
-<div class="line">        <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> rowset_size = 10;</div>
-<div class="line">        <span class="keywordtype">int</span> data[rowset_size];</div>
-<div class="line">        <a class="code" href="classpicodbc_1_1result__set.html" title="Represents a bulk result set from a fetch operation.">picodbc::result_set</a>* results = statement.<a class="code" href="classpicodbc_1_1statement.html#a3943a22f566ea32001a4166efcca458b" title="Returns a bulk result_set object for fetching multiple rows at a time.">bulk_fetch</a>(rowset_size);</div>
-<div class="line">        results-&gt;<a class="code" href="classpicodbc_1_1result__set.html#ae11177bd560c0b799d9fd565d5e85274" title="Binds the given column to the given output buffer.">bind_column</a>(0, data);</div>
-<div class="line">        <span class="keywordflow">while</span>(results-&gt;<a class="code" href="classpicodbc_1_1result__set.html#af573ace9cd293d71f151efa01e8291af" title="Batch fetches the next rowset_size rows.">next</a>())</div>
-<div class="line">        {</div>
-<div class="line">            <span class="keywordflow">for</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> i = 0; i &lt; results-&gt;<a class="code" href="classpicodbc_1_1result__set.html#a64e4235b965b40ed3970c8886e67a87e" title="Number of rows fetched by the last call to next.">rows</a>(); ++i)</div>
-<div class="line">            {</div>
-<div class="line">                <span class="keywordflow">if</span>(results-&gt;<a class="code" href="classpicodbc_1_1result__set.html#afcb02edbb3a0ade02013acd3d13e67a2" title="Returns true if the given position in the result set for the given column is null.">is_null</a>(0, i))</div>
-<div class="line">                    cout &lt;&lt; <span class="stringliteral">&quot;null&quot;</span> &lt;&lt; endl;</div>
-<div class="line">                <span class="keywordflow">else</span></div>
-<div class="line">                    cout &lt;&lt; data[i] &lt;&lt; endl;</div>
-<div class="line">            }</div>
 <div class="line">        }</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// The resources used by connection and statement are cleaned up automatically or</span></div>
@@ -181,7 +165,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Sun Sep 16 2012 13:52:21 for picodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Mon Sep 17 2012 13:36:30 for picodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>

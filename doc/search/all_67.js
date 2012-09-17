@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['get',['get',['../classpicodbc_1_1statement.html#a04b534fc268b561bd56d94b9f1a4f295',1,'picodbc::statement']]]
+  ['get',['get',['../classpicodbc_1_1result.html#a728bd423e8427e418691ec4989b29bf6',1,'picodbc::result']]]
 ];

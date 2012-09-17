@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>picodbc: Member List</title>
+<title>picodbc: picodbc.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -40,8 +40,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
-      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -62,9 +62,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
   <div id="navrow2" class="tabs2">
     <ul class="tablist">
-      <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
-      <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
-      <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
+      <li><a href="files.html"><span>File&#160;List</span></a></li>
     </ul>
   </div>
 <!-- window showing the filter options -->
@@ -81,25 +79,29 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="namespacepicodbc.html">picodbc</a></li><li class="navelem"><a class="el" href="classpicodbc_1_1result__set.html">result_set</a></li>  </ul>
-</div>
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle">
-<div class="title">picodbc::result_set Member List</div>  </div>
+<div class="title">picodbc.cpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>This is the complete list of members for <a class="el" href="classpicodbc_1_1result__set.html">picodbc::result_set</a>, including all inherited members.</p>
-<table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="classpicodbc_1_1result__set.html#ae11177bd560c0b799d9fd565d5e85274">bind_column</a>(short column, T *output)</td><td class="entry"><a class="el" href="classpicodbc_1_1result__set.html">picodbc::result_set</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classpicodbc_1_1result__set.html#afcb02edbb3a0ade02013acd3d13e67a2">is_null</a>(short column, unsigned long position) const </td><td class="entry"><a class="el" href="classpicodbc_1_1result__set.html">picodbc::result_set</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classpicodbc_1_1result__set.html#af573ace9cd293d71f151efa01e8291af">next</a>()</td><td class="entry"><a class="el" href="classpicodbc_1_1result__set.html">picodbc::result_set</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classpicodbc_1_1result__set.html#a64e4235b965b40ed3970c8886e67a87e">rows</a>() const </td><td class="entry"><a class="el" href="classpicodbc_1_1result__set.html">picodbc::result_set</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classpicodbc_1_1result__set.html#a94b6dc90ee6b9e921b83c1cff0675744">rowset_size</a>() const </td><td class="entry"><a class="el" href="classpicodbc_1_1result__set.html">picodbc::result_set</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-</table></div><!-- contents -->
+<p>Implementation details.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="picodbc_8h_source.html">picodbc.h</a>&quot;</code><br/>
+<code>#include &lt;algorithm&gt;</code><br/>
+<code>#include &lt;cassert&gt;</code><br/>
+<code>#include &lt;vector&gt;</code><br/>
+</div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2><a name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacepicodbc"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepicodbc.html">picodbc</a></td></tr>
+<tr class="memdesc:namespacepicodbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">The entirety of picodbc can be found within this one namespace. <br/></td></tr>
+</table>
+<a name="details" id="details"></a><h2>Detailed Description</h2>
+<div class="textblock"></div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/>
 <address class="footer">
@@ -108,7 +110,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Sun Sep 16 2012 13:52:21 for picodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Mon Sep 17 2012 13:36:30 for picodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>

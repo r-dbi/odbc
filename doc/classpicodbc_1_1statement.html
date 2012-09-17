@@ -121,54 +121,16 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:a171dfa9ffca19e1131c964641e080e89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes the statement and frees all associated resources. <br/></td></tr>
 <tr class="memitem:ad69c1aa3e5f43987f020426fcc9e4b68"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68">prepare</a> (<a class="el" href="classpicodbc_1_1connection.html">connection</a> &amp;conn, const std::string &amp;stmt)</td></tr>
 <tr class="memdesc:ad69c1aa3e5f43987f020426fcc9e4b68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens and prepares the given statement to execute on the given connection.  <a href="#ad69c1aa3e5f43987f020426fcc9e4b68"></a><br/></td></tr>
-<tr class="memitem:af3c584af500a2de798be595bd055e30a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#af3c584af500a2de798be595bd055e30a">execute_direct</a> (<a class="el" href="classpicodbc_1_1connection.html">connection</a> &amp;conn, const std::string &amp;query)</td></tr>
-<tr class="memdesc:af3c584af500a2de798be595bd055e30a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immediately opens, prepares, and executes the given query directly on the given connection.  <a href="#af3c584af500a2de798be595bd055e30a"></a><br/></td></tr>
-<tr class="memitem:a1a5ad09e72aecce9cd47801696f79231"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a1a5ad09e72aecce9cd47801696f79231">execute</a> ()</td></tr>
-<tr class="memdesc:a1a5ad09e72aecce9cd47801696f79231"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute the previously prepared query now.  <a href="#a1a5ad09e72aecce9cd47801696f79231"></a><br/></td></tr>
-<tr class="memitem:a660592da3f2b0ebcd9a84c53b4b6ff9e"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a660592da3f2b0ebcd9a84c53b4b6ff9e">rows</a> () const </td></tr>
-<tr class="memdesc:a660592da3f2b0ebcd9a84c53b4b6ff9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of affected rows or rows in the current result set.  <a href="#a660592da3f2b0ebcd9a84c53b4b6ff9e"></a><br/></td></tr>
-<tr class="memitem:ac32f337acf530cf19bf2427ec98bf2dc"><td class="memItemLeft" align="right" valign="top">short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#ac32f337acf530cf19bf2427ec98bf2dc">columns</a> () const </td></tr>
-<tr class="memdesc:ac32f337acf530cf19bf2427ec98bf2dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of columns in the current result set.  <a href="#ac32f337acf530cf19bf2427ec98bf2dc"></a><br/></td></tr>
-<tr class="memitem:a08bcdc9e2c1ed03cb0eec3a04b78f0e0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a08bcdc9e2c1ed03cb0eec3a04b78f0e0">first</a> ()</td></tr>
-<tr class="memdesc:a08bcdc9e2c1ed03cb0eec3a04b78f0e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches the first row in the current result set.  <a href="#a08bcdc9e2c1ed03cb0eec3a04b78f0e0"></a><br/></td></tr>
-<tr class="memitem:a86ad861a17b614b08ab3249b1e5adc0c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a86ad861a17b614b08ab3249b1e5adc0c">last</a> ()</td></tr>
-<tr class="memdesc:a86ad861a17b614b08ab3249b1e5adc0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches the last row in the current result set.  <a href="#a86ad861a17b614b08ab3249b1e5adc0c"></a><br/></td></tr>
-<tr class="memitem:aea8cbf87004a8b0d99e1b2055fb6c648"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#aea8cbf87004a8b0d99e1b2055fb6c648">next</a> ()</td></tr>
-<tr class="memdesc:aea8cbf87004a8b0d99e1b2055fb6c648"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches the next row in the current result set.  <a href="#aea8cbf87004a8b0d99e1b2055fb6c648"></a><br/></td></tr>
-<tr class="memitem:a2bb76d68dd767b9e4d2db3b243512d63"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a2bb76d68dd767b9e4d2db3b243512d63">prior</a> ()</td></tr>
-<tr class="memdesc:a2bb76d68dd767b9e4d2db3b243512d63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches the prior row in the current result set.  <a href="#a2bb76d68dd767b9e4d2db3b243512d63"></a><br/></td></tr>
-<tr class="memitem:a4c8ba647fafc1fccfea83a95dfc9928c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a4c8ba647fafc1fccfea83a95dfc9928c">move</a> (unsigned long row)</td></tr>
-<tr class="memdesc:a4c8ba647fafc1fccfea83a95dfc9928c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves to and fetches the specified row in the current result set.  <a href="#a4c8ba647fafc1fccfea83a95dfc9928c"></a><br/></td></tr>
-<tr class="memitem:a67d45e45e6760364e8808c9a38bc38e1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a67d45e45e6760364e8808c9a38bc38e1">skip</a> (unsigned long <a class="el" href="classpicodbc_1_1statement.html#a660592da3f2b0ebcd9a84c53b4b6ff9e">rows</a>)</td></tr>
-<tr class="memdesc:a67d45e45e6760364e8808c9a38bc38e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Skips a number of rows and then fetches the resulting row in the current result set.  <a href="#a67d45e45e6760364e8808c9a38bc38e1"></a><br/></td></tr>
-<tr class="memitem:a66260b2fd24e5323128e39fdccd05f93"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a66260b2fd24e5323128e39fdccd05f93"></a>
-unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a66260b2fd24e5323128e39fdccd05f93">position</a> () const </td></tr>
-<tr class="memdesc:a66260b2fd24e5323128e39fdccd05f93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current position in the current result set, or -1 on error. <br/></td></tr>
-<tr class="memitem:a5844b8f78890305b90c48b8ce91abfce"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a5844b8f78890305b90c48b8ce91abfce">end</a> () const </td></tr>
-<tr class="memdesc:a5844b8f78890305b90c48b8ce91abfce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if there are no more results in the current result set.  <a href="#a5844b8f78890305b90c48b8ce91abfce"></a><br/></td></tr>
-<tr class="memitem:a9a01f3a77b43f5b9ce966591c4e5e4ed"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9a01f3a77b43f5b9ce966591c4e5e4ed"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a9a01f3a77b43f5b9ce966591c4e5e4ed">free_results</a> ()</td></tr>
-<tr class="memdesc:a9a01f3a77b43f5b9ce966591c4e5e4ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees the current result set. <br/></td></tr>
-<tr class="memitem:ab5592a678345e32320cc7753c92db616"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:ab5592a678345e32320cc7753c92db616"><td class="memTemplItemLeft" align="right" valign="top">const T &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#ab5592a678345e32320cc7753c92db616">bind_parameter</a> (long param, const T &amp;value)</td></tr>
-<tr class="memdesc:ab5592a678345e32320cc7753c92db616"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given value to the given parameter placeholder number in the prepared statement.  <a href="#ab5592a678345e32320cc7753c92db616"></a><br/></td></tr>
-<tr class="memitem:a759a1df14aa2faf31a12149c4c98525a"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a759a1df14aa2faf31a12149c4c98525a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a759a1df14aa2faf31a12149c4c98525a">bind_column</a> (short column, T &amp;output)</td></tr>
-<tr class="memdesc:a759a1df14aa2faf31a12149c4c98525a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given column to the supplied output parameter.  <a href="#a759a1df14aa2faf31a12149c4c98525a"></a><br/></td></tr>
-<tr class="memitem:a378fa5a69cf3b943baa468ccdb7602bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a378fa5a69cf3b943baa468ccdb7602bc">bind_column_buffer</a> (short column, char *buffer, short length)</td></tr>
-<tr class="memdesc:a378fa5a69cf3b943baa468ccdb7602bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given column to the supplied output character buffer.  <a href="#a378fa5a69cf3b943baa468ccdb7602bc"></a><br/></td></tr>
+<tr class="memitem:a6b6e8e2272d99587d67c3cac49cc336a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpicodbc_1_1result.html">result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a6b6e8e2272d99587d67c3cac49cc336a">execute_direct</a> (<a class="el" href="classpicodbc_1_1connection.html">connection</a> &amp;conn, const std::string &amp;query, unsigned long rowset_size=1)</td></tr>
+<tr class="memdesc:a6b6e8e2272d99587d67c3cac49cc336a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immediately opens, prepares, and executes the given query directly on the given connection.  <a href="#a6b6e8e2272d99587d67c3cac49cc336a"></a><br/></td></tr>
+<tr class="memitem:a843158c462d74406072e984e67f22218"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpicodbc_1_1result.html">result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a843158c462d74406072e984e67f22218">execute</a> (unsigned long rowset_size=1)</td></tr>
+<tr class="memdesc:a843158c462d74406072e984e67f22218"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute the previously prepared query now.  <a href="#a843158c462d74406072e984e67f22218"></a><br/></td></tr>
 <tr class="memitem:ad0092410e4daad75dfaaf019654ec83b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad0092410e4daad75dfaaf019654ec83b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#ad0092410e4daad75dfaaf019654ec83b">reset_parameters</a> ()</td></tr>
 <tr class="memdesc:ad0092410e4daad75dfaaf019654ec83b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets all currently bound parameters. <br/></td></tr>
-<tr class="memitem:a04b534fc268b561bd56d94b9f1a4f295"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a04b534fc268b561bd56d94b9f1a4f295"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a04b534fc268b561bd56d94b9f1a4f295">get</a> (short column)</td></tr>
-<tr class="memdesc:a04b534fc268b561bd56d94b9f1a4f295"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets data from the given column in the selected row of the current result set.  <a href="#a04b534fc268b561bd56d94b9f1a4f295"></a><br/></td></tr>
-<tr class="memitem:a86f3b5cc5f8f11ea0459a1b016580f64"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a86f3b5cc5f8f11ea0459a1b016580f64">is_null</a> (short column)</td></tr>
-<tr class="memdesc:a86f3b5cc5f8f11ea0459a1b016580f64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if and only if the given column in the selected row of the current results set is NULL.  <a href="#a86f3b5cc5f8f11ea0459a1b016580f64"></a><br/></td></tr>
-<tr class="memitem:a76f1f52a828cd5d039d56b8179174c7f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a76f1f52a828cd5d039d56b8179174c7f">column_name</a> (short column)</td></tr>
-<tr class="memdesc:a76f1f52a828cd5d039d56b8179174c7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name of the specified column.  <a href="#a76f1f52a828cd5d039d56b8179174c7f"></a><br/></td></tr>
-<tr class="memitem:a3943a22f566ea32001a4166efcca458b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpicodbc_1_1result__set.html">result_set</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a3943a22f566ea32001a4166efcca458b">bulk_fetch</a> (unsigned long rowset_size)</td></tr>
-<tr class="memdesc:a3943a22f566ea32001a4166efcca458b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a bulk <a class="el" href="classpicodbc_1_1result__set.html" title="Represents a bulk result set from a fetch operation.">result_set</a> object for fetching multiple rows at a time.  <a href="#a3943a22f566ea32001a4166efcca458b"></a><br/></td></tr>
+<tr class="memitem:a4b441894415762f058bc936489bba844"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a4b441894415762f058bc936489bba844"><td class="memTemplItemLeft" align="right" valign="top">const void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a4b441894415762f058bc936489bba844">bind_parameter</a> (long param, const T &amp;value)</td></tr>
+<tr class="memdesc:a4b441894415762f058bc936489bba844"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given value to the given parameter placeholder number in the prepared statement.  <a href="#a4b441894415762f058bc936489bba844"></a><br/></td></tr>
 </table>
 <a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><dl class="section note"><dt>Note</dt><dd>statements are non-copyable. </dd></dl>
@@ -176,9 +138,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <a class="anchor" id="a8ea6d0e50ae1b165aa4d5db71bb7ef3a"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">picodbc::statement::statement </td>
@@ -187,22 +146,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a1a5ad09e72aecce9cd47801696f79231" title="Execute the previously prepared query now.">execute()</a>, <a class="el" href="classpicodbc_1_1statement.html#af3c584af500a2de798be595bd055e30a" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct()</a>, <a class="el" href="classpicodbc_1_1statement.html#a56099cd8bb97a58f2d6b874f7ed4f512" title="Creates a statement for the given connection.">open()</a>, <a class="el" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare()</a> </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a843158c462d74406072e984e67f22218" title="Execute the previously prepared query now.">execute()</a>, <a class="el" href="classpicodbc_1_1statement.html#a6b6e8e2272d99587d67c3cac49cc336a" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct()</a>, <a class="el" href="classpicodbc_1_1statement.html#a56099cd8bb97a58f2d6b874f7ed4f512" title="Creates a statement for the given connection.">open()</a>, <a class="el" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare()</a> </dd></dl>
 
 </div>
 </div>
 <a class="anchor" id="a0747f4f0414283343e5c98de934ff48d"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">picodbc::statement::statement </td>
@@ -222,11 +173,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -235,16 +181,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a1a5ad09e72aecce9cd47801696f79231" title="Execute the previously prepared query now.">execute()</a>, <a class="el" href="classpicodbc_1_1statement.html#af3c584af500a2de798be595bd055e30a" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct()</a>, <a class="el" href="classpicodbc_1_1statement.html#a56099cd8bb97a58f2d6b874f7ed4f512" title="Creates a statement for the given connection.">open()</a>, <a class="el" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare()</a> </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a843158c462d74406072e984e67f22218" title="Execute the previously prepared query now.">execute()</a>, <a class="el" href="classpicodbc_1_1statement.html#a6b6e8e2272d99587d67c3cac49cc336a" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct()</a>, <a class="el" href="classpicodbc_1_1statement.html#a56099cd8bb97a58f2d6b874f7ed4f512" title="Creates a statement for the given connection.">open()</a>, <a class="el" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare()</a> </dd></dl>
 
 </div>
 </div>
 <a class="anchor" id="af0fa4dbb9e84dbb262600f888ca3469f"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">picodbc::statement::~statement </td>
@@ -253,18 +196,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a171dfa9ffca19e1131c964641e080e89" title="Closes the statement and frees all associated resources.">close()</a> </dd></dl>
 
 </div>
 </div>
 <h2>Member Function Documentation</h2>
-<a class="anchor" id="a759a1df14aa2faf31a12149c4c98525a"></a>
+<a class="anchor" id="a4b441894415762f058bc936489bba844"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -274,115 +212,7 @@ template&lt;class T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void picodbc::statement::bind_column </td>
-          <td>(</td>
-          <td class="paramtype">short&#160;</td>
-          <td class="paramname"><em>column</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">T &amp;&#160;</td>
-          <td class="paramname"><em>output</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>A statement must be executed before attempting to bind, otherwise <a class="el" href="classpicodbc_1_1index__range__error.html" title="Index out of range.">index_range_error</a> will be thrown. Each call to <a class="el" href="classpicodbc_1_1statement.html#aea8cbf87004a8b0d99e1b2055fb6c648" title="Fetches the next row in the current result set.">next()</a> will fill the output parameter with the next value. Columns are numbered from left to right and 0-indexed. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">column</td><td>Column position. </td></tr>
-    <tr><td class="paramname">output</td><td>Bound storage value. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section note"><dt>Note</dt><dd>You can not bind a std::string to a column, use <a class="el" href="classpicodbc_1_1statement.html#a378fa5a69cf3b943baa468ccdb7602bc" title="Binds the given column to the supplied output character buffer.">bind_column_buffer()</a> instead. </dd></dl>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a378fa5a69cf3b943baa468ccdb7602bc" title="Binds the given column to the supplied output character buffer.">bind_column_buffer</a> </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a>,<a class="el" href="classpicodbc_1_1index__range__error.html" title="Index out of range.">index_range_error</a></td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a378fa5a69cf3b943baa468ccdb7602bc"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void picodbc::statement::bind_column_buffer </td>
-          <td>(</td>
-          <td class="paramtype">short&#160;</td>
-          <td class="paramname"><em>column</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>buffer</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">short&#160;</td>
-          <td class="paramname"><em>length</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>A statement must be executed before attempting to bind, otherwise <a class="el" href="classpicodbc_1_1index__range__error.html" title="Index out of range.">index_range_error</a> will be thrown. Each call to <a class="el" href="classpicodbc_1_1statement.html#aea8cbf87004a8b0d99e1b2055fb6c648" title="Fetches the next row in the current result set.">next()</a> will fill the output buffer with the next value. Columns are numbered from left to right and 0-indexed. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">column</td><td>Column position. </td></tr>
-    <tr><td class="paramname">output</td><td>Bound output buffer. </td></tr>
-    <tr><td class="paramname">length</td><td>Size of output buffer. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a759a1df14aa2faf31a12149c4c98525a" title="Binds the given column to the supplied output parameter.">bind_column</a> </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a>,<a class="el" href="classpicodbc_1_1index__range__error.html" title="Index out of range.">index_range_error</a></td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="ab5592a678345e32320cc7753c92db616"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class T &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const T&amp; picodbc::statement::bind_parameter </td>
+          <td class="memname">const void picodbc::statement::bind_parameter </td>
           <td>(</td>
           <td class="paramtype">long&#160;</td>
           <td class="paramname"><em>param</em>, </td>
@@ -413,7 +243,6 @@ template&lt;class T &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The bound value. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
@@ -423,88 +252,18 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a3943a22f566ea32001a4166efcca458b"></a>
+<a class="anchor" id="a843158c462d74406072e984e67f22218"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classpicodbc_1_1result__set.html">result_set</a>* picodbc::statement::bulk_fetch </td>
+          <td class="memname"><a class="el" href="classpicodbc_1_1result.html">result</a> picodbc::statement::execute </td>
           <td>(</td>
           <td class="paramtype">unsigned long&#160;</td>
-          <td class="paramname"><em>rowset_size</em></td><td>)</td>
+          <td class="paramname"><em>rowset_size</em> = <code>1</code></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>The <a class="el" href="classpicodbc_1_1result__set.html" title="Represents a bulk result set from a fetch operation.">result_set</a> object is owned by the statement object, do not delete the returned pointer. The result set's resources are managed automatically. The <a class="el" href="classpicodbc_1_1result__set.html" title="Represents a bulk result set from a fetch operation.">result_set</a> object is only valid for the duration of the lifetime of the statement object that created it. </p>
-<dl class="section warning"><dt>Warning</dt><dd>Using the bulk_fetch operation with the normal statement bind and fetch operations will result in undefined behavior. </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a76f1f52a828cd5d039d56b8179174c7f"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string picodbc::statement::column_name </td>
-          <td>(</td>
-          <td class="paramtype">short&#160;</td>
-          <td class="paramname"><em>column</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Columns are numbered from left to right and 0-indexed. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">Column</td><td>position. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1index__range__error.html" title="Index out of range.">index_range_error</a></td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="ac32f337acf530cf19bf2427ec98bf2dc"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">short picodbc::statement::columns </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
@@ -512,76 +271,17 @@ template&lt;class T &gt; </div>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>A result set object. </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a56099cd8bb97a58f2d6b874f7ed4f512" title="Creates a statement for the given connection.">open()</a>, <a class="el" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare()</a>, <a class="el" href="classpicodbc_1_1statement.html#a843158c462d74406072e984e67f22218" title="Execute the previously prepared query now.">execute()</a>, <a class="el" href="classpicodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a> </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a5844b8f78890305b90c48b8ce91abfce"></a>
+<a class="anchor" id="a6b6e8e2272d99587d67c3cac49cc336a"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool picodbc::statement::end </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a1a5ad09e72aecce9cd47801696f79231"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void picodbc::statement::execute </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="af3c584af500a2de798be595bd055e30a"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void picodbc::statement::execute_direct </td>
+          <td class="memname"><a class="el" href="classpicodbc_1_1result.html">result</a> picodbc::statement::execute_direct </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classpicodbc_1_1connection.html">connection</a> &amp;&#160;</td>
           <td class="paramname"><em>conn</em>, </td>
@@ -590,7 +290,13 @@ template&lt;class T &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>query</em>&#160;</td>
+          <td class="paramname"><em>query</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned long&#160;</td>
+          <td class="paramname"><em>rowset_size</em> = <code>1</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -598,11 +304,6 @@ template&lt;class T &gt; </div>
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -611,219 +312,14 @@ template&lt;class T &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a56099cd8bb97a58f2d6b874f7ed4f512" title="Creates a statement for the given connection.">open()</a>, <a class="el" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare()</a>, <a class="el" href="classpicodbc_1_1statement.html#a1a5ad09e72aecce9cd47801696f79231" title="Execute the previously prepared query now.">execute()</a> </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a08bcdc9e2c1ed03cb0eec3a04b78f0e0"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool picodbc::statement::first </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>true if there are more results or false otherwise. </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a04b534fc268b561bd56d94b9f1a4f295"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class T &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">T picodbc::statement::get </td>
-          <td>(</td>
-          <td class="paramtype">short&#160;</td>
-          <td class="paramname"><em>column</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Columns are numbered from left to right and 0-indexed. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">Column</td><td>position. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a>,<a class="el" href="classpicodbc_1_1index__range__error.html" title="Index out of range.">index_range_error</a>,<a class="el" href="classpicodbc_1_1type__incompatible__error.html" title="Type incompatible.">type_incompatible_error</a></td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a86f3b5cc5f8f11ea0459a1b016580f64"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool picodbc::statement::is_null </td>
-          <td>(</td>
-          <td class="paramtype">short&#160;</td>
-          <td class="paramname"><em>column</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Columns are numbered from left to right and 0-indexed. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">Column</td><td>position. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a>,<a class="el" href="classpicodbc_1_1index__range__error.html" title="Index out of range.">index_range_error</a></td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a86ad861a17b614b08ab3249b1e5adc0c"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool picodbc::statement::last </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>true if there are more results or false otherwise. </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a4c8ba647fafc1fccfea83a95dfc9928c"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool picodbc::statement::move </td>
-          <td>(</td>
-          <td class="paramtype">unsigned long&#160;</td>
-          <td class="paramname"><em>row</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>true if there are results or false otherwise. </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="aea8cbf87004a8b0d99e1b2055fb6c648"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool picodbc::statement::next </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>true if there are more results or false otherwise. </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
-  </table>
-  </dd>
-</dl>
+<dl class="section return"><dt>Returns</dt><dd>A result set object. </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a56099cd8bb97a58f2d6b874f7ed4f512" title="Creates a statement for the given connection.">open()</a>, <a class="el" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare()</a>, <a class="el" href="classpicodbc_1_1statement.html#a843158c462d74406072e984e67f22218" title="Execute the previously prepared query now.">execute()</a>, <a class="el" href="classpicodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a> </dd></dl>
 
 </div>
 </div>
 <a class="anchor" id="a56099cd8bb97a58f2d6b874f7ed4f512"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void picodbc::statement::open </td>
@@ -833,11 +329,6 @@ template&lt;class T &gt; </div>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -857,9 +348,6 @@ template&lt;class T &gt; </div>
 <a class="anchor" id="ad69c1aa3e5f43987f020426fcc9e4b68"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void picodbc::statement::prepare </td>
@@ -879,11 +367,6 @@ template&lt;class T &gt; </div>
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -902,98 +385,9 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a2bb76d68dd767b9e4d2db3b243512d63"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool picodbc::statement::prior </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>true if there are more results or false otherwise. </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a660592da3f2b0ebcd9a84c53b4b6ff9e"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">long picodbc::statement::rows </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a67d45e45e6760364e8808c9a38bc38e1"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool picodbc::statement::skip </td>
-          <td>(</td>
-          <td class="paramtype">unsigned long&#160;</td>
-          <td class="paramname"><em>rows</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>true if there are results or false otherwise. </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="picodbc_8h_source.html">picodbc.h</a></li>
+<li><a class="el" href="picodbc_8cpp.html">picodbc.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
@@ -1004,7 +398,7 @@ template&lt;class T &gt; </div>
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Sun Sep 16 2012 13:52:21 for picodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Mon Sep 17 2012 13:36:30 for picodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>
