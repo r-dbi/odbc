@@ -37,10 +37,8 @@ void show(picodbc::result results)
 
 int main()
 {
-    // const char* connection_string = "A Data Source Connection String";
-    // #define EXAMPLE_TABLE "public.example_table"
-    const char* connection_string = "Driver=vertica;Servername=sandbox03;Port=5433;Database=vertica01;UserName=dbadmin;Password=;";
-    #define EXAMPLE_TABLE "public.amytest"
+    const char* connection_string = "A Data Source Connection String";
+    #define EXAMPLE_TABLE "public.example_table"
 
     try
     {
