@@ -119,6 +119,8 @@ HDBC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a171dfa9ffca19e1131c964641e080e89"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a171dfa9ffca19e1131c964641e080e89"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a171dfa9ffca19e1131c964641e080e89">close</a> ()</td></tr>
 <tr class="memdesc:a171dfa9ffca19e1131c964641e080e89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes the statement and frees all associated resources. <br/></td></tr>
+<tr class="memitem:a98be67ac35ad33cb2fbf98bdeab060ae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a98be67ac35ad33cb2fbf98bdeab060ae">cancel</a> ()</td></tr>
+<tr class="memdesc:a98be67ac35ad33cb2fbf98bdeab060ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels execution of the statement.  <a href="#a98be67ac35ad33cb2fbf98bdeab060ae"></a><br/></td></tr>
 <tr class="memitem:ad69c1aa3e5f43987f020426fcc9e4b68"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68">prepare</a> (<a class="el" href="classpicodbc_1_1connection.html">connection</a> &amp;conn, const std::string &amp;stmt)</td></tr>
 <tr class="memdesc:ad69c1aa3e5f43987f020426fcc9e4b68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens and prepares the given statement to execute on the given connection.  <a href="#ad69c1aa3e5f43987f020426fcc9e4b68"></a><br/></td></tr>
 <tr class="memitem:a6b6e8e2272d99587d67c3cac49cc336a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpicodbc_1_1result.html">result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a6b6e8e2272d99587d67c3cac49cc336a">execute_direct</a> (<a class="el" href="classpicodbc_1_1connection.html">connection</a> &amp;conn, const std::string &amp;query, unsigned long rowset_size=1)</td></tr>
@@ -266,6 +268,27 @@ template&lt;class T &gt; </div>
   </table>
   </dd>
 </dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a98be67ac35ad33cb2fbf98bdeab060ae"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void picodbc::statement::cancel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
@@ -428,7 +451,7 @@ template&lt;class T &gt; </div>
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Tue Sep 18 2012 00:38:23 for picodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Tue Sep 18 2012 10:13:55 for picodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>

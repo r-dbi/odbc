@@ -87,14 +87,13 @@ namespace detail
     class bound_parameter;
     typedef std::tr1::shared_ptr<result_impl> result_impl_ptr;
 
-    // #T field names need trailing _'s
     class bound_column
     {
     public:
         ~bound_column()
         {
-            delete[] cbdata;
-            delete[] pdata;
+            delete[] cbdata_;
+            delete[] pdata_;
         }
 
     private:
@@ -102,16 +101,16 @@ namespace detail
         bound_column& operator=(bound_column rhs); // not defined
 
         bound_column()
-        : name()
-        , sqltype(0)
-        , sqlsize(0)
-        , scale(0)
-        , ctype(0)
-        , clen(0)
-        , blob(false)
-        , rowset_size(0)
-        , cbdata(0)
-        , pdata(NULL)
+        : name_()
+        , sqltype_(0)
+        , sqlsize_(0)
+        , scale_(0)
+        , ctype_(0)
+        , clen_(0)
+        , blob_(false)
+        , rowset_size_(0)
+        , cbdata_(0)
+        , pdata_(0)
         {
 
         }
@@ -121,16 +120,16 @@ namespace detail
         friend class result_impl;
 
     private:
-        std::string name;
-        SQLSMALLINT sqltype;
-        SQLULEN sqlsize;
-        SQLSMALLINT scale;
-        SQLSMALLINT ctype;
-        SQLSMALLINT clen;
-        bool blob;
-        unsigned long rowset_size;
-        long* cbdata;
-        char* pdata;
+        std::string name_;
+        SQLSMALLINT sqltype_;
+        SQLULEN sqlsize_;
+        SQLSMALLINT scale_;
+        SQLSMALLINT ctype_;
+        SQLSMALLINT clen_;
+        bool blob_;
+        unsigned long rowset_size_;
+        long* cbdata_;
+        char* pdata_;
     };
 
     void statement_bind_parameter_value(statement* me, long param, SQLSMALLINT ctype, SQLSMALLINT sqltype, char* value, std::size_t value_size);
@@ -258,7 +257,7 @@ public:
     const char* what() const throw();
 };
 
-//! \brief Accessed NULL data.
+//! \brief Accessed null data.
 //! \see exceptions
 class null_access_error : public std::runtime_error
 {
@@ -388,6 +387,10 @@ public:
 
     //! \brief Returns the native ODBC environment handle.
     HDBC native_evn_handle() const;
+
+    //! \brief Returns the name of the ODBC driver.
+    //! \throws database_error
+    std::string driver_name() const;
 
 private:
     connection(const connection&); // not defined
@@ -521,20 +524,20 @@ public:
     T get(short column, unsigned long row = 0)
     {
         detail::bound_column& col = result_impl_get_bound_column(impl_, column, row);
-        switch(col.ctype)
+        switch(col.ctype_)
         {
-            case SQL_C_SSHORT: return (T)*(short*)(col.pdata + row * col.clen);
-            case SQL_C_USHORT: return (T)*(unsigned short*)(col.pdata + row * col.clen);
-            case SQL_C_SLONG: return (T)*(long*)(col.pdata + row * col.clen);
-            case SQL_C_ULONG: return (T)*(unsigned long*)(col.pdata + row * col.clen);
-            case SQL_C_FLOAT: return (T)*(float*)(col.pdata + row * col.clen);
-            case SQL_C_DOUBLE: return (T)*(double*)(col.pdata + row * col.clen);
-            case SQL_C_CHAR: if (!col.blob) return detail::convert<T>((col.pdata + row * col.clen));
+            case SQL_C_SSHORT: return (T)*(short*)(col.pdata_ + row * col.clen_);
+            case SQL_C_USHORT: return (T)*(unsigned short*)(col.pdata_ + row * col.clen_);
+            case SQL_C_SLONG: return (T)*(long*)(col.pdata_ + row * col.clen_);
+            case SQL_C_ULONG: return (T)*(unsigned long*)(col.pdata_ + row * col.clen_);
+            case SQL_C_FLOAT: return (T)*(float*)(col.pdata_ + row * col.clen_);
+            case SQL_C_DOUBLE: return (T)*(double*)(col.pdata_ + row * col.clen_);
+            case SQL_C_CHAR: if (!col.blob_) return detail::convert<T>((col.pdata_ + row * col.clen_));
         }
         throw type_incompatible_error();
     }
 
-    //! \brief Returns true if and only if the given column in the selected row of the current rowset is NULL.
+    //! \brief Returns true if and only if the given column in the selected row of the current rowset is null.
     //!
     //! Columns are numbered from left to right and 0-indexed.
     //! \param Column position. 
@@ -548,7 +551,6 @@ public:
     //! \param Column position. 
     //! \throws index_range_error
     std::string column_name(short column) const;
-
 
 private:
     result(HDBC stmt, unsigned long rowset_size);
@@ -565,22 +567,22 @@ inline std::string result::get<std::string>(short column, unsigned long row)
 {
     detail::bound_column& col = result_impl_get_bound_column(impl_, column, row);
     char buffer[1024];
-    switch(col.ctype)
+    switch(col.ctype_)
     {
         case SQL_C_CHAR:
         case SQL_C_GUID:
         case SQL_C_BINARY:
-            if(col.blob)
+            if(col.blob_)
                 throw std::runtime_error("blob not implemented yet"); // #T implement load_blob(column);
-            return (col.pdata + row * col.clen);
+            return (col.pdata_ + row * col.clen_);
 
         case SQL_C_LONG:
-            if(std::snprintf(buffer, sizeof(buffer), "%ld", *(long*)(col.pdata + row * col.clen)) != 1)
+            if(std::snprintf(buffer, sizeof(buffer), "%ld", *(long*)(col.pdata_ + row * col.clen_)) != 1)
                 throw type_incompatible_error();
             return buffer;
 
         case SQL_C_DOUBLE:
-            if(std::snprintf(buffer, sizeof(buffer), "%lf", *(double*)(col.pdata + row * col.clen)) != 1)
+            if(std::snprintf(buffer, sizeof(buffer), "%lf", *(double*)(col.pdata_ + row * col.clen_)) != 1)
                 throw type_incompatible_error();
             return buffer;
 
@@ -626,6 +628,10 @@ public:
 
     //! \brief Closes the statement and frees all associated resources.
     void close();
+
+    //! \brief Cancels execution of the statement.
+    //! \throws database_error
+    void cancel();
 
     //! \brief Opens and prepares the given statement to execute on the given connection.
     //! \param conn The connection where the statement will be executed.

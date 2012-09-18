@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['cancel',['cancel',['../classpicodbc_1_1statement.html#a98be67ac35ad33cb2fbf98bdeab060ae',1,'picodbc::statement']]],
   ['close',['close',['../classpicodbc_1_1statement.html#a171dfa9ffca19e1131c964641e080e89',1,'picodbc::statement']]],
   ['column_5fname',['column_name',['../classpicodbc_1_1result.html#a3612cb327a30e9c39b5e88674ccfbca3',1,'picodbc::result']]],
   ['columns',['columns',['../classpicodbc_1_1result.html#a66022f74b4d02c8257b12efd6ad7aa33',1,'picodbc::result']]],

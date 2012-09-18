@@ -131,6 +131,8 @@ HDBC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a313cafa146bb5e4811860d8371dd38fd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a313cafa146bb5e4811860d8371dd38fd"></a>
 HDBC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1connection.html#a313cafa146bb5e4811860d8371dd38fd">native_evn_handle</a> () const </td></tr>
 <tr class="memdesc:a313cafa146bb5e4811860d8371dd38fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the native ODBC environment handle. <br/></td></tr>
+<tr class="memitem:a7a57db107e8edcd3d6a65b682762be0b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1connection.html#a7a57db107e8edcd3d6a65b682762be0b">driver_name</a> () const </td></tr>
+<tr class="memdesc:a7a57db107e8edcd3d6a65b682762be0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name of the ODBC driver.  <a href="#a7a57db107e8edcd3d6a65b682762be0b"></a><br/></td></tr>
 </table>
 <a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><dl class="section note"><dt>Note</dt><dd>connections are non-copyable. </dd></dl>
@@ -323,6 +325,27 @@ HDBC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a class="anchor" id="a7a57db107e8edcd3d6a65b682762be0b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string picodbc::connection::driver_name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="picodbc_8h_source.html">picodbc.h</a></li>
 <li><a class="el" href="picodbc_8cpp.html">picodbc.cpp</a></li>
@@ -336,7 +359,7 @@ HDBC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Tue Sep 18 2012 00:38:23 for picodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Tue Sep 18 2012 10:13:55 for picodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>

@@ -33,7 +33,7 @@ namespace detail
         return rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO;
     }
 
-    // Tests if the given return data indicates NULL data.
+    // Tests if the given return data indicates null data.
     inline bool data_is_null(SQLLEN cbdata)
     {
         return (cbdata == SQL_NULL_DATA);
@@ -125,8 +125,8 @@ const char* database_error::what() const throw()
 }
 
 connection::connection()
-: env_(NULL)
-, conn_(NULL)
+: env_(0)
+, conn_(0)
 , connected_(false)
 , transactions_(0)
 , rollback_(false)
@@ -135,8 +135,8 @@ connection::connection()
 }
 
 connection::connection(const std::string& dsn, const std::string& user, const std::string& pass, int timeout)
-: env_(NULL)
-, conn_(NULL)
+: env_(0)
+, conn_(0)
 , connected_(false)
 , transactions_(0)
 , rollback_(false)
@@ -146,8 +146,8 @@ connection::connection(const std::string& dsn, const std::string& user, const st
 }
 
 connection::connection(const std::string& connection_string, int timeout)
-: env_(NULL)
-, conn_(NULL)
+: env_(0)
+, conn_(0)
 , connected_(false)
 , transactions_(0)
 , rollback_(false)
@@ -174,8 +174,8 @@ void connection::connect(const std::string& dsn, const std::string& user, const 
     PICODBC_CALL(SQLConnect, rc,
         conn_
         , (SQLCHAR*)dsn.c_str(), SQL_NTS
-        , user.empty() ? (SQLCHAR*)user.c_str() : NULL, SQL_NTS
-        , pass.empty() ? (SQLCHAR*)pass.c_str() : NULL, SQL_NTS);
+        , user.empty() ? (SQLCHAR*)user.c_str() : 0, SQL_NTS
+        , pass.empty() ? (SQLCHAR*)pass.c_str() : 0, SQL_NTS);
     connected_ = detail::success(rc);
     if (!connected_)
         PICODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
@@ -229,6 +229,17 @@ HDBC connection::native_dbc_handle() const
 HDBC connection::native_evn_handle() const
 {
     return env_;
+}
+
+std::string connection::driver_name() const
+{
+    char name[1024];
+    SQLSMALLINT length;
+    RETCODE rc;
+    PICODBC_CALL(SQLGetInfo, rc, conn_, SQL_DRIVER_NAME, name, sizeof(name), &length);
+    if (!detail::success(rc))
+        PICODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+    return name;
 }
 
 transaction::transaction(connection& conn)
@@ -507,7 +518,7 @@ public:
             , SQL_ATTR_ROW_NUMBER
             , &pos
             , SQL_IS_UINTEGER
-            , NULL);
+            , 0);
         if (!success(rc))
             PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         return pos;
@@ -525,14 +536,14 @@ public:
         bound_column& col = bound_columns_[column];
         if(row >= rows())
             throw index_range_error();
-        return data_is_null(col.cbdata[row]);
+        return data_is_null(col.cbdata_[row]);
     }
 
     std::string column_name(short column) const
     {
         if(column >= bound_columns_size_)
             throw index_range_error();
-        return bound_columns_[column].name;
+        return bound_columns_[column].name_;
     }
 
 private:
@@ -564,9 +575,9 @@ private:
         for(short i = 0; i < bound_columns_size_; ++i)
         {
             bound_column& col = bound_columns_[i];
-            for(unsigned long j = 0; j < col.rowset_size; ++j)
-                col.cbdata[j] = 0;
-            if(col.blob && col.pdata)
+            for(unsigned long j = 0; j < col.rowset_size_; ++j)
+                col.cbdata_[j] = 0;
+            if(col.blob_ && col.pdata_)
                 release_bound_resources(i);
         }
     }
@@ -578,10 +589,10 @@ private:
             throw index_range_error();
 
         bound_column& col = bound_columns_[column];
-        delete[] col.pdata;
+        delete[] col.pdata_;
 
-        bound_columns_[column].pdata = 0;
-        bound_columns_[column].clen = 0;
+        col.pdata_ = 0;
+        col.clen_ = 0;
     }
 
     bool fetch(unsigned long rows, SQLUSMALLINT orientation)
@@ -634,61 +645,61 @@ private:
                 PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
             bound_column& col = bound_columns_[i];
-            col.name = reinterpret_cast<char*>(column_name);
-            col.sqltype = sqltype;
-            col.sqlsize = sqlsize;
-            col.scale = scale;
+            col.name_ = reinterpret_cast<char*>(column_name);
+            col.sqltype_ = sqltype;
+            col.sqlsize_ = sqlsize;
+            col.scale_ = scale;
 
-            switch(col.sqltype)
+            switch(col.sqltype_)
             {
                 case SQL_BIT:
                 case SQL_TINYINT:
                 case SQL_SMALLINT:
                 case SQL_INTEGER:
-                    col.ctype = SQL_C_LONG;
-                    col.clen = 4;
+                    col.ctype_ = SQL_C_LONG;
+                    col.clen_ = 4;
                     break;
                 case SQL_DOUBLE:
                 case SQL_FLOAT:
                 case SQL_NUMERIC:
                 case SQL_DECIMAL:
                 case SQL_REAL:
-                    col.ctype = SQL_C_DOUBLE;
-                    col.clen = 8;
+                    col.ctype_ = SQL_C_DOUBLE;
+                    col.clen_ = 8;
                     break;
                 case SQL_DATE:
                 case SQL_TYPE_DATE:
-                    col.ctype = SQL_C_DATE;
-                    col.clen = sizeof(date_type);
+                    col.ctype_ = SQL_C_DATE;
+                    col.clen_ = sizeof(date_type);
                     break;
                 case SQL_TIMESTAMP:
                 case SQL_TYPE_TIMESTAMP:
-                    col.ctype = SQL_C_TIMESTAMP;
-                    col.clen = sizeof(timestamp_type);
+                    col.ctype_ = SQL_C_TIMESTAMP;
+                    col.clen_ = sizeof(timestamp_type);
                     break;
                 case SQL_CHAR:
                 case SQL_VARCHAR:
-                    col.ctype = SQL_C_CHAR;
-                    col.clen = col.sqlsize + 1;
+                    col.ctype_ = SQL_C_CHAR;
+                    col.clen_ = col.sqlsize_ + 1;
                     break;
                 case SQL_LONGVARCHAR:
-                    col.ctype = SQL_C_CHAR;
-                    col.blob = true;
-                    col.clen = 0;
+                    col.ctype_ = SQL_C_CHAR;
+                    col.blob_ = true;
+                    col.clen_ = 0;
                     break;
                 case SQL_BINARY:
                 case SQL_VARBINARY:
-                    col.ctype = SQL_C_BINARY;
-                    col.clen = col.sqlsize + 1;
+                    col.ctype_ = SQL_C_BINARY;
+                    col.clen_ = col.sqlsize_ + 1;
                     break;
                 case SQL_LONGVARBINARY:
-                    col.ctype = SQL_C_BINARY;
-                    col.blob = true;
-                    col.clen = 0;
+                    col.ctype_ = SQL_C_BINARY;
+                    col.blob_ = true;
+                    col.clen_ = 0;
                     break;
                 default:
-                    col.ctype = sql_type_info<std::string>::ctype;
-                    col.clen = 128;
+                    col.ctype_ = sql_type_info<std::string>::ctype;
+                    col.clen_ = 128;
                     break;
             }
         }
@@ -696,19 +707,16 @@ private:
         for(SQLSMALLINT i = 0; i < n_columns; ++i)
         {
             bound_column& col = bound_columns_[i];
-            col.cbdata = new long[rowset_size_];
-            if(col.blob)
+            col.cbdata_ = new long[rowset_size_];
+            if(col.blob_)
             {
-                PICODBC_CALL(SQLBindCol, rc, stmt_, i + 1, col.ctype, 0, 0, col.cbdata);
+                PICODBC_CALL(SQLBindCol, rc, stmt_, i + 1, col.ctype_, 0, 0, col.cbdata_);
             }
             else
             {
-                col.rowset_size = rowset_size_;
-                // col.pdata = new char*[col.rowset_size];
-                // for(unsigned long r = 0; r < rowset_size_; ++r)
-                //     col.pdata[r] = new char[col.clen];
-                col.pdata = new char[rowset_size_ * col.clen];
-                PICODBC_CALL(SQLBindCol, rc, stmt_, i + 1, col.ctype, col.pdata, col.clen, col.cbdata);
+                col.rowset_size_ = rowset_size_;
+                col.pdata_ = new char[rowset_size_ * col.clen_];
+                PICODBC_CALL(SQLBindCol, rc, stmt_, i + 1, col.ctype_, col.pdata_, col.clen_, col.cbdata_);
             }
             if(!success(rc))
                 PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
@@ -834,6 +842,8 @@ unsigned long result::position() const
     return impl_->position();
 }
 
+//! \brief Returns true if there are no more results in the current result set.
+//! \throws database_error
 bool result::end() const
 {
     return impl_->end();
@@ -850,7 +860,7 @@ std::string result::column_name(short column) const
 }
 
 statement::statement()
-: stmt_(NULL)
+: stmt_(0)
 , open_(false)
 , bound_parameters_()
 {
@@ -858,7 +868,7 @@ statement::statement()
 }
 
 statement::statement(connection& conn, const std::string& stmt)
-: stmt_(NULL)
+: stmt_(0)
 , open_(false)
 , bound_parameters_()
 {
@@ -900,7 +910,15 @@ void statement::close()
     reset_parameters();
     PICODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
     open_ = false;
-    stmt_ = NULL;
+    stmt_ = 0;
+}
+
+void statement::cancel()
+{
+    RETCODE rc;
+    PICODBC_CALL(SQLCancel, rc, stmt_);
+    if (!detail::success(rc))
+        PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 }
 
 void statement::prepare(connection& conn, const std::string& stmt)
