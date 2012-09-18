@@ -66,7 +66,7 @@ int main()
         results = statement.execute();
         show<string>(results);
 
-        // // Transactions
+        // Transactions
         {
             picodbc::transaction transaction(connection);
             statement.execute_direct(connection, "delete from " EXAMPLE_TABLE " where true;");
