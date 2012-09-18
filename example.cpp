@@ -61,16 +61,16 @@ int main()
         show<string>(results);
 
         // Binding parameters
-        statement.prepare(connection, "select * from " EXAMPLE_TABLE " where cast(a as float) = ?;");
+        statement.prepare(connection, "select cast(a as float) as f from " EXAMPLE_TABLE " where cast(a as float) = ?;");
         statement.bind_parameter(0, 1.0);
 
         results = statement.execute();
-        show<string>(results);
+        show<double>(results);
 
         // Transactions
         {
             picodbc::transaction transaction(connection);
-            statement.execute_direct(connection, "delete from " EXAMPLE_TABLE " where true;");
+            statement.execute_direct(connection, "delete from " EXAMPLE_TABLE ";");
             // transaction will be rolled back if we don't call transaction.commit()
         }
 
