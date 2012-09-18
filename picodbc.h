@@ -93,6 +93,7 @@ namespace detail
     public:
         ~bound_column()
         {
+            delete[] cbdata;
             delete[] pdata;
         }
 
@@ -108,6 +109,7 @@ namespace detail
         , ctype(0)
         , clen(0)
         , blob(false)
+        , rowset_size(0)
         , cbdata(0)
         , pdata(NULL)
         {
@@ -126,13 +128,14 @@ namespace detail
         SQLSMALLINT ctype;
         SQLSMALLINT clen;
         bool blob;
-        long cbdata;
+        unsigned long rowset_size;
+        long* cbdata;
         char* pdata;
     };
 
     void statement_bind_parameter_value(statement* me, long param, SQLSMALLINT ctype, SQLSMALLINT sqltype, char* value, std::size_t value_size);
     void statement_bind_parameter_string(statement* me, long param, const std::string& string);
-    bound_column& result_impl_get_bound_column(result_impl_ptr me, short column);
+    bound_column& result_impl_get_bound_column(result_impl_ptr me, short column, unsigned long row);
 
     // simple enable/disable if utility taken from boost
     template <bool B, class T = void> struct enable_if_c { typedef T type; };
@@ -340,7 +343,8 @@ public:
     //! \brief Create new connection object and immediately connect to the given data source.
     //! \param dsn The name of the data source.
     //! \param user The username for authenticating to the data source.
-    //! \param pass the password for authenticating to the data source.
+    //! \param pass The password for authenticating to the data source.
+    //! \param timeout The number in seconds before connection timeout.
     //! \throws database_error
     //! \see connected(), connect()
     connection(const std::string& dsn, const std::string& user, const std::string& pass, int timeout = 5);
@@ -357,13 +361,15 @@ public:
     //! \brief Create new connection object and immediately connect to the given data source.
     //! \param dsn The name of the data source.
     //! \param user The username for authenticating to the data source.
-    //! \param pass the password for authenticating to the data source.
+    //! \param pass The password for authenticating to the data source.
+    //! \param timeout The number in seconds before connection timeout.
     //! \throws database_error
     //! \see connected()
     void connect(const std::string& dsn, const std::string& user, const std::string& pass, int timeout = 5);
 
     //! \brief Create new connection object and immediately connect using the given connection string.
     //! \param connection_string The connection string for establishing a connection.
+    //! \param timeout The number in seconds before connection timeout.
     //! \throws database_error
     //! \see connected()
     void connect(const std::string& connection_string, int timeout = 5);
@@ -450,13 +456,17 @@ public:
     //! Member swap.
     void swap(result& rhs) throw();
 
-    //! \brief The bulk rowset size for this result object. This is constant for this object's entire lifetime.
-    unsigned long rowset_size() const;
-
     //! \brief Returns the native ODBC statement handle.
     HDBC native_stmt_handle() const;
 
-    //! \brief Returns the number of affected rows or rows in the current result set.
+    //! \brief The rowset size for this result set.
+    unsigned long rowset_size() const;
+
+    //! \brief Returns the number of rows affected by this statement.
+    //! \throws database_error
+    long affected_rows() const;
+
+    //! \brief Returns the number of rows in the current rowset.
     //! \throws database_error
     long rows() const;
 
@@ -494,41 +504,43 @@ public:
     //! \throws database_error
     bool skip(unsigned long rows);
 
-    //! \brief Returns the current position in the current result set, or -1 on error.
+    //! \brief Returns the row position in the current result set.
     unsigned long position() const;
 
     //! \brief Returns true if there are no more results in the current result set.
     //! \throws database_error
     bool end() const;
 
-    //! \brief Gets data from the given column in the selected row of the current result set.
+    //! \brief Gets data from the given column in the selected row of the current rowset.
     //!
     //! Columns are numbered from left to right and 0-indexed.
     //! \param Column position. 
+    //! \param row If there are multiple rows in this rowset, get from the specified row.
     //! \throws database_error, index_range_error, type_incompatible_error
     template<class T>
-    T get(short column)
+    T get(short column, unsigned long row = 0)
     {
-        detail::bound_column& col = result_impl_get_bound_column(impl_, column);
+        detail::bound_column& col = result_impl_get_bound_column(impl_, column, row);
         switch(col.ctype)
         {
-            case SQL_C_SSHORT: return (T)*(short*)col.pdata;
-            case SQL_C_USHORT: return (T)*(unsigned short*)col.pdata;
-            case SQL_C_SLONG: return (T)*(long*)col.pdata;
-            case SQL_C_ULONG: return (T)*(unsigned long *)col.pdata;
-            case SQL_C_FLOAT: return (T)*(float*)col.pdata;
-            case SQL_C_DOUBLE: return (T)*(double*)col.pdata;
-            case SQL_C_CHAR: if (!col.blob) return detail::convert<T>(col.pdata);
+            case SQL_C_SSHORT: return (T)*(short*)(col.pdata + row * col.clen);
+            case SQL_C_USHORT: return (T)*(unsigned short*)(col.pdata + row * col.clen);
+            case SQL_C_SLONG: return (T)*(long*)(col.pdata + row * col.clen);
+            case SQL_C_ULONG: return (T)*(unsigned long*)(col.pdata + row * col.clen);
+            case SQL_C_FLOAT: return (T)*(float*)(col.pdata + row * col.clen);
+            case SQL_C_DOUBLE: return (T)*(double*)(col.pdata + row * col.clen);
+            case SQL_C_CHAR: if (!col.blob) return detail::convert<T>((col.pdata + row * col.clen));
         }
         throw type_incompatible_error();
     }
 
-    //! \brief Returns true if and only if the given column in the selected row of the current results set is NULL.
+    //! \brief Returns true if and only if the given column in the selected row of the current rowset is NULL.
     //!
     //! Columns are numbered from left to right and 0-indexed.
     //! \param Column position. 
+    //! \param row If there are multiple rows in this rowset, get from the specified row.
     //! \throws database_error, index_range_error
-    bool is_null(short column) const;
+    bool is_null(short column, unsigned long row = 0) const;
 
     //! \brief Returns the name of the specified column.
     //!
@@ -537,10 +549,6 @@ public:
     //! \throws index_range_error
     std::string column_name(short column) const;
 
-    // #T re-implement bulk fetching post-refactor
-    // template<class T>
-    // void bind_column(short column, T* output);
-    // bool is_null(short column, unsigned long position) const;
 
 private:
     result(HDBC stmt, unsigned long rowset_size);
@@ -553,9 +561,9 @@ private:
 };
 
 template<>
-inline std::string result::get<std::string>(short column)
+inline std::string result::get<std::string>(short column, unsigned long row)
 {
-    detail::bound_column& col = result_impl_get_bound_column(impl_, column);
+    detail::bound_column& col = result_impl_get_bound_column(impl_, column, row);
     char buffer[1024];
     switch(col.ctype)
     {
@@ -564,15 +572,15 @@ inline std::string result::get<std::string>(short column)
         case SQL_C_BINARY:
             if(col.blob)
                 throw std::runtime_error("blob not implemented yet"); // #T implement load_blob(column);
-            return col.pdata;
+            return (col.pdata + row * col.clen);
 
         case SQL_C_LONG:
-            if(std::snprintf(buffer, sizeof(buffer), "%ld", *(long*)col.pdata) != 1)
+            if(std::snprintf(buffer, sizeof(buffer), "%ld", *(long*)(col.pdata + row * col.clen)) != 1)
                 throw type_incompatible_error();
             return buffer;
 
         case SQL_C_DOUBLE:
-            if(std::snprintf(buffer, sizeof(buffer), "%lf", *(double*)col.pdata) != 1)
+            if(std::snprintf(buffer, sizeof(buffer), "%lf", *(double*)(col.pdata + row * col.clen)) != 1)
                 throw type_incompatible_error();
             return buffer;
 
@@ -629,15 +637,21 @@ public:
     //! \brief Immediately opens, prepares, and executes the given query directly on the given connection.
     //! \param conn The connection where the statement will be executed.
     //! \param stmt The SQL query that will be executed.
+    //! \param rowset_size Numbers of rows to fetch per rowset.
     //! \return A result set object.
     //! \see open(), prepare(), execute(), result
     result execute_direct(connection& conn, const std::string& query, unsigned long rowset_size = 1);
 
     //! \brief Execute the previously prepared query now.
+    //! \param rowset_size Numbers of rows to fetch per rowset.
     //! \throws database_error
     //! \return A result set object.
     //! \see open(), prepare(), execute(), result
     result execute(unsigned long rowset_size = 1);
+
+    //! \brief Returns the number of rows affected by this statement.
+    //! \throws database_error
+    long affected_rows() const;
 
     //! \brief Resets all currently bound parameters.
     void reset_parameters();

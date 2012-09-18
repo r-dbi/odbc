@@ -6,34 +6,38 @@ using namespace std;
 template<class T>
 void show(picodbc::result results)
 {
-    cout << "displaying " << results.rows() << " rows:" << endl;
-
     const short columns = results.columns();
+    long rows_displayed = 0;
+
+    cout << "\nDisplaying " << results.affected_rows() << " rows (" << results.rowset_size() << " at a time):" << endl;
 
     cout << "row\t";
     for(short i = 0; i < columns; ++i)
         cout << results.column_name(i) << "\t";
     cout << endl;
 
-    long row = 0;
     while(results.next())
     {
-        cout << row++ << "\t";
-        for(short i = 0; i < columns; ++i)
+        const unsigned long rows = results.rows();
+        for(unsigned long row = 0; row < rows; ++row)
         {
-            if(results.is_null(i))
-                cout << "(null)";
-            else
-                cout << "(" << results.get<T>(i) << ")";
-            cout << "\t";
+            cout << rows_displayed++ << "\t";
+            for(short col = 0; col < columns; ++col)
+            {
+                if(results.is_null(col, row))
+                    cout << "(null)";
+                else
+                    cout << "(" << results.get<T>(col, row) << ")";
+                cout << "\t";
+            }
+            cout << endl;
         }
-        cout << endl;
     }
 }
 
 int main()
 {
-    const char* connection_string = "a SQLDriverConnect connection string";
+    const char* connection_string = "A Data Source Connection String";
     #define EXAMPLE_TABLE "public.example_table"
 
     try
@@ -51,6 +55,10 @@ int main()
         results = statement.execute_direct(connection, "select * from " EXAMPLE_TABLE ";");
         show<string>(results);
 
+        // Direct execution, bulk fetching 2 rows at a time
+        results = statement.execute_direct(connection, "select * from " EXAMPLE_TABLE ";", 2);
+        show<string>(results);
+
         // Binding parameters
         statement.prepare(connection, "select * from " EXAMPLE_TABLE " where cast(a as float) = ?;");
         statement.bind_parameter(0, 1.0);
@@ -58,7 +66,7 @@ int main()
         results = statement.execute();
         show<string>(results);
 
-        // Transactions
+        // // Transactions
         {
             picodbc::transaction transaction(connection);
             statement.execute_direct(connection, "delete from " EXAMPLE_TABLE " where true;");

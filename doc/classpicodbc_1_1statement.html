@@ -125,6 +125,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:a6b6e8e2272d99587d67c3cac49cc336a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immediately opens, prepares, and executes the given query directly on the given connection.  <a href="#a6b6e8e2272d99587d67c3cac49cc336a"></a><br/></td></tr>
 <tr class="memitem:a843158c462d74406072e984e67f22218"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpicodbc_1_1result.html">result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a843158c462d74406072e984e67f22218">execute</a> (unsigned long rowset_size=1)</td></tr>
 <tr class="memdesc:a843158c462d74406072e984e67f22218"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute the previously prepared query now.  <a href="#a843158c462d74406072e984e67f22218"></a><br/></td></tr>
+<tr class="memitem:a36d1086f2411782e78a3d4641e25713f"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a36d1086f2411782e78a3d4641e25713f">affected_rows</a> () const </td></tr>
+<tr class="memdesc:a36d1086f2411782e78a3d4641e25713f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of rows affected by this statement.  <a href="#a36d1086f2411782e78a3d4641e25713f"></a><br/></td></tr>
 <tr class="memitem:ad0092410e4daad75dfaaf019654ec83b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad0092410e4daad75dfaaf019654ec83b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#ad0092410e4daad75dfaaf019654ec83b">reset_parameters</a> ()</td></tr>
 <tr class="memdesc:ad0092410e4daad75dfaaf019654ec83b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets all currently bound parameters. <br/></td></tr>
@@ -202,6 +204,27 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div>
 </div>
 <h2>Member Function Documentation</h2>
+<a class="anchor" id="a36d1086f2411782e78a3d4641e25713f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long picodbc::statement::affected_rows </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="a4b441894415762f058bc936489bba844"></a>
 <div class="memitem">
 <div class="memproto">
@@ -265,6 +288,12 @@ template&lt;class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rowset_size</td><td>Numbers of rows to fetch per rowset. </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
@@ -309,6 +338,7 @@ template&lt;class T &gt; </div>
   <table class="params">
     <tr><td class="paramname">conn</td><td>The connection where the statement will be executed. </td></tr>
     <tr><td class="paramname">stmt</td><td>The SQL query that will be executed. </td></tr>
+    <tr><td class="paramname">rowset_size</td><td>Numbers of rows to fetch per rowset. </td></tr>
   </table>
   </dd>
 </dl>
@@ -398,7 +428,7 @@ template&lt;class T &gt; </div>
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Mon Sep 17 2012 13:36:30 for picodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Tue Sep 18 2012 00:38:23 for picodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>

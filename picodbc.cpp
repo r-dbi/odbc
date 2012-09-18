@@ -33,6 +33,12 @@ namespace detail
         return rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO;
     }
 
+    // Tests if the given return data indicates NULL data.
+    inline bool data_is_null(SQLLEN cbdata)
+    {
+        return (cbdata == SQL_NULL_DATA);
+    }
+
     // attempts to get the last ODBC error as a string.
     inline std::string last_error(SQLHANDLE handle, SQLSMALLINT handle_type)
     {
@@ -63,14 +69,16 @@ namespace detail
     {
         RETCODE rc;
         PICODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_ENV, SQL_NULL_HANDLE, &env);
-        PICODBC_CALL(SQLSetEnvAttr, rc, env, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)(SQL_OV_ODBC3), 0);
-        PICODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_DBC, env, &conn);   
-    }
+        if(!success(rc))
+            PICODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
 
-    // Tests if the given return data indicates NULL data.
-    inline bool data_is_null(SQLLEN cbdata)
-    {
-        return (cbdata == SQL_NULL_DATA);
+        PICODBC_CALL(SQLSetEnvAttr, rc, env, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, 0);
+        if(!success(rc))
+            PICODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
+
+        PICODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_DBC, env, &conn);   
+        if(!success(rc))
+            PICODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
     }
 
     const char* const sql_type_info<short>::format = "%hd";
@@ -425,56 +433,29 @@ public:
         delete[] bound_columns_;
     }
 
-    // #T re-implement bulk fetching post-refactor
-    // template<class T>
-    // void bind_column(short column, T* output)
-    // {
-    //  indicators_[column] = indicator_type();
-    //  indicators_[column].reserve(rowset_size_);
-    //  indicators_[column].resize(rowset_size_);
-    //
-    //  RETCODE rc = SQLBindCol(stmt_, column + 1, sql_type_info<T>::ctype, output, 0, &indicators_[column].front());
-    //  if(!success(rc))
-    //      PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-    // }
-
-    // #T re-implement bulk fetching post-refactor
-    // bool is_null(short column, unsigned long position) const
-    // {
-    //  if(!indicators_.count(column))
-    //      throw index_range_error();
-    //  return data_is_null(indicators_.find(column)->second[position]);
-    // }
-
-    // #T re-implement bulk fetching post-refactor
-    // bool next()
-    // {
-    //  RETCODE rc = SQLFetchScroll(stmt_, SQL_FETCH_NEXT, 0);
-    //  if (rc == SQL_NO_DATA)
-    //      return false;
-    //  if (!success(rc))
-    //      PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-    //  return true;
-    // }
+    HDBC native_stmt_handle() const
+    {
+        return stmt_;
+    }
 
     unsigned long rowset_size() const
     {
         return rowset_size_;
     }
 
-    HDBC native_stmt_handle() const
-    {
-        return stmt_;
-    }
-
-    long rows() const
+    long affected_rows() const
     {
         SQLLEN rows;
         RETCODE rc;
         PICODBC_CALL(SQLRowCount, rc, stmt_, &rows);
-        if (!success(rc))
+        if (!detail::success(rc))
             PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         return rows;
+    }
+
+    long rows() const
+    {
+        return row_count_;
     }
 
     short columns() const
@@ -537,11 +518,14 @@ public:
         return (position() > static_cast<unsigned long>(rows()));
     }
 
-    bool is_null(short column) const
+    bool is_null(short column, unsigned long row) const
     {
         if(column >= bound_columns_size_)
             throw index_range_error();
-        return data_is_null(bound_columns_[column].cbdata);
+        bound_column& col = bound_columns_[column];
+        if(row >= rows())
+            throw index_range_error();
+        return data_is_null(col.cbdata[row]);
     }
 
     std::string column_name(short column) const
@@ -563,35 +547,48 @@ private:
     , bound_columns_(0)
     , bound_columns_size_(0)
     {
+        RETCODE rc;
+        PICODBC_CALL(SQLSetStmtAttr, rc, stmt, SQL_ATTR_ROW_ARRAY_SIZE, (SQLPOINTER)rowset_size_, 0);
+        if(!success(rc))
+            PICODBC_THROW_DATABASE_ERROR(stmt, SQL_HANDLE_STMT);
+
+        PICODBC_CALL(SQLSetStmtAttr, rc, stmt, SQL_ATTR_ROWS_FETCHED_PTR, &row_count_, 0);
+        if(!success(rc))
+            PICODBC_THROW_DATABASE_ERROR(stmt, SQL_HANDLE_STMT);
+
         auto_bind();
     }
 
     void before_move()
     {
-        for (std::size_t i = 0; i < bound_columns_size_; ++i)
+        for(short i = 0; i < bound_columns_size_; ++i)
         {
-            bound_columns_[i].cbdata = 0;
-            if(bound_columns_[i].blob && bound_columns_[i].pdata)
+            bound_column& col = bound_columns_[i];
+            for(unsigned long j = 0; j < col.rowset_size; ++j)
+                col.cbdata[j] = 0;
+            if(col.blob && col.pdata)
                 release_bound_resources(i);
         }
     }
 
     void release_bound_resources(short column)
     {
+        throw std::runtime_error("SHOULDN'T GET HERE!");
         if(column >= bound_columns_size_)
             throw index_range_error();
-        delete[] bound_columns_[column].pdata;
+
+        bound_column& col = bound_columns_[column];
+        delete[] col.pdata;
+
         bound_columns_[column].pdata = 0;
         bound_columns_[column].clen = 0;
     }
 
     bool fetch(unsigned long rows, SQLUSMALLINT orientation)
     {
-        SQLULEN row_out = 0;
-        SQLUSMALLINT status;
         before_move();
         RETCODE rc;
-        PICODBC_CALL(SQLExtendedFetch, rc, stmt_, orientation, rows, &row_out, &status);
+        PICODBC_CALL(SQLFetchScroll, rc, stmt_, orientation, rows);
         if (rc == SQL_NO_DATA)
             return false;
         if (!success(rc))
@@ -699,14 +696,19 @@ private:
         for(SQLSMALLINT i = 0; i < n_columns; ++i)
         {
             bound_column& col = bound_columns_[i];
+            col.cbdata = new long[rowset_size_];
             if(col.blob)
             {
-                PICODBC_CALL(SQLBindCol, rc, stmt_, i + 1, col.ctype, 0, 0, &col.cbdata);
+                PICODBC_CALL(SQLBindCol, rc, stmt_, i + 1, col.ctype, 0, 0, col.cbdata);
             }
             else
             {
-                col.pdata = new char[col.clen];
-                PICODBC_CALL(SQLBindCol, rc, stmt_, i + 1, col.ctype, col.pdata, col.clen, &col.cbdata);
+                col.rowset_size = rowset_size_;
+                // col.pdata = new char*[col.rowset_size];
+                // for(unsigned long r = 0; r < rowset_size_; ++r)
+                //     col.pdata[r] = new char[col.clen];
+                col.pdata = new char[rowset_size_ * col.clen];
+                PICODBC_CALL(SQLBindCol, rc, stmt_, i + 1, col.ctype, col.pdata, col.clen, col.cbdata);
             }
             if(!success(rc))
                 PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
@@ -715,7 +717,7 @@ private:
 
 private:
     friend class result;
-    friend bound_column& result_impl_get_bound_column(result_impl_ptr me, short column);
+    friend bound_column& result_impl_get_bound_column(result_impl_ptr me, short column, unsigned long row);
 
 private:
     const HDBC stmt_;
@@ -726,11 +728,11 @@ private:
     std::size_t bound_columns_size_;
 };
 
-bound_column& result_impl_get_bound_column(result_impl_ptr me, short column)
+bound_column& result_impl_get_bound_column(result_impl_ptr me, short column, unsigned long row)
 {
     if(column >= me->bound_columns_size_)
         throw index_range_error();
-    if(me->is_null(column))
+    if(me->is_null(column, row))
         throw null_access_error();
     return me->bound_columns_[column];
 }
@@ -772,96 +774,74 @@ void result::swap(result& rhs) throw()
     swap(impl_, rhs.impl_);
 }
 
-//! \brief The bulk rowset size for this result object. This is constant for this object's entire lifetime.
-unsigned long result::rowset_size() const
-{
-    return impl_->rowset_size();
-}
-
-//! \brief Returns the native ODBC statement handle.
 HDBC result::native_stmt_handle() const
 {
     return impl_->native_stmt_handle();
 }
 
-//! \brief Returns the number of affected rows or rows in the current result set.
-//! \throws database_error
+unsigned long result::rowset_size() const
+{
+    return impl_->rowset_size();
+}
+
+long result::affected_rows() const
+{
+    return impl_->affected_rows();
+}
+
 long result::rows() const
 {
     return impl_->rows();
 }
 
-//! \brief Returns the number of columns in the current result set.
-//! \throws database_error
 short result::columns() const
 {
     return impl_->columns();
 }
 
-//! \brief Fetches the first row in the current result set.
-//! \return true if there are more results or false otherwise.
-//! \throws database_error
 bool result::first()
 {
     return impl_->first();
 }
 
-//! \brief Fetches the last row in the current result set.
-//! \return true if there are more results or false otherwise.
-//! \throws database_error
 bool result::last()
 {
     return impl_->last();
 }
 
-//! \brief Fetches the next row in the current result set.
-//! \return true if there are more results or false otherwise.
-//! \throws database_error
 bool result::next()
 {
     return impl_->next();
 }
 
-//! \brief Fetches the prior row in the current result set.
-//! \return true if there are more results or false otherwise.
-//! \throws database_error
 bool result::prior()
 {
     return impl_->prior();
 }
 
-//! \brief Moves to and fetches the specified row in the current result set.
-//! \return true if there are results or false otherwise.
-//! \throws database_error
 bool result::move(unsigned long row)
 {
     return impl_->move(row);
 }
 
-//! \brief Skips a number of rows and then fetches the resulting row in the current result set.
-//! \return true if there are results or false otherwise.
-//! \throws database_error
 bool result::skip(unsigned long rows)
 {
     return impl_->skip(rows);
 }
 
-//! \brief Returns the current position in the current result set, or -1 on error.
 unsigned long result::position() const
 {
     return impl_->position();
 }
 
-//! \brief Returns true if there are no more results in the current result set.
-//! \throws database_error
 bool result::end() const
 {
     return impl_->end();
 }
 
-bool result::is_null(short column) const
+bool result::is_null(short column, unsigned long row) const
 {
-    return impl_->is_null(column);
+    return impl_->is_null(column, row);
 }
 
 std::string result::column_name(short column) const
@@ -949,6 +929,16 @@ result statement::execute(unsigned long rowset_size)
     if (!detail::success(rc))
         PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     return result(stmt_, rowset_size);
+}
+
+long statement::affected_rows() const
+{
+    SQLLEN rows;
+    RETCODE rc;
+    PICODBC_CALL(SQLRowCount, rc, stmt_, &rows);
+    if (!detail::success(rc))
+        PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+    return rows;
 }
 
 void statement::reset_parameters()

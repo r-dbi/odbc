@@ -117,14 +117,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad037852a715f68b7b13acd85f2fdfe5c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad037852a715f68b7b13acd85f2fdfe5c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result.html#ad037852a715f68b7b13acd85f2fdfe5c">swap</a> (<a class="el" href="classpicodbc_1_1result.html">result</a> &amp;rhs)  throw ()</td></tr>
 <tr class="memdesc:ad037852a715f68b7b13acd85f2fdfe5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member swap. <br/></td></tr>
-<tr class="memitem:af615b80be6d9822f409add5846327809"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af615b80be6d9822f409add5846327809"></a>
-unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result.html#af615b80be6d9822f409add5846327809">rowset_size</a> () const </td></tr>
-<tr class="memdesc:af615b80be6d9822f409add5846327809"><td class="mdescLeft">&#160;</td><td class="mdescRight">The bulk rowset size for this result object. This is constant for this object's entire lifetime. <br/></td></tr>
 <tr class="memitem:a256dcf93f49090327260e8a6b6208708"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a256dcf93f49090327260e8a6b6208708"></a>
 HDBC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result.html#a256dcf93f49090327260e8a6b6208708">native_stmt_handle</a> () const </td></tr>
 <tr class="memdesc:a256dcf93f49090327260e8a6b6208708"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the native ODBC statement handle. <br/></td></tr>
+<tr class="memitem:af615b80be6d9822f409add5846327809"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af615b80be6d9822f409add5846327809"></a>
+unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result.html#af615b80be6d9822f409add5846327809">rowset_size</a> () const </td></tr>
+<tr class="memdesc:af615b80be6d9822f409add5846327809"><td class="mdescLeft">&#160;</td><td class="mdescRight">The rowset size for this result set. <br/></td></tr>
+<tr class="memitem:a347a5e64c4b0a94bfbe20aca6fe1f3c4"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result.html#a347a5e64c4b0a94bfbe20aca6fe1f3c4">affected_rows</a> () const </td></tr>
+<tr class="memdesc:a347a5e64c4b0a94bfbe20aca6fe1f3c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of rows affected by this statement.  <a href="#a347a5e64c4b0a94bfbe20aca6fe1f3c4"></a><br/></td></tr>
 <tr class="memitem:a996215ac1678e7890e4fa538d4aab95f"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result.html#a996215ac1678e7890e4fa538d4aab95f">rows</a> () const </td></tr>
-<tr class="memdesc:a996215ac1678e7890e4fa538d4aab95f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of affected rows or rows in the current result set.  <a href="#a996215ac1678e7890e4fa538d4aab95f"></a><br/></td></tr>
+<tr class="memdesc:a996215ac1678e7890e4fa538d4aab95f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of rows in the current rowset.  <a href="#a996215ac1678e7890e4fa538d4aab95f"></a><br/></td></tr>
 <tr class="memitem:a66022f74b4d02c8257b12efd6ad7aa33"><td class="memItemLeft" align="right" valign="top">short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result.html#a66022f74b4d02c8257b12efd6ad7aa33">columns</a> () const </td></tr>
 <tr class="memdesc:a66022f74b4d02c8257b12efd6ad7aa33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of columns in the current result set.  <a href="#a66022f74b4d02c8257b12efd6ad7aa33"></a><br/></td></tr>
 <tr class="memitem:a062132cc4057c13b91ebd47e739215ab"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result.html#a062132cc4057c13b91ebd47e739215ab">first</a> ()</td></tr>
@@ -141,14 +143,14 @@ HDBC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:aa1ed066310da5af2688422ea7d700f69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Skips a number of rows and then fetches the resulting row in the current result set.  <a href="#aa1ed066310da5af2688422ea7d700f69"></a><br/></td></tr>
 <tr class="memitem:affedf5475d452a1849cf4a577d5c6f29"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="affedf5475d452a1849cf4a577d5c6f29"></a>
 unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result.html#affedf5475d452a1849cf4a577d5c6f29">position</a> () const </td></tr>
-<tr class="memdesc:affedf5475d452a1849cf4a577d5c6f29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current position in the current result set, or -1 on error. <br/></td></tr>
+<tr class="memdesc:affedf5475d452a1849cf4a577d5c6f29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the row position in the current result set. <br/></td></tr>
 <tr class="memitem:ac33ed04e940ef9c7b7bd5681a41e05af"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result.html#ac33ed04e940ef9c7b7bd5681a41e05af">end</a> () const </td></tr>
 <tr class="memdesc:ac33ed04e940ef9c7b7bd5681a41e05af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if there are no more results in the current result set.  <a href="#ac33ed04e940ef9c7b7bd5681a41e05af"></a><br/></td></tr>
-<tr class="memitem:a728bd423e8427e418691ec4989b29bf6"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a728bd423e8427e418691ec4989b29bf6"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result.html#a728bd423e8427e418691ec4989b29bf6">get</a> (short column)</td></tr>
-<tr class="memdesc:a728bd423e8427e418691ec4989b29bf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets data from the given column in the selected row of the current result set.  <a href="#a728bd423e8427e418691ec4989b29bf6"></a><br/></td></tr>
-<tr class="memitem:a3c7695fa9220cf6a090ce0927f889e2b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result.html#a3c7695fa9220cf6a090ce0927f889e2b">is_null</a> (short column) const </td></tr>
-<tr class="memdesc:a3c7695fa9220cf6a090ce0927f889e2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if and only if the given column in the selected row of the current results set is NULL.  <a href="#a3c7695fa9220cf6a090ce0927f889e2b"></a><br/></td></tr>
+<tr class="memitem:a1689bd06911edd22277edb2c8ac70602"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a1689bd06911edd22277edb2c8ac70602"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result.html#a1689bd06911edd22277edb2c8ac70602">get</a> (short column, unsigned long row=0)</td></tr>
+<tr class="memdesc:a1689bd06911edd22277edb2c8ac70602"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets data from the given column in the selected row of the current rowset.  <a href="#a1689bd06911edd22277edb2c8ac70602"></a><br/></td></tr>
+<tr class="memitem:ad06df3898738320e1c4a1e17463c5ee3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result.html#ad06df3898738320e1c4a1e17463c5ee3">is_null</a> (short column, unsigned long row=0) const </td></tr>
+<tr class="memdesc:ad06df3898738320e1c4a1e17463c5ee3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if and only if the given column in the selected row of the current rowset is NULL.  <a href="#ad06df3898738320e1c4a1e17463c5ee3"></a><br/></td></tr>
 <tr class="memitem:a3612cb327a30e9c39b5e88674ccfbca3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1result.html#a3612cb327a30e9c39b5e88674ccfbca3">column_name</a> (short column) const </td></tr>
 <tr class="memdesc:a3612cb327a30e9c39b5e88674ccfbca3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name of the specified column.  <a href="#a3612cb327a30e9c39b5e88674ccfbca3"></a><br/></td></tr>
 </table>
@@ -156,6 +158,27 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <div class="textblock"><dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a843158c462d74406072e984e67f22218" title="Execute the previously prepared query now.">statement::execute()</a>, <a class="el" href="classpicodbc_1_1statement.html#a6b6e8e2272d99587d67c3cac49cc336a" title="Immediately opens, prepares, and executes the given query directly on the given connection.">statement::execute_direct()</a> </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>result objects may be copied, however all copies will refer to the same underlying ODBC result set. </dd></dl>
 </div><h2>Member Function Documentation</h2>
+<a class="anchor" id="a347a5e64c4b0a94bfbe20aca6fe1f3c4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long picodbc::result::affected_rows </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a class="anchor" id="a3612cb327a30e9c39b5e88674ccfbca3"></a>
 <div class="memitem">
 <div class="memproto">
@@ -249,7 +272,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 
 </div>
 </div>
-<a class="anchor" id="a728bd423e8427e418691ec4989b29bf6"></a>
+<a class="anchor" id="a1689bd06911edd22277edb2c8ac70602"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -262,8 +285,18 @@ template&lt;class T &gt; </div>
           <td class="memname">T picodbc::result::get </td>
           <td>(</td>
           <td class="paramtype">short&#160;</td>
-          <td class="paramname"><em>column</em></td><td>)</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">unsigned long&#160;</td>
+          <td class="paramname"><em>row</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -276,6 +309,7 @@ template&lt;class T &gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">Column</td><td>position. </td></tr>
+    <tr><td class="paramname">row</td><td>If there are multiple rows in this rowset, get from the specified row. </td></tr>
   </table>
   </dd>
 </dl>
@@ -288,7 +322,7 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a3c7695fa9220cf6a090ce0927f889e2b"></a>
+<a class="anchor" id="ad06df3898738320e1c4a1e17463c5ee3"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -296,8 +330,18 @@ template&lt;class T &gt; </div>
           <td class="memname">bool picodbc::result::is_null </td>
           <td>(</td>
           <td class="paramtype">short&#160;</td>
-          <td class="paramname"><em>column</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned long&#160;</td>
+          <td class="paramname"><em>row</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -305,6 +349,7 @@ template&lt;class T &gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">Column</td><td>position. </td></tr>
+    <tr><td class="paramname">row</td><td>If there are multiple rows in this rowset, get from the specified row. </td></tr>
   </table>
   </dd>
 </dl>
@@ -463,7 +508,7 @@ template&lt;class T &gt; </div>
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Mon Sep 17 2012 13:36:30 for picodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Tue Sep 18 2012 00:38:23 for picodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>
