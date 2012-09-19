@@ -120,10 +120,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"></div>
 <div class="line"><span class="keywordtype">int</span> main()</div>
 <div class="line">{</div>
-<div class="line">    <span class="comment">// const char* connection_string = &quot;A Data Source Connection String&quot;;</span></div>
-<div class="line">    <span class="comment">// #define EXAMPLE_TABLE &quot;public.example_table&quot;</span></div>
-<div class="line">    <span class="keyword">const</span> <span class="keywordtype">char</span>* connection_string = <span class="stringliteral">&quot;Driver=vertica;Servername=sandbox03;Port=5433;Database=vertica01;UserName=dbadmin;Password=;&quot;</span>;</div>
-<div class="line"><span class="preprocessor">    #define EXAMPLE_TABLE &quot;public.amytest&quot;</span></div>
+<div class="line">    <span class="keyword">const</span> <span class="keywordtype">char</span>* connection_string = <span class="stringliteral">&quot;A Data Source Connection String&quot;</span>;</div>
+<div class="line"><span class="preprocessor">    #define EXAMPLE_TABLE &quot;public.example_table&quot;</span></div>
 <div class="line"><span class="preprocessor"></span></div>
 <div class="line">    <span class="keywordflow">try</span></div>
 <div class="line">    {</div>
@@ -137,32 +135,32 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">        <a class="code" href="classpicodbc_1_1statement.html" title="Represents a statement on the database.">picodbc::statement</a> statement;</div>
 <div class="line">        <a class="code" href="classpicodbc_1_1result.html" title="A resource for managing result sets from statement execution.">picodbc::result</a> results;</div>
 <div class="line"></div>
-<div class="line">        <span class="comment">// // Direct execution</span></div>
-<div class="line">        <span class="comment">// results = statement.execute_direct(connection, &quot;select * from &quot; EXAMPLE_TABLE &quot;;&quot;);</span></div>
-<div class="line">        <span class="comment">// show&lt;string&gt;(results);</span></div>
+<div class="line">        <span class="comment">// Direct execution</span></div>
+<div class="line">        results = statement.<a class="code" href="classpicodbc_1_1statement.html#a811b445c18f1435e1e943db9651c45ed" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>);</div>
+<div class="line">        show&lt;string&gt;(results);</div>
 <div class="line"></div>
-<div class="line">        <span class="comment">// // Direct execution, bulk fetching 2 rows at a time</span></div>
-<div class="line">        <span class="comment">// results = statement.execute_direct(connection, &quot;select * from &quot; EXAMPLE_TABLE &quot;;&quot;, 2);</span></div>
-<div class="line">        <span class="comment">// show&lt;string&gt;(results);</span></div>
+<div class="line">        <span class="comment">// Direct execution, bulk fetching 2 rows at a time</span></div>
+<div class="line">        results = statement.<a class="code" href="classpicodbc_1_1statement.html#a811b445c18f1435e1e943db9651c45ed" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>, 2);</div>
+<div class="line">        show&lt;string&gt;(results);</div>
 <div class="line"></div>
-<div class="line">        <span class="comment">// // Binding parameters</span></div>
-<div class="line">        <span class="comment">// statement.prepare(connection, &quot;select cast(a as float) as f from &quot; EXAMPLE_TABLE &quot; where cast(a as float) = ?;&quot;);</span></div>
-<div class="line">        <span class="comment">// statement.bind_parameter(0, 1.0);</span></div>
+<div class="line">        <span class="comment">// Binding parameters</span></div>
+<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;select cast(a as float) as f from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot; where cast(a as float) = ?;&quot;</span>);</div>
+<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#a4b441894415762f058bc936489bba844" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(0, 1.0);</div>
 <div class="line"></div>
-<div class="line">        <span class="comment">// results = statement.execute();</span></div>
-<div class="line">        <span class="comment">// show&lt;double&gt;(results);</span></div>
+<div class="line">        results = statement.<a class="code" href="classpicodbc_1_1statement.html#aa0f3654eaf6f159f98ae39f3ae206ef3" title="Execute the previously prepared query now.">execute</a>();</div>
+<div class="line">        show&lt;double&gt;(results);</div>
 <div class="line"></div>
-<div class="line">        <span class="comment">// // Transactions</span></div>
-<div class="line">        <span class="comment">// {</span></div>
-<div class="line">        <span class="comment">//     picodbc::transaction transaction(connection);</span></div>
-<div class="line">        <span class="comment">//     statement.execute_direct(connection, &quot;delete from &quot; EXAMPLE_TABLE &quot;;&quot;);</span></div>
-<div class="line">        <span class="comment">//     // transaction will be rolled back if we don&#39;t call transaction.commit()</span></div>
-<div class="line">        <span class="comment">// }</span></div>
+<div class="line">        <span class="comment">// Transactions</span></div>
+<div class="line">        {</div>
+<div class="line">            <a class="code" href="classpicodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">picodbc::transaction</a> transaction(connection);</div>
+<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a811b445c18f1435e1e943db9651c45ed" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;delete from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>);</div>
+<div class="line">            <span class="comment">// transaction will be rolled back if we don&#39;t call transaction.commit()</span></div>
+<div class="line">        }</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Batch inserting</span></div>
 <div class="line">        {</div>
-<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a6b6e8e2272d99587d67c3cac49cc336a" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;drop table if exists public.batch_insert_test;&quot;</span>);</div>
-<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a6b6e8e2272d99587d67c3cac49cc336a" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;create table public.batch_insert_test (x int);&quot;</span>);</div>
+<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a811b445c18f1435e1e943db9651c45ed" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;drop table if exists public.batch_insert_test;&quot;</span>);</div>
+<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a811b445c18f1435e1e943db9651c45ed" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;create table public.batch_insert_test (x int);&quot;</span>);</div>
 <div class="line"></div>
 <div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;insert into public.batch_insert_test values (?);&quot;</span>);</div>
 <div class="line"></div>
@@ -171,7 +169,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a4b441894415762f058bc936489bba844" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(0, data, data + data_count);</div>
 <div class="line"></div>
 <div class="line">            <a class="code" href="classpicodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">picodbc::transaction</a> transaction(connection);</div>
-<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a843158c462d74406072e984e67f22218" title="Execute the previously prepared query now.">execute</a>(data_count);</div>
+<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#aa0f3654eaf6f159f98ae39f3ae206ef3" title="Execute the previously prepared query now.">execute</a>(data_count);</div>
 <div class="line">            transaction.commit();</div>
 <div class="line">        }</div>
 <div class="line"></div>
@@ -192,7 +190,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Wed Sep 19 2012 12:50:39 for picodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Wed Sep 19 2012 13:07:15 for picodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>

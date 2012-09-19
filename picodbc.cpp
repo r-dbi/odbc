@@ -992,31 +992,31 @@ void statement::prepare(connection& conn, const std::string& stmt)
         PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 }
 
-result statement::execute_direct(connection& conn, const std::string& query, unsigned long rowset_size)
+result statement::execute_direct(connection& conn, const std::string& query, unsigned long batch_operations)
 {
     open(conn);
     RETCODE rc;
-    PICODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)rowset_size, 0);
+    PICODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)batch_operations, 0);
     if (!detail::success(rc))
         PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
     PICODBC_CALL(SQLExecDirect, rc, stmt_, (SQLCHAR*)query.c_str(), SQL_NTS);
     if (!detail::success(rc))
         PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-    return result(stmt_, rowset_size);
+    return result(stmt_, batch_operations);
 }
 
-result statement::execute(unsigned long rowset_size)
+result statement::execute(unsigned long batch_operations)
 {
     RETCODE rc;
-    PICODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)rowset_size, 0);
+    PICODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)batch_operations, 0);
     if (!detail::success(rc))
         PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
     PICODBC_CALL(SQLExecute, rc, stmt_);
     if (!detail::success(rc))
         PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-    return result(stmt_, rowset_size);
+    return result(stmt_, batch_operations);
 }
 
 long statement::affected_rows() const

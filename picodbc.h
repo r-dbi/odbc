@@ -652,19 +652,19 @@ public:
     //! \brief Immediately opens, prepares, and executes the given query directly on the given connection.
     //! \param conn The connection where the statement will be executed.
     //! \param stmt The SQL query that will be executed.
-    //! \param rowset_size Numbers of rows to fetch per rowset.
+    //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
     //! \return A result set object.
     //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
     //! \see open(), prepare(), execute(), result, transaction
-    result execute_direct(connection& conn, const std::string& query, unsigned long rowset_size = 1);
+    result execute_direct(connection& conn, const std::string& query, unsigned long batch_operations = 1);
 
     //! \brief Execute the previously prepared query now.
-    //! \param rowset_size Numbers of rows to fetch per rowset.
+    //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
     //! \throws database_error
     //! \return A result set object.
     //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
     //! \see open(), prepare(), execute(), result, transaction
-    result execute(unsigned long rowset_size = 1);
+    result execute(unsigned long batch_operations = 1);
 
     //! \brief Returns the number of rows affected by the request or –1 if the number of affected rows is not available.
     //! \throws database_error
