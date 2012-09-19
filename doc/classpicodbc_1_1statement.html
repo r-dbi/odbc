@@ -106,7 +106,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a8ea6d0e50ae1b165aa4d5db71bb7ef3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new un-prepared statement.  <a href="#a8ea6d0e50ae1b165aa4d5db71bb7ef3a"></a><br/></td></tr>
 <tr class="memitem:a0747f4f0414283343e5c98de934ff48d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a0747f4f0414283343e5c98de934ff48d">statement</a> (<a class="el" href="classpicodbc_1_1connection.html">connection</a> &amp;conn, const std::string &amp;stmt)</td></tr>
 <tr class="memdesc:a0747f4f0414283343e5c98de934ff48d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs and prepares a statement using the given connection and query.  <a href="#a0747f4f0414283343e5c98de934ff48d"></a><br/></td></tr>
-<tr class="memitem:af0fa4dbb9e84dbb262600f888ca3469f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#af0fa4dbb9e84dbb262600f888ca3469f">~statement</a> ()</td></tr>
+<tr class="memitem:af0fa4dbb9e84dbb262600f888ca3469f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#af0fa4dbb9e84dbb262600f888ca3469f">~statement</a> ()  throw ()</td></tr>
 <tr class="memdesc:af0fa4dbb9e84dbb262600f888ca3469f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes the statement.  <a href="#af0fa4dbb9e84dbb262600f888ca3469f"></a><br/></td></tr>
 <tr class="memitem:a56099cd8bb97a58f2d6b874f7ed4f512"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a56099cd8bb97a58f2d6b874f7ed4f512">open</a> (<a class="el" href="classpicodbc_1_1connection.html">connection</a> &amp;conn)</td></tr>
 <tr class="memdesc:a56099cd8bb97a58f2d6b874f7ed4f512"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a statement for the given connection.  <a href="#a56099cd8bb97a58f2d6b874f7ed4f512"></a><br/></td></tr>
@@ -128,13 +128,16 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a843158c462d74406072e984e67f22218"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpicodbc_1_1result.html">result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a843158c462d74406072e984e67f22218">execute</a> (unsigned long rowset_size=1)</td></tr>
 <tr class="memdesc:a843158c462d74406072e984e67f22218"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute the previously prepared query now.  <a href="#a843158c462d74406072e984e67f22218"></a><br/></td></tr>
 <tr class="memitem:a36d1086f2411782e78a3d4641e25713f"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a36d1086f2411782e78a3d4641e25713f">affected_rows</a> () const </td></tr>
-<tr class="memdesc:a36d1086f2411782e78a3d4641e25713f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of rows affected by this statement.  <a href="#a36d1086f2411782e78a3d4641e25713f"></a><br/></td></tr>
+<tr class="memdesc:a36d1086f2411782e78a3d4641e25713f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of rows affected by the request or –1 if the number of affected rows is not available.  <a href="#a36d1086f2411782e78a3d4641e25713f"></a><br/></td></tr>
 <tr class="memitem:ad0092410e4daad75dfaaf019654ec83b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad0092410e4daad75dfaaf019654ec83b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#ad0092410e4daad75dfaaf019654ec83b">reset_parameters</a> ()</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#ad0092410e4daad75dfaaf019654ec83b">reset_parameters</a> ()  throw ()</td></tr>
 <tr class="memdesc:ad0092410e4daad75dfaaf019654ec83b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets all currently bound parameters. <br/></td></tr>
 <tr class="memitem:a4b441894415762f058bc936489bba844"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
 <tr class="memitem:a4b441894415762f058bc936489bba844"><td class="memTemplItemLeft" align="right" valign="top">const void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a4b441894415762f058bc936489bba844">bind_parameter</a> (long param, const T &amp;value)</td></tr>
 <tr class="memdesc:a4b441894415762f058bc936489bba844"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given value to the given parameter placeholder number in the prepared statement.  <a href="#a4b441894415762f058bc936489bba844"></a><br/></td></tr>
+<tr class="memitem:a0cbb1166c01e049c5cfa8b1d45eb3fc2"><td class="memTemplParams" colspan="2">template&lt;class InputIterator &gt; </td></tr>
+<tr class="memitem:a0cbb1166c01e049c5cfa8b1d45eb3fc2"><td class="memTemplItemLeft" align="right" valign="top">const void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a0cbb1166c01e049c5cfa8b1d45eb3fc2">bind_parameter</a> (long param, InputIterator first, InputIterator last)</td></tr>
+<tr class="memdesc:a0cbb1166c01e049c5cfa8b1d45eb3fc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds a number of values to the given parameter placeholder number in the prepared statement for batch operation.  <a href="#a0cbb1166c01e049c5cfa8b1d45eb3fc2"></a><br/></td></tr>
 </table>
 <a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><dl class="section note"><dt>Note</dt><dd>statements are non-copyable. </dd></dl>
@@ -197,7 +200,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
           <td class="memname">picodbc::statement::~statement </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td>  throw ()</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -277,6 +280,64 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
+<a class="anchor" id="a0cbb1166c01e049c5cfa8b1d45eb3fc2"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class InputIterator &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const void picodbc::statement::bind_parameter </td>
+          <td>(</td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname"><em>param</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">InputIterator&#160;</td>
+          <td class="paramname"><em>first</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">InputIterator&#160;</td>
+          <td class="paramname"><em>last</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">param</td><td>Placeholder position. </td></tr>
+    <tr><td class="paramname">first</td><td>Iterator to first value to bind. </td></tr>
+    <tr><td class="paramname">first</td><td>Iterator to one past the last value to bind. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section attention"><dt>Attention</dt><dd>You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classpicodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">transaction</a> </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a98be67ac35ad33cb2fbf98bdeab060ae"></a>
 <div class="memitem">
 <div class="memproto">
@@ -324,7 +385,8 @@ template&lt;class T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A result set object. </dd></dl>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a56099cd8bb97a58f2d6b874f7ed4f512" title="Creates a statement for the given connection.">open()</a>, <a class="el" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare()</a>, <a class="el" href="classpicodbc_1_1statement.html#a843158c462d74406072e984e67f22218" title="Execute the previously prepared query now.">execute()</a>, <a class="el" href="classpicodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a> </dd></dl>
+<dl class="section attention"><dt>Attention</dt><dd>You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed. </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a56099cd8bb97a58f2d6b874f7ed4f512" title="Creates a statement for the given connection.">open()</a>, <a class="el" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare()</a>, <a class="el" href="classpicodbc_1_1statement.html#a843158c462d74406072e984e67f22218" title="Execute the previously prepared query now.">execute()</a>, <a class="el" href="classpicodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a>, <a class="el" href="classpicodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">transaction</a> </dd></dl>
 
 </div>
 </div>
@@ -366,7 +428,8 @@ template&lt;class T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A result set object. </dd></dl>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a56099cd8bb97a58f2d6b874f7ed4f512" title="Creates a statement for the given connection.">open()</a>, <a class="el" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare()</a>, <a class="el" href="classpicodbc_1_1statement.html#a843158c462d74406072e984e67f22218" title="Execute the previously prepared query now.">execute()</a>, <a class="el" href="classpicodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a> </dd></dl>
+<dl class="section attention"><dt>Attention</dt><dd>You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed. </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classpicodbc_1_1statement.html#a56099cd8bb97a58f2d6b874f7ed4f512" title="Creates a statement for the given connection.">open()</a>, <a class="el" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare()</a>, <a class="el" href="classpicodbc_1_1statement.html#a843158c462d74406072e984e67f22218" title="Execute the previously prepared query now.">execute()</a>, <a class="el" href="classpicodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a>, <a class="el" href="classpicodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">transaction</a> </dd></dl>
 
 </div>
 </div>
@@ -451,7 +514,7 @@ template&lt;class T &gt; </div>
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Tue Sep 18 2012 10:20:57 for picodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Wed Sep 19 2012 12:50:39 for picodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>

@@ -104,17 +104,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a31a0d738b689ae9df198b0b75e03ca7c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1transaction.html#a31a0d738b689ae9df198b0b75e03ca7c">transaction</a> (<a class="el" href="classpicodbc_1_1connection.html">connection</a> &amp;conn)</td></tr>
 <tr class="memdesc:a31a0d738b689ae9df198b0b75e03ca7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begin a transaction on the given connection object.  <a href="#a31a0d738b689ae9df198b0b75e03ca7c"></a><br/></td></tr>
-<tr class="memitem:a117c80e78024292a955da2569192d518"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1transaction.html#a117c80e78024292a955da2569192d518">~transaction</a> ()</td></tr>
-<tr class="memdesc:a117c80e78024292a955da2569192d518"><td class="mdescLeft">&#160;</td><td class="mdescRight">If this transaction has not been committed, will will rollback any modifying operations.  <a href="#a117c80e78024292a955da2569192d518"></a><br/></td></tr>
-<tr class="memitem:ac858084a511fcb8fa0215777c39cfb8b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac858084a511fcb8fa0215777c39cfb8b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1transaction.html#ac858084a511fcb8fa0215777c39cfb8b">commit</a> ()  throw ()</td></tr>
-<tr class="memdesc:ac858084a511fcb8fa0215777c39cfb8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks this transaction for commit. <br/></td></tr>
+<tr class="memitem:a117c80e78024292a955da2569192d518"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a117c80e78024292a955da2569192d518"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1transaction.html#a117c80e78024292a955da2569192d518">~transaction</a> ()  throw ()</td></tr>
+<tr class="memdesc:a117c80e78024292a955da2569192d518"><td class="mdescLeft">&#160;</td><td class="mdescRight">If this transaction has not been committed, will will rollback any modifying operations. <br/></td></tr>
+<tr class="memitem:ac858084a511fcb8fa0215777c39cfb8b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1transaction.html#ac858084a511fcb8fa0215777c39cfb8b">commit</a> ()</td></tr>
+<tr class="memdesc:ac858084a511fcb8fa0215777c39cfb8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks this transaction for commit.  <a href="#ac858084a511fcb8fa0215777c39cfb8b"></a><br/></td></tr>
 <tr class="memitem:a236a5be15ab2a60662bb68b9709191e1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a236a5be15ab2a60662bb68b9709191e1"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1transaction.html#a236a5be15ab2a60662bb68b9709191e1">rollback</a> ()  throw ()</td></tr>
 <tr class="memdesc:a236a5be15ab2a60662bb68b9709191e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks this transaction for rollback. <br/></td></tr>
 </table>
 <a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>transactions are non-copyable. </p>
+<div class="textblock"><dl class="section attention"><dt>Attention</dt><dd>You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>transactions are non-copyable. </dd></dl>
 </div><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a31a0d738b689ae9df198b0b75e03ca7c"></a>
 <div class="memitem">
@@ -147,12 +148,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a class="anchor" id="a117c80e78024292a955da2569192d518"></a>
+<h2>Member Function Documentation</h2>
+<a class="anchor" id="ac858084a511fcb8fa0215777c39cfb8b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">picodbc::transaction::~transaction </td>
+          <td class="memname">void picodbc::transaction::commit </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -181,7 +183,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Tue Sep 18 2012 10:20:57 for picodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Wed Sep 19 2012 12:50:39 for picodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>

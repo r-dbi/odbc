@@ -74,6 +74,22 @@ int main()
             // transaction will be rolled back if we don't call transaction.commit()
         }
 
+        // Batch inserting
+        {
+            statement.execute_direct(connection, "drop table if exists public.batch_insert_test;");
+            statement.execute_direct(connection, "create table public.batch_insert_test (x int);");
+
+            statement.prepare(connection, "insert into public.batch_insert_test values (?);");
+
+            const size_t data_count = 10000;
+            int data[data_count] = { 0 };
+            statement.bind_parameter(0, data, data + data_count);
+
+            picodbc::transaction transaction(connection);
+            statement.execute(data_count);
+            transaction.commit();
+        }
+
         // The resources used by connection and statement are cleaned up automatically or
         // you can explicitly call statement.close() and/or connection.disconnect().
     }

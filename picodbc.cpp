@@ -72,7 +72,7 @@ namespace detail
         if(!success(rc))
             PICODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
 
-        PICODBC_CALL(SQLSetEnvAttr, rc, env, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, 0);
+        PICODBC_CALL(SQLSetEnvAttr, rc, env, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, SQL_IS_UINTEGER);
         if(!success(rc))
             PICODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
 
@@ -156,7 +156,7 @@ connection::connection(const std::string& connection_string, int timeout)
     connect(connection_string, timeout);
 }
 
-connection::~connection()
+connection::~connection() throw()
 {
     disconnect();
     RETCODE rc;
@@ -167,29 +167,50 @@ connection::~connection()
 void connection::connect(const std::string& dsn, const std::string& user, const std::string& pass, int timeout)
 {
     disconnect();
+
     RETCODE rc;
     PICODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
+    if(!detail::success(rc))
+        PICODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+
     PICODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_DBC, env_, &conn_);
-    PICODBC_CALL(SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, reinterpret_cast<SQLPOINTER*>(timeout), 0);
+    if(!detail::success(rc))
+        PICODBC_THROW_DATABASE_ERROR(env_, SQL_HANDLE_ENV);
+
+    PICODBC_CALL(SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)timeout, 0);
+    if(!detail::success(rc))
+        PICODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+
     PICODBC_CALL(SQLConnect, rc,
         conn_
         , (SQLCHAR*)dsn.c_str(), SQL_NTS
         , user.empty() ? (SQLCHAR*)user.c_str() : 0, SQL_NTS
         , pass.empty() ? (SQLCHAR*)pass.c_str() : 0, SQL_NTS);
-    connected_ = detail::success(rc);
-    if (!connected_)
+    if(!detail::success(rc))
         PICODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+
+    connected_ = detail::success(rc);
 }
 
 void connection::connect(const std::string& connection_string, int timeout)
 {
     disconnect();
+
     RETCODE rc;
     PICODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
+    if(!detail::success(rc))
+        PICODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+
     PICODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_DBC, env_, &conn_);
+    if(!detail::success(rc))
+        PICODBC_THROW_DATABASE_ERROR(env_, SQL_HANDLE_ENV);
+
+    PICODBC_CALL(SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)timeout, 0);
+    if(!detail::success(rc))
+        PICODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+
     SQLCHAR dsn[1024];
     SQLSMALLINT dsn_size = 0;
-    PICODBC_CALL(SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, reinterpret_cast<SQLPOINTER*>(timeout), 0);
     PICODBC_CALL(SQLDriverConnect, rc,
         conn_
         , 0
@@ -197,9 +218,10 @@ void connection::connect(const std::string& connection_string, int timeout)
         , dsn, sizeof(dsn)
         , &dsn_size
         , SQL_DRIVER_NOPROMPT);
-    connected_ = detail::success(rc);
-    if (!connected_)
+    if(!detail::success(rc))
         PICODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+
+    connected_ = detail::success(rc);
 }
 
 bool connection::connected() const
@@ -207,7 +229,7 @@ bool connection::connected() const
     return connected_;
 }
 
-void connection::disconnect()
+void connection::disconnect() throw()
 {
     if(connected())
     {
@@ -252,7 +274,7 @@ transaction::transaction(connection& conn)
         PICODBC_CALL(SQLSetConnectAttr, rc,
             conn_.native_dbc_handle()
             , SQL_ATTR_AUTOCOMMIT
-            , static_cast<SQLPOINTER>(SQL_AUTOCOMMIT_OFF)
+            , (SQLPOINTER)SQL_AUTOCOMMIT_OFF
             , SQL_IS_UINTEGER);
         if (!detail::success(rc))
             PICODBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
@@ -260,7 +282,7 @@ transaction::transaction(connection& conn)
     ++conn_.transactions_;
 }
 
-transaction::~transaction()
+transaction::~transaction() throw()
 {
     if(!committed_)
     {
@@ -272,20 +294,16 @@ transaction::~transaction()
     {
         RETCODE rc;
         PICODBC_CALL(SQLEndTran, rc, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_ROLLBACK);
-        if (!detail::success(rc))
-            throw database_error(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
         conn_.rollback_ = false;
         PICODBC_CALL(SQLSetConnectAttr, rc, 
             conn_.native_dbc_handle()
             , SQL_ATTR_AUTOCOMMIT
-            , reinterpret_cast<SQLPOINTER>(SQL_AUTOCOMMIT_ON)
+            , (SQLPOINTER)SQL_AUTOCOMMIT_ON
             , SQL_IS_UINTEGER);
-        if (!detail::success(rc))
-            PICODBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
     }
 }
 
-void transaction::commit() throw()
+void transaction::commit()
 {
     if(committed_)
         return;
@@ -294,6 +312,8 @@ void transaction::commit() throw()
     {
         RETCODE rc;
         PICODBC_CALL(SQLEndTran, rc, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_COMMIT);
+        if(!detail::success(rc))
+            PICODBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
     }
 }
 
@@ -312,13 +332,18 @@ class bound_parameter
 public:
     ~bound_parameter()
     {
-
+        delete[] value_buffer_;
     }
 
 private:
     bound_parameter(HSTMT stmt, long param)
     : stmt_(stmt)
     , param_(param)
+    , value_buffer_(0)
+    , value_buffer_len_(0)
+    , string_buffer_()
+    , string_buffer_len_(0)
+    , indicators_()
     {
 
     }
@@ -327,6 +352,11 @@ private:
     bound_parameter(const bound_parameter& rhs)
     : stmt_(rhs.stmt_)
     , param_(rhs.param_)
+    , value_buffer_(rhs.value_buffer_)
+    , value_buffer_len_(rhs.value_buffer_len_)
+    , string_buffer_(rhs.string_buffer_)
+    , string_buffer_len_(rhs.string_buffer_len_)
+    , indicators_()
     {
 
     }
@@ -344,14 +374,29 @@ private:
         using std::swap;
         swap(stmt_, rhs.stmt_);
         swap(param_, rhs.param_);
+        swap(value_buffer_, rhs.value_buffer_);
+        swap(value_buffer_len_, rhs.value_buffer_len_);
+        swap(string_buffer_, rhs.string_buffer_);
+        swap(string_buffer_len_, rhs.string_buffer_len_);
+        swap(indicators_, rhs.indicators_);
     }
 
-    void set_value(SQLSMALLINT ctype, SQLSMALLINT sqltype, char* value, std::size_t value_size)
+    void set_value(SQLSMALLINT ctype, SQLSMALLINT sqltype, char* data, std::size_t element_size, std::size_t elements, bool take_ownership)
     {
-        using std::copy;
-        copy(value, value + value_size, value_buffer_);
-
-        SQLLEN str_len_or_ind_ptr = 0;
+        delete[] value_buffer_;
+        if(take_ownership)
+        {
+            value_buffer_ = data;
+        }
+        else
+        {
+            value_buffer_ = new char[element_size * elements];
+            using std::copy;
+            copy(data, data + (element_size * elements), value_buffer_);
+        }
+        value_buffer_len_ = element_size * elements;
+        indicators_.reserve(elements);
+        indicators_.resize(elements, 0);
         RETCODE rc;
         PICODBC_CALL(SQLBindParameter, rc, 
             stmt_
@@ -362,8 +407,10 @@ private:
             , 0
             , 0
             , (SQLPOINTER)value_buffer_
-            , 0
-            , &str_len_or_ind_ptr);
+            , element_size
+            , indicators_.data());
+        if(!success(rc))
+            PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
     void set_string(const std::string& str)
@@ -392,8 +439,10 @@ private:
         , long param
         , SQLSMALLINT ctype
         , SQLSMALLINT sqltype
-        , char* value
-        , std::size_t value_size);
+        , char* data
+        , std::size_t element_size
+        , std::size_t elements
+        , bool take_ownership);
 
     friend void statement_bind_parameter_string(
         statement* me
@@ -403,9 +452,11 @@ private:
 private:
     HSTMT stmt_;
     long param_;
-    char value_buffer_[512];
+    char* value_buffer_;
+    long value_buffer_len_;
     std::string string_buffer_;
     SQLLEN string_buffer_len_;
+    std::vector<SQLLEN> indicators_;
 };
 
 void statement_bind_parameter_value(
@@ -413,12 +464,14 @@ void statement_bind_parameter_value(
     , long param
     , SQLSMALLINT ctype
     , SQLSMALLINT sqltype
-    , char* value
-    , std::size_t value_size)
+    , char* data
+    , std::size_t element_size
+    , std::size_t elements
+    , bool take_ownership)
 {
     if(!me->bound_parameters_.count(param))
         me->bound_parameters_[param] = new class bound_parameter(me->stmt_, param);
-    me->bound_parameters_[param]->set_value(ctype, sqltype, value, value_size);
+    me->bound_parameters_[param]->set_value(ctype, sqltype, data, element_size, elements, take_ownership);
 }
 
 void statement_bind_parameter_string(
@@ -438,7 +491,7 @@ private:
     typedef std::map<short, indicator_type> indicators_type;
 
 public:
-    ~result_impl()
+    ~result_impl() throw()
     {
         before_move();
         delete[] bound_columns_;
@@ -554,7 +607,6 @@ private:
     : stmt_(stmt)
     , rowset_size_(rowset_size)
     , row_count_(0)
-    , indicators_()
     , bound_columns_(0)
     , bound_columns_size_(0)
     {
@@ -570,7 +622,7 @@ private:
         auto_bind();
     }
 
-    void before_move()
+    void before_move() throw()
     {
         for(short i = 0; i < bound_columns_size_; ++i)
         {
@@ -582,15 +634,11 @@ private:
         }
     }
 
-    void release_bound_resources(short column)
+    void release_bound_resources(short column) throw()
     {
-        throw std::runtime_error("SHOULDN'T GET HERE!");
-        if(column >= bound_columns_size_)
-            throw index_range_error();
-
+        assert(column < bound_columns_size_);
         bound_column& col = bound_columns_[column];
         delete[] col.pdata_;
-
         col.pdata_ = 0;
         col.clen_ = 0;
     }
@@ -640,7 +688,6 @@ private:
                 , &sqlsize
                 , &scale
                 , &nullable);
-
             if(!success(rc))
                 PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
@@ -711,15 +758,17 @@ private:
             if(col.blob_)
             {
                 PICODBC_CALL(SQLBindCol, rc, stmt_, i + 1, col.ctype_, 0, 0, col.cbdata_);
+                if(!success(rc))
+                    PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
             }
             else
             {
                 col.rowset_size_ = rowset_size_;
                 col.pdata_ = new char[rowset_size_ * col.clen_];
                 PICODBC_CALL(SQLBindCol, rc, stmt_, i + 1, col.ctype_, col.pdata_, col.clen_, col.cbdata_);
+                if(!success(rc))
+                    PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
             }
-            if(!success(rc))
-                PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         }
     }   
 
@@ -731,7 +780,6 @@ private:
     const HDBC stmt_;
     const unsigned long rowset_size_;
     unsigned long row_count_;
-    indicators_type indicators_;
     bound_column* bound_columns_;
     std::size_t bound_columns_size_;
 };
@@ -753,7 +801,7 @@ result::result()
 
 }
 
-result::~result()
+result::~result() throw()
 {
 
 }
@@ -842,8 +890,6 @@ unsigned long result::position() const
     return impl_->position();
 }
 
-//! \brief Returns true if there are no more results in the current result set.
-//! \throws database_error
 bool result::end() const
 {
     return impl_->end();
@@ -875,9 +921,14 @@ statement::statement(connection& conn, const std::string& stmt)
     prepare(conn, stmt);
 }
 
-statement::~statement()
+statement::~statement() throw()
 {
-    close();
+    if(!open())
+        return;
+    RETCODE rc;
+    PICODBC_CALL(SQLCancel, rc, stmt_);
+    reset_parameters();
+    PICODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
 }
 
 void statement::open(connection& conn)
@@ -906,9 +957,20 @@ void statement::close()
         return;
     RETCODE rc;
     PICODBC_CALL(SQLCancel, rc, stmt_);
-    PICODBC_CALL(SQLCloseCursor, rc, stmt_);
+    if(!detail::success(rc))
+        PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+
+    // #T do we need to do this here?
+    // PICODBC_CALL(SQLCloseCursor, rc, stmt_);
+    // if(!detail::success(rc))
+    //     PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+
     reset_parameters();
+
     PICODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
+    if(!detail::success(rc))
+        PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+
     open_ = false;
     stmt_ = 0;
 }
@@ -934,6 +996,10 @@ result statement::execute_direct(connection& conn, const std::string& query, uns
 {
     open(conn);
     RETCODE rc;
+    PICODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)rowset_size, 0);
+    if (!detail::success(rc))
+        PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+
     PICODBC_CALL(SQLExecDirect, rc, stmt_, (SQLCHAR*)query.c_str(), SQL_NTS);
     if (!detail::success(rc))
         PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
@@ -943,6 +1009,10 @@ result statement::execute_direct(connection& conn, const std::string& query, uns
 result statement::execute(unsigned long rowset_size)
 {
     RETCODE rc;
+    PICODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)rowset_size, 0);
+    if (!detail::success(rc))
+        PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+
     PICODBC_CALL(SQLExecute, rc, stmt_);
     if (!detail::success(rc))
         PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
@@ -959,7 +1029,7 @@ long statement::affected_rows() const
     return rows;
 }
 
-void statement::reset_parameters()
+void statement::reset_parameters() throw()
 {
     RETCODE rc;
     PICODBC_CALL(SQLFreeStmt, rc, stmt_, SQL_RESET_PARAMS);

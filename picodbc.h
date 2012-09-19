@@ -132,7 +132,15 @@ namespace detail
         char* pdata_;
     };
 
-    void statement_bind_parameter_value(statement* me, long param, SQLSMALLINT ctype, SQLSMALLINT sqltype, char* value, std::size_t value_size);
+    void statement_bind_parameter_value(
+        statement* me
+        , long param
+        , SQLSMALLINT ctype
+        , SQLSMALLINT sqltype
+        , char* data
+        , std::size_t element_size
+        , std::size_t elemnts
+        , bool take_ownership);
     void statement_bind_parameter_string(statement* me, long param, const std::string& string);
     bound_column& result_impl_get_bound_column(result_impl_ptr me, short column, unsigned long row);
 
@@ -355,7 +363,7 @@ public:
     connection(const std::string& connection_string, int timeout = 5);
 
     //! \brief Automatically disconnects from the database and frees all associated resources.
-    ~connection();
+    ~connection() throw();
 
     //! \brief Create new connection object and immediately connect to the given data source.
     //! \param dsn The name of the data source.
@@ -377,7 +385,7 @@ public:
     bool connected() const;
 
     //! \brief Disconnects from the database, but maintains environment and handle resources.
-    void disconnect();
+    void disconnect() throw();
 
     //! \brief Returns the number of transactions currently held for this connection.
     std::size_t transactions() const;
@@ -409,7 +417,8 @@ private:
 
 //! \brief A resource for managing transaction commits and rollbacks.
 //!
-//! \not transactions are non-copyable.
+//! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
+//! \note transactions are non-copyable.
 class transaction
 {
 public:
@@ -419,11 +428,11 @@ public:
     explicit transaction(connection& conn);
 
     //! \brief If this transaction has not been committed, will will rollback any modifying operations.
-    //! \throws database_error
-    ~transaction();
+    ~transaction() throw();
 
     //! \brief Marks this transaction for commit.
-    void commit() throw();
+    //! \throws database_error
+    void commit();
 
     //! \brief Marks this transaction for rollback.
     void rollback() throw();
@@ -448,7 +457,7 @@ public:
     result();
 
     //! Free result set.
-    ~result();
+    ~result() throw();
 
     //! Copy constructor.
     result(const result& rhs);
@@ -465,11 +474,11 @@ public:
     //! \brief The rowset size for this result set.
     unsigned long rowset_size() const;
 
-    //! \brief Returns the number of rows affected by this statement.
+    //! \brief Returns the number of rows affected by the request or –1 if the number of affected rows is not available.
     //! \throws database_error
     long affected_rows() const;
 
-    //! \brief Returns the number of rows in the current rowset.
+    //! \brief Returns the number of rows in the current rowset or 0 if the number of rows is not available.
     //! \throws database_error
     long rows() const;
 
@@ -613,7 +622,7 @@ public:
 
     //! \brief Closes the statement.
     //! \see close()
-    ~statement();
+    ~statement() throw();
 
     //! \brief Creates a statement for the given connection.
     //! \param conn The connection where the statement will be executed.
@@ -645,22 +654,24 @@ public:
     //! \param stmt The SQL query that will be executed.
     //! \param rowset_size Numbers of rows to fetch per rowset.
     //! \return A result set object.
-    //! \see open(), prepare(), execute(), result
+    //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
+    //! \see open(), prepare(), execute(), result, transaction
     result execute_direct(connection& conn, const std::string& query, unsigned long rowset_size = 1);
 
     //! \brief Execute the previously prepared query now.
     //! \param rowset_size Numbers of rows to fetch per rowset.
     //! \throws database_error
     //! \return A result set object.
-    //! \see open(), prepare(), execute(), result
+    //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
+    //! \see open(), prepare(), execute(), result, transaction
     result execute(unsigned long rowset_size = 1);
 
-    //! \brief Returns the number of rows affected by this statement.
+    //! \brief Returns the number of rows affected by the request or –1 if the number of affected rows is not available.
     //! \throws database_error
     long affected_rows() const;
 
     //! \brief Resets all currently bound parameters.
-    void reset_parameters();
+    void reset_parameters() throw();
 
     //! \brief Binds the given value to the given parameter placeholder number in the prepared statement.
     //!
@@ -672,7 +683,44 @@ public:
     template<class T>
     const void bind_parameter(long param, const T& value)
     {
-        detail::statement_bind_parameter_value(this, param, detail::sql_type_info<T>::ctype, detail::sql_type_info<T>::sqltype, (char*)&value, sizeof(value));
+        detail::statement_bind_parameter_value(
+            this
+            , param
+            , detail::sql_type_info<T>::ctype
+            , detail::sql_type_info<T>::sqltype
+            , (char*)&value
+            , sizeof(value)
+            , 1
+            , false);
+    }
+
+    //! \brief Binds a number of values to the given parameter placeholder number in the prepared statement for batch operation.
+    //! 
+    //! \param param Placeholder position.
+    //! \param first Iterator to first value to bind.
+    //! \param first Iterator to one past the last value to bind.
+    //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
+    //! \throws database_error
+    //! \see transaction
+    template<class InputIterator>
+    const void bind_parameter(long param, InputIterator first, InputIterator last)
+    {
+        using std::iterator_traits;
+        using std::distance;
+        using std::copy;
+        typedef typename iterator_traits<InputIterator>::value_type value_type;
+        typename iterator_traits<InputIterator>::difference_type elements = distance(first, last);
+        value_type* data = new value_type[elements];
+        copy(first, last, data);
+        detail::statement_bind_parameter_value(
+            this
+            , param
+            , detail::sql_type_info<value_type>::ctype
+            , detail::sql_type_info<value_type>::sqltype
+            , (char*)data
+            , sizeof(value_type)
+            , elements
+            , true);
     }
 
     #ifndef DOXYGEN
@@ -695,8 +743,10 @@ private:
         , long param
         , SQLSMALLINT ctype
         , SQLSMALLINT sqltype
-        , char* value
-        , std::size_t value_size);
+        , char* data
+        , std::size_t element_size
+        , std::size_t elements
+        , bool take_ownership);
 
     friend void detail::statement_bind_parameter_string(
         statement* me
