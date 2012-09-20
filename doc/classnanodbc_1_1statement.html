@@ -96,7 +96,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 
 <p>Represents a statement on the database.  
- <a href="classnanodbc_1_1statement.html#details">More...</a></p>
+</p>
 
 <p><code>#include &lt;<a class="el" href="nanodbc_8h_source.html">nanodbc.h</a>&gt;</code></p>
 <table class="memberdecls">
@@ -106,6 +106,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ac9ea91624b4b6136f98b002f75376cd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new un-prepared statement.  <a href="#ac9ea91624b4b6136f98b002f75376cd9"></a><br/></td></tr>
 <tr class="memitem:a2c4a3e27254f7c7a0658fcb856bad3b0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a2c4a3e27254f7c7a0658fcb856bad3b0">statement</a> (<a class="el" href="classnanodbc_1_1connection.html">connection</a> &amp;conn, const std::string &amp;stmt)</td></tr>
 <tr class="memdesc:a2c4a3e27254f7c7a0658fcb856bad3b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs and prepares a statement using the given connection and query.  <a href="#a2c4a3e27254f7c7a0658fcb856bad3b0"></a><br/></td></tr>
+<tr class="memitem:a78cdb0dbf1437cd98eff448e8c6a8757"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a78cdb0dbf1437cd98eff448e8c6a8757"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a78cdb0dbf1437cd98eff448e8c6a8757">statement</a> (const <a class="el" href="classnanodbc_1_1statement.html">statement</a> &amp;rhs)</td></tr>
+<tr class="memdesc:a78cdb0dbf1437cd98eff448e8c6a8757"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor. <br/></td></tr>
+<tr class="memitem:aaaa08f3783cb111c4426d42ae8d1ecd3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaaa08f3783cb111c4426d42ae8d1ecd3"></a>
+<a class="el" href="classnanodbc_1_1statement.html">statement</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#aaaa08f3783cb111c4426d42ae8d1ecd3">operator=</a> (<a class="el" href="classnanodbc_1_1statement.html">statement</a> rhs)</td></tr>
+<tr class="memdesc:aaaa08f3783cb111c4426d42ae8d1ecd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assignment. <br/></td></tr>
+<tr class="memitem:a162acf127c4cc540315cfd47823c1d48"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a162acf127c4cc540315cfd47823c1d48"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a162acf127c4cc540315cfd47823c1d48">swap</a> (<a class="el" href="classnanodbc_1_1statement.html">statement</a> &amp;rhs)  throw ()</td></tr>
+<tr class="memdesc:a162acf127c4cc540315cfd47823c1d48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member swap. <br/></td></tr>
 <tr class="memitem:aea8078384372f2c34175722d246b54c1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#aea8078384372f2c34175722d246b54c1">~statement</a> ()  throw ()</td></tr>
 <tr class="memdesc:aea8078384372f2c34175722d246b54c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes the statement.  <a href="#aea8078384372f2c34175722d246b54c1"></a><br/></td></tr>
 <tr class="memitem:a4c3a75e7dd841dafcb7fe46fa5871b0f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a4c3a75e7dd841dafcb7fe46fa5871b0f">open</a> (<a class="el" href="classnanodbc_1_1connection.html">connection</a> &amp;conn)</td></tr>
@@ -139,9 +148,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a0fc28a8371eb98813f7692c9212730e4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a0fc28a8371eb98813f7692c9212730e4">bind_parameter</a> (long param, InputIterator first, InputIterator last)</td></tr>
 <tr class="memdesc:a0fc28a8371eb98813f7692c9212730e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds a number of values to the given parameter placeholder number in the prepared statement for batch operation.  <a href="#a0fc28a8371eb98813f7692c9212730e4"></a><br/></td></tr>
 </table>
-<a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><dl class="section note"><dt>Note</dt><dd>statements are non-copyable. </dd></dl>
-</div><h2>Constructor &amp; Destructor Documentation</h2>
+<h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="ac9ea91624b4b6136f98b002f75376cd9"></a>
 <div class="memitem">
 <div class="memproto">
@@ -514,7 +521,7 @@ template&lt;class InputIterator &gt; </div>
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Wed Sep 19 2012 23:48:29 for nanodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Thu Sep 20 2012 12:00:54 for nanodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>

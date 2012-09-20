@@ -356,7 +356,6 @@ private:
 
     }
 
-    // #T need to refactor as shared pimpl
     bound_parameter(const bound_parameter& rhs)
     : stmt_(rhs.stmt_)
     , param_(rhs.param_)
@@ -368,14 +367,12 @@ private:
 
     }
 
-    // #T need to refactor as shared pimpl
     bound_parameter& operator=(bound_parameter rhs)
     {
         swap(rhs);
         return *this;
     }
 
-    // #T need to refactor as shared pimpl
     void swap(bound_parameter& rhs)
     {
         using std::swap;
@@ -462,6 +459,166 @@ private:
     SQLLEN string_buffer_len_;
 };
 
+class statement_impl
+{
+private:
+    typedef std::map<long, detail::bound_parameter*> bound_parameters_type;
+
+public:
+    statement_impl()
+    : stmt_(0)
+    , open_(false)
+    , bound_parameters_()
+    {
+
+    }
+
+    statement_impl(connection& conn, const std::string& stmt)
+    : stmt_(0)
+    , open_(false)
+    , bound_parameters_()
+    {
+        prepare(conn, stmt);
+    }
+
+    ~statement_impl() throw()
+    {
+        if(!open())
+            return;
+        RETCODE rc;
+        NANODBC_CALL(SQLCancel, rc, stmt_);
+        reset_parameters();
+        NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
+    }
+
+    void open(connection& conn)
+    {
+        close();
+        RETCODE rc;
+        NANODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_STMT, conn.native_dbc_handle(), &stmt_);
+        open_ = detail::success(rc);
+        if (!open_)
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+    }
+
+    bool open() const
+    {
+        return open_;
+    }
+
+    HDBC native_stmt_handle() const
+    {
+        return stmt_;
+    }
+
+    void close()
+    {
+        if(!open())
+            return;
+        RETCODE rc;
+        NANODBC_CALL(SQLCancel, rc, stmt_);
+        if(!detail::success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+
+        reset_parameters();
+
+        NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
+        if(!detail::success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+
+        open_ = false;
+        stmt_ = 0;
+    }
+
+    void cancel()
+    {
+        RETCODE rc;
+        NANODBC_CALL(SQLCancel, rc, stmt_);
+        if (!detail::success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+    }
+
+    void prepare(connection& conn, const std::string& stmt)
+    {
+        open(conn);
+        RETCODE rc;
+        NANODBC_CALL(SQLPrepare, rc, stmt_, (SQLCHAR*)stmt.c_str(), SQL_NTS);
+        if (!detail::success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+    }
+
+    result execute_direct(connection& conn, const std::string& query, unsigned long batch_operations, statement& statement)
+    {
+        open(conn);
+        RETCODE rc;
+        NANODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)batch_operations, 0);
+        if (!detail::success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+
+        NANODBC_CALL(SQLExecDirect, rc, stmt_, (SQLCHAR*)query.c_str(), SQL_NTS);
+        if (!detail::success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        return result(statement, batch_operations);
+    }
+
+    result execute(unsigned long batch_operations, statement& statement)
+    {
+        RETCODE rc;
+        NANODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)batch_operations, 0);
+        if (!detail::success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+
+        NANODBC_CALL(SQLExecute, rc, stmt_);
+        if (!detail::success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        return result(statement, batch_operations);
+    }
+
+    long affected_rows() const
+    {
+        SQLLEN rows;
+        RETCODE rc;
+        NANODBC_CALL(SQLRowCount, rc, stmt_, &rows);
+        if (!detail::success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        return rows;
+    }
+
+    void reset_parameters() throw()
+    {
+        RETCODE rc;
+        NANODBC_CALL(SQLFreeStmt, rc, stmt_, SQL_RESET_PARAMS);
+        for(bound_parameters_type::iterator i = bound_parameters_.begin(), end = bound_parameters_.end(); i != end; ++i)
+            delete i->second;
+        bound_parameters_.clear();
+    }
+
+private:
+    statement_impl(const statement_impl&); // not defined
+    statement_impl& operator=(const statement_impl&); // not defined
+
+private:
+    friend void statement_bind_parameter_value(
+        statement* me
+        , long param
+        , SQLSMALLINT ctype
+        , SQLSMALLINT sqltype
+        , char* data
+        , std::size_t element_size
+        , std::size_t elements
+        , bool take_ownership);
+
+    friend void statement_bind_parameter_string(
+        statement* me
+        , long param
+        , const std::string& string);
+
+private:
+    HSTMT stmt_;
+    bool open_;
+    bound_parameters_type bound_parameters_;
+};
+
 void statement_bind_parameter_value(
     statement* me
     , long param
@@ -472,9 +629,9 @@ void statement_bind_parameter_value(
     , std::size_t elements
     , bool take_ownership)
 {
-    if(!me->bound_parameters_.count(param))
-        me->bound_parameters_[param] = new bound_parameter(me->stmt_, param);
-    me->bound_parameters_[param]->set_value(ctype, sqltype, data, element_size, elements, take_ownership);
+    if(!me->impl_->bound_parameters_.count(param))
+        me->impl_->bound_parameters_[param] = new bound_parameter(me->native_stmt_handle(), param);
+    me->impl_->bound_parameters_[param]->set_value(ctype, sqltype, data, element_size, elements, take_ownership);
 }
 
 void statement_bind_parameter_string(
@@ -482,9 +639,9 @@ void statement_bind_parameter_string(
     , long param
     , const std::string& string)
 {
-    if(!me->bound_parameters_.count(param))
-        me->bound_parameters_[param] = new bound_parameter(me->stmt_, param);
-    me->bound_parameters_[param]->set_string(string);
+    if(!me->impl_->bound_parameters_.count(param))
+        me->impl_->bound_parameters_[param] = new bound_parameter(me->native_stmt_handle(), param);
+    me->impl_->bound_parameters_[param]->set_string(string);
 }
 
 class result_impl
@@ -498,7 +655,7 @@ public:
 
     HDBC native_stmt_handle() const
     {
-        return stmt_;
+        return stmt_.native_stmt_handle();
     }
 
     unsigned long rowset_size() const
@@ -510,9 +667,9 @@ public:
     {
         SQLLEN rows;
         RETCODE rc;
-        NANODBC_CALL(SQLRowCount, rc, stmt_, &rows);
+        NANODBC_CALL(SQLRowCount, rc, stmt_.native_stmt_handle(), &rows);
         if (!detail::success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
         return rows;
     }
 
@@ -525,9 +682,9 @@ public:
     {
         SQLSMALLINT cols;
         RETCODE rc;
-        NANODBC_CALL(SQLNumResultCols, rc, stmt_, &cols);
+        NANODBC_CALL(SQLNumResultCols, rc, stmt_.native_stmt_handle(), &cols);
         if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
         return cols;
     }
 
@@ -566,13 +723,13 @@ public:
         SQLULEN pos;
         RETCODE rc;
         NANODBC_CALL(SQLGetStmtAttr, rc,
-            stmt_
+            stmt_.native_stmt_handle()
             , SQL_ATTR_ROW_NUMBER
             , &pos
             , SQL_IS_UINTEGER
             , 0);
         if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
         return pos;
     }
 
@@ -602,7 +759,7 @@ private:
     result_impl(const result_impl&); // not defined
     result_impl& operator=(const result_impl&); // not defined
 
-    result_impl(HDBC stmt, unsigned long rowset_size)
+    result_impl(statement stmt, unsigned long rowset_size)
     : stmt_(stmt)
     , rowset_size_(rowset_size)
     , row_count_(0)
@@ -610,13 +767,13 @@ private:
     , bound_columns_size_(0)
     {
         RETCODE rc;
-        NANODBC_CALL(SQLSetStmtAttr, rc, stmt, SQL_ATTR_ROW_ARRAY_SIZE, (SQLPOINTER)rowset_size_, 0);
+        NANODBC_CALL(SQLSetStmtAttr, rc, stmt_.native_stmt_handle(), SQL_ATTR_ROW_ARRAY_SIZE, (SQLPOINTER)rowset_size_, 0);
         if(!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
 
-        NANODBC_CALL(SQLSetStmtAttr, rc, stmt, SQL_ATTR_ROWS_FETCHED_PTR, &row_count_, 0);
+        NANODBC_CALL(SQLSetStmtAttr, rc, stmt_.native_stmt_handle(), SQL_ATTR_ROWS_FETCHED_PTR, &row_count_, 0);
         if(!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
 
         auto_bind();
     }
@@ -646,11 +803,11 @@ private:
     {
         before_move();
         RETCODE rc;
-        NANODBC_CALL(SQLFetchScroll, rc, stmt_, orientation, rows);
+        NANODBC_CALL(SQLFetchScroll, rc, stmt_.native_stmt_handle(), orientation, rows);
         if (rc == SQL_NO_DATA)
             return false;
         if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
         return true;
     }
 
@@ -658,10 +815,10 @@ private:
     {
         SQLSMALLINT n_columns = 0;
         RETCODE rc;
-        NANODBC_CALL(SQLNumResultCols, rc, stmt_, &n_columns);
+        NANODBC_CALL(SQLNumResultCols, rc, stmt_.native_stmt_handle(), &n_columns);
 
         if(!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
         if(n_columns < 1)
             return;
 
@@ -678,7 +835,7 @@ private:
         {
             RETCODE rc;
             NANODBC_CALL(SQLDescribeCol, rc,
-                stmt_
+                stmt_.native_stmt_handle()
                 , i + 1
                 , column_name
                 , sizeof(column_name)
@@ -688,7 +845,7 @@ private:
                 , &scale
                 , &nullable);
             if(!success(rc))
-                NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+                NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
 
             bound_column& col = bound_columns_[i];
             col.name_ = reinterpret_cast<char*>(column_name);
@@ -756,17 +913,17 @@ private:
             col.cbdata_ = new long[rowset_size_];
             if(col.blob_)
             {
-                NANODBC_CALL(SQLBindCol, rc, stmt_, i + 1, col.ctype_, 0, 0, col.cbdata_);
+                NANODBC_CALL(SQLBindCol, rc, stmt_.native_stmt_handle(), i + 1, col.ctype_, 0, 0, col.cbdata_);
                 if(!success(rc))
-                    NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+                    NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
             }
             else
             {
                 col.rowset_size_ = rowset_size_;
                 col.pdata_ = new char[rowset_size_ * col.clen_];
-                NANODBC_CALL(SQLBindCol, rc, stmt_, i + 1, col.ctype_, col.pdata_, col.clen_, col.cbdata_);
+                NANODBC_CALL(SQLBindCol, rc, stmt_.native_stmt_handle(), i + 1, col.ctype_, col.pdata_, col.clen_, col.cbdata_);
                 if(!success(rc))
-                    NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+                    NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
             }
         }
     }   
@@ -776,7 +933,7 @@ private:
     friend bound_column& result_impl_get_bound_column(result_impl_ptr me, short column, unsigned long row);
 
 private:
-    const HDBC stmt_;
+    statement stmt_;
     const unsigned long rowset_size_;
     unsigned long row_count_;
     bound_column* bound_columns_;
@@ -805,7 +962,7 @@ result::~result() throw()
 
 }
 
-result::result(HDBC stmt, unsigned long rowset_size)
+result::result(statement stmt, unsigned long rowset_size)
 : impl_(new detail::result_impl_ptr::element_type(stmt, rowset_size))
 {
 
@@ -905,136 +1062,88 @@ std::string result::column_name(short column) const
 }
 
 statement::statement()
-: stmt_(0)
-, open_(false)
-, bound_parameters_()
+: impl_(new detail::statement_impl_ptr::element_type())
 {
 
 }
 
 statement::statement(connection& conn, const std::string& stmt)
-: stmt_(0)
-, open_(false)
-, bound_parameters_()
+: impl_(new detail::statement_impl_ptr::element_type(conn, stmt))
 {
-    prepare(conn, stmt);
+
+}
+
+statement::statement(const statement& rhs)
+: impl_(rhs.impl_)
+{
+
+}
+
+statement& statement::operator=(statement rhs)
+{
+    swap(rhs);
+    return *this;
+}
+
+void statement::swap(statement& rhs) throw()
+{
+    using std::swap;
+    swap(impl_, rhs.impl_);
 }
 
 statement::~statement() throw()
 {
-    if(!open())
-        return;
-    RETCODE rc;
-    NANODBC_CALL(SQLCancel, rc, stmt_);
-    reset_parameters();
-    NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
+
 }
 
 void statement::open(connection& conn)
 {
-    close();
-    RETCODE rc;
-    NANODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_STMT, conn.native_dbc_handle(), &stmt_);
-    open_ = detail::success(rc);
-    if (!open_)
-        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+    impl_->open(conn);
 }
 
 bool statement::open() const
 {
-    return open_;
+    return impl_->open();
 }
 
 HDBC statement::native_stmt_handle() const
 {
-    return stmt_;
+    return impl_->native_stmt_handle();
 }
 
 void statement::close()
 {
-    if(!open())
-        return;
-    RETCODE rc;
-    NANODBC_CALL(SQLCancel, rc, stmt_);
-    if(!detail::success(rc))
-        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-
-    // #T do we need to do this here?
-    // NANODBC_CALL(SQLCloseCursor, rc, stmt_);
-    // if(!detail::success(rc))
-    //     NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-
-    reset_parameters();
-
-    NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
-    if(!detail::success(rc))
-        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-
-    open_ = false;
-    stmt_ = 0;
+    impl_->close();
 }
 
 void statement::cancel()
 {
-    RETCODE rc;
-    NANODBC_CALL(SQLCancel, rc, stmt_);
-    if (!detail::success(rc))
-        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+    impl_->cancel();
 }
 
 void statement::prepare(connection& conn, const std::string& stmt)
 {
-    open(conn);
-    RETCODE rc;
-    NANODBC_CALL(SQLPrepare, rc, stmt_, (SQLCHAR*)stmt.c_str(), SQL_NTS);
-    if (!detail::success(rc))
-        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+    impl_->prepare(conn, stmt);
 }
 
 result statement::execute_direct(connection& conn, const std::string& query, unsigned long batch_operations)
 {
-    open(conn);
-    RETCODE rc;
-    NANODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)batch_operations, 0);
-    if (!detail::success(rc))
-        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-
-    NANODBC_CALL(SQLExecDirect, rc, stmt_, (SQLCHAR*)query.c_str(), SQL_NTS);
-    if (!detail::success(rc))
-        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-    return result(stmt_, batch_operations);
+    return impl_->execute_direct(conn, query, batch_operations, *this);
 }
 
 result statement::execute(unsigned long batch_operations)
 {
-    RETCODE rc;
-    NANODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)batch_operations, 0);
-    if (!detail::success(rc))
-        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-
-    NANODBC_CALL(SQLExecute, rc, stmt_);
-    if (!detail::success(rc))
-        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-    return result(stmt_, batch_operations);
+    return impl_->execute(batch_operations, *this);
 }
 
 long statement::affected_rows() const
 {
-    SQLLEN rows;
-    RETCODE rc;
-    NANODBC_CALL(SQLRowCount, rc, stmt_, &rows);
-    if (!detail::success(rc))
-        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-    return rows;
+    return impl_->affected_rows();
 }
 
 void statement::reset_parameters() throw()
 {
-    RETCODE rc;
-    NANODBC_CALL(SQLFreeStmt, rc, stmt_, SQL_RESET_PARAMS);
-    for(bound_parameters_type::iterator i = bound_parameters_.begin(), end = bound_parameters_.end(); i != end; ++i)
-        delete i->second;
-    bound_parameters_.clear();
+    impl_->reset_parameters();
 }
 
 } // namespace nanodbc

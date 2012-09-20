@@ -36,6 +36,14 @@ void show(nanodbc::result results)
     }
 }
 
+nanodbc::result direct_execution(nanodbc::connection& connection, const string& query)
+{
+    nanodbc::statement statement;
+    return statement.execute_direct(connection, query);
+    // notice that statement will be destructed here, but the result object
+    // will keep the statement resources alive until we are done with them
+}
+
 int main()
 {
     const char* connection_string = "A Data Source Connection String";
@@ -50,12 +58,13 @@ int main()
         // or nanodbc::connection connection("data source name", "username", "password", timeout_seconds);
         cout << "Connected with driver " << connection.driver_name() << endl;
 
-        nanodbc::statement statement;
         nanodbc::result results;
 
         // Direct execution
-        results = statement.execute_direct(connection, "select * from " EXAMPLE_TABLE ";");
+        results = direct_execution(connection, "select * from " EXAMPLE_TABLE ";");
         show<string>(results);
+
+        nanodbc::statement statement;
 
         // Direct execution, bulk fetching 2 rows at a time
         results = statement.execute_direct(connection, "select * from " EXAMPLE_TABLE ";", 2);

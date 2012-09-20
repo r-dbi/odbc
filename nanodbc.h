@@ -85,8 +85,10 @@ class result;
 namespace detail
 {
     class result_impl;
+    class statement_impl;
     class bound_parameter;
     typedef std::tr1::shared_ptr<result_impl> result_impl_ptr;
+    typedef std::tr1::shared_ptr<statement_impl> statement_impl_ptr;
 
     class bound_column
     {
@@ -564,10 +566,10 @@ public:
     std::string column_name(short column) const;
 
 private:
-    result(HDBC stmt, unsigned long rowset_size);
+    result(statement stmt, unsigned long rowset_size);
 
 private:
-    friend class statement;
+    friend class detail::statement_impl;
 
 private:
     detail::result_impl_ptr impl_;
@@ -598,7 +600,7 @@ inline std::string result::get<std::string>(short column, unsigned long row)
             return buffer;
 
         case SQL_C_DATE:
-            throw std::runtime_error("date not implemented yet"); // #T implement data conversion
+            throw std::runtime_error("date not implemented yet"); // #T implement date conversion
 
         case SQL_C_TIMESTAMP:
             throw std::runtime_error("timestamp not implemented yet"); // #T implement timestamp conversion
@@ -607,8 +609,6 @@ inline std::string result::get<std::string>(short column, unsigned long row)
 }
 
 //! \brief Represents a statement on the database.
-//!
-//! \note statements are non-copyable.
 class statement
 {
 public:
@@ -621,6 +621,15 @@ public:
     //! \param stmt The SQL query statement.
     //! \see execute(), execute_direct(), open(), prepare()
     statement(connection& conn, const std::string& stmt);
+
+    //! Copy constructor.
+    statement(const statement& rhs);
+
+    //! Assignment.
+    statement& operator=(statement rhs);
+
+    //! Member swap.
+    void swap(statement& rhs) throw();
 
     //! \brief Closes the statement.
     //! \see close()
@@ -758,7 +767,7 @@ public:
         size_type elements = distance(first, last);
 
         SQLULEN column_size;
-        detail::describe_parameter_column_size(stmt_, param, column_size);
+        detail::describe_parameter_column_size(native_stmt_handle(), param, column_size);
 
         char* cdata = new char[elements * column_size];
         size_type row = 0;
@@ -778,13 +787,6 @@ public:
     #endif // DOXYGEN
 
 private:
-    typedef std::map<long, detail::bound_parameter*> bound_parameters_type;
-
-private:
-    statement(const statement&); // not defined
-    statement& operator=(const statement&); // not defined
-
-private:
     friend void detail::statement_bind_parameter_value(
         statement* me
         , long param
@@ -801,9 +803,10 @@ private:
         , const std::string& string);
 
 private:
-    HSTMT stmt_;
-    bool open_;
-    bound_parameters_type bound_parameters_;
+    friend class detail::statement_impl;
+
+private:
+    detail::statement_impl_ptr impl_;
 };
 
 //! @}

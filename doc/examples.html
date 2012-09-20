@@ -119,6 +119,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">    }</div>
 <div class="line">}</div>
 <div class="line"></div>
+<div class="line"><a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">nanodbc::result</a> direct_execution(<a class="code" href="classnanodbc_1_1connection.html" title="Manages and encapsulates ODBC resources such as the connection and environment handles.">nanodbc::connection</a>&amp; connection, <span class="keyword">const</span> <span class="keywordtype">string</span>&amp; query)</div>
+<div class="line">{</div>
+<div class="line">    <a class="code" href="classnanodbc_1_1statement.html" title="Represents a statement on the database.">nanodbc::statement</a> statement;</div>
+<div class="line">    <span class="keywordflow">return</span> statement.<a class="code" href="classnanodbc_1_1statement.html#a13b12d75f58772db3c719afea74a59a9" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, query);</div>
+<div class="line">    <span class="comment">// notice that statement will be destructed here, but the result object</span></div>
+<div class="line">    <span class="comment">// will keep the statement resources alive until we are done with them</span></div>
+<div class="line">}</div>
+<div class="line"></div>
 <div class="line"><span class="keywordtype">int</span> main()</div>
 <div class="line">{</div>
 <div class="line">    <span class="keyword">const</span> <span class="keywordtype">char</span>* connection_string = <span class="stringliteral">&quot;A Data Source Connection String&quot;</span>;</div>
@@ -131,39 +139,40 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">        <span class="comment">// or nanodbc::connection connection(connection_string, timeout_seconds);</span></div>
 <div class="line">        <span class="comment">// or nanodbc::connection connection(&quot;data source name&quot;, &quot;username&quot;, &quot;password&quot;);</span></div>
 <div class="line">        <span class="comment">// or nanodbc::connection connection(&quot;data source name&quot;, &quot;username&quot;, &quot;password&quot;, timeout_seconds);</span></div>
-<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot;Connected with driver &quot;</span> &lt;&lt; connection.driver_name() &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot;Connected with driver &quot;</span> &lt;&lt; connection.<a class="code" href="classnanodbc_1_1connection.html#a55cbecf5f5ad6f06292b2d5e0082c69c" title="Returns the name of the ODBC driver.">driver_name</a>() &lt;&lt; endl;</div>
 <div class="line"></div>
-<div class="line">        <a class="code" href="classnanodbc_1_1statement.html" title="Represents a statement on the database.">nanodbc::statement</a> statement;</div>
 <div class="line">        <a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">nanodbc::result</a> results;</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Direct execution</span></div>
-<div class="line">        results = statement.<a class="code" href="classnanodbc_1_1statement.html#a13b12d75f58772db3c719afea74a59a9" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>);</div>
+<div class="line">        results = direct_execution(connection, <span class="stringliteral">&quot;select * from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>);</div>
 <div class="line">        show&lt;string&gt;(results);</div>
 <div class="line"></div>
+<div class="line">        <a class="code" href="classnanodbc_1_1statement.html" title="Represents a statement on the database.">nanodbc::statement</a> statement;</div>
+<div class="line"></div>
 <div class="line">        <span class="comment">// Direct execution, bulk fetching 2 rows at a time</span></div>
-<div class="line">        results = statement.<a class="code" href="classnanodbc_1_1statement.html#a13b12d75f58772db3c719afea74a59a9" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>, 2);</div>
+<div class="line">        results = statement.execute_direct(connection, <span class="stringliteral">&quot;select * from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>, 2);</div>
 <div class="line">        show&lt;string&gt;(results);</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Binding parameters</span></div>
-<div class="line">        statement.<a class="code" href="classnanodbc_1_1statement.html#a93aa16195232656e4680473e53bb07a5" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;select cast(a as float) as f from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot; where cast(a as float) = ?;&quot;</span>);</div>
-<div class="line">        statement.<a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(0, 1.0);</div>
+<div class="line">        statement.prepare(connection, <span class="stringliteral">&quot;select cast(a as float) as f from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot; where cast(a as float) = ?;&quot;</span>);</div>
+<div class="line">        statement.bind_parameter(0, 1.0);</div>
 <div class="line"></div>
-<div class="line">        results = statement.<a class="code" href="classnanodbc_1_1statement.html#aa152b2164fdf14ebeafd3182426c002b" title="Execute the previously prepared query now.">execute</a>();</div>
+<div class="line">        results = statement.execute();</div>
 <div class="line">        show&lt;double&gt;(results);</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Transactions</span></div>
 <div class="line">        {</div>
 <div class="line">            <a class="code" href="classnanodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">nanodbc::transaction</a> transaction(connection);</div>
-<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#a13b12d75f58772db3c719afea74a59a9" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;delete from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>);</div>
+<div class="line">            statement.execute_direct(connection, <span class="stringliteral">&quot;delete from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>);</div>
 <div class="line">            <span class="comment">// transaction will be rolled back if we don&#39;t call transaction.commit()</span></div>
 <div class="line">        }</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Batch inserting</span></div>
 <div class="line">        {</div>
-<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#a13b12d75f58772db3c719afea74a59a9" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;drop table if exists public.batch_insert_test;&quot;</span>);</div>
-<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#a13b12d75f58772db3c719afea74a59a9" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;create table public.batch_insert_test (x varchar(50), y int);&quot;</span>);</div>
+<div class="line">            statement.execute_direct(connection, <span class="stringliteral">&quot;drop table if exists public.batch_insert_test;&quot;</span>);</div>
+<div class="line">            statement.execute_direct(connection, <span class="stringliteral">&quot;create table public.batch_insert_test (x varchar(50), y int);&quot;</span>);</div>
 <div class="line"></div>
-<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#a93aa16195232656e4680473e53bb07a5" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;insert into public.batch_insert_test values (?, ?);&quot;</span>);</div>
+<div class="line">            statement.prepare(connection, <span class="stringliteral">&quot;insert into public.batch_insert_test values (?, ?);&quot;</span>);</div>
 <div class="line"></div>
 <div class="line">            <span class="keyword">const</span> <span class="keywordtype">size_t</span> data_count = 4;</div>
 <div class="line"></div>
@@ -172,16 +181,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">            xdata.push_back(<span class="stringliteral">&quot;is&quot;</span>);</div>
 <div class="line">            xdata.push_back(<span class="stringliteral">&quot;a&quot;</span>);</div>
 <div class="line">            xdata.push_back(<span class="stringliteral">&quot;test&quot;</span>);</div>
-<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(0, xdata.begin(), xdata.end());</div>
+<div class="line">            statement.bind_parameter(0, xdata.begin(), xdata.end());</div>
 <div class="line"></div>
 <div class="line">            <span class="keywordtype">int</span> ydata[data_count] = { 1, 2, 3, 4 };</div>
-<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(1, ydata, ydata + data_count);</div>
+<div class="line">            statement.bind_parameter(1, ydata, ydata + data_count);</div>
 <div class="line"></div>
 <div class="line">            <a class="code" href="classnanodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">nanodbc::transaction</a> transaction(connection);</div>
-<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#aa152b2164fdf14ebeafd3182426c002b" title="Execute the previously prepared query now.">execute</a>(data_count);</div>
+<div class="line">            statement.execute(data_count);</div>
 <div class="line">            transaction.commit();</div>
 <div class="line"> </div>
-<div class="line">            results = statement.<a class="code" href="classnanodbc_1_1statement.html#a13b12d75f58772db3c719afea74a59a9" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from public.batch_insert_test;&quot;</span>);</div>
+<div class="line">            results = statement.execute_direct(connection, <span class="stringliteral">&quot;select * from public.batch_insert_test;&quot;</span>);</div>
 <div class="line">            show&lt;string&gt;(results);</div>
 <div class="line">       }</div>
 <div class="line"></div>
@@ -202,7 +211,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Wed Sep 19 2012 23:48:29 for nanodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Thu Sep 20 2012 12:00:54 for nanodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>
