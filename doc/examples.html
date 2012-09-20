@@ -83,6 +83,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="textblock"><p>Example library usage.</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="picodbc_8h.html" title="The entirety of picodbc can be found within this file and picodbc.cpp.">picodbc.h</a>&quot;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"></div>
 <div class="line"><span class="keyword">using namespace </span>std;</div>
 <div class="line"></div>
@@ -145,7 +146,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"></div>
 <div class="line">        <span class="comment">// Binding parameters</span></div>
 <div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;select cast(a as float) as f from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot; where cast(a as float) = ?;&quot;</span>);</div>
-<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#a4b441894415762f058bc936489bba844" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(0, 1.0);</div>
+<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#a3f4fbc4c3bbe8e44d90cec074ac829fc" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(0, 1.0);</div>
 <div class="line"></div>
 <div class="line">        results = statement.<a class="code" href="classpicodbc_1_1statement.html#aa0f3654eaf6f159f98ae39f3ae206ef3" title="Execute the previously prepared query now.">execute</a>();</div>
 <div class="line">        show&lt;double&gt;(results);</div>
@@ -160,18 +161,29 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">        <span class="comment">// Batch inserting</span></div>
 <div class="line">        {</div>
 <div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a811b445c18f1435e1e943db9651c45ed" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;drop table if exists public.batch_insert_test;&quot;</span>);</div>
-<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a811b445c18f1435e1e943db9651c45ed" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;create table public.batch_insert_test (x int);&quot;</span>);</div>
+<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a811b445c18f1435e1e943db9651c45ed" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;create table public.batch_insert_test (x varchar(50), y int);&quot;</span>);</div>
 <div class="line"></div>
-<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;insert into public.batch_insert_test values (?);&quot;</span>);</div>
+<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;insert into public.batch_insert_test values (?, ?);&quot;</span>);</div>
 <div class="line"></div>
-<div class="line">            <span class="keyword">const</span> <span class="keywordtype">size_t</span> data_count = 10000;</div>
-<div class="line">            <span class="keywordtype">int</span> data[data_count] = { 0 };</div>
-<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a4b441894415762f058bc936489bba844" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(0, data, data + data_count);</div>
+<div class="line">            <span class="keyword">const</span> <span class="keywordtype">size_t</span> data_count = 4;</div>
+<div class="line"></div>
+<div class="line">            vector&lt;string&gt; xdata;</div>
+<div class="line">            xdata.push_back(<span class="stringliteral">&quot;this&quot;</span>);</div>
+<div class="line">            xdata.push_back(<span class="stringliteral">&quot;is&quot;</span>);</div>
+<div class="line">            xdata.push_back(<span class="stringliteral">&quot;a&quot;</span>);</div>
+<div class="line">            xdata.push_back(<span class="stringliteral">&quot;test&quot;</span>);</div>
+<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a3f4fbc4c3bbe8e44d90cec074ac829fc" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(0, xdata.begin(), xdata.end());</div>
+<div class="line"></div>
+<div class="line">            <span class="keywordtype">int</span> ydata[data_count] = { 1, 2, 3, 4 };</div>
+<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a3f4fbc4c3bbe8e44d90cec074ac829fc" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(1, ydata, ydata + data_count);</div>
 <div class="line"></div>
 <div class="line">            <a class="code" href="classpicodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">picodbc::transaction</a> transaction(connection);</div>
 <div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#aa0f3654eaf6f159f98ae39f3ae206ef3" title="Execute the previously prepared query now.">execute</a>(data_count);</div>
 <div class="line">            transaction.commit();</div>
-<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">            results = statement.<a class="code" href="classpicodbc_1_1statement.html#a811b445c18f1435e1e943db9651c45ed" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from public.batch_insert_test;&quot;</span>);</div>
+<div class="line">            show&lt;string&gt;(results);</div>
+<div class="line">       }</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// The resources used by connection and statement are cleaned up automatically or</span></div>
 <div class="line">        <span class="comment">// you can explicitly call statement.close() and/or connection.disconnect().</span></div>
@@ -190,7 +202,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Wed Sep 19 2012 13:07:15 for picodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Wed Sep 19 2012 23:35:50 for picodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>

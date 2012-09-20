@@ -66,13 +66,14 @@ See http://www.codeguru.com/submission-guidelines.php for details.<br />
 #include <sql.h>
 #include <sqlext.h>
 
-#include <cstdio> // std::sscanf(), std::snprintf()
-#include <map> // std::map
-#include <stdexcept> // std::runtime_error
-#include <string> // std::string
-#include <tr1/cstdint> // std::tr1::int16_t, std::tr1::int32_t
-#include <tr1/memory> // std::tr1::shared_ptr
-#include <tr1/type_traits> // std::tr1::is_same
+#include <algorithm>
+#include <cstdio>
+#include <map>
+#include <stdexcept>
+#include <string>
+#include <tr1/cstdint>
+#include <tr1/memory>
+#include <tr1/type_traits>
 
 //! \brief The entirety of picodbc can be found within this one namespace.
 namespace picodbc
@@ -143,6 +144,7 @@ namespace detail
         , bool take_ownership);
     void statement_bind_parameter_string(statement* me, long param, const std::string& string);
     bound_column& result_impl_get_bound_column(result_impl_ptr me, short column, unsigned long row);
+    void describe_parameter_column_size(HSTMT stmt, long param, SQLULEN& column_size);
 
     // simple enable/disable if utility taken from boost
     template <bool B, class T = void> struct enable_if_c { typedef T type; };
@@ -694,6 +696,13 @@ public:
             , false);
     }
 
+    #ifndef DOXYGEN
+    void bind_parameter(long param, const std::string& value)
+    {
+        detail::statement_bind_parameter_string(this, param, value);
+    }
+    #endif // DOXYGEN
+
     //! \brief Binds a number of values to the given parameter placeholder number in the prepared statement for batch operation.
     //! 
     //! \param param Placeholder position.
@@ -703,12 +712,68 @@ public:
     //! \throws database_error
     //! \see transaction
     template<class InputIterator>
-    void bind_parameter(long param, InputIterator first, InputIterator last);
+    #ifndef DOXYGEN
+        typename detail::disable_if_c<
+            std::tr1::is_same<
+                typename std::iterator_traits<InputIterator>::value_type
+                , std::string
+            >::value
+        >::type
+    #else
+        void
+    #endif
+    bind_parameter(long param, InputIterator first, InputIterator last)
+    {
+        using std::distance;
+        using std::copy;
+        typedef typename std::iterator_traits<InputIterator>::value_type element_type;
+        typename std::iterator_traits<InputIterator>::difference_type elements = distance(first, last);
+        element_type* data = new element_type[elements];
+        copy(first, last, data);
+        detail::statement_bind_parameter_value(
+            this
+            , param
+            , detail::sql_type_info<element_type>::ctype
+            , detail::sql_type_info<element_type>::sqltype
+            , (char*)data
+            , sizeof(element_type)
+            , elements
+            , true);
+    }
 
     #ifndef DOXYGEN
-    void bind_parameter(long param, const std::string& value)
+    template<class InputIterator>
+    typename detail::enable_if_c<
+        std::tr1::is_same<
+            typename std::iterator_traits<InputIterator>::value_type
+            , std::string
+        >::value
+    >::type
+    bind_parameter(long param, InputIterator first, InputIterator last)
     {
-        detail::statement_bind_parameter_string(this, param, value);
+        using std::distance;
+        using std::copy;
+        typedef typename std::iterator_traits<InputIterator>::value_type element_type;
+        typedef typename std::iterator_traits<InputIterator>::difference_type size_type;
+        size_type elements = distance(first, last);
+
+        SQLULEN column_size;
+        detail::describe_parameter_column_size(stmt_, param, column_size);
+
+        char* cdata = new char[elements * column_size];
+        size_type row = 0;
+        for(InputIterator i = first; i != last; ++i)
+            std::strncpy(&cdata[row++ * column_size], std::string(*i).c_str(), column_size);
+
+        detail::statement_bind_parameter_value(
+            this
+            , param
+            , detail::sql_type_info<std::string>::ctype
+            , detail::sql_type_info<std::string>::sqltype
+            , cdata
+            , column_size
+            , elements
+            , true);
     }
     #endif // DOXYGEN
 
@@ -718,32 +783,6 @@ private:
 private:
     statement(const statement&); // not defined
     statement& operator=(const statement&); // not defined
-
-    template<class ElementType>
-    struct bind_parameter_impl
-    {
-        statement* me_;
-        explicit bind_parameter_impl(statement* me) : me_(me) { }
-        template<class InputIterator>
-        void operator()(long param, InputIterator first, InputIterator last) const
-        {
-            using std::iterator_traits;
-            using std::distance;
-            using std::copy;
-            typename iterator_traits<InputIterator>::difference_type elements = distance(first, last);
-            ElementType* data = new ElementType[elements];
-            copy(first, last, data);
-            detail::statement_bind_parameter_value(
-                me_
-                , param
-                , detail::sql_type_info<ElementType>::ctype
-                , detail::sql_type_info<ElementType>::sqltype
-                , (char*)data
-                , sizeof(ElementType)
-                , elements
-                , true);
-        }
-    };
 
 private:
     friend void detail::statement_bind_parameter_value(
@@ -766,26 +805,6 @@ private:
     bool open_;
     bound_parameters_type bound_parameters_;
 };
-
-template<>
-struct statement::bind_parameter_impl<std::string>
-{
-    statement* me_;
-    explicit bind_parameter_impl(statement* me) : me_(me) { }
-    template<class InputIterator>
-    void operator()(long param, InputIterator first, InputIterator last)
-    {
-        throw std::runtime_error("batch string binding not implemented yet");
-    }
-};
-
-template<class InputIterator>
-inline void statement::bind_parameter(long param, InputIterator first, InputIterator last)
-{
-    using std::iterator_traits;
-    typedef typename iterator_traits<InputIterator>::value_type element_type;
-    bind_parameter_impl<element_type>(this)(param, first, last);
-}
 
 //! @}
 

@@ -1,5 +1,6 @@
 #include "picodbc.h"
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -77,18 +78,29 @@ int main()
         // Batch inserting
         {
             statement.execute_direct(connection, "drop table if exists public.batch_insert_test;");
-            statement.execute_direct(connection, "create table public.batch_insert_test (x int);");
+            statement.execute_direct(connection, "create table public.batch_insert_test (x varchar(50), y int);");
 
-            statement.prepare(connection, "insert into public.batch_insert_test values (?);");
+            statement.prepare(connection, "insert into public.batch_insert_test values (?, ?);");
 
-            const size_t data_count = 10000;
-            int data[data_count] = { 0 };
-            statement.bind_parameter(0, data, data + data_count);
+            const size_t data_count = 4;
+
+            vector<string> xdata;
+            xdata.push_back("this");
+            xdata.push_back("is");
+            xdata.push_back("a");
+            xdata.push_back("test");
+            statement.bind_parameter(0, xdata.begin(), xdata.end());
+
+            int ydata[data_count] = { 1, 2, 3, 4 };
+            statement.bind_parameter(1, ydata, ydata + data_count);
 
             picodbc::transaction transaction(connection);
             statement.execute(data_count);
             transaction.commit();
-        }
+ 
+            results = statement.execute_direct(connection, "select * from public.batch_insert_test;");
+            show<string>(results);
+       }
 
         // The resources used by connection and statement are cleaned up automatically or
         // you can explicitly call statement.close() and/or connection.disconnect().

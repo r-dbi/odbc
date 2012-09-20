@@ -132,12 +132,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:ad0092410e4daad75dfaaf019654ec83b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad0092410e4daad75dfaaf019654ec83b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#ad0092410e4daad75dfaaf019654ec83b">reset_parameters</a> ()  throw ()</td></tr>
 <tr class="memdesc:ad0092410e4daad75dfaaf019654ec83b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets all currently bound parameters. <br/></td></tr>
-<tr class="memitem:a4b441894415762f058bc936489bba844"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a4b441894415762f058bc936489bba844"><td class="memTemplItemLeft" align="right" valign="top">const void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a4b441894415762f058bc936489bba844">bind_parameter</a> (long param, const T &amp;value)</td></tr>
-<tr class="memdesc:a4b441894415762f058bc936489bba844"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given value to the given parameter placeholder number in the prepared statement.  <a href="#a4b441894415762f058bc936489bba844"></a><br/></td></tr>
-<tr class="memitem:a0cbb1166c01e049c5cfa8b1d45eb3fc2"><td class="memTemplParams" colspan="2">template&lt;class InputIterator &gt; </td></tr>
-<tr class="memitem:a0cbb1166c01e049c5cfa8b1d45eb3fc2"><td class="memTemplItemLeft" align="right" valign="top">const void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a0cbb1166c01e049c5cfa8b1d45eb3fc2">bind_parameter</a> (long param, InputIterator first, InputIterator last)</td></tr>
-<tr class="memdesc:a0cbb1166c01e049c5cfa8b1d45eb3fc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds a number of values to the given parameter placeholder number in the prepared statement for batch operation.  <a href="#a0cbb1166c01e049c5cfa8b1d45eb3fc2"></a><br/></td></tr>
+<tr class="memitem:a3f4fbc4c3bbe8e44d90cec074ac829fc"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a3f4fbc4c3bbe8e44d90cec074ac829fc"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a3f4fbc4c3bbe8e44d90cec074ac829fc">bind_parameter</a> (long param, const T &amp;value)</td></tr>
+<tr class="memdesc:a3f4fbc4c3bbe8e44d90cec074ac829fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given value to the given parameter placeholder number in the prepared statement.  <a href="#a3f4fbc4c3bbe8e44d90cec074ac829fc"></a><br/></td></tr>
+<tr class="memitem:a663ecdc16765081125bebc6fba2949b3"><td class="memTemplParams" colspan="2">template&lt;class InputIterator &gt; </td></tr>
+<tr class="memitem:a663ecdc16765081125bebc6fba2949b3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpicodbc_1_1statement.html#a663ecdc16765081125bebc6fba2949b3">bind_parameter</a> (long param, InputIterator first, InputIterator last)</td></tr>
+<tr class="memdesc:a663ecdc16765081125bebc6fba2949b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds a number of values to the given parameter placeholder number in the prepared statement for batch operation.  <a href="#a663ecdc16765081125bebc6fba2949b3"></a><br/></td></tr>
 </table>
 <a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><dl class="section note"><dt>Note</dt><dd>statements are non-copyable. </dd></dl>
@@ -230,7 +230,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a class="anchor" id="a4b441894415762f058bc936489bba844"></a>
+<a class="anchor" id="a3f4fbc4c3bbe8e44d90cec074ac829fc"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -240,7 +240,7 @@ template&lt;class T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const void picodbc::statement::bind_parameter </td>
+          <td class="memname">void picodbc::statement::bind_parameter </td>
           <td>(</td>
           <td class="paramtype">long&#160;</td>
           <td class="paramname"><em>param</em>, </td>
@@ -280,7 +280,7 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a0cbb1166c01e049c5cfa8b1d45eb3fc2"></a>
+<a class="anchor" id="a663ecdc16765081125bebc6fba2949b3"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -290,7 +290,7 @@ template&lt;class InputIterator &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const void picodbc::statement::bind_parameter </td>
+          <td class="memname">void picodbc::statement::bind_parameter </td>
           <td>(</td>
           <td class="paramtype">long&#160;</td>
           <td class="paramname"><em>param</em>, </td>
@@ -514,7 +514,7 @@ template&lt;class InputIterator &gt; </div>
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Wed Sep 19 2012 13:07:15 for picodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Wed Sep 19 2012 23:35:50 for picodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>

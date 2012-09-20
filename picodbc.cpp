@@ -2,9 +2,7 @@
 
 #include "picodbc.h"
 
-#include <algorithm> // std::copy()
-#include <cassert> // assert()
-#include <vector> // std::vector
+#include <cassert>
 
 #define PICODBC_STRINGIZE_I(text) #text
 #define PICODBC_STRINGIZE(text) PICODBC_STRINGIZE_I(text)
@@ -90,6 +88,17 @@ namespace detail
     const char* const sql_type_info<float>::format = "%f";
     const char* const sql_type_info<double>::format = "%ld";
     const char* const sql_type_info<std::string>::format = "%s";
+
+    void describe_parameter_column_size(HSTMT stmt, long param, SQLULEN& column_size)
+    {
+        RETCODE rc;
+        SQLSMALLINT data_type;
+        SQLSMALLINT decimal_digits;
+        SQLSMALLINT nullable;
+        PICODBC_CALL(SQLDescribeParam, rc, stmt, param + 1, &data_type, &column_size, &decimal_digits, &nullable);
+        if(!success(rc))
+            PICODBC_THROW_DATABASE_ERROR(stmt, SQL_HANDLE_STMT);
+    }
 } // namespace detail
 
 type_incompatible_error::type_incompatible_error()
@@ -343,7 +352,6 @@ private:
     , value_buffer_len_(0)
     , string_buffer_()
     , string_buffer_len_(0)
-    , indicators_()
     {
 
     }
@@ -356,7 +364,6 @@ private:
     , value_buffer_len_(rhs.value_buffer_len_)
     , string_buffer_(rhs.string_buffer_)
     , string_buffer_len_(rhs.string_buffer_len_)
-    , indicators_()
     {
 
     }
@@ -378,7 +385,6 @@ private:
         swap(value_buffer_len_, rhs.value_buffer_len_);
         swap(string_buffer_, rhs.string_buffer_);
         swap(string_buffer_len_, rhs.string_buffer_len_);
-        swap(indicators_, rhs.indicators_);
     }
 
     void set_value(SQLSMALLINT ctype, SQLSMALLINT sqltype, char* data, std::size_t element_size, std::size_t elements, bool take_ownership)
@@ -395,8 +401,6 @@ private:
             copy(data, data + (element_size * elements), value_buffer_);
         }
         value_buffer_len_ = element_size * elements;
-        indicators_.reserve(elements);
-        indicators_.resize(elements, 0);
         RETCODE rc;
         PICODBC_CALL(SQLBindParameter, rc, 
             stmt_
@@ -404,11 +408,11 @@ private:
             , SQL_PARAM_INPUT
             , ctype
             , sqltype
-            , 0
+            , element_size // column size ignored for many types, but needed for strings
             , 0
             , (SQLPOINTER)value_buffer_
             , element_size
-            , indicators_.data());
+            , 0);
         if(!success(rc))
             PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
@@ -456,7 +460,6 @@ private:
     long value_buffer_len_;
     std::string string_buffer_;
     SQLLEN string_buffer_len_;
-    std::vector<SQLLEN> indicators_;
 };
 
 void statement_bind_parameter_value(
@@ -486,10 +489,6 @@ void statement_bind_parameter_string(
 
 class result_impl
 {
-private:
-    typedef std::vector<SQLLEN> indicator_type;
-    typedef std::map<short, indicator_type> indicators_type;
-
 public:
     ~result_impl() throw()
     {
