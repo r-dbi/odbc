@@ -547,7 +547,7 @@ public:
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
-    result execute_direct(connection& conn, const std::string& query, unsigned long batch_operations, statement& statement)
+    result execute_direct(connection& conn, const std::string& query, long batch_operations, statement& statement)
     {
         open(conn);
         RETCODE rc;
@@ -561,7 +561,7 @@ public:
         return result(statement, batch_operations);
     }
 
-    result execute(unsigned long batch_operations, statement& statement)
+    result execute(long batch_operations, statement& statement)
     {
         RETCODE rc;
         NANODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)batch_operations, 0);
@@ -658,7 +658,7 @@ public:
         return stmt_.native_stmt_handle();
     }
 
-    unsigned long rowset_size() const
+    long rowset_size() const
     {
         return rowset_size_;
     }
@@ -708,17 +708,17 @@ public:
         return fetch(0, SQL_FETCH_PRIOR);
     }
 
-    bool move(unsigned long row)
+    bool move(long row)
     {
         return fetch(row, SQL_FETCH_ABSOLUTE);
     }
 
-    bool skip(unsigned long rows)
+    bool skip(long rows)
     {
         return fetch(rows, SQL_FETCH_RELATIVE);
     }
 
-    unsigned long position() const
+    long position() const
     {
         SQLULEN pos;
         RETCODE rc;
@@ -735,10 +735,10 @@ public:
 
     bool end() const
     {
-        return (position() > static_cast<unsigned long>(rows()));
+        return (position() > rows());
     }
 
-    bool is_null(short column, unsigned long row) const
+    bool is_null(short column, long row) const
     {
         if(column >= bound_columns_size_)
             throw index_range_error();
@@ -759,7 +759,7 @@ private:
     result_impl(const result_impl&); // not defined
     result_impl& operator=(const result_impl&); // not defined
 
-    result_impl(statement stmt, unsigned long rowset_size)
+    result_impl(statement stmt, long rowset_size)
     : stmt_(stmt)
     , rowset_size_(rowset_size)
     , row_count_(0)
@@ -783,7 +783,7 @@ private:
         for(short i = 0; i < bound_columns_size_; ++i)
         {
             bound_column& col = bound_columns_[i];
-            for(unsigned long j = 0; j < col.rowset_size_; ++j)
+            for(long j = 0; j < col.rowset_size_; ++j)
                 col.cbdata_[j] = 0;
             if(col.blob_ && col.pdata_)
                 release_bound_resources(i);
@@ -799,7 +799,7 @@ private:
         col.clen_ = 0;
     }
 
-    bool fetch(unsigned long rows, SQLUSMALLINT orientation)
+    bool fetch(long rows, SQLUSMALLINT orientation)
     {
         before_move();
         RETCODE rc;
@@ -930,17 +930,17 @@ private:
 
 private:
     friend class nanodbc::result;
-    friend bound_column& nanodbc::detail::result_impl_get_bound_column(result_impl_ptr me, short column, unsigned long row);
+    friend bound_column& nanodbc::detail::result_impl_get_bound_column(result_impl_ptr me, short column, long row);
 
 private:
     statement stmt_;
-    const unsigned long rowset_size_;
-    unsigned long row_count_;
+    const long rowset_size_;
+    long row_count_;
     bound_column* bound_columns_;
-    std::size_t bound_columns_size_;
+    short bound_columns_size_;
 };
 
-bound_column& result_impl_get_bound_column(result_impl_ptr me, short column, unsigned long row)
+bound_column& result_impl_get_bound_column(result_impl_ptr me, short column, long row)
 {
     if(column >= me->bound_columns_size_)
         throw index_range_error();
@@ -962,7 +962,7 @@ result::~result() throw()
 
 }
 
-result::result(statement stmt, unsigned long rowset_size)
+result::result(statement stmt, long rowset_size)
 : impl_(new detail::result_impl_ptr::element_type(stmt, rowset_size))
 {
 
@@ -991,7 +991,7 @@ HDBC result::native_stmt_handle() const
     return impl_->native_stmt_handle();
 }
 
-unsigned long result::rowset_size() const
+long result::rowset_size() const
 {
     return impl_->rowset_size();
 }
@@ -1031,17 +1031,17 @@ bool result::prior()
     return impl_->prior();
 }
 
-bool result::move(unsigned long row)
+bool result::move(long row)
 {
     return impl_->move(row);
 }
 
-bool result::skip(unsigned long rows)
+bool result::skip(long rows)
 {
     return impl_->skip(rows);
 }
 
-unsigned long result::position() const
+long result::position() const
 {
     return impl_->position();
 }
@@ -1051,7 +1051,7 @@ bool result::end() const
     return impl_->end();
 }
 
-bool result::is_null(short column, unsigned long row) const
+bool result::is_null(short column, long row) const
 {
     return impl_->is_null(column, row);
 }
@@ -1126,12 +1126,12 @@ void statement::prepare(connection& conn, const std::string& stmt)
     impl_->prepare(conn, stmt);
 }
 
-result statement::execute_direct(connection& conn, const std::string& query, unsigned long batch_operations)
+result statement::execute_direct(connection& conn, const std::string& query, long batch_operations)
 {
     return impl_->execute_direct(conn, query, batch_operations, *this);
 }
 
-result statement::execute(unsigned long batch_operations)
+result statement::execute(long batch_operations)
 {
     return impl_->execute(batch_operations, *this);
 }

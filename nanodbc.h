@@ -132,7 +132,7 @@ namespace detail
         SQLSMALLINT ctype_;
         SQLSMALLINT clen_;
         bool blob_;
-        unsigned long rowset_size_;
+        long rowset_size_;
         long* cbdata_;
         char* pdata_;
     };
@@ -147,7 +147,7 @@ namespace detail
         , std::size_t elemnts
         , bool take_ownership);
     void statement_bind_parameter_string(statement* me, long param, const std::string& string);
-    bound_column& result_impl_get_bound_column(result_impl_ptr me, short column, unsigned long row);
+    bound_column& result_impl_get_bound_column(result_impl_ptr me, short column, long row);
     void describe_parameter_column_size(HSTMT stmt, long param, SQLULEN& column_size);
 
     // simple enable/disable if utility taken from boost
@@ -478,7 +478,7 @@ public:
     HDBC native_stmt_handle() const;
 
     //! \brief The rowset size for this result set.
-    unsigned long rowset_size() const;
+    long rowset_size() const;
 
     //! \brief Returns the number of rows affected by the request or –1 if the number of affected rows is not available.
     //! \throws database_error
@@ -515,15 +515,15 @@ public:
     //! \brief Moves to and fetches the specified row in the current result set.
     //! \return true if there are results or false otherwise.
     //! \throws database_error
-    bool move(unsigned long row);
+    bool move(long row);
 
     //! \brief Skips a number of rows and then fetches the resulting row in the current result set.
     //! \return true if there are results or false otherwise.
     //! \throws database_error
-    bool skip(unsigned long rows);
+    bool skip(long rows);
 
     //! \brief Returns the row position in the current result set.
-    unsigned long position() const;
+    long position() const;
 
     //! \brief Returns true if there are no more results in the current result set.
     //! \throws database_error
@@ -536,7 +536,7 @@ public:
     //! \param row If there are multiple rows in this rowset, get from the specified row.
     //! \throws database_error, index_range_error, type_incompatible_error
     template<class T>
-    T get(short column, unsigned long row = 0) const
+    T get(short column, long row = 0) const
     {
         detail::bound_column& col = result_impl_get_bound_column(impl_, column, row);
         switch(col.ctype_)
@@ -558,7 +558,7 @@ public:
     //! \param Column position. 
     //! \param row If there are multiple rows in this rowset, get from the specified row.
     //! \throws database_error, index_range_error
-    bool is_null(short column, unsigned long row = 0) const;
+    bool is_null(short column, long row = 0) const;
 
     //! \brief Returns the name of the specified column.
     //!
@@ -568,7 +568,7 @@ public:
     std::string column_name(short column) const;
 
 private:
-    result(statement stmt, unsigned long rowset_size);
+    result(statement stmt, long rowset_size);
 
 private:
     friend class nanodbc::detail::statement_impl;
@@ -578,7 +578,7 @@ private:
 };
 
 template<>
-inline std::string result::get<std::string>(short column, unsigned long row) const
+inline std::string result::get<std::string>(short column, long row) const
 {
     detail::bound_column& col = result_impl_get_bound_column(impl_, column, row);
     char buffer[1024];
@@ -669,7 +669,7 @@ public:
     //! \return A result set object.
     //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
     //! \see open(), prepare(), execute(), result, transaction
-    result execute_direct(connection& conn, const std::string& query, unsigned long batch_operations = 1);
+    result execute_direct(connection& conn, const std::string& query, long batch_operations = 1);
 
     //! \brief Execute the previously prepared query now.
     //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
@@ -677,7 +677,7 @@ public:
     //! \return A result set object.
     //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
     //! \see open(), prepare(), execute(), result, transaction
-    result execute(unsigned long batch_operations = 1);
+    result execute(long batch_operations = 1);
 
     //! \brief Returns the number of rows affected by the request or –1 if the number of affected rows is not available.
     //! \throws database_error
