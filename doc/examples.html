@@ -93,7 +93,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">    <span class="keyword">const</span> <span class="keywordtype">short</span> columns = results.<a class="code" href="classnanodbc_1_1result.html#a839990af1305d8dcb249f8464433034a" title="Returns the number of columns in the current result set.">columns</a>();</div>
 <div class="line">    <span class="keywordtype">long</span> rows_displayed = 0;</div>
 <div class="line"></div>
-<div class="line">    cout &lt;&lt; <span class="stringliteral">&quot;\nDisplaying &quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#a07f215555775ba5fc7576bc9da96f5c5" title="Returns the number of rows affected by the request or –1 if the number of affected rows is not availa...">affected_rows</a>() &lt;&lt; <span class="stringliteral">&quot; rows (&quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#ab7e5c8e0893576ef5c5aafe86f88d6cc" title="The rowset size for this result set.">rowset_size</a>() &lt;&lt; <span class="stringliteral">&quot; at a time):&quot;</span> &lt;&lt; endl;</div>
+<div class="line">    cout &lt;&lt; <span class="stringliteral">&quot;\nDisplaying &quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#a07f215555775ba5fc7576bc9da96f5c5" title="Returns the number of rows affected by the request or –1 if the number of affected rows is not availa...">affected_rows</a>() &lt;&lt; <span class="stringliteral">&quot; rows (&quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#adf331dc9bc9b610f5a47e6bc796dd961" title="The rowset size for this result set.">rowset_size</a>() &lt;&lt; <span class="stringliteral">&quot; at a time):&quot;</span> &lt;&lt; endl;</div>
 <div class="line"></div>
 <div class="line">    cout &lt;&lt; <span class="stringliteral">&quot;row\t&quot;</span>;</div>
 <div class="line">    <span class="keywordflow">for</span>(<span class="keywordtype">short</span> i = 0; i &lt; columns; ++i)</div>
@@ -108,10 +108,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">            cout &lt;&lt; rows_displayed++ &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
 <div class="line">            <span class="keywordflow">for</span>(<span class="keywordtype">short</span> col = 0; col &lt; columns; ++col)</div>
 <div class="line">            {</div>
-<div class="line">                <span class="keywordflow">if</span>(results.<a class="code" href="classnanodbc_1_1result.html#ac04e5558bf0cc5c8c019a07f75a39079" title="Returns true if and only if the given column in the selected row of the current rowset is null...">is_null</a>(col, row))</div>
+<div class="line">                <span class="keywordflow">if</span>(results.<a class="code" href="classnanodbc_1_1result.html#a357e2f03365ce6988083730718dd3487" title="Returns true if and only if the given column in the selected row of the current rowset is null...">is_null</a>(col, row))</div>
 <div class="line">                    cout &lt;&lt; <span class="stringliteral">&quot;(null)&quot;</span>;</div>
 <div class="line">                <span class="keywordflow">else</span></div>
-<div class="line">                    cout &lt;&lt; <span class="stringliteral">&quot;(&quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#afb178a82a88b16f4ce78168a986a6d7d" title="Gets data from the given column in the selected row of the current rowset.">get</a>&lt;T&gt;(col, row) &lt;&lt; <span class="stringliteral">&quot;)&quot;</span>;</div>
+<div class="line">                    cout &lt;&lt; <span class="stringliteral">&quot;(&quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#ad5ac9176ad8529aeabe2655b54b71999" title="Gets data from the given column in the selected row of the current rowset.">get</a>&lt;T&gt;(col, row) &lt;&lt; <span class="stringliteral">&quot;)&quot;</span>;</div>
 <div class="line">                cout &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
 <div class="line">            }</div>
 <div class="line">            cout &lt;&lt; endl;</div>
@@ -122,7 +122,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">nanodbc::result</a> direct_execution(<a class="code" href="classnanodbc_1_1connection.html" title="Manages and encapsulates ODBC resources such as the connection and environment handles.">nanodbc::connection</a>&amp; connection, <span class="keyword">const</span> <span class="keywordtype">string</span>&amp; query)</div>
 <div class="line">{</div>
 <div class="line">    <a class="code" href="classnanodbc_1_1statement.html" title="Represents a statement on the database.">nanodbc::statement</a> statement;</div>
-<div class="line">    <span class="keywordflow">return</span> statement.<a class="code" href="classnanodbc_1_1statement.html#a13b12d75f58772db3c719afea74a59a9" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, query);</div>
+<div class="line">    <span class="keywordflow">return</span> statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, query);</div>
 <div class="line">    <span class="comment">// notice that statement will be destructed here, but the result object</span></div>
 <div class="line">    <span class="comment">// will keep the statement resources alive until we are done with them</span></div>
 <div class="line">}</div>
@@ -211,7 +211,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Thu Sep 20 2012 12:00:54 for nanodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Thu Sep 20 2012 14:49:51 for nanodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>
