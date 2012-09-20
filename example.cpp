@@ -1,11 +1,11 @@
-#include "picodbc.h"
+#include "nanodbc.h"
 #include <iostream>
 #include <vector>
 
 using namespace std;
 
 template<class T>
-void show(picodbc::result results)
+void show(nanodbc::result results)
 {
     const short columns = results.columns();
     long rows_displayed = 0;
@@ -44,14 +44,14 @@ int main()
     try
     {
         // Establishing connections
-        picodbc::connection connection(connection_string);
-        // or picodbc::connection connection(connection_string, timeout_seconds);
-        // or picodbc::connection connection("data source name", "username", "password");
-        // or picodbc::connection connection("data source name", "username", "password", timeout_seconds);
+        nanodbc::connection connection(connection_string);
+        // or nanodbc::connection connection(connection_string, timeout_seconds);
+        // or nanodbc::connection connection("data source name", "username", "password");
+        // or nanodbc::connection connection("data source name", "username", "password", timeout_seconds);
         cout << "Connected with driver " << connection.driver_name() << endl;
 
-        picodbc::statement statement;
-        picodbc::result results;
+        nanodbc::statement statement;
+        nanodbc::result results;
 
         // Direct execution
         results = statement.execute_direct(connection, "select * from " EXAMPLE_TABLE ";");
@@ -70,7 +70,7 @@ int main()
 
         // Transactions
         {
-            picodbc::transaction transaction(connection);
+            nanodbc::transaction transaction(connection);
             statement.execute_direct(connection, "delete from " EXAMPLE_TABLE ";");
             // transaction will be rolled back if we don't call transaction.commit()
         }
@@ -94,7 +94,7 @@ int main()
             int ydata[data_count] = { 1, 2, 3, 4 };
             statement.bind_parameter(1, ydata, ydata + data_count);
 
-            picodbc::transaction transaction(connection);
+            nanodbc::transaction transaction(connection);
             statement.execute(data_count);
             transaction.commit();
  

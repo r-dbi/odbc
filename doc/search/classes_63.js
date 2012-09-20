@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['connection',['connection',['../classpicodbc_1_1connection.html',1,'picodbc']]]
+  ['connection',['connection',['../classnanodbc_1_1connection.html',1,'nanodbc']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['fract',['fract',['../structpicodbc_1_1timestamp__type.html#ae05fd042f4b20e2adfffb2f4e757372b',1,'picodbc::timestamp_type']]]
+  ['fract',['fract',['../structnanodbc_1_1timestamp__type.html#ac397dfb25d4f44d7ece8f1aba40230d3',1,'nanodbc::timestamp_type']]]
 ];

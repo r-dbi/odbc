@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['position',['position',['../classpicodbc_1_1result.html#affedf5475d452a1849cf4a577d5c6f29',1,'picodbc::result']]],
-  ['prepare',['prepare',['../classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68',1,'picodbc::statement']]],
-  ['prior',['prior',['../classpicodbc_1_1result.html#a5c67f69ad7349f76935e2c2ddda1ff8d',1,'picodbc::result']]]
+  ['position',['position',['../classnanodbc_1_1result.html#af35deace1b1577117cded9fc622ab9b8',1,'nanodbc::result']]],
+  ['prepare',['prepare',['../classnanodbc_1_1statement.html#a93aa16195232656e4680473e53bb07a5',1,'nanodbc::statement']]],
+  ['prior',['prior',['../classnanodbc_1_1result.html#afd0b71a0bfe3e184f3b9a1caf8f17058',1,'nanodbc::result']]]
 ];

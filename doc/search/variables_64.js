@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['day',['day',['../structpicodbc_1_1date__type.html#a21bd3edf1b7c5dcc9805e6c738c0d783',1,'picodbc::date_type::day()'],['../structpicodbc_1_1timestamp__type.html#a544a24b5814cfeb018580e7de1f26455',1,'picodbc::timestamp_type::day()']]]
+  ['day',['day',['../structnanodbc_1_1date__type.html#a15a815e92a13dec12c0dd37aba57a980',1,'nanodbc::date_type::day()'],['../structnanodbc_1_1timestamp__type.html#a8a1af13feb146aac2ded7bfff71fd26d',1,'nanodbc::timestamp_type::day()']]]
 ];

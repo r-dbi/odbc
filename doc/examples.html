@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>picodbc: Example Usage</title>
+<title>nanodbc: Example Usage</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname"><a href="https://code.google.com/p/picodbc/" style="text-decoration: none;">picodbc</a>
+   <div id="projectname"><a href="https://code.google.com/p/nanodbc/" style="text-decoration: none;">nanodbc</a>
    </div>
    <div id="projectbrief">A Minuscule C++ ODBC API Wrapper</div>
   </td>
@@ -81,37 +81,37 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Example library usage.</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="picodbc_8h.html" title="The entirety of picodbc can be found within this file and picodbc.cpp.">picodbc.h</a>&quot;</span></div>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="nanodbc_8h.html" title="The entirety of nanodbc can be found within this file and nanodbc.cpp.">nanodbc.h</a>&quot;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"></div>
 <div class="line"><span class="keyword">using namespace </span>std;</div>
 <div class="line"></div>
 <div class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><span class="keywordtype">void</span> show(<a class="code" href="classpicodbc_1_1result.html" title="A resource for managing result sets from statement execution.">picodbc::result</a> results)</div>
+<div class="line"><span class="keywordtype">void</span> show(<a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">nanodbc::result</a> results)</div>
 <div class="line">{</div>
-<div class="line">    <span class="keyword">const</span> <span class="keywordtype">short</span> columns = results.<a class="code" href="classpicodbc_1_1result.html#a66022f74b4d02c8257b12efd6ad7aa33" title="Returns the number of columns in the current result set.">columns</a>();</div>
+<div class="line">    <span class="keyword">const</span> <span class="keywordtype">short</span> columns = results.<a class="code" href="classnanodbc_1_1result.html#a839990af1305d8dcb249f8464433034a" title="Returns the number of columns in the current result set.">columns</a>();</div>
 <div class="line">    <span class="keywordtype">long</span> rows_displayed = 0;</div>
 <div class="line"></div>
-<div class="line">    cout &lt;&lt; <span class="stringliteral">&quot;\nDisplaying &quot;</span> &lt;&lt; results.<a class="code" href="classpicodbc_1_1result.html#a347a5e64c4b0a94bfbe20aca6fe1f3c4" title="Returns the number of rows affected by the request or –1 if the number of affected rows is not availa...">affected_rows</a>() &lt;&lt; <span class="stringliteral">&quot; rows (&quot;</span> &lt;&lt; results.<a class="code" href="classpicodbc_1_1result.html#af615b80be6d9822f409add5846327809" title="The rowset size for this result set.">rowset_size</a>() &lt;&lt; <span class="stringliteral">&quot; at a time):&quot;</span> &lt;&lt; endl;</div>
+<div class="line">    cout &lt;&lt; <span class="stringliteral">&quot;\nDisplaying &quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#a07f215555775ba5fc7576bc9da96f5c5" title="Returns the number of rows affected by the request or –1 if the number of affected rows is not availa...">affected_rows</a>() &lt;&lt; <span class="stringliteral">&quot; rows (&quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#ab7e5c8e0893576ef5c5aafe86f88d6cc" title="The rowset size for this result set.">rowset_size</a>() &lt;&lt; <span class="stringliteral">&quot; at a time):&quot;</span> &lt;&lt; endl;</div>
 <div class="line"></div>
 <div class="line">    cout &lt;&lt; <span class="stringliteral">&quot;row\t&quot;</span>;</div>
 <div class="line">    <span class="keywordflow">for</span>(<span class="keywordtype">short</span> i = 0; i &lt; columns; ++i)</div>
-<div class="line">        cout &lt;&lt; results.<a class="code" href="classpicodbc_1_1result.html#a3612cb327a30e9c39b5e88674ccfbca3" title="Returns the name of the specified column.">column_name</a>(i) &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
+<div class="line">        cout &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#ac761639372b233894a15d78da868e85c" title="Returns the name of the specified column.">column_name</a>(i) &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
 <div class="line">    cout &lt;&lt; endl;</div>
 <div class="line"></div>
-<div class="line">    <span class="keywordflow">while</span>(results.<a class="code" href="classpicodbc_1_1result.html#a14ec1560eccc8aca08437825849b7d88" title="Fetches the next row in the current result set.">next</a>())</div>
+<div class="line">    <span class="keywordflow">while</span>(results.<a class="code" href="classnanodbc_1_1result.html#a31470b51f194181373e4c2c4292d11c4" title="Fetches the next row in the current result set.">next</a>())</div>
 <div class="line">    {</div>
-<div class="line">        <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> rows = results.<a class="code" href="classpicodbc_1_1result.html#a996215ac1678e7890e4fa538d4aab95f" title="Returns the number of rows in the current rowset or 0 if the number of rows is not available...">rows</a>();</div>
+<div class="line">        <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> rows = results.<a class="code" href="classnanodbc_1_1result.html#ae03450240fce5d33a39716e6c7ebf207" title="Returns the number of rows in the current rowset or 0 if the number of rows is not available...">rows</a>();</div>
 <div class="line">        <span class="keywordflow">for</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> row = 0; row &lt; rows; ++row)</div>
 <div class="line">        {</div>
 <div class="line">            cout &lt;&lt; rows_displayed++ &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
 <div class="line">            <span class="keywordflow">for</span>(<span class="keywordtype">short</span> col = 0; col &lt; columns; ++col)</div>
 <div class="line">            {</div>
-<div class="line">                <span class="keywordflow">if</span>(results.<a class="code" href="classpicodbc_1_1result.html#ad06df3898738320e1c4a1e17463c5ee3" title="Returns true if and only if the given column in the selected row of the current rowset is null...">is_null</a>(col, row))</div>
+<div class="line">                <span class="keywordflow">if</span>(results.<a class="code" href="classnanodbc_1_1result.html#ac04e5558bf0cc5c8c019a07f75a39079" title="Returns true if and only if the given column in the selected row of the current rowset is null...">is_null</a>(col, row))</div>
 <div class="line">                    cout &lt;&lt; <span class="stringliteral">&quot;(null)&quot;</span>;</div>
 <div class="line">                <span class="keywordflow">else</span></div>
-<div class="line">                    cout &lt;&lt; <span class="stringliteral">&quot;(&quot;</span> &lt;&lt; results.<a class="code" href="classpicodbc_1_1result.html#a1689bd06911edd22277edb2c8ac70602" title="Gets data from the given column in the selected row of the current rowset.">get</a>&lt;T&gt;(col, row) &lt;&lt; <span class="stringliteral">&quot;)&quot;</span>;</div>
+<div class="line">                    cout &lt;&lt; <span class="stringliteral">&quot;(&quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#afb178a82a88b16f4ce78168a986a6d7d" title="Gets data from the given column in the selected row of the current rowset.">get</a>&lt;T&gt;(col, row) &lt;&lt; <span class="stringliteral">&quot;)&quot;</span>;</div>
 <div class="line">                cout &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
 <div class="line">            }</div>
 <div class="line">            cout &lt;&lt; endl;</div>
@@ -127,43 +127,43 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">    <span class="keywordflow">try</span></div>
 <div class="line">    {</div>
 <div class="line">        <span class="comment">// Establishing connections</span></div>
-<div class="line">        <a class="code" href="classpicodbc_1_1connection.html" title="Manages and encapsulates ODBC resources such as the connection and environment handles.">picodbc::connection</a> connection(connection_string);</div>
-<div class="line">        <span class="comment">// or picodbc::connection connection(connection_string, timeout_seconds);</span></div>
-<div class="line">        <span class="comment">// or picodbc::connection connection(&quot;data source name&quot;, &quot;username&quot;, &quot;password&quot;);</span></div>
-<div class="line">        <span class="comment">// or picodbc::connection connection(&quot;data source name&quot;, &quot;username&quot;, &quot;password&quot;, timeout_seconds);</span></div>
+<div class="line">        <a class="code" href="classnanodbc_1_1connection.html" title="Manages and encapsulates ODBC resources such as the connection and environment handles.">nanodbc::connection</a> connection(connection_string);</div>
+<div class="line">        <span class="comment">// or nanodbc::connection connection(connection_string, timeout_seconds);</span></div>
+<div class="line">        <span class="comment">// or nanodbc::connection connection(&quot;data source name&quot;, &quot;username&quot;, &quot;password&quot;);</span></div>
+<div class="line">        <span class="comment">// or nanodbc::connection connection(&quot;data source name&quot;, &quot;username&quot;, &quot;password&quot;, timeout_seconds);</span></div>
 <div class="line">        cout &lt;&lt; <span class="stringliteral">&quot;Connected with driver &quot;</span> &lt;&lt; connection.driver_name() &lt;&lt; endl;</div>
 <div class="line"></div>
-<div class="line">        <a class="code" href="classpicodbc_1_1statement.html" title="Represents a statement on the database.">picodbc::statement</a> statement;</div>
-<div class="line">        <a class="code" href="classpicodbc_1_1result.html" title="A resource for managing result sets from statement execution.">picodbc::result</a> results;</div>
+<div class="line">        <a class="code" href="classnanodbc_1_1statement.html" title="Represents a statement on the database.">nanodbc::statement</a> statement;</div>
+<div class="line">        <a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">nanodbc::result</a> results;</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Direct execution</span></div>
-<div class="line">        results = statement.<a class="code" href="classpicodbc_1_1statement.html#a811b445c18f1435e1e943db9651c45ed" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>);</div>
+<div class="line">        results = statement.<a class="code" href="classnanodbc_1_1statement.html#a13b12d75f58772db3c719afea74a59a9" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>);</div>
 <div class="line">        show&lt;string&gt;(results);</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Direct execution, bulk fetching 2 rows at a time</span></div>
-<div class="line">        results = statement.<a class="code" href="classpicodbc_1_1statement.html#a811b445c18f1435e1e943db9651c45ed" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>, 2);</div>
+<div class="line">        results = statement.<a class="code" href="classnanodbc_1_1statement.html#a13b12d75f58772db3c719afea74a59a9" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>, 2);</div>
 <div class="line">        show&lt;string&gt;(results);</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Binding parameters</span></div>
-<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;select cast(a as float) as f from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot; where cast(a as float) = ?;&quot;</span>);</div>
-<div class="line">        statement.<a class="code" href="classpicodbc_1_1statement.html#a3f4fbc4c3bbe8e44d90cec074ac829fc" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(0, 1.0);</div>
+<div class="line">        statement.<a class="code" href="classnanodbc_1_1statement.html#a93aa16195232656e4680473e53bb07a5" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;select cast(a as float) as f from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot; where cast(a as float) = ?;&quot;</span>);</div>
+<div class="line">        statement.<a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(0, 1.0);</div>
 <div class="line"></div>
-<div class="line">        results = statement.<a class="code" href="classpicodbc_1_1statement.html#aa0f3654eaf6f159f98ae39f3ae206ef3" title="Execute the previously prepared query now.">execute</a>();</div>
+<div class="line">        results = statement.<a class="code" href="classnanodbc_1_1statement.html#aa152b2164fdf14ebeafd3182426c002b" title="Execute the previously prepared query now.">execute</a>();</div>
 <div class="line">        show&lt;double&gt;(results);</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Transactions</span></div>
 <div class="line">        {</div>
-<div class="line">            <a class="code" href="classpicodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">picodbc::transaction</a> transaction(connection);</div>
-<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a811b445c18f1435e1e943db9651c45ed" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;delete from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>);</div>
+<div class="line">            <a class="code" href="classnanodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">nanodbc::transaction</a> transaction(connection);</div>
+<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#a13b12d75f58772db3c719afea74a59a9" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;delete from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>);</div>
 <div class="line">            <span class="comment">// transaction will be rolled back if we don&#39;t call transaction.commit()</span></div>
 <div class="line">        }</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Batch inserting</span></div>
 <div class="line">        {</div>
-<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a811b445c18f1435e1e943db9651c45ed" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;drop table if exists public.batch_insert_test;&quot;</span>);</div>
-<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a811b445c18f1435e1e943db9651c45ed" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;create table public.batch_insert_test (x varchar(50), y int);&quot;</span>);</div>
+<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#a13b12d75f58772db3c719afea74a59a9" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;drop table if exists public.batch_insert_test;&quot;</span>);</div>
+<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#a13b12d75f58772db3c719afea74a59a9" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;create table public.batch_insert_test (x varchar(50), y int);&quot;</span>);</div>
 <div class="line"></div>
-<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#ad69c1aa3e5f43987f020426fcc9e4b68" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;insert into public.batch_insert_test values (?, ?);&quot;</span>);</div>
+<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#a93aa16195232656e4680473e53bb07a5" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;insert into public.batch_insert_test values (?, ?);&quot;</span>);</div>
 <div class="line"></div>
 <div class="line">            <span class="keyword">const</span> <span class="keywordtype">size_t</span> data_count = 4;</div>
 <div class="line"></div>
@@ -172,16 +172,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">            xdata.push_back(<span class="stringliteral">&quot;is&quot;</span>);</div>
 <div class="line">            xdata.push_back(<span class="stringliteral">&quot;a&quot;</span>);</div>
 <div class="line">            xdata.push_back(<span class="stringliteral">&quot;test&quot;</span>);</div>
-<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a3f4fbc4c3bbe8e44d90cec074ac829fc" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(0, xdata.begin(), xdata.end());</div>
+<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(0, xdata.begin(), xdata.end());</div>
 <div class="line"></div>
 <div class="line">            <span class="keywordtype">int</span> ydata[data_count] = { 1, 2, 3, 4 };</div>
-<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#a3f4fbc4c3bbe8e44d90cec074ac829fc" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(1, ydata, ydata + data_count);</div>
+<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(1, ydata, ydata + data_count);</div>
 <div class="line"></div>
-<div class="line">            <a class="code" href="classpicodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">picodbc::transaction</a> transaction(connection);</div>
-<div class="line">            statement.<a class="code" href="classpicodbc_1_1statement.html#aa0f3654eaf6f159f98ae39f3ae206ef3" title="Execute the previously prepared query now.">execute</a>(data_count);</div>
+<div class="line">            <a class="code" href="classnanodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">nanodbc::transaction</a> transaction(connection);</div>
+<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#aa152b2164fdf14ebeafd3182426c002b" title="Execute the previously prepared query now.">execute</a>(data_count);</div>
 <div class="line">            transaction.commit();</div>
 <div class="line"> </div>
-<div class="line">            results = statement.<a class="code" href="classpicodbc_1_1statement.html#a811b445c18f1435e1e943db9651c45ed" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from public.batch_insert_test;&quot;</span>);</div>
+<div class="line">            results = statement.<a class="code" href="classnanodbc_1_1statement.html#a13b12d75f58772db3c719afea74a59a9" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from public.batch_insert_test;&quot;</span>);</div>
 <div class="line">            show&lt;string&gt;(results);</div>
 <div class="line">       }</div>
 <div class="line"></div>
@@ -202,7 +202,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Wed Sep 19 2012 23:35:50 for picodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Wed Sep 19 2012 23:48:29 for nanodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>

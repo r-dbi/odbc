@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['database_5ferror',['database_error',['../classpicodbc_1_1database__error.html',1,'picodbc']]],
-  ['database_5ferror',['database_error',['../classpicodbc_1_1database__error.html#a895648f7c943fd3b80cd12c0ec135f21',1,'picodbc::database_error']]],
-  ['date_5ftype',['date_type',['../structpicodbc_1_1date__type.html',1,'picodbc']]],
-  ['day',['day',['../structpicodbc_1_1date__type.html#a21bd3edf1b7c5dcc9805e6c738c0d783',1,'picodbc::date_type::day()'],['../structpicodbc_1_1timestamp__type.html#a544a24b5814cfeb018580e7de1f26455',1,'picodbc::timestamp_type::day()']]],
-  ['disconnect',['disconnect',['../classpicodbc_1_1connection.html#ae23d15c0938262aef46e3ba4683a7236',1,'picodbc::connection']]],
-  ['driver_5fname',['driver_name',['../classpicodbc_1_1connection.html#a7a57db107e8edcd3d6a65b682762be0b',1,'picodbc::connection']]]
+  ['database_5ferror',['database_error',['../classnanodbc_1_1database__error.html',1,'nanodbc']]],
+  ['database_5ferror',['database_error',['../classnanodbc_1_1database__error.html#a3058365e76eb38889067036fba3df7f2',1,'nanodbc::database_error']]],
+  ['date_5ftype',['date_type',['../structnanodbc_1_1date__type.html',1,'nanodbc']]],
+  ['day',['day',['../structnanodbc_1_1date__type.html#a15a815e92a13dec12c0dd37aba57a980',1,'nanodbc::date_type::day()'],['../structnanodbc_1_1timestamp__type.html#a8a1af13feb146aac2ded7bfff71fd26d',1,'nanodbc::timestamp_type::day()']]],
+  ['disconnect',['disconnect',['../classnanodbc_1_1connection.html#adf614b7fdc08596122ca12e21a61ba34',1,'nanodbc::connection']]],
+  ['driver_5fname',['driver_name',['../classnanodbc_1_1connection.html#a55cbecf5f5ad6f06292b2d5e0082c69c',1,'nanodbc::connection']]]
 ];

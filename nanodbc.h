@@ -1,4 +1,4 @@
-//! \file picodbc.h The entirety of picodbc can be found within this file and picodbc.cpp.
+//! \file nanodbc.h The entirety of nanodbc can be found within this file and nanodbc.cpp.
 
 /*! \mainpage
 
@@ -6,8 +6,8 @@
 \li \ref license "License"
 \li \ref credits "Credits"
 \li \ref examples "Example Usage"
-\li \ref picodbc "Namespace Reference"
-\li <a href="https://picodbc.googlecode.com">Project Homepage</a>
+\li \ref nanodbc "Namespace Reference"
+\li <a href="https://nanodbc.googlecode.com">Project Homepage</a>
 
 \section license License
 Copyright (C) 2012 Amy Troschinetz amy@lexicalunit.com
@@ -60,8 +60,8 @@ See http://www.codeguru.com/submission-guidelines.php for details.<br />
 \include example.cpp
 */
 
-#ifndef PICODBC_H
-#define PICODBC_H
+#ifndef NANODBC_H
+#define NANODBC_H
 
 #include <sql.h>
 #include <sqlext.h>
@@ -75,8 +75,8 @@ See http://www.codeguru.com/submission-guidelines.php for details.<br />
 #include <tr1/memory>
 #include <tr1/type_traits>
 
-//! \brief The entirety of picodbc can be found within this one namespace.
-namespace picodbc
+//! \brief The entirety of nanodbc can be found within this one namespace.
+namespace nanodbc
 {
 
 class statement;
@@ -250,7 +250,7 @@ namespace detail
 //! \brief Possible error conditions.
 //!
 //! Specific errors such as type_incompatible_error, null_access_error, and index_range_error can arise
-//! from improper use of the picodbc library. The general database_error is for all other situations
+//! from improper use of the nanodbc library. The general database_error is for all other situations
 //! in which the ODBC driver or C API reports an error condition. The explanatory string for database_error
 //! will, if possible, contain a diagnostic message obtained from SQLGetDiagRec().
 //! @{
@@ -309,7 +309,7 @@ public:
 //! @}
 
 //! \addtogroup utility Utility Classes
-//! \brief Additional picodbc utility classes.
+//! \brief Additional nanodbc utility classes.
 //!
 //! \{
 
@@ -336,7 +336,7 @@ struct timestamp_type
 //! \}
 
 //! \addtogroup main Main Classes
-//! \brief Main picodbc classes.
+//! \brief Main nanodbc classes.
 //!
 //! @{
 
@@ -808,6 +808,6 @@ private:
 
 //! @}
 
-} // namespace picodbc
+} // namespace nanodbc
 
-#endif // PICODBC_H
+#endif // NANODBC_H

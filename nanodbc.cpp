@@ -1,26 +1,26 @@
-//! \file picodbc.cpp Implementation details.
+//! \file nanodbc.cpp Implementation details.
 
-#include "picodbc.h"
+#include "nanodbc.h"
 
 #include <cassert>
 
-#define PICODBC_STRINGIZE_I(text) #text
-#define PICODBC_STRINGIZE(text) PICODBC_STRINGIZE_I(text)
-#define PICODBC_THROW_DATABASE_ERROR(handle, handle_type) throw database_error(handle, handle_type, __FILE__ ":" PICODBC_STRINGIZE(__LINE__) ": ")
+#define NANODBC_STRINGIZE_I(text) #text
+#define NANODBC_STRINGIZE(text) NANODBC_STRINGIZE_I(text)
+#define NANODBC_THROW_DATABASE_ERROR(handle, handle_type) throw database_error(handle, handle_type, __FILE__ ":" NANODBC_STRINGIZE(__LINE__) ": ")
 
-#ifdef PICODBC_ODBC_API_DEBUG
+#ifdef NANODBC_ODBC_API_DEBUG
     #include <iostream>
-    #define PICODBC_CALL(FUNC, RC, ...)                                                            \
+    #define NANODBC_CALL(FUNC, RC, ...)                                                            \
         do {                                                                                       \
-            std::cerr << __FILE__ << ":" PICODBC_STRINGIZE(__LINE__) << " " << #FUNC << std::endl; \
+            std::cerr << __FILE__ << ":" NANODBC_STRINGIZE(__LINE__) << " " << #FUNC << std::endl; \
             RC = FUNC(__VA_ARGS__);                                                                \
         } while(false)                                                                             \
         /**/
 #else
-    #define PICODBC_CALL(FUNC, RC, ...) RC = FUNC(__VA_ARGS__)
+    #define NANODBC_CALL(FUNC, RC, ...) RC = FUNC(__VA_ARGS__)
 #endif
 
-namespace picodbc
+namespace nanodbc
 {
 
 namespace detail
@@ -66,17 +66,17 @@ namespace detail
     inline void allocate_handle(HENV& env, HDBC& conn)
     {
         RETCODE rc;
-        PICODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_ENV, SQL_NULL_HANDLE, &env);
+        NANODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_ENV, SQL_NULL_HANDLE, &env);
         if(!success(rc))
-            PICODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
+            NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
 
-        PICODBC_CALL(SQLSetEnvAttr, rc, env, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, SQL_IS_UINTEGER);
+        NANODBC_CALL(SQLSetEnvAttr, rc, env, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, SQL_IS_UINTEGER);
         if(!success(rc))
-            PICODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
+            NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
 
-        PICODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_DBC, env, &conn);   
+        NANODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_DBC, env, &conn);   
         if(!success(rc))
-            PICODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
+            NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
     }
 
     const char* const sql_type_info<short>::format = "%hd";
@@ -95,9 +95,9 @@ namespace detail
         SQLSMALLINT data_type;
         SQLSMALLINT decimal_digits;
         SQLSMALLINT nullable;
-        PICODBC_CALL(SQLDescribeParam, rc, stmt, param + 1, &data_type, &column_size, &decimal_digits, &nullable);
+        NANODBC_CALL(SQLDescribeParam, rc, stmt, param + 1, &data_type, &column_size, &decimal_digits, &nullable);
         if(!success(rc))
-            PICODBC_THROW_DATABASE_ERROR(stmt, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt, SQL_HANDLE_STMT);
     }
 } // namespace detail
 
@@ -169,8 +169,8 @@ connection::~connection() throw()
 {
     disconnect();
     RETCODE rc;
-    PICODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
-    PICODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_ENV, env_);
+    NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
+    NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_ENV, env_);
 }
 
 void connection::connect(const std::string& dsn, const std::string& user, const std::string& pass, int timeout)
@@ -178,25 +178,25 @@ void connection::connect(const std::string& dsn, const std::string& user, const 
     disconnect();
 
     RETCODE rc;
-    PICODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
+    NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
     if(!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
-    PICODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_DBC, env_, &conn_);
+    NANODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_DBC, env_, &conn_);
     if(!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(env_, SQL_HANDLE_ENV);
+        NANODBC_THROW_DATABASE_ERROR(env_, SQL_HANDLE_ENV);
 
-    PICODBC_CALL(SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)timeout, 0);
+    NANODBC_CALL(SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)timeout, 0);
     if(!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
-    PICODBC_CALL(SQLConnect, rc,
+    NANODBC_CALL(SQLConnect, rc,
         conn_
         , (SQLCHAR*)dsn.c_str(), SQL_NTS
         , user.empty() ? (SQLCHAR*)user.c_str() : 0, SQL_NTS
         , pass.empty() ? (SQLCHAR*)pass.c_str() : 0, SQL_NTS);
     if(!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
     connected_ = detail::success(rc);
 }
@@ -206,21 +206,21 @@ void connection::connect(const std::string& connection_string, int timeout)
     disconnect();
 
     RETCODE rc;
-    PICODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
+    NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
     if(!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
-    PICODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_DBC, env_, &conn_);
+    NANODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_DBC, env_, &conn_);
     if(!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(env_, SQL_HANDLE_ENV);
+        NANODBC_THROW_DATABASE_ERROR(env_, SQL_HANDLE_ENV);
 
-    PICODBC_CALL(SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)timeout, 0);
+    NANODBC_CALL(SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)timeout, 0);
     if(!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
     SQLCHAR dsn[1024];
     SQLSMALLINT dsn_size = 0;
-    PICODBC_CALL(SQLDriverConnect, rc,
+    NANODBC_CALL(SQLDriverConnect, rc,
         conn_
         , 0
         , (SQLCHAR*)connection_string.c_str(), SQL_NTS
@@ -228,7 +228,7 @@ void connection::connect(const std::string& connection_string, int timeout)
         , &dsn_size
         , SQL_DRIVER_NOPROMPT);
     if(!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
     connected_ = detail::success(rc);
 }
@@ -267,9 +267,9 @@ std::string connection::driver_name() const
     char name[1024];
     SQLSMALLINT length;
     RETCODE rc;
-    PICODBC_CALL(SQLGetInfo, rc, conn_, SQL_DRIVER_NAME, name, sizeof(name), &length);
+    NANODBC_CALL(SQLGetInfo, rc, conn_, SQL_DRIVER_NAME, name, sizeof(name), &length);
     if (!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
     return name;
 }
 
@@ -280,13 +280,13 @@ transaction::transaction(connection& conn)
     if(conn_.transactions_ == 0 && conn_.connected())
     {
         RETCODE rc;
-        PICODBC_CALL(SQLSetConnectAttr, rc,
+        NANODBC_CALL(SQLSetConnectAttr, rc,
             conn_.native_dbc_handle()
             , SQL_ATTR_AUTOCOMMIT
             , (SQLPOINTER)SQL_AUTOCOMMIT_OFF
             , SQL_IS_UINTEGER);
         if (!detail::success(rc))
-            PICODBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
+            NANODBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
     }
     ++conn_.transactions_;
 }
@@ -302,9 +302,9 @@ transaction::~transaction() throw()
     if(conn_.transactions_ == 0 && conn_.rollback_ && conn_.connected())
     {
         RETCODE rc;
-        PICODBC_CALL(SQLEndTran, rc, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_ROLLBACK);
+        NANODBC_CALL(SQLEndTran, rc, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_ROLLBACK);
         conn_.rollback_ = false;
-        PICODBC_CALL(SQLSetConnectAttr, rc, 
+        NANODBC_CALL(SQLSetConnectAttr, rc, 
             conn_.native_dbc_handle()
             , SQL_ATTR_AUTOCOMMIT
             , (SQLPOINTER)SQL_AUTOCOMMIT_ON
@@ -320,9 +320,9 @@ void transaction::commit()
     if((--conn_.transactions_) == 0 && conn_.connected())
     {
         RETCODE rc;
-        PICODBC_CALL(SQLEndTran, rc, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_COMMIT);
+        NANODBC_CALL(SQLEndTran, rc, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_COMMIT);
         if(!detail::success(rc))
-            PICODBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
+            NANODBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
     }
 }
 
@@ -402,7 +402,7 @@ private:
         }
         value_buffer_len_ = element_size * elements;
         RETCODE rc;
-        PICODBC_CALL(SQLBindParameter, rc, 
+        NANODBC_CALL(SQLBindParameter, rc, 
             stmt_
             , param_ + 1
             , SQL_PARAM_INPUT
@@ -414,7 +414,7 @@ private:
             , element_size
             , 0);
         if(!success(rc))
-            PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
     void set_string(const std::string& str)
@@ -422,7 +422,7 @@ private:
         string_buffer_ = str;
         string_buffer_len_ = SQL_NTS;
         RETCODE rc;
-        PICODBC_CALL(SQLBindParameter, rc, 
+        NANODBC_CALL(SQLBindParameter, rc, 
             stmt_
             , param_ + 1
             , SQL_PARAM_INPUT
@@ -434,7 +434,7 @@ private:
             , (SQLLEN)string_buffer_.size() + 1
             , &string_buffer_len_);
         if (!success(rc))
-            PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
 private:
@@ -510,9 +510,9 @@ public:
     {
         SQLLEN rows;
         RETCODE rc;
-        PICODBC_CALL(SQLRowCount, rc, stmt_, &rows);
+        NANODBC_CALL(SQLRowCount, rc, stmt_, &rows);
         if (!detail::success(rc))
-            PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         return rows;
     }
 
@@ -525,9 +525,9 @@ public:
     {
         SQLSMALLINT cols;
         RETCODE rc;
-        PICODBC_CALL(SQLNumResultCols, rc, stmt_, &cols);
+        NANODBC_CALL(SQLNumResultCols, rc, stmt_, &cols);
         if (!success(rc))
-            PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         return cols;
     }
 
@@ -565,14 +565,14 @@ public:
     {
         SQLULEN pos;
         RETCODE rc;
-        PICODBC_CALL(SQLGetStmtAttr, rc,
+        NANODBC_CALL(SQLGetStmtAttr, rc,
             stmt_
             , SQL_ATTR_ROW_NUMBER
             , &pos
             , SQL_IS_UINTEGER
             , 0);
         if (!success(rc))
-            PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         return pos;
     }
 
@@ -610,13 +610,13 @@ private:
     , bound_columns_size_(0)
     {
         RETCODE rc;
-        PICODBC_CALL(SQLSetStmtAttr, rc, stmt, SQL_ATTR_ROW_ARRAY_SIZE, (SQLPOINTER)rowset_size_, 0);
+        NANODBC_CALL(SQLSetStmtAttr, rc, stmt, SQL_ATTR_ROW_ARRAY_SIZE, (SQLPOINTER)rowset_size_, 0);
         if(!success(rc))
-            PICODBC_THROW_DATABASE_ERROR(stmt, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt, SQL_HANDLE_STMT);
 
-        PICODBC_CALL(SQLSetStmtAttr, rc, stmt, SQL_ATTR_ROWS_FETCHED_PTR, &row_count_, 0);
+        NANODBC_CALL(SQLSetStmtAttr, rc, stmt, SQL_ATTR_ROWS_FETCHED_PTR, &row_count_, 0);
         if(!success(rc))
-            PICODBC_THROW_DATABASE_ERROR(stmt, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt, SQL_HANDLE_STMT);
 
         auto_bind();
     }
@@ -646,11 +646,11 @@ private:
     {
         before_move();
         RETCODE rc;
-        PICODBC_CALL(SQLFetchScroll, rc, stmt_, orientation, rows);
+        NANODBC_CALL(SQLFetchScroll, rc, stmt_, orientation, rows);
         if (rc == SQL_NO_DATA)
             return false;
         if (!success(rc))
-            PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         return true;
     }
 
@@ -658,10 +658,10 @@ private:
     {
         SQLSMALLINT n_columns = 0;
         RETCODE rc;
-        PICODBC_CALL(SQLNumResultCols, rc, stmt_, &n_columns);
+        NANODBC_CALL(SQLNumResultCols, rc, stmt_, &n_columns);
 
         if(!success(rc))
-            PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         if(n_columns < 1)
             return;
 
@@ -677,7 +677,7 @@ private:
         for(SQLSMALLINT i = 0; i < n_columns; ++i)
         {
             RETCODE rc;
-            PICODBC_CALL(SQLDescribeCol, rc,
+            NANODBC_CALL(SQLDescribeCol, rc,
                 stmt_
                 , i + 1
                 , column_name
@@ -688,7 +688,7 @@ private:
                 , &scale
                 , &nullable);
             if(!success(rc))
-                PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+                NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
             bound_column& col = bound_columns_[i];
             col.name_ = reinterpret_cast<char*>(column_name);
@@ -756,17 +756,17 @@ private:
             col.cbdata_ = new long[rowset_size_];
             if(col.blob_)
             {
-                PICODBC_CALL(SQLBindCol, rc, stmt_, i + 1, col.ctype_, 0, 0, col.cbdata_);
+                NANODBC_CALL(SQLBindCol, rc, stmt_, i + 1, col.ctype_, 0, 0, col.cbdata_);
                 if(!success(rc))
-                    PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+                    NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
             }
             else
             {
                 col.rowset_size_ = rowset_size_;
                 col.pdata_ = new char[rowset_size_ * col.clen_];
-                PICODBC_CALL(SQLBindCol, rc, stmt_, i + 1, col.ctype_, col.pdata_, col.clen_, col.cbdata_);
+                NANODBC_CALL(SQLBindCol, rc, stmt_, i + 1, col.ctype_, col.pdata_, col.clen_, col.cbdata_);
                 if(!success(rc))
-                    PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+                    NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
             }
         }
     }   
@@ -925,19 +925,19 @@ statement::~statement() throw()
     if(!open())
         return;
     RETCODE rc;
-    PICODBC_CALL(SQLCancel, rc, stmt_);
+    NANODBC_CALL(SQLCancel, rc, stmt_);
     reset_parameters();
-    PICODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
+    NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
 }
 
 void statement::open(connection& conn)
 {
     close();
     RETCODE rc;
-    PICODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_STMT, conn.native_dbc_handle(), &stmt_);
+    NANODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_STMT, conn.native_dbc_handle(), &stmt_);
     open_ = detail::success(rc);
     if (!open_)
-        PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 }
 
 bool statement::open() const
@@ -955,20 +955,20 @@ void statement::close()
     if(!open())
         return;
     RETCODE rc;
-    PICODBC_CALL(SQLCancel, rc, stmt_);
+    NANODBC_CALL(SQLCancel, rc, stmt_);
     if(!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
     // #T do we need to do this here?
-    // PICODBC_CALL(SQLCloseCursor, rc, stmt_);
+    // NANODBC_CALL(SQLCloseCursor, rc, stmt_);
     // if(!detail::success(rc))
-    //     PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+    //     NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
     reset_parameters();
 
-    PICODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
+    NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
     if(!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
     open_ = false;
     stmt_ = 0;
@@ -977,44 +977,44 @@ void statement::close()
 void statement::cancel()
 {
     RETCODE rc;
-    PICODBC_CALL(SQLCancel, rc, stmt_);
+    NANODBC_CALL(SQLCancel, rc, stmt_);
     if (!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 }
 
 void statement::prepare(connection& conn, const std::string& stmt)
 {
     open(conn);
     RETCODE rc;
-    PICODBC_CALL(SQLPrepare, rc, stmt_, (SQLCHAR*)stmt.c_str(), SQL_NTS);
+    NANODBC_CALL(SQLPrepare, rc, stmt_, (SQLCHAR*)stmt.c_str(), SQL_NTS);
     if (!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 }
 
 result statement::execute_direct(connection& conn, const std::string& query, unsigned long batch_operations)
 {
     open(conn);
     RETCODE rc;
-    PICODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)batch_operations, 0);
+    NANODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)batch_operations, 0);
     if (!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
-    PICODBC_CALL(SQLExecDirect, rc, stmt_, (SQLCHAR*)query.c_str(), SQL_NTS);
+    NANODBC_CALL(SQLExecDirect, rc, stmt_, (SQLCHAR*)query.c_str(), SQL_NTS);
     if (!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     return result(stmt_, batch_operations);
 }
 
 result statement::execute(unsigned long batch_operations)
 {
     RETCODE rc;
-    PICODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)batch_operations, 0);
+    NANODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)batch_operations, 0);
     if (!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
-    PICODBC_CALL(SQLExecute, rc, stmt_);
+    NANODBC_CALL(SQLExecute, rc, stmt_);
     if (!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     return result(stmt_, batch_operations);
 }
 
@@ -1022,24 +1022,24 @@ long statement::affected_rows() const
 {
     SQLLEN rows;
     RETCODE rc;
-    PICODBC_CALL(SQLRowCount, rc, stmt_, &rows);
+    NANODBC_CALL(SQLRowCount, rc, stmt_, &rows);
     if (!detail::success(rc))
-        PICODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     return rows;
 }
 
 void statement::reset_parameters() throw()
 {
     RETCODE rc;
-    PICODBC_CALL(SQLFreeStmt, rc, stmt_, SQL_RESET_PARAMS);
+    NANODBC_CALL(SQLFreeStmt, rc, stmt_, SQL_RESET_PARAMS);
     for(bound_parameters_type::iterator i = bound_parameters_.begin(), end = bound_parameters_.end(); i != end; ++i)
         delete i->second;
     bound_parameters_.clear();
 }
 
-} // namespace picodbc
+} // namespace nanodbc
 
-#undef PICODBC_THROW_DATABASE_ERROR
-#undef PICODBC_STRINGIZE
-#undef PICODBC_STRINGIZE_I
-#undef PICODBC_CALL
+#undef NANODBC_THROW_DATABASE_ERROR
+#undef NANODBC_STRINGIZE
+#undef NANODBC_STRINGIZE_I
+#undef NANODBC_CALL

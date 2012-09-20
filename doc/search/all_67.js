@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['get',['get',['../classpicodbc_1_1result.html#a1689bd06911edd22277edb2c8ac70602',1,'picodbc::result']]]
+  ['get',['get',['../classnanodbc_1_1result.html#afb178a82a88b16f4ce78168a986a6d7d',1,'nanodbc::result']]]
 ];

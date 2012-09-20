@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['sec',['sec',['../structpicodbc_1_1timestamp__type.html#af9a49b84b42c5a370941958e5db4244c',1,'picodbc::timestamp_type']]]
+  ['sec',['sec',['../structnanodbc_1_1timestamp__type.html#aa881ef3b93839ed837c00dec40b8e450',1,'nanodbc::timestamp_type']]]
 ];

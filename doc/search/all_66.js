@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['first',['first',['../classpicodbc_1_1result.html#a062132cc4057c13b91ebd47e739215ab',1,'picodbc::result']]],
-  ['fract',['fract',['../structpicodbc_1_1timestamp__type.html#ae05fd042f4b20e2adfffb2f4e757372b',1,'picodbc::timestamp_type']]]
+  ['first',['first',['../classnanodbc_1_1result.html#a8ce75f4ab1bb039c6ee6724966f54a93',1,'nanodbc::result']]],
+  ['fract',['fract',['../structnanodbc_1_1timestamp__type.html#ac397dfb25d4f44d7ece8f1aba40230d3',1,'nanodbc::timestamp_type']]]
 ];
