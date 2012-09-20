@@ -68,6 +68,7 @@ See http://www.codeguru.com/submission-guidelines.php for details.<br />
 
 #include <algorithm>
 #include <cstdio>
+#include <cstring>
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -773,10 +774,7 @@ public:
         char* cdata = new char[elements * column_size];
         size_type row = 0;
         for(InputIterator i = first; i != last; ++i)
-        {
-            using namespace std; // promote strncpy() if it's not already
-            strncpy(&cdata[row++ * column_size], std::string(*i).c_str(), column_size);
-        }
+            std::strncpy(&cdata[row++ * column_size], std::string(*i).c_str(), column_size);
 
         detail::statement_bind_parameter_value(
             this
