@@ -681,7 +681,7 @@ public:
     //! \param value Value to substitute into placeholder.
     //! \throws database_error
     template<class T>
-    const void bind_parameter(long param, const T& value)
+    void bind_parameter(long param, const T& value)
     {
         detail::statement_bind_parameter_value(
             this
@@ -703,28 +703,10 @@ public:
     //! \throws database_error
     //! \see transaction
     template<class InputIterator>
-    const void bind_parameter(long param, InputIterator first, InputIterator last)
-    {
-        using std::iterator_traits;
-        using std::distance;
-        using std::copy;
-        typedef typename iterator_traits<InputIterator>::value_type value_type;
-        typename iterator_traits<InputIterator>::difference_type elements = distance(first, last);
-        value_type* data = new value_type[elements];
-        copy(first, last, data);
-        detail::statement_bind_parameter_value(
-            this
-            , param
-            , detail::sql_type_info<value_type>::ctype
-            , detail::sql_type_info<value_type>::sqltype
-            , (char*)data
-            , sizeof(value_type)
-            , elements
-            , true);
-    }
+    void bind_parameter(long param, InputIterator first, InputIterator last);
 
     #ifndef DOXYGEN
-    const void bind_parameter(long param, const std::string& value)
+    void bind_parameter(long param, const std::string& value)
     {
         detail::statement_bind_parameter_string(this, param, value);
     }
@@ -736,6 +718,32 @@ private:
 private:
     statement(const statement&); // not defined
     statement& operator=(const statement&); // not defined
+
+    template<class ElementType>
+    struct bind_parameter_impl
+    {
+        statement* me_;
+        explicit bind_parameter_impl(statement* me) : me_(me) { }
+        template<class InputIterator>
+        void operator()(long param, InputIterator first, InputIterator last) const
+        {
+            using std::iterator_traits;
+            using std::distance;
+            using std::copy;
+            typename iterator_traits<InputIterator>::difference_type elements = distance(first, last);
+            ElementType* data = new ElementType[elements];
+            copy(first, last, data);
+            detail::statement_bind_parameter_value(
+                me_
+                , param
+                , detail::sql_type_info<ElementType>::ctype
+                , detail::sql_type_info<ElementType>::sqltype
+                , (char*)data
+                , sizeof(ElementType)
+                , elements
+                , true);
+        }
+    };
 
 private:
     friend void detail::statement_bind_parameter_value(
@@ -758,6 +766,26 @@ private:
     bool open_;
     bound_parameters_type bound_parameters_;
 };
+
+template<>
+struct statement::bind_parameter_impl<std::string>
+{
+    statement* me_;
+    explicit bind_parameter_impl(statement* me) : me_(me) { }
+    template<class InputIterator>
+    void operator()(long param, InputIterator first, InputIterator last)
+    {
+        throw std::runtime_error("batch string binding not implemented yet");
+    }
+};
+
+template<class InputIterator>
+inline void statement::bind_parameter(long param, InputIterator first, InputIterator last)
+{
+    using std::iterator_traits;
+    typedef typename iterator_traits<InputIterator>::value_type element_type;
+    bind_parameter_impl<element_type>(this)(param, first, last);
+}
 
 //! @}
 

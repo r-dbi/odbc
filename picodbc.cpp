@@ -470,7 +470,7 @@ void statement_bind_parameter_value(
     , bool take_ownership)
 {
     if(!me->bound_parameters_.count(param))
-        me->bound_parameters_[param] = new class bound_parameter(me->stmt_, param);
+        me->bound_parameters_[param] = new bound_parameter(me->stmt_, param);
     me->bound_parameters_[param]->set_value(ctype, sqltype, data, element_size, elements, take_ownership);
 }
 
@@ -480,7 +480,7 @@ void statement_bind_parameter_string(
     , const std::string& string)
 {
     if(!me->bound_parameters_.count(param))
-        me->bound_parameters_[param] = new class bound_parameter(me->stmt_, param);
+        me->bound_parameters_[param] = new bound_parameter(me->stmt_, param);
     me->bound_parameters_[param]->set_string(string);
 }
 
