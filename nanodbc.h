@@ -360,13 +360,13 @@ public:
     //! \param timeout The number in seconds before connection timeout.
     //! \throws database_error
     //! \see connected(), connect()
-    connection(const std::string& dsn, const std::string& user, const std::string& pass, int timeout = 5);
+    connection(const std::string& dsn, const std::string& user, const std::string& pass, long timeout = 5);
 
     //! \brief Create new connection object and immediately connect using the given connection string.
     //! \param connection_string The connection string for establishing a connection.
     //! \throws database_error
     //! \see connected(), connect()
-    connection(const std::string& connection_string, int timeout = 5);
+    connection(const std::string& connection_string, long timeout = 5);
 
     //! \brief Automatically disconnects from the database and frees all associated resources.
     ~connection() throw();
@@ -378,14 +378,14 @@ public:
     //! \param timeout The number in seconds before connection timeout.
     //! \throws database_error
     //! \see connected()
-    void connect(const std::string& dsn, const std::string& user, const std::string& pass, int timeout = 5);
+    void connect(const std::string& dsn, const std::string& user, const std::string& pass, long timeout = 5);
 
     //! \brief Create new connection object and immediately connect using the given connection string.
     //! \param connection_string The connection string for establishing a connection.
     //! \param timeout The number in seconds before connection timeout.
     //! \throws database_error
     //! \see connected()
-    void connect(const std::string& connection_string, int timeout = 5);
+    void connect(const std::string& connection_string, long timeout = 5);
 
     //! \brief Returns true if connected to the database.
     bool connected() const;

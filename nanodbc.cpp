@@ -143,7 +143,7 @@ connection::connection()
     detail::allocate_handle(env_, conn_);
 }
 
-connection::connection(const std::string& dsn, const std::string& user, const std::string& pass, int timeout)
+connection::connection(const std::string& dsn, const std::string& user, const std::string& pass, long timeout)
 : env_(0)
 , conn_(0)
 , connected_(false)
@@ -154,7 +154,7 @@ connection::connection(const std::string& dsn, const std::string& user, const st
     connect(dsn, user, pass, timeout);
 }
 
-connection::connection(const std::string& connection_string, int timeout)
+connection::connection(const std::string& connection_string, long timeout)
 : env_(0)
 , conn_(0)
 , connected_(false)
@@ -173,7 +173,7 @@ connection::~connection() throw()
     NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_ENV, env_);
 }
 
-void connection::connect(const std::string& dsn, const std::string& user, const std::string& pass, int timeout)
+void connection::connect(const std::string& dsn, const std::string& user, const std::string& pass, long timeout)
 {
     disconnect();
 
@@ -201,7 +201,7 @@ void connection::connect(const std::string& dsn, const std::string& user, const 
     connected_ = detail::success(rc);
 }
 
-void connection::connect(const std::string& connection_string, int timeout)
+void connection::connect(const std::string& connection_string, long timeout)
 {
     disconnect();
 
