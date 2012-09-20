@@ -79,8 +79,9 @@ See http://www.codeguru.com/submission-guidelines.php for details.<br />
 namespace nanodbc
 {
 
-class statement;
 class result;
+class statement;
+class transaction;
 
 namespace detail
 {
@@ -119,8 +120,8 @@ namespace detail
         }
 
     private:
-        friend class result;
-        friend class result_impl;
+        friend class nanodbc::result;
+        friend class nanodbc::detail::result_impl;
 
     private:
         std::string name_;
@@ -409,7 +410,7 @@ private:
     connection& operator=(const connection&); // not defined
 
 private:
-    friend class transaction;
+    friend class nanodbc::transaction;
 
 private:
     HENV env_;
@@ -534,7 +535,7 @@ public:
     //! \param row If there are multiple rows in this rowset, get from the specified row.
     //! \throws database_error, index_range_error, type_incompatible_error
     template<class T>
-    T get(short column, unsigned long row = 0)
+    T get(short column, unsigned long row = 0) const
     {
         detail::bound_column& col = result_impl_get_bound_column(impl_, column, row);
         switch(col.ctype_)
@@ -569,14 +570,14 @@ private:
     result(statement stmt, unsigned long rowset_size);
 
 private:
-    friend class detail::statement_impl;
+    friend class nanodbc::detail::statement_impl;
 
 private:
     detail::result_impl_ptr impl_;
 };
 
 template<>
-inline std::string result::get<std::string>(short column, unsigned long row)
+inline std::string result::get<std::string>(short column, unsigned long row) const
 {
     detail::bound_column& col = result_impl_get_bound_column(impl_, column, row);
     char buffer[1024];
@@ -772,7 +773,10 @@ public:
         char* cdata = new char[elements * column_size];
         size_type row = 0;
         for(InputIterator i = first; i != last; ++i)
-            std::strncpy(&cdata[row++ * column_size], std::string(*i).c_str(), column_size);
+        {
+            using namespace std; // promote strncpy() if it's not already
+            strncpy(&cdata[row++ * column_size], std::string(*i).c_str(), column_size);
+        }
 
         detail::statement_bind_parameter_value(
             this
@@ -787,7 +791,7 @@ public:
     #endif // DOXYGEN
 
 private:
-    friend void detail::statement_bind_parameter_value(
+    friend void nanodbc::detail::statement_bind_parameter_value(
         statement* me
         , long param
         , SQLSMALLINT ctype
@@ -797,13 +801,13 @@ private:
         , std::size_t elements
         , bool take_ownership);
 
-    friend void detail::statement_bind_parameter_string(
+    friend void nanodbc::detail::statement_bind_parameter_string(
         statement* me
         , long param
         , const std::string& string);
 
 private:
-    friend class detail::statement_impl;
+    friend class nanodbc::detail::statement_impl;
 
 private:
     detail::statement_impl_ptr impl_;

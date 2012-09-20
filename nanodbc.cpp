@@ -435,7 +435,7 @@ private:
     }
 
 private:
-    friend void statement_bind_parameter_value(
+    friend void nanodbc::detail::statement_bind_parameter_value(
         statement* me
         , long param
         , SQLSMALLINT ctype
@@ -445,7 +445,7 @@ private:
         , std::size_t elements
         , bool take_ownership);
 
-    friend void statement_bind_parameter_string(
+    friend void nanodbc::detail::statement_bind_parameter_string(
         statement* me
         , long param
         , const std::string& string);
@@ -598,7 +598,7 @@ private:
     statement_impl& operator=(const statement_impl&); // not defined
 
 private:
-    friend void statement_bind_parameter_value(
+    friend void nanodbc::detail::statement_bind_parameter_value(
         statement* me
         , long param
         , SQLSMALLINT ctype
@@ -608,7 +608,7 @@ private:
         , std::size_t elements
         , bool take_ownership);
 
-    friend void statement_bind_parameter_string(
+    friend void nanodbc::detail::statement_bind_parameter_string(
         statement* me
         , long param
         , const std::string& string);
@@ -929,8 +929,8 @@ private:
     }   
 
 private:
-    friend class result;
-    friend bound_column& result_impl_get_bound_column(result_impl_ptr me, short column, unsigned long row);
+    friend class nanodbc::result;
+    friend bound_column& nanodbc::detail::result_impl_get_bound_column(result_impl_ptr me, short column, unsigned long row);
 
 private:
     statement stmt_;
