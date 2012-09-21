@@ -66,6 +66,7 @@ See http://www.codeguru.com/submission-guidelines.php for details.<br />
 #include <sql.h>
 #include <sqlext.h>
 #include <algorithm>
+#include <cstring>
 #include <stdexcept>
 #include <string>
 #include <tr1/cstdint>

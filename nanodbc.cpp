@@ -4,7 +4,6 @@
 
 #include <cassert>
 #include <cstdio>
-#include <cstring>
 #include <map>
 
 #define NANODBC_STRINGIZE_I(text) #text
