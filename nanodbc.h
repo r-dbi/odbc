@@ -65,11 +65,7 @@ See http://www.codeguru.com/submission-guidelines.php for details.<br />
 
 #include <sql.h>
 #include <sqlext.h>
-
 #include <algorithm>
-#include <cstdio>
-#include <cstring>
-#include <map>
 #include <stdexcept>
 #include <string>
 #include <tr1/cstdint>
@@ -81,75 +77,10 @@ namespace nanodbc
 {
 
 class result;
-class statement;
 class transaction;
 
 namespace detail
 {
-    class result_impl;
-    class statement_impl;
-    class bound_parameter;
-    typedef std::tr1::shared_ptr<result_impl> result_impl_ptr;
-    typedef std::tr1::shared_ptr<statement_impl> statement_impl_ptr;
-
-    class bound_column
-    {
-    public:
-        ~bound_column()
-        {
-            delete[] cbdata_;
-            delete[] pdata_;
-        }
-
-    private:
-        bound_column(const bound_column& rhs); // not defined
-        bound_column& operator=(bound_column rhs); // not defined
-
-        bound_column()
-        : name_()
-        , sqltype_(0)
-        , sqlsize_(0)
-        , scale_(0)
-        , ctype_(0)
-        , clen_(0)
-        , blob_(false)
-        , rowset_size_(0)
-        , cbdata_(0)
-        , pdata_(0)
-        {
-
-        }
-
-    private:
-        friend class nanodbc::result;
-        friend class nanodbc::detail::result_impl;
-
-    private:
-        std::string name_;
-        SQLSMALLINT sqltype_;
-        SQLULEN sqlsize_;
-        SQLSMALLINT scale_;
-        SQLSMALLINT ctype_;
-        SQLSMALLINT clen_;
-        bool blob_;
-        long rowset_size_;
-        long* cbdata_;
-        char* pdata_;
-    };
-
-    void statement_bind_parameter_value(
-        statement* me
-        , long param
-        , SQLSMALLINT ctype
-        , SQLSMALLINT sqltype
-        , char* data
-        , std::size_t element_size
-        , std::size_t elemnts
-        , bool take_ownership);
-    void statement_bind_parameter_string(statement* me, long param, const std::string& string);
-    bound_column& result_impl_get_bound_column(result_impl_ptr me, short column, long row);
-    void describe_parameter_column_size(HSTMT stmt, long param, SQLULEN& column_size);
-
     // simple enable/disable if utility taken from boost
     template <bool B, class T = void> struct enable_if_c { typedef T type; };
     template <class T> struct enable_if_c<false, T> { };
@@ -233,21 +164,6 @@ namespace detail
         static const SQLSMALLINT sqltype = SQL_CHAR;
         static const char* const format; 
     };
-
-    // Converts the given string to the given type T.
-    template<class T>
-    inline T convert(const std::string& s)
-    {
-        T value;
-        std::sscanf(s.c_str(), detail::sql_type_info<T>::format, &value);
-        return value;
-    }
-
-    template<>
-    inline std::string convert<std::string>(const std::string& s)
-    {
-        return s;
-    }
 } // namespace detail
 
 //! \addtogroup exceptions Exception Types
@@ -452,164 +368,6 @@ private:
     bool committed_;
 };
 
-//! \brief A resource for managing result sets from statement execution.
-//!
-//! \see statement::execute(), statement::execute_direct()
-//! \note result objects may be copied, however all copies will refer to the same underlying ODBC result set.
-class result
-{
-public:
-    //! Empty result set.
-    result();
-
-    //! Free result set.
-    ~result() throw();
-
-    //! Copy constructor.
-    result(const result& rhs);
-
-    //! Assignment.
-    result& operator=(result rhs);
-
-    //! Member swap.
-    void swap(result& rhs) throw();
-
-    //! \brief Returns the native ODBC statement handle.
-    HDBC native_stmt_handle() const;
-
-    //! \brief The rowset size for this result set.
-    long rowset_size() const;
-
-    //! \brief Returns the number of rows affected by the request or –1 if the number of affected rows is not available.
-    //! \throws database_error
-    long affected_rows() const;
-
-    //! \brief Returns the number of rows in the current rowset or 0 if the number of rows is not available.
-    //! \throws database_error
-    long rows() const;
-
-    //! \brief Returns the number of columns in the current result set.
-    //! \throws database_error
-    short columns() const;
-
-    //! \brief Fetches the first row in the current result set.
-    //! \return true if there are more results or false otherwise.
-    //! \throws database_error
-    bool first();
-
-    //! \brief Fetches the last row in the current result set.
-    //! \return true if there are more results or false otherwise.
-    //! \throws database_error
-    bool last();
-
-    //! \brief Fetches the next row in the current result set.
-    //! \return true if there are more results or false otherwise.
-    //! \throws database_error
-    bool next();
-
-    //! \brief Fetches the prior row in the current result set.
-    //! \return true if there are more results or false otherwise.
-    //! \throws database_error
-    bool prior();
-
-    //! \brief Moves to and fetches the specified row in the current result set.
-    //! \return true if there are results or false otherwise.
-    //! \throws database_error
-    bool move(long row);
-
-    //! \brief Skips a number of rows and then fetches the resulting row in the current result set.
-    //! \return true if there are results or false otherwise.
-    //! \throws database_error
-    bool skip(long rows);
-
-    //! \brief Returns the row position in the current result set.
-    long position() const;
-
-    //! \brief Returns true if there are no more results in the current result set.
-    //! \throws database_error
-    bool end() const;
-
-    //! \brief Gets data from the given column in the selected row of the current rowset.
-    //!
-    //! Columns are numbered from left to right and 0-indexed.
-    //! \param Column position. 
-    //! \param row If there are multiple rows in this rowset, get from the specified row.
-    //! \throws database_error, index_range_error, type_incompatible_error
-    template<class T>
-    T get(short column, long row = 0) const
-    {
-        detail::bound_column& col = result_impl_get_bound_column(impl_, column, row);
-        switch(col.ctype_)
-        {
-            case SQL_C_SSHORT: return (T)*(short*)(col.pdata_ + row * col.clen_);
-            case SQL_C_USHORT: return (T)*(unsigned short*)(col.pdata_ + row * col.clen_);
-            case SQL_C_SLONG: return (T)*(long*)(col.pdata_ + row * col.clen_);
-            case SQL_C_ULONG: return (T)*(unsigned long*)(col.pdata_ + row * col.clen_);
-            case SQL_C_FLOAT: return (T)*(float*)(col.pdata_ + row * col.clen_);
-            case SQL_C_DOUBLE: return (T)*(double*)(col.pdata_ + row * col.clen_);
-            case SQL_C_CHAR: if (!col.blob_) return detail::convert<T>((col.pdata_ + row * col.clen_));
-        }
-        throw type_incompatible_error();
-    }
-
-    //! \brief Returns true if and only if the given column in the selected row of the current rowset is null.
-    //!
-    //! Columns are numbered from left to right and 0-indexed.
-    //! \param Column position. 
-    //! \param row If there are multiple rows in this rowset, get from the specified row.
-    //! \throws database_error, index_range_error
-    bool is_null(short column, long row = 0) const;
-
-    //! \brief Returns the name of the specified column.
-    //!
-    //! Columns are numbered from left to right and 0-indexed.
-    //! \param Column position. 
-    //! \throws index_range_error
-    std::string column_name(short column) const;
-
-private:
-    result(statement stmt, long rowset_size);
-
-private:
-    friend class nanodbc::detail::statement_impl;
-
-private:
-    detail::result_impl_ptr impl_;
-};
-
-template<>
-inline std::string result::get<std::string>(short column, long row) const
-{
-    detail::bound_column& col = result_impl_get_bound_column(impl_, column, row);
-    char buffer[1024];
-    switch(col.ctype_)
-    {
-        case SQL_C_CHAR:
-        case SQL_C_GUID:
-        case SQL_C_BINARY:
-            if(col.blob_)
-                throw std::runtime_error("blob not implemented yet"); // #T implement load_blob(column);
-            return (col.pdata_ + row * col.clen_);
-
-        case SQL_C_LONG:
-            if(std::snprintf(buffer, sizeof(buffer), "%ld", *(long*)(col.pdata_ + row * col.clen_)) != 1)
-                throw type_incompatible_error();
-            return buffer;
-
-        case SQL_C_DOUBLE:
-            if(std::snprintf(buffer, sizeof(buffer), "%lf", *(double*)(col.pdata_ + row * col.clen_)) != 1)
-                throw type_incompatible_error();
-            return buffer;
-
-        case SQL_C_DATE:
-            throw std::runtime_error("date not implemented yet"); // #T implement date conversion
-
-        case SQL_C_TIMESTAMP:
-            throw std::runtime_error("timestamp not implemented yet"); // #T implement timestamp conversion
-    }
-    throw type_incompatible_error();
-}
-
 //! \brief Represents a statement on the database.
 class statement
 {
@@ -694,25 +452,7 @@ public:
     //! \param value Value to substitute into placeholder.
     //! \throws database_error
     template<class T>
-    void bind_parameter(long param, const T& value)
-    {
-        detail::statement_bind_parameter_value(
-            this
-            , param
-            , detail::sql_type_info<T>::ctype
-            , detail::sql_type_info<T>::sqltype
-            , (char*)&value
-            , sizeof(value)
-            , 1
-            , false);
-    }
-
-    #ifndef DOXYGEN
-    void bind_parameter(long param, const std::string& value)
-    {
-        detail::statement_bind_parameter_string(this, param, value);
-    }
-    #endif // DOXYGEN
+    void bind_parameter(long param, const T& value);
 
     //! \brief Binds a number of values to the given parameter placeholder number in the prepared statement for batch operation.
     //! 
@@ -738,12 +478,14 @@ public:
         using std::distance;
         using std::copy;
         typedef typename std::iterator_traits<InputIterator>::value_type element_type;
-        typename std::iterator_traits<InputIterator>::difference_type elements = distance(first, last);
+        typedef typename std::iterator_traits<InputIterator>::difference_type size_type;
+        const size_type elements = distance(first, last);
+
         element_type* data = new element_type[elements];
         copy(first, last, data);
-        detail::statement_bind_parameter_value(
-            this
-            , param
+
+        bind_parameter(
+            param
             , detail::sql_type_info<element_type>::ctype
             , detail::sql_type_info<element_type>::sqltype
             , (char*)data
@@ -766,21 +508,18 @@ public:
         using std::copy;
         typedef typename std::iterator_traits<InputIterator>::value_type element_type;
         typedef typename std::iterator_traits<InputIterator>::difference_type size_type;
-        size_type elements = distance(first, last);
-
-        SQLULEN column_size;
-        detail::describe_parameter_column_size(native_stmt_handle(), param, column_size);
+        const size_type elements = distance(first, last);
+        const unsigned long column_size = parameter_column_size(param);
 
         char* cdata = new char[elements * column_size];
         size_type row = 0;
         for(InputIterator i = first; i != last; ++i)
             std::strncpy(&cdata[row++ * column_size], std::string(*i).c_str(), column_size);
 
-        detail::statement_bind_parameter_value(
-            this
-            , param
-            , detail::sql_type_info<std::string>::ctype
-            , detail::sql_type_info<std::string>::sqltype
+        bind_parameter(
+            param
+            , detail::sql_type_info<element_type>::ctype
+            , detail::sql_type_info<element_type>::sqltype
             , cdata
             , column_size
             , elements
@@ -789,26 +528,135 @@ public:
     #endif // DOXYGEN
 
 private:
-    friend void nanodbc::detail::statement_bind_parameter_value(
-        statement* me
-        , long param
+    void bind_parameter(
+        long param
         , SQLSMALLINT ctype
         , SQLSMALLINT sqltype
         , char* data
         , std::size_t element_size
-        , std::size_t elements
+        , std::size_t elemnts
         , bool take_ownership);
 
-    friend void nanodbc::detail::statement_bind_parameter_string(
-        statement* me
-        , long param
-        , const std::string& string);
+    unsigned long parameter_column_size(long param) const;
 
 private:
-    friend class nanodbc::detail::statement_impl;
+    friend class nanodbc::result;
+    class statement_impl;
 
 private:
-    detail::statement_impl_ptr impl_;
+    std::tr1::shared_ptr<statement_impl> impl_;
+};
+
+//! \brief A resource for managing result sets from statement execution.
+//!
+//! \see statement::execute(), statement::execute_direct()
+//! \note result objects may be copied, however all copies will refer to the same underlying ODBC result set.
+class result
+{
+public:
+    //! Empty result set.
+    result();
+
+    //! Free result set.
+    ~result() throw();
+
+    //! Copy constructor.
+    result(const result& rhs);
+
+    //! Assignment.
+    result& operator=(result rhs);
+
+    //! Member swap.
+    void swap(result& rhs) throw();
+
+    //! \brief Returns the native ODBC statement handle.
+    HDBC native_stmt_handle() const;
+
+    //! \brief The rowset size for this result set.
+    long rowset_size() const;
+
+    //! \brief Returns the number of rows affected by the request or –1 if the number of affected rows is not available.
+    //! \throws database_error
+    long affected_rows() const;
+
+    //! \brief Returns the number of rows in the current rowset or 0 if the number of rows is not available.
+    //! \throws database_error
+    long rows() const;
+
+    //! \brief Returns the number of columns in the current result set.
+    //! \throws database_error
+    short columns() const;
+
+    //! \brief Fetches the first row in the current result set.
+    //! \return true if there are more results or false otherwise.
+    //! \throws database_error
+    bool first();
+
+    //! \brief Fetches the last row in the current result set.
+    //! \return true if there are more results or false otherwise.
+    //! \throws database_error
+    bool last();
+
+    //! \brief Fetches the next row in the current result set.
+    //! \return true if there are more results or false otherwise.
+    //! \throws database_error
+    bool next();
+
+    //! \brief Fetches the prior row in the current result set.
+    //! \return true if there are more results or false otherwise.
+    //! \throws database_error
+    bool prior();
+
+    //! \brief Moves to and fetches the specified row in the current result set.
+    //! \return true if there are results or false otherwise.
+    //! \throws database_error
+    bool move(long row);
+
+    //! \brief Skips a number of rows and then fetches the resulting row in the current result set.
+    //! \return true if there are results or false otherwise.
+    //! \throws database_error
+    bool skip(long rows);
+
+    //! \brief Returns the row position in the current result set.
+    long position() const;
+
+    //! \brief Returns true if there are no more results in the current result set.
+    //! \throws database_error
+    bool end() const;
+
+    //! \brief Gets data from the given column in the selected row of the current rowset.
+    //!
+    //! Columns are numbered from left to right and 0-indexed.
+    //! \param Column position. 
+    //! \param row If there are multiple rows in this rowset, get from the specified row.
+    //! \throws database_error, index_range_error, type_incompatible_error
+    template<class T>
+    T get(short column, long row = 0) const;
+
+    //! \brief Returns true if and only if the given column in the selected row of the current rowset is null.
+    //!
+    //! Columns are numbered from left to right and 0-indexed.
+    //! \param Column position. 
+    //! \param row If there are multiple rows in this rowset, get from the specified row.
+    //! \throws database_error, index_range_error
+    bool is_null(short column, long row = 0) const;
+
+    //! \brief Returns the name of the specified column.
+    //!
+    //! Columns are numbered from left to right and 0-indexed.
+    //! \param Column position. 
+    //! \throws index_range_error
+    std::string column_name(short column) const;
+
+private:
+    result(statement stmt, long rowset_size);
+
+private:
+    friend class nanodbc::statement::statement_impl;
+    class result_impl;
+
+private:
+    std::tr1::shared_ptr<result_impl> impl_;
 };
 
 //! @}
