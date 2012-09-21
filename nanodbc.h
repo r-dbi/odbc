@@ -65,13 +65,24 @@ See http://www.codeguru.com/submission-guidelines.php for details.<br />
 
 #include <sql.h>
 #include <sqlext.h>
+
 #include <algorithm>
 #include <cstring>
 #include <stdexcept>
 #include <string>
-#include <tr1/cstdint>
-#include <tr1/memory>
-#include <tr1/type_traits>
+
+// You must explicitly request TR1 by defining this at compile time, otherwise nanodbc will assume you're using c++11.
+#ifdef NANODBC_USE_TR1
+    #include <tr1/cstdint>
+    #include <tr1/memory>
+    #include <tr1/type_traits>
+    #define NANODBC_STD std::tr1::
+#else
+    #include <cstdint>
+    #include <memory>
+    #include <type_traits>
+    #define NANODBC_STD std::
+#endif
 
 //! \brief The entirety of nanodbc can be found within this one namespace.
 namespace nanodbc
@@ -237,21 +248,21 @@ public:
 //! \brief A type for representing date data.
 struct date_type
 {
-    std::tr1::int16_t year; //!< Year.
-    std::tr1::int16_t month; //!< Month.
-    std::tr1::int16_t day; //!< Day.
+    NANODBC_STD int16_t year; //!< Year.
+    NANODBC_STD int16_t month; //!< Month.
+    NANODBC_STD int16_t day; //!< Day.
 };
 
 //! \brief A type for representing timestamp data.
 struct timestamp_type
 {
-    std::tr1::int16_t year; //!< Year.
-    std::tr1::int16_t month; //!< Month.
-    std::tr1::int16_t day; //!< Day.
-    std::tr1::int16_t hour; //!< 24 Hour.
-    std::tr1::int16_t min; //!< Min.
-    std::tr1::int16_t sec; //!< Seconds.
-    std::tr1::int32_t fract; //!< Fractional seconds.
+    NANODBC_STD int16_t year; //!< Year.
+    NANODBC_STD int16_t month; //!< Month.
+    NANODBC_STD int16_t day; //!< Day.
+    NANODBC_STD int16_t hour; //!< 24 Hour.
+    NANODBC_STD int16_t min; //!< Min.
+    NANODBC_STD int16_t sec; //!< Seconds.
+    NANODBC_STD int32_t fract; //!< Fractional seconds.
 };
 
 //! \}
@@ -308,7 +319,7 @@ private:
     friend class nanodbc::connection;
 
 private:
-    std::tr1::shared_ptr<transaction_impl> impl_;
+    NANODBC_STD shared_ptr<transaction_impl> impl_;
 };
 
 //! \brief Manages and encapsulates ODBC resources such as the connection and environment handles.
@@ -391,7 +402,7 @@ private:
     friend class nanodbc::transaction::transaction_impl;
 
 private:
-    std::tr1::shared_ptr<connection_impl> impl_;
+    NANODBC_STD shared_ptr<connection_impl> impl_;
 };
 
 //! \brief Represents a statement on the database.
@@ -491,7 +502,7 @@ public:
     template<class InputIterator>
     #ifndef DOXYGEN
         typename detail::disable_if_c<
-            std::tr1::is_convertible<
+            NANODBC_STD is_convertible<
                 typename std::iterator_traits<InputIterator>::value_type
                 , std::string
             >::value
@@ -523,7 +534,7 @@ public:
     #ifndef DOXYGEN
     template<class InputIterator>
     typename detail::enable_if_c<
-        std::tr1::is_convertible<
+        NANODBC_STD is_convertible<
             typename std::iterator_traits<InputIterator>::value_type
             , std::string
         >::value
@@ -570,7 +581,7 @@ private:
     friend class nanodbc::result;
 
 private:
-    std::tr1::shared_ptr<statement_impl> impl_;
+    NANODBC_STD shared_ptr<statement_impl> impl_;
 };
 
 //! \brief A resource for managing result sets from statement execution.
@@ -682,7 +693,7 @@ private:
     friend class nanodbc::statement::statement_impl;
 
 private:
-    std::tr1::shared_ptr<result_impl> impl_;
+    NANODBC_STD shared_ptr<result_impl> impl_;
 };
 
 //! @}

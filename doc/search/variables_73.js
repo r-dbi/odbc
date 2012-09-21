@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['sec',['sec',['../structnanodbc_1_1timestamp__type.html#aa881ef3b93839ed837c00dec40b8e450',1,'nanodbc::timestamp_type']]]
+  ['sec',['sec',['../structnanodbc_1_1timestamp__type.html#a845300ae8fd81818ebd28c8938aa6420',1,'nanodbc::timestamp_type']]]
 ];

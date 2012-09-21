@@ -6,6 +6,10 @@
 #include <cstdio>
 #include <map>
 
+///////////////////////////////////////////////////////////////////////////////
+// Exception Handling
+///////////////////////////////////////////////////////////////////////////////
+
 #define NANODBC_STRINGIZE_I(text) #text
 #define NANODBC_STRINGIZE(text) NANODBC_STRINGIZE_I(text)
 #define NANODBC_THROW_DATABASE_ERROR(handle, handle_type) throw database_error(handle, handle_type, __FILE__ ":" NANODBC_STRINGIZE(__LINE__) ": ")
@@ -21,6 +25,10 @@
 #else
     #define NANODBC_CALL(FUNC, RC, ...) RC = FUNC(__VA_ARGS__)
 #endif
+
+///////////////////////////////////////////////////////////////////////////////
+// Implementation Details
+///////////////////////////////////////////////////////////////////////////////
 
 namespace nanodbc
 {
@@ -51,12 +59,13 @@ namespace
         return value;
     }
 
-    // easy way to check if a return code signifies success.
+    // Easy way to check if a return code signifies success.
     inline bool success(RETCODE rc)
     {
         return rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO;
     }
 
+    // Encapsulates resources needed for column binding.
     class bound_column
     {
     public:
@@ -98,6 +107,7 @@ namespace
         bound_column& operator=(bound_column rhs); // not defined
     };
 
+    // Encapsulates resources needed for parameter binding.
     class bound_parameter
     {
     public:
@@ -115,34 +125,6 @@ namespace
         ~bound_parameter()
         {
             delete[] value_buffer_;
-        }
-
-        bound_parameter(const bound_parameter& rhs)
-        : stmt_(rhs.stmt_)
-        , param_(rhs.param_)
-        , value_buffer_(rhs.value_buffer_)
-        , value_buffer_len_(rhs.value_buffer_len_)
-        , string_buffer_(rhs.string_buffer_)
-        , string_buffer_len_(rhs.string_buffer_len_)
-        {
-
-        }
-
-        bound_parameter& operator=(bound_parameter rhs)
-        {
-            swap(rhs);
-            return *this;
-        }
-
-        void swap(bound_parameter& rhs)
-        {
-            using std::swap;
-            swap(stmt_, rhs.stmt_);
-            swap(param_, rhs.param_);
-            swap(value_buffer_, rhs.value_buffer_);
-            swap(value_buffer_len_, rhs.value_buffer_len_);
-            swap(string_buffer_, rhs.string_buffer_);
-            swap(string_buffer_len_, rhs.string_buffer_len_);
         }
 
         void set_value(SQLSMALLINT ctype, SQLSMALLINT sqltype, char* data, std::size_t element_size, std::size_t elements, bool take_ownership)
@@ -196,6 +178,10 @@ namespace
         }
 
     private:
+        bound_parameter(const bound_parameter&); // not defined
+        bound_parameter& operator=(const bound_parameter&); // not defined
+
+    private:
         HSTMT stmt_;
         long param_;
         char* value_buffer_;
@@ -204,7 +190,7 @@ namespace
         SQLLEN string_buffer_len_;
     };
 
-    // attempts to get the last ODBC error as a string.
+    // Attempts to get the last ODBC error as a string.
     inline std::string last_error(SQLHANDLE handle, SQLSMALLINT handle_type)
     {
         SQLCHAR sql_state[6];
@@ -229,7 +215,7 @@ namespace
         return "Unknown Error: SQLGetDiagRec() call failed";
     }
 
-    // allocates the native ODBC handles.
+    // Allocates the native ODBC handles.
     inline void allocate_handle(HENV& env, HDBC& conn)
     {
         RETCODE rc;
@@ -246,6 +232,10 @@ namespace
             NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
     }
 } // namespace
+
+///////////////////////////////////////////////////////////////////////////////
+// Exception Types
+///////////////////////////////////////////////////////////////////////////////
 
 type_incompatible_error::type_incompatible_error()
 : std::runtime_error("type incompatible") { }
@@ -278,6 +268,10 @@ const char* database_error::what() const throw()
 {
     return std::runtime_error::what();
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Private Implementation: connection
+///////////////////////////////////////////////////////////////////////////////
 
 class connection::connection_impl
 {
@@ -454,6 +448,10 @@ private:
     bool rollback_; // if true, this connection is marked for eventual transaction rollback
 };
 
+///////////////////////////////////////////////////////////////////////////////
+// Private Implementation: transaction
+///////////////////////////////////////////////////////////////////////////////
+
 class transaction::transaction_impl
 {
 public:
@@ -536,6 +534,10 @@ private:
     bool committed_;
 };
 
+///////////////////////////////////////////////////////////////////////////////
+// Private Implementation: statement
+///////////////////////////////////////////////////////////////////////////////
+
 class statement::statement_impl
 {
 private:
@@ -560,12 +562,17 @@ public:
 
     ~statement_impl() throw()
     {
-        if(!open())
-            return;
-        RETCODE rc;
-        NANODBC_CALL(SQLCancel, rc, stmt_);
-        reset_parameters();
-        NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
+        if(open())
+        {
+            RETCODE rc;
+            NANODBC_CALL(SQLCancel, rc, stmt_);
+            reset_parameters();
+            NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
+        }
+        else
+        {
+            release_parameters();
+        }
     }
 
     void open(connection& conn)
@@ -592,6 +599,7 @@ public:
     {
         if(!open())
             return;
+
         RETCODE rc;
         NANODBC_CALL(SQLCancel, rc, stmt_);
         if(!success(rc))
@@ -618,6 +626,7 @@ public:
     void prepare(connection& conn, const std::string& stmt)
     {
         open(conn);
+
         RETCODE rc;
         NANODBC_CALL(SQLPrepare, rc, stmt_, (SQLCHAR*)stmt.c_str(), SQL_NTS);
         if (!success(rc))
@@ -627,6 +636,7 @@ public:
     result execute_direct(connection& conn, const std::string& query, long batch_operations, statement& statement)
     {
         open(conn);
+
         RETCODE rc;
         NANODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)batch_operations, 0);
         if (!success(rc))
@@ -659,15 +669,6 @@ public:
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         return rows;
-    }
-
-    void reset_parameters() throw()
-    {
-        RETCODE rc;
-        NANODBC_CALL(SQLFreeStmt, rc, stmt_, SQL_RESET_PARAMS);
-        for(bound_parameters_type::iterator i = bound_parameters_.begin(), end = bound_parameters_.end(); i != end; ++i)
-            delete i->second;
-        bound_parameters_.clear();
     }
 
     template<class T>
@@ -717,6 +718,21 @@ public:
         bound_parameters_[param]->set_value(ctype, sqltype, data, element_size, elements, take_ownership);
     }
 
+    void reset_parameters() throw()
+    {
+        RETCODE rc;
+        NANODBC_CALL(SQLFreeStmt, rc, stmt_, SQL_RESET_PARAMS);
+        release_parameters();
+    }
+
+private:
+    void release_parameters() throw()
+    {
+        for(bound_parameters_type::iterator i = bound_parameters_.begin(), end = bound_parameters_.end(); i != end; ++i)
+            delete i->second;
+        bound_parameters_.clear();
+    }
+
 private:
     statement_impl(const statement_impl&); // not defined
     statement_impl& operator=(const statement_impl&); // not defined
@@ -726,6 +742,10 @@ private:
     bool open_;
     bound_parameters_type bound_parameters_;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+// Private Implementation: result
+///////////////////////////////////////////////////////////////////////////////
 
 class result::result_impl
 {
@@ -1080,7 +1100,7 @@ inline std::string result::result_impl::get<std::string>(short column, long row)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Pimpl Forwards
+// Pimpl Forwards: connection
 ///////////////////////////////////////////////////////////////////////////////
 
 connection::connection()
@@ -1184,6 +1204,10 @@ void connection::rollback(bool onoff)
     impl_->rollback(onoff);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Pimpl Forwards: transaction
+///////////////////////////////////////////////////////////////////////////////
+
 transaction::transaction(const class connection& conn)
 : impl_(new transaction_impl(conn))
 {
@@ -1242,6 +1266,10 @@ transaction::operator const class connection&() const
 {
     return impl_->connection();
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Pimpl Forwards: statement
+///////////////////////////////////////////////////////////////////////////////
 
 statement::statement()
 : impl_(new statement_impl())
@@ -1333,6 +1361,8 @@ void statement::bind_parameter(long param, const T& value)
 {
     impl_->bind_parameter(param, value);
 }
+
+// The following are the only supported instantiations of statement::bind_parameter().
 template void statement::bind_parameter(long, const short&);
 template void statement::bind_parameter(long, const unsigned short&);
 template void statement::bind_parameter(long, const long&);
@@ -1359,6 +1389,10 @@ unsigned long statement::parameter_column_size(long param) const
 {
     return impl_->parameter_column_size(param);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Pimpl Forwards: result
+///////////////////////////////////////////////////////////////////////////////
 
 result::result()
 : impl_()
@@ -1475,6 +1509,8 @@ T result::get(short column, long row) const
 {
     return impl_->get<T>(column, row);
 }
+
+// The following are the only supported instantiations of result::get().
 template short result::get(short, long) const;
 template unsigned short result::get(short, long) const;
 template long result::get(short, long) const;
