@@ -121,7 +121,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"></div>
 <div class="line"><a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">nanodbc::result</a> direct_execution(<a class="code" href="classnanodbc_1_1connection.html" title="Manages and encapsulates ODBC resources such as the connection and environment handles.">nanodbc::connection</a>&amp; connection, <span class="keyword">const</span> <span class="keywordtype">string</span>&amp; query)</div>
 <div class="line">{</div>
-<div class="line">    <a class="code" href="classnanodbc_1_1statement.html" title="Represents a statement on the database.">nanodbc::statement</a> statement;</div>
+<div class="line">    <a class="code" href="classnanodbc_1_1statement.html" title="Represents a statement on the database.">nanodbc::statement</a> <a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9" title="Creates a new un-prepared statement.">statement</a>;</div>
 <div class="line">    <span class="keywordflow">return</span> statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, query);</div>
 <div class="line">    <span class="comment">// notice that statement will be destructed here, but the result object</span></div>
 <div class="line">    <span class="comment">// will keep the statement resources alive until we are done with them</span></div>
@@ -147,7 +147,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">        results = direct_execution(connection, <span class="stringliteral">&quot;select * from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>);</div>
 <div class="line">        show&lt;string&gt;(results);</div>
 <div class="line"></div>
-<div class="line">        <a class="code" href="classnanodbc_1_1statement.html" title="Represents a statement on the database.">nanodbc::statement</a> statement;</div>
+<div class="line">        <a class="code" href="classnanodbc_1_1statement.html" title="Represents a statement on the database.">nanodbc::statement</a> <a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9" title="Creates a new un-prepared statement.">statement</a>;</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Direct execution, bulk fetching 2 rows at a time</span></div>
 <div class="line">        results = statement.execute_direct(connection, <span class="stringliteral">&quot;select * from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>, 2);</div>
@@ -211,7 +211,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Fri Sep 21 2012 15:04:20 for nanodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Fri Sep 21 2012 16:53:46 for nanodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>

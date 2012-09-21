@@ -77,8 +77,8 @@ See http://www.codeguru.com/submission-guidelines.php for details.<br />
 namespace nanodbc
 {
 
+class connection;
 class result;
-class transaction;
 
 namespace detail
 {
@@ -261,14 +261,71 @@ struct timestamp_type
 //!
 //! @{
 
-//! \brief Manages and encapsulates ODBC resources such as the connection and environment handles.
+//! \brief A resource for managing transaction commits and rollbacks.
 //!
-//! \note connections are non-copyable.
+//! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
+class transaction
+{
+public:
+    //! \brief Begin a transaction on the given connection object.
+    //! \post Operations that modify the database must now be committed before taking effect.
+    //! \throws database_error
+    explicit transaction(const class connection& conn);
+
+    //! Copy constructor.
+    transaction(const transaction& rhs);
+
+    //! Assignment.
+    transaction& operator=(transaction rhs);
+
+    //! Member swap.
+    void swap(transaction& rhs) throw();
+
+    //! \brief If this transaction has not been committed, will will rollback any modifying operations.
+    ~transaction() throw();
+
+    //! \brief Marks this transaction for commit.
+    //! \throws database_error
+    void commit();
+
+    //! \brief Marks this transaction for rollback.
+    void rollback() throw();
+
+    //! Returns the connection object.
+    class connection& connection();
+
+    //! Returns the connection object.
+    const class connection& connection() const;
+
+    //! Returns the connection object.
+    operator class connection&();
+
+    //! Returns the connection object.
+    operator const class connection&() const;
+
+private:
+    class transaction_impl;
+    friend class nanodbc::connection;
+
+private:
+    std::tr1::shared_ptr<transaction_impl> impl_;
+};
+
+//! \brief Manages and encapsulates ODBC resources such as the connection and environment handles.
 class connection
 {
 public:
     //! \brief Create new connection object, initially not connected.
     connection();
+
+    //! Copy constructor.
+    connection(const connection& rhs);
+
+    //! Assignment.
+    connection& operator=(connection rhs);
+
+    //! Member swap.
+    void swap(connection&) throw();
 
     //! \brief Create new connection object and immediately connect to the given data source.
     //! \param dsn The name of the data source.
@@ -317,56 +374,24 @@ public:
     HDBC native_dbc_handle() const;
 
     //! \brief Returns the native ODBC environment handle.
-    HDBC native_evn_handle() const;
+    HDBC native_env_handle() const;
 
     //! \brief Returns the name of the ODBC driver.
     //! \throws database_error
     std::string driver_name() const;
 
 private:
-    connection(const connection&); // not defined
-    connection& operator=(const connection&); // not defined
+    std::size_t ref_transaction();
+    std::size_t unref_transaction();
+    bool rollback() const;
+    void rollback(bool onoff);
 
 private:
-    friend class nanodbc::transaction;
+    class connection_impl;
+    friend class nanodbc::transaction::transaction_impl;
 
 private:
-    HENV env_;
-    HDBC conn_;
-    bool connected_;
-    std::size_t transactions_;
-    bool rollback_; // if true, this connection is marked for eventual transaction rollback
-};
-
-//! \brief A resource for managing transaction commits and rollbacks.
-//!
-//! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
-//! \note transactions are non-copyable.
-class transaction
-{
-public:
-    //! \brief Begin a transaction on the given connection object.
-    //! \post Operations that modify the database must now be committed before taking effect.
-    //! \throws database_error
-    explicit transaction(connection& conn);
-
-    //! \brief If this transaction has not been committed, will will rollback any modifying operations.
-    ~transaction() throw();
-
-    //! \brief Marks this transaction for commit.
-    //! \throws database_error
-    void commit();
-
-    //! \brief Marks this transaction for rollback.
-    void rollback() throw();
-
-private:
-    transaction(const transaction&); // not defined
-    transaction& operator=(const transaction&); // not defined
-
-private:
-    connection& conn_;
-    bool committed_;
+    std::tr1::shared_ptr<connection_impl> impl_;
 };
 
 //! \brief Represents a statement on the database.
@@ -466,7 +491,7 @@ public:
     template<class InputIterator>
     #ifndef DOXYGEN
         typename detail::disable_if_c<
-            std::tr1::is_same<
+            std::tr1::is_convertible<
                 typename std::iterator_traits<InputIterator>::value_type
                 , std::string
             >::value
@@ -498,7 +523,7 @@ public:
     #ifndef DOXYGEN
     template<class InputIterator>
     typename detail::enable_if_c<
-        std::tr1::is_same<
+        std::tr1::is_convertible<
             typename std::iterator_traits<InputIterator>::value_type
             , std::string
         >::value
@@ -541,8 +566,8 @@ private:
     unsigned long parameter_column_size(long param) const;
 
 private:
-    friend class nanodbc::result;
     class statement_impl;
+    friend class nanodbc::result;
 
 private:
     std::tr1::shared_ptr<statement_impl> impl_;
@@ -653,8 +678,8 @@ private:
     result(statement stmt, long rowset_size);
 
 private:
-    friend class nanodbc::statement::statement_impl;
     class result_impl;
+    friend class nanodbc::statement::statement_impl;
 
 private:
     std::tr1::shared_ptr<result_impl> impl_;

@@ -89,7 +89,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#friends">Friends</a> &#124;
 <a href="classnanodbc_1_1connection-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">nanodbc::connection Class Reference<div class="ingroups"><a class="el" href="group__main.html">Main Classes</a></div></div>  </div>
@@ -97,7 +96,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 
 <p>Manages and encapsulates ODBC resources such as the connection and environment handles.  
- <a href="classnanodbc_1_1connection.html#details">More...</a></p>
+</p>
 
 <p><code>#include &lt;<a class="el" href="nanodbc_8h_source.html">nanodbc.h</a>&gt;</code></p>
 <table class="memberdecls">
@@ -106,6 +105,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aab3f1b405cc87c780b3ec5e95665284d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aab3f1b405cc87c780b3ec5e95665284d"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#aab3f1b405cc87c780b3ec5e95665284d">connection</a> ()</td></tr>
 <tr class="memdesc:aab3f1b405cc87c780b3ec5e95665284d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create new connection object, initially not connected. <br/></td></tr>
+<tr class="memitem:aaea353f8c2f0b4576bc4c95bed330b46"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaea353f8c2f0b4576bc4c95bed330b46"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#aaea353f8c2f0b4576bc4c95bed330b46">connection</a> (const <a class="el" href="classnanodbc_1_1connection.html">connection</a> &amp;rhs)</td></tr>
+<tr class="memdesc:aaea353f8c2f0b4576bc4c95bed330b46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor. <br/></td></tr>
+<tr class="memitem:a47debf67d31d195f307bbc52b650cdf2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a47debf67d31d195f307bbc52b650cdf2"></a>
+<a class="el" href="classnanodbc_1_1connection.html">connection</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#a47debf67d31d195f307bbc52b650cdf2">operator=</a> (<a class="el" href="classnanodbc_1_1connection.html">connection</a> rhs)</td></tr>
+<tr class="memdesc:a47debf67d31d195f307bbc52b650cdf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assignment. <br/></td></tr>
+<tr class="memitem:a76c616fd73c3e38ea7cac89bd183f2cb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a76c616fd73c3e38ea7cac89bd183f2cb"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#a76c616fd73c3e38ea7cac89bd183f2cb">swap</a> (<a class="el" href="classnanodbc_1_1connection.html">connection</a> &amp;)  throw ()</td></tr>
+<tr class="memdesc:a76c616fd73c3e38ea7cac89bd183f2cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member swap. <br/></td></tr>
 <tr class="memitem:a34d6ffe0f4017058577fc92bd487601f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#a34d6ffe0f4017058577fc92bd487601f">connection</a> (const std::string &amp;dsn, const std::string &amp;user, const std::string &amp;pass, long timeout=5)</td></tr>
 <tr class="memdesc:a34d6ffe0f4017058577fc92bd487601f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create new connection object and immediately connect to the given data source.  <a href="#a34d6ffe0f4017058577fc92bd487601f"></a><br/></td></tr>
 <tr class="memitem:aa0a3df69cbc4e6aa4cbde6cd0add5591"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#aa0a3df69cbc4e6aa4cbde6cd0add5591">connection</a> (const std::string &amp;connection_string, long timeout=5)</td></tr>
@@ -129,20 +137,13 @@ std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <tr class="memitem:a490acddf71dce9145032199d722dc78a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a490acddf71dce9145032199d722dc78a"></a>
 HDBC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#a490acddf71dce9145032199d722dc78a">native_dbc_handle</a> () const </td></tr>
 <tr class="memdesc:a490acddf71dce9145032199d722dc78a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the native ODBC database connection handle. <br/></td></tr>
-<tr class="memitem:a8ee4b883cd2393c47a89974eb4cf2676"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8ee4b883cd2393c47a89974eb4cf2676"></a>
-HDBC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#a8ee4b883cd2393c47a89974eb4cf2676">native_evn_handle</a> () const </td></tr>
-<tr class="memdesc:a8ee4b883cd2393c47a89974eb4cf2676"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the native ODBC environment handle. <br/></td></tr>
+<tr class="memitem:a8d19c7be48694212688cba682b48a012"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8d19c7be48694212688cba682b48a012"></a>
+HDBC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#a8d19c7be48694212688cba682b48a012">native_env_handle</a> () const </td></tr>
+<tr class="memdesc:a8d19c7be48694212688cba682b48a012"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the native ODBC environment handle. <br/></td></tr>
 <tr class="memitem:a55cbecf5f5ad6f06292b2d5e0082c69c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1connection.html#a55cbecf5f5ad6f06292b2d5e0082c69c">driver_name</a> () const </td></tr>
 <tr class="memdesc:a55cbecf5f5ad6f06292b2d5e0082c69c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name of the ODBC driver.  <a href="#a55cbecf5f5ad6f06292b2d5e0082c69c"></a><br/></td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2><a name="friends"></a>
-Friends</h2></td></tr>
-<tr class="memitem:a1f58c944bebfc6292b3b4418437a7a90"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1f58c944bebfc6292b3b4418437a7a90"></a>
-class&#160;</td><td class="memItemRight" valign="bottom"><b>nanodbc::transaction</b></td></tr>
 </table>
-<a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><dl class="section note"><dt>Note</dt><dd>connections are non-copyable. </dd></dl>
-</div><h2>Constructor &amp; Destructor Documentation</h2>
+<h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a34d6ffe0f4017058577fc92bd487601f"></a>
 <div class="memitem">
 <div class="memproto">
@@ -365,7 +366,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>nanodbc::transaction
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Fri Sep 21 2012 15:04:20 for nanodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Fri Sep 21 2012 16:53:46 for nanodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>

@@ -279,205 +279,262 @@ const char* database_error::what() const throw()
     return std::runtime_error::what();
 }
 
-connection::connection()
-: env_(0)
-, conn_(0)
-, connected_(false)
-, transactions_(0)
-, rollback_(false)
+class connection::connection_impl
 {
-    allocate_handle(env_, conn_);
-}
-
-connection::connection(const std::string& dsn, const std::string& user, const std::string& pass, long timeout)
-: env_(0)
-, conn_(0)
-, connected_(false)
-, transactions_(0)
-, rollback_(false)
-{
-    allocate_handle(env_, conn_);
-    connect(dsn, user, pass, timeout);
-}
-
-connection::connection(const std::string& connection_string, long timeout)
-: env_(0)
-, conn_(0)
-, connected_(false)
-, transactions_(0)
-, rollback_(false)
-{
-    allocate_handle(env_, conn_);
-    connect(connection_string, timeout);
-}
-
-connection::~connection() throw()
-{
-    disconnect();
-    RETCODE rc;
-    NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
-    NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_ENV, env_);
-}
-
-void connection::connect(const std::string& dsn, const std::string& user, const std::string& pass, long timeout)
-{
-    disconnect();
-
-    RETCODE rc;
-    NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
-    if(!success(rc))
-        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-
-    NANODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_DBC, env_, &conn_);
-    if(!success(rc))
-        NANODBC_THROW_DATABASE_ERROR(env_, SQL_HANDLE_ENV);
-
-    NANODBC_CALL(SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)timeout, 0);
-    if(!success(rc))
-        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-
-    NANODBC_CALL(SQLConnect, rc,
-        conn_
-        , (SQLCHAR*)dsn.c_str(), SQL_NTS
-        , user.empty() ? (SQLCHAR*)user.c_str() : 0, SQL_NTS
-        , pass.empty() ? (SQLCHAR*)pass.c_str() : 0, SQL_NTS);
-    if(!success(rc))
-        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-
-    connected_ = success(rc);
-}
-
-void connection::connect(const std::string& connection_string, long timeout)
-{
-    disconnect();
-
-    RETCODE rc;
-    NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
-    if(!success(rc))
-        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-
-    NANODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_DBC, env_, &conn_);
-    if(!success(rc))
-        NANODBC_THROW_DATABASE_ERROR(env_, SQL_HANDLE_ENV);
-
-    NANODBC_CALL(SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)timeout, 0);
-    if(!success(rc))
-        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-
-    SQLCHAR dsn[1024];
-    SQLSMALLINT dsn_size = 0;
-    NANODBC_CALL(SQLDriverConnect, rc,
-        conn_
-        , 0
-        , (SQLCHAR*)connection_string.c_str(), SQL_NTS
-        , dsn, sizeof(dsn)
-        , &dsn_size
-        , SQL_DRIVER_NOPROMPT);
-    if(!success(rc))
-        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-
-    connected_ = success(rc);
-}
-
-bool connection::connected() const
-{
-    return connected_;
-}
-
-void connection::disconnect() throw()
-{
-    if(connected())
+public:
+    connection_impl()
+    : env_(0)
+    , conn_(0)
+    , connected_(false)
+    , transactions_(0)
+    , rollback_(false)
     {
-        SQLDisconnect(conn_);
+        allocate_handle(env_, conn_);
     }
-    connected_ = false;
-}
 
-std::size_t connection::transactions() const
-{
-    return transactions_;
-}
-
-HDBC connection::native_dbc_handle() const
-{
-    return conn_;
-}
-
-HDBC connection::native_evn_handle() const
-{
-    return env_;
-}
-
-std::string connection::driver_name() const
-{
-    char name[1024];
-    SQLSMALLINT length;
-    RETCODE rc;
-    NANODBC_CALL(SQLGetInfo, rc, conn_, SQL_DRIVER_NAME, name, sizeof(name), &length);
-    if (!success(rc))
-        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-    return name;
-}
-
-transaction::transaction(connection& conn)
-: conn_(conn)
-, committed_(false)
-{
-    if(conn_.transactions_ == 0 && conn_.connected())
+    connection_impl(const std::string& dsn, const std::string& user, const std::string& pass, long timeout)
+    : env_(0)
+    , conn_(0)
+    , connected_(false)
+    , transactions_(0)
+    , rollback_(false)
     {
+        allocate_handle(env_, conn_);
+        connect(dsn, user, pass, timeout);
+    }
+
+    connection_impl(const std::string& connection_string, long timeout)
+    : env_(0)
+    , conn_(0)
+    , connected_(false)
+    , transactions_(0)
+    , rollback_(false)
+    {
+        allocate_handle(env_, conn_);
+        connect(connection_string, timeout);
+    }
+
+    ~connection_impl() throw()
+    {
+        disconnect();
         RETCODE rc;
-        NANODBC_CALL(SQLSetConnectAttr, rc,
-            conn_.native_dbc_handle()
-            , SQL_ATTR_AUTOCOMMIT
-            , (SQLPOINTER)SQL_AUTOCOMMIT_OFF
-            , SQL_IS_UINTEGER);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
-    }
-    ++conn_.transactions_;
-}
-
-transaction::~transaction() throw()
-{
-    if(!committed_)
-    {
-        conn_.rollback_ = true;
-        --conn_.transactions_;
+        NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
+        NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_ENV, env_);
     }
 
-    if(conn_.transactions_ == 0 && conn_.rollback_ && conn_.connected())
+    void connect(const std::string& dsn, const std::string& user, const std::string& pass, long timeout)
     {
+        disconnect();
+
         RETCODE rc;
-        NANODBC_CALL(SQLEndTran, rc, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_ROLLBACK);
-        conn_.rollback_ = false;
-        NANODBC_CALL(SQLSetConnectAttr, rc, 
-            conn_.native_dbc_handle()
-            , SQL_ATTR_AUTOCOMMIT
-            , (SQLPOINTER)SQL_AUTOCOMMIT_ON
-            , SQL_IS_UINTEGER);
-    }
-}
-
-void transaction::commit()
-{
-    if(committed_)
-        return;
-    committed_ = true;
-    if((--conn_.transactions_) == 0 && conn_.connected())
-    {
-        RETCODE rc;
-        NANODBC_CALL(SQLEndTran, rc, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_COMMIT);
+        NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
         if(!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
-    }
-}
+            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
-void transaction::rollback() throw()
+        NANODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_DBC, env_, &conn_);
+        if(!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(env_, SQL_HANDLE_ENV);
+
+        NANODBC_CALL(SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)timeout, 0);
+        if(!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+
+        NANODBC_CALL(SQLConnect, rc,
+            conn_
+            , (SQLCHAR*)dsn.c_str(), SQL_NTS
+            , user.empty() ? (SQLCHAR*)user.c_str() : 0, SQL_NTS
+            , pass.empty() ? (SQLCHAR*)pass.c_str() : 0, SQL_NTS);
+        if(!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+
+        connected_ = success(rc);
+    }
+
+    void connect(const std::string& connection_string, long timeout)
+    {
+        disconnect();
+
+        RETCODE rc;
+        NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
+        if(!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+
+        NANODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_DBC, env_, &conn_);
+        if(!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(env_, SQL_HANDLE_ENV);
+
+        NANODBC_CALL(SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)timeout, 0);
+        if(!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+
+        SQLCHAR dsn[1024];
+        SQLSMALLINT dsn_size = 0;
+        NANODBC_CALL(SQLDriverConnect, rc,
+            conn_
+            , 0
+            , (SQLCHAR*)connection_string.c_str(), SQL_NTS
+            , dsn, sizeof(dsn)
+            , &dsn_size
+            , SQL_DRIVER_NOPROMPT);
+        if(!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+
+        connected_ = success(rc);
+    }
+
+    bool connected() const
+    {
+        return connected_;
+    }
+
+    void disconnect() throw()
+    {
+        if(connected())
+        {
+            SQLDisconnect(conn_);
+        }
+        connected_ = false;
+    }
+
+    std::size_t transactions() const
+    {
+        return transactions_;
+    }
+
+    HDBC native_dbc_handle() const
+    {
+        return conn_;
+    }
+
+    HDBC native_env_handle() const
+    {
+        return env_;
+    }
+
+    std::string driver_name() const
+    {
+        char name[1024];
+        SQLSMALLINT length;
+        RETCODE rc;
+        NANODBC_CALL(SQLGetInfo, rc, conn_, SQL_DRIVER_NAME, name, sizeof(name), &length);
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+        return name;
+    }
+
+    std::size_t ref_transaction()
+    {
+        return --transactions_;
+    }
+
+    std::size_t unref_transaction()
+    {
+        return ++transactions_;
+    }
+
+    bool rollback() const
+    {
+        return rollback_;
+    }
+
+    void rollback(bool onoff)
+    {
+        rollback_ = onoff;
+    }
+
+private:
+    connection_impl(const connection_impl&); // not defined
+    connection_impl& operator=(const connection_impl&); // not defined
+
+private:
+    HENV env_;
+    HDBC conn_;
+    bool connected_;
+    std::size_t transactions_;
+    bool rollback_; // if true, this connection is marked for eventual transaction rollback
+};
+
+class transaction::transaction_impl
 {
-    if(committed_)
-        return;
-    conn_.rollback_ = true;
-}
+public:
+    transaction_impl(const class connection& conn)
+    : conn_(conn)
+    , committed_(false)
+    {
+        if(conn_.transactions() == 0 && conn_.connected())
+        {
+            RETCODE rc;
+            NANODBC_CALL(SQLSetConnectAttr, rc,
+                conn_.native_dbc_handle()
+                , SQL_ATTR_AUTOCOMMIT
+                , (SQLPOINTER)SQL_AUTOCOMMIT_OFF
+                , SQL_IS_UINTEGER);
+            if (!success(rc))
+                NANODBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
+        }
+        conn_.ref_transaction();
+    }
+
+    ~transaction_impl() throw()
+    {
+        if(!committed_)
+        {
+            conn_.rollback(true);
+            conn_.unref_transaction();
+        }
+
+        if(conn_.transactions() == 0 && conn_.rollback() && conn_.connected())
+        {
+            RETCODE rc;
+            NANODBC_CALL(SQLEndTran, rc, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_ROLLBACK);
+            conn_.rollback(false);
+            NANODBC_CALL(SQLSetConnectAttr, rc, 
+                conn_.native_dbc_handle()
+                , SQL_ATTR_AUTOCOMMIT
+                , (SQLPOINTER)SQL_AUTOCOMMIT_ON
+                , SQL_IS_UINTEGER);
+        }
+    }
+
+    void commit()
+    {
+        if(committed_)
+            return;
+        committed_ = true;
+        if(conn_.unref_transaction() == 0 && conn_.connected())
+        {
+            RETCODE rc;
+            NANODBC_CALL(SQLEndTran, rc, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_COMMIT);
+            if(!success(rc))
+                NANODBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
+        }
+    }
+
+    void rollback() throw()
+    {
+        if(committed_)
+            return;
+        conn_.rollback(true);
+    }
+
+    class connection& connection()
+    {
+        return conn_;
+    }
+
+    const class connection& connection() const
+    {
+        return conn_;
+    }
+
+private:
+    transaction_impl(const transaction_impl&); // not defined
+    transaction_impl& operator=(const transaction_impl&); // not defined
+
+private:
+    class connection conn_;
+    bool committed_;
+};
 
 class statement::statement_impl
 {
@@ -1020,6 +1077,170 @@ inline std::string result::result_impl::get<std::string>(short column, long row)
             throw std::runtime_error("timestamp not implemented yet"); // #T implement timestamp conversion
     }
     throw type_incompatible_error();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Pimpl Forwards
+///////////////////////////////////////////////////////////////////////////////
+
+connection::connection()
+: impl_(new connection_impl())
+{
+
+}
+
+connection::connection(const connection& rhs)
+: impl_(rhs.impl_)
+{
+
+}
+
+connection& connection::operator=(connection rhs)
+{
+    swap(rhs);
+    return *this;
+}
+
+void connection::swap(connection& rhs) throw()
+{
+    using std::swap;
+    swap(impl_, rhs.impl_);
+}
+
+connection::connection(const std::string& dsn, const std::string& user, const std::string& pass, long timeout)
+: impl_(new connection_impl(dsn, user, pass, timeout))
+{
+
+}
+
+connection::connection(const std::string& connection_string, long timeout)
+: impl_(new connection_impl(connection_string, timeout))
+{
+
+}
+
+connection::~connection() throw()
+{
+
+}
+
+void connection::connect(const std::string& dsn, const std::string& user, const std::string& pass, long timeout)
+{
+    impl_->connect(dsn, user, pass, timeout);
+}
+
+void connection::connect(const std::string& connection_string, long timeout)
+{
+    impl_->connect(connection_string, timeout);
+}
+
+bool connection::connected() const
+{
+    return impl_->connected();
+}
+
+void connection::disconnect() throw()
+{
+    impl_->disconnect();
+}
+
+std::size_t connection::transactions() const
+{
+    return impl_->transactions();
+}
+
+HDBC connection::native_dbc_handle() const
+{
+    return impl_->native_dbc_handle();
+}
+
+HDBC connection::native_env_handle() const
+{
+    return impl_->native_env_handle();
+}
+
+std::string connection::driver_name() const
+{
+    return impl_->driver_name();
+}
+
+std::size_t connection::ref_transaction()
+{
+    return impl_->ref_transaction();
+}
+
+std::size_t connection::unref_transaction()
+{
+    return impl_->unref_transaction();
+}
+
+bool connection::rollback() const
+{
+    return impl_->rollback();
+}
+
+void connection::rollback(bool onoff)
+{
+    impl_->rollback(onoff);
+}
+
+transaction::transaction(const class connection& conn)
+: impl_(new transaction_impl(conn))
+{
+
+}
+
+transaction::transaction(const transaction& rhs)
+: impl_(rhs.impl_)
+{
+
+}
+
+transaction& transaction::operator=(transaction rhs)
+{
+    swap(rhs);
+    return *this;
+}
+
+void transaction::swap(transaction& rhs) throw()
+{
+    using std::swap;
+    swap(impl_, rhs.impl_);
+}
+
+transaction::~transaction() throw()
+{
+
+}
+
+void transaction::commit()
+{
+    impl_->commit();
+}
+
+void transaction::rollback() throw()
+{
+    impl_->rollback();
+}
+
+class connection& transaction::connection()
+{
+    return impl_->connection();
+}
+
+const class connection& transaction::connection() const
+{
+    return impl_->connection();
+}
+
+transaction::operator class connection&()
+{
+    return impl_->connection();
+}
+
+transaction::operator const class connection&() const
+{
+    return impl_->connection();
 }
 
 statement::statement()
