@@ -16,14 +16,21 @@
 
 #ifdef NANODBC_ODBC_API_DEBUG
     #include <iostream>
-    #define NANODBC_CALL(FUNC, RC, ...)                                                            \
+    #define NANODBC_CALL_RC(FUNC, RC, ...)                                                         \
         do {                                                                                       \
             std::cerr << __FILE__ << ":" NANODBC_STRINGIZE(__LINE__) << " " << #FUNC << std::endl; \
             RC = FUNC(__VA_ARGS__);                                                                \
         } while(false)                                                                             \
         /**/
+    #define NANODBC_CALL(FUNC, ...)                                                                \
+        do {                                                                                       \
+            std::cerr << __FILE__ << ":" NANODBC_STRINGIZE(__LINE__) << " " << #FUNC << std::endl; \
+            FUNC(__VA_ARGS__);                                                                     \
+        } while(false)                                                                             \
+        /**/
 #else
-    #define NANODBC_CALL(FUNC, RC, ...) RC = FUNC(__VA_ARGS__)
+    #define NANODBC_CALL_RC(FUNC, RC, ...) RC = FUNC(__VA_ARGS__)
+    #define NANODBC_CALL(FUNC, ...) FUNC(__VA_ARGS__)
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -142,7 +149,7 @@ namespace
             }
             value_buffer_len_ = element_size * elements;
             RETCODE rc;
-            NANODBC_CALL(SQLBindParameter, rc, 
+            NANODBC_CALL_RC(SQLBindParameter, rc, 
                 stmt_
                 , param_ + 1
                 , SQL_PARAM_INPUT
@@ -162,7 +169,7 @@ namespace
             string_buffer_ = str;
             string_buffer_len_ = SQL_NTS;
             RETCODE rc;
-            NANODBC_CALL(SQLBindParameter, rc, 
+            NANODBC_CALL_RC(SQLBindParameter, rc, 
                 stmt_
                 , param_ + 1
                 , SQL_PARAM_INPUT
@@ -219,15 +226,15 @@ namespace
     inline void allocate_handle(HENV& env, HDBC& conn)
     {
         RETCODE rc;
-        NANODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_ENV, SQL_NULL_HANDLE, &env);
+        NANODBC_CALL_RC(SQLAllocHandle, rc, SQL_HANDLE_ENV, SQL_NULL_HANDLE, &env);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
 
-        NANODBC_CALL(SQLSetEnvAttr, rc, env, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, SQL_IS_UINTEGER);
+        NANODBC_CALL_RC(SQLSetEnvAttr, rc, env, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, SQL_IS_UINTEGER);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
 
-        NANODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_DBC, env, &conn);   
+        NANODBC_CALL_RC(SQLAllocHandle, rc, SQL_HANDLE_DBC, env, &conn);   
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
     }
@@ -311,9 +318,8 @@ public:
     ~connection_impl() throw()
     {
         disconnect();
-        RETCODE rc;
-        NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
-        NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_ENV, env_);
+        NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_DBC, conn_);
+        NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_ENV, env_);
     }
 
     void connect(const std::string& dsn, const std::string& user, const std::string& pass, long timeout)
@@ -321,19 +327,19 @@ public:
         disconnect();
 
         RETCODE rc;
-        NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
+        NANODBC_CALL_RC(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
-        NANODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_DBC, env_, &conn_);
+        NANODBC_CALL_RC(SQLAllocHandle, rc, SQL_HANDLE_DBC, env_, &conn_);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(env_, SQL_HANDLE_ENV);
 
-        NANODBC_CALL(SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)timeout, 0);
+        NANODBC_CALL_RC(SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)timeout, 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
-        NANODBC_CALL(SQLConnect, rc,
+        NANODBC_CALL_RC(SQLConnect, rc,
             conn_
             , (SQLCHAR*)dsn.c_str(), SQL_NTS
             , user.empty() ? (SQLCHAR*)user.c_str() : 0, SQL_NTS
@@ -349,21 +355,21 @@ public:
         disconnect();
 
         RETCODE rc;
-        NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
+        NANODBC_CALL_RC(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
-        NANODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_DBC, env_, &conn_);
+        NANODBC_CALL_RC(SQLAllocHandle, rc, SQL_HANDLE_DBC, env_, &conn_);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(env_, SQL_HANDLE_ENV);
 
-        NANODBC_CALL(SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)timeout, 0);
+        NANODBC_CALL_RC(SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)timeout, 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
         SQLCHAR dsn[1024];
         SQLSMALLINT dsn_size = 0;
-        NANODBC_CALL(SQLDriverConnect, rc,
+        NANODBC_CALL_RC(SQLDriverConnect, rc,
             conn_
             , 0
             , (SQLCHAR*)connection_string.c_str(), SQL_NTS
@@ -410,7 +416,7 @@ public:
         char name[1024];
         SQLSMALLINT length;
         RETCODE rc;
-        NANODBC_CALL(SQLGetInfo, rc, conn_, SQL_DRIVER_NAME, name, sizeof(name), &length);
+        NANODBC_CALL_RC(SQLGetInfo, rc, conn_, SQL_DRIVER_NAME, name, sizeof(name), &length);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
         return name;
@@ -462,7 +468,7 @@ public:
         if(conn_.transactions() == 0 && conn_.connected())
         {
             RETCODE rc;
-            NANODBC_CALL(SQLSetConnectAttr, rc,
+            NANODBC_CALL_RC(SQLSetConnectAttr, rc,
                 conn_.native_dbc_handle()
                 , SQL_ATTR_AUTOCOMMIT
                 , (SQLPOINTER)SQL_AUTOCOMMIT_OFF
@@ -483,10 +489,9 @@ public:
 
         if(conn_.transactions() == 0 && conn_.rollback() && conn_.connected())
         {
-            RETCODE rc;
-            NANODBC_CALL(SQLEndTran, rc, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_ROLLBACK);
+            NANODBC_CALL(SQLEndTran, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_ROLLBACK);
             conn_.rollback(false);
-            NANODBC_CALL(SQLSetConnectAttr, rc, 
+            NANODBC_CALL(SQLSetConnectAttr,
                 conn_.native_dbc_handle()
                 , SQL_ATTR_AUTOCOMMIT
                 , (SQLPOINTER)SQL_AUTOCOMMIT_ON
@@ -502,7 +507,7 @@ public:
         if(conn_.unref_transaction() == 0 && conn_.connected())
         {
             RETCODE rc;
-            NANODBC_CALL(SQLEndTran, rc, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_COMMIT);
+            NANODBC_CALL_RC(SQLEndTran, rc, SQL_HANDLE_DBC, conn_.native_dbc_handle(), SQL_COMMIT);
             if(!success(rc))
                 NANODBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
         }
@@ -564,10 +569,9 @@ public:
     {
         if(open())
         {
-            RETCODE rc;
-            NANODBC_CALL(SQLCancel, rc, stmt_);
+            NANODBC_CALL(SQLCancel, stmt_);
             reset_parameters();
-            NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
+            NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_STMT, stmt_);
         }
         else
         {
@@ -579,7 +583,7 @@ public:
     {
         close();
         RETCODE rc;
-        NANODBC_CALL(SQLAllocHandle, rc, SQL_HANDLE_STMT, conn.native_dbc_handle(), &stmt_);
+        NANODBC_CALL_RC(SQLAllocHandle, rc, SQL_HANDLE_STMT, conn.native_dbc_handle(), &stmt_);
         open_ = success(rc);
         if (!open_)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
@@ -601,13 +605,13 @@ public:
             return;
 
         RETCODE rc;
-        NANODBC_CALL(SQLCancel, rc, stmt_);
+        NANODBC_CALL_RC(SQLCancel, rc, stmt_);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
         reset_parameters();
 
-        NANODBC_CALL(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
+        NANODBC_CALL_RC(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
@@ -618,7 +622,7 @@ public:
     void cancel()
     {
         RETCODE rc;
-        NANODBC_CALL(SQLCancel, rc, stmt_);
+        NANODBC_CALL_RC(SQLCancel, rc, stmt_);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
@@ -628,7 +632,7 @@ public:
         open(conn);
 
         RETCODE rc;
-        NANODBC_CALL(SQLPrepare, rc, stmt_, (SQLCHAR*)stmt.c_str(), SQL_NTS);
+        NANODBC_CALL_RC(SQLPrepare, rc, stmt_, (SQLCHAR*)stmt.c_str(), SQL_NTS);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
@@ -638,11 +642,11 @@ public:
         open(conn);
 
         RETCODE rc;
-        NANODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)batch_operations, 0);
+        NANODBC_CALL_RC(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)batch_operations, 0);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
-        NANODBC_CALL(SQLExecDirect, rc, stmt_, (SQLCHAR*)query.c_str(), SQL_NTS);
+        NANODBC_CALL_RC(SQLExecDirect, rc, stmt_, (SQLCHAR*)query.c_str(), SQL_NTS);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         return result(statement, batch_operations);
@@ -651,11 +655,11 @@ public:
     result execute(long batch_operations, statement& statement)
     {
         RETCODE rc;
-        NANODBC_CALL(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)batch_operations, 0);
+        NANODBC_CALL_RC(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)batch_operations, 0);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
-        NANODBC_CALL(SQLExecute, rc, stmt_);
+        NANODBC_CALL_RC(SQLExecute, rc, stmt_);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         return result(statement, batch_operations);
@@ -665,7 +669,7 @@ public:
     {
         SQLLEN rows;
         RETCODE rc;
-        NANODBC_CALL(SQLRowCount, rc, stmt_, &rows);
+        NANODBC_CALL_RC(SQLRowCount, rc, stmt_, &rows);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         return rows;
@@ -695,10 +699,7 @@ public:
     {
         RETCODE rc;
         SQLULEN column_size;
-        SQLSMALLINT data_type;
-        SQLSMALLINT decimal_digits;
-        SQLSMALLINT nullable;
-        NANODBC_CALL(SQLDescribeParam, rc, stmt_, param + 1, &data_type, &column_size, &decimal_digits, &nullable);
+        NANODBC_CALL_RC(SQLDescribeParam, rc, stmt_, param + 1, 0, &column_size, 0, 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         return column_size;
@@ -720,8 +721,7 @@ public:
 
     void reset_parameters() throw()
     {
-        RETCODE rc;
-        NANODBC_CALL(SQLFreeStmt, rc, stmt_, SQL_RESET_PARAMS);
+        NANODBC_CALL(SQLFreeStmt, stmt_, SQL_RESET_PARAMS);
         release_parameters();
     }
 
@@ -758,11 +758,11 @@ public:
     , bound_columns_size_(0)
     {
         RETCODE rc;
-        NANODBC_CALL(SQLSetStmtAttr, rc, stmt_.native_stmt_handle(), SQL_ATTR_ROW_ARRAY_SIZE, (SQLPOINTER)rowset_size_, 0);
+        NANODBC_CALL_RC(SQLSetStmtAttr, rc, stmt_.native_stmt_handle(), SQL_ATTR_ROW_ARRAY_SIZE, (SQLPOINTER)rowset_size_, 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
 
-        NANODBC_CALL(SQLSetStmtAttr, rc, stmt_.native_stmt_handle(), SQL_ATTR_ROWS_FETCHED_PTR, &row_count_, 0);
+        NANODBC_CALL_RC(SQLSetStmtAttr, rc, stmt_.native_stmt_handle(), SQL_ATTR_ROWS_FETCHED_PTR, &row_count_, 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
 
@@ -789,7 +789,7 @@ public:
     {
         SQLLEN rows;
         RETCODE rc;
-        NANODBC_CALL(SQLRowCount, rc, stmt_.native_stmt_handle(), &rows);
+        NANODBC_CALL_RC(SQLRowCount, rc, stmt_.native_stmt_handle(), &rows);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
         return rows;
@@ -804,7 +804,7 @@ public:
     {
         SQLSMALLINT cols;
         RETCODE rc;
-        NANODBC_CALL(SQLNumResultCols, rc, stmt_.native_stmt_handle(), &cols);
+        NANODBC_CALL_RC(SQLNumResultCols, rc, stmt_.native_stmt_handle(), &cols);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
         return cols;
@@ -844,7 +844,7 @@ public:
     {
         SQLULEN pos;
         RETCODE rc;
-        NANODBC_CALL(SQLGetStmtAttr, rc,
+        NANODBC_CALL_RC(SQLGetStmtAttr, rc,
             stmt_.native_stmt_handle()
             , SQL_ATTR_ROW_NUMBER
             , &pos
@@ -928,7 +928,7 @@ private:
     {
         before_move();
         RETCODE rc;
-        NANODBC_CALL(SQLFetchScroll, rc, stmt_.native_stmt_handle(), orientation, rows);
+        NANODBC_CALL_RC(SQLFetchScroll, rc, stmt_.native_stmt_handle(), orientation, rows);
         if (rc == SQL_NO_DATA)
             return false;
         if (!success(rc))
@@ -940,7 +940,7 @@ private:
     {
         SQLSMALLINT n_columns = 0;
         RETCODE rc;
-        NANODBC_CALL(SQLNumResultCols, rc, stmt_.native_stmt_handle(), &n_columns);
+        NANODBC_CALL_RC(SQLNumResultCols, rc, stmt_.native_stmt_handle(), &n_columns);
 
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
@@ -959,7 +959,7 @@ private:
         for(SQLSMALLINT i = 0; i < n_columns; ++i)
         {
             RETCODE rc;
-            NANODBC_CALL(SQLDescribeCol, rc,
+            NANODBC_CALL_RC(SQLDescribeCol, rc,
                 stmt_.native_stmt_handle()
                 , i + 1
                 , column_name
@@ -1038,7 +1038,7 @@ private:
             col.cbdata_ = new long[rowset_size_];
             if(col.blob_)
             {
-                NANODBC_CALL(SQLBindCol, rc, stmt_.native_stmt_handle(), i + 1, col.ctype_, 0, 0, col.cbdata_);
+                NANODBC_CALL_RC(SQLBindCol, rc, stmt_.native_stmt_handle(), i + 1, col.ctype_, 0, 0, col.cbdata_);
                 if(!success(rc))
                     NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
             }
@@ -1046,7 +1046,7 @@ private:
             {
                 col.rowset_size_ = rowset_size_;
                 col.pdata_ = new char[rowset_size_ * col.clen_];
-                NANODBC_CALL(SQLBindCol, rc, stmt_.native_stmt_handle(), i + 1, col.ctype_, col.pdata_, col.clen_, col.cbdata_);
+                NANODBC_CALL_RC(SQLBindCol, rc, stmt_.native_stmt_handle(), i + 1, col.ctype_, col.pdata_, col.clen_, col.cbdata_);
                 if(!success(rc))
                     NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
             }
@@ -1072,7 +1072,7 @@ inline std::string result::result_impl::get<std::string>(short column, long row)
 
     RETCODE rc;
     unsigned long column_size;
-    NANODBC_CALL(SQLDescribeCol, rc, stmt_.native_stmt_handle(), column + 1, 0, 0, 0, 0, &column_size, 0, 0);
+    NANODBC_CALL_RC(SQLDescribeCol, rc, stmt_.native_stmt_handle(), column + 1, 0, 0, 0, 0, &column_size, 0, 0);
     if(!success(rc))
         NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
     char buffer[column_size];
@@ -1532,4 +1532,5 @@ template std::string result::get(short, long) const;
 #undef NANODBC_THROW_DATABASE_ERROR
 #undef NANODBC_STRINGIZE
 #undef NANODBC_STRINGIZE_I
+#undef NANODBC_CALL_RC
 #undef NANODBC_CALL
