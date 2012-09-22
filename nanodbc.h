@@ -71,8 +71,8 @@ See http://www.codeguru.com/submission-guidelines.php for details.<br />
 #include <stdexcept>
 #include <string>
 
-// You must explicitly request TR1 by defining this at compile time, otherwise nanodbc will assume you're using c++11.
-#ifdef NANODBC_USE_TR1
+// You must explicitly request C++11 support by defining NANODBC_USE_CPP11 at compile time, otherwise nanodbc will assume it must use tr1 instead.
+#ifndef NANODBC_USE_CPP11
     #include <tr1/cstdint>
     #include <tr1/memory>
     #include <tr1/type_traits>
