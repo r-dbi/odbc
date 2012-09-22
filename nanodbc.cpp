@@ -1070,7 +1070,13 @@ inline std::string result::result_impl::get<std::string>(short column, long row)
         throw null_access_error();
     bound_column& col = bound_columns_[column];
 
-    char buffer[1024]; // #T get max length from describe col
+    RETCODE rc;
+    unsigned long column_size;
+    NANODBC_CALL(SQLDescribeCol, rc, stmt_.native_stmt_handle(), column + 1, 0, 0, 0, 0, &column_size, 0, 0);
+    if(!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
+    char buffer[column_size];
+
     switch(col.ctype_)
     {
         case SQL_C_CHAR:
