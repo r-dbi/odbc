@@ -85,6 +85,8 @@ See http://www.codeguru.com/submission-guidelines.php for details.<br />
 #endif
 
 //! \brief The entirety of nanodbc can be found within this one namespace.
+//! \todo Implement retrieval of blob data.
+//! \todo Support unicode operation.
 namespace nanodbc
 {
 
@@ -246,22 +248,22 @@ public:
 //! \{
 
 //! \brief A type for representing date data.
-struct date_type
+struct date
 {
-    NANODBC_STD int16_t year; //!< Year.
-    NANODBC_STD int16_t month; //!< Month.
-    NANODBC_STD int16_t day; //!< Day.
+    NANODBC_STD int16_t year; //!< Year [0-inf).
+    NANODBC_STD int16_t month; //!< Month of the year [1-12].
+    NANODBC_STD int16_t day; //!< Day of the month [1-31].
 };
 
 //! \brief A type for representing timestamp data.
-struct timestamp_type
+struct timestamp
 {
-    NANODBC_STD int16_t year; //!< Year.
-    NANODBC_STD int16_t month; //!< Month.
-    NANODBC_STD int16_t day; //!< Day.
-    NANODBC_STD int16_t hour; //!< 24 Hour.
-    NANODBC_STD int16_t min; //!< Min.
-    NANODBC_STD int16_t sec; //!< Seconds.
+    NANODBC_STD int16_t year; //!< Year [0-inf).
+    NANODBC_STD int16_t month; //!< Month of the year [1-12].
+    NANODBC_STD int16_t day; //!< Day of the month [1-31].
+    NANODBC_STD int16_t hour; //!< Hours since midnight [0-23].
+    NANODBC_STD int16_t min; //!< Minutes after the hour [0-59].
+    NANODBC_STD int16_t sec; //!< Seconds after the minute.
     NANODBC_STD int32_t fract; //!< Fractional seconds.
 };
 

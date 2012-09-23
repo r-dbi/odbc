@@ -3,7 +3,9 @@
 #include "nanodbc.h"
 
 #include <cassert>
+#include <clocale>
 #include <cstdio>
+#include <ctime>
 #include <map>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -988,12 +990,12 @@ private:
                 case SQL_DATE:
                 case SQL_TYPE_DATE:
                     col.ctype_ = SQL_C_DATE;
-                    col.clen_ = sizeof(date_type);
+                    col.clen_ = sizeof(date);
                     break;
                 case SQL_TIMESTAMP:
                 case SQL_TYPE_TIMESTAMP:
                     col.ctype_ = SQL_C_TIMESTAMP;
-                    col.clen_ = sizeof(timestamp_type);
+                    col.clen_ = sizeof(timestamp);
                     break;
                 case SQL_CHAR:
                 case SQL_VARCHAR:
@@ -1041,7 +1043,7 @@ private:
                     NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
             }
         }
-    }   
+    }
 
 private:
     statement stmt_;
@@ -1050,6 +1052,50 @@ private:
     bound_column* bound_columns_;
     short bound_columns_size_;
 };
+
+template<>
+inline date result::result_impl::get<date>(short column, long row) const
+{
+    if(column >= bound_columns_size_)
+        throw index_range_error();
+    if(is_null(column, row))
+        throw null_access_error();
+    bound_column& col = bound_columns_[column];
+    switch(col.ctype_)
+    {
+        case SQL_C_DATE:
+            return *((date*)(col.pdata_ + row * col.clen_));
+        case SQL_C_TIMESTAMP:
+        {
+            timestamp stamp = *((timestamp*)(col.pdata_ + row * col.clen_));
+            date d = { stamp.year, stamp.month, stamp.day };
+            return d;
+        }
+    }
+    throw type_incompatible_error();
+}
+
+template<>
+inline timestamp result::result_impl::get<timestamp>(short column, long row) const
+{
+    if(column >= bound_columns_size_)
+        throw index_range_error();
+    if(is_null(column, row))
+        throw null_access_error();
+    bound_column& col = bound_columns_[column];
+    switch(col.ctype_)
+    {
+        case SQL_C_DATE:
+        {
+            date d = *((date*)(col.pdata_ + row * col.clen_));
+            timestamp stamp = { d.year, d.month, d.day, 0, 0 , 0, 0 };
+            return stamp;
+        }
+        case SQL_C_TIMESTAMP:
+            return *((timestamp*)(col.pdata_ + row * col.clen_));
+    }
+    throw type_incompatible_error();
+}
 
 template<>
 inline std::string result::result_impl::get<std::string>(short column, long row) const
@@ -1073,7 +1119,7 @@ inline std::string result::result_impl::get<std::string>(short column, long row)
         case SQL_C_GUID:
         case SQL_C_BINARY:
             if(col.blob_)
-                throw std::runtime_error("blob not implemented yet"); // #T implement load_blob(column);
+                throw std::runtime_error("blob not implemented yet");
             return (col.pdata_ + row * col.clen_);
 
         case SQL_C_LONG:
@@ -1087,10 +1133,37 @@ inline std::string result::result_impl::get<std::string>(short column, long row)
             return buffer;
 
         case SQL_C_DATE:
-            throw std::runtime_error("date not implemented yet"); // #T implement date conversion
+        {
+            date d = *((date*)(col.pdata_ + row * col.clen_));
+            std::tm st = { 0 };
+            st.tm_year = d.year - 1900;
+            st.tm_mon = d.month - 1;
+            st.tm_mday = d.day;
+            char* old_lc_time = std::setlocale(LC_TIME, NULL);
+            std::setlocale(LC_TIME, "");
+            char date_str[512];
+            std::strftime(date_str, sizeof(date_str), "%F", &st);
+            std::setlocale(LC_TIME, old_lc_time);
+            return date_str;
+        }
 
         case SQL_C_TIMESTAMP:
-            throw std::runtime_error("timestamp not implemented yet"); // #T implement timestamp conversion
+        {
+            timestamp stamp = *((timestamp*)(col.pdata_ + row * col.clen_));
+            std::tm st = { 0 };
+            st.tm_year = stamp.year - 1900;
+            st.tm_mon = stamp.month - 1;
+            st.tm_mday = stamp.day;
+            st.tm_hour = stamp.hour;
+            st.tm_min = stamp.min;
+            st.tm_sec = stamp.sec;
+            char* old_lc_time = std::setlocale(LC_TIME, NULL);
+            std::setlocale(LC_TIME, "");
+            char date_str[512];
+            std::strftime(date_str, sizeof(date_str), "%+", &st);
+            std::setlocale(LC_TIME, old_lc_time);
+            return date_str;
+        }
     }
     throw type_incompatible_error();
 }
@@ -1516,6 +1589,8 @@ template unsigned int result::get(short, long) const;
 template float result::get(short, long) const;
 template double result::get(short, long) const;
 template std::string result::get(short, long) const;
+template date result::get(short, long) const;
+template timestamp result::get(short, long) const;
 
 } // namespace nanodbc
 

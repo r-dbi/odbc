@@ -59,12 +59,11 @@ int main()
         cout << "Connected with driver " << connection.driver_name() << endl;
 
         nanodbc::result results;
+        nanodbc::statement statement;
 
         // Direct execution
         results = direct_execution(connection, "select * from " EXAMPLE_TABLE ";");
         show<string>(results);
-
-        nanodbc::statement statement;
 
         // Direct execution, bulk fetching 2 rows at a time
         results = statement.execute_direct(connection, "select * from " EXAMPLE_TABLE ";", 2);
@@ -109,7 +108,18 @@ int main()
  
             results = statement.execute_direct(connection, "select * from public.batch_insert_test;");
             show<string>(results);
-       }
+        }
+
+        // Dates and Times
+        statement.execute_direct(connection, "drop table if exists public.date_test;");
+        statement.execute_direct(connection, "create table public.date_test (x datetime);");
+        statement.execute_direct(connection, "insert into public.date_test values (current_timestamp);");
+        results = statement.execute_direct(connection, "select * from public.date_test;");
+        results.next();
+        nanodbc::date date = results.get<nanodbc::date>(0);
+        cout << date.year << "-" << date.month << "-" << date.day << endl;
+        results = statement.execute_direct(connection, "select * from public.date_test;");
+        show<string>(results);
 
         // The resources used by connection and statement are cleaned up automatically or
         // you can explicitly call statement.close() and/or connection.disconnect().

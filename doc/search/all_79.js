@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['year',['year',['../structnanodbc_1_1date__type.html#a91ba37c66f1a1849b55126313c3113cd',1,'nanodbc::date_type::year()'],['../structnanodbc_1_1timestamp__type.html#ac8b3e7385205beb38f8ee16a3f2240c1',1,'nanodbc::timestamp_type::year()']]]
+  ['year',['year',['../structnanodbc_1_1date.html#a0c1ac39de9d84f0f69542874672983b5',1,'nanodbc::date::year()'],['../structnanodbc_1_1timestamp.html#a9454a0af8eb6c7c6a46970acdb115a46',1,'nanodbc::timestamp::year()']]]
 ];

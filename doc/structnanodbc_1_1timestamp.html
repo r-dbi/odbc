@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>nanodbc: Member List</title>
+<title>nanodbc: nanodbc::timestamp Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -83,21 +83,51 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacenanodbc.html">nanodbc</a></li><li class="navelem"><a class="el" href="structnanodbc_1_1date__type.html">date_type</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacenanodbc.html">nanodbc</a></li><li class="navelem"><a class="el" href="structnanodbc_1_1timestamp.html">timestamp</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structnanodbc_1_1timestamp-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">nanodbc::date_type Member List</div>  </div>
+<div class="title">nanodbc::timestamp Struct Reference<div class="ingroups"><a class="el" href="group__utility.html">Utility Classes</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>This is the complete list of members for <a class="el" href="structnanodbc_1_1date__type.html">nanodbc::date_type</a>, including all inherited members.</p>
-<table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="structnanodbc_1_1date__type.html#ac4f4eb12b634fe5497e3d0751cb3a87d">day</a></td><td class="entry"><a class="el" href="structnanodbc_1_1date__type.html">nanodbc::date_type</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="structnanodbc_1_1date__type.html#af1b2bd75d6c8057053620dd456fb67e6">month</a></td><td class="entry"><a class="el" href="structnanodbc_1_1date__type.html">nanodbc::date_type</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="structnanodbc_1_1date__type.html#a91ba37c66f1a1849b55126313c3113cd">year</a></td><td class="entry"><a class="el" href="structnanodbc_1_1date__type.html">nanodbc::date_type</a></td><td class="entry"></td></tr>
-</table></div><!-- contents -->
+<p>A type for representing timestamp data.  
+</p>
+
+<p><code>#include &lt;<a class="el" href="nanodbc_8h_source.html">nanodbc.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a9454a0af8eb6c7c6a46970acdb115a46"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9454a0af8eb6c7c6a46970acdb115a46"></a>
+NANODBC_STD int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnanodbc_1_1timestamp.html#a9454a0af8eb6c7c6a46970acdb115a46">year</a></td></tr>
+<tr class="memdesc:a9454a0af8eb6c7c6a46970acdb115a46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Year [0-inf). <br/></td></tr>
+<tr class="memitem:a90f420dc2a158176e746fed84cb63ebc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a90f420dc2a158176e746fed84cb63ebc"></a>
+NANODBC_STD int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnanodbc_1_1timestamp.html#a90f420dc2a158176e746fed84cb63ebc">month</a></td></tr>
+<tr class="memdesc:a90f420dc2a158176e746fed84cb63ebc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Month of the year [1-12]. <br/></td></tr>
+<tr class="memitem:aa644fff9e05429605f384429ddba6151"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa644fff9e05429605f384429ddba6151"></a>
+NANODBC_STD int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnanodbc_1_1timestamp.html#aa644fff9e05429605f384429ddba6151">day</a></td></tr>
+<tr class="memdesc:aa644fff9e05429605f384429ddba6151"><td class="mdescLeft">&#160;</td><td class="mdescRight">Day of the month [1-31]. <br/></td></tr>
+<tr class="memitem:a54abe95bccc01e7e1730bf397595ac41"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a54abe95bccc01e7e1730bf397595ac41"></a>
+NANODBC_STD int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnanodbc_1_1timestamp.html#a54abe95bccc01e7e1730bf397595ac41">hour</a></td></tr>
+<tr class="memdesc:a54abe95bccc01e7e1730bf397595ac41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hours since midnight [0-23]. <br/></td></tr>
+<tr class="memitem:a33736316dfcc1e94d852f5f069f3cb9d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a33736316dfcc1e94d852f5f069f3cb9d"></a>
+NANODBC_STD int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnanodbc_1_1timestamp.html#a33736316dfcc1e94d852f5f069f3cb9d">min</a></td></tr>
+<tr class="memdesc:a33736316dfcc1e94d852f5f069f3cb9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minutes after the hour [0-59]. <br/></td></tr>
+<tr class="memitem:a7fe7339a11e828f7583a6e0a4993f6ac"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7fe7339a11e828f7583a6e0a4993f6ac"></a>
+NANODBC_STD int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnanodbc_1_1timestamp.html#a7fe7339a11e828f7583a6e0a4993f6ac">sec</a></td></tr>
+<tr class="memdesc:a7fe7339a11e828f7583a6e0a4993f6ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seconds after the minute. <br/></td></tr>
+<tr class="memitem:a5bba23490ece948a93c35cf3540f14bf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5bba23490ece948a93c35cf3540f14bf"></a>
+NANODBC_STD int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnanodbc_1_1timestamp.html#a5bba23490ece948a93c35cf3540f14bf">fract</a></td></tr>
+<tr class="memdesc:a5bba23490ece948a93c35cf3540f14bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fractional seconds. <br/></td></tr>
+</table>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li><a class="el" href="nanodbc_8h_source.html">nanodbc.h</a></li>
+</ul>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/>
 <address class="footer">
@@ -106,7 +136,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Fri Sep 21 2012 18:43:19 for nanodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Sun Sep 23 2012 09:55:24 for nanodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>
