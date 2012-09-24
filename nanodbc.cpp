@@ -1441,6 +1441,8 @@ template void statement::bind_parameter(long, const unsigned int&);
 template void statement::bind_parameter(long, const float&);
 template void statement::bind_parameter(long, const double&);
 template void statement::bind_parameter(long, const std::string&);
+template void statement::bind_parameter(long, const date&);
+template void statement::bind_parameter(long, const timestamp&);
 
 void statement::bind_parameter(
     long param

@@ -1,64 +1,62 @@
 //! \file nanodbc.h The entirety of nanodbc can be found within this file and nanodbc.cpp.
 
-/*! \mainpage
+//! \mainpage
+//! 
+//! \section toc Table of Contents
+//! \li \ref license "License"
+//! \li \ref credits "Credits"
+//! \li \ref examples "Example Usage"
+//! \li \ref nanodbc "Namespace Reference"
+//! \li <a href="https://nanodbc.googlecode.com">Project Homepage</a>
+//! 
+//! \section license License
+//! Copyright (C) 2012 Amy Troschinetz amy@lexicalunit.com
+//! 
+//! The MIT License
+//! 
+//! Permission is hereby granted, free of charge, to any person obtaining a copy
+//! of this software and associated documentation files (the "Software"), to deal
+//! in the Software without restriction, including without limitation the rights
+//! to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//! copies of the Software, and to permit persons to whom the Software is
+//! furnished to do so, subject to the following conditions:
+//! 
+//! The above copyright notice and this permission notice shall be included in
+//! all copies or substantial portions of the Software.
+//! 
+//! THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//! IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//! FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//! AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//! LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//! OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//! THE SOFTWARE.
+//! 
+//! \section credits Credits
+//! Much of the code in this file was originally derived from TinyODBC.<br />
+//! TinyODBC is hosted at http://code.google.com/p/tiodbc/<br />
+//! Copyright (C) 2008 SqUe squarious@gmail.com<br />
+//! License: The MIT License<br />
+//! 
+//! Transaction support was based on the implementation in SimpleDB: C++ ODBC database API.<br/>
+//! SimpleDB is hosted at http://simpledb.sourceforge.net<br/>
+//! Copyright (C) 2006 Eminence Technology Pty Ltd<br/>
+//! Copyright (C) 2008-2010,2012 Russell Kliese russell@kliese.id.au<br/>
+//! License: GNU Lesser General Public version 2.1<br/>
+//! 
+//! Some improvements and features are based on The Python ODBC Library.<br/>
+//! The Python ODBC Library is hosted at http://code.google.com/p/pyodbc/<br/>
+//! License: The MIT License<br/>
+//! 
+//! Implementation of column binding inspired by Nick E. Geht's source code posted to on CodeGuru.<br />
+//! GSODBC hosted at http://www.codeguru.com/mfc_database/gsodbc.html<br />
+//! Copyright (C) 2002 Nick E. Geht<br />
+//! License: Perpetual license to reproduce, distribute, adapt, perform, display, and sublicense.<br/>
+//! See http://www.codeguru.com/submission-guidelines.php for details.<br />
 
-\section toc Table of Contents
-\li \ref license "License"
-\li \ref credits "Credits"
-\li \ref examples "Example Usage"
-\li \ref nanodbc "Namespace Reference"
-\li <a href="https://nanodbc.googlecode.com">Project Homepage</a>
-
-\section license License
-Copyright (C) 2012 Amy Troschinetz amy@lexicalunit.com
-
-The MIT License
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
-\section credits Credits
-Much of the code in this file was originally derived from TinyODBC.<br />
-TinyODBC is hosted at http://code.google.com/p/tiodbc/<br />
-Copyright (C) 2008 SqUe squarious@gmail.com<br />
-License: The MIT License<br />
-
-Transaction support was based on the implementation in SimpleDB: C++ ODBC database API.<br/>
-SimpleDB is hosted at http://simpledb.sourceforge.net<br/>
-Copyright (C) 2006 Eminence Technology Pty Ltd<br/>
-Copyright (C) 2008-2010,2012 Russell Kliese russell@kliese.id.au<br/>
-License: GNU Lesser General Public version 2.1<br/>
-
-Some improvements and features are based on The Python ODBC Library.<br/>
-The Python ODBC Library is hosted at http://code.google.com/p/pyodbc/<br/>
-License: The MIT License<br/>
-
-Implementation of column binding inspired by Nick E. Geht's source code posted to on CodeGuru.<br />
-GSODBC hosted at http://www.codeguru.com/mfc_database/gsodbc.html<br />
-Copyright (C) 2002 Nick E. Geht<br />
-License: Perpetual license to reproduce, distribute, adapt, perform, display, and sublicense.<br/>
-See http://www.codeguru.com/submission-guidelines.php for details.<br />
-*/
-
-/*! \page examples Example Usage
-\brief Example library usage.
-\include example.cpp
-*/
+//! \page examples Example Usage
+//! \brief Example library usage.
+//! \include example.cpp
 
 #ifndef NANODBC_H
 #define NANODBC_H
@@ -92,10 +90,12 @@ namespace nanodbc
 
 class connection;
 class result;
+struct date;
+struct timestamp;
 
 namespace detail
 {
-    // simple enable/disable if utility taken from boost
+    // Simple enable/disable if utility taken from boost.
     template <bool B, class T = void> struct enable_if_c { typedef T type; };
     template <class T> struct enable_if_c<false, T> { };
     template <bool B, class T = void> struct disable_if_c { typedef T type; };
@@ -177,6 +177,20 @@ namespace detail
         static const SQLSMALLINT ctype = SQL_C_CHAR; 
         static const SQLSMALLINT sqltype = SQL_CHAR;
         static const char* const format; 
+    };
+
+    template<>
+    struct sql_type_info<nanodbc::date>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_DATE; 
+        static const SQLSMALLINT sqltype = SQL_DATE;
+    };
+
+    template<>
+    struct sql_type_info<nanodbc::timestamp>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_TIMESTAMP; 
+        static const SQLSMALLINT sqltype = SQL_TIMESTAMP;
     };
 } // namespace detail
 
