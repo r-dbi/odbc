@@ -85,6 +85,7 @@
 //! \brief The entirety of nanodbc can be found within this one namespace.
 //! \todo Implement retrieval of blob data.
 //! \todo Support unicode operation.
+//! \todo Implement reflective features for columns, such as type, to enable visitation.
 namespace nanodbc
 {
 
