@@ -66,7 +66,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -77,7 +77,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">Utility Classes</div>  </div>
 </div><!--header-->
@@ -92,8 +93,70 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A type for representing date data.  <a href="structnanodbc_1_1date.html#details">More...</a><br/></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnanodbc_1_1timestamp.html">nanodbc::timestamp</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A type for representing timestamp data.  <a href="structnanodbc_1_1timestamp.html#details">More...</a><br/></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:ga47d1e22a8d3d3d06fe137595e1a1a8bd"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utility.html#ga47d1e22a8d3d3d06fe137595e1a1a8bd">nanodbc::column_datatype</a> { <br/>
+&#160;&#160;<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda676692c8479db371ab26d380f6c647e9">nanodbc::column_short</a> =  SQL_C_SSHORT, 
+<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda1f17e3e04d384ddbc4e27021cad56123">nanodbc::column_ushort</a> =  SQL_C_USHORT, 
+<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda94f3781f281316dbeeb632d51eb35db1">nanodbc::column_long</a> =  SQL_C_SLONG, 
+<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdacf50f0ab9482be51f33d01d877a5dbeb">nanodbc::column_ulong</a> =  SQL_C_ULONG, 
+<br/>
+&#160;&#160;<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda94ef94cb5ec581dc2d692cbbf08c7d1f">nanodbc::column_float</a> =  SQL_C_FLOAT, 
+<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdac2dd90f85fa6245e44aaa5e90fc81deb">nanodbc::column_double</a> =  SQL_C_DOUBLE, 
+<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdae6a4031d828ad9f7b87e58e025df9499">nanodbc::column_string</a> =  SQL_C_CHAR, 
+<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda52bf1c4255bc8a26be72f5d23f468b60">nanodbc::column_date</a> =  SQL_C_DATE, 
+<br/>
+&#160;&#160;<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda290ef74260650d308c0e94782bc523c7">nanodbc::column_timestamp</a> =  SQL_C_TIMESTAMP
+<br/>
+ }</td></tr>
+<tr class="memdesc:ga47d1e22a8d3d3d06fe137595e1a1a8bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">A type for representing the data type of a column.  <a href="group__utility.html#ga47d1e22a8d3d3d06fe137595e1a1a8bd">More...</a><br/></td></tr>
 </table>
 <a name="details" id="details"></a><h2>Detailed Description</h2>
+<h2>Enumeration Type Documentation</h2>
+<a class="anchor" id="ga47d1e22a8d3d3d06fe137595e1a1a8bd"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group__utility.html#ga47d1e22a8d3d3d06fe137595e1a1a8bd">nanodbc::column_datatype</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl><dt><b>Enumerator: </b></dt><dd><table border="0" cellspacing="2" cellpadding="0">
+<tr><td valign="top"><em><a class="anchor" id="gga47d1e22a8d3d3d06fe137595e1a1a8bda676692c8479db371ab26d380f6c647e9"></a>column_short</em>&nbsp;</td><td>
+<p>Signed short type. </p>
+</td></tr>
+<tr><td valign="top"><em><a class="anchor" id="gga47d1e22a8d3d3d06fe137595e1a1a8bda1f17e3e04d384ddbc4e27021cad56123"></a>column_ushort</em>&nbsp;</td><td>
+<p>Unsigned short type. </p>
+</td></tr>
+<tr><td valign="top"><em><a class="anchor" id="gga47d1e22a8d3d3d06fe137595e1a1a8bda94f3781f281316dbeeb632d51eb35db1"></a>column_long</em>&nbsp;</td><td>
+<p>Signed long type. </p>
+</td></tr>
+<tr><td valign="top"><em><a class="anchor" id="gga47d1e22a8d3d3d06fe137595e1a1a8bdacf50f0ab9482be51f33d01d877a5dbeb"></a>column_ulong</em>&nbsp;</td><td>
+<p>Unsigned long type. </p>
+</td></tr>
+<tr><td valign="top"><em><a class="anchor" id="gga47d1e22a8d3d3d06fe137595e1a1a8bda94ef94cb5ec581dc2d692cbbf08c7d1f"></a>column_float</em>&nbsp;</td><td>
+<p>Float point type. </p>
+</td></tr>
+<tr><td valign="top"><em><a class="anchor" id="gga47d1e22a8d3d3d06fe137595e1a1a8bdac2dd90f85fa6245e44aaa5e90fc81deb"></a>column_double</em>&nbsp;</td><td>
+<p>Double precision floating point type. </p>
+</td></tr>
+<tr><td valign="top"><em><a class="anchor" id="gga47d1e22a8d3d3d06fe137595e1a1a8bdae6a4031d828ad9f7b87e58e025df9499"></a>column_string</em>&nbsp;</td><td>
+<p>String type. </p>
+</td></tr>
+<tr><td valign="top"><em><a class="anchor" id="gga47d1e22a8d3d3d06fe137595e1a1a8bda52bf1c4255bc8a26be72f5d23f468b60"></a>column_date</em>&nbsp;</td><td>
+<p>Date type. </p>
+</td></tr>
+<tr><td valign="top"><em><a class="anchor" id="gga47d1e22a8d3d3d06fe137595e1a1a8bda290ef74260650d308c0e94782bc523c7"></a>column_timestamp</em>&nbsp;</td><td>
+<p>Timestamp type. </p>
+</td></tr>
+</table>
+</dd>
+</dl>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/>
@@ -103,7 +166,7 @@ Classes</h2></td></tr>
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Mon Sep 24 2012 10:00:54 for nanodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Mon Sep 24 2012 23:13:20 for nanodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>

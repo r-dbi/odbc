@@ -46,10 +46,8 @@ nanodbc::result direct_execution(nanodbc::connection& connection, const string& 
 
 int main()
 {
-    // const char* connection_string = "A Data Source Connection String";
-    // #define EXAMPLE_TABLE "public.example_table"
-    const char* connection_string = "Driver=vertica;Servername=sandbox03;Port=5433;Database=vertica01;UserName=dbadmin;Password=;"; // #T
-    #define EXAMPLE_TABLE "public.amytest" // #T
+    const char* connection_string = "A Data Source Connection String";
+    #define EXAMPLE_TABLE "public.example_table"
 
     try
     {
@@ -63,12 +61,6 @@ int main()
         nanodbc::result results;
         nanodbc::statement statement;
 
-        direct_execution(connection, "insert into foo (a) values (100);");
-        results = direct_execution(connection, "SELECT LAST_INSERT_ID();");
-        show<string>(results);
-
-
-#if 0
         // Direct execution
         results = direct_execution(connection, "select * from " EXAMPLE_TABLE ";");
         show<string>(results);
@@ -131,7 +123,6 @@ int main()
 
         // The resources used by connection and statement are cleaned up automatically or
         // you can explicitly call statement.close() and/or connection.disconnect().
-#endif
     }
     catch(const exception& e)
     {

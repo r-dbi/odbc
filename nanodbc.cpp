@@ -867,6 +867,14 @@ public:
         return bound_columns_[column].name_;
     }
 
+    enum column_datatype column_datatype(short column) const
+    {
+        if(column >= bound_columns_size_)
+            throw index_range_error();
+        bound_column& col = bound_columns_[column];
+        return column_datatype(col.ctype_);
+    }
+
     template<class T>
     T get(short column, long row = 0) const
     {
@@ -1573,6 +1581,11 @@ bool result::is_null(short column, long row) const
 std::string result::column_name(short column) const
 {
     return impl_->column_name(column);
+}
+
+column_datatype result::column_datatype(short column) const
+{
+    return impl_->column_datatype(column);
 }
 
 template<class T>

@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>nanodbc: Exception Types</title>
+<title>nanodbc: Namespace Members</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -39,7 +39,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li class="current"><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -60,6 +60,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="namespaces.html"><span>Namespace&#160;List</span></a></li>
+      <li class="current"><a href="namespacemembers.html"><span>Namespace&#160;Members</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow3" class="tabs2">
+    <ul class="tablist">
+      <li><a href="namespacemembers.html"><span>All</span></a></li>
+      <li class="current"><a href="namespacemembers_enum.html"><span>Enumerations</span></a></li>
+      <li><a href="namespacemembers_eval.html"><span>Enumerator</span></a></li>
+    </ul>
+  </div>
 </div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -75,30 +88,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<div class="header">
-  <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
-  <div class="headertitle">
-<div class="title">Exception Types</div>  </div>
-</div><!--header-->
 <div class="contents">
-
-<p>Possible error conditions.  
-<a href="#details">More...</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1type__incompatible__error.html">nanodbc::type_incompatible_error</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type incompatible.  <a href="classnanodbc_1_1type__incompatible__error.html#details">More...</a><br/></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1null__access__error.html">nanodbc::null_access_error</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accessed null data.  <a href="classnanodbc_1_1null__access__error.html#details">More...</a><br/></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1index__range__error.html">nanodbc::index_range_error</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Index out of range.  <a href="classnanodbc_1_1index__range__error.html#details">More...</a><br/></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1database__error.html">nanodbc::database_error</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">General database error.  <a href="classnanodbc_1_1database__error.html#details">More...</a><br/></td></tr>
-</table>
-<a name="details" id="details"></a><h2>Detailed Description</h2>
-<p>Specific errors such as <a class="el" href="classnanodbc_1_1type__incompatible__error.html" title="Type incompatible.">type_incompatible_error</a>, <a class="el" href="classnanodbc_1_1null__access__error.html" title="Accessed null data.">null_access_error</a>, and <a class="el" href="classnanodbc_1_1index__range__error.html" title="Index out of range.">index_range_error</a> can arise from improper use of the nanodbc library. The general <a class="el" href="classnanodbc_1_1database__error.html" title="General database error.">database_error</a> is for all other situations in which the ODBC driver or C API reports an error condition. The explanatory string for <a class="el" href="classnanodbc_1_1database__error.html" title="General database error.">database_error</a> will, if possible, contain a diagnostic message obtained from SQLGetDiagRec(). </p>
+&#160;<ul>
+<li>column_datatype
+: <a class="el" href="group__utility.html#ga47d1e22a8d3d3d06fe137595e1a1a8bd">nanodbc</a>
+</li>
+</ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/>

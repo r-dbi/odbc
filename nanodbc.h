@@ -282,6 +282,20 @@ struct timestamp
     NANODBC_STD int32_t fract; //!< Fractional seconds.
 };
 
+//! \brief A type for representing the data type of a column.
+enum column_datatype
+{
+    column_short = SQL_C_SSHORT             //!< Signed short type.
+    , column_ushort = SQL_C_USHORT          //!< Unsigned short type.
+    , column_long = SQL_C_SLONG             //!< Signed long type.
+    , column_ulong = SQL_C_ULONG            //!< Unsigned long type.
+    , column_float = SQL_C_FLOAT            //!< Float point type.
+    , column_double = SQL_C_DOUBLE          //!< Double precision floating point type
+    , column_string = SQL_C_CHAR            //!< String type
+    , column_date = SQL_C_DATE              //!< Date type.
+    , column_timestamp = SQL_C_TIMESTAMP    //!< Timestamp type.
+};
+
 //! \}
 
 //! \addtogroup main Main Classes
@@ -701,6 +715,9 @@ public:
     //! \param Column position. 
     //! \throws index_range_error
     std::string column_name(short column) const;
+
+    //! Returns a column_datatype representing the C type of this column.
+    enum column_datatype column_datatype(short column) const;
 
 private:
     result(statement stmt, long rowset_size);
