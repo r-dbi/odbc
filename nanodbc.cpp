@@ -835,9 +835,9 @@ public:
         return fetch(rows, SQL_FETCH_RELATIVE);
     }
 
-    long position() const
+    unsigned long position() const
     {
-        SQLULEN pos;
+        SQLULEN pos = 0; // necessary to initialize to 0
         RETCODE rc;
         NANODBC_CALL_RC(SQLGetStmtAttr, rc, stmt_.native_stmt_handle(), SQL_ATTR_ROW_NUMBER, &pos, SQL_IS_UINTEGER, 0);
         if (!success(rc))
@@ -847,7 +847,7 @@ public:
 
     bool end() const
     {
-        return (position() > rows());
+        return (rows() < 0 || position() > static_cast<unsigned long>(rows()));
     }
 
     bool is_null(short column, long row) const
@@ -1563,7 +1563,7 @@ bool result::skip(long rows)
     return impl_->skip(rows);
 }
 
-long result::position() const
+unsigned long result::position() const
 {
     return impl_->position();
 }

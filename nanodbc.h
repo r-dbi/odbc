@@ -686,7 +686,7 @@ public:
     bool skip(long rows);
 
     //! \brief Returns the row position in the current result set.
-    long position() const;
+    unsigned long position() const;
 
     //! \brief Returns true if there are no more results in the current result set.
     //! \throws database_error
