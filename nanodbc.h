@@ -641,15 +641,14 @@ public:
     HDBC native_stmt_handle() const;
 
     //! \brief The rowset size for this result set.
-    long rowset_size() const;
+    long rowset_size() const throw();
 
     //! \brief Returns the number of rows affected by the request or –1 if the number of affected rows is not available.
     //! \throws database_error
     long affected_rows() const;
 
     //! \brief Returns the number of rows in the current rowset or 0 if the number of rows is not available.
-    //! \throws database_error
-    long rows() const;
+    long rows() const throw();
 
     //! \brief Returns the number of columns in the current result set.
     //! \throws database_error
@@ -689,7 +688,7 @@ public:
     unsigned long position() const;
 
     //! \brief Returns true if there are no more results in the current result set.
-    bool end() const;
+    bool end() const throw();
 
     //! \brief Gets data from the given column in the selected row of the current rowset.
     //!

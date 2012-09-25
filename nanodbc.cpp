@@ -790,7 +790,7 @@ public:
         return rows;
     }
 
-    long rows() const
+    long rows() const throw()
     {
         return row_count_;
     }
@@ -845,7 +845,7 @@ public:
         return pos - 1;
     }
 
-    bool end() const
+    bool end() const throw()
     {
         SQLULEN pos = 0; // necessary to initialize to 0
         RETCODE rc;
@@ -1516,7 +1516,7 @@ HDBC result::native_stmt_handle() const
     return impl_->native_stmt_handle();
 }
 
-long result::rowset_size() const
+long result::rowset_size() const throw()
 {
     return impl_->rowset_size();
 }
@@ -1526,7 +1526,7 @@ long result::affected_rows() const
     return impl_->affected_rows();
 }
 
-long result::rows() const
+long result::rows() const throw()
 {
     return impl_->rows();
 }
@@ -1571,7 +1571,7 @@ unsigned long result::position() const
     return impl_->position();
 }
 
-bool result::end() const
+bool result::end() const throw()
 {
     return impl_->end();
 }
