@@ -689,7 +689,6 @@ public:
     unsigned long position() const;
 
     //! \brief Returns true if there are no more results in the current result set.
-    //! \throws database_error
     bool end() const;
 
     //! \brief Gets data from the given column in the selected row of the current rowset.

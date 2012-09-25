@@ -530,32 +530,32 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00687"></a><span class="lineno">  687</span>&#160;</div>
 <div class="line"><a name="l00689"></a><span class="lineno">  689</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <a class="code" href="classnanodbc_1_1result.html#af35deace1b1577117cded9fc622ab9b8" title="Returns the row position in the current result set.">position</a>() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00690"></a><span class="lineno">  690</span>&#160;</div>
-<div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#aad619da0f6099108a51d9c2854709134" title="Returns true if there are no more results in the current result set.">end</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160;</div>
-<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;    T <span class="keyword">get</span>(<span class="keywordtype">short</span> column, <span class="keywordtype">long</span> row = 0) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;</div>
-<div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#a357e2f03365ce6988083730718dd3487" title="Returns true if and only if the given column in the selected row of the current rowset is null...">is_null</a>(<span class="keywordtype">short</span> column, <span class="keywordtype">long</span> row = 0) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;</div>
-<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;    std::string <a class="code" href="classnanodbc_1_1result.html#ac761639372b233894a15d78da868e85c" title="Returns the name of the specified column.">column_name</a>(<span class="keywordtype">short</span> column) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;</div>
-<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;    <span class="keyword">enum</span> <a class="code" href="group__utility.html#ga47d1e22a8d3d3d06fe137595e1a1a8bd" title="A type for representing the data type of a column.">column_datatype</a> <a class="code" href="classnanodbc_1_1result.html#a0a4dd990a1537852603cb724d012e3c7" title="Returns a column_datatype representing the C type of this column.">column_datatype</a>(<span class="keywordtype">short</span> column) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;</div>
-<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;    <a class="code" href="classnanodbc_1_1result.html#ad4d59619a46d67bbc171d0d5c9e84705" title="Empty result set.">result</a>(<a class="code" href="classnanodbc_1_1statement.html" title="Represents a statement on the database.">statement</a> stmt, <span class="keywordtype">long</span> rowset_size);</div>
-<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;</div>
-<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;    <span class="keyword">class </span>result_impl;</div>
-<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span>nanodbc::statement::statement_impl;</div>
-<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;</div>
-<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;    NANODBC_STD shared_ptr&lt;result_impl&gt; impl_;</div>
-<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;};</div>
-<div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;</div>
-<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;</div>
-<div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160;} <span class="comment">// namespace nanodbc</span></div>
-<div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;</div>
-<div class="line"><a name="l00737"></a><span class="lineno">  737</span>&#160;<span class="preprocessor">#endif // NANODBC_H</span></div>
+<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#aad619da0f6099108a51d9c2854709134" title="Returns true if there are no more results in the current result set.">end</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160;</div>
+<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;    T <span class="keyword">get</span>(<span class="keywordtype">short</span> column, <span class="keywordtype">long</span> row = 0) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;</div>
+<div class="line"><a name="l00709"></a><span class="lineno">  709</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#a357e2f03365ce6988083730718dd3487" title="Returns true if and only if the given column in the selected row of the current rowset is null...">is_null</a>(<span class="keywordtype">short</span> column, <span class="keywordtype">long</span> row = 0) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;</div>
+<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;    std::string <a class="code" href="classnanodbc_1_1result.html#ac761639372b233894a15d78da868e85c" title="Returns the name of the specified column.">column_name</a>(<span class="keywordtype">short</span> column) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;</div>
+<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;    <span class="keyword">enum</span> <a class="code" href="group__utility.html#ga47d1e22a8d3d3d06fe137595e1a1a8bd" title="A type for representing the data type of a column.">column_datatype</a> <a class="code" href="classnanodbc_1_1result.html#a0a4dd990a1537852603cb724d012e3c7" title="Returns a column_datatype representing the C type of this column.">column_datatype</a>(<span class="keywordtype">short</span> column) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;</div>
+<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;    <a class="code" href="classnanodbc_1_1result.html#ad4d59619a46d67bbc171d0d5c9e84705" title="Empty result set.">result</a>(<a class="code" href="classnanodbc_1_1statement.html" title="Represents a statement on the database.">statement</a> stmt, <span class="keywordtype">long</span> rowset_size);</div>
+<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;</div>
+<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;    <span class="keyword">class </span>result_impl;</div>
+<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span>nanodbc::statement::statement_impl;</div>
+<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;</div>
+<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;    NANODBC_STD shared_ptr&lt;result_impl&gt; impl_;</div>
+<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;};</div>
+<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;</div>
+<div class="line"><a name="l00733"></a><span class="lineno">  733</span>&#160;</div>
+<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;} <span class="comment">// namespace nanodbc</span></div>
+<div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160;</div>
+<div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;<span class="preprocessor">#endif // NANODBC_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/>
@@ -565,7 +565,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Tue Sep 25 2012 14:56:50 for nanodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Tue Sep 25 2012 15:48:20 for nanodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>
