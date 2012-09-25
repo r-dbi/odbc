@@ -842,12 +842,15 @@ public:
         NANODBC_CALL_RC(SQLGetStmtAttr, rc, stmt_.native_stmt_handle(), SQL_ATTR_ROW_NUMBER, &pos, SQL_IS_UINTEGER, 0);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
-        return pos;
+        return pos - 1;
     }
 
     bool end() const
     {
-        return (rows() < 0 || position() > static_cast<unsigned long>(rows()));
+        SQLULEN pos = 0; // necessary to initialize to 0
+        RETCODE rc;
+        NANODBC_CALL_RC(SQLGetStmtAttr, rc, stmt_.native_stmt_handle(), SQL_ATTR_ROW_NUMBER, &pos, SQL_IS_UINTEGER, 0);
+        return (!success(rc) || rows() < 0 || pos - 1 > static_cast<unsigned long>(rows()));
     }
 
     bool is_null(short column, long row) const
