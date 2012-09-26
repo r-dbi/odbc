@@ -527,6 +527,7 @@ public:
     //! \param param Placeholder position.
     //! \param first Iterator to first value to bind.
     //! \param first Iterator to one past the last value to bind.
+    //! \return the The number of elements that were bound to this column.
     //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
     //! \throws database_error
     //! \see transaction
@@ -537,9 +538,10 @@ public:
                 typename std::iterator_traits<InputIterator>::value_type
                 , std::string
             >::value
+            , unsigned long
         >::type
     #else
-        void
+        unsigned long
     #endif
     bind_parameter(long param, InputIterator first, InputIterator last)
     {
@@ -560,6 +562,7 @@ public:
             , sizeof(element_type)
             , elements
             , true);
+        return elements;
     }
 
     #ifndef DOXYGEN
@@ -569,6 +572,7 @@ public:
             typename std::iterator_traits<InputIterator>::value_type
             , std::string
         >::value
+        , unsigned long
     >::type
     bind_parameter(long param, InputIterator first, InputIterator last)
     {
@@ -592,6 +596,7 @@ public:
             , column_size
             , elements
             , true);
+        return elements;
     }
     #endif // DOXYGEN
 
