@@ -148,11 +148,11 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <tr class="memitem:aad619da0f6099108a51d9c2854709134"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aad619da0f6099108a51d9c2854709134"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#aad619da0f6099108a51d9c2854709134">end</a> () const   throw ()</td></tr>
 <tr class="memdesc:aad619da0f6099108a51d9c2854709134"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if there are no more results in the current result set. <br/></td></tr>
-<tr class="memitem:ac9335505de3e261dc98fd578d12a755f"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:ac9335505de3e261dc98fd578d12a755f"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#ac9335505de3e261dc98fd578d12a755f">get</a> (short column, long row=0) const </td></tr>
-<tr class="memdesc:ac9335505de3e261dc98fd578d12a755f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets data from the given column in the selected row of the current rowset.  <a href="#ac9335505de3e261dc98fd578d12a755f"></a><br/></td></tr>
-<tr class="memitem:a357e2f03365ce6988083730718dd3487"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a357e2f03365ce6988083730718dd3487">is_null</a> (short column, long row=0) const </td></tr>
-<tr class="memdesc:a357e2f03365ce6988083730718dd3487"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if and only if the given column in the selected row of the current rowset is null.  <a href="#a357e2f03365ce6988083730718dd3487"></a><br/></td></tr>
+<tr class="memitem:a621a4c4a6dfaaa40f890da7e7b7fd068"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a621a4c4a6dfaaa40f890da7e7b7fd068"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a621a4c4a6dfaaa40f890da7e7b7fd068">get</a> (short column) const </td></tr>
+<tr class="memdesc:a621a4c4a6dfaaa40f890da7e7b7fd068"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets data from the given column in the selected row of the current rowset.  <a href="#a621a4c4a6dfaaa40f890da7e7b7fd068"></a><br/></td></tr>
+<tr class="memitem:a46777a452792e0184f63bc370c3303a4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#a46777a452792e0184f63bc370c3303a4">is_null</a> (short column) const </td></tr>
+<tr class="memdesc:a46777a452792e0184f63bc370c3303a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if and only if the given column in the selected row of the current rowset is null.  <a href="#a46777a452792e0184f63bc370c3303a4"></a><br/></td></tr>
 <tr class="memitem:ac761639372b233894a15d78da868e85c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1result.html#ac761639372b233894a15d78da868e85c">column_name</a> (short column) const </td></tr>
 <tr class="memdesc:ac761639372b233894a15d78da868e85c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name of the specified column.  <a href="#ac761639372b233894a15d78da868e85c"></a><br/></td></tr>
 <tr class="memitem:a0a4dd990a1537852603cb724d012e3c7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0a4dd990a1537852603cb724d012e3c7"></a>
@@ -256,7 +256,7 @@ enum <a class="el" href="group__utility.html#ga47d1e22a8d3d3d06fe137595e1a1a8bd"
 
 </div>
 </div>
-<a class="anchor" id="ac9335505de3e261dc98fd578d12a755f"></a>
+<a class="anchor" id="a621a4c4a6dfaaa40f890da7e7b7fd068"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -266,18 +266,8 @@ template&lt;class T &gt; </div>
           <td class="memname">template <a class="el" href="structnanodbc_1_1timestamp.html">timestamp</a> nanodbc::result::get </td>
           <td>(</td>
           <td class="paramtype">short&#160;</td>
-          <td class="paramname"><em>column</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">long&#160;</td>
-          <td class="paramname"><em>row</em> = <code>0</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
+          <td class="paramname"><em>column</em></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -298,7 +288,7 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a357e2f03365ce6988083730718dd3487"></a>
+<a class="anchor" id="a46777a452792e0184f63bc370c3303a4"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -306,18 +296,8 @@ template&lt;class T &gt; </div>
           <td class="memname">bool nanodbc::result::is_null </td>
           <td>(</td>
           <td class="paramtype">short&#160;</td>
-          <td class="paramname"><em>column</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">long&#160;</td>
-          <td class="paramname"><em>row</em> = <code>0</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
+          <td class="paramname"><em>column</em></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -463,7 +443,7 @@ template&lt;class T &gt; </div>
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Tue Sep 25 2012 16:56:15 for nanodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Wed Sep 26 2012 11:43:56 for nanodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>

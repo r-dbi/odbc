@@ -697,7 +697,7 @@ public:
     //! \param row If there are multiple rows in this rowset, get from the specified row.
     //! \throws database_error, index_range_error, type_incompatible_error
     template<class T>
-    T get(short column, long row = 0) const;
+    T get(short column) const;
 
     //! \brief Returns true if and only if the given column in the selected row of the current rowset is null.
     //!
@@ -705,7 +705,7 @@ public:
     //! \param Column position. 
     //! \param row If there are multiple rows in this rowset, get from the specified row.
     //! \throws database_error, index_range_error
-    bool is_null(short column, long row = 0) const;
+    bool is_null(short column) const;
 
     //! \brief Returns the name of the specified column.
     //!

@@ -10,7 +10,7 @@ void show(nanodbc::result results)
     const short columns = results.columns();
     long rows_displayed = 0;
 
-    cout << "\nDisplaying " << results.affected_rows() << " rows (" << results.rowset_size() << " at a time):" << endl;
+    cout << "\nDisplaying " << results.affected_rows() << " rows (" << results.rowset_size() << " fetched at a time):" << endl;
 
     cout << "row\t";
     for(short i = 0; i < columns; ++i)
@@ -19,20 +19,16 @@ void show(nanodbc::result results)
 
     while(results.next())
     {
-        const unsigned long rows = results.rows();
-        for(unsigned long row = 0; row < rows; ++row)
+        cout << rows_displayed++ << "\t";
+        for(short col = 0; col < columns; ++col)
         {
-            cout << rows_displayed++ << "\t";
-            for(short col = 0; col < columns; ++col)
-            {
-                if(results.is_null(col, row))
-                    cout << "(null)";
-                else
-                    cout << "(" << results.get<T>(col, row) << ")";
-                cout << "\t";
-            }
-            cout << endl;
+            if(results.is_null(col))
+                cout << "(null)";
+            else
+                cout << "(" << results.get<T>(col) << ")";
+            cout << "\t";
         }
+        cout << endl;
     }
 }
 
@@ -44,14 +40,18 @@ nanodbc::result direct_execution(nanodbc::connection& connection, const string& 
     // will keep the statement resources alive until we are done with them
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-    const char* connection_string = "A Data Source Connection String";
-    #define EXAMPLE_TABLE "public.example_table"
+    if(argc < 2)
+    {
+        cerr << "please provide a connection string" << endl;
+        return 1;
+    }
 
     try
     {
         // Establishing connections
+        const string connection_string = argv[1];
         nanodbc::connection connection(connection_string);
         // or nanodbc::connection connection(connection_string, timeout_seconds);
         // or nanodbc::connection connection("data source name", "username", "password");
@@ -62,15 +62,21 @@ int main()
         nanodbc::statement statement;
 
         // Direct execution
-        results = direct_execution(connection, "select * from " EXAMPLE_TABLE ";");
+        direct_execution(connection, "drop table if exists public.example_table;");
+        direct_execution(connection, "create table public.example_table (a int, b varchar(10));");
+        direct_execution(connection, "insert into public.example_table values (1, 'one;');");
+        direct_execution(connection, "insert into public.example_table values (2, 'two;');");
+        direct_execution(connection, "insert into public.example_table values (3, 'tri;');");
+        direct_execution(connection, "insert into public.example_table (b) values ('z;');");
+        results = direct_execution(connection, "select * from public.example_table;");
         show<string>(results);
 
         // Direct execution, bulk fetching 2 rows at a time
-        results = statement.execute_direct(connection, "select * from " EXAMPLE_TABLE ";", 2);
+        results = statement.execute_direct(connection, "select * from public.example_table;", 2);
         show<string>(results);
 
         // Binding parameters
-        statement.prepare(connection, "select cast(a as float) as f from " EXAMPLE_TABLE " where cast(a as float) = ?;");
+        statement.prepare(connection, "select cast(a as float) as f from public.example_table where cast(a as float) = ?;");
         statement.bind_parameter(0, 1.0);
 
         results = statement.execute();
@@ -78,10 +84,14 @@ int main()
 
         // Transactions
         {
+            cout << "\ndeleting all rows ... " << flush;
             nanodbc::transaction transaction(connection);
-            statement.execute_direct(connection, "delete from " EXAMPLE_TABLE ";");
+            statement.execute_direct(connection, "delete from public.example_table;");
             // transaction will be rolled back if we don't call transaction.commit()
         }
+        results = direct_execution(connection, "select count(1) from public.example_table;");
+        results.next();
+        cout << "still have " << results.get<int>(0) << " rows!" << endl;
 
         // Batch inserting
         {
@@ -106,7 +116,7 @@ int main()
             statement.execute(data_count);
             transaction.commit();
  
-            results = statement.execute_direct(connection, "select * from public.batch_insert_test;");
+            results = statement.execute_direct(connection, "select * from public.batch_insert_test;", 3);
             show<string>(results);
         }
 
@@ -117,7 +127,7 @@ int main()
         results = statement.execute_direct(connection, "select * from public.date_test;");
         results.next();
         nanodbc::date date = results.get<nanodbc::date>(0);
-        cout << date.year << "-" << date.month << "-" << date.day << endl;
+        cout << endl << date.year << "-" << date.month << "-" << date.day << endl;
         results = statement.execute_direct(connection, "select * from public.date_test;");
         show<string>(results);
 

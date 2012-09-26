@@ -751,6 +751,7 @@ public:
     , row_count_(0)
     , bound_columns_(0)
     , bound_columns_size_(0)
+    , rowset_position_(0)
     {
         RETCODE rc;
         NANODBC_CALL_RC(SQLSetStmtAttr, rc, stmt_.native_stmt_handle(), SQL_ATTR_ROW_ARRAY_SIZE, (SQLPOINTER)rowset_size_, 0);
@@ -807,31 +808,44 @@ public:
 
     bool first()
     {
+        rowset_position_ = 0;
         return fetch(0, SQL_FETCH_FIRST);
     }
 
     bool last()
     {
+        rowset_position_ = 0;
         return fetch(0, SQL_FETCH_LAST);
     }
 
     bool next()
     {
+        if(rows() && ++rowset_position_ < rowset_size_)
+            return rowset_position_ < rows();
+        rowset_position_ = 0;
         return fetch(0, SQL_FETCH_NEXT);
     }
 
     bool prior()
     {
+        if(rows() && --rowset_position_ >= 0)
+            return true;
+        rowset_position_ = 0;
         return fetch(0, SQL_FETCH_PRIOR);
     }
 
     bool move(long row)
     {
+        rowset_position_ = 0;
         return fetch(row, SQL_FETCH_ABSOLUTE);
     }
 
     bool skip(long rows)
     {
+        rowset_position_ += rows;
+        if(this->rows() && rowset_position_ < rowset_size_)
+            return rowset_position_ < this->rows();
+        rowset_position_ = 0;
         return fetch(rows, SQL_FETCH_RELATIVE);
     }
 
@@ -842,7 +856,7 @@ public:
         NANODBC_CALL_RC(SQLGetStmtAttr, rc, stmt_.native_stmt_handle(), SQL_ATTR_ROW_NUMBER, &pos, SQL_IS_UINTEGER, 0);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
-        return pos - 1;
+        return pos - 1 + rowset_position_;
     }
 
     bool end() const throw()
@@ -853,14 +867,14 @@ public:
         return (!success(rc) || rows() < 0 || pos - 1 > static_cast<unsigned long>(rows()));
     }
 
-    bool is_null(short column, long row) const
+    bool is_null(short column) const
     {
         if(column >= bound_columns_size_)
             throw index_range_error();
         bound_column& col = bound_columns_[column];
-        if(row >= rows())
+        if(rowset_position_ >= rows())
             throw index_range_error();
-        return col.cbdata_[row] == SQL_NULL_DATA;
+        return col.cbdata_[rowset_position_] == SQL_NULL_DATA;
     }
 
     std::string column_name(short column) const
@@ -879,23 +893,23 @@ public:
     }
 
     template<class T>
-    T get(short column, long row = 0) const
+    T get(short column) const
     {
         if(column >= bound_columns_size_)
             throw index_range_error();
-        if(is_null(column, row))
+        if(is_null(column))
             throw null_access_error();
         bound_column& col = bound_columns_[column];
 
         switch(col.ctype_)
         {
-            case SQL_C_SSHORT: return (T)*(short*)(col.pdata_ + row * col.clen_);
-            case SQL_C_USHORT: return (T)*(unsigned short*)(col.pdata_ + row * col.clen_);
-            case SQL_C_SLONG: return (T)*(long*)(col.pdata_ + row * col.clen_);
-            case SQL_C_ULONG: return (T)*(unsigned long*)(col.pdata_ + row * col.clen_);
-            case SQL_C_FLOAT: return (T)*(float*)(col.pdata_ + row * col.clen_);
-            case SQL_C_DOUBLE: return (T)*(double*)(col.pdata_ + row * col.clen_);
-            case SQL_C_CHAR: if (!col.blob_) return convert<T>((col.pdata_ + row * col.clen_));
+            case SQL_C_SSHORT: return (T)*(short*)(col.pdata_ + rowset_position_ * col.clen_);
+            case SQL_C_USHORT: return (T)*(unsigned short*)(col.pdata_ + rowset_position_ * col.clen_);
+            case SQL_C_SLONG: return (T)*(long*)(col.pdata_ + rowset_position_ * col.clen_);
+            case SQL_C_ULONG: return (T)*(unsigned long*)(col.pdata_ + rowset_position_ * col.clen_);
+            case SQL_C_FLOAT: return (T)*(float*)(col.pdata_ + rowset_position_ * col.clen_);
+            case SQL_C_DOUBLE: return (T)*(double*)(col.pdata_ + rowset_position_ * col.clen_);
+            case SQL_C_CHAR: if (!col.blob_) return convert<T>((col.pdata_ + rowset_position_ * col.clen_));
         }
         throw type_incompatible_error();
     }
@@ -1062,23 +1076,24 @@ private:
     long row_count_;
     bound_column* bound_columns_;
     short bound_columns_size_;
+    long rowset_position_;
 };
 
 template<>
-inline date result::result_impl::get<date>(short column, long row) const
+inline date result::result_impl::get<date>(short column) const
 {
     if(column >= bound_columns_size_)
         throw index_range_error();
-    if(is_null(column, row))
+    if(is_null(column))
         throw null_access_error();
     bound_column& col = bound_columns_[column];
     switch(col.ctype_)
     {
         case SQL_C_DATE:
-            return *((date*)(col.pdata_ + row * col.clen_));
+            return *((date*)(col.pdata_ + rowset_position_ * col.clen_));
         case SQL_C_TIMESTAMP:
         {
-            timestamp stamp = *((timestamp*)(col.pdata_ + row * col.clen_));
+            timestamp stamp = *((timestamp*)(col.pdata_ + rowset_position_ * col.clen_));
             date d = { stamp.year, stamp.month, stamp.day };
             return d;
         }
@@ -1087,33 +1102,33 @@ inline date result::result_impl::get<date>(short column, long row) const
 }
 
 template<>
-inline timestamp result::result_impl::get<timestamp>(short column, long row) const
+inline timestamp result::result_impl::get<timestamp>(short column) const
 {
     if(column >= bound_columns_size_)
         throw index_range_error();
-    if(is_null(column, row))
+    if(is_null(column))
         throw null_access_error();
     bound_column& col = bound_columns_[column];
     switch(col.ctype_)
     {
         case SQL_C_DATE:
         {
-            date d = *((date*)(col.pdata_ + row * col.clen_));
+            date d = *((date*)(col.pdata_ + rowset_position_ * col.clen_));
             timestamp stamp = { d.year, d.month, d.day, 0, 0 , 0, 0 };
             return stamp;
         }
         case SQL_C_TIMESTAMP:
-            return *((timestamp*)(col.pdata_ + row * col.clen_));
+            return *((timestamp*)(col.pdata_ + rowset_position_ * col.clen_));
     }
     throw type_incompatible_error();
 }
 
 template<>
-inline std::string result::result_impl::get<std::string>(short column, long row) const
+inline std::string result::result_impl::get<std::string>(short column) const
 {
     if(column >= bound_columns_size_)
         throw index_range_error();
-    if(is_null(column, row))
+    if(is_null(column))
         throw null_access_error();
     bound_column& col = bound_columns_[column];
 
@@ -1131,21 +1146,21 @@ inline std::string result::result_impl::get<std::string>(short column, long row)
         case SQL_C_BINARY:
             if(col.blob_)
                 throw std::runtime_error("blob not implemented yet");
-            return (col.pdata_ + row * col.clen_);
+            return (col.pdata_ + rowset_position_ * col.clen_);
 
         case SQL_C_LONG:
-            if(std::snprintf(buffer, sizeof(buffer), "%ld", *(long*)(col.pdata_ + row * col.clen_)) != 1)
+            if(std::snprintf(buffer, sizeof(buffer), "%ld", *(long*)(col.pdata_ + rowset_position_ * col.clen_)) != 1)
                 throw type_incompatible_error();
             return buffer;
 
         case SQL_C_DOUBLE:
-            if(std::snprintf(buffer, sizeof(buffer), "%lf", *(double*)(col.pdata_ + row * col.clen_)) != 1)
+            if(std::snprintf(buffer, sizeof(buffer), "%lf", *(double*)(col.pdata_ + rowset_position_ * col.clen_)) != 1)
                 throw type_incompatible_error();
             return buffer;
 
         case SQL_C_DATE:
         {
-            date d = *((date*)(col.pdata_ + row * col.clen_));
+            date d = *((date*)(col.pdata_ + rowset_position_ * col.clen_));
             std::tm st = { 0 };
             st.tm_year = d.year - 1900;
             st.tm_mon = d.month - 1;
@@ -1160,7 +1175,7 @@ inline std::string result::result_impl::get<std::string>(short column, long row)
 
         case SQL_C_TIMESTAMP:
         {
-            timestamp stamp = *((timestamp*)(col.pdata_ + row * col.clen_));
+            timestamp stamp = *((timestamp*)(col.pdata_ + rowset_position_ * col.clen_));
             std::tm st = { 0 };
             st.tm_year = stamp.year - 1900;
             st.tm_mon = stamp.month - 1;
@@ -1576,9 +1591,9 @@ bool result::end() const throw()
     return impl_->end();
 }
 
-bool result::is_null(short column, long row) const
+bool result::is_null(short column) const
 {
-    return impl_->is_null(column, row);
+    return impl_->is_null(column);
 }
 
 std::string result::column_name(short column) const
@@ -1592,23 +1607,23 @@ column_datatype result::column_datatype(short column) const
 }
 
 template<class T>
-T result::get(short column, long row) const
+T result::get(short column) const
 {
-    return impl_->get<T>(column, row);
+    return impl_->get<T>(column);
 }
 
 // The following are the only supported instantiations of result::get().
-template short result::get(short, long) const;
-template unsigned short result::get(short, long) const;
-template long result::get(short, long) const;
-template unsigned long result::get(short, long) const;
-template int result::get(short, long) const;
-template unsigned int result::get(short, long) const;
-template float result::get(short, long) const;
-template double result::get(short, long) const;
-template std::string result::get(short, long) const;
-template date result::get(short, long) const;
-template timestamp result::get(short, long) const;
+template short result::get(short) const;
+template unsigned short result::get(short) const;
+template long result::get(short) const;
+template unsigned long result::get(short) const;
+template int result::get(short) const;
+template unsigned int result::get(short) const;
+template float result::get(short) const;
+template double result::get(short) const;
+template std::string result::get(short) const;
+template date result::get(short) const;
+template timestamp result::get(short) const;
 
 } // namespace nanodbc
 

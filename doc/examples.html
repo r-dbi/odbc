@@ -93,7 +93,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">    <span class="keyword">const</span> <span class="keywordtype">short</span> columns = results.<a class="code" href="classnanodbc_1_1result.html#a839990af1305d8dcb249f8464433034a" title="Returns the number of columns in the current result set.">columns</a>();</div>
 <div class="line">    <span class="keywordtype">long</span> rows_displayed = 0;</div>
 <div class="line"></div>
-<div class="line">    cout &lt;&lt; <span class="stringliteral">&quot;\nDisplaying &quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#a07f215555775ba5fc7576bc9da96f5c5" title="Returns the number of rows affected by the request or –1 if the number of affected rows is not availa...">affected_rows</a>() &lt;&lt; <span class="stringliteral">&quot; rows (&quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#adf331dc9bc9b610f5a47e6bc796dd961" title="The rowset size for this result set.">rowset_size</a>() &lt;&lt; <span class="stringliteral">&quot; at a time):&quot;</span> &lt;&lt; endl;</div>
+<div class="line">    cout &lt;&lt; <span class="stringliteral">&quot;\nDisplaying &quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#a07f215555775ba5fc7576bc9da96f5c5" title="Returns the number of rows affected by the request or –1 if the number of affected rows is not availa...">affected_rows</a>() &lt;&lt; <span class="stringliteral">&quot; rows (&quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#adf331dc9bc9b610f5a47e6bc796dd961" title="The rowset size for this result set.">rowset_size</a>() &lt;&lt; <span class="stringliteral">&quot; fetched at a time):&quot;</span> &lt;&lt; endl;</div>
 <div class="line"></div>
 <div class="line">    cout &lt;&lt; <span class="stringliteral">&quot;row\t&quot;</span>;</div>
 <div class="line">    <span class="keywordflow">for</span>(<span class="keywordtype">short</span> i = 0; i &lt; columns; ++i)</div>
@@ -102,20 +102,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"></div>
 <div class="line">    <span class="keywordflow">while</span>(results.<a class="code" href="classnanodbc_1_1result.html#a31470b51f194181373e4c2c4292d11c4" title="Fetches the next row in the current result set.">next</a>())</div>
 <div class="line">    {</div>
-<div class="line">        <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> rows = results.<a class="code" href="classnanodbc_1_1result.html#ae03450240fce5d33a39716e6c7ebf207" title="Returns the number of rows in the current rowset or 0 if the number of rows is not available...">rows</a>();</div>
-<div class="line">        <span class="keywordflow">for</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> row = 0; row &lt; rows; ++row)</div>
+<div class="line">        cout &lt;&lt; rows_displayed++ &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
+<div class="line">        <span class="keywordflow">for</span>(<span class="keywordtype">short</span> col = 0; col &lt; columns; ++col)</div>
 <div class="line">        {</div>
-<div class="line">            cout &lt;&lt; rows_displayed++ &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
-<div class="line">            <span class="keywordflow">for</span>(<span class="keywordtype">short</span> col = 0; col &lt; columns; ++col)</div>
-<div class="line">            {</div>
-<div class="line">                <span class="keywordflow">if</span>(results.<a class="code" href="classnanodbc_1_1result.html#a357e2f03365ce6988083730718dd3487" title="Returns true if and only if the given column in the selected row of the current rowset is null...">is_null</a>(col, row))</div>
-<div class="line">                    cout &lt;&lt; <span class="stringliteral">&quot;(null)&quot;</span>;</div>
-<div class="line">                <span class="keywordflow">else</span></div>
-<div class="line">                    cout &lt;&lt; <span class="stringliteral">&quot;(&quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#ac9335505de3e261dc98fd578d12a755f" title="Gets data from the given column in the selected row of the current rowset.">get</a>&lt;T&gt;(col, row) &lt;&lt; <span class="stringliteral">&quot;)&quot;</span>;</div>
-<div class="line">                cout &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
-<div class="line">            }</div>
-<div class="line">            cout &lt;&lt; endl;</div>
+<div class="line">            <span class="keywordflow">if</span>(results.<a class="code" href="classnanodbc_1_1result.html#a46777a452792e0184f63bc370c3303a4" title="Returns true if and only if the given column in the selected row of the current rowset is null...">is_null</a>(col))</div>
+<div class="line">                cout &lt;&lt; <span class="stringliteral">&quot;(null)&quot;</span>;</div>
+<div class="line">            <span class="keywordflow">else</span></div>
+<div class="line">                cout &lt;&lt; <span class="stringliteral">&quot;(&quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#a621a4c4a6dfaaa40f890da7e7b7fd068" title="Gets data from the given column in the selected row of the current rowset.">get</a>&lt;T&gt;(col) &lt;&lt; <span class="stringliteral">&quot;)&quot;</span>;</div>
+<div class="line">            cout &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
 <div class="line">        }</div>
+<div class="line">        cout &lt;&lt; endl;</div>
 <div class="line">    }</div>
 <div class="line">}</div>
 <div class="line"></div>
@@ -127,14 +123,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">    <span class="comment">// will keep the statement resources alive until we are done with them</span></div>
 <div class="line">}</div>
 <div class="line"></div>
-<div class="line"><span class="keywordtype">int</span> main()</div>
+<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>* argv[])</div>
 <div class="line">{</div>
-<div class="line">    <span class="keyword">const</span> <span class="keywordtype">char</span>* connection_string = <span class="stringliteral">&quot;A Data Source Connection String&quot;</span>;</div>
-<div class="line"><span class="preprocessor">    #define EXAMPLE_TABLE &quot;public.example_table&quot;</span></div>
-<div class="line"><span class="preprocessor"></span></div>
+<div class="line">    <span class="keywordflow">if</span>(argc &lt; 2)</div>
+<div class="line">    {</div>
+<div class="line">        cerr &lt;&lt; <span class="stringliteral">&quot;please provide a connection string&quot;</span> &lt;&lt; endl;</div>
+<div class="line">        <span class="keywordflow">return</span> 1;</div>
+<div class="line">    }</div>
+<div class="line"></div>
 <div class="line">    <span class="keywordflow">try</span></div>
 <div class="line">    {</div>
 <div class="line">        <span class="comment">// Establishing connections</span></div>
+<div class="line">        <span class="keyword">const</span> <span class="keywordtype">string</span> connection_string = argv[1];</div>
 <div class="line">        <a class="code" href="classnanodbc_1_1connection.html" title="Manages and encapsulates ODBC resources such as the connection and environment handles.">nanodbc::connection</a> connection(connection_string);</div>
 <div class="line">        <span class="comment">// or nanodbc::connection connection(connection_string, timeout_seconds);</span></div>
 <div class="line">        <span class="comment">// or nanodbc::connection connection(&quot;data source name&quot;, &quot;username&quot;, &quot;password&quot;);</span></div>
@@ -145,15 +145,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">        <a class="code" href="classnanodbc_1_1statement.html" title="Represents a statement on the database.">nanodbc::statement</a> <a class="code" href="classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9" title="Creates a new un-prepared statement.">statement</a>;</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Direct execution</span></div>
-<div class="line">        results = direct_execution(connection, <span class="stringliteral">&quot;select * from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>);</div>
+<div class="line">        direct_execution(connection, <span class="stringliteral">&quot;drop table if exists public.example_table;&quot;</span>);</div>
+<div class="line">        direct_execution(connection, <span class="stringliteral">&quot;create table public.example_table (a int, b varchar(10));&quot;</span>);</div>
+<div class="line">        direct_execution(connection, <span class="stringliteral">&quot;insert into public.example_table values (1, &#39;one;&#39;);&quot;</span>);</div>
+<div class="line">        direct_execution(connection, <span class="stringliteral">&quot;insert into public.example_table values (2, &#39;two;&#39;);&quot;</span>);</div>
+<div class="line">        direct_execution(connection, <span class="stringliteral">&quot;insert into public.example_table values (3, &#39;tri;&#39;);&quot;</span>);</div>
+<div class="line">        direct_execution(connection, <span class="stringliteral">&quot;insert into public.example_table (b) values (&#39;z;&#39;);&quot;</span>);</div>
+<div class="line">        results = direct_execution(connection, <span class="stringliteral">&quot;select * from public.example_table;&quot;</span>);</div>
 <div class="line">        show&lt;string&gt;(results);</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Direct execution, bulk fetching 2 rows at a time</span></div>
-<div class="line">        results = statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>, 2);</div>
+<div class="line">        results = statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from public.example_table;&quot;</span>, 2);</div>
 <div class="line">        show&lt;string&gt;(results);</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Binding parameters</span></div>
-<div class="line">        statement.<a class="code" href="classnanodbc_1_1statement.html#a93aa16195232656e4680473e53bb07a5" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;select cast(a as float) as f from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot; where cast(a as float) = ?;&quot;</span>);</div>
+<div class="line">        statement.<a class="code" href="classnanodbc_1_1statement.html#a93aa16195232656e4680473e53bb07a5" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;select cast(a as float) as f from public.example_table where cast(a as float) = ?;&quot;</span>);</div>
 <div class="line">        statement.<a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(0, 1.0);</div>
 <div class="line"></div>
 <div class="line">        results = statement.<a class="code" href="classnanodbc_1_1statement.html#aab9f6066efcfb5dc4244cd082c7d27a4" title="Execute the previously prepared query now.">execute</a>();</div>
@@ -161,10 +167,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"></div>
 <div class="line">        <span class="comment">// Transactions</span></div>
 <div class="line">        {</div>
+<div class="line">            cout &lt;&lt; <span class="stringliteral">&quot;\ndeleting all rows ... &quot;</span> &lt;&lt; flush;</div>
 <div class="line">            <a class="code" href="classnanodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">nanodbc::transaction</a> transaction(connection);</div>
-<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;delete from &quot;</span> EXAMPLE_TABLE <span class="stringliteral">&quot;;&quot;</span>);</div>
+<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;delete from public.example_table;&quot;</span>);</div>
 <div class="line">            <span class="comment">// transaction will be rolled back if we don&#39;t call transaction.commit()</span></div>
 <div class="line">        }</div>
+<div class="line">        results = direct_execution(connection, <span class="stringliteral">&quot;select count(1) from public.example_table;&quot;</span>);</div>
+<div class="line">        results.next();</div>
+<div class="line">        cout &lt;&lt; <span class="stringliteral">&quot;still have &quot;</span> &lt;&lt; results.get&lt;<span class="keywordtype">int</span>&gt;(0) &lt;&lt; <span class="stringliteral">&quot; rows!&quot;</span> &lt;&lt; endl;</div>
 <div class="line"></div>
 <div class="line">        <span class="comment">// Batch inserting</span></div>
 <div class="line">        {</div>
@@ -189,7 +199,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#aab9f6066efcfb5dc4244cd082c7d27a4" title="Execute the previously prepared query now.">execute</a>(data_count);</div>
 <div class="line">            transaction.commit();</div>
 <div class="line"> </div>
-<div class="line">            results = statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from public.batch_insert_test;&quot;</span>);</div>
+<div class="line">            results = statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from public.batch_insert_test;&quot;</span>, 3);</div>
 <div class="line">            show&lt;string&gt;(results);</div>
 <div class="line">        }</div>
 <div class="line"></div>
@@ -200,7 +210,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">        results = statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from public.date_test;&quot;</span>);</div>
 <div class="line">        results.<a class="code" href="classnanodbc_1_1result.html#a31470b51f194181373e4c2c4292d11c4" title="Fetches the next row in the current result set.">next</a>();</div>
 <div class="line">        <a class="code" href="structnanodbc_1_1date.html" title="A type for representing date data.">nanodbc::date</a> date = results.get&lt;<a class="code" href="structnanodbc_1_1date.html" title="A type for representing date data.">nanodbc::date</a>&gt;(0);</div>
-<div class="line">        cout &lt;&lt; date.<a class="code" href="structnanodbc_1_1date.html#a0c1ac39de9d84f0f69542874672983b5" title="Year [0-inf).">year</a> &lt;&lt; <span class="stringliteral">&quot;-&quot;</span> &lt;&lt; date.<a class="code" href="structnanodbc_1_1date.html#adef74703dfbffe3c3cba04a806029a0d" title="Month of the year [1-12].">month</a> &lt;&lt; <span class="stringliteral">&quot;-&quot;</span> &lt;&lt; date.<a class="code" href="structnanodbc_1_1date.html#a2352e7a762f3d57dfe43ce6b2f1e9be4" title="Day of the month [1-31].">day</a> &lt;&lt; endl;</div>
+<div class="line">        cout &lt;&lt; endl &lt;&lt; date.<a class="code" href="structnanodbc_1_1date.html#a0c1ac39de9d84f0f69542874672983b5" title="Year [0-inf).">year</a> &lt;&lt; <span class="stringliteral">&quot;-&quot;</span> &lt;&lt; date.<a class="code" href="structnanodbc_1_1date.html#adef74703dfbffe3c3cba04a806029a0d" title="Month of the year [1-12].">month</a> &lt;&lt; <span class="stringliteral">&quot;-&quot;</span> &lt;&lt; date.<a class="code" href="structnanodbc_1_1date.html#a2352e7a762f3d57dfe43ce6b2f1e9be4" title="Day of the month [1-31].">day</a> &lt;&lt; endl;</div>
 <div class="line">        results = statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from public.date_test;&quot;</span>);</div>
 <div class="line">        show&lt;string&gt;(results);</div>
 <div class="line"></div>
@@ -221,7 +231,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Tue Sep 25 2012 16:56:15 for nanodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html">Generated on Wed Sep 26 2012 11:43:56 for nanodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>
