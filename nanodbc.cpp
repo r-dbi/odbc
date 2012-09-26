@@ -889,7 +889,7 @@ public:
         if(column >= bound_columns_size_)
             throw index_range_error();
         bound_column& col = bound_columns_[column];
-        return column_datatype(col.ctype_);
+        return static_cast<enum column_datatype>(col.ctype_);
     }
 
     template<class T>
