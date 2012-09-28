@@ -134,6 +134,10 @@ int main(int argc, char* argv[])
         results = statement.execute_direct(connection, "select * from public.date_test;");
         show<string>(results);
 
+        // Cleanup
+        statement.execute_direct(connection, "drop table if exists public.date_test;");
+        statement.execute_direct(connection, "drop table if exists public.example_table;");
+        statement.execute_direct(connection, "drop table if exists public.batch_insert_test;");
         // The resources used by connection and statement are cleaned up automatically or
         // you can explicitly call statement.close() and/or connection.disconnect().
     }

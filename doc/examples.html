@@ -217,6 +217,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">        results = statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;select * from public.date_test;&quot;</span>);</div>
 <div class="line">        show&lt;string&gt;(results);</div>
 <div class="line"></div>
+<div class="line">        <span class="comment">// Cleanup</span></div>
+<div class="line">        statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;drop table if exists public.date_test;&quot;</span>);</div>
+<div class="line">        statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;drop table if exists public.example_table;&quot;</span>);</div>
+<div class="line">        statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;drop table if exists public.batch_insert_test;&quot;</span>);</div>
 <div class="line">        <span class="comment">// The resources used by connection and statement are cleaned up automatically or</span></div>
 <div class="line">        <span class="comment">// you can explicitly call statement.close() and/or connection.disconnect().</span></div>
 <div class="line">    }</div>
