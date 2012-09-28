@@ -109,6 +109,14 @@ namespace detail
     struct sql_type_info { };
 
     template<>
+    struct sql_type_info<char>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_CHAR; 
+        static const SQLSMALLINT sqltype = SQL_CHAR;
+        static const char* const format; 
+    };
+
+    template<>
     struct sql_type_info<short>
     {
         static const SQLSMALLINT ctype = SQL_C_SSHORT;

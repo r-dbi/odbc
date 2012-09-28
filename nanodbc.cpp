@@ -44,6 +44,7 @@ namespace nanodbc
 
 namespace detail
 {
+    const char* const sql_type_info<char>::format = "%c";
     const char* const sql_type_info<short>::format = "%hd";
     const char* const sql_type_info<unsigned short>::format = "%hu";
     const char* const sql_type_info<long>::format = "%ld";
@@ -711,7 +712,7 @@ public:
     {
         if(!bound_parameters_.count(param))
             bound_parameters_[param] = new bound_parameter(stmt_, param);
-        bound_parameters_[param]->set_value(ctype, sqltype, data, element_size, elements, take_ownership);
+            bound_parameters_[param]->set_value(ctype, sqltype, data, element_size, elements, take_ownership);
     }
 
     void reset_parameters() throw()
@@ -1149,12 +1150,17 @@ inline std::string result::result_impl::get<std::string>(short column) const
             return (col.pdata_ + rowset_position_ * col.clen_);
 
         case SQL_C_LONG:
-            if(std::snprintf(buffer, sizeof(buffer), "%ld", *(long*)(col.pdata_ + rowset_position_ * col.clen_)) != 1)
+            if(std::snprintf(buffer, sizeof(buffer), "%ld", *(long*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
+                throw type_incompatible_error();
+            return buffer;
+
+        case SQL_C_FLOAT:
+            if(std::snprintf(buffer, sizeof(buffer), "%f", *(float*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
                 throw type_incompatible_error();
             return buffer;
 
         case SQL_C_DOUBLE:
-            if(std::snprintf(buffer, sizeof(buffer), "%lf", *(double*)(col.pdata_ + rowset_position_ * col.clen_)) != 1)
+            if(std::snprintf(buffer, sizeof(buffer), "%lf", *(double*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
                 throw type_incompatible_error();
             return buffer;
 
@@ -1458,6 +1464,7 @@ void statement::bind_parameter(long param, const T& value)
 }
 
 // The following are the only supported instantiations of statement::bind_parameter().
+template void statement::bind_parameter(long, const char&);
 template void statement::bind_parameter(long, const short&);
 template void statement::bind_parameter(long, const unsigned short&);
 template void statement::bind_parameter(long, const long&);
@@ -1613,6 +1620,7 @@ T result::get(short column) const
 }
 
 // The following are the only supported instantiations of result::get().
+template char result::get(short) const;
 template short result::get(short) const;
 template unsigned short result::get(short) const;
 template long result::get(short) const;

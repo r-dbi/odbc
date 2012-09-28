@@ -64,10 +64,10 @@ int main(int argc, char* argv[])
         // Direct execution
         direct_execution(connection, "drop table if exists public.example_table;");
         direct_execution(connection, "create table public.example_table (a int, b varchar(10));");
-        direct_execution(connection, "insert into public.example_table values (1, 'one;');");
-        direct_execution(connection, "insert into public.example_table values (2, 'two;');");
-        direct_execution(connection, "insert into public.example_table values (3, 'tri;');");
-        direct_execution(connection, "insert into public.example_table (b) values ('z;');");
+        direct_execution(connection, "insert into public.example_table values (1, 'one');");
+        direct_execution(connection, "insert into public.example_table values (2, 'two');");
+        direct_execution(connection, "insert into public.example_table values (3, 'tri');");
+        direct_execution(connection, "insert into public.example_table (b) values ('z');");
         results = direct_execution(connection, "select * from public.example_table;");
         show<string>(results);
 
@@ -96,9 +96,9 @@ int main(int argc, char* argv[])
         // Batch inserting
         {
             statement.execute_direct(connection, "drop table if exists public.batch_insert_test;");
-            statement.execute_direct(connection, "create table public.batch_insert_test (x varchar(50), y int);");
+            statement.execute_direct(connection, "create table public.batch_insert_test (x varchar(50), y int, z float);");
 
-            statement.prepare(connection, "insert into public.batch_insert_test values (?, ?);");
+            statement.prepare(connection, "insert into public.batch_insert_test (x, y, z) values (?, ?, ?);");
 
             const size_t data_count = 4;
 
@@ -111,6 +111,9 @@ int main(int argc, char* argv[])
 
             int ydata[data_count] = { 1, 2, 3, 4 };
             statement.bind_parameter(1, ydata, ydata + data_count);
+
+            float zdata[data_count] = { 1.1, 2.2, 3.3, 4.4 };
+            statement.bind_parameter(2, zdata, zdata + data_count);
 
             nanodbc::transaction transaction(connection);
             statement.execute(data_count);
