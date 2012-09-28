@@ -147,10 +147,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">        <span class="comment">// Direct execution</span></div>
 <div class="line">        direct_execution(connection, <span class="stringliteral">&quot;drop table if exists public.example_table;&quot;</span>);</div>
 <div class="line">        direct_execution(connection, <span class="stringliteral">&quot;create table public.example_table (a int, b varchar(10));&quot;</span>);</div>
-<div class="line">        direct_execution(connection, <span class="stringliteral">&quot;insert into public.example_table values (1, &#39;one;&#39;);&quot;</span>);</div>
-<div class="line">        direct_execution(connection, <span class="stringliteral">&quot;insert into public.example_table values (2, &#39;two;&#39;);&quot;</span>);</div>
-<div class="line">        direct_execution(connection, <span class="stringliteral">&quot;insert into public.example_table values (3, &#39;tri;&#39;);&quot;</span>);</div>
-<div class="line">        direct_execution(connection, <span class="stringliteral">&quot;insert into public.example_table (b) values (&#39;z;&#39;);&quot;</span>);</div>
+<div class="line">        direct_execution(connection, <span class="stringliteral">&quot;insert into public.example_table values (1, &#39;one&#39;);&quot;</span>);</div>
+<div class="line">        direct_execution(connection, <span class="stringliteral">&quot;insert into public.example_table values (2, &#39;two&#39;);&quot;</span>);</div>
+<div class="line">        direct_execution(connection, <span class="stringliteral">&quot;insert into public.example_table values (3, &#39;tri&#39;);&quot;</span>);</div>
+<div class="line">        direct_execution(connection, <span class="stringliteral">&quot;insert into public.example_table (b) values (&#39;z&#39;);&quot;</span>);</div>
 <div class="line">        results = direct_execution(connection, <span class="stringliteral">&quot;select * from public.example_table;&quot;</span>);</div>
 <div class="line">        show&lt;string&gt;(results);</div>
 <div class="line"></div>
@@ -179,9 +179,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">        <span class="comment">// Batch inserting</span></div>
 <div class="line">        {</div>
 <div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;drop table if exists public.batch_insert_test;&quot;</span>);</div>
-<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;create table public.batch_insert_test (x varchar(50), y int);&quot;</span>);</div>
+<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;create table public.batch_insert_test (x varchar(50), y int, z float);&quot;</span>);</div>
 <div class="line"></div>
-<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#a93aa16195232656e4680473e53bb07a5" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;insert into public.batch_insert_test values (?, ?);&quot;</span>);</div>
+<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#a93aa16195232656e4680473e53bb07a5" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(connection, <span class="stringliteral">&quot;insert into public.batch_insert_test (x, y, z) values (?, ?, ?);&quot;</span>);</div>
 <div class="line"></div>
 <div class="line">            <span class="keyword">const</span> <span class="keywordtype">size_t</span> data_count = 4;</div>
 <div class="line"></div>
@@ -194,6 +194,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"></div>
 <div class="line">            <span class="keywordtype">int</span> ydata[data_count] = { 1, 2, 3, 4 };</div>
 <div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(1, ydata, ydata + data_count);</div>
+<div class="line"></div>
+<div class="line">            <span class="keywordtype">float</span> zdata[data_count] = { 1.1, 2.2, 3.3, 4.4 };</div>
+<div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(2, zdata, zdata + data_count);</div>
 <div class="line"></div>
 <div class="line">            <a class="code" href="classnanodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">nanodbc::transaction</a> transaction(connection);</div>
 <div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#aab9f6066efcfb5dc4244cd082c7d27a4" title="Execute the previously prepared query now.">execute</a>(data_count);</div>
@@ -231,7 +234,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 	</div>
 	<small>
 		<!-- <img class="footer" src="doxygen.png" alt="doxygen"/> -->
-		<a href="http://www.doxygen.org/index.html">Generated on Wed Sep 26 2012 17:51:50 for nanodbc by doxygen 1.8.1.2</a>
+		<a href="http://www.doxygen.org/index.html"><!-- generatedby inserts date information that we don't need -->Generated for nanodbc by doxygen 1.8.1.2</a>
 	</small>
 </address>
 </body>
