@@ -90,20 +90,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
 <div class="line"><span class="keywordtype">void</span> show(<a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">nanodbc::result</a> results)</div>
 <div class="line">{</div>
-<div class="line">    <span class="keyword">const</span> <span class="keywordtype">short</span> columns = results.<a class="code" href="classnanodbc_1_1result.html#a839990af1305d8dcb249f8464433034a" title="Returns the number of columns in the current result set.">columns</a>();</div>
+<div class="line">    <span class="keyword">const</span> <span class="keywordtype">short</span> columns = results.<a class="code" href="classnanodbc_1_1result.html#a839990af1305d8dcb249f8464433034a" title="Returns the number of columns in a result set.">columns</a>();</div>
 <div class="line">    <span class="keywordtype">long</span> rows_displayed = 0;</div>
 <div class="line"></div>
 <div class="line">    cout &lt;&lt; <span class="stringliteral">&quot;\nDisplaying &quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#a07f215555775ba5fc7576bc9da96f5c5" title="Returns the number of rows affected by the request or –1 if the number of affected rows is not availa...">affected_rows</a>() &lt;&lt; <span class="stringliteral">&quot; rows (&quot;</span> &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#adf331dc9bc9b610f5a47e6bc796dd961" title="The rowset size for this result set.">rowset_size</a>() &lt;&lt; <span class="stringliteral">&quot; fetched at a time):&quot;</span> &lt;&lt; endl;</div>
 <div class="line"></div>
 <div class="line">    cout &lt;&lt; <span class="stringliteral">&quot;row\t&quot;</span>;</div>
-<div class="line">    <span class="keywordflow">for</span>(<span class="keywordtype">short</span> i = 0; i &lt; columns; ++i)</div>
+<div class="line">    <span class="keywordflow">for</span>(<span class="keywordtype">short</span> i = 0; i &lt; <a class="code" href="classnanodbc_1_1statement.html#aa0c021f78768849d0c89368de514954f" title="Returns the number of columns in a result set.">columns</a>; ++i)</div>
 <div class="line">        cout &lt;&lt; results.<a class="code" href="classnanodbc_1_1result.html#ac761639372b233894a15d78da868e85c" title="Returns the name of the specified column.">column_name</a>(i) &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
 <div class="line">    cout &lt;&lt; endl;</div>
 <div class="line"></div>
 <div class="line">    <span class="keywordflow">while</span>(results.<a class="code" href="classnanodbc_1_1result.html#a31470b51f194181373e4c2c4292d11c4" title="Fetches the next row in the current result set.">next</a>())</div>
 <div class="line">    {</div>
 <div class="line">        cout &lt;&lt; rows_displayed++ &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
-<div class="line">        <span class="keywordflow">for</span>(<span class="keywordtype">short</span> col = 0; col &lt; columns; ++col)</div>
+<div class="line">        <span class="keywordflow">for</span>(<span class="keywordtype">short</span> col = 0; col &lt; <a class="code" href="classnanodbc_1_1statement.html#aa0c021f78768849d0c89368de514954f" title="Returns the number of columns in a result set.">columns</a>; ++col)</div>
 <div class="line">        {</div>
 <div class="line">            <span class="keywordflow">if</span>(results.<a class="code" href="classnanodbc_1_1result.html#a46777a452792e0184f63bc370c3303a4" title="Returns true if and only if the given column in the selected row of the current rowset is null...">is_null</a>(col))</div>
 <div class="line">                cout &lt;&lt; <span class="stringliteral">&quot;(null)&quot;</span>;</div>

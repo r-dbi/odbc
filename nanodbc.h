@@ -168,7 +168,7 @@ namespace detail
     struct sql_type_info<float>
     { 
         static const SQLSMALLINT ctype = SQL_C_FLOAT; 
-        static const SQLSMALLINT sqltype = SQL_REAL;
+        static const SQLSMALLINT sqltype = SQL_FLOAT;
         static const char* const format; 
     };
 
@@ -293,15 +293,25 @@ struct timestamp
 //! \brief A type for representing the data type of a column.
 enum column_datatype
 {
-    column_short = SQL_C_SSHORT             //!< Signed short type.
-    , column_ushort = SQL_C_USHORT          //!< Unsigned short type.
-    , column_long = SQL_C_SLONG             //!< Signed long type.
-    , column_ulong = SQL_C_ULONG            //!< Unsigned long type.
-    , column_float = SQL_C_FLOAT            //!< Float point type.
-    , column_double = SQL_C_DOUBLE          //!< Double precision floating point type
-    , column_string = SQL_C_CHAR            //!< String type
-    , column_date = SQL_C_DATE              //!< Date type.
-    , column_timestamp = SQL_C_TIMESTAMP    //!< Timestamp type.
+    column_char = SQL_CHAR                      //!< Characters.
+    , column_date = SQL_TYPE_DATE               //!< Date.
+    , column_double = SQL_DOUBLE                //!< Double precision.
+    , column_float = SQL_FLOAT                  //!< Floating point.
+    , column_integer = SQL_INTEGER              //!< Integer.
+    , column_decimal = SQL_DECIMAL              //!< Decimal.
+    , column_numeric = SQL_NUMERIC              //!< Numeric.
+    , column_real = SQL_REAL                    //!< Real.
+    , column_smallint = SQL_SMALLINT            //!< Small integer.
+    , column_time = SQL_TYPE_TIME               //!< Time.
+    , column_timestamp = SQL_TYPE_TIMESTAMP     //!< Timestamp.
+    , column_tinyint = SQL_TINYINT              //!< Tiny integer.
+    , column_varchar = SQL_VARCHAR              //!< Varchar.
+    , column_bigint = SQL_BIGINT                //!< Big integer.
+    , column_varbinary = SQL_VARBINARY          //!< Varbinary.
+    , column_longvarbinary = SQL_LONGVARBINARY  //!< Long varbinary.
+    , column_bit = SQL_BIT                      //!< Bit.
+    , column_interval = SQL_INTERVAL            //!< Interval.
+    , column_longvarchar = SQL_LONGVARCHAR      //!< Long varchar.
 };
 
 //! \}
@@ -517,6 +527,10 @@ public:
     //! \throws database_error
     long affected_rows() const;
 
+    //! \brief Returns the number of columns in a result set.
+    //! \throws database_error
+    short columns() const;
+
     //! \brief Resets all currently bound parameters.
     void reset_parameters() throw();
 
@@ -663,7 +677,7 @@ public:
     //! \brief Returns the number of rows in the current rowset or 0 if the number of rows is not available.
     long rows() const throw();
 
-    //! \brief Returns the number of columns in the current result set.
+    //! \brief Returns the number of columns in a result set.
     //! \throws database_error
     short columns() const;
 

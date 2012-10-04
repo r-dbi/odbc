@@ -671,6 +671,16 @@ public:
         return rows;
     }
 
+    short columns() const
+    {
+        SQLSMALLINT cols;
+        RETCODE rc;
+        NANODBC_CALL_RC(SQLNumResultCols, rc, stmt_, &cols);
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        return cols;
+    }
+
     template<class T>
     void bind_parameter(long param, const T& value)
     {
@@ -712,7 +722,7 @@ public:
     {
         if(!bound_parameters_.count(param))
             bound_parameters_[param] = new bound_parameter(stmt_, param);
-            bound_parameters_[param]->set_value(ctype, sqltype, data, element_size, elements, take_ownership);
+        bound_parameters_[param]->set_value(ctype, sqltype, data, element_size, elements, take_ownership);
     }
 
     void reset_parameters() throw()
@@ -784,12 +794,7 @@ public:
 
     long affected_rows() const
     {
-        SQLLEN rows;
-        RETCODE rc;
-        NANODBC_CALL_RC(SQLRowCount, rc, stmt_.native_stmt_handle(), &rows);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
-        return rows;
+        return stmt_.affected_rows();
     }
 
     long rows() const throw()
@@ -799,12 +804,7 @@ public:
 
     short columns() const
     {
-        SQLSMALLINT cols;
-        RETCODE rc;
-        NANODBC_CALL_RC(SQLNumResultCols, rc, stmt_.native_stmt_handle(), &cols);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
-        return cols;
+        return stmt_.columns();
     }
 
     bool first()
@@ -890,7 +890,7 @@ public:
         if(column >= bound_columns_size_)
             throw index_range_error();
         bound_column& col = bound_columns_[column];
-        return static_cast<enum column_datatype>(col.ctype_);
+        return static_cast<enum column_datatype>(col.sqltype_);
     }
 
     template<class T>
@@ -954,12 +954,7 @@ private:
 
     void auto_bind()
     {
-        SQLSMALLINT n_columns = 0;
-        RETCODE rc;
-        NANODBC_CALL_RC(SQLNumResultCols, rc, stmt_.native_stmt_handle(), &n_columns);
-
-        if(!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
+        const short n_columns = columns();
         if(n_columns < 1)
             return;
 
@@ -968,13 +963,13 @@ private:
         bound_columns_ = new bound_column[n_columns];
         bound_columns_size_ = n_columns;
 
+        RETCODE rc;
         SQLCHAR column_name[1024];
         SQLSMALLINT sqltype, scale, nullable, len;
         SQLULEN sqlsize;
 
         for(SQLSMALLINT i = 0; i < n_columns; ++i)
         {
-            RETCODE rc;
             NANODBC_CALL_RC(
                 SQLDescribeCol
                 , rc
@@ -1450,6 +1445,11 @@ result statement::execute(long batch_operations)
 long statement::affected_rows() const
 {
     return impl_->affected_rows();
+}
+
+short statement::columns() const
+{
+    return impl_->columns();
 }
 
 void statement::reset_parameters() throw()
