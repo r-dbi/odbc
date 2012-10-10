@@ -549,6 +549,7 @@ public:
     : stmt_(0)
     , open_(false)
     , bound_parameters_()
+    , conn_()
     {
 
     }
@@ -557,13 +558,14 @@ public:
     : stmt_(0)
     , open_(false)
     , bound_parameters_()
+    , conn_()
     {
         prepare(conn, stmt);
     }
 
     ~statement_impl() throw()
     {
-        if(open())
+        if(open() && connected())
         {
             NANODBC_CALL(SQLCancel, stmt_);
             reset_parameters();
@@ -583,11 +585,17 @@ public:
         open_ = success(rc);
         if (!open_)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        conn_ = conn;
     }
 
     bool open() const
     {
         return open_;
+    }
+
+    bool connected() const
+    {
+        return conn_.connected();
     }
 
     HDBC native_stmt_handle() const
@@ -597,19 +605,23 @@ public:
 
     void close()
     {
-        if(!open())
-            return;
+        if(open() && connected())
+        {
+            RETCODE rc;
+            NANODBC_CALL_RC(SQLCancel, rc, stmt_);
+            if(!success(rc))
+                NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
-        RETCODE rc;
-        NANODBC_CALL_RC(SQLCancel, rc, stmt_);
-        if(!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+            reset_parameters();
 
-        reset_parameters();
-
-        NANODBC_CALL_RC(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
-        if(!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+            NANODBC_CALL_RC(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
+            if(!success(rc))
+                NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        }
+        else
+        {
+            release_parameters();
+        }
 
         open_ = false;
         stmt_ = 0;
@@ -747,6 +759,7 @@ private:
     HSTMT stmt_;
     bool open_;
     bound_parameters_type bound_parameters_;
+    connection conn_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1410,6 +1423,11 @@ void statement::open(connection& conn)
 bool statement::open() const
 {
     return impl_->open();
+}
+
+bool statement::connected() const
+{
+    return impl_->connected();
 }
 
 HDBC statement::native_stmt_handle() const

@@ -407,179 +407,181 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;</div>
 <div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1statement.html#aa9b830794ca0767b1ea0ebc9088aa690" title="Returns true if connection is open.">open</a>() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;</div>
-<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;    HDBC <a class="code" href="classnanodbc_1_1statement.html#acf6ff1fb082254f309c0a255019ca29f" title="Returns the native ODBC statement handle.">native_stmt_handle</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1statement.html#a6ea61610405cd2dd80897e1420193967" title="Returns true if connected to the database.">connected</a>() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;</div>
-<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnanodbc_1_1statement.html#abcf1dda8ab40a3b8ebd33c69afa4a399" title="Closes the statement and frees all associated resources.">close</a>();</div>
+<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;    HDBC <a class="code" href="classnanodbc_1_1statement.html#acf6ff1fb082254f309c0a255019ca29f" title="Returns the native ODBC statement handle.">native_stmt_handle</a>() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;</div>
-<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnanodbc_1_1statement.html#a81f6e6e0b547a900d20652fe5abe7b75" title="Cancels execution of the statement.">cancel</a>();</div>
-<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;</div>
-<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnanodbc_1_1statement.html#a93aa16195232656e4680473e53bb07a5" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(<a class="code" href="classnanodbc_1_1connection.html" title="Manages and encapsulates ODBC resources such as the connection and environment handles.">connection</a>&amp; conn, <span class="keyword">const</span> std::string&amp; stmt);</div>
-<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;</div>
-<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;    <a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a> <a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(<a class="code" href="classnanodbc_1_1connection.html" title="Manages and encapsulates ODBC resources such as the connection and environment handles.">connection</a>&amp; conn, <span class="keyword">const</span> std::string&amp; query, <span class="keywordtype">long</span> batch_operations = 1);</div>
-<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;</div>
-<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;    <a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a> <a class="code" href="classnanodbc_1_1statement.html#aab9f6066efcfb5dc4244cd082c7d27a4" title="Execute the previously prepared query now.">execute</a>(<span class="keywordtype">long</span> batch_operations = 1);</div>
-<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;</div>
-<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;    <span class="keywordtype">long</span> <a class="code" href="classnanodbc_1_1statement.html#af134dc3bf4b490135d839c251a8b84b5" title="Returns the number of rows affected by the request or –1 if the number of affected rows is not availa...">affected_rows</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;</div>
-<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;    <span class="keywordtype">short</span> <a class="code" href="classnanodbc_1_1statement.html#aa0c021f78768849d0c89368de514954f" title="Returns the number of columns in a result set.">columns</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;</div>
-<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnanodbc_1_1statement.html#a61b359e1bcb7bf66f2cfbc055c105472" title="Resets all currently bound parameters.">reset_parameters</a>() <span class="keywordflow">throw</span>();</div>
+<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnanodbc_1_1statement.html#abcf1dda8ab40a3b8ebd33c69afa4a399" title="Closes the statement and frees all associated resources.">close</a>();</div>
+<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;</div>
+<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnanodbc_1_1statement.html#a81f6e6e0b547a900d20652fe5abe7b75" title="Cancels execution of the statement.">cancel</a>();</div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;</div>
+<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnanodbc_1_1statement.html#a93aa16195232656e4680473e53bb07a5" title="Opens and prepares the given statement to execute on the given connection.">prepare</a>(<a class="code" href="classnanodbc_1_1connection.html" title="Manages and encapsulates ODBC resources such as the connection and environment handles.">connection</a>&amp; conn, <span class="keyword">const</span> std::string&amp; stmt);</div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;</div>
+<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;    <a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a> <a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(<a class="code" href="classnanodbc_1_1connection.html" title="Manages and encapsulates ODBC resources such as the connection and environment handles.">connection</a>&amp; conn, <span class="keyword">const</span> std::string&amp; query, <span class="keywordtype">long</span> batch_operations = 1);</div>
+<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;</div>
+<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;    <a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a> <a class="code" href="classnanodbc_1_1statement.html#aab9f6066efcfb5dc4244cd082c7d27a4" title="Execute the previously prepared query now.">execute</a>(<span class="keywordtype">long</span> batch_operations = 1);</div>
+<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;</div>
+<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;    <span class="keywordtype">long</span> <a class="code" href="classnanodbc_1_1statement.html#af134dc3bf4b490135d839c251a8b84b5" title="Returns the number of rows affected by the request or –1 if the number of affected rows is not availa...">affected_rows</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;</div>
+<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;    <span class="keywordtype">short</span> <a class="code" href="classnanodbc_1_1statement.html#aa0c021f78768849d0c89368de514954f" title="Returns the number of columns in a result set.">columns</a>() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;</div>
-<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(<span class="keywordtype">long</span> param, <span class="keyword">const</span> T&amp; value);</div>
-<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;</div>
-<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">class</span> InputIterator&gt;</div>
-<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;<span class="preprocessor">    #ifndef DOXYGEN</span></div>
-<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;<span class="preprocessor"></span>        <span class="keyword">typename</span> detail::disable_if_c&lt;</div>
-<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;            NANODBC_STD is_convertible&lt;</div>
-<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;                <span class="keyword">typename</span> std::iterator_traits&lt;InputIterator&gt;::value_type</div>
-<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;                , std::string</div>
-<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;            &gt;::value</div>
-<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;            , <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span></div>
-<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;        &gt;::type</div>
-<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;<span class="preprocessor">    #else</span></div>
-<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;<span class="preprocessor"></span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span></div>
-<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;<span class="preprocessor">    #endif</span></div>
-<div class="line"><a name="l00568"></a><span class="lineno"><a class="code" href="classnanodbc_1_1statement.html#a053bf02eb8b9829496abfc54761db040">  568</a></span>&#160;<span class="preprocessor"></span>    <a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(<span class="keywordtype">long</span> param, InputIterator first, InputIterator last)</div>
-<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;    {</div>
-<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;        <span class="keyword">using</span> std::distance;</div>
-<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;        <span class="keyword">using</span> std::copy;</div>
-<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;        <span class="keyword">typedef</span> <span class="keyword">typename</span> std::iterator_traits&lt;InputIterator&gt;::value_type element_type;</div>
-<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;        <span class="keyword">typedef</span> <span class="keyword">typename</span> std::iterator_traits&lt;InputIterator&gt;::difference_type size_type;</div>
-<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;        <span class="keyword">const</span> size_type elements = distance(first, last);</div>
-<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;</div>
-<div class="line"><a name="l00576"></a><span class="lineno">  576</span>&#160;        element_type* data = <span class="keyword">new</span> element_type[elements];</div>
-<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;        copy(first, last, data);</div>
+<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnanodbc_1_1statement.html#a61b359e1bcb7bf66f2cfbc055c105472" title="Resets all currently bound parameters.">reset_parameters</a>() <span class="keywordflow">throw</span>();</div>
+<div class="line"><a name="l00539"></a><span class="lineno">  539</span>&#160;</div>
+<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(<span class="keywordtype">long</span> param, <span class="keyword">const</span> T&amp; value);</div>
+<div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;</div>
+<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">class</span> InputIterator&gt;</div>
+<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;<span class="preprocessor">    #ifndef DOXYGEN</span></div>
+<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;<span class="preprocessor"></span>        <span class="keyword">typename</span> detail::disable_if_c&lt;</div>
+<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;            NANODBC_STD is_convertible&lt;</div>
+<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;                <span class="keyword">typename</span> std::iterator_traits&lt;InputIterator&gt;::value_type</div>
+<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;                , std::string</div>
+<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;            &gt;::value</div>
+<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;            , <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span></div>
+<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;        &gt;::type</div>
+<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;<span class="preprocessor">    #else</span></div>
+<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;<span class="preprocessor"></span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span></div>
+<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;<span class="preprocessor">    #endif</span></div>
+<div class="line"><a name="l00571"></a><span class="lineno"><a class="code" href="classnanodbc_1_1statement.html#a053bf02eb8b9829496abfc54761db040">  571</a></span>&#160;<span class="preprocessor"></span>    <a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(<span class="keywordtype">long</span> param, InputIterator first, InputIterator last)</div>
+<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;    {</div>
+<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;        <span class="keyword">using</span> std::distance;</div>
+<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;        <span class="keyword">using</span> std::copy;</div>
+<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;        <span class="keyword">typedef</span> <span class="keyword">typename</span> std::iterator_traits&lt;InputIterator&gt;::value_type element_type;</div>
+<div class="line"><a name="l00576"></a><span class="lineno">  576</span>&#160;        <span class="keyword">typedef</span> <span class="keyword">typename</span> std::iterator_traits&lt;InputIterator&gt;::difference_type size_type;</div>
+<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;        <span class="keyword">const</span> size_type elements = distance(first, last);</div>
 <div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160;</div>
-<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;        <a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(</div>
-<div class="line"><a name="l00580"></a><span class="lineno">  580</span>&#160;            param</div>
-<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;            , detail::sql_type_info&lt;element_type&gt;::ctype</div>
-<div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;            , detail::sql_type_info&lt;element_type&gt;::sqltype</div>
-<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;            , (<span class="keywordtype">char</span>*)data</div>
-<div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;            , <span class="keyword">sizeof</span>(element_type)</div>
-<div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;            , elements</div>
-<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;            , <span class="keyword">true</span>);</div>
-<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;        <span class="keywordflow">return</span> elements;</div>
-<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;    }</div>
-<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;</div>
-<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;<span class="preprocessor">    #ifndef DOXYGEN</span></div>
-<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;<span class="preprocessor"></span>    <span class="keyword">template</span>&lt;<span class="keyword">class</span> InputIterator&gt;</div>
-<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;    <span class="keyword">typename</span> detail::enable_if_c&lt;</div>
-<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;        NANODBC_STD is_convertible&lt;</div>
-<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;            <span class="keyword">typename</span> std::iterator_traits&lt;InputIterator&gt;::value_type</div>
-<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;            , std::string</div>
-<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;        &gt;::value</div>
-<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;        , <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span></div>
-<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;    &gt;::type</div>
-<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;    <a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(<span class="keywordtype">long</span> param, InputIterator first, InputIterator last)</div>
-<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;    {</div>
-<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;        <span class="keyword">using</span> std::distance;</div>
-<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;        <span class="keyword">using</span> std::copy;</div>
-<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;        <span class="keyword">typedef</span> <span class="keyword">typename</span> std::iterator_traits&lt;InputIterator&gt;::value_type element_type;</div>
-<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;        <span class="keyword">typedef</span> <span class="keyword">typename</span> std::iterator_traits&lt;InputIterator&gt;::difference_type size_type;</div>
-<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;        <span class="keyword">const</span> size_type elements = distance(first, last);</div>
-<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> column_size = parameter_column_size(param);</div>
-<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;</div>
-<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;        <span class="keywordtype">char</span>* cdata = <span class="keyword">new</span> <span class="keywordtype">char</span>[elements * column_size];</div>
-<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;        size_type row = 0;</div>
-<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;        <span class="keywordflow">for</span>(InputIterator i = first; i != last; ++i)</div>
-<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;            std::strncpy(&amp;cdata[row++ * column_size], std::string(*i).c_str(), column_size);</div>
-<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;</div>
-<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;        <a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(</div>
-<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;            param</div>
-<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;            , detail::sql_type_info&lt;element_type&gt;::ctype</div>
-<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;            , detail::sql_type_info&lt;element_type&gt;::sqltype</div>
-<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;            , cdata</div>
-<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;            , column_size</div>
-<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;            , elements</div>
-<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;            , <span class="keyword">true</span>);</div>
-<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;        <span class="keywordflow">return</span> elements;</div>
-<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;    }</div>
-<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;<span class="preprocessor">    #endif // DOXYGEN</span></div>
-<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(</div>
-<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;        <span class="keywordtype">long</span> param</div>
-<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;        , SQLSMALLINT ctype</div>
-<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;        , SQLSMALLINT sqltype</div>
-<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;        , <span class="keywordtype">char</span>* data</div>
-<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;        , std::size_t element_size</div>
-<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;        , std::size_t elemnts</div>
-<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;        , <span class="keywordtype">bool</span> take_ownership);</div>
-<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;</div>
-<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> parameter_column_size(<span class="keywordtype">long</span> param) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;</div>
-<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;    <span class="keyword">class </span>statement_impl;</div>
-<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">nanodbc::result</a>;</div>
-<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;</div>
-<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;    NANODBC_STD shared_ptr&lt;statement_impl&gt; impl_;</div>
-<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;};</div>
-<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;</div>
-<div class="line"><a name="l00649"></a><span class="lineno"><a class="code" href="classnanodbc_1_1result.html">  649</a></span>&#160;<span class="keyword">class </span><a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a></div>
-<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;{</div>
-<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;    <a class="code" href="classnanodbc_1_1result.html#ad4d59619a46d67bbc171d0d5c9e84705" title="Empty result set.">result</a>();</div>
-<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;</div>
-<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;    <a class="code" href="classnanodbc_1_1result.html#aa5b60db0a4b2fb30bb8c10352f01cc02" title="Free result set.">~result</a>() <span class="keywordflow">throw</span>();</div>
+<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;        element_type* data = <span class="keyword">new</span> element_type[elements];</div>
+<div class="line"><a name="l00580"></a><span class="lineno">  580</span>&#160;        copy(first, last, data);</div>
+<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;</div>
+<div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;        <a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(</div>
+<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;            param</div>
+<div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;            , detail::sql_type_info&lt;element_type&gt;::ctype</div>
+<div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;            , detail::sql_type_info&lt;element_type&gt;::sqltype</div>
+<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;            , (<span class="keywordtype">char</span>*)data</div>
+<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;            , <span class="keyword">sizeof</span>(element_type)</div>
+<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;            , elements</div>
+<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;            , <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;        <span class="keywordflow">return</span> elements;</div>
+<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;    }</div>
+<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;</div>
+<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;<span class="preprocessor">    #ifndef DOXYGEN</span></div>
+<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;<span class="preprocessor"></span>    <span class="keyword">template</span>&lt;<span class="keyword">class</span> InputIterator&gt;</div>
+<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;    <span class="keyword">typename</span> detail::enable_if_c&lt;</div>
+<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;        NANODBC_STD is_convertible&lt;</div>
+<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;            <span class="keyword">typename</span> std::iterator_traits&lt;InputIterator&gt;::value_type</div>
+<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;            , std::string</div>
+<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;        &gt;::value</div>
+<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;        , <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span></div>
+<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;    &gt;::type</div>
+<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;    <a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(<span class="keywordtype">long</span> param, InputIterator first, InputIterator last)</div>
+<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;    {</div>
+<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;        <span class="keyword">using</span> std::distance;</div>
+<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;        <span class="keyword">using</span> std::copy;</div>
+<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;        <span class="keyword">typedef</span> <span class="keyword">typename</span> std::iterator_traits&lt;InputIterator&gt;::value_type element_type;</div>
+<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;        <span class="keyword">typedef</span> <span class="keyword">typename</span> std::iterator_traits&lt;InputIterator&gt;::difference_type size_type;</div>
+<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;        <span class="keyword">const</span> size_type elements = distance(first, last);</div>
+<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> column_size = parameter_column_size(param);</div>
+<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;</div>
+<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;        <span class="keywordtype">char</span>* cdata = <span class="keyword">new</span> <span class="keywordtype">char</span>[elements * column_size];</div>
+<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;        size_type row = 0;</div>
+<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;        <span class="keywordflow">for</span>(InputIterator i = first; i != last; ++i)</div>
+<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;            std::strncpy(&amp;cdata[row++ * column_size], std::string(*i).c_str(), column_size);</div>
+<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;</div>
+<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;        <a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(</div>
+<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;            param</div>
+<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;            , detail::sql_type_info&lt;element_type&gt;::ctype</div>
+<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;            , detail::sql_type_info&lt;element_type&gt;::sqltype</div>
+<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;            , cdata</div>
+<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;            , column_size</div>
+<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;            , elements</div>
+<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;            , <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;        <span class="keywordflow">return</span> elements;</div>
+<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;    }</div>
+<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;<span class="preprocessor">    #endif // DOXYGEN</span></div>
+<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3" title="Binds the given value to the given parameter placeholder number in the prepared statement.">bind_parameter</a>(</div>
+<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;        <span class="keywordtype">long</span> param</div>
+<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;        , SQLSMALLINT ctype</div>
+<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;        , SQLSMALLINT sqltype</div>
+<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;        , <span class="keywordtype">char</span>* data</div>
+<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;        , std::size_t element_size</div>
+<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;        , std::size_t elemnts</div>
+<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;        , <span class="keywordtype">bool</span> take_ownership);</div>
+<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;</div>
+<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> parameter_column_size(<span class="keywordtype">long</span> param) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;</div>
+<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;    <span class="keyword">class </span>statement_impl;</div>
+<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">nanodbc::result</a>;</div>
+<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;</div>
+<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;    NANODBC_STD shared_ptr&lt;statement_impl&gt; impl_;</div>
+<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;};</div>
+<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;</div>
+<div class="line"><a name="l00652"></a><span class="lineno"><a class="code" href="classnanodbc_1_1result.html">  652</a></span>&#160;<span class="keyword">class </span><a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a></div>
+<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;{</div>
+<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;    <a class="code" href="classnanodbc_1_1result.html#ad4d59619a46d67bbc171d0d5c9e84705" title="Empty result set.">result</a>();</div>
 <div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160;</div>
-<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;    <a class="code" href="classnanodbc_1_1result.html#ad4d59619a46d67bbc171d0d5c9e84705" title="Empty result set.">result</a>(<span class="keyword">const</span> <a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a>&amp; rhs);</div>
+<div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;    <a class="code" href="classnanodbc_1_1result.html#aa5b60db0a4b2fb30bb8c10352f01cc02" title="Free result set.">~result</a>() <span class="keywordflow">throw</span>();</div>
 <div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;</div>
-<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;    <a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a>&amp; <a class="code" href="classnanodbc_1_1result.html#a231eaf6046c90656ab52337e1549d572" title="Assignment.">operator=</a>(<a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a> rhs);</div>
+<div class="line"><a name="l00662"></a><span class="lineno">  662</span>&#160;    <a class="code" href="classnanodbc_1_1result.html#ad4d59619a46d67bbc171d0d5c9e84705" title="Empty result set.">result</a>(<span class="keyword">const</span> <a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a>&amp; rhs);</div>
 <div class="line"><a name="l00663"></a><span class="lineno">  663</span>&#160;</div>
-<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnanodbc_1_1result.html#a4d52ce7e9dc915dc3f5128472bbc38f1" title="Member swap.">swap</a>(<a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a>&amp; rhs) <span class="keywordflow">throw</span>();</div>
+<div class="line"><a name="l00665"></a><span class="lineno">  665</span>&#160;    <a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a>&amp; <a class="code" href="classnanodbc_1_1result.html#a231eaf6046c90656ab52337e1549d572" title="Assignment.">operator=</a>(<a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a> rhs);</div>
 <div class="line"><a name="l00666"></a><span class="lineno">  666</span>&#160;</div>
-<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;    HDBC <a class="code" href="classnanodbc_1_1result.html#ae2b5f121dd1375fd5b6a5a9668463089" title="Returns the native ODBC statement handle.">native_stmt_handle</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00668"></a><span class="lineno">  668</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnanodbc_1_1result.html#a4d52ce7e9dc915dc3f5128472bbc38f1" title="Member swap.">swap</a>(<a class="code" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">result</a>&amp; rhs) <span class="keywordflow">throw</span>();</div>
 <div class="line"><a name="l00669"></a><span class="lineno">  669</span>&#160;</div>
-<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;    <span class="keywordtype">long</span> <a class="code" href="classnanodbc_1_1result.html#adf331dc9bc9b610f5a47e6bc796dd961" title="The rowset size for this result set.">rowset_size</a>() <span class="keyword">const</span> <span class="keywordflow">throw</span>();</div>
+<div class="line"><a name="l00671"></a><span class="lineno">  671</span>&#160;    HDBC <a class="code" href="classnanodbc_1_1result.html#ae2b5f121dd1375fd5b6a5a9668463089" title="Returns the native ODBC statement handle.">native_stmt_handle</a>() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160;</div>
-<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;    <span class="keywordtype">long</span> <a class="code" href="classnanodbc_1_1result.html#a07f215555775ba5fc7576bc9da96f5c5" title="Returns the number of rows affected by the request or –1 if the number of affected rows is not availa...">affected_rows</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160;</div>
-<div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;    <span class="keywordtype">long</span> <a class="code" href="classnanodbc_1_1result.html#ae03450240fce5d33a39716e6c7ebf207" title="Returns the number of rows in the current rowset or 0 if the number of rows is not available...">rows</a>() <span class="keyword">const</span> <span class="keywordflow">throw</span>();</div>
+<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;    <span class="keywordtype">long</span> <a class="code" href="classnanodbc_1_1result.html#adf331dc9bc9b610f5a47e6bc796dd961" title="The rowset size for this result set.">rowset_size</a>() <span class="keyword">const</span> <span class="keywordflow">throw</span>();</div>
+<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;</div>
+<div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;    <span class="keywordtype">long</span> <a class="code" href="classnanodbc_1_1result.html#a07f215555775ba5fc7576bc9da96f5c5" title="Returns the number of rows affected by the request or –1 if the number of affected rows is not availa...">affected_rows</a>() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160;</div>
-<div class="line"><a name="l00682"></a><span class="lineno">  682</span>&#160;    <span class="keywordtype">short</span> <a class="code" href="classnanodbc_1_1result.html#a839990af1305d8dcb249f8464433034a" title="Returns the number of columns in a result set.">columns</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00683"></a><span class="lineno">  683</span>&#160;</div>
-<div class="line"><a name="l00687"></a><span class="lineno">  687</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#a8ce75f4ab1bb039c6ee6724966f54a93" title="Fetches the first row in the current result set.">first</a>();</div>
-<div class="line"><a name="l00688"></a><span class="lineno">  688</span>&#160;</div>
-<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#a5078a998be38e7814338597eaf100405" title="Fetches the last row in the current result set.">last</a>();</div>
-<div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160;</div>
-<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#a31470b51f194181373e4c2c4292d11c4" title="Fetches the next row in the current result set.">next</a>();</div>
-<div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160;</div>
-<div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#afd0b71a0bfe3e184f3b9a1caf8f17058" title="Fetches the prior row in the current result set.">prior</a>();</div>
-<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;</div>
-<div class="line"><a name="l00707"></a><span class="lineno">  707</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#a70388a8ca569a6e30367a45f215f2986" title="Moves to and fetches the specified row in the current result set.">move</a>(<span class="keywordtype">long</span> row);</div>
-<div class="line"><a name="l00708"></a><span class="lineno">  708</span>&#160;</div>
-<div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#abcd96eb3fd8fea53fa41289c5fc87377" title="Skips a number of rows and then fetches the resulting row in the current result set.">skip</a>(<span class="keywordtype">long</span> <a class="code" href="classnanodbc_1_1result.html#ae03450240fce5d33a39716e6c7ebf207" title="Returns the number of rows in the current rowset or 0 if the number of rows is not available...">rows</a>);</div>
-<div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;</div>
-<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <a class="code" href="classnanodbc_1_1result.html#af35deace1b1577117cded9fc622ab9b8" title="Returns the row position in the current result set.">position</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00681"></a><span class="lineno">  681</span>&#160;    <span class="keywordtype">long</span> <a class="code" href="classnanodbc_1_1result.html#ae03450240fce5d33a39716e6c7ebf207" title="Returns the number of rows in the current rowset or 0 if the number of rows is not available...">rows</a>() <span class="keyword">const</span> <span class="keywordflow">throw</span>();</div>
+<div class="line"><a name="l00682"></a><span class="lineno">  682</span>&#160;</div>
+<div class="line"><a name="l00685"></a><span class="lineno">  685</span>&#160;    <span class="keywordtype">short</span> <a class="code" href="classnanodbc_1_1result.html#a839990af1305d8dcb249f8464433034a" title="Returns the number of columns in a result set.">columns</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00686"></a><span class="lineno">  686</span>&#160;</div>
+<div class="line"><a name="l00690"></a><span class="lineno">  690</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#a8ce75f4ab1bb039c6ee6724966f54a93" title="Fetches the first row in the current result set.">first</a>();</div>
+<div class="line"><a name="l00691"></a><span class="lineno">  691</span>&#160;</div>
+<div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#a5078a998be38e7814338597eaf100405" title="Fetches the last row in the current result set.">last</a>();</div>
+<div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;</div>
+<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#a31470b51f194181373e4c2c4292d11c4" title="Fetches the next row in the current result set.">next</a>();</div>
+<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;</div>
+<div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#afd0b71a0bfe3e184f3b9a1caf8f17058" title="Fetches the prior row in the current result set.">prior</a>();</div>
+<div class="line"><a name="l00706"></a><span class="lineno">  706</span>&#160;</div>
+<div class="line"><a name="l00710"></a><span class="lineno">  710</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#a70388a8ca569a6e30367a45f215f2986" title="Moves to and fetches the specified row in the current result set.">move</a>(<span class="keywordtype">long</span> row);</div>
+<div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;</div>
+<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#abcd96eb3fd8fea53fa41289c5fc87377" title="Skips a number of rows and then fetches the resulting row in the current result set.">skip</a>(<span class="keywordtype">long</span> <a class="code" href="classnanodbc_1_1result.html#ae03450240fce5d33a39716e6c7ebf207" title="Returns the number of rows in the current rowset or 0 if the number of rows is not available...">rows</a>);</div>
 <div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;</div>
-<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#aad619da0f6099108a51d9c2854709134" title="Returns true if there are no more results in the current result set.">end</a>() <span class="keyword">const</span> <span class="keywordflow">throw</span>();</div>
+<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <a class="code" href="classnanodbc_1_1result.html#af35deace1b1577117cded9fc622ab9b8" title="Returns the row position in the current result set.">position</a>() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;</div>
-<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;    T <span class="keyword">get</span>(<span class="keywordtype">short</span> column) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;</div>
-<div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#a46777a452792e0184f63bc370c3303a4" title="Returns true if and only if the given column in the selected row of the current rowset is null...">is_null</a>(<span class="keywordtype">short</span> column) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;</div>
-<div class="line"><a name="l00742"></a><span class="lineno">  742</span>&#160;    std::string <a class="code" href="classnanodbc_1_1result.html#ac761639372b233894a15d78da868e85c" title="Returns the name of the specified column.">column_name</a>(<span class="keywordtype">short</span> column) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00743"></a><span class="lineno">  743</span>&#160;</div>
-<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160;    <span class="keyword">enum</span> <a class="code" href="group__utility.html#ga47d1e22a8d3d3d06fe137595e1a1a8bd" title="A type for representing the data type of a column.">column_datatype</a> <a class="code" href="classnanodbc_1_1result.html#a0a4dd990a1537852603cb724d012e3c7" title="Returns a column_datatype representing the C type of this column.">column_datatype</a>(<span class="keywordtype">short</span> column) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#aad619da0f6099108a51d9c2854709134" title="Returns true if there are no more results in the current result set.">end</a>() <span class="keyword">const</span> <span class="keywordflow">throw</span>();</div>
+<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;</div>
+<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;    T <span class="keyword">get</span>(<span class="keywordtype">short</span> column) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;</div>
+<div class="line"><a name="l00738"></a><span class="lineno">  738</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnanodbc_1_1result.html#a46777a452792e0184f63bc370c3303a4" title="Returns true if and only if the given column in the selected row of the current rowset is null...">is_null</a>(<span class="keywordtype">short</span> column) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00739"></a><span class="lineno">  739</span>&#160;</div>
+<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160;    std::string <a class="code" href="classnanodbc_1_1result.html#ac761639372b233894a15d78da868e85c" title="Returns the name of the specified column.">column_name</a>(<span class="keywordtype">short</span> column) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00746"></a><span class="lineno">  746</span>&#160;</div>
-<div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;    <a class="code" href="classnanodbc_1_1result.html#ad4d59619a46d67bbc171d0d5c9e84705" title="Empty result set.">result</a>(<a class="code" href="classnanodbc_1_1statement.html" title="Represents a statement on the database.">statement</a> stmt, <span class="keywordtype">long</span> <a class="code" href="classnanodbc_1_1result.html#adf331dc9bc9b610f5a47e6bc796dd961" title="The rowset size for this result set.">rowset_size</a>);</div>
+<div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;    <span class="keyword">enum</span> <a class="code" href="group__utility.html#ga47d1e22a8d3d3d06fe137595e1a1a8bd" title="A type for representing the data type of a column.">column_datatype</a> <a class="code" href="classnanodbc_1_1result.html#a0a4dd990a1537852603cb724d012e3c7" title="Returns a column_datatype representing the C type of this column.">column_datatype</a>(<span class="keywordtype">short</span> column) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;</div>
 <div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;    <span class="keyword">class </span>result_impl;</div>
-<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span>nanodbc::statement::statement_impl;</div>
-<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;</div>
-<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;    NANODBC_STD shared_ptr&lt;result_impl&gt; impl_;</div>
-<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;};</div>
-<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;</div>
-<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;</div>
-<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;} <span class="comment">// namespace nanodbc</span></div>
-<div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;</div>
-<div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;<span class="preprocessor">#endif // NANODBC_H</span></div>
+<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;    <a class="code" href="classnanodbc_1_1result.html#ad4d59619a46d67bbc171d0d5c9e84705" title="Empty result set.">result</a>(<a class="code" href="classnanodbc_1_1statement.html" title="Represents a statement on the database.">statement</a> stmt, <span class="keywordtype">long</span> <a class="code" href="classnanodbc_1_1result.html#adf331dc9bc9b610f5a47e6bc796dd961" title="The rowset size for this result set.">rowset_size</a>);</div>
+<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;</div>
+<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;    <span class="keyword">class </span>result_impl;</div>
+<div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span>nanodbc::statement::statement_impl;</div>
+<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;</div>
+<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;    NANODBC_STD shared_ptr&lt;result_impl&gt; impl_;</div>
+<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;};</div>
+<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;</div>
+<div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;</div>
+<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;} <span class="comment">// namespace nanodbc</span></div>
+<div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;</div>
+<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;<span class="preprocessor">#endif // NANODBC_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/>

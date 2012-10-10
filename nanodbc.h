@@ -489,6 +489,9 @@ public:
     //! \brief Returns true if connection is open.
     bool open() const;
 
+    //! \brief Returns true if connected to the database.
+    bool connected() const;
+
     //! \brief Returns the native ODBC statement handle.
     HDBC native_stmt_handle() const;
 
