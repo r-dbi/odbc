@@ -175,7 +175,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">            statement.<a class="code" href="classnanodbc_1_1statement.html#ae34d3b80a8c0342b584761a223b11f1c" title="Immediately opens, prepares, and executes the given query directly on the given connection.">execute_direct</a>(connection, <span class="stringliteral">&quot;delete from public.example_table;&quot;</span>);</div>
 <div class="line">            <span class="comment">// transaction will be rolled back if we don&#39;t call transaction.commit()</span></div>
 <div class="line">        }</div>
-<div class="line">        results = direct_execution(connection, <span class="stringliteral">&quot;select count(1) from public.example_table;&quot;</span>);</div>
+<div class="line">        results = foo(connection, <span class="stringliteral">&quot;select count(1) from public.example_table;&quot;</span>);</div>
 <div class="line">        results.next();</div>
 <div class="line">        cout &lt;&lt; <span class="stringliteral">&quot;still have &quot;</span> &lt;&lt; results.get&lt;<span class="keywordtype">int</span>&gt;(0) &lt;&lt; <span class="stringliteral">&quot; rows!&quot;</span> &lt;&lt; endl;</div>
 <div class="line"></div>

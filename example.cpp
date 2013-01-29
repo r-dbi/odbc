@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
             statement.execute_direct(connection, "delete from public.example_table;");
             // transaction will be rolled back if we don't call transaction.commit()
         }
-        results = direct_execution(connection, "select count(1) from public.example_table;");
+        results = foo(connection, "select count(1) from public.example_table;");
         results.next();
         cout << "still have " << results.get<int>(0) << " rows!" << endl;
 
