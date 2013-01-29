@@ -10,13 +10,16 @@ void show(nanodbc::result results)
     const short columns = results.columns();
     long rows_displayed = 0;
 
-    cout << "\nDisplaying " << results.affected_rows() << " rows (" << results.rowset_size() << " fetched at a time):" << endl;
+    cout << "\nDisplaying " << results.affected_rows() << " rows "
+         << "(" << results.rowset_size() << " fetched at a time):" << endl;
 
+    // show the column names
     cout << "row\t";
     for(short i = 0; i < columns; ++i)
         cout << results.column_name(i) << "\t";
     cout << endl;
 
+    // show the column data for each row
     while(results.next())
     {
         cout << rows_displayed++ << "\t";
@@ -32,7 +35,7 @@ void show(nanodbc::result results)
     }
 }
 
-nanodbc::result direct_execution(nanodbc::connection& connection, const string& query)
+nanodbc::result foo(nanodbc::connection& connection, const string& query)
 {
     nanodbc::statement statement;
     return statement.execute_direct(connection, query);
@@ -58,17 +61,17 @@ int main(int argc, char* argv[])
         // or nanodbc::connection connection("data source name", "username", "password", timeout_seconds);
         cout << "Connected with driver " << connection.driver_name() << endl;
 
-        nanodbc::result results;
         nanodbc::statement statement;
+        nanodbc::result results;
 
         // Direct execution
-        direct_execution(connection, "drop table if exists public.example_table;");
-        direct_execution(connection, "create table public.example_table (a int, b varchar(10));");
-        direct_execution(connection, "insert into public.example_table values (1, 'one');");
-        direct_execution(connection, "insert into public.example_table values (2, 'two');");
-        direct_execution(connection, "insert into public.example_table values (3, 'tri');");
-        direct_execution(connection, "insert into public.example_table (b) values ('z');");
-        results = direct_execution(connection, "select * from public.example_table;");
+        statement.execute_direct(connection, "drop table if exists public.example_table;");
+        statement.execute_direct(connection, "create table public.example_table (a int, b varchar(10));");
+        statement.execute_direct(connection, "insert into public.example_table values (1, 'one');");
+        statement.execute_direct(connection, "insert into public.example_table values (2, 'two');");
+        statement.execute_direct(connection, "insert into public.example_table values (3, 'tri');");
+        foo(connection, "insert into public.example_table (b) values ('z');");
+        results = foo(connection, "select * from public.example_table;");
         show<string>(results);
 
         // Direct execution, bulk fetching 2 rows at a time
@@ -138,6 +141,7 @@ int main(int argc, char* argv[])
         statement.execute_direct(connection, "drop table if exists public.date_test;");
         statement.execute_direct(connection, "drop table if exists public.example_table;");
         statement.execute_direct(connection, "drop table if exists public.batch_insert_test;");
+
         // The resources used by connection and statement are cleaned up automatically or
         // you can explicitly call statement.close() and/or connection.disconnect().
     }
