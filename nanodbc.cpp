@@ -7,6 +7,11 @@
 #include <cstdio>
 #include <ctime>
 #include <map>
+#ifdef NANODBC_USE_CPP11
+    #include <cstdint>
+#else
+    #include <stdint.h>
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // Exception Handling
@@ -106,7 +111,7 @@ namespace
         SQLULEN sqlsize_;
         SQLSMALLINT scale_;
         SQLSMALLINT ctype_;
-        SQLSMALLINT clen_;
+        SQLULEN clen_;
         bool blob_;
         long rowset_size_;
         long* cbdata_;
@@ -652,7 +657,9 @@ public:
         RETCODE rc;
         NANODBC_CALL_RC(SQLSetStmtAttr, rc, stmt_, SQL_ATTR_PARAMSET_SIZE, (SQLPOINTER)batch_operations, 0);
         if (!success(rc))
+        {
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        }
 
         NANODBC_CALL_RC(SQLExecDirect, rc, stmt_, (SQLCHAR*)query.c_str(), SQL_NTS);
         if (!success(rc))
@@ -914,7 +921,7 @@ public:
         if(is_null(column))
             throw null_access_error();
         bound_column& col = bound_columns_[column];
-
+        using namespace std; // if int64_t is in std namespace (in c++11)
         switch(col.ctype_)
         {
             case SQL_C_SSHORT: return (T)*(short*)(col.pdata_ + rowset_position_ * col.clen_);
@@ -923,6 +930,8 @@ public:
             case SQL_C_ULONG: return (T)*(unsigned long*)(col.pdata_ + rowset_position_ * col.clen_);
             case SQL_C_FLOAT: return (T)*(float*)(col.pdata_ + rowset_position_ * col.clen_);
             case SQL_C_DOUBLE: return (T)*(double*)(col.pdata_ + rowset_position_ * col.clen_);
+            case SQL_C_SBIGINT: return (T)*(int64_t*)(col.pdata_ + rowset_position_ * col.clen_);
+            case SQL_C_UBIGINT: return (T)*(uint64_t*)(col.pdata_ + rowset_position_ * col.clen_);
             case SQL_C_CHAR: if (!col.blob_) return convert<T>((col.pdata_ + rowset_position_ * col.clen_));
         }
         throw type_incompatible_error();
@@ -1004,6 +1013,7 @@ private:
             col.sqlsize_ = sqlsize;
             col.scale_ = scale;
 
+            using namespace std; // if int64_t is in std namespace (in c++11)
             switch(col.sqltype_)
             {
                 case SQL_BIT:
@@ -1011,14 +1021,18 @@ private:
                 case SQL_SMALLINT:
                 case SQL_INTEGER:
                     col.ctype_ = SQL_C_LONG;
-                    col.clen_ = 4;
+                    col.clen_ = sizeof(long);
+                    break;
+                case SQL_BIGINT:
+                    col.ctype_ = SQL_C_SBIGINT;
+                    col.clen_ = sizeof(int64_t);
                     break;
                 case SQL_DOUBLE:
                 case SQL_FLOAT:
                 case SQL_DECIMAL:
                 case SQL_REAL:
                     col.ctype_ = SQL_C_DOUBLE;
-                    col.clen_ = 8;
+                    col.clen_ = sizeof(double);
                     break;
                 case SQL_DATE:
                 case SQL_TYPE_DATE:
@@ -1158,6 +1172,11 @@ inline std::string result::result_impl::get<std::string>(short column) const
             return (col.pdata_ + rowset_position_ * col.clen_);
 
         case SQL_C_LONG:
+            if(std::snprintf(buffer, sizeof(buffer), "%ld", *(long*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
+                throw type_incompatible_error();
+            return buffer;
+
+        case SQL_C_SBIGINT:
             if(std::snprintf(buffer, sizeof(buffer), "%ld", *(long*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
                 throw type_incompatible_error();
             return buffer;
