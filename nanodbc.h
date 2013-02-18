@@ -89,6 +89,18 @@
 namespace nanodbc
 {
 
+// You must explicitly request Unicode support by defining NANODBC_USE_UNICODE at compile time.
+#ifndef DOXYGEN
+    #ifdef NANODBC_USE_UNICODE
+        typedef std::wstring string;
+    #else
+        typedef std::string string;
+    #endif // NANODBC_USE_UNICODE
+#else
+    //! string_type will be std::wstring is NANODBC_USE_UNICODE is defined, otherwise std::string.
+    typedef string_type string;
+#endif // DOXYGEN
+
 class connection;
 class result;
 struct date;
@@ -113,7 +125,15 @@ namespace detail
     { 
         static const SQLSMALLINT ctype = SQL_C_CHAR; 
         static const SQLSMALLINT sqltype = SQL_CHAR;
-        static const char* const format; 
+        static const string::value_type* const format; 
+    };
+
+    template<>
+    struct sql_type_info<wchar_t>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_WCHAR; 
+        static const SQLSMALLINT sqltype = SQL_WCHAR;
+        static const string::value_type* const format; 
     };
 
     template<>
@@ -121,7 +141,7 @@ namespace detail
     {
         static const SQLSMALLINT ctype = SQL_C_SSHORT;
         static const SQLSMALLINT sqltype = SQL_SMALLINT; 
-        static const char* const format;
+        static const string::value_type* const format;
     };
 
     template<>
@@ -129,7 +149,7 @@ namespace detail
     { 
         static const SQLSMALLINT ctype = SQL_C_USHORT; 
         static const SQLSMALLINT sqltype = SQL_SMALLINT;    
-        static const char* const format; 
+        static const string::value_type* const format; 
     };
 
     template<>
@@ -137,7 +157,7 @@ namespace detail
     { 
         static const SQLSMALLINT ctype = SQL_C_SLONG; 
         static const SQLSMALLINT sqltype = SQL_INTEGER; 
-        static const char* const format; 
+        static const string::value_type* const format; 
     };
 
     template<>
@@ -145,7 +165,7 @@ namespace detail
     { 
         static const SQLSMALLINT ctype = SQL_C_ULONG; 
         static const SQLSMALLINT sqltype = SQL_INTEGER; 
-        static const char* const format; 
+        static const string::value_type* const format; 
     };
 
     template<>
@@ -153,7 +173,7 @@ namespace detail
     { 
         static const SQLSMALLINT ctype = SQL_C_SLONG; 
         static const SQLSMALLINT sqltype = SQL_INTEGER; 
-        static const char* const format; 
+        static const string::value_type* const format; 
     };
 
     template<>
@@ -161,7 +181,7 @@ namespace detail
     { 
         static const SQLSMALLINT ctype = SQL_C_ULONG; 
         static const SQLSMALLINT sqltype = SQL_INTEGER; 
-        static const char* const format; 
+        static const string::value_type* const format; 
     };
 
     template<>
@@ -169,7 +189,7 @@ namespace detail
     { 
         static const SQLSMALLINT ctype = SQL_C_FLOAT; 
         static const SQLSMALLINT sqltype = SQL_FLOAT;
-        static const char* const format; 
+        static const string::value_type* const format; 
     };
 
     template<>
@@ -177,7 +197,7 @@ namespace detail
     { 
         static const SQLSMALLINT ctype = SQL_C_DOUBLE; 
         static const SQLSMALLINT sqltype = SQL_DOUBLE;
-        static const char* const format; 
+        static const string::value_type* const format; 
     };
 
     template<>
@@ -185,7 +205,15 @@ namespace detail
     { 
         static const SQLSMALLINT ctype = SQL_C_CHAR; 
         static const SQLSMALLINT sqltype = SQL_CHAR;
-        static const char* const format; 
+        static const string::value_type* const format; 
+    };
+
+    template<>
+    struct sql_type_info<std::wstring>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_WCHAR; 
+        static const SQLSMALLINT sqltype = SQL_WCHAR;
+        static const string::value_type* const format; 
     };
 
     template<>
@@ -294,6 +322,7 @@ struct timestamp
 enum column_datatype
 {
     column_char = SQL_CHAR                      //!< Characters.
+    , column_wchar = SQL_WCHAR                  //!< Wide characters.
     , column_date = SQL_TYPE_DATE               //!< Date.
     , column_double = SQL_DOUBLE                //!< Double precision.
     , column_float = SQL_FLOAT                  //!< Floating point.
@@ -394,13 +423,13 @@ public:
     //! \param timeout The number in seconds before connection timeout.
     //! \throws database_error
     //! \see connected(), connect()
-    connection(const std::string& dsn, const std::string& user, const std::string& pass, long timeout = 5);
+    connection(const string& dsn, const string& user, const string& pass, long timeout = 5);
 
     //! \brief Create new connection object and immediately connect using the given connection string.
     //! \param connection_string The connection string for establishing a connection.
     //! \throws database_error
     //! \see connected(), connect()
-    connection(const std::string& connection_string, long timeout = 5);
+    connection(const string& connection_string, long timeout = 5);
 
     //! \brief Automatically disconnects from the database and frees all associated resources.
     ~connection() throw();
@@ -412,14 +441,14 @@ public:
     //! \param timeout The number in seconds before connection timeout.
     //! \throws database_error
     //! \see connected()
-    void connect(const std::string& dsn, const std::string& user, const std::string& pass, long timeout = 5);
+    void connect(const string& dsn, const string& user, const string& pass, long timeout = 5);
 
     //! \brief Create new connection object and immediately connect using the given connection string.
     //! \param connection_string The connection string for establishing a connection.
     //! \param timeout The number in seconds before connection timeout.
     //! \throws database_error
     //! \see connected()
-    void connect(const std::string& connection_string, long timeout = 5);
+    void connect(const string& connection_string, long timeout = 5);
 
     //! \brief Returns true if connected to the database.
     bool connected() const;
@@ -438,7 +467,7 @@ public:
 
     //! \brief Returns the name of the ODBC driver.
     //! \throws database_error
-    std::string driver_name() const;
+    string driver_name() const;
 
 private:
     std::size_t ref_transaction();
@@ -466,7 +495,7 @@ public:
     //! \param conn The connection to use.
     //! \param stmt The SQL query statement.
     //! \see execute(), execute_direct(), open(), prepare()
-    statement(connection& conn, const std::string& stmt);
+    statement(connection& conn, const string& stmt);
 
     //! Copy constructor.
     statement(const statement& rhs);
@@ -507,7 +536,7 @@ public:
     //! \param stmt The SQL query that will be executed.
     //! \see open()
     //! \throws database_error
-    void prepare(connection& conn, const std::string& stmt);
+    void prepare(connection& conn, const string& stmt);
 
     //! \brief Immediately opens, prepares, and executes the given query directly on the given connection.
     //! \param conn The connection where the statement will be executed.
@@ -516,7 +545,7 @@ public:
     //! \return A result set object.
     //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
     //! \see open(), prepare(), execute(), result, transaction
-    result execute_direct(connection& conn, const std::string& query, long batch_operations = 1);
+    result execute_direct(connection& conn, const string& query, long batch_operations = 1);
 
     //! \brief Execute the previously prepared query now.
     //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
@@ -561,7 +590,7 @@ public:
         typename detail::disable_if_c<
             NANODBC_STD is_convertible<
                 typename std::iterator_traits<InputIterator>::value_type
-                , std::string
+                , string
             >::value
             , unsigned long
         >::type
@@ -583,7 +612,7 @@ public:
             param
             , detail::sql_type_info<element_type>::ctype
             , detail::sql_type_info<element_type>::sqltype
-            , (char*)data
+            , (string::value_type*)data
             , sizeof(element_type)
             , elements
             , true);
@@ -595,7 +624,7 @@ public:
     typename detail::enable_if_c<
         NANODBC_STD is_convertible<
             typename std::iterator_traits<InputIterator>::value_type
-            , std::string
+            , string
         >::value
         , unsigned long
     >::type
@@ -608,10 +637,17 @@ public:
         const size_type elements = distance(first, last);
         const unsigned long column_size = parameter_column_size(param);
 
-        char* cdata = new char[elements * column_size];
+        string::value_type* cdata = new string::value_type[elements * column_size];
         size_type row = 0;
+
+        #ifdef NANODBC_USE_UNICODE
+            #define NANODBC_STRNCPY std::wcsncpy
+        #else
+            #define NANODBC_STRNCPY std::strncpy
+        #endif // NANODBC_USE_UNICODE
         for(InputIterator i = first; i != last; ++i)
-            std::strncpy(&cdata[row++ * column_size], std::string(*i).c_str(), column_size);
+            NANODBC_STRNCPY(&cdata[row++ * column_size], string(*i).c_str(), column_size);
+        #undef NANODBC_STRNCPY
 
         bind_parameter(
             param
@@ -630,7 +666,7 @@ private:
         long param
         , SQLSMALLINT ctype
         , SQLSMALLINT sqltype
-        , char* data
+        , string::value_type* data
         , std::size_t element_size
         , std::size_t elemnts
         , bool take_ownership);
@@ -742,7 +778,7 @@ public:
     //! Columns are numbered from left to right and 0-indexed.
     //! \param Column position. 
     //! \throws index_range_error
-    std::string column_name(short column) const;
+    string column_name(short column) const;
 
     //! Returns a column_datatype representing the C type of this column.
     enum column_datatype column_datatype(short column) const;
