@@ -97,7 +97,7 @@ namespace nanodbc
         typedef std::string string;
     #endif // NANODBC_USE_UNICODE
 #else
-    //! string_type will be std::wstring is NANODBC_USE_UNICODE is defined, otherwise std::string.
+    //! string_type will be std::wstring if NANODBC_USE_UNICODE is defined, otherwise std::string.
     typedef string_type string;
 #endif // DOXYGEN
 

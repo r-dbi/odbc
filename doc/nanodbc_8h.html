@@ -70,7 +70,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -84,6 +84,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">nanodbc.h File Reference</div>  </div>
@@ -143,30 +144,38 @@ Namespaces</h2></td></tr>
 <tr class="memdesc:namespacenanodbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">The entirety of nanodbc can be found within this one namespace. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a5cb71b638e64be9bdac7edfd15c0eaa0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5cb71b638e64be9bdac7edfd15c0eaa0"></a>
+typedef string_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacenanodbc.html#a5cb71b638e64be9bdac7edfd15c0eaa0">nanodbc::string</a></td></tr>
+<tr class="memdesc:a5cb71b638e64be9bdac7edfd15c0eaa0"><td class="mdescLeft">&#160;</td><td class="mdescRight">string_type will be std::wstring is NANODBC_USE_UNICODE is defined, otherwise std::string. <br/></td></tr>
+<tr class="separator:a5cb71b638e64be9bdac7edfd15c0eaa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:ga47d1e22a8d3d3d06fe137595e1a1a8bd"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__utility.html#ga47d1e22a8d3d3d06fe137595e1a1a8bd">nanodbc::column_datatype</a> { <br/>
 &#160;&#160;<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda29b44a50569a63e3030993e472c32ab0">nanodbc::column_char</a> = SQL_CHAR, 
+<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda538a5c92c17d4fc1f468ec5447aad2b0">nanodbc::column_wchar</a> = SQL_WCHAR, 
 <a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda52bf1c4255bc8a26be72f5d23f468b60">nanodbc::column_date</a> = SQL_TYPE_DATE, 
 <a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdac2dd90f85fa6245e44aaa5e90fc81deb">nanodbc::column_double</a> = SQL_DOUBLE, 
-<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda94ef94cb5ec581dc2d692cbbf08c7d1f">nanodbc::column_float</a> = SQL_FLOAT, 
 <br/>
-&#160;&#160;<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda99981dd99cf34e9a6ca445df1353bd4d">nanodbc::column_integer</a> = SQL_INTEGER, 
+&#160;&#160;<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda94ef94cb5ec581dc2d692cbbf08c7d1f">nanodbc::column_float</a> = SQL_FLOAT, 
+<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda99981dd99cf34e9a6ca445df1353bd4d">nanodbc::column_integer</a> = SQL_INTEGER, 
 <a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdacd48849998c2790112648cfcc69a5f6a">nanodbc::column_decimal</a> = SQL_DECIMAL, 
 <a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda71f3fa3ed05fd34cdf0441b5ca8a972d">nanodbc::column_numeric</a> = SQL_NUMERIC, 
-<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdade22bc38709e54a12ae2feaac1f64764">nanodbc::column_real</a> = SQL_REAL, 
 <br/>
-&#160;&#160;<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda7d7d3ec9c7177d18a7061770414cc82f">nanodbc::column_smallint</a> = SQL_SMALLINT, 
+&#160;&#160;<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdade22bc38709e54a12ae2feaac1f64764">nanodbc::column_real</a> = SQL_REAL, 
+<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda7d7d3ec9c7177d18a7061770414cc82f">nanodbc::column_smallint</a> = SQL_SMALLINT, 
 <a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdacab863887290b09d6f0c78a6a8f7cbe2">nanodbc::column_time</a> = SQL_TYPE_TIME, 
 <a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda290ef74260650d308c0e94782bc523c7">nanodbc::column_timestamp</a> = SQL_TYPE_TIMESTAMP, 
-<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda738bb9fc4b7a46f822f9860d2c9f9ff8">nanodbc::column_tinyint</a> = SQL_TINYINT, 
 <br/>
-&#160;&#160;<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdad3cf169551dfa5c54ab4d5013a5e71ba">nanodbc::column_varchar</a> = SQL_VARCHAR, 
+&#160;&#160;<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda738bb9fc4b7a46f822f9860d2c9f9ff8">nanodbc::column_tinyint</a> = SQL_TINYINT, 
+<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdad3cf169551dfa5c54ab4d5013a5e71ba">nanodbc::column_varchar</a> = SQL_VARCHAR, 
 <a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda46392ac8b70b4993b0669aa2a2443088">nanodbc::column_bigint</a> = SQL_BIGINT, 
 <a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdac53efbf2e719acb1f20a49ae83eb75a2">nanodbc::column_varbinary</a> = SQL_VARBINARY, 
-<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda3af48967498a5b65f028034c8d36eb2e">nanodbc::column_longvarbinary</a> = SQL_LONGVARBINARY, 
 <br/>
-&#160;&#160;<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdaf364271066b055657a326ec4b2afe290">nanodbc::column_bit</a> = SQL_BIT, 
+&#160;&#160;<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda3af48967498a5b65f028034c8d36eb2e">nanodbc::column_longvarbinary</a> = SQL_LONGVARBINARY, 
+<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdaf364271066b055657a326ec4b2afe290">nanodbc::column_bit</a> = SQL_BIT, 
 <a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda5f96ffd8634aef6c0e713d84fdb569ee">nanodbc::column_interval</a> = SQL_INTERVAL, 
 <a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda72ead8321d2a04f8501909d746e117da">nanodbc::column_longvarchar</a> = SQL_LONGVARCHAR
 <br/>
