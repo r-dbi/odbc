@@ -7,7 +7,7 @@ cpp11:
 	clang++ example.cpp nanodbc.cpp -o example $(iodbc-config --libs) -Wall -Wno-deprecated-declarations ${ODBC_FLAGS} -g -std=c++11 -stdlib=libc++ -DNANODBC_USE_CPP11
 
 clean:
-	rm -rf a.out.dSYM a.out example
+	rm -rf example.dSYM example
 
 dox:
 	make clean
