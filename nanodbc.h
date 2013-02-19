@@ -203,7 +203,7 @@ namespace detail
     struct sql_type_info<std::string>
     { 
         static const SQLSMALLINT ctype = SQL_C_CHAR; 
-        static const SQLSMALLINT sqltype = SQL_CHAR;
+        static const SQLSMALLINT sqltype = SQL_VARCHAR;
         static const string::value_type* const format; 
     };
 
@@ -211,7 +211,7 @@ namespace detail
     struct sql_type_info<std::wstring>
     { 
         static const SQLSMALLINT ctype = SQL_C_WCHAR; 
-        static const SQLSMALLINT sqltype = SQL_WCHAR;
+        static const SQLSMALLINT sqltype = SQL_WVARCHAR;
         static const string::value_type* const format; 
     };
 
@@ -569,108 +569,47 @@ public:
     //!
     //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     //! Placeholder numbers count from left to right and are 0-indexed.
+    //! 
+    //! \warning String values must be null-terminated.
     //! \param param Placeholder position.
     //! \param value Value to substitute into placeholder.
     //! \throws database_error
-    template<class T>
-    void bind_parameter(long param, const T& value);
-
-    //! \brief Binds a number of values to the given parameter placeholder number in the prepared statement for batch operation.
-    //! 
-    //! \param param Placeholder position.
-    //! \param first Iterator to first value to bind.
-    //! \param first Iterator to one past the last value to bind.
-    //! \return the The number of elements that were bound to this column.
-    //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
-    //! \throws database_error
-    //! \see transaction
-    template<class InputIterator>
     #ifndef DOXYGEN
+        template<class T>
         typename detail::disable_if_c<
-            NANODBC_STD is_convertible<
-                typename std::iterator_traits<InputIterator>::value_type
-                , string
+            NANODBC_STD is_same<
+                T
+                , string::value_type
             >::value
-            , unsigned long
+            , void
         >::type
     #else
-        unsigned long
-    #endif
-    bind_parameter(long param, InputIterator first, InputIterator last)
+        void
+    #endif // DOXYGEN
+    bind_parameter(long param, const T* value)
     {
-        using std::distance;
-        using std::copy;
-        typedef typename std::iterator_traits<InputIterator>::value_type element_type;
-        typedef typename std::iterator_traits<InputIterator>::difference_type size_type;
-        const size_type elements = distance(first, last);
-
-        element_type* data = new element_type[elements];
-        copy(first, last, data);
-
-        bind_parameter(
-            param
-            , detail::sql_type_info<element_type>::ctype
-            , detail::sql_type_info<element_type>::sqltype
-            , (string::value_type*)data
-            , sizeof(element_type)
-            , elements
-            , true);
-        return elements;
+        bind_parameter_value(param, value);
     }
 
     #ifndef DOXYGEN
-    template<class InputIterator>
-    typename detail::enable_if_c<
-        NANODBC_STD is_convertible<
-            typename std::iterator_traits<InputIterator>::value_type
-            , string
-        >::value
-        , unsigned long
-    >::type
-    bind_parameter(long param, InputIterator first, InputIterator last)
-    {
-        using std::distance;
-        using std::copy;
-        typedef typename std::iterator_traits<InputIterator>::value_type element_type;
-        typedef typename std::iterator_traits<InputIterator>::difference_type size_type;
-        const size_type elements = distance(first, last);
-        const unsigned long column_size = parameter_column_size(param);
-
-        string::value_type* cdata = new string::value_type[elements * column_size];
-        size_type row = 0;
-
-        #ifdef NANODBC_USE_UNICODE
-            #define NANODBC_STRNCPY std::wcsncpy
-        #else
-            #define NANODBC_STRNCPY std::strncpy
-        #endif // NANODBC_USE_UNICODE
-        for(InputIterator i = first; i != last; ++i)
-            NANODBC_STRNCPY(&cdata[row++ * column_size], string(*i).c_str(), column_size);
-        #undef NANODBC_STRNCPY
-
-        bind_parameter(
-            param
-            , detail::sql_type_info<element_type>::ctype
-            , detail::sql_type_info<element_type>::sqltype
-            , cdata
-            , column_size
-            , elements
-            , true);
-        return elements;
-    }
+        template<class T>
+        typename detail::enable_if_c<
+            NANODBC_STD is_same<
+                T
+                , string::value_type
+            >::value
+            , void
+        >::type
+        bind_parameter(long param, const T* value)
+        {
+            bind_parameter_string(param, value);
+        }
     #endif // DOXYGEN
 
 private:
-    void bind_parameter(
-        long param
-        , SQLSMALLINT ctype
-        , SQLSMALLINT sqltype
-        , string::value_type* data
-        , std::size_t element_size
-        , std::size_t elemnts
-        , bool take_ownership);
-
-    unsigned long parameter_column_size(long param) const;
+    template<class T>
+    void bind_parameter_value(long param, const T* value);
+    void bind_parameter_string(long param, const string::value_type* value);
 
 private:
     class statement_impl;

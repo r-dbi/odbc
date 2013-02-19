@@ -79,11 +79,17 @@ int main(int argc, char* argv[])
         show<string>(results);
 
         // Binding parameters
-        statement.prepare(connection, "select cast(a as float) as f from public.example_table where cast(a as float) = ?;");
-        statement.bind_parameter(0, 1.0);
+        statement.prepare(connection, "insert into public.example_table (a, b) values (?, ?);");
+        const int eight_int = 8;
+        statement.bind_parameter(0, &eight_int);
+        const string eight_str = "eight";
+        statement.bind_parameter(1, eight_str.c_str());
+        statement.execute();
 
+        statement.prepare(connection, "select * from public.example_table where a = ?;");
+        statement.bind_parameter(0, &eight_int);
         results = statement.execute();
-        show<double>(results);
+        show<string>(results);
 
         // Transactions
         {
@@ -97,6 +103,7 @@ int main(int argc, char* argv[])
         cout << "still have " << results.get<int>(0) << " rows!" << endl;
 
         // Batch inserting
+        #if 0
         {
             statement.execute_direct(connection, "drop table if exists public.batch_insert_test;");
             statement.execute_direct(connection, "create table public.batch_insert_test (x varchar(50), y int, z float);");
@@ -125,6 +132,7 @@ int main(int argc, char* argv[])
             results = statement.execute_direct(connection, "select * from public.batch_insert_test;", 3);
             show<string>(results);
         }
+        #endif
 
         // Dates and Times
         statement.execute_direct(connection, "drop table if exists public.date_test;");

@@ -165,14 +165,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a61b359e1bcb7bf66f2cfbc055c105472">reset_parameters</a> ()  throw ()</td></tr>
 <tr class="memdesc:a61b359e1bcb7bf66f2cfbc055c105472"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets all currently bound parameters. <br/></td></tr>
 <tr class="separator:a61b359e1bcb7bf66f2cfbc055c105472"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a042a9bb7438b91c03e9c5e9c0439eee3"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a042a9bb7438b91c03e9c5e9c0439eee3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a042a9bb7438b91c03e9c5e9c0439eee3">bind_parameter</a> (long param, const T &amp;value)</td></tr>
-<tr class="memdesc:a042a9bb7438b91c03e9c5e9c0439eee3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given value to the given parameter placeholder number in the prepared statement.  <a href="#a042a9bb7438b91c03e9c5e9c0439eee3"></a><br/></td></tr>
-<tr class="separator:a042a9bb7438b91c03e9c5e9c0439eee3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a053bf02eb8b9829496abfc54761db040"><td class="memTemplParams" colspan="2">template&lt;class InputIterator &gt; </td></tr>
-<tr class="memitem:a053bf02eb8b9829496abfc54761db040"><td class="memTemplItemLeft" align="right" valign="top">unsigned long&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a053bf02eb8b9829496abfc54761db040">bind_parameter</a> (long param, InputIterator first, InputIterator last)</td></tr>
-<tr class="memdesc:a053bf02eb8b9829496abfc54761db040"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds a number of values to the given parameter placeholder number in the prepared statement for batch operation.  <a href="#a053bf02eb8b9829496abfc54761db040"></a><br/></td></tr>
-<tr class="separator:a053bf02eb8b9829496abfc54761db040"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa66fd84b60c1ea42d8017f8f804adf0a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#aa66fd84b60c1ea42d8017f8f804adf0a">bind_parameter</a> (long param, const T *value)</td></tr>
+<tr class="memdesc:aa66fd84b60c1ea42d8017f8f804adf0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given value to the given parameter placeholder number in the prepared statement.  <a href="#aa66fd84b60c1ea42d8017f8f804adf0a"></a><br/></td></tr>
+<tr class="separator:aa66fd84b60c1ea42d8017f8f804adf0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
@@ -269,11 +264,12 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>nanodbc::result</b><
 
 </div>
 </div>
-<a class="anchor" id="a042a9bb7438b91c03e9c5e9c0439eee3"></a>
+<a class="anchor" id="aa66fd84b60c1ea42d8017f8f804adf0a"></a>
 <div class="memitem">
 <div class="memproto">
-<div class="memtemplate">
-template&lt;class T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void nanodbc::statement::bind_parameter </td>
@@ -284,59 +280,8 @@ template&lt;class T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const T &amp;&#160;</td>
+          <td class="paramtype">const T *&#160;</td>
           <td class="paramname"><em>value</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>If your prepared SQL query has any ? placeholders, this is how you bind values to them. Placeholder numbers count from left to right and are 0-indexed. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">param</td><td>Placeholder position. </td></tr>
-    <tr><td class="paramname">value</td><td>Value to substitute into placeholder. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classnanodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a053bf02eb8b9829496abfc54761db040"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class InputIterator &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">unsigned long nanodbc::statement::bind_parameter </td>
-          <td>(</td>
-          <td class="paramtype">long&#160;</td>
-          <td class="paramname"><em>param</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">InputIterator&#160;</td>
-          <td class="paramname"><em>first</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">InputIterator&#160;</td>
-          <td class="paramname"><em>last</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -350,23 +295,21 @@ template&lt;class InputIterator &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>If your prepared SQL query has any ? placeholders, this is how you bind values to them. Placeholder numbers count from left to right and are 0-indexed.</p>
+<dl class="section warning"><dt>Warning</dt><dd>String values must be null-terminated. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">param</td><td>Placeholder position. </td></tr>
-    <tr><td class="paramname">first</td><td>Iterator to first value to bind. </td></tr>
-    <tr><td class="paramname">first</td><td>Iterator to one past the last value to bind. </td></tr>
+    <tr><td class="paramname">value</td><td>Value to substitute into placeholder. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>the The number of elements that were bound to this column. </dd></dl>
-<dl class="section attention"><dt>Attention</dt><dd>You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed. </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="classnanodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classnanodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">transaction</a> </dd></dl>
 
 </div>
 </div>
