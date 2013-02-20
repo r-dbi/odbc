@@ -645,6 +645,30 @@ public:
         return cols;
     }
 
+    void reset_parameters() throw()
+    {
+        NANODBC_CALL(SQLFreeStmt, stmt_, SQL_RESET_PARAMS);
+    }
+
+    unsigned long parameter_size(long param) const
+    {
+        RETCODE rc;
+        SQLSMALLINT data_type;
+        SQLULEN parameter_size;
+        NANODBC_CALL_RC(
+            SQLDescribeParam
+            , rc
+            , stmt_
+            , param + 1
+            , &data_type
+            , &parameter_size
+            , 0
+            , 0);
+        if(!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        return parameter_size;
+    }
+
     template<class T>
     void bind_parameter_value(long param, const T* value)
     {
@@ -698,11 +722,6 @@ public:
             , 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-    }
-
-    void reset_parameters() throw()
-    {
-        NANODBC_CALL(SQLFreeStmt, stmt_, SQL_RESET_PARAMS);
     }
 
 private:
@@ -1465,6 +1484,11 @@ short statement::columns() const
 void statement::reset_parameters() throw()
 {
     impl_->reset_parameters();
+}
+
+unsigned long statement::parameter_size(long param) const
+{
+    return impl_->parameter_size(param);
 }
 
 template<class T>

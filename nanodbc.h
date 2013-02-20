@@ -565,6 +565,9 @@ public:
     //! \brief Resets all currently bound parameters.
     void reset_parameters() throw();
 
+    //! \brief Returns the parameter size for the indicated parameter placeholder within a prepared statement.
+    unsigned long parameter_size(long param) const;
+
     //! \brief Binds the given value to the given parameter placeholder number in the prepared statement.
     //!
     //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
