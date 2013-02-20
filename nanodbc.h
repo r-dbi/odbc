@@ -578,7 +578,7 @@ public:
         template<class T>
         typename detail::disable_if_c<
             NANODBC_STD is_same<
-                T
+                typename NANODBC_STD remove_extent<T>::type
                 , string::value_type
             >::value
             , void
@@ -595,14 +595,14 @@ public:
         template<class T>
         typename detail::enable_if_c<
             NANODBC_STD is_same<
-                T
+                typename NANODBC_STD remove_extent<T>::type
                 , string::value_type
             >::value
             , void
         >::type
         bind_parameter(long param, const T* value)
         {
-            bind_parameter_string(param, value);
+            bind_parameter_string(param, reinterpret_cast<const string::value_type*>(value));
         }
     #endif // DOXYGEN
 

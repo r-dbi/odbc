@@ -102,28 +102,31 @@ int main(int argc, char* argv[])
         results.next();
         cout << "still have " << results.get<int>(0) << " rows!" << endl;
 
-        // Batch inserting
-        #if 0
+        // Bulk inserting
+        statement.prepare(connection, "insert into public.example_table (a, b) values (10, ?);");
+        const char values[][10] = {"this", "is", "a", "test"};
+        statement.bind_parameter(0, values);
+        {
+            nanodbc::transaction transaction(connection);
+            statement.execute(4);
+            transaction.commit();
+        }
+        results = statement.execute_direct(connection, "select * from public.example_table where a = 10;");
+        show<string>(results);
+
+        // Bulk inserting
         {
             statement.execute_direct(connection, "drop table if exists public.batch_insert_test;");
-            statement.execute_direct(connection, "create table public.batch_insert_test (x varchar(50), y int, z float);");
-
-            statement.prepare(connection, "insert into public.batch_insert_test (x, y, z) values (?, ?, ?);");
+            statement.execute_direct(connection, "create table public.batch_insert_test (y int, z float);");
+            statement.prepare(connection, "insert into public.batch_insert_test (y, z) values (?, ?);");
 
             const size_t data_count = 4;
-
-            vector<string> xdata;
-            xdata.push_back("this");
-            xdata.push_back("is");
-            xdata.push_back("a");
-            xdata.push_back("test");
-            statement.bind_parameter(0, xdata.begin(), xdata.end());
-
+            
             int ydata[data_count] = { 1, 2, 3, 4 };
-            statement.bind_parameter(1, ydata, ydata + data_count);
+            statement.bind_parameter(0, ydata);
 
             float zdata[data_count] = { 1.1, 2.2, 3.3, 4.4 };
-            statement.bind_parameter(2, zdata, zdata + data_count);
+            statement.bind_parameter(1, zdata);
 
             nanodbc::transaction transaction(connection);
             statement.execute(data_count);
@@ -132,7 +135,6 @@ int main(int argc, char* argv[])
             results = statement.execute_direct(connection, "select * from public.batch_insert_test;", 3);
             show<string>(results);
         }
-        #endif
 
         // Dates and Times
         statement.execute_direct(connection, "drop table if exists public.date_test;");

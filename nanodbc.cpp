@@ -47,17 +47,19 @@
 
 #ifdef NANODBC_ODBC_API_DEBUG
     #include <iostream>
-    #define NANODBC_CALL_RC(FUNC, RC, ...)                                                         \
-        do {                                                                                       \
-            std::cerr << __FILE__ << ":" NANODBC_STRINGIZE(__LINE__) << " " << #FUNC << std::endl; \
-            RC = FUNC(__VA_ARGS__);                                                                \
-        } while(false)                                                                             \
+    #define NANODBC_CALL_RC(FUNC, RC, ...)                                                        \
+        do {                                                                                      \
+            std::cerr << __FILE__ ":" NANODBC_STRINGIZE(__LINE__) " "                             \
+                NANODBC_STRINGIZE(FUNC) "(" #__VA_ARGS__ ")" << std::endl;                        \
+            RC = FUNC(__VA_ARGS__);                                                               \
+        } while(false)                                                                            \
         /**/
-    #define NANODBC_CALL(FUNC, ...)                                                                \
-        do {                                                                                       \
-            std::cerr << __FILE__ << ":" NANODBC_STRINGIZE(__LINE__) << " " << #FUNC << std::endl; \
-            FUNC(__VA_ARGS__);                                                                     \
-        } while(false)                                                                             \
+    #define NANODBC_CALL(FUNC, ...)                                                               \
+        do {                                                                                      \
+            std::cerr << __FILE__ ":" NANODBC_STRINGIZE(__LINE__) " "                             \
+                NANODBC_STRINGIZE(FUNC) "(" #__VA_ARGS__ ")" << std::endl;                        \
+            FUNC(__VA_ARGS__);                                                                    \
+        } while(false)                                                                            \
         /**/
 #else
     #define NANODBC_CALL_RC(FUNC, RC, ...) RC = FUNC(__VA_ARGS__)
@@ -681,7 +683,6 @@ public:
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
-        const string::size_type len = std::strlen(value);
         NANODBC_CALL_RC(
             SQLBindParameter
             , rc
@@ -693,7 +694,7 @@ public:
             , parameter_size // column size ignored for many types, but needed for strings
             , 0
             , (SQLPOINTER)value
-            , len
+            , parameter_size
             , 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
