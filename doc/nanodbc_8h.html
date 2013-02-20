@@ -95,13 +95,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;sql.h&gt;</code><br/>
 <code>#include &lt;sqlext.h&gt;</code><br/>
-<code>#include &lt;algorithm&gt;</code><br/>
-<code>#include &lt;cstring&gt;</code><br/>
 <code>#include &lt;stdexcept&gt;</code><br/>
 <code>#include &lt;string&gt;</code><br/>
 <code>#include &lt;tr1/cstdint&gt;</code><br/>
 <code>#include &lt;tr1/memory&gt;</code><br/>
-<code>#include &lt;tr1/type_traits&gt;</code><br/>
 </div>
 <p><a href="nanodbc_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -171,13 +168,16 @@ Enumerations</h2></td></tr>
 <br/>
 &#160;&#160;<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda738bb9fc4b7a46f822f9860d2c9f9ff8">nanodbc::column_tinyint</a> = SQL_TINYINT, 
 <a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdad3cf169551dfa5c54ab4d5013a5e71ba">nanodbc::column_varchar</a> = SQL_VARCHAR, 
+<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdacf5344c88cd435d97e3163eadf6dc457">nanodbc::column_wvarchar</a> = SQL_WVARCHAR, 
 <a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda46392ac8b70b4993b0669aa2a2443088">nanodbc::column_bigint</a> = SQL_BIGINT, 
-<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdac53efbf2e719acb1f20a49ae83eb75a2">nanodbc::column_varbinary</a> = SQL_VARBINARY, 
 <br/>
-&#160;&#160;<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda3af48967498a5b65f028034c8d36eb2e">nanodbc::column_longvarbinary</a> = SQL_LONGVARBINARY, 
+&#160;&#160;<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdac53efbf2e719acb1f20a49ae83eb75a2">nanodbc::column_varbinary</a> = SQL_VARBINARY, 
+<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda3af48967498a5b65f028034c8d36eb2e">nanodbc::column_longvarbinary</a> = SQL_LONGVARBINARY, 
 <a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdaf364271066b055657a326ec4b2afe290">nanodbc::column_bit</a> = SQL_BIT, 
 <a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda5f96ffd8634aef6c0e713d84fdb569ee">nanodbc::column_interval</a> = SQL_INTERVAL, 
-<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda72ead8321d2a04f8501909d746e117da">nanodbc::column_longvarchar</a> = SQL_LONGVARCHAR
+<br/>
+&#160;&#160;<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda72ead8321d2a04f8501909d746e117da">nanodbc::column_longvarchar</a> = SQL_LONGVARCHAR, 
+<a class="el" href="group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda647e6691accd7b07b357f2c2cfdb75f7">nanodbc::column_wlongvarchar</a> = SQL_WLONGVARCHAR
 <br/>
  }</td></tr>
 <tr class="memdesc:ga47d1e22a8d3d3d06fe137595e1a1a8bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">A type for representing the data type of a column.  <a href="group__utility.html#ga47d1e22a8d3d3d06fe137595e1a1a8bd">More...</a><br/></td></tr>

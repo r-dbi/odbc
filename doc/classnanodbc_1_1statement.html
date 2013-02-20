@@ -169,9 +169,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a3143847d022bab2e10fca186b64f0665">parameter_size</a> (long param) const </td></tr>
 <tr class="memdesc:a3143847d022bab2e10fca186b64f0665"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the parameter size for the indicated parameter placeholder within a prepared statement. <br/></td></tr>
 <tr class="separator:a3143847d022bab2e10fca186b64f0665"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa66fd84b60c1ea42d8017f8f804adf0a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#aa66fd84b60c1ea42d8017f8f804adf0a">bind_parameter</a> (long param, const T *value)</td></tr>
-<tr class="memdesc:aa66fd84b60c1ea42d8017f8f804adf0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given value to the given parameter placeholder number in the prepared statement.  <a href="#aa66fd84b60c1ea42d8017f8f804adf0a"></a><br/></td></tr>
-<tr class="separator:aa66fd84b60c1ea42d8017f8f804adf0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46a2dcc63f50836008978384cb14e15d"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a46a2dcc63f50836008978384cb14e15d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a46a2dcc63f50836008978384cb14e15d">bind_parameter</a> (long param, const T *value)</td></tr>
+<tr class="memdesc:a46a2dcc63f50836008978384cb14e15d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given value to the given parameter placeholder number in the prepared statement.  <a href="#a46a2dcc63f50836008978384cb14e15d"></a><br/></td></tr>
+<tr class="separator:a46a2dcc63f50836008978384cb14e15d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4652eee4ec14b3806db4a5058757cf7b"><td class="memTemplParams" colspan="2">template&lt;class T , std::size_t N&gt; </td></tr>
+<tr class="memitem:a4652eee4ec14b3806db4a5058757cf7b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnanodbc_1_1statement.html#a4652eee4ec14b3806db4a5058757cf7b">bind_parameter</a> (long param, const T(*values)[N])</td></tr>
+<tr class="memdesc:a4652eee4ec14b3806db4a5058757cf7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the given values to the given parameter placeholder number in the prepared statement.  <a href="#a4652eee4ec14b3806db4a5058757cf7b"></a><br/></td></tr>
+<tr class="separator:a4652eee4ec14b3806db4a5058757cf7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
@@ -268,12 +273,11 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>nanodbc::result</b><
 
 </div>
 </div>
-<a class="anchor" id="aa66fd84b60c1ea42d8017f8f804adf0a"></a>
+<a class="anchor" id="a46a2dcc63f50836008978384cb14e15d"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void nanodbc::statement::bind_parameter </td>
@@ -293,6 +297,51 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>nanodbc::result</b><
           <td></td><td></td>
         </tr>
       </table>
+</div><div class="memdoc">
+<p>If your prepared SQL query has any ? placeholders, this is how you bind values to them. Placeholder numbers count from left to right and are 0-indexed.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">param</td><td>Placeholder position. </td></tr>
+    <tr><td class="paramname">value</td><td>Value to substitute into placeholder. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classnanodbc_1_1database__error.html" title="General database error.">database_error</a></td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a4652eee4ec14b3806db4a5058757cf7b"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T , std::size_t N&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nanodbc::statement::bind_parameter </td>
+          <td>(</td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname"><em>param</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T(*)&#160;</td>
+          <td class="paramname"><em>values</em>[N]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">inline</span></span>  </td>
@@ -300,11 +349,11 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>nanodbc::result</b><
 </table>
 </div><div class="memdoc">
 <p>If your prepared SQL query has any ? placeholders, this is how you bind values to them. Placeholder numbers count from left to right and are 0-indexed.</p>
-<dl class="section warning"><dt>Warning</dt><dd>String values must be null-terminated. </dd></dl>
+<p>Typically you would use bulk operations with a row size of N when executing a statement bound this way.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">param</td><td>Placeholder position. </td></tr>
-    <tr><td class="paramname">value</td><td>Value to substitute into placeholder. </td></tr>
+    <tr><td class="paramname">values</td><td>Values to bulk substitute into placeholder. </td></tr>
   </table>
   </dd>
 </dl>

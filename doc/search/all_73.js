@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['sec',['sec',['../structnanodbc_1_1timestamp.html#a7fe7339a11e828f7583a6e0a4993f6ac',1,'nanodbc::timestamp']]],
+  ['sec',['sec',['../structnanodbc_1_1timestamp.html#a41c233f469d097bafcac752750d11f36',1,'nanodbc::timestamp']]],
   ['skip',['skip',['../classnanodbc_1_1result.html#abcd96eb3fd8fea53fa41289c5fc87377',1,'nanodbc::result']]],
   ['statement',['statement',['../classnanodbc_1_1statement.html',1,'nanodbc']]],
   ['statement',['statement',['../classnanodbc_1_1statement.html#ac9ea91624b4b6136f98b002f75376cd9',1,'nanodbc::statement::statement()'],['../classnanodbc_1_1statement.html#a8e3a811edf0dfd3faef6ebac8612f89d',1,'nanodbc::statement::statement(connection &amp;conn, const string &amp;stmt)'],['../classnanodbc_1_1statement.html#a78cdb0dbf1437cd98eff448e8c6a8757',1,'nanodbc::statement::statement(const statement &amp;rhs)']]],

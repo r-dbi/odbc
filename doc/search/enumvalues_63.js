@@ -19,5 +19,7 @@ var searchData=
   ['column_5ftinyint',['column_tinyint',['../group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda738bb9fc4b7a46f822f9860d2c9f9ff8',1,'nanodbc']]],
   ['column_5fvarbinary',['column_varbinary',['../group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdac53efbf2e719acb1f20a49ae83eb75a2',1,'nanodbc']]],
   ['column_5fvarchar',['column_varchar',['../group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdad3cf169551dfa5c54ab4d5013a5e71ba',1,'nanodbc']]],
-  ['column_5fwchar',['column_wchar',['../group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda538a5c92c17d4fc1f468ec5447aad2b0',1,'nanodbc']]]
+  ['column_5fwchar',['column_wchar',['../group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda538a5c92c17d4fc1f468ec5447aad2b0',1,'nanodbc']]],
+  ['column_5fwlongvarchar',['column_wlongvarchar',['../group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda647e6691accd7b07b357f2c2cfdb75f7',1,'nanodbc']]],
+  ['column_5fwvarchar',['column_wvarchar',['../group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdacf5344c88cd435d97e3163eadf6dc457',1,'nanodbc']]]
 ];

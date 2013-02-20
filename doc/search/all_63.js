@@ -24,6 +24,8 @@ var searchData=
   ['column_5fvarbinary',['column_varbinary',['../group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdac53efbf2e719acb1f20a49ae83eb75a2',1,'nanodbc']]],
   ['column_5fvarchar',['column_varchar',['../group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdad3cf169551dfa5c54ab4d5013a5e71ba',1,'nanodbc']]],
   ['column_5fwchar',['column_wchar',['../group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda538a5c92c17d4fc1f468ec5447aad2b0',1,'nanodbc']]],
+  ['column_5fwlongvarchar',['column_wlongvarchar',['../group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bda647e6691accd7b07b357f2c2cfdb75f7',1,'nanodbc']]],
+  ['column_5fwvarchar',['column_wvarchar',['../group__utility.html#gga47d1e22a8d3d3d06fe137595e1a1a8bdacf5344c88cd435d97e3163eadf6dc457',1,'nanodbc']]],
   ['columns',['columns',['../classnanodbc_1_1statement.html#aa0c021f78768849d0c89368de514954f',1,'nanodbc::statement::columns()'],['../classnanodbc_1_1result.html#a839990af1305d8dcb249f8464433034a',1,'nanodbc::result::columns()']]],
   ['commit',['commit',['../classnanodbc_1_1transaction.html#ad13c6871ac5f572456e881c2e52c2c91',1,'nanodbc::transaction']]],
   ['connect',['connect',['../classnanodbc_1_1connection.html#a499c8c5718696c4b6a1549864bb32acd',1,'nanodbc::connection::connect(const string &amp;dsn, const string &amp;user, const string &amp;pass, long timeout=5)'],['../classnanodbc_1_1connection.html#a46c3ac71cc9d460a8ce71bd33b391b06',1,'nanodbc::connection::connect(const string &amp;connection_string, long timeout=5)']]],

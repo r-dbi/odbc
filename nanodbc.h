@@ -64,8 +64,6 @@
 #include <sql.h>
 #include <sqlext.h>
 
-#include <algorithm>
-#include <cstring>
 #include <stdexcept>
 #include <string>
 
@@ -73,13 +71,11 @@
 #ifndef NANODBC_USE_CPP11
     #include <tr1/cstdint>
     #include <tr1/memory>
-    #include <tr1/type_traits>
-    #define NANODBC_STD std::tr1::
+    #define NANODBC_TR1_STD std::tr1::
 #else
     #include <cstdint>
     #include <memory>
-    #include <type_traits>
-    #define NANODBC_STD std::
+    #define NANODBC_TR1_STD std::
 #endif
 
 //! \brief The entirety of nanodbc can be found within this one namespace.
@@ -104,131 +100,6 @@ class connection;
 class result;
 struct date;
 struct timestamp;
-
-namespace detail
-{
-    // Simple enable/disable if utility taken from boost.
-    template <bool B, class T = void> struct enable_if_c { typedef T type; };
-    template <class T> struct enable_if_c<false, T> { };
-    template <bool B, class T = void> struct disable_if_c { typedef T type; };
-    template <class T> struct disable_if_c<true, T> { };
-
-    // A utility for calculating the ctype, sqltype, and format specifiers for the given type T.
-    // I essentially create a lookup table based on the MSDN ODBC documentation.
-    // See http://msdn.microsoft.com/en-us/library/windows/desktop/ms714556(v=vs.85).aspx for details.
-    template<class T>
-    struct sql_type_info { };
-
-    template<>
-    struct sql_type_info<char>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_CHAR; 
-        static const SQLSMALLINT sqltype = SQL_CHAR;
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<wchar_t>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_WCHAR; 
-        static const SQLSMALLINT sqltype = SQL_WCHAR;
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<short>
-    {
-        static const SQLSMALLINT ctype = SQL_C_SSHORT;
-        static const SQLSMALLINT sqltype = SQL_SMALLINT; 
-        static const string::value_type* const format;
-    };
-
-    template<>
-    struct sql_type_info<unsigned short>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_USHORT; 
-        static const SQLSMALLINT sqltype = SQL_SMALLINT;    
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<long>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_SLONG; 
-        static const SQLSMALLINT sqltype = SQL_INTEGER; 
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<unsigned long>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_ULONG; 
-        static const SQLSMALLINT sqltype = SQL_INTEGER; 
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<int>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_SLONG; 
-        static const SQLSMALLINT sqltype = SQL_INTEGER; 
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<unsigned int>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_ULONG; 
-        static const SQLSMALLINT sqltype = SQL_INTEGER; 
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<float>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_FLOAT; 
-        static const SQLSMALLINT sqltype = SQL_FLOAT;
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<double>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_DOUBLE; 
-        static const SQLSMALLINT sqltype = SQL_DOUBLE;
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<std::string>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_CHAR; 
-        static const SQLSMALLINT sqltype = SQL_VARCHAR;
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<std::wstring>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_WCHAR; 
-        static const SQLSMALLINT sqltype = SQL_WVARCHAR;
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<nanodbc::date>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_DATE; 
-        static const SQLSMALLINT sqltype = SQL_DATE;
-    };
-
-    template<>
-    struct sql_type_info<nanodbc::timestamp>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_TIMESTAMP; 
-        static const SQLSMALLINT sqltype = SQL_TIMESTAMP;
-    };
-} // namespace detail
 
 //! \addtogroup exceptions Exception Types
 //! \brief Possible error conditions.
@@ -300,21 +171,21 @@ public:
 //! \brief A type for representing date data.
 struct date
 {
-    NANODBC_STD int16_t year; //!< Year [0-inf).
-    NANODBC_STD int16_t month; //!< Month of the year [1-12].
-    NANODBC_STD int16_t day; //!< Day of the month [1-31].
+    NANODBC_TR1_STD int16_t year; //!< Year [0-inf).
+    NANODBC_TR1_STD int16_t month; //!< Month of the year [1-12].
+    NANODBC_TR1_STD int16_t day; //!< Day of the month [1-31].
 };
 
 //! \brief A type for representing timestamp data.
 struct timestamp
 {
-    NANODBC_STD int16_t year; //!< Year [0-inf).
-    NANODBC_STD int16_t month; //!< Month of the year [1-12].
-    NANODBC_STD int16_t day; //!< Day of the month [1-31].
-    NANODBC_STD int16_t hour; //!< Hours since midnight [0-23].
-    NANODBC_STD int16_t min; //!< Minutes after the hour [0-59].
-    NANODBC_STD int16_t sec; //!< Seconds after the minute.
-    NANODBC_STD int32_t fract; //!< Fractional seconds.
+    NANODBC_TR1_STD int16_t year;   //!< Year [0-inf).
+    NANODBC_TR1_STD int16_t month;  //!< Month of the year [1-12].
+    NANODBC_TR1_STD int16_t day;    //!< Day of the month [1-31].
+    NANODBC_TR1_STD int16_t hour;   //!< Hours since midnight [0-23].
+    NANODBC_TR1_STD int16_t min;    //!< Minutes after the hour [0-59].
+    NANODBC_TR1_STD int16_t sec;    //!< Seconds after the minute.
+    NANODBC_TR1_STD int32_t fract;  //!< Fractional seconds.
 };
 
 //! \brief A type for representing the data type of a column.
@@ -334,12 +205,14 @@ enum column_datatype
     , column_timestamp = SQL_TYPE_TIMESTAMP     //!< Timestamp.
     , column_tinyint = SQL_TINYINT              //!< Tiny integer.
     , column_varchar = SQL_VARCHAR              //!< Varchar.
+    , column_wvarchar = SQL_WVARCHAR            //!< Wide varchar.
     , column_bigint = SQL_BIGINT                //!< Big integer.
     , column_varbinary = SQL_VARBINARY          //!< Varbinary.
     , column_longvarbinary = SQL_LONGVARBINARY  //!< Long varbinary.
     , column_bit = SQL_BIT                      //!< Bit.
     , column_interval = SQL_INTERVAL            //!< Interval.
     , column_longvarchar = SQL_LONGVARCHAR      //!< Long varchar.
+    , column_wlongvarchar = SQL_WLONGVARCHAR    //!< Wide long varchar.
 };
 
 //! \}
@@ -396,7 +269,7 @@ private:
     friend class nanodbc::connection;
 
 private:
-    NANODBC_STD shared_ptr<transaction_impl> impl_;
+    NANODBC_TR1_STD shared_ptr<transaction_impl> impl_;
 };
 
 //! \brief Manages and encapsulates ODBC resources such as the connection and environment handles.
@@ -479,7 +352,7 @@ private:
     friend class nanodbc::transaction::transaction_impl;
 
 private:
-    NANODBC_STD shared_ptr<connection_impl> impl_;
+    NANODBC_TR1_STD shared_ptr<connection_impl> impl_;
 };
 
 //! \brief Represents a statement on the database.
@@ -573,53 +446,34 @@ public:
     //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     //! Placeholder numbers count from left to right and are 0-indexed.
     //! 
-    //! \warning String values must be null-terminated.
     //! \param param Placeholder position.
     //! \param value Value to substitute into placeholder.
     //! \throws database_error
-    #ifndef DOXYGEN
-        template<class T>
-        typename detail::disable_if_c<
-            NANODBC_STD is_same<
-                typename NANODBC_STD remove_extent<T>::type
-                , string::value_type
-            >::value
-            , void
-        >::type
-    #else
-        void
-    #endif // DOXYGEN
-    bind_parameter(long param, const T* value)
-    {
-        bind_parameter_value(param, value);
-    }
-
-    #ifndef DOXYGEN
-        template<class T>
-        typename detail::enable_if_c<
-            NANODBC_STD is_same<
-                typename NANODBC_STD remove_extent<T>::type
-                , string::value_type
-            >::value
-            , void
-        >::type
-        bind_parameter(long param, const T* value)
-        {
-            bind_parameter_string(param, reinterpret_cast<const string::value_type*>(value));
-        }
-    #endif // DOXYGEN
-
-private:
     template<class T>
-    void bind_parameter_value(long param, const T* value);
-    void bind_parameter_string(long param, const string::value_type* value);
+    void bind_parameter(long param, const T* value);
+
+    //! \brief Binds the given values to the given parameter placeholder number in the prepared statement.
+    //!
+    //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
+    //! Placeholder numbers count from left to right and are 0-indexed.
+    //! 
+    //! Typically you would use bulk operations with a row size of N when executing a statement bound this way.
+    //! 
+    //! \param param Placeholder position.
+    //! \param values Values to bulk substitute into placeholder.
+    //! \throws database_error
+    template<class T, std::size_t N>
+    void bind_parameter(long param, const T(*values)[N])
+    {
+        bind_parameter(param, reinterpret_cast<const T*>(values));
+    }
 
 private:
     class statement_impl;
     friend class nanodbc::result;
 
 private:
-    NANODBC_STD shared_ptr<statement_impl> impl_;
+    NANODBC_TR1_STD shared_ptr<statement_impl> impl_;
 };
 
 //! \brief A resource for managing result sets from statement execution.
@@ -732,11 +586,13 @@ private:
     friend class nanodbc::statement::statement_impl;
 
 private:
-    NANODBC_STD shared_ptr<result_impl> impl_;
+    NANODBC_TR1_STD shared_ptr<result_impl> impl_;
 };
 
 //! @}
 
 } // namespace nanodbc
+
+#undef NANODBC_TR1_STD
 
 #endif // NANODBC_H
