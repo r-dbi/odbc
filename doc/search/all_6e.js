@@ -3,10 +3,9 @@ var searchData=
   ['nanodbc',['nanodbc',['../namespacenanodbc.html',1,'']]],
   ['nanodbc_2ecpp',['nanodbc.cpp',['../nanodbc_8cpp.html',1,'']]],
   ['nanodbc_2eh',['nanodbc.h',['../nanodbc_8h.html',1,'']]],
-  ['native_5fdbc_5fhandle',['native_dbc_handle',['../classnanodbc_1_1connection.html#a490acddf71dce9145032199d722dc78a',1,'nanodbc::connection']]],
-  ['native_5fenv_5fhandle',['native_env_handle',['../classnanodbc_1_1connection.html#a8d19c7be48694212688cba682b48a012',1,'nanodbc::connection']]],
-  ['native_5fstmt_5fhandle',['native_stmt_handle',['../classnanodbc_1_1statement.html#acf6ff1fb082254f309c0a255019ca29f',1,'nanodbc::statement::native_stmt_handle()'],['../classnanodbc_1_1result.html#ae2b5f121dd1375fd5b6a5a9668463089',1,'nanodbc::result::native_stmt_handle()']]],
+  ['native_5fdbc_5fhandle',['native_dbc_handle',['../classnanodbc_1_1connection.html#aa74dba54fddd405c393b1804af39f699',1,'nanodbc::connection']]],
+  ['native_5fenv_5fhandle',['native_env_handle',['../classnanodbc_1_1connection.html#a49cdcc18b198d15fa19ccac35ac90133',1,'nanodbc::connection']]],
+  ['native_5fstmt_5fhandle',['native_stmt_handle',['../classnanodbc_1_1statement.html#aa46fc6496b4c8926c8225c34f57413b7',1,'nanodbc::statement::native_stmt_handle()'],['../classnanodbc_1_1result.html#a263ba337539adcf36c73531ad1c57768',1,'nanodbc::result::native_stmt_handle()']]],
   ['next',['next',['../classnanodbc_1_1result.html#a31470b51f194181373e4c2c4292d11c4',1,'nanodbc::result']]],
-  ['null_5faccess_5ferror',['null_access_error',['../classnanodbc_1_1null__access__error.html#a266596c19b36563938c415a19fdd67ad',1,'nanodbc::null_access_error']]],
   ['null_5faccess_5ferror',['null_access_error',['../classnanodbc_1_1null__access__error.html',1,'nanodbc']]]
 ];

@@ -61,9 +61,6 @@
 #ifndef NANODBC_H
 #define NANODBC_H
 
-#include <sql.h>
-#include <sqlext.h>
-
 #include <stdexcept>
 #include <string>
 
@@ -96,11 +93,6 @@ namespace nanodbc
     typedef string_type string;
 #endif // DOXYGEN
 
-class connection;
-class result;
-struct date;
-struct timestamp;
-
 //! \addtogroup exceptions Exception Types
 //! \brief Possible error conditions.
 //!
@@ -115,10 +107,7 @@ struct timestamp;
 class type_incompatible_error : public std::runtime_error
 {
 public:
-    //! \brief Constructor.
     type_incompatible_error();
-    
-    //! \brief Returns the explanatory string.
     const char* what() const throw();
 };
 
@@ -127,10 +116,7 @@ public:
 class null_access_error : public std::runtime_error
 {
 public:
-    //! \brief Constructor.
     null_access_error();
-    
-    //! \brief Returns the explanatory string.
     const char* what() const throw();
 };
 
@@ -139,10 +125,7 @@ public:
 class index_range_error : public std::runtime_error
 {
 public:
-    //! \brief Constructor.
     index_range_error();
-    
-    //! \brief Returns the explanatory string.
     const char* what() const throw();
 };
 
@@ -155,9 +138,7 @@ public:
     //! \param handle The native ODBC statement or connection handle.
     //! \param handle_type The native ODBC handle type code for the given handle.
     //! \param info Additional information that will be appended to the beginning of the error message.
-    database_error(SQLHANDLE handle, SQLSMALLINT handle_type, const std::string& info = "");
-
-    //! \brief Returns the explanatory string.
+    database_error(void* handle, short handle_type, const std::string& info = "");
     const char* what() const throw();
 };
 
@@ -186,33 +167,6 @@ struct timestamp
     NANODBC_TR1_STD int16_t min;    //!< Minutes after the hour [0-59].
     NANODBC_TR1_STD int16_t sec;    //!< Seconds after the minute.
     NANODBC_TR1_STD int32_t fract;  //!< Fractional seconds.
-};
-
-//! \brief A type for representing the data type of a column.
-enum column_datatype
-{
-    column_char = SQL_CHAR                      //!< Characters.
-    , column_wchar = SQL_WCHAR                  //!< Wide characters.
-    , column_date = SQL_TYPE_DATE               //!< Date.
-    , column_double = SQL_DOUBLE                //!< Double precision.
-    , column_float = SQL_FLOAT                  //!< Floating point.
-    , column_integer = SQL_INTEGER              //!< Integer.
-    , column_decimal = SQL_DECIMAL              //!< Decimal.
-    , column_numeric = SQL_NUMERIC              //!< Numeric.
-    , column_real = SQL_REAL                    //!< Real.
-    , column_smallint = SQL_SMALLINT            //!< Small integer.
-    , column_time = SQL_TYPE_TIME               //!< Time.
-    , column_timestamp = SQL_TYPE_TIMESTAMP     //!< Timestamp.
-    , column_tinyint = SQL_TINYINT              //!< Tiny integer.
-    , column_varchar = SQL_VARCHAR              //!< Varchar.
-    , column_wvarchar = SQL_WVARCHAR            //!< Wide varchar.
-    , column_bigint = SQL_BIGINT                //!< Big integer.
-    , column_varbinary = SQL_VARBINARY          //!< Varbinary.
-    , column_longvarbinary = SQL_LONGVARBINARY  //!< Long varbinary.
-    , column_bit = SQL_BIT                      //!< Bit.
-    , column_interval = SQL_INTERVAL            //!< Interval.
-    , column_longvarchar = SQL_LONGVARCHAR      //!< Long varchar.
-    , column_wlongvarchar = SQL_WLONGVARCHAR    //!< Wide long varchar.
 };
 
 //! \}
@@ -332,10 +286,10 @@ public:
     std::size_t transactions() const;
 
     //! \brief Returns the native ODBC database connection handle.
-    HDBC native_dbc_handle() const;
+    void* native_dbc_handle() const;
 
     //! \brief Returns the native ODBC environment handle.
-    HDBC native_env_handle() const;
+    void* native_env_handle() const;
 
     //! \brief Returns the name of the ODBC driver.
     //! \throws database_error
@@ -354,6 +308,8 @@ private:
 private:
     NANODBC_TR1_STD shared_ptr<connection_impl> impl_;
 };
+
+class result;
 
 //! \brief Represents a statement on the database.
 class statement
@@ -394,7 +350,7 @@ public:
     bool connected() const;
 
     //! \brief Returns the native ODBC statement handle.
-    HDBC native_stmt_handle() const;
+    void* native_stmt_handle() const;
 
     //! \brief Closes the statement and frees all associated resources.
     void close();
@@ -499,7 +455,7 @@ public:
     void swap(result& rhs) throw();
 
     //! \brief Returns the native ODBC statement handle.
-    HDBC native_stmt_handle() const;
+    void* native_stmt_handle() const;
 
     //! \brief The rowset size for this result set.
     long rowset_size() const throw();
@@ -575,8 +531,8 @@ public:
     //! \throws index_range_error
     string column_name(short column) const;
 
-    //! Returns a column_datatype representing the C type of this column.
-    enum column_datatype column_datatype(short column) const;
+    //! Returns a identifying integer value representing the C type of this column.
+    int column_datatype(short column) const;
 
 private:
     result(statement stmt, long rowset_size);

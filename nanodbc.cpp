@@ -15,7 +15,10 @@
     #include <stdint.h>
 #endif
 
-// On OS X 10.8 ODBC declarations were deprecated.
+#include <sql.h>
+#include <sqlext.h>
+
+// Workaround DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -38,21 +41,15 @@
 #endif // NANODBC_USE_UNICODE
 
 ///////////////////////////////////////////////////////////////////////////////
-// Exception Handling
+// ODBC API Interface
 ///////////////////////////////////////////////////////////////////////////////
 
-#define NANODBC_STRINGIZE_I(text) #text
-#define NANODBC_STRINGIZE(text) NANODBC_STRINGIZE_I(text)
-#define NANODBC_THROW_DATABASE_ERROR(handle, handle_type)                     \
-    throw database_error(                                                     \
-        handle                                                                \
-        , handle_type                                                         \
-        , __FILE__ ":" NANODBC_STRINGIZE(__LINE__) ": ")                      \
-    /**/
+// By making all calls to ODBC functions through this macro, we can easily get
+// runtime debugging information of which ODBC functions are being called,
+// in what order, and with what parameters by defining NANODBC_ODBC_API_DEBUG.
 
 #ifdef NANODBC_ODBC_API_DEBUG
     #include <iostream>
-
     #define NANODBC_CALL_RC(FUNC, RC, ...)                                    \
         do {                                                                  \
             std::cerr << __FILE__ ":" NANODBC_STRINGIZE(__LINE__) " "         \
@@ -60,7 +57,6 @@
             RC = FUNC(__VA_ARGS__);                                           \
         } while(false)                                                        \
         /**/
-
     #define NANODBC_CALL(FUNC, ...)                                           \
         do {                                                                  \
             std::cerr << __FILE__ ":" NANODBC_STRINGIZE(__LINE__) " "         \
@@ -74,202 +70,16 @@
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-// Implementation Details
+// Error and Exception Handling
 ///////////////////////////////////////////////////////////////////////////////
-
-namespace nanodbc
-{
-
-namespace detail
-{
-    // A utility for calculating the ctype, sqltype, and format specifiers for the given type T.
-    // I essentially create a lookup table based on the MSDN ODBC documentation.
-    // See http://msdn.microsoft.com/en-us/library/windows/desktop/ms714556(v=vs.85).aspx for details.
-    template<class T>
-    struct sql_type_info { };
-
-    template<>
-    struct sql_type_info<char>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_CHAR; 
-        static const SQLSMALLINT sqltype = SQL_CHAR;
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<wchar_t>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_WCHAR; 
-        static const SQLSMALLINT sqltype = SQL_WCHAR;
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<short>
-    {
-        static const SQLSMALLINT ctype = SQL_C_SSHORT;
-        static const SQLSMALLINT sqltype = SQL_SMALLINT; 
-        static const string::value_type* const format;
-    };
-
-    template<>
-    struct sql_type_info<unsigned short>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_USHORT; 
-        static const SQLSMALLINT sqltype = SQL_SMALLINT;    
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<long>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_SLONG; 
-        static const SQLSMALLINT sqltype = SQL_INTEGER; 
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<unsigned long>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_ULONG; 
-        static const SQLSMALLINT sqltype = SQL_INTEGER; 
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<int>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_SLONG; 
-        static const SQLSMALLINT sqltype = SQL_INTEGER; 
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<unsigned int>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_ULONG; 
-        static const SQLSMALLINT sqltype = SQL_INTEGER; 
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<float>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_FLOAT; 
-        static const SQLSMALLINT sqltype = SQL_FLOAT;
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<double>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_DOUBLE; 
-        static const SQLSMALLINT sqltype = SQL_DOUBLE;
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<std::string>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_CHAR; 
-        static const SQLSMALLINT sqltype = SQL_VARCHAR;
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<std::wstring>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_WCHAR; 
-        static const SQLSMALLINT sqltype = SQL_WVARCHAR;
-        static const string::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<nanodbc::date>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_DATE; 
-        static const SQLSMALLINT sqltype = SQL_DATE;
-    };
-
-    template<>
-    struct sql_type_info<nanodbc::timestamp>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_TIMESTAMP; 
-        static const SQLSMALLINT sqltype = SQL_TIMESTAMP;
-    };
-
-    const string::value_type* const sql_type_info<char>::format = NANODBC_TEXT("%c");
-    const string::value_type* const sql_type_info<wchar_t>::format = NANODBC_TEXT("%lc");
-    const string::value_type* const sql_type_info<short>::format = NANODBC_TEXT("%hd");
-    const string::value_type* const sql_type_info<unsigned short>::format = NANODBC_TEXT("%hu");
-    const string::value_type* const sql_type_info<long>::format = NANODBC_TEXT("%ld");
-    const string::value_type* const sql_type_info<unsigned long>::format = NANODBC_TEXT("%lu");
-    const string::value_type* const sql_type_info<int>::format = NANODBC_TEXT("%d");
-    const string::value_type* const sql_type_info<unsigned int>::format = NANODBC_TEXT("%u");
-    const string::value_type* const sql_type_info<float>::format = NANODBC_TEXT("%f");
-    const string::value_type* const sql_type_info<double>::format = NANODBC_TEXT("%lf");
-} // namespace detail
-
-using namespace detail;
 
 namespace
 {
-    // Converts the given string to the given type T.
-    template<class T>
-    inline T convert(const string& s)
-    {
-        T value;
-        NANODBC_SSCANF(s.c_str(), sql_type_info<T>::format, &value);
-        return value;
-    }
-
     // Easy way to check if a return code signifies success.
     inline bool success(RETCODE rc)
     {
         return rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO;
     }
-
-    // Encapsulates resources needed for column binding.
-    class bound_column
-    {
-    public:
-        bound_column()
-        : name_()
-        , sqltype_(0)
-        , sqlsize_(0)
-        , scale_(0)
-        , ctype_(0)
-        , clen_(0)
-        , blob_(false)
-        , rowset_size_(0)
-        , cbdata_(0)
-        , pdata_(0)
-        {
-
-        }
-
-        ~bound_column()
-        {
-            delete[] cbdata_;
-            delete[] pdata_;
-        }
-
-    public:
-        string name_;
-        SQLSMALLINT sqltype_;
-        SQLULEN sqlsize_;
-        SQLSMALLINT scale_;
-        SQLSMALLINT ctype_;
-        SQLULEN clen_;
-        bool blob_;
-        long rowset_size_;
-        long* cbdata_;
-        char* pdata_;
-
-    private:
-        bound_column(const bound_column& rhs); // not defined
-        bound_column& operator=(bound_column rhs); // not defined
-    };
 
     // Attempts to get the last ODBC error as a string.
     inline std::string last_error(SQLHANDLE handle, SQLSMALLINT handle_type)
@@ -298,9 +108,240 @@ namespace
         }
         return "Unknown Error: SQLGetDiagRec() call failed";
     }
+} // namespace
+
+namespace nanodbc
+{
+    type_incompatible_error::type_incompatible_error()
+    : std::runtime_error("type incompatible") { }
+    
+    const char* type_incompatible_error::what() const throw()
+    {
+        return std::runtime_error::what();
+    }
+
+    null_access_error::null_access_error()
+    : std::runtime_error("null access") { }
+    
+    const char* null_access_error::what() const throw()
+    {
+        return std::runtime_error::what();
+    }
+
+    index_range_error::index_range_error()
+    : std::runtime_error("index out of range") { }
+    
+    const char* index_range_error::what() const throw()
+    {
+        return std::runtime_error::what();
+    }
+
+    database_error::database_error(void* handle, short handle_type, const std::string& info)
+    : std::runtime_error(info + last_error(handle, handle_type)) { }
+
+    const char* database_error::what() const throw()
+    {
+        return std::runtime_error::what();
+    }
+} // namespace nanodbc
+
+// Throwing exceptions using NANODBC_THROW_DATABASE_ERROR enables file name
+// and line numbers to be inserted into the error message. Useful for debugging.
+#define NANODBC_STRINGIZE_I(text) #text
+#define NANODBC_STRINGIZE(text) NANODBC_STRINGIZE_I(text)
+#define NANODBC_THROW_DATABASE_ERROR(handle, handle_type)                     \
+    throw nanodbc::database_error(                                            \
+        handle                                                                \
+        , handle_type                                                         \
+        , __FILE__ ":" NANODBC_STRINGIZE(__LINE__) ": ")                      \
+    /**/
+
+///////////////////////////////////////////////////////////////////////////////
+// Implementation Details
+///////////////////////////////////////////////////////////////////////////////
+
+namespace
+{
+    // A utility for calculating the ctype, sqltype, and format specifiers for the given type T.
+    // I essentially create a lookup table based on the MSDN ODBC documentation.
+    // See http://msdn.microsoft.com/en-us/library/windows/desktop/ms714556(v=vs.85).aspx for details.
+    template<class T>
+    struct sql_type_info { };
+
+    template<>
+    struct sql_type_info<char>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_CHAR; 
+        static const SQLSMALLINT sqltype = SQL_CHAR;
+        static const nanodbc::string::value_type* const format; 
+    };
+
+    template<>
+    struct sql_type_info<wchar_t>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_WCHAR; 
+        static const SQLSMALLINT sqltype = SQL_WCHAR;
+        static const nanodbc::string::value_type* const format; 
+    };
+
+    template<>
+    struct sql_type_info<short>
+    {
+        static const SQLSMALLINT ctype = SQL_C_SSHORT;
+        static const SQLSMALLINT sqltype = SQL_SMALLINT; 
+        static const nanodbc::string::value_type* const format;
+    };
+
+    template<>
+    struct sql_type_info<unsigned short>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_USHORT; 
+        static const SQLSMALLINT sqltype = SQL_SMALLINT;    
+        static const nanodbc::string::value_type* const format; 
+    };
+
+    template<>
+    struct sql_type_info<long>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_SLONG; 
+        static const SQLSMALLINT sqltype = SQL_INTEGER; 
+        static const nanodbc::string::value_type* const format; 
+    };
+
+    template<>
+    struct sql_type_info<unsigned long>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_ULONG; 
+        static const SQLSMALLINT sqltype = SQL_INTEGER; 
+        static const nanodbc::string::value_type* const format; 
+    };
+
+    template<>
+    struct sql_type_info<int>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_SLONG; 
+        static const SQLSMALLINT sqltype = SQL_INTEGER; 
+        static const nanodbc::string::value_type* const format; 
+    };
+
+    template<>
+    struct sql_type_info<unsigned int>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_ULONG; 
+        static const SQLSMALLINT sqltype = SQL_INTEGER; 
+        static const nanodbc::string::value_type* const format; 
+    };
+
+    template<>
+    struct sql_type_info<float>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_FLOAT; 
+        static const SQLSMALLINT sqltype = SQL_FLOAT;
+        static const nanodbc::string::value_type* const format; 
+    };
+
+    template<>
+    struct sql_type_info<double>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_DOUBLE; 
+        static const SQLSMALLINT sqltype = SQL_DOUBLE;
+        static const nanodbc::string::value_type* const format; 
+    };
+
+    template<>
+    struct sql_type_info<std::string>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_CHAR; 
+        static const SQLSMALLINT sqltype = SQL_VARCHAR;
+        static const nanodbc::string::value_type* const format; 
+    };
+
+    template<>
+    struct sql_type_info<std::wstring>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_WCHAR; 
+        static const SQLSMALLINT sqltype = SQL_WVARCHAR;
+        static const nanodbc::string::value_type* const format; 
+    };
+
+    template<>
+    struct sql_type_info<nanodbc::date>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_DATE; 
+        static const SQLSMALLINT sqltype = SQL_DATE;
+    };
+
+    template<>
+    struct sql_type_info<nanodbc::timestamp>
+    { 
+        static const SQLSMALLINT ctype = SQL_C_TIMESTAMP; 
+        static const SQLSMALLINT sqltype = SQL_TIMESTAMP;
+    };
+
+    const nanodbc::string::value_type* const sql_type_info<char>::format = NANODBC_TEXT("%c");
+    const nanodbc::string::value_type* const sql_type_info<wchar_t>::format = NANODBC_TEXT("%lc");
+    const nanodbc::string::value_type* const sql_type_info<short>::format = NANODBC_TEXT("%hd");
+    const nanodbc::string::value_type* const sql_type_info<unsigned short>::format = NANODBC_TEXT("%hu");
+    const nanodbc::string::value_type* const sql_type_info<long>::format = NANODBC_TEXT("%ld");
+    const nanodbc::string::value_type* const sql_type_info<unsigned long>::format = NANODBC_TEXT("%lu");
+    const nanodbc::string::value_type* const sql_type_info<int>::format = NANODBC_TEXT("%d");
+    const nanodbc::string::value_type* const sql_type_info<unsigned int>::format = NANODBC_TEXT("%u");
+    const nanodbc::string::value_type* const sql_type_info<float>::format = NANODBC_TEXT("%f");
+    const nanodbc::string::value_type* const sql_type_info<double>::format = NANODBC_TEXT("%lf");
+
+    // Converts the given string to the given type T.
+    template<class T>
+    inline T convert(const nanodbc::string& s)
+    {
+        T value;
+        NANODBC_SSCANF(s.c_str(), sql_type_info<T>::format, &value);
+        return value;
+    }
+
+    // Encapsulates resources needed for column binding.
+    class bound_column
+    {
+    public:
+        bound_column()
+        : name_()
+        , sqltype_(0)
+        , sqlsize_(0)
+        , scale_(0)
+        , ctype_(0)
+        , clen_(0)
+        , blob_(false)
+        , rowset_size_(0)
+        , cbdata_(0)
+        , pdata_(0)
+        {
+
+        }
+
+        ~bound_column()
+        {
+            delete[] cbdata_;
+            delete[] pdata_;
+        }
+
+    public:
+        nanodbc::string name_;
+        SQLSMALLINT sqltype_;
+        SQLULEN sqlsize_;
+        SQLSMALLINT scale_;
+        SQLSMALLINT ctype_;
+        SQLULEN clen_;
+        bool blob_;
+        long rowset_size_;
+        long* cbdata_;
+        char* pdata_;
+
+    private:
+        bound_column(const bound_column& rhs); // not defined
+        bound_column& operator=(bound_column rhs); // not defined
+    };
 
     // Allocates the native ODBC handles.
-    inline void allocate_handle(HENV& env, HDBC& conn)
+    inline void allocate_handle(SQLHENV& env, SQLHDBC& conn)
     {
         RETCODE rc;
         NANODBC_CALL_RC(SQLAllocHandle, rc, SQL_HANDLE_ENV, SQL_NULL_HANDLE, &env);
@@ -318,44 +359,11 @@ namespace
 } // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
-// Exception Types
-///////////////////////////////////////////////////////////////////////////////
-
-type_incompatible_error::type_incompatible_error()
-: std::runtime_error("type incompatible") { }
-
-const char* type_incompatible_error::what() const throw()
-{
-    return std::runtime_error::what();
-}
-
-null_access_error::null_access_error()
-: std::runtime_error("null access") { }
-
-const char* null_access_error::what() const throw()
-{
-    return std::runtime_error::what();
-}
-
-index_range_error::index_range_error()
-: std::runtime_error("index out of range") { }
-
-const char* index_range_error::what() const throw()
-{
-    return std::runtime_error::what();
-}
-
-database_error::database_error(SQLHANDLE handle, SQLSMALLINT handle_type, const std::string& info)
-: std::runtime_error(info + last_error(handle, handle_type)) { }
-
-const char* database_error::what() const throw()
-{
-    return std::runtime_error::what();
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // Private Implementation: connection
 ///////////////////////////////////////////////////////////////////////////////
+
+namespace nanodbc
+{
 
 class connection::connection_impl
 {
@@ -482,12 +490,12 @@ public:
         return transactions_;
     }
 
-    HDBC native_dbc_handle() const
+    void* native_dbc_handle() const
     {
         return conn_;
     }
 
-    HDBC native_env_handle() const
+    void* native_env_handle() const
     {
         return env_;
     }
@@ -542,9 +550,14 @@ private:
     bool rollback_; // if true, this connection is marked for eventual transaction rollback
 };
 
+} // namespace nanodbc
+
 ///////////////////////////////////////////////////////////////////////////////
 // Private Implementation: transaction
 ///////////////////////////////////////////////////////////////////////////////
+
+namespace nanodbc
+{
 
 class transaction::transaction_impl
 {
@@ -639,9 +652,14 @@ private:
     bool committed_;
 };
 
+} // namespace nanodbc
+
 ///////////////////////////////////////////////////////////////////////////////
 // Private Implementation: statement
 ///////////////////////////////////////////////////////////////////////////////
+
+namespace nanodbc
+{
 
 class statement::statement_impl
 {
@@ -698,7 +716,7 @@ public:
         return conn_.connected();
     }
 
-    HDBC native_stmt_handle() const
+    void* native_stmt_handle() const
     {
         return stmt_;
     }
@@ -880,9 +898,14 @@ private:
     connection conn_;
 };
 
+} // namespace nanodbc
+
 ///////////////////////////////////////////////////////////////////////////////
 // Private Implementation: result
 ///////////////////////////////////////////////////////////////////////////////
+
+namespace nanodbc
+{
 
 class result::result_impl
 {
@@ -924,7 +947,7 @@ public:
         delete[] bound_columns_;
     }
 
-    HDBC native_stmt_handle() const
+    void* native_stmt_handle() const
     {
         return stmt_.native_stmt_handle();
     }
@@ -1041,12 +1064,12 @@ public:
         return bound_columns_[column].name_;
     }
 
-    enum column_datatype column_datatype(short column) const
+    int column_datatype(short column) const
     {
         if(column >= bound_columns_size_)
             throw index_range_error();
         bound_column& col = bound_columns_[column];
-        return static_cast<enum column_datatype>(col.sqltype_);
+        return col.sqltype_;
     }
 
     template<class T>
@@ -1421,9 +1444,14 @@ inline string result::result_impl::get<string>(short column) const
     throw type_incompatible_error();
 }
 
+} // namespace nanodbc
+
 ///////////////////////////////////////////////////////////////////////////////
 // Pimpl Forwards: connection
 ///////////////////////////////////////////////////////////////////////////////
+
+namespace nanodbc
+{
 
 connection::connection()
 : impl_(new connection_impl())
@@ -1491,12 +1519,12 @@ std::size_t connection::transactions() const
     return impl_->transactions();
 }
 
-HDBC connection::native_dbc_handle() const
+void* connection::native_dbc_handle() const
 {
     return impl_->native_dbc_handle();
 }
 
-HDBC connection::native_env_handle() const
+void* connection::native_env_handle() const
 {
     return impl_->native_env_handle();
 }
@@ -1526,9 +1554,14 @@ void connection::rollback(bool onoff)
     impl_->rollback(onoff);
 }
 
+} // namespace nanodbc
+
 ///////////////////////////////////////////////////////////////////////////////
 // Pimpl Forwards: transaction
 ///////////////////////////////////////////////////////////////////////////////
+
+namespace nanodbc
+{
 
 transaction::transaction(const class connection& conn)
 : impl_(new transaction_impl(conn))
@@ -1589,9 +1622,14 @@ transaction::operator const class connection&() const
     return impl_->connection();
 }
 
+} // namespace nanodbc
+
 ///////////////////////////////////////////////////////////////////////////////
 // Pimpl Forwards: statement
 ///////////////////////////////////////////////////////////////////////////////
+
+namespace nanodbc
+{
 
 statement::statement()
 : impl_(new statement_impl())
@@ -1643,7 +1681,7 @@ bool statement::connected() const
     return impl_->connected();
 }
 
-HDBC statement::native_stmt_handle() const
+void* statement::native_stmt_handle() const
 {
     return impl_->native_stmt_handle();
 }
@@ -1712,9 +1750,14 @@ template void statement::bind_parameter(long, const double*);
 template void statement::bind_parameter(long, const date*);
 template void statement::bind_parameter(long, const timestamp*);
 
+} // namespace nanodbc
+
 ///////////////////////////////////////////////////////////////////////////////
 // Pimpl Forwards: result
 ///////////////////////////////////////////////////////////////////////////////
+
+namespace nanodbc
+{
 
 result::result()
 : impl_()
@@ -1751,7 +1794,7 @@ void result::swap(result& rhs) throw()
     swap(impl_, rhs.impl_);
 }
 
-HDBC result::native_stmt_handle() const
+void* result::native_stmt_handle() const
 {
     return impl_->native_stmt_handle();
 }
@@ -1826,7 +1869,7 @@ string result::column_name(short column) const
     return impl_->column_name(column);
 }
 
-column_datatype result::column_datatype(short column) const
+int result::column_datatype(short column) const
 {
     return impl_->column_datatype(column);
 }
