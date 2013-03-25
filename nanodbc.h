@@ -404,9 +404,10 @@ public:
     //! 
     //! \param param Placeholder position.
     //! \param value Value to substitute into placeholder.
+    //! \param nulls Used to batch insert nulls into the database.
     //! \throws database_error
     template<class T>
-    void bind_parameter(long param, const T* value);
+    void bind_parameter(long param, const T* value, long* nulls = 0);
 
     //! \brief Binds the given values to the given parameter placeholder number in the prepared statement.
     //!

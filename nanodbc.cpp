@@ -217,6 +217,22 @@ namespace
     };
 
     template<>
+    struct sql_type_info<long long>
+    {
+        static const SQLSMALLINT ctype = SQL_C_SBIGINT;
+        static const SQLSMALLINT sqltype = SQL_BIGINT;
+        static const nanodbc::string::value_type* const format;
+    };
+
+    template<>
+    struct sql_type_info<unsigned long long>
+    {
+        static const SQLSMALLINT ctype = SQL_C_UBIGINT;
+        static const SQLSMALLINT sqltype = SQL_BIGINT;
+        static const nanodbc::string::value_type* const format;
+    };
+
+    template<>
     struct sql_type_info<int>
     { 
         static const SQLSMALLINT ctype = SQL_C_SLONG; 
@@ -284,6 +300,8 @@ namespace
     const nanodbc::string::value_type* const sql_type_info<unsigned short>::format = NANODBC_TEXT("%hu");
     const nanodbc::string::value_type* const sql_type_info<long>::format = NANODBC_TEXT("%ld");
     const nanodbc::string::value_type* const sql_type_info<unsigned long>::format = NANODBC_TEXT("%lu");
+    const nanodbc::string::value_type* const sql_type_info<long long>::format = NANODBC_TEXT("%ld");
+    const nanodbc::string::value_type* const sql_type_info<unsigned long long>::format = NANODBC_TEXT("%lu");
     const nanodbc::string::value_type* const sql_type_info<int>::format = NANODBC_TEXT("%d");
     const nanodbc::string::value_type* const sql_type_info<unsigned int>::format = NANODBC_TEXT("%u");
     const nanodbc::string::value_type* const sql_type_info<float>::format = NANODBC_TEXT("%f");
@@ -854,7 +872,7 @@ public:
     }
 
     template<class T>
-    void bind_parameter(long param, const T* value)
+    void bind_parameter(long param, const T* value, long* nulls)
     {
         RETCODE rc;
         SQLSMALLINT data_type;
@@ -883,7 +901,7 @@ public:
             , 0
             , (SQLPOINTER)value
             , parameter_size
-            , 0);
+            , nulls);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
@@ -1381,6 +1399,7 @@ inline string result::result_impl::get<string>(short column) const
                     , NANODBC_TEXT("%ld")
                     , *(long*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
                 throw type_incompatible_error();
+            buffer.resize(strlen(buffer.c_str()));
             return buffer;
         }
 
@@ -1393,6 +1412,7 @@ inline string result::result_impl::get<string>(short column) const
                     , NANODBC_TEXT("%f")
                     , *(float*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
                 throw type_incompatible_error();
+            buffer.resize(strlen(buffer.c_str()));
             return buffer;
         }
 
@@ -1405,6 +1425,7 @@ inline string result::result_impl::get<string>(short column) const
                     , NANODBC_TEXT("%lf")
                     , *(double*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
                 throw type_incompatible_error();
+            buffer.resize(strlen(buffer.c_str()));
             return buffer;
         }
 
@@ -1436,7 +1457,7 @@ inline string result::result_impl::get<string>(short column) const
             char* old_lc_time = std::setlocale(LC_TIME, NULL);
             std::setlocale(LC_TIME, "");
             string::value_type date_str[512];
-            NANODBC_STRFTIME(date_str, sizeof(date_str) / sizeof(string::value_type), NANODBC_TEXT("%+"), &st);
+            NANODBC_STRFTIME(date_str, sizeof(date_str) / sizeof(string::value_type), NANODBC_TEXT("%FT%H:%M:%S%z"), &st);
             std::setlocale(LC_TIME, old_lc_time);
             return string(date_str);
         }
@@ -1732,23 +1753,23 @@ unsigned long statement::parameter_size(long param) const
 }
 
 template<class T>
-void statement::bind_parameter(long param, const T* value)
+void statement::bind_parameter(long param, const T* value, long* nulls)
 {
-    impl_->bind_parameter(param, reinterpret_cast<const T*>(value));
+    impl_->bind_parameter(param, reinterpret_cast<const T*>(value), nulls);
 }
 
 // The following are the only supported instantiations of statement::bind_parameter().
-template void statement::bind_parameter(long, const char*);
-template void statement::bind_parameter(long, const short*);
-template void statement::bind_parameter(long, const unsigned short*);
-template void statement::bind_parameter(long, const long*);
-template void statement::bind_parameter(long, const unsigned long*);
-template void statement::bind_parameter(long, const int*);
-template void statement::bind_parameter(long, const unsigned int*);
-template void statement::bind_parameter(long, const float*);
-template void statement::bind_parameter(long, const double*);
-template void statement::bind_parameter(long, const date*);
-template void statement::bind_parameter(long, const timestamp*);
+template void statement::bind_parameter(long, const char*, long*);
+template void statement::bind_parameter(long, const short*, long*);
+template void statement::bind_parameter(long, const unsigned short*, long*);
+template void statement::bind_parameter(long, const long*, long*);
+template void statement::bind_parameter(long, const unsigned long*, long*);
+template void statement::bind_parameter(long, const int*, long*);
+template void statement::bind_parameter(long, const unsigned int*, long*);
+template void statement::bind_parameter(long, const float*, long*);
+template void statement::bind_parameter(long, const double*, long*);
+template void statement::bind_parameter(long, const date*, long*);
+template void statement::bind_parameter(long, const timestamp*, long*);
 
 } // namespace nanodbc
 
@@ -1886,6 +1907,8 @@ template short result::get(short) const;
 template unsigned short result::get(short) const;
 template long result::get(short) const;
 template unsigned long result::get(short) const;
+template long long result::get(short) const;
+template unsigned long long result::get(short) const;
 template int result::get(short) const;
 template unsigned int result::get(short) const;
 template float result::get(short) const;
