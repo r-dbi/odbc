@@ -9,10 +9,6 @@ cpp11:
 clean:
 	rm -rf example.dSYM example example.html highlight.css
 
-example:
-	# Generate highlighted example code
-	highlight -i example.cpp -o example.html -f --line-numbers --style bright
-
 dox:
 	make clean
 	find doc/doxygen -type f -not -name header.html -and -not -name footer.html | xargs rm 
