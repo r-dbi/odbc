@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['synopsis',['Synopsis',['../md__r_e_a_d_m_e.html',1,'']]],
   ['sec',['sec',['../structnanodbc_1_1timestamp.html#a41c233f469d097bafcac752750d11f36',1,'nanodbc::timestamp']]],
   ['skip',['skip',['../classnanodbc_1_1result.html#abcd96eb3fd8fea53fa41289c5fc87377',1,'nanodbc::result']]],
   ['statement',['statement',['../classnanodbc_1_1statement.html',1,'nanodbc']]],

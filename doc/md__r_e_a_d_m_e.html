@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>nanodbc: nanodbc</title>
+<title>nanodbc: Synopsis</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -77,10 +77,62 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">nanodbc </div>  </div>
+<div class="title">Synopsis </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>A very small C++ wrapper for the native C ODBC API. </p>
+<div class="textblock"><p>A very small C++ wrapper for the native C ODBC API. For all the gory details see the <a href="https://nanodbc.googlecode.com/hg/doc/index.html">source level documentation</a>! Developed by Amy Troschinetz.</p>
+<h1>Rationale</h1>
+<p>Nanodbc originally began as a simple fork of <a href="http://code.google.com/p/tiodbc/">TinyODBC</a> with some additional features. Eventually it grew to the point where it made sense to break with many of the basic underlaying design decisions of TinyODBC and completely refactor much of the codebase. Other projects that have had influence on nanodbc include <a href="http://simpledb.sourceforge.net">SimpleDB</a>, <a href="http://code.google.com/p/pyodbc/, [Database Template Library](http://dtemplatelib.sourceforge.net">pyodbc</a>, and <a href="http://www.codeguru.com/mfc_database/gsodbc.html">GSODBC</a>.</p>
+<p>Why should you use nanodbc?</p>
+<ul>
+<li>Small! Just like TinyODBC, nanodbc is small. Just one header and one implementation file.</li>
+<li>Simple! There are only a handful of significant classes to learn.</li>
+<li>Portable! Nanodbc uses only standard C++ headers in addition to the ODBC API headers.</li>
+<li>Robust! Where it makes sense, error handling is done with exceptions rather than return codes.</li>
+<li>Features! Nanodbc supports ODBC 3, SQLDriverConnect(), Transactions, Bound Parameters, Bulk Operations, and much more.</li>
+<li>Documented! I have tried to provide very clean and useful documentation with example usage.</li>
+<li>Active! I am currently actively using and developing nanodbc so I hope to add more and more features all the time.</li>
+</ul>
+<h1>Download</h1>
+<ul>
+<li><a href="https://raw.github.com/lexicalunit/nanodbc/master/nanodbc.h">Download nanodbc.h</a></li>
+<li><a href="https://raw.github.com/lexicalunit/nanodbc/master/nanodbc.cpp">Download nanodbc.cpp</a></li>
+<li><a href="http://htmlpreview.github.com/?https://github.com/lexicalunit/nanodbc/blob/master/doc/index.html">Source level documentation</a> Provided by htmlpreview.github.com.</li>
+</ul>
+<h1>Todo</h1>
+<ul>
+<li>[ ] Blob support</li>
+<li>[ ] Unit tests</li>
+<li>[ ] Verify unicode support</li>
+<li>[ ] Testing on many different systems</li>
+<li>[ ] Testing with many different ODBC drivers</li>
+</ul>
+<h1>Example</h1>
+<p>```cpp #include "nanodbc.h" #include &lt;iostream&gt; #include &lt;vector&gt;</p>
+<p>using namespace std;</p>
+<p>template&lt;class T&gt; void show(nanodbc::result results) { const short columns = results.columns(); long rows_displayed = 0;</p>
+<p>cout &lt;&lt; "\nDisplaying " &lt;&lt; results.affected_rows() &lt;&lt; " rows " &lt;&lt; "(" &lt;&lt; results.rowset_size() &lt;&lt; " fetched at a time):" &lt;&lt; endl;</p>
+<p>// show the column names cout &lt;&lt; "row\t"; for(short i = 0; i &lt; columns; ++i) cout &lt;&lt; results.column_name(i) &lt;&lt; "\t"; cout &lt;&lt; endl;</p>
+<p>// show the column data for each row while(results.next()) { cout &lt;&lt; rows_displayed++ &lt;&lt; "\t"; for(short col = 0; col &lt; columns; ++col) { if(results.is_null(col)) cout &lt;&lt; "(null)"; else cout &lt;&lt; "(" &lt;&lt; results.get&lt;T&gt;(col) &lt;&lt; ")"; cout &lt;&lt; "\t"; } cout &lt;&lt; endl; } }</p>
+<p><a class="el" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">nanodbc::result</a> foo(nanodbc::connection&amp; connection, const string&amp; query) { <a class="el" href="classnanodbc_1_1statement.html" title="Represents a statement on the database.">nanodbc::statement</a> statement; return statement.execute_direct(connection, query); // notice that statement will be destructed here, but the result object // will keep the statement resources alive until we are done with them }</p>
+<p>int main(int argc, char* argv[]) { if(argc &lt; 2) { cerr &lt;&lt; "please provide a connection string" &lt;&lt; endl; return 1; }</p>
+<p>try { // Establishing connections const string connection_string = argv[1]; <a class="el" href="classnanodbc_1_1connection.html" title="Manages and encapsulates ODBC resources such as the connection and environment handles.">nanodbc::connection</a> connection(connection_string); // or <a class="el" href="classnanodbc_1_1connection.html" title="Manages and encapsulates ODBC resources such as the connection and environment handles.">nanodbc::connection</a> connection(connection_string, timeout_seconds); // or <a class="el" href="classnanodbc_1_1connection.html" title="Manages and encapsulates ODBC resources such as the connection and environment handles.">nanodbc::connection</a> connection("data source name", "username", "password"); // or <a class="el" href="classnanodbc_1_1connection.html" title="Manages and encapsulates ODBC resources such as the connection and environment handles.">nanodbc::connection</a> connection("data source name", "username", "password", timeout_seconds); cout &lt;&lt; "Connected with driver " &lt;&lt; connection.driver_name() &lt;&lt; endl;</p>
+<p><a class="el" href="classnanodbc_1_1statement.html" title="Represents a statement on the database.">nanodbc::statement</a> statement; <a class="el" href="classnanodbc_1_1result.html" title="A resource for managing result sets from statement execution.">nanodbc::result</a> results;</p>
+<p>// Direct execution statement.execute_direct(connection, "drop table if exists public.example_table;"); statement.execute_direct(connection, "create table public.example_table (a int, b varchar(10));"); statement.execute_direct(connection, "insert into public.example_table values (1, 'one');"); statement.execute_direct(connection, "insert into public.example_table values (2, 'two');"); statement.execute_direct(connection, "insert into public.example_table values (3, 'tri');"); foo(connection, "insert into public.example_table (b) values ('z');"); results = foo(connection, "select * from public.example_table;"); show&lt;string&gt;(results);</p>
+<p>// Direct execution, bulk fetching 2 rows at a time results = statement.execute_direct(connection, "select * from public.example_table;", 2); show&lt;string&gt;(results);</p>
+<p>// Binding parameters statement.prepare(connection, "insert into public.example_table (a, b) values (?, ?);"); const int eight_int = 8; statement.bind_parameter(0, &amp;eight_int); const string eight_str = "eight"; statement.bind_parameter(1, eight_str.c_str()); statement.execute();</p>
+<p>statement.prepare(connection, "select * from public.example_table where a = ?;"); statement.bind_parameter(0, &amp;eight_int); results = statement.execute(); show&lt;string&gt;(results);</p>
+<p>// Transactions { cout &lt;&lt; "\ndeleting all rows ... " &lt;&lt; flush; <a class="el" href="classnanodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">nanodbc::transaction</a> transaction(connection); statement.execute_direct(connection, "delete from public.example_table;"); // transaction will be rolled back if we don't call transaction.commit() } results = foo(connection, "select count(1) from public.example_table;"); results.next(); cout &lt;&lt; "still have " &lt;&lt; results.get&lt;int&gt;(0) &lt;&lt; " rows!" &lt;&lt; endl;</p>
+<p>// Bulk inserting statement.prepare(connection, "insert into public.example_table (a, b) values (10, ?);"); const char values[][10] = {"this", "is", "a", "test"}; statement.bind_parameter(0, values); { <a class="el" href="classnanodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">nanodbc::transaction</a> transaction(connection); statement.execute(4); transaction.commit(); } results = statement.execute_direct(connection, "select * from public.example_table where a = 10;"); show&lt;string&gt;(results);</p>
+<p>// Bulk inserting { statement.execute_direct(connection, "drop table if exists public.batch_insert_test;"); statement.execute_direct(connection, "create table public.batch_insert_test (y int, z float);"); statement.prepare(connection, "insert into public.batch_insert_test (y, z) values (?, ?);");</p>
+<p>const size_t data_count = 4;</p>
+<p>int ydata[data_count] = { 1, 2, 3, 4 }; statement.bind_parameter(0, ydata);</p>
+<p>float zdata[data_count] = { 1.1, 2.2, 3.3, 4.4 }; statement.bind_parameter(1, zdata);</p>
+<p><a class="el" href="classnanodbc_1_1transaction.html" title="A resource for managing transaction commits and rollbacks.">nanodbc::transaction</a> transaction(connection); statement.execute(data_count); transaction.commit();</p>
+<p>results = statement.execute_direct(connection, "select * from public.batch_insert_test;", 3); show&lt;string&gt;(results); }</p>
+<p>// Dates and Times statement.execute_direct(connection, "drop table if exists public.date_test;"); statement.execute_direct(connection, "create table public.date_test (x datetime);"); statement.execute_direct(connection, "insert into public.date_test values (current_timestamp);"); results = statement.execute_direct(connection, "select * from public.date_test;"); results.next(); <a class="el" href="structnanodbc_1_1date.html" title="A type for representing date data.">nanodbc::date</a> date = results.get&lt;nanodbc::date&gt;(0); cout &lt;&lt; endl &lt;&lt; date.year &lt;&lt; "-" &lt;&lt; date.month &lt;&lt; "-" &lt;&lt; date.day &lt;&lt; endl; results = statement.execute_direct(connection, "select * from public.date_test;"); show&lt;string&gt;(results);</p>
+<p>// Cleanup statement.execute_direct(connection, "drop table if exists public.date_test;"); statement.execute_direct(connection, "drop table if exists public.example_table;"); statement.execute_direct(connection, "drop table if exists public.batch_insert_test;");</p>
+<p>// The resources used by connection and statement are cleaned up automatically or // you can explicitly call statement.close() and/or connection.disconnect(). } catch(const exception&amp; e) { cerr &lt;&lt; "exception: " &lt;&lt; e.what() &lt;&lt; endl; } } ``` </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/>

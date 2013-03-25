@@ -1764,6 +1764,8 @@ template void statement::bind_parameter(long, const short*, long*);
 template void statement::bind_parameter(long, const unsigned short*, long*);
 template void statement::bind_parameter(long, const long*, long*);
 template void statement::bind_parameter(long, const unsigned long*, long*);
+template void statement::bind_parameter(long, const long long*, long*);
+template void statement::bind_parameter(long, const unsigned long long*, long*);
 template void statement::bind_parameter(long, const int*, long*);
 template void statement::bind_parameter(long, const unsigned int*, long*);
 template void statement::bind_parameter(long, const float*, long*);
