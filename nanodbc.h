@@ -7,7 +7,7 @@
 //! \li \ref credits "Credits"
 //! \li \ref examples "Example Usage"
 //! \li \ref nanodbc "Namespace Reference"
-//! \li <a href="https://nanodbc.googlecode.com">Project Homepage</a>
+//! \li <a href="http://lexicalunit.github.com/nanodbc/">Project Homepage</a>
 //! 
 //! \section license License
 //! Copyright (C) 2012 Amy Troschinetz amy@lexicalunit.com
