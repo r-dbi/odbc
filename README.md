@@ -8,27 +8,27 @@ Nanodbc originally began as a simple fork of [TinyODBC](http://code.google.com/p
 
 Why should you use nanodbc?
 
-  * Small! Just like TinyODBC, nanodbc is small. Just one header and one implementation file.
-  * Simple! There are only a handful of significant classes to learn.
-  * Portable! Nanodbc uses  only standard C++ headers in addition to the ODBC API headers.
-  * Robust! Where it makes sense, error handling is done with exceptions rather than return codes.
-  * Features! Nanodbc supports ODBC 3, SQLDriverConnect(), Transactions, Bound Parameters, Bulk Operations, and much more.
-  * Documented! I have tried to provide very clean and useful documentation with example usage.
-  * Active! I am currently actively using and developing nanodbc so I hope to add more and more features all the time.
+- Small! Just like TinyODBC, nanodbc is small. Just one header and one implementation file.
+- Simple! There are only a handful of significant classes to learn.
+- Portable! Nanodbc uses  only standard C++ headers in addition to the ODBC API headers.
+- Robust! Where it makes sense, error handling is done with exceptions rather than return codes.
+- Features! Nanodbc supports ODBC 3, SQLDriverConnect(), Transactions, Bound Parameters, Bulk Operations, and much more.
+- Documented! I have tried to provide very clean and useful documentation with example usage.
+- Active! I am currently actively using and developing nanodbc so I hope to add more and more features all the time.
 
 Download
 =======
-  * [Download nanodbc.h](https://raw.github.com/lexicalunit/nanodbc/master/nanodbc.h)
-  * [Download nanodbc.cpp](https://raw.github.com/lexicalunit/nanodbc/master/nanodbc.cpp)
-  * [Source level documentation](http://htmlpreview.github.com/?https://github.com/lexicalunit/nanodbc/blob/master/doc/index.html) Provided by htmlpreview.github.com.
+- [Download nanodbc.h](https://raw.github.com/lexicalunit/nanodbc/master/nanodbc.h)
+- [Download nanodbc.cpp](https://raw.github.com/lexicalunit/nanodbc/master/nanodbc.cpp)
+- [Source level documentation](http://htmlpreview.github.com/?https://github.com/lexicalunit/nanodbc/blob/master/doc/index.html) Provided by htmlpreview.github.com.
 
 Todo
 =======
-  * Blob support
-  * Unit tests
-  * Verify unicode support
-  * Testing on many different systems
-  * Testing with many different ODBC drivers
+- [ ] Blob support
+- [ ] Unit tests
+- [ ] Verify unicode support
+- [ ] Testing on many different systems
+- [ ] Testing with many different ODBC drivers
 
 Example
 =======
