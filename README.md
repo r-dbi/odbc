@@ -1,6 +1,6 @@
 Synopsis
 =======
-A very small C++ wrapper for the native C ODBC API. For all the gory details see the [source level documentation](https://nanodbc.googlecode.com/hg/doc/index.html)! Developed by Amy Troschinetz.
+A very small C++ wrapper for the native C ODBC API. For all the gory details see the [source level documentation](http://htmlpreview.github.com/?https://github.com/lexicalunit/nanodbc/blob/master/doc/index.html)! Developed by Amy Troschinetz.
 
 Rationale
 =======
