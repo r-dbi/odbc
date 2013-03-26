@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void show(nanodbc::result results);
+void show(nanodbc::result& results);
 nanodbc::result execute(nanodbc::connection& connection, const string& query);
 
 int main(int argc, char* argv[])
@@ -18,11 +18,11 @@ int main(int argc, char* argv[])
     cout << "Connected with driver " << connection.driver_name() << endl;
 
     // Direct execution
-    execute(connection,"drop table if exists public.simple_test;");
-    execute(connection,"create table public.simple_test (a int, b varchar(10));");
-    execute(connection,"insert into public.simple_test values (1, 'one');");
-    execute(connection,"insert into public.simple_test values (2, 'two');");
-    execute(connection,"insert into public.simple_test values (3, 'tri');");
+    execute(connection, "drop table if exists public.simple_test;");
+    execute(connection, "create table public.simple_test (a int, b varchar(10));");
+    execute(connection, "insert into public.simple_test values (1, 'one');");
+    execute(connection, "insert into public.simple_test values (2, 'two');");
+    execute(connection, "insert into public.simple_test values (3, 'tri');");
     execute(connection, "insert into public.simple_test (b) values ('z');");
     nanodbc::result results = execute(connection, "select * from public.simple_test;");
     show(results);
@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
     execute(connection, "drop table if exists public.date_test;");
 }
 
-void show(nanodbc::result results)
+void show(nanodbc::result& results)
 {
     const short columns = results.columns();
     long rows_displayed = 0;
