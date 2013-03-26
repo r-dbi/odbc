@@ -84,13 +84,13 @@ namespace nanodbc
 // You must explicitly request Unicode support by defining NANODBC_USE_UNICODE at compile time.
 #ifndef DOXYGEN
     #ifdef NANODBC_USE_UNICODE
-        typedef std::wstring string;
+        typedef std::wstring string_type;
     #else
-        typedef std::string string;
+        typedef std::string string_type;
     #endif // NANODBC_USE_UNICODE
 #else
     //! string_type will be std::wstring if NANODBC_USE_UNICODE is defined, otherwise std::string.
-    typedef string_type string;
+    typedef unspecified-type string_type;
 #endif // DOXYGEN
 
 //! \addtogroup exceptions Exception Types
@@ -249,13 +249,13 @@ public:
     //! \param timeout The number in seconds before connection timeout.
     //! \throws database_error
     //! \see connected(), connect()
-    connection(const string& dsn, const string& user, const string& pass, long timeout = 5);
+    connection(const string_type& dsn, const string_type& user, const string_type& pass, long timeout = 5);
 
     //! \brief Create new connection object and immediately connect using the given connection string.
     //! \param connection_string The connection string for establishing a connection.
     //! \throws database_error
     //! \see connected(), connect()
-    connection(const string& connection_string, long timeout = 5);
+    connection(const string_type& connection_string, long timeout = 5);
 
     //! \brief Automatically disconnects from the database and frees all associated resources.
     ~connection() throw();
@@ -267,14 +267,14 @@ public:
     //! \param timeout The number in seconds before connection timeout.
     //! \throws database_error
     //! \see connected()
-    void connect(const string& dsn, const string& user, const string& pass, long timeout = 5);
+    void connect(const string_type& dsn, const string_type& user, const string_type& pass, long timeout = 5);
 
     //! \brief Create new connection object and immediately connect using the given connection string.
     //! \param connection_string The connection string for establishing a connection.
     //! \param timeout The number in seconds before connection timeout.
     //! \throws database_error
     //! \see connected()
-    void connect(const string& connection_string, long timeout = 5);
+    void connect(const string_type& connection_string, long timeout = 5);
 
     //! \brief Returns true if connected to the database.
     bool connected() const;
@@ -293,7 +293,7 @@ public:
 
     //! \brief Returns the name of the ODBC driver.
     //! \throws database_error
-    string driver_name() const;
+    string_type driver_name() const;
 
 private:
     std::size_t ref_transaction();
@@ -323,7 +323,7 @@ public:
     //! \param conn The connection to use.
     //! \param stmt The SQL query statement.
     //! \see execute(), execute_direct(), open(), prepare()
-    statement(connection& conn, const string& stmt);
+    statement(connection& conn, const string_type& stmt);
 
     //! Copy constructor.
     statement(const statement& rhs);
@@ -349,6 +349,9 @@ public:
     //! \brief Returns true if connected to the database.
     bool connected() const;
 
+    //! \brief Returns the associated connection object if any.
+    class connection connection() const;
+
     //! \brief Returns the native ODBC statement handle.
     void* native_stmt_handle() const;
 
@@ -364,7 +367,7 @@ public:
     //! \param stmt The SQL query that will be executed.
     //! \see open()
     //! \throws database_error
-    void prepare(connection& conn, const string& stmt);
+    void prepare(class connection& conn, const string_type& stmt);
 
     //! \brief Immediately opens, prepares, and executes the given query directly on the given connection.
     //! \param conn The connection where the statement will be executed.
@@ -373,7 +376,7 @@ public:
     //! \return A result set object.
     //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
     //! \see open(), prepare(), execute(), result, transaction
-    result execute_direct(connection& conn, const string& query, long batch_operations = 1);
+    result execute_direct(class connection& conn, const string_type& query, long batch_operations = 1);
 
     //! \brief Execute the previously prepared query now.
     //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
@@ -513,9 +516,19 @@ public:
     //! Columns are numbered from left to right and 0-indexed.
     //! \param Column position. 
     //! \param row If there are multiple rows in this rowset, get from the specified row.
-    //! \throws database_error, index_range_error, type_incompatible_error
+    //! \throws database_error, index_range_error, type_incompatible_error, null_access_error
     template<class T>
     T get(short column) const;
+
+    //! \brief Gets data from the given column in the selected row of the current rowset.
+    //! If the data is null, fallback is returned instead.
+    //!
+    //! Columns are numbered from left to right and 0-indexed.
+    //! \param Column position. 
+    //! \param row If there are multiple rows in this rowset, get from the specified row.
+    //! \throws database_error, index_range_error, type_incompatible_error
+    template<class T>
+    T get(short column, const T& fallback) const;
 
     //! \brief Returns true if and only if the given column in the selected row of the current rowset is null.
     //!
@@ -530,7 +543,7 @@ public:
     //! Columns are numbered from left to right and 0-indexed.
     //! \param Column position. 
     //! \throws index_range_error
-    string column_name(short column) const;
+    string_type column_name(short column) const;
 
     //! Returns a identifying integer value representing the C type of this column.
     int column_datatype(short column) const;
@@ -545,6 +558,31 @@ private:
 private:
     NANODBC_TR1_STD shared_ptr<result_impl> impl_;
 };
+
+//! @}
+
+//! \addtogroup main Free Functions
+//! \brief Convenience functions.
+//!
+//! @{
+
+//! \brief Immediately opens, prepares, and executes the given query directly on the given connection.
+//! \param conn The connection where the statement will be executed.
+//! \param stmt The SQL query that will be executed.
+//! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+//! \return A result set object.
+//! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
+//! \see open(), prepare(), execute(), result, transaction
+nanodbc::result execute(nanodbc::connection& conn, const string_type& query, long batch_operations = 1);
+
+//! \brief Execute the previously prepared query now.
+//! Executes within the context of a transaction object and commits the transaction directly after execution.
+//! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+//! \throws database_error
+//! \return A result set object.
+//! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
+//! \see open(), prepare(), execute(), result, transaction
+nanodbc::result execute(nanodbc::statement& stmt, long batch_operations = 1);
 
 //! @}
 

@@ -5,7 +5,6 @@
 using namespace std;
 
 void show(nanodbc::result& results);
-nanodbc::result execute(nanodbc::connection& connection, const string& query);
 
 int main(int argc, char* argv[])
 {
@@ -35,11 +34,11 @@ int main(int argc, char* argv[])
         statement.bind_parameter(0, &eight_int);
         const string eight_str = "eight";
         statement.bind_parameter(1, eight_str.c_str());
-        statement.execute();
+        execute(statement);
 
         statement.prepare(connection, "select * from public.simple_test where a = ?;");
         statement.bind_parameter(0, &eight_int);
-        results = statement.execute();
+        results = execute(statement);
         show(results);
     }
 
@@ -70,11 +69,9 @@ int main(int argc, char* argv[])
         float zdata[] = { 1.1, 2.2, 3.3, 4.4 };
         statement.bind_parameter(2, zdata);
 
-        nanodbc::transaction transaction(connection);
-        statement.execute(4);
-        transaction.commit();
+        execute(statement, 4);
 
-        results = statement.execute_direct(connection, "select * from public.batch_test;", 3);
+        results = execute(connection, "select * from public.batch_test;", 3);
         show(results);
     }
 
@@ -116,19 +113,7 @@ void show(nanodbc::result& results)
     {
         cout << rows_displayed++ << "\t";
         for(short col = 0; col < columns; ++col)
-        {
-            if(results.is_null(col))
-                cout << "(null)";
-            else
-                cout << "(" << results.get<string>(col) << ")";
-            cout << "\t";
-        }
+            cout << "(" << results.get<string>(col, string("null")) << ")\t";
         cout << endl;
     }
-}
-
-nanodbc::result execute(nanodbc::connection& connection, const string& query)
-{
-    nanodbc::statement statement;
-    return statement.execute_direct(connection, query);
 }
