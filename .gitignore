@@ -13,3 +13,5 @@
 *.a
 
 doc/
+example
+example.dSYM/
