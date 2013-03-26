@@ -129,6 +129,15 @@ public:
     const char* what() const throw();
 };
 
+//! \brief Programming logic error.
+//! \see exceptions
+class programming_error : public std::runtime_error
+{
+public:
+    explicit programming_error(const std::string& info);
+    const char* what() const throw();
+};
+
 //! \brief General database error.
 //! \see exceptions
 class database_error : public std::runtime_error
@@ -319,6 +328,11 @@ public:
     //! \see execute(), execute_direct(), open(), prepare()
     statement();
 
+    //! \brief Constructs a statement object and associates it to the given connection.
+    //! \param conn The connection to use.
+    //! \see open(), prepare()
+    explicit statement(connection& conn);
+
     //! \brief Constructs and prepares a statement using the given connection and query.
     //! \param conn The connection to use.
     //! \param query The SQL query statement.
@@ -350,7 +364,10 @@ public:
     bool connected() const;
 
     //! \brief Returns the associated connection object if any.
-    class connection connection() const;
+    const class connection& connection() const;
+
+    //! \brief Returns the associated connection object if any.
+    class connection& connection();
 
     //! \brief Returns the native ODBC statement handle.
     void* native_statement_handle() const;
@@ -368,6 +385,14 @@ public:
     //! \see open()
     //! \throws database_error
     void prepare(class connection& conn, const string_type& query);
+
+    //! \brief Prepares the given statement to execute its associated connection.
+    //! If the statement is not open throws programming_error.
+    //! \param conn The connection where the statement will be executed.
+    //! \param query The SQL query that will be executed.
+    //! \see open()
+    //! \throws database_error, programming_error
+    void prepare(const string_type& query);
 
     //! \brief Immediately opens, prepares, and executes the given query directly on the given connection.
     //! \param conn The connection where the statement will be executed.
@@ -573,16 +598,33 @@ private:
 //! \return A result set object.
 //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
 //! \see open(), prepare(), execute(), result, transaction
-nanodbc::result execute(nanodbc::connection& conn, const string_type& query, long batch_operations = 1);
+result execute(connection& conn, const string_type& query, long batch_operations = 1);
 
 //! \brief Execute the previously prepared query now.
-//! Executes within the context of a transaction object and commits the transaction directly after execution.
+//! \param stmt The prepared statement that will be executed.
 //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
 //! \throws database_error
 //! \return A result set object.
 //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
+//! \see open(), prepare(), execute(), result
+result execute(statement& stmt, long batch_operations = 1);
+
+//! \brief Execute the previously prepared query now.
+//! Executes within the context of a transaction object and commits the transaction directly after execution.
+//! \param stmt The prepared statement that will be executed in batch.
+//! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+//! \throws database_error
+//! \return A result set object.
 //! \see open(), prepare(), execute(), result, transaction
-nanodbc::result execute(nanodbc::statement& statement, long batch_operations = 1);
+result transact(statement& stmt, long batch_operations);
+
+//! \brief Prepares the given statement to execute on it associated connection.
+//! If the statement is not open throws programming_error.
+//! \param conn The connection where the statement will be executed.
+//! \param query The SQL query that will be executed.
+//! \see open()
+//! \throws database_error, programming_error
+void prepare(statement& stmt, const string_type& query);
 
 //! @}
 

@@ -136,6 +136,14 @@ namespace nanodbc
         return std::runtime_error::what();
     }
 
+    programming_error::programming_error(const std::string& info)
+    : std::runtime_error(info.c_str()) { }
+    
+    const char* programming_error::what() const throw()
+    {
+        return std::runtime_error::what();
+    }
+
     database_error::database_error(void* handle, short handle_type, const std::string& info)
     : std::runtime_error(info + last_error(handle, handle_type)) { }
 
@@ -690,6 +698,14 @@ public:
 
     }
 
+    statement_impl(class connection& conn)
+    : stmt_(0)
+    , open_(false)
+    , conn_()
+    {
+        open(conn);
+    }
+
     statement_impl(class connection& conn, const string_type& query)
     : stmt_(0)
     , open_(false)
@@ -734,7 +750,12 @@ public:
         return conn_.connected();
     }
 
-    class connection connection() const
+    const class connection& connection() const
+    {
+        return conn_;
+    }
+
+    class connection& connection()
     {
         return conn_;
     }
@@ -775,7 +796,13 @@ public:
     void prepare(class connection& conn, const string_type& query)
     {
         open(conn);
+        prepare(query);
+    }
 
+    void prepare(const string_type& query)
+    {
+        if(!open())
+            throw programming_error("statement has no associated open connection");
         RETCODE rc;
         NANODBC_CALL_RC(
             NANODBC_UNICODE(SQLPrepare)
@@ -1494,9 +1521,19 @@ result execute(connection& conn, const string_type& query, long batch_operations
 
 result execute(statement& stmt, long batch_operations)
 {
-    transaction transact(stmt.connection());
     return stmt.execute(batch_operations);
-    transact.commit();
+}
+
+result transact(statement& stmt, long batch_operations)
+{
+    class transaction transaction(stmt.connection());
+    return stmt.execute(batch_operations);
+    transaction.commit();
+}
+
+void prepare(statement& stmt, const string_type& query)
+{
+    stmt.prepare(query);
 }
 
 } // namespace nanodbc
@@ -1692,6 +1729,12 @@ statement::statement()
 
 }
 
+statement::statement(class connection& conn)
+: impl_(new statement_impl(conn))
+{
+
+}
+
 statement::statement(class connection& conn, const string_type& query)
 : impl_(new statement_impl(conn, query))
 {
@@ -1736,7 +1779,12 @@ bool statement::connected() const
     return impl_->connected();
 }
 
-class connection statement::connection() const
+const class connection& statement::connection() const
+{
+    return impl_->connection();
+}
+
+class connection& statement::connection()
 {
     return impl_->connection();
 }
@@ -1759,6 +1807,11 @@ void statement::cancel()
 void statement::prepare(class connection& conn, const string_type& query)
 {
     impl_->prepare(conn, query);
+}
+
+void statement::prepare(const string_type& query)
+{
+    impl_->prepare(query);
 }
 
 result statement::execute_direct(class connection& conn, const string_type& query, long batch_operations)

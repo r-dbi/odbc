@@ -4,12 +4,24 @@
 
 using namespace std;
 
+void run_test(const char* connection_string);
 void show(nanodbc::result& results);
 
 int main(int argc, char* argv[])
 {
+    try
+    {
+        run_test(argv[1]);
+    }
+    catch(const exception& e)
+    {
+        cerr << e.what() << endl;
+    }
+}
+
+void run_test(const char* connection_string)
+{
     // Establishing connections
-    const string connection_string = argv[1];
     nanodbc::connection connection(connection_string);
     // or connection(connection_string, timeout_seconds);
     // or connection("data source name", "username", "password");
@@ -28,15 +40,15 @@ int main(int argc, char* argv[])
 
     // Binding parameters
     {
-        nanodbc::statement statement;
-        statement.prepare(connection, "insert into public.simple_test (a, b) values (?, ?);");
+        nanodbc::statement statement(connection);
+        prepare(statement, "insert into public.simple_test (a, b) values (?, ?);");
         const int eight_int = 8;
         statement.bind_parameter(0, &eight_int);
         const string eight_str = "eight";
         statement.bind_parameter(1, eight_str.c_str());
         execute(statement);
 
-        statement.prepare(connection, "select * from public.simple_test where a = ?;");
+        prepare(statement, "select * from public.simple_test where a = ?;");
         statement.bind_parameter(0, &eight_int);
         results = execute(statement);
         show(results);
@@ -55,10 +67,10 @@ int main(int argc, char* argv[])
 
     // Batch inserting
     {
-        nanodbc::statement statement;
+        nanodbc::statement statement(connection);
         execute(connection, "drop table if exists public.batch_test;");
         execute(connection, "create table public.batch_test (x varchar(10), y int, z float);");
-        statement.prepare(connection, "insert into public.batch_test (x, y, z) values (?, ?, ?);");
+        prepare(statement, "insert into public.batch_test (x, y, z) values (?, ?, ?);");
 
         const char xdata[][10] = {"this", "is", "a", "test"};
         statement.bind_parameter(0, xdata);
@@ -69,7 +81,7 @@ int main(int argc, char* argv[])
         float zdata[] = { 1.1, 2.2, 3.3, 4.4 };
         statement.bind_parameter(2, zdata);
 
-        execute(statement, 4);
+        transact(statement, 4);
 
         results = execute(connection, "select * from public.batch_test;", 3);
         show(results);
