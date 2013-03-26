@@ -9,6 +9,10 @@ cpp11:
 clean:
 	rm -rf example.dSYM example example.html highlight.css
 
+index:
+	# Compile GitHub Pages content
+	jekyll --pygments --no-lsi --safe /tmp
+
 dox:
 	make clean
 	find doc/doxygen -type f -not -name header.html -and -not -name footer.html | xargs rm 
