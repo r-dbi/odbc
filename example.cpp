@@ -113,7 +113,7 @@ void show(nanodbc::result& results)
     {
         cout << rows_displayed++ << "\t";
         for(short col = 0; col < columns; ++col)
-            cout << "(" << results.get<string>(col, string("null")) << ")\t";
+            cout << "(" << results.get<string>(col, "null") << ")\t";
         cout << endl;
     }
 }
