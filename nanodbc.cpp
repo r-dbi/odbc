@@ -690,12 +690,12 @@ public:
 
     }
 
-    statement_impl(class connection& conn, const string_type& stmt)
+    statement_impl(class connection& conn, const string_type& query)
     : stmt_(0)
     , open_(false)
     , conn_()
     {
-        prepare(conn, stmt);
+        prepare(conn, query);
     }
 
     ~statement_impl() throw()
@@ -739,7 +739,7 @@ public:
         return conn_;
     }
 
-    void* native_stmt_handle() const
+    void* native_statement_handle() const
     {
         return stmt_;
     }
@@ -772,7 +772,7 @@ public:
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
-    void prepare(class connection& conn, const string_type& stmt)
+    void prepare(class connection& conn, const string_type& query)
     {
         open(conn);
 
@@ -781,7 +781,7 @@ public:
             NANODBC_UNICODE(SQLPrepare)
             , rc
             , stmt_
-            , (NANODBC_SQLCHAR*)stmt.c_str()
+            , (NANODBC_SQLCHAR*)query.c_str()
             , SQL_NTS);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
@@ -945,21 +945,21 @@ public:
         NANODBC_CALL_RC(
             SQLSetStmtAttr
             , rc
-            , stmt_.native_stmt_handle()
+            , stmt_.native_statement_handle()
             , SQL_ATTR_ROW_ARRAY_SIZE
             , (SQLPOINTER)rowset_size_
             , 0);
         if(!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
 
         NANODBC_CALL_RC(SQLSetStmtAttr
             , rc
-            , stmt_.native_stmt_handle()
+            , stmt_.native_statement_handle()
             , SQL_ATTR_ROWS_FETCHED_PTR
             , &row_count_
             , 0);
         if(!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
 
         auto_bind();
     }
@@ -970,9 +970,9 @@ public:
         delete[] bound_columns_;
     }
 
-    void* native_stmt_handle() const
+    void* native_statement_handle() const
     {
-        return stmt_.native_stmt_handle();
+        return stmt_.native_statement_handle();
     }
 
     long rowset_size() const
@@ -1045,13 +1045,13 @@ public:
         NANODBC_CALL_RC(
             SQLGetStmtAttr
             , rc
-            , stmt_.native_stmt_handle()
+            , stmt_.native_statement_handle()
             , SQL_ATTR_ROW_NUMBER
             , &pos
             , SQL_IS_UINTEGER
             , 0);
         if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
         return pos - 1 + rowset_position_;
     }
 
@@ -1062,7 +1062,7 @@ public:
         NANODBC_CALL_RC(
             SQLGetStmtAttr
             , rc
-            , stmt_.native_stmt_handle()
+            , stmt_.native_statement_handle()
             , SQL_ATTR_ROW_NUMBER
             , &pos
             , SQL_IS_UINTEGER
@@ -1150,13 +1150,13 @@ private:
         NANODBC_CALL_RC(
             SQLFetchScroll
             , rc
-            , stmt_.native_stmt_handle()
+            , stmt_.native_statement_handle()
             , orientation
             , rows);
         if (rc == SQL_NO_DATA)
             return false;
         if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
         return true;
     }
 
@@ -1181,7 +1181,7 @@ private:
             NANODBC_CALL_RC(
                 NANODBC_UNICODE(SQLDescribeCol)
                 , rc
-                , stmt_.native_stmt_handle()
+                , stmt_.native_statement_handle()
                 , i + 1
                 , (NANODBC_SQLCHAR*)column_name
                 , sizeof(column_name)
@@ -1191,7 +1191,7 @@ private:
                 , &scale
                 , &nullable);
             if(!success(rc))
-                NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
+                NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
 
             bound_column& col = bound_columns_[i];
             col.name_ = reinterpret_cast<string_type::value_type*>(column_name);
@@ -1272,14 +1272,14 @@ private:
                 NANODBC_CALL_RC(
                     SQLBindCol
                     , rc
-                    , stmt_.native_stmt_handle()
+                    , stmt_.native_statement_handle()
                     , i + 1
                     , col.ctype_
                     , 0
                     , 0
                     , col.cbdata_);
                 if(!success(rc))
-                    NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
+                    NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
             }
             else
             {
@@ -1288,14 +1288,14 @@ private:
                 NANODBC_CALL_RC(
                     SQLBindCol
                     , rc
-                    , stmt_.native_stmt_handle()
+                    , stmt_.native_statement_handle()
                     , i + 1
                     , col.ctype_
                     , col.pdata_
                     , col.clen_
                     , col.cbdata_);
                 if(!success(rc))
-                    NANODBC_THROW_DATABASE_ERROR(stmt_.native_stmt_handle(), SQL_HANDLE_STMT);
+                    NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
             }
         }
     }
@@ -1488,8 +1488,8 @@ namespace nanodbc
 
 result execute(connection& conn, const string_type& query, long batch_operations)
 {
-    statement stmt;
-    return stmt.execute_direct(conn, query, batch_operations);
+    class statement statement;
+    return statement.execute_direct(conn, query, batch_operations);
 }
 
 result execute(statement& stmt, long batch_operations)
@@ -1692,8 +1692,8 @@ statement::statement()
 
 }
 
-statement::statement(class connection& conn, const string_type& stmt)
-: impl_(new statement_impl(conn, stmt))
+statement::statement(class connection& conn, const string_type& query)
+: impl_(new statement_impl(conn, query))
 {
 
 }
@@ -1741,9 +1741,9 @@ class connection statement::connection() const
     return impl_->connection();
 }
 
-void* statement::native_stmt_handle() const
+void* statement::native_statement_handle() const
 {
-    return impl_->native_stmt_handle();
+    return impl_->native_statement_handle();
 }
 
 void statement::close()
@@ -1756,9 +1756,9 @@ void statement::cancel()
     impl_->cancel();
 }
 
-void statement::prepare(class connection& conn, const string_type& stmt)
+void statement::prepare(class connection& conn, const string_type& query)
 {
-    impl_->prepare(conn, stmt);
+    impl_->prepare(conn, query);
 }
 
 result statement::execute_direct(class connection& conn, const string_type& query, long batch_operations)
@@ -1856,9 +1856,9 @@ void result::swap(result& rhs) throw()
     swap(impl_, rhs.impl_);
 }
 
-void* result::native_stmt_handle() const
+void* result::native_statement_handle() const
 {
-    return impl_->native_stmt_handle();
+    return impl_->native_statement_handle();
 }
 
 long result::rowset_size() const throw()

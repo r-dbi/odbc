@@ -321,9 +321,9 @@ public:
 
     //! \brief Constructs and prepares a statement using the given connection and query.
     //! \param conn The connection to use.
-    //! \param stmt The SQL query statement.
+    //! \param query The SQL query statement.
     //! \see execute(), execute_direct(), open(), prepare()
-    statement(connection& conn, const string_type& stmt);
+    statement(connection& conn, const string_type& query);
 
     //! Copy constructor.
     statement(const statement& rhs);
@@ -353,7 +353,7 @@ public:
     class connection connection() const;
 
     //! \brief Returns the native ODBC statement handle.
-    void* native_stmt_handle() const;
+    void* native_statement_handle() const;
 
     //! \brief Closes the statement and frees all associated resources.
     void close();
@@ -364,14 +364,14 @@ public:
 
     //! \brief Opens and prepares the given statement to execute on the given connection.
     //! \param conn The connection where the statement will be executed.
-    //! \param stmt The SQL query that will be executed.
+    //! \param query The SQL query that will be executed.
     //! \see open()
     //! \throws database_error
-    void prepare(class connection& conn, const string_type& stmt);
+    void prepare(class connection& conn, const string_type& query);
 
     //! \brief Immediately opens, prepares, and executes the given query directly on the given connection.
     //! \param conn The connection where the statement will be executed.
-    //! \param stmt The SQL query that will be executed.
+    //! \param query The SQL query that will be executed.
     //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
     //! \return A result set object.
     //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
@@ -459,7 +459,7 @@ public:
     void swap(result& rhs) throw();
 
     //! \brief Returns the native ODBC statement handle.
-    void* native_stmt_handle() const;
+    void* native_statement_handle() const;
 
     //! \brief The rowset size for this result set.
     long rowset_size() const throw();
@@ -549,7 +549,7 @@ public:
     int column_datatype(short column) const;
 
 private:
-    result(statement stmt, long rowset_size);
+    result(statement statement, long rowset_size);
 
 private:
     class result_impl;
@@ -568,7 +568,7 @@ private:
 
 //! \brief Immediately opens, prepares, and executes the given query directly on the given connection.
 //! \param conn The connection where the statement will be executed.
-//! \param stmt The SQL query that will be executed.
+//! \param query The SQL query that will be executed.
 //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
 //! \return A result set object.
 //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
@@ -582,7 +582,7 @@ nanodbc::result execute(nanodbc::connection& conn, const string_type& query, lon
 //! \return A result set object.
 //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
 //! \see open(), prepare(), execute(), result, transaction
-nanodbc::result execute(nanodbc::statement& stmt, long batch_operations = 1);
+nanodbc::result execute(nanodbc::statement& statement, long batch_operations = 1);
 
 //! @}
 
