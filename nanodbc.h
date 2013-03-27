@@ -235,6 +235,147 @@ private:
     NANODBC_TR1_STD shared_ptr<transaction_impl> impl_;
 };
 
+//! \brief Represents a statement on the database.
+class statement
+{
+public:
+    //! \brief Creates a new un-prepared statement.
+    //! \see execute(), execute_direct(), open(), prepare()
+    statement();
+
+    //! \brief Constructs a statement object and associates it to the given connection.
+    //! \param conn The connection to use.
+    //! \see open(), prepare()
+    explicit statement(class connection& conn);
+
+    //! \brief Constructs and prepares a statement using the given connection and query.
+    //! \param conn The connection to use.
+    //! \param query The SQL query statement.
+    //! \see execute(), execute_direct(), open(), prepare()
+    statement(class connection& conn, const string_type& query);
+
+    //! Copy constructor.
+    statement(const statement& rhs);
+
+    //! Assignment.
+    statement& operator=(statement rhs);
+
+    //! Member swap.
+    void swap(statement& rhs) throw();
+
+    //! \brief Closes the statement.
+    //! \see close()
+    ~statement() throw();
+
+    //! \brief Creates a statement for the given connection.
+    //! \param conn The connection where the statement will be executed.
+    //! \throws database_error
+    void open(class connection& conn);
+
+    //! \brief Returns true if connection is open.
+    bool open() const;
+
+    //! \brief Returns true if connected to the database.
+    bool connected() const;
+
+    //! \brief Returns the associated connection object if any.
+    class connection& connection();
+
+    //! \brief Returns the associated connection object if any.
+    const class connection& connection() const;
+
+    //! \brief Returns the native ODBC statement handle.
+    void* native_statement_handle() const;
+
+    //! \brief Closes the statement and frees all associated resources.
+    void close();
+
+    //! \brief Cancels execution of the statement.
+    //! \throws database_error
+    void cancel();
+
+    //! \brief Opens and prepares the given statement to execute on the given connection.
+    //! \param conn The connection where the statement will be executed.
+    //! \param query The SQL query that will be executed.
+    //! \see open()
+    //! \throws database_error
+    void prepare(class connection& conn, const string_type& query);
+
+    //! \brief Prepares the given statement to execute its associated connection.
+    //! If the statement is not open throws programming_error.
+    //! \param conn The connection where the statement will be executed.
+    //! \param query The SQL query that will be executed.
+    //! \see open()
+    //! \throws database_error, programming_error
+    void prepare(const string_type& query);
+
+    //! \brief Immediately opens, prepares, and executes the given query directly on the given connection.
+    //! \param conn The connection where the statement will be executed.
+    //! \param query The SQL query that will be executed.
+    //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+    //! \return A result set object.
+    //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
+    //! \see open(), prepare(), execute(), result, transaction
+    class result execute_direct(class connection& conn, const string_type& query, long batch_operations = 1);
+
+    //! \brief Execute the previously prepared query now.
+    //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+    //! \throws database_error
+    //! \return A result set object.
+    //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
+    //! \see open(), prepare(), execute(), result, transaction
+    class result execute(long batch_operations = 1);
+
+    //! \brief Returns the number of rows affected by the request or –1 if the number of affected rows is not available.
+    //! \throws database_error
+    long affected_rows() const;
+
+    //! \brief Returns the number of columns in a result set.
+    //! \throws database_error
+    short columns() const;
+
+    //! \brief Resets all currently bound parameters.
+    void reset_parameters() throw();
+
+    //! \brief Returns the parameter size for the indicated parameter placeholder within a prepared statement.
+    unsigned long parameter_size(long param) const;
+
+    //! \brief Binds the given value to the given parameter placeholder number in the prepared statement.
+    //!
+    //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
+    //! Placeholder numbers count from left to right and are 0-indexed.
+    //! 
+    //! \param param Placeholder position.
+    //! \param value Value to substitute into placeholder.
+    //! \param nulls Used to batch insert nulls into the database.
+    //! \throws database_error
+    template<class T>
+    void bind_parameter(long param, const T* value, long* nulls = 0);
+
+    //! \brief Binds the given values to the given parameter placeholder number in the prepared statement.
+    //!
+    //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
+    //! Placeholder numbers count from left to right and are 0-indexed.
+    //! 
+    //! Typically you would use bulk operations with a row size of N when executing a statement bound this way.
+    //! 
+    //! \param param Placeholder position.
+    //! \param values Values to bulk substitute into placeholder.
+    //! \throws database_error
+    template<class T, std::size_t N>
+    void bind_parameter(long param, const T(*values)[N])
+    {
+        bind_parameter(param, reinterpret_cast<const T*>(values));
+    }
+
+private:
+    class statement_impl;
+    friend class nanodbc::result;
+
+private:
+    NANODBC_TR1_STD shared_ptr<statement_impl> impl_;
+};
+
 //! \brief Manages and encapsulates ODBC resources such as the connection and environment handles.
 class connection
 {
@@ -316,149 +457,6 @@ private:
 
 private:
     NANODBC_TR1_STD shared_ptr<connection_impl> impl_;
-};
-
-class result;
-
-//! \brief Represents a statement on the database.
-class statement
-{
-public:
-    //! \brief Creates a new un-prepared statement.
-    //! \see execute(), execute_direct(), open(), prepare()
-    statement();
-
-    //! \brief Constructs a statement object and associates it to the given connection.
-    //! \param conn The connection to use.
-    //! \see open(), prepare()
-    explicit statement(connection& conn);
-
-    //! \brief Constructs and prepares a statement using the given connection and query.
-    //! \param conn The connection to use.
-    //! \param query The SQL query statement.
-    //! \see execute(), execute_direct(), open(), prepare()
-    statement(connection& conn, const string_type& query);
-
-    //! Copy constructor.
-    statement(const statement& rhs);
-
-    //! Assignment.
-    statement& operator=(statement rhs);
-
-    //! Member swap.
-    void swap(statement& rhs) throw();
-
-    //! \brief Closes the statement.
-    //! \see close()
-    ~statement() throw();
-
-    //! \brief Creates a statement for the given connection.
-    //! \param conn The connection where the statement will be executed.
-    //! \throws database_error
-    void open(connection& conn);
-
-    //! \brief Returns true if connection is open.
-    bool open() const;
-
-    //! \brief Returns true if connected to the database.
-    bool connected() const;
-
-    //! \brief Returns the associated connection object if any.
-    const class connection& connection() const;
-
-    //! \brief Returns the associated connection object if any.
-    class connection& connection();
-
-    //! \brief Returns the native ODBC statement handle.
-    void* native_statement_handle() const;
-
-    //! \brief Closes the statement and frees all associated resources.
-    void close();
-
-    //! \brief Cancels execution of the statement.
-    //! \throws database_error
-    void cancel();
-
-    //! \brief Opens and prepares the given statement to execute on the given connection.
-    //! \param conn The connection where the statement will be executed.
-    //! \param query The SQL query that will be executed.
-    //! \see open()
-    //! \throws database_error
-    void prepare(class connection& conn, const string_type& query);
-
-    //! \brief Prepares the given statement to execute its associated connection.
-    //! If the statement is not open throws programming_error.
-    //! \param conn The connection where the statement will be executed.
-    //! \param query The SQL query that will be executed.
-    //! \see open()
-    //! \throws database_error, programming_error
-    void prepare(const string_type& query);
-
-    //! \brief Immediately opens, prepares, and executes the given query directly on the given connection.
-    //! \param conn The connection where the statement will be executed.
-    //! \param query The SQL query that will be executed.
-    //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
-    //! \return A result set object.
-    //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
-    //! \see open(), prepare(), execute(), result, transaction
-    result execute_direct(class connection& conn, const string_type& query, long batch_operations = 1);
-
-    //! \brief Execute the previously prepared query now.
-    //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
-    //! \throws database_error
-    //! \return A result set object.
-    //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
-    //! \see open(), prepare(), execute(), result, transaction
-    result execute(long batch_operations = 1);
-
-    //! \brief Returns the number of rows affected by the request or –1 if the number of affected rows is not available.
-    //! \throws database_error
-    long affected_rows() const;
-
-    //! \brief Returns the number of columns in a result set.
-    //! \throws database_error
-    short columns() const;
-
-    //! \brief Resets all currently bound parameters.
-    void reset_parameters() throw();
-
-    //! \brief Returns the parameter size for the indicated parameter placeholder within a prepared statement.
-    unsigned long parameter_size(long param) const;
-
-    //! \brief Binds the given value to the given parameter placeholder number in the prepared statement.
-    //!
-    //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
-    //! Placeholder numbers count from left to right and are 0-indexed.
-    //! 
-    //! \param param Placeholder position.
-    //! \param value Value to substitute into placeholder.
-    //! \param nulls Used to batch insert nulls into the database.
-    //! \throws database_error
-    template<class T>
-    void bind_parameter(long param, const T* value, long* nulls = 0);
-
-    //! \brief Binds the given values to the given parameter placeholder number in the prepared statement.
-    //!
-    //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
-    //! Placeholder numbers count from left to right and are 0-indexed.
-    //! 
-    //! Typically you would use bulk operations with a row size of N when executing a statement bound this way.
-    //! 
-    //! \param param Placeholder position.
-    //! \param values Values to bulk substitute into placeholder.
-    //! \throws database_error
-    template<class T, std::size_t N>
-    void bind_parameter(long param, const T(*values)[N])
-    {
-        bind_parameter(param, reinterpret_cast<const T*>(values));
-    }
-
-private:
-    class statement_impl;
-    friend class nanodbc::result;
-
-private:
-    NANODBC_TR1_STD shared_ptr<statement_impl> impl_;
 };
 
 //! \brief A resource for managing result sets from statement execution.

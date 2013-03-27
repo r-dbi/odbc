@@ -18,8 +18,12 @@
 #include <sql.h>
 #include <sqlext.h>
 
-// Workaround DEPRECATED_IN_MAC_OS_X_VERSION_10_7_AND_LATER
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+// Workaround DEPRECATED_IN_MAC_OS_X_VERSION_10_X_AND_LATER
+#ifdef __clang__
+    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#else
+    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // Unicode Support
@@ -1527,8 +1531,9 @@ result execute(statement& stmt, long batch_operations)
 result transact(statement& stmt, long batch_operations)
 {
     class transaction transaction(stmt.connection());
-    return stmt.execute(batch_operations);
+    result rvalue = stmt.execute(batch_operations);
     transaction.commit();
+    return rvalue;
 }
 
 void prepare(statement& stmt, const string_type& query)
