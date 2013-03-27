@@ -10,6 +10,5 @@ gnu:
 	# Example build for g++ using unixODBC on Linux
 	g++ example.cpp nanodbc.cpp -o example -lverticaodbc -lodbc -lodbcinst -Wall -g
 
-
 clean:
 	rm -rf example example.dSYM
