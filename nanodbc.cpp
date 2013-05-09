@@ -174,6 +174,8 @@ namespace nanodbc
 
 namespace
 {
+    using namespace std; // if int64_t is in std namespace (in c++11)
+
     // A utility for calculating the ctype, sqltype, and format specifiers for the given type T.
     // I essentially create a lookup table based on the MSDN ODBC documentation.
     // See http://msdn.microsoft.com/en-us/library/windows/desktop/ms714556(v=vs.85).aspx for details.
@@ -213,7 +215,7 @@ namespace
     };
 
     template<>
-    struct sql_type_info<long>
+    struct sql_type_info<int32_t>
     { 
         static const SQLSMALLINT ctype = SQL_C_SLONG; 
         static const SQLSMALLINT sqltype = SQL_INTEGER; 
@@ -221,7 +223,7 @@ namespace
     };
 
     template<>
-    struct sql_type_info<unsigned long>
+    struct sql_type_info<uint32_t>
     { 
         static const SQLSMALLINT ctype = SQL_C_ULONG; 
         static const SQLSMALLINT sqltype = SQL_INTEGER; 
@@ -229,7 +231,7 @@ namespace
     };
 
     template<>
-    struct sql_type_info<long long>
+    struct sql_type_info<int64_t>
     {
         static const SQLSMALLINT ctype = SQL_C_SBIGINT;
         static const SQLSMALLINT sqltype = SQL_BIGINT;
@@ -237,27 +239,11 @@ namespace
     };
 
     template<>
-    struct sql_type_info<unsigned long long>
+    struct sql_type_info<uint64_t>
     {
         static const SQLSMALLINT ctype = SQL_C_UBIGINT;
         static const SQLSMALLINT sqltype = SQL_BIGINT;
         static const nanodbc::string_type::value_type* const format;
-    };
-
-    template<>
-    struct sql_type_info<int>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_SLONG; 
-        static const SQLSMALLINT sqltype = SQL_INTEGER; 
-        static const nanodbc::string_type::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<unsigned int>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_ULONG; 
-        static const SQLSMALLINT sqltype = SQL_INTEGER; 
-        static const nanodbc::string_type::value_type* const format; 
     };
 
     template<>
@@ -306,18 +292,15 @@ namespace
         static const SQLSMALLINT sqltype = SQL_TIMESTAMP;
     };
 
-    const nanodbc::string_type::value_type* const sql_type_info<char>::format = NANODBC_TEXT("%c");
-    const nanodbc::string_type::value_type* const sql_type_info<wchar_t>::format = NANODBC_TEXT("%lc");
-    const nanodbc::string_type::value_type* const sql_type_info<short>::format = NANODBC_TEXT("%hd");
-    const nanodbc::string_type::value_type* const sql_type_info<unsigned short>::format = NANODBC_TEXT("%hu");
-    const nanodbc::string_type::value_type* const sql_type_info<long>::format = NANODBC_TEXT("%ld");
-    const nanodbc::string_type::value_type* const sql_type_info<unsigned long>::format = NANODBC_TEXT("%lu");
-    const nanodbc::string_type::value_type* const sql_type_info<long long>::format = NANODBC_TEXT("%ld");
-    const nanodbc::string_type::value_type* const sql_type_info<unsigned long long>::format = NANODBC_TEXT("%lu");
-    const nanodbc::string_type::value_type* const sql_type_info<int>::format = NANODBC_TEXT("%d");
-    const nanodbc::string_type::value_type* const sql_type_info<unsigned int>::format = NANODBC_TEXT("%u");
-    const nanodbc::string_type::value_type* const sql_type_info<float>::format = NANODBC_TEXT("%f");
-    const nanodbc::string_type::value_type* const sql_type_info<double>::format = NANODBC_TEXT("%lf");
+     const nanodbc::string_type::value_type* const sql_type_info<wchar_t>::format = NANODBC_TEXT("%lc");
+     const nanodbc::string_type::value_type* const sql_type_info<short>::format = NANODBC_TEXT("%hd");
+     const nanodbc::string_type::value_type* const sql_type_info<unsigned short>::format = NANODBC_TEXT("%hu");
+     const nanodbc::string_type::value_type* const sql_type_info<int32_t>::format = NANODBC_TEXT("%ld");
+     const nanodbc::string_type::value_type* const sql_type_info<uint32_t>::format = NANODBC_TEXT("%lu");
+     const nanodbc::string_type::value_type* const sql_type_info<int64_t>::format = NANODBC_TEXT("%ld");
+     const nanodbc::string_type::value_type* const sql_type_info<uint64_t>::format = NANODBC_TEXT("%lu");
+     const nanodbc::string_type::value_type* const sql_type_info<float>::format = NANODBC_TEXT("%f");
+     const nanodbc::string_type::value_type* const sql_type_info<double>::format = NANODBC_TEXT("%lf");
 
     // Converts the given string to the given type T.
     template<class T>
@@ -1238,7 +1221,7 @@ private:
                 case SQL_SMALLINT:
                 case SQL_INTEGER:
                     col.ctype_ = SQL_C_LONG;
-                    col.clen_ = sizeof(long);
+                    col.clen_ = sizeof(int32_t);
                     break;
                 case SQL_BIGINT:
                     col.ctype_ = SQL_C_SBIGINT;
@@ -1496,8 +1479,10 @@ T result::result_impl::get_impl(short column) const
     const char* s = col.pdata_ + rowset_position_ * col.clen_;
     switch(col.ctype_)
     {
+        case SQL_C_CHAR: return (T)*(char*)(s);
         case SQL_C_SSHORT: return (T)*(short*)(s);
         case SQL_C_USHORT: return (T)*(unsigned short*)(s);
+        case SQL_C_LONG: return (T)*(long*)(s);
         case SQL_C_SLONG: return (T)*(long*)(s);
         case SQL_C_ULONG: return (T)*(unsigned long*)(s);
         case SQL_C_FLOAT: return (T)*(float*)(s);
@@ -1859,16 +1844,13 @@ void statement::bind_parameter(long param, const T* value, long* nulls)
 template void statement::bind_parameter(long, const char*, long*);
 template void statement::bind_parameter(long, const short*, long*);
 template void statement::bind_parameter(long, const unsigned short*, long*);
-template void statement::bind_parameter(long, const long*, long*);
-template void statement::bind_parameter(long, const unsigned long*, long*);
-template void statement::bind_parameter(long, const long long*, long*);
-template void statement::bind_parameter(long, const unsigned long long*, long*);
-template void statement::bind_parameter(long, const int*, long*);
-template void statement::bind_parameter(long, const unsigned int*, long*);
+template void statement::bind_parameter(long, const int32_t*, long*);
+template void statement::bind_parameter(long, const uint32_t*, long*);
+template void statement::bind_parameter(long, const int64_t*, long*);
+template void statement::bind_parameter(long, const uint64_t*, long*);
 template void statement::bind_parameter(long, const float*, long*);
 template void statement::bind_parameter(long, const double*, long*);
 template void statement::bind_parameter(long, const date*, long*);
-template void statement::bind_parameter(long, const timestamp*, long*);
 
 } // namespace nanodbc
 
