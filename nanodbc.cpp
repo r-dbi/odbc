@@ -1231,6 +1231,7 @@ private:
                 case SQL_FLOAT:
                 case SQL_DECIMAL:
                 case SQL_REAL:
+                case SQL_NUMERIC:
                     col.ctype_ = SQL_C_DOUBLE;
                     col.clen_ = sizeof(double);
                     break;
@@ -1244,7 +1245,6 @@ private:
                     col.ctype_ = SQL_C_TIMESTAMP;
                     col.clen_ = sizeof(timestamp);
                     break;
-                case SQL_NUMERIC:
                 case SQL_CHAR:
                 case SQL_VARCHAR:
                     col.ctype_ = SQL_C_CHAR;
