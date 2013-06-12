@@ -837,7 +837,7 @@ public:
             , SQL_ATTR_PARAMSET_SIZE
             , (SQLPOINTER)batch_operations
             , 0);
-        if (!success(rc))
+        if (!success(rc) && rc != SQL_NO_DATA)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
         NANODBC_CALL_RC(SQLExecute, rc, stmt_);
