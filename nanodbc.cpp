@@ -822,7 +822,7 @@ public:
             , stmt_
             , (NANODBC_SQLCHAR*)query.c_str()
             , SQL_NTS);
-        if (!success(rc))
+        if (!success(rc) && rc != SQL_NO_DATA)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         return result(statement, batch_operations);
     }
