@@ -10,7 +10,7 @@
 //! \li <a href="http://lexicalunit.github.com/nanodbc/">Project Homepage</a>
 //! 
 //! \section license License
-//! Copyright (C) 2013 Amy Troschinetz amy@lexicalunit.com
+//! Copyright (C) 2013 lexicalunit <amy@lexicalunit.com>
 //! 
 //! The MIT License
 //! 
