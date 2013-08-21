@@ -582,7 +582,7 @@ public:
     //! Returns a identifying integer value representing the C type of this column.
     int column_datatype(short column) const;
 
-    //! Returns the next result
+    //! Returns the next result, for example when stored procedure returns multiple result sets.
     bool next_result() const;
 
 private:

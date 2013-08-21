@@ -1137,9 +1137,9 @@ public:
             SQLMoreResults
             , rc
             , stmt_.native_statement_handle());
-        if (rc == SQL_NO_DATA)
+        if(rc == SQL_NO_DATA)
             return false;
-        if (!success(rc))
+        if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
         return true;
     }
