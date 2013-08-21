@@ -9,6 +9,10 @@
 #include <cstring>
 #include <ctime>
 #include <map>
+#if _MSC_VER <= 1500
+#pragma warning(disable:4244)
+#pragma warning(disable:4312)
+#endif
 #ifdef NANODBC_USE_BOOST
     #include <boost/cstdint.hpp>
 #else
@@ -22,11 +26,14 @@
 #include <sql.h>
 #include <sqlext.h>
 
+#ifndef _MSC_VER
+// These pragma's are not supported by MSVC
 // Workaround DEPRECATED_IN_MAC_OS_X_VERSION_10_X_AND_LATER
 #ifdef __clang__
     #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #else
     #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
