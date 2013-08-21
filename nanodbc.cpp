@@ -929,22 +929,23 @@ public:
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
-        SQLSMALLINT        fParamType;
-        switch (direction) {
+        SQLSMALLINT param_type;
+        switch(direction)
+        {
             default:
                 assert(false);
-                //fallthrough
-            case In:
-                fParamType = SQL_PARAM_INPUT;
+                // fallthrough
+            case PARAM_IN:
+                param_type = SQL_PARAM_INPUT;
                 break;
-            case Out:
-                fParamType = SQL_PARAM_OUTPUT;
+            case PARAM_OUT:
+                param_type = SQL_PARAM_OUTPUT;
                 break;
-            case InOut:
-                fParamType = SQL_PARAM_INPUT_OUTPUT;
+            case PARAM_INOUT:
+                param_type = SQL_PARAM_INPUT_OUTPUT;
                 break;
-            case Return:
-                fParamType = SQL_PARAM_OUTPUT;
+            case PARAM_RETURN:
+                param_type = SQL_PARAM_OUTPUT;
                 break;
         }
 
@@ -953,7 +954,7 @@ public:
             , rc
             , stmt_
             , param + 1
-            , fParamType
+            , param_type
             , sql_type_info<T>::ctype
             , data_type
             , parameter_size // column size ignored for many types, but needed for strings
