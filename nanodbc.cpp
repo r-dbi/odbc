@@ -9,25 +9,53 @@
 #include <cstring>
 #include <ctime>
 #include <map>
+#if _MSC_VER <= 1500
+#pragma warning(disable:4244)
+#pragma warning(disable:4312)
+#endif
+#ifdef NANODBC_USE_BOOST
+    #include <boost/cstdint.hpp>
+#else
 #ifdef NANODBC_USE_CPP11
     #include <cstdint>
 #else
     #include <stdint.h>
 #endif
+#endif
 
 #include <sql.h>
 #include <sqlext.h>
 
+#ifndef _MSC_VER
+// These pragma's are not supported by MSVC
 // Workaround DEPRECATED_IN_MAC_OS_X_VERSION_10_X_AND_LATER
 #ifdef __clang__
     #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #else
     #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // Unicode Support
 ///////////////////////////////////////////////////////////////////////////////
+#if _MSC_VER <= 1400
+#ifdef NANODBC_USE_UNICODE
+    #define NANODBC_TEXT(s) L ## s
+    #define NANODBC_SSCANF std::swscanf
+    #define NANODBC_SNPRINTF swprintf
+    #define NANODBC_STRFTIME std::wcsftime
+    #define NANODBC_UNICODE(f) f ## W
+    #define NANODBC_SQLCHAR SQLWCHAR
+#else
+    #define NANODBC_TEXT(s) s
+    #define NANODBC_SSCANF std::sscanf
+    #define NANODBC_SNPRINTF _snprintf
+    #define NANODBC_STRFTIME std::strftime
+    #define NANODBC_UNICODE(f) f
+    #define NANODBC_SQLCHAR SQLCHAR
+#endif // NANODBC_USE_UNICODE
+#else
 #ifdef NANODBC_USE_UNICODE
     #define NANODBC_TEXT(s) L ## s
     #define NANODBC_SSCANF std::swscanf
@@ -43,6 +71,7 @@
     #define NANODBC_UNICODE(f) f
     #define NANODBC_SQLCHAR SQLCHAR
 #endif // NANODBC_USE_UNICODE
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // ODBC API Interface
