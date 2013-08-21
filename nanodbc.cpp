@@ -1157,6 +1157,20 @@ public:
         return col.sqltype_;
     }
 
+    bool next_result() const
+    {
+        RETCODE rc;
+        NANODBC_CALL_RC(
+            SQLMoreResults
+            , rc
+            , stmt_.native_statement_handle());
+        if (rc == SQL_NO_DATA)
+            return false;
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
+        return true;
+    }
+
     template<class T>
     T get(short column) const
     {
@@ -2022,6 +2036,11 @@ string_type result::column_name(short column) const
 int result::column_datatype(short column) const
 {
     return impl_->column_datatype(column);
+}
+
+bool result::next_result() const
+{
+    return impl_->next_result();
 }
 
 template<class T>
