@@ -9,10 +9,14 @@
 #include <cstring>
 #include <ctime>
 #include <map>
+#ifdef NANODBC_USE_BOOST
+    #include <boost/cstdint.hpp>
+#else
 #ifdef NANODBC_USE_CPP11
     #include <cstdint>
 #else
     #include <stdint.h>
+#endif
 #endif
 
 #include <sql.h>

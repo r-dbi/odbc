@@ -64,6 +64,16 @@
 #include <stdexcept>
 #include <string>
 
+#ifdef NANODBC_USE_BOOST
+// Visual C++ 2005
+    #define NANODBC_TR1_STD std::
+    #include <boost/smart_ptr.hpp>
+    #include <boost/cstdint.hpp>
+    namespace std
+    {
+        using namespace boost;
+    }
+#else
 // You must explicitly request C++11 support by defining NANODBC_USE_CPP11 at compile time, otherwise nanodbc will assume it must use tr1 instead.
 #ifndef NANODBC_USE_CPP11
     #include <tr1/cstdint>
@@ -73,6 +83,7 @@
     #include <cstdint>
     #include <memory>
     #define NANODBC_TR1_STD std::
+#endif
 #endif
 
 //! \brief The entirety of nanodbc can be found within this one namespace.
