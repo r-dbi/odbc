@@ -582,6 +582,9 @@ public:
     //! Returns a identifying integer value representing the C type of this column.
     int column_datatype(short column) const;
 
+    //! Returns the next result
+    bool next_result() const;
+
 private:
     result(statement statement, long rowset_size);
 
