@@ -891,7 +891,7 @@ public:
     }
 
     template<class T>
-    void bind_parameter(long param, const T* value, long* nulls)
+    void bind_parameter(long param, const T* value, long* nulls, param_direction direction)
     {
         RETCODE rc;
         SQLSMALLINT data_type;
@@ -908,12 +908,31 @@ public:
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
+        SQLSMALLINT        fParamType;
+        switch (direction) {
+            default:
+                assert(false);
+                //fallthrough
+            case In:
+                fParamType = SQL_PARAM_INPUT;
+                break;
+            case Out:
+                fParamType = SQL_PARAM_OUTPUT;
+                break;
+            case InOut:
+                fParamType = SQL_PARAM_INPUT_OUTPUT;
+                break;
+            case Return:
+                fParamType = SQL_PARAM_OUTPUT;
+                break;
+        }
+
         NANODBC_CALL_RC(
             SQLBindParameter
             , rc
             , stmt_
             , param + 1
-            , SQL_PARAM_INPUT
+            , fParamType
             , sql_type_info<T>::ctype
             , data_type
             , parameter_size // column size ignored for many types, but needed for strings
@@ -1835,22 +1854,22 @@ unsigned long statement::parameter_size(long param) const
 }
 
 template<class T>
-void statement::bind_parameter(long param, const T* value, long* nulls)
+void statement::bind_parameter(long param, const T* value, long* nulls, param_direction direction)
 {
-    impl_->bind_parameter(param, reinterpret_cast<const T*>(value), nulls);
+    impl_->bind_parameter(param, reinterpret_cast<const T*>(value), nulls, direction);
 }
 
 // The following are the only supported instantiations of statement::bind_parameter().
-template void statement::bind_parameter(long, const char*, long*);
-template void statement::bind_parameter(long, const short*, long*);
-template void statement::bind_parameter(long, const unsigned short*, long*);
-template void statement::bind_parameter(long, const int32_t*, long*);
-template void statement::bind_parameter(long, const uint32_t*, long*);
-template void statement::bind_parameter(long, const int64_t*, long*);
-template void statement::bind_parameter(long, const uint64_t*, long*);
-template void statement::bind_parameter(long, const float*, long*);
-template void statement::bind_parameter(long, const double*, long*);
-template void statement::bind_parameter(long, const date*, long*);
+template void statement::bind_parameter(long, const char*, long*, param_direction);
+template void statement::bind_parameter(long, const short*, long*, param_direction);
+template void statement::bind_parameter(long, const unsigned short*, long*, param_direction);
+template void statement::bind_parameter(long, const int32_t*, long*, param_direction);
+template void statement::bind_parameter(long, const uint32_t*, long*, param_direction);
+template void statement::bind_parameter(long, const int64_t*, long*, param_direction);
+template void statement::bind_parameter(long, const uint64_t*, long*, param_direction);
+template void statement::bind_parameter(long, const float*, long*, param_direction);
+template void statement::bind_parameter(long, const double*, long*, param_direction);
+template void statement::bind_parameter(long, const date*, long*, param_direction);
 
 } // namespace nanodbc
 
