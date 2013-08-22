@@ -9,68 +9,60 @@
 #include <cstring>
 #include <ctime>
 #include <map>
-#if _MSC_VER <= 1500
-#pragma warning(disable:4244)
-#pragma warning(disable:4312)
+
+#if defined(_MSC_VER) && _MSC_VER <= 1500
+    // silence spurious Visual C++ 2005 warnings 
+    #pragma warning(disable:4244)
+    #pragma warning(disable:4312)
 #endif
-#ifdef NANODBC_USE_BOOST
-    #include <boost/cstdint.hpp>
-#else
-#ifdef NANODBC_USE_CPP11
-    #include <cstdint>
-#else
-    #include <stdint.h>
-#endif
+
+#ifdef __APPLE__
+    // silence spurious OS X deprecation warnings
+    #define MAC_OS_X_VERSION_MIN_REQUIRED MAC_OS_X_VERSION_10_6
 #endif
 
 #include <sql.h>
 #include <sqlext.h>
 
-#ifndef _MSC_VER
-// These pragma's are not supported by MSVC
-// Workaround DEPRECATED_IN_MAC_OS_X_VERSION_10_X_AND_LATER
-#ifdef __clang__
-    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-#else
-    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
+#ifdef _WIN32
+    #include <windows.h>
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // Unicode Support
 ///////////////////////////////////////////////////////////////////////////////
-#if _MSC_VER <= 1400
-#ifdef NANODBC_USE_UNICODE
-    #define NANODBC_TEXT(s) L ## s
-    #define NANODBC_SSCANF std::swscanf
-    #define NANODBC_SNPRINTF swprintf
-    #define NANODBC_STRFTIME std::wcsftime
-    #define NANODBC_UNICODE(f) f ## W
-    #define NANODBC_SQLCHAR SQLWCHAR
+#if defined(_MSC_VER) && _MSC_VER <= 1400
+    #ifdef NANODBC_USE_UNICODE
+        #define NANODBC_TEXT(s) L ## s
+        #define NANODBC_SSCANF std::swscanf
+        #define NANODBC_SNPRINTF swprintf
+        #define NANODBC_STRFTIME std::wcsftime
+        #define NANODBC_UNICODE(f) f ## W
+        #define NANODBC_SQLCHAR SQLWCHAR
+    #else
+        #define NANODBC_TEXT(s) s
+        #define NANODBC_SSCANF std::sscanf
+        #define NANODBC_SNPRINTF _snprintf
+        #define NANODBC_STRFTIME std::strftime
+        #define NANODBC_UNICODE(f) f
+        #define NANODBC_SQLCHAR SQLCHAR
+    #endif
 #else
-    #define NANODBC_TEXT(s) s
-    #define NANODBC_SSCANF std::sscanf
-    #define NANODBC_SNPRINTF _snprintf
-    #define NANODBC_STRFTIME std::strftime
-    #define NANODBC_UNICODE(f) f
-    #define NANODBC_SQLCHAR SQLCHAR
-#endif // NANODBC_USE_UNICODE
-#else
-#ifdef NANODBC_USE_UNICODE
-    #define NANODBC_TEXT(s) L ## s
-    #define NANODBC_SSCANF std::swscanf
-    #define NANODBC_SNPRINTF swprintf
-    #define NANODBC_STRFTIME std::wcsftime
-    #define NANODBC_UNICODE(f) f ## W
-    #define NANODBC_SQLCHAR SQLWCHAR
-#else
-    #define NANODBC_TEXT(s) s
-    #define NANODBC_SSCANF std::sscanf
-    #define NANODBC_SNPRINTF std::snprintf
-    #define NANODBC_STRFTIME std::strftime
-    #define NANODBC_UNICODE(f) f
-    #define NANODBC_SQLCHAR SQLCHAR
-#endif // NANODBC_USE_UNICODE
+    #ifdef NANODBC_USE_UNICODE
+        #define NANODBC_TEXT(s) L ## s
+        #define NANODBC_SSCANF std::swscanf
+        #define NANODBC_SNPRINTF swprintf
+        #define NANODBC_STRFTIME std::wcsftime
+        #define NANODBC_UNICODE(f) f ## W
+        #define NANODBC_SQLCHAR SQLWCHAR
+    #else
+        #define NANODBC_TEXT(s) s
+        #define NANODBC_SSCANF std::sscanf
+        #define NANODBC_SNPRINTF std::snprintf
+        #define NANODBC_STRFTIME std::strftime
+        #define NANODBC_UNICODE(f) f
+        #define NANODBC_SQLCHAR SQLCHAR
+    #endif
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -937,22 +929,23 @@ public:
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
-        SQLSMALLINT        fParamType;
-        switch (direction) {
+        SQLSMALLINT param_type;
+        switch(direction)
+        {
             default:
                 assert(false);
-                //fallthrough
-            case In:
-                fParamType = SQL_PARAM_INPUT;
+                // fallthrough
+            case PARAM_IN:
+                param_type = SQL_PARAM_INPUT;
                 break;
-            case Out:
-                fParamType = SQL_PARAM_OUTPUT;
+            case PARAM_OUT:
+                param_type = SQL_PARAM_OUTPUT;
                 break;
-            case InOut:
-                fParamType = SQL_PARAM_INPUT_OUTPUT;
+            case PARAM_INOUT:
+                param_type = SQL_PARAM_INPUT_OUTPUT;
                 break;
-            case Return:
-                fParamType = SQL_PARAM_OUTPUT;
+            case PARAM_RETURN:
+                param_type = SQL_PARAM_OUTPUT;
                 break;
         }
 
@@ -961,7 +954,7 @@ public:
             , rc
             , stmt_
             , param + 1
-            , fParamType
+            , param_type
             , sql_type_info<T>::ctype
             , data_type
             , parameter_size // column size ignored for many types, but needed for strings
@@ -1164,9 +1157,9 @@ public:
             SQLMoreResults
             , rc
             , stmt_.native_statement_handle());
-        if (rc == SQL_NO_DATA)
+        if(rc == SQL_NO_DATA)
             return false;
-        if (!success(rc))
+        if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
         return true;
     }
