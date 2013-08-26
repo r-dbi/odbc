@@ -100,18 +100,20 @@ namespace nanodbc
         typedef std::string string_type;
     #endif // NANODBC_USE_UNICODE
 
-    #if defined(_WIN64) || defined(__LP64__)
+    #if defined(_WIN64)
         // LLP64 machine, Windows
+        typedef NANODBC_TR1_STD int64_t null_type;
+    #elif !defined(_WIN64) && defined(__LP64__)
         // LP64 machine, OS X or Linux
-        typedef __int64 null_type;
+        typedef long null_type;
     #else
-        // 32-bit machine, Windows or Linux or OS X
+        // 32-bit machine
         typedef long null_type;
     #endif
 #else
     //! string_type will be std::wstring if NANODBC_USE_UNICODE is defined, otherwise std::string.
     typedef unspecified-type string_type;
-    //! null_type will be __int64 for 64-bit compilations, otherwise long.
+    //! null_type will be int64_t for 64-bit compilations, otherwise long.
     typedef unspecified-type null_type;
 #endif // DOXYGEN
 
