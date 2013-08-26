@@ -99,9 +99,20 @@ namespace nanodbc
     #else
         typedef std::string string_type;
     #endif // NANODBC_USE_UNICODE
+
+    #if defined(_WIN64) || defined(__LP64__)
+        // LLP64 machine, Windows
+        // LP64 machine, OS X or Linux
+        typedef __int64 null_type;
+    #else
+        // 32-bit machine, Windows or Linux or OS X
+        typedef long null_type;
+    #endif
 #else
     //! string_type will be std::wstring if NANODBC_USE_UNICODE is defined, otherwise std::string.
     typedef unspecified-type string_type;
+    //! null_type will be __int64 for 64-bit compilations, otherwise long.
+    typedef unspecified-type null_type;
 #endif // DOXYGEN
 
 //! \addtogroup exceptions Exception Types
@@ -372,7 +383,7 @@ public:
     //! \param nulls Used to batch insert nulls into the database.
     //! \throws database_error
     template<class T>
-    void bind_parameter(long param, const T* value, long* nulls = 0, param_direction direction = PARAM_IN);
+    void bind_parameter(long param, const T* value, null_type* nulls = 0, param_direction direction = PARAM_IN);
 
     //! \brief Binds the given values to the given parameter placeholder number in the prepared statement.
     //!
