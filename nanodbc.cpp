@@ -72,6 +72,8 @@
 // By making all calls to ODBC functions through this macro, we can easily get
 // runtime debugging information of which ODBC functions are being called,
 // in what order, and with what parameters by defining NANODBC_ODBC_API_DEBUG.
+#define NANODBC_STRINGIZE_I(text) #text
+#define NANODBC_STRINGIZE(text) NANODBC_STRINGIZE_I(text)
 
 #ifdef NANODBC_ODBC_API_DEBUG
     #include <iostream>
@@ -180,8 +182,6 @@ namespace nanodbc
 
 // Throwing exceptions using NANODBC_THROW_DATABASE_ERROR enables file name
 // and line numbers to be inserted into the error message. Useful for debugging.
-#define NANODBC_STRINGIZE_I(text) #text
-#define NANODBC_STRINGIZE(text) NANODBC_STRINGIZE_I(text)
 #define NANODBC_THROW_DATABASE_ERROR(handle, handle_type)                     \
     throw nanodbc::database_error(                                            \
         handle                                                                \
@@ -845,6 +845,8 @@ public:
             , SQL_NTS);
         if (!success(rc) && rc != SQL_NO_DATA)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        if (rc == SQL_NO_DATA)
+            return result();
         return result(statement, batch_operations);
     }
 
@@ -864,6 +866,8 @@ public:
         NANODBC_CALL_RC(SQLExecute, rc, stmt_);
         if (!success(rc) && rc != SQL_NO_DATA)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        if (rc == SQL_NO_DATA)
+            return result();
         return result(statement, batch_operations);
     }
 
@@ -2047,6 +2051,18 @@ T result::get(short column, const T& fallback) const
 {
     return impl_->get<T>(column, fallback);
 }
+
+#ifdef NANODBC_USE_CPP11
+    result::operator bool() const
+    {
+        return static_cast<bool>(impl_);
+    }
+#else
+    bool result::boolean_test() const
+    {
+        return impl_;
+    }
+#endif // NANODBC_USE_CPP11
 
 // The following are the only supported instantiations of result::get().
 template string_type::value_type result::get(short) const;

@@ -86,6 +86,42 @@
     #endif
 #endif
 
+#ifndef DOXYGEN
+namespace detail
+{
+    // Safe Bool idiom from http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Safe_bool#Solution_and_Sample_Code
+    // Creative Commons Attribution/Share-Alike License: http://creativecommons.org/licenses/by-sa/3.0/
+    // In C++11 and on we can simply use explicit conversion operators instead of all this boilerplate
+    class safe_bool_base
+    {
+    public:
+        typedef void (safe_bool_base::*bool_type)() const;
+        void this_type_does_not_support_comparisons() const {}
+
+    protected:
+        safe_bool_base() {}
+        safe_bool_base(const safe_bool_base&) {}
+        safe_bool_base& operator=(const safe_bool_base&) {return *this;}
+        ~safe_bool_base() {}
+    };
+     
+    template <typename T=void> 
+    class safe_bool : private safe_bool_base
+    {
+      // private or protected inheritance is very important here as it triggers the
+      // access control violation in main.
+    public:
+        operator bool_type() const
+        {
+            return (static_cast<const T*>(this))->boolean_test() ? &safe_bool_base::this_type_does_not_support_comparisons : 0;
+        }
+
+    protected:
+        ~safe_bool() {}
+    };
+} // namespace detail
+#endif // DOXYGEN
+
 //! \brief The entirety of nanodbc can be found within this one namespace.
 //! \todo Implement retrieval of blob data.
 //! \todo Implement reflective features for columns, such as type, to enable visitation.
@@ -494,11 +530,19 @@ private:
     NANODBC_TR1_STD shared_ptr<connection_impl> impl_;
 };
 
-//! \brief A resource for managing result sets from statement execution.
-//!
-//! \see statement::execute(), statement::execute_direct()
-//! \note result objects may be copied, however all copies will refer to the same underlying ODBC result set.
-class result
+#ifndef DOXYGEN
+    #ifdef NANODBC_USE_CPP11
+        class result
+    #else
+        class result : public detail::safe_bool<result>
+    #endif
+#else
+    //! \brief A resource for managing result sets from statement execution.
+    //!
+    //! \see statement::execute(), statement::execute_direct()
+    //! \note result objects may be copied, however all copies will refer to the same underlying ODBC result set.
+    class result
+#endif // doxygen
 {
 public:
     //! Empty result set.
@@ -608,6 +652,18 @@ public:
 
     //! Returns the next result, for example when stored procedure returns multiple result sets.
     bool next_result() const;
+
+    #ifndef DOXYGEN
+        #ifdef NANODBC_USE_CPP11
+            explicit operator bool() const;
+        #else
+            bool boolean_test() const;
+        #endif // NANODBC_USE_CPP11
+    #else
+        //! If and only if result object is valid, returns true.
+        //! \note A safe-bool idiom is used if NANODBC_USE_CPP11 is not defined, otherwise an explicit conversion operator is used.
+        operator bool() const;
+    #endif // DOXYGEN
 
 private:
     result(statement statement, long rowset_size);
