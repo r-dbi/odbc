@@ -69,13 +69,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 // ODBC API Interface
 ///////////////////////////////////////////////////////////////////////////////
+#define NANODBC_STRINGIZE_I(text) #text
+#define NANODBC_STRINGIZE(text) NANODBC_STRINGIZE_I(text)
 
 // By making all calls to ODBC functions through this macro, we can easily get
 // runtime debugging information of which ODBC functions are being called,
 // in what order, and with what parameters by defining NANODBC_ODBC_API_DEBUG.
-#define NANODBC_STRINGIZE_I(text) #text
-#define NANODBC_STRINGIZE(text) NANODBC_STRINGIZE_I(text)
-
 #ifdef NANODBC_ODBC_API_DEBUG
     #include <iostream>
     #define NANODBC_CALL_RC(FUNC, RC, ...)                                    \
