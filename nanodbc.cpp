@@ -21,12 +21,13 @@
     #define MAC_OS_X_VERSION_MIN_REQUIRED MAC_OS_X_VERSION_10_6
 #endif
 
-#include <sql.h>
-#include <sqlext.h>
-
 #ifdef _WIN32
+    // needs to be included above sql.h for windows
     #include <windows.h>
 #endif
+
+#include <sql.h>
+#include <sqlext.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Unicode Support
