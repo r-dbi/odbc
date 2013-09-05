@@ -501,7 +501,7 @@ public:
     bool connected() const;
 
     //! \brief Disconnects from the database, but maintains environment and handle resources.
-    void disconnect() throw();
+    void disconnect();
 
     //! \brief Returns the number of transactions currently held for this connection.
     std::size_t transactions() const;

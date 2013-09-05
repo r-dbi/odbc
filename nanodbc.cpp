@@ -462,7 +462,14 @@ public:
 
     ~connection_impl() throw()
     {
-        disconnect();
+        try
+        {
+            disconnect();
+        }
+        catch(...)
+        {
+            // ignore exceptions thrown during disconnect
+        }
         NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_DBC, conn_);
         NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_ENV, env_);
     }
@@ -536,11 +543,14 @@ public:
         return connected_;
     }
 
-    void disconnect() throw()
+    void disconnect()
     {
         if(connected())
         {
-            NANODBC_CALL(SQLDisconnect, conn_);
+            RETCODE rc;
+            NANODBC_CALL_RC(SQLDisconnect, rc, conn_);
+            if(!success(rc))
+                NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
         }
         connected_ = false;
     }
@@ -573,7 +583,7 @@ public:
             , name
             , sizeof(name)
             , &length);
-        if (!success(rc))
+        if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
         return name;
     }
@@ -636,7 +646,7 @@ public:
                 , SQL_ATTR_AUTOCOMMIT
                 , (SQLPOINTER)SQL_AUTOCOMMIT_OFF
                 , SQL_IS_UINTEGER);
-            if (!success(rc))
+            if(!success(rc))
                 NANODBC_THROW_DATABASE_ERROR(conn_.native_dbc_handle(), SQL_HANDLE_DBC);
         }
         conn_.ref_transaction();
@@ -769,7 +779,7 @@ public:
             , conn.native_dbc_handle()
             , &stmt_);
         open_ = success(rc);
-        if (!open_)
+        if(!open_)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         conn_ = conn;
     }
@@ -823,7 +833,7 @@ public:
     {
         RETCODE rc;
         NANODBC_CALL_RC(SQLCancel, rc, stmt_);
-        if (!success(rc))
+        if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
@@ -844,7 +854,7 @@ public:
             , stmt_
             , (NANODBC_SQLCHAR*)query.c_str()
             , SQL_NTS);
-        if (!success(rc))
+        if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
@@ -860,7 +870,7 @@ public:
             , SQL_ATTR_PARAMSET_SIZE
             , (SQLPOINTER)batch_operations
             , 0);
-        if (!success(rc))
+        if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
         NANODBC_CALL_RC(
@@ -869,9 +879,9 @@ public:
             , stmt_
             , (NANODBC_SQLCHAR*)query.c_str()
             , SQL_NTS);
-        if (!success(rc) && rc != SQL_NO_DATA)
+        if(!success(rc) && rc != SQL_NO_DATA)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-        if (rc == SQL_NO_DATA)
+        if(rc == SQL_NO_DATA)
             return result();
         return result(statement, batch_operations);
     }
@@ -886,13 +896,13 @@ public:
             , SQL_ATTR_PARAMSET_SIZE
             , (SQLPOINTER)batch_operations
             , 0);
-        if (!success(rc) && rc != SQL_NO_DATA)
+        if(!success(rc) && rc != SQL_NO_DATA)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
         NANODBC_CALL_RC(SQLExecute, rc, stmt_);
-        if (!success(rc) && rc != SQL_NO_DATA)
+        if(!success(rc) && rc != SQL_NO_DATA)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-        if (rc == SQL_NO_DATA)
+        if(rc == SQL_NO_DATA)
             return result();
         return result(statement, batch_operations);
     }
@@ -902,7 +912,7 @@ public:
         SQLLEN rows;
         RETCODE rc;
         NANODBC_CALL_RC(SQLRowCount, rc, stmt_, &rows);
-        if (!success(rc))
+        if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         return rows;
     }
@@ -912,7 +922,7 @@ public:
         SQLSMALLINT cols;
         RETCODE rc;
         NANODBC_CALL_RC(SQLNumResultCols, rc, stmt_, &cols);
-        if (!success(rc))
+        if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         return cols;
     }
@@ -1135,7 +1145,7 @@ public:
             , &pos
             , SQL_IS_UINTEGER
             , 0);
-        if (!success(rc))
+        if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
         return pos - 1 + rowset_position_;
     }
@@ -1252,9 +1262,9 @@ private:
             , stmt_.native_statement_handle()
             , orientation
             , rows);
-        if (rc == SQL_NO_DATA)
+        if(rc == SQL_NO_DATA)
             return false;
-        if (!success(rc))
+        if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
         return true;
     }
@@ -1676,7 +1686,7 @@ bool connection::connected() const
     return impl_->connected();
 }
 
-void connection::disconnect() throw()
+void connection::disconnect()
 {
     impl_->disconnect();
 }
