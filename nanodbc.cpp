@@ -382,13 +382,21 @@ namespace
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
 
-        NANODBC_CALL_RC(SQLSetEnvAttr, rc, env, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, SQL_IS_UINTEGER);
-        if(!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
+        try
+        {
+            NANODBC_CALL_RC(SQLSetEnvAttr, rc, env, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, SQL_IS_UINTEGER);
+            if(!success(rc))
+                NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
 
-        NANODBC_CALL_RC(SQLAllocHandle, rc, SQL_HANDLE_DBC, env, &conn);   
-        if(!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
+            NANODBC_CALL_RC(SQLAllocHandle, rc, SQL_HANDLE_DBC, env, &conn);
+            if(!success(rc))
+                NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
+        }
+        catch(...)
+        {
+            NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_ENV, env);
+            throw;
+        }
     }
 } // namespace
 
@@ -420,7 +428,16 @@ public:
     , rollback_(false)
     {
         allocate_handle(env_, conn_);
-        connect(dsn, user, pass, timeout);
+        try
+        {
+            connect(dsn, user, pass, timeout);
+        }
+        catch(...)
+        {
+            NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_DBC, conn_);
+            NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_ENV, env_);
+            throw;
+        }
     }
 
     connection_impl(const string_type& connection_string, long timeout)
@@ -431,7 +448,16 @@ public:
     , rollback_(false)
     {
         allocate_handle(env_, conn_);
-        connect(connection_string, timeout);
+        try
+        {
+            connect(connection_string, timeout);
+        }
+        catch(...)
+        {
+            NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_DBC, conn_);
+            NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_ENV, env_);
+            throw;
+        }
     }
 
     ~connection_impl() throw()
