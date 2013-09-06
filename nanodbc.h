@@ -374,7 +374,6 @@ public:
 
     //! \brief Prepares the given statement to execute its associated connection.
     //! If the statement is not open throws programming_error.
-    //! \param conn The connection where the statement will be executed.
     //! \param query The SQL query that will be executed.
     //! \see open()
     //! \throws database_error, programming_error
@@ -419,6 +418,7 @@ public:
     //! \param param Placeholder position.
     //! \param value Value to substitute into placeholder.
     //! \param nulls Used to batch insert nulls into the database.
+    //! \param param_direciton ODBC parameter direction.
     //! \throws database_error
     template<class T>
     void bind_parameter(long param, const T* value, null_type* nulls = 0, param_direction direction = PARAM_IN);
@@ -467,16 +467,17 @@ public:
     //! \param dsn The name of the data source.
     //! \param user The username for authenticating to the data source.
     //! \param pass The password for authenticating to the data source.
-    //! \param timeout The number in seconds before connection timeout.
+    //! \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
     //! \throws database_error
     //! \see connected(), connect()
-    connection(const string_type& dsn, const string_type& user, const string_type& pass, long timeout = 5);
+    connection(const string_type& dsn, const string_type& user, const string_type& pass, long timeout = 0);
 
     //! \brief Create new connection object and immediately connect using the given connection string.
     //! \param connection_string The connection string for establishing a connection.
+    //! \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
     //! \throws database_error
     //! \see connected(), connect()
-    connection(const string_type& connection_string, long timeout = 5);
+    connection(const string_type& connection_string, long timeout = 0);
 
     //! \brief Automatically disconnects from the database and frees all associated resources.
     ~connection() throw();
@@ -485,17 +486,17 @@ public:
     //! \param dsn The name of the data source.
     //! \param user The username for authenticating to the data source.
     //! \param pass The password for authenticating to the data source.
-    //! \param timeout The number in seconds before connection timeout.
+    //! \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
     //! \throws database_error
     //! \see connected()
-    void connect(const string_type& dsn, const string_type& user, const string_type& pass, long timeout = 5);
+    void connect(const string_type& dsn, const string_type& user, const string_type& pass, long timeout = 0);
 
     //! \brief Create new connection object and immediately connect using the given connection string.
     //! \param connection_string The connection string for establishing a connection.
-    //! \param timeout The number in seconds before connection timeout.
+    //! \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
     //! \throws database_error
     //! \see connected()
-    void connect(const string_type& connection_string, long timeout = 5);
+    void connect(const string_type& connection_string, long timeout = 0);
 
     //! \brief Returns true if connected to the database.
     bool connected() const;
@@ -613,42 +614,73 @@ public:
     //! \brief Returns true if there are no more results in the current result set.
     bool end() const throw();
 
-    //! \brief Gets data from the given column in the selected row of the current rowset.
+    //! \brief Gets data from the given column of the current rowset.
     //!
     //! Columns are numbered from left to right and 0-indexed.
-    //! \param Column position. 
-    //! \param row If there are multiple rows in this rowset, get from the specified row.
+    //! \param column position.
     //! \throws database_error, index_range_error, type_incompatible_error, null_access_error
     template<class T>
     T get(short column) const;
 
-    //! \brief Gets data from the given column in the selected row of the current rowset.
+    //! \brief Gets data from the given column of the current rowset.
     //! If the data is null, fallback is returned instead.
     //!
     //! Columns are numbered from left to right and 0-indexed.
-    //! \param Column position. 
-    //! \param row If there are multiple rows in this rowset, get from the specified row.
+    //! \param column position.
+    //! \param fallback if value is null, return fallback instead.
     //! \throws database_error, index_range_error, type_incompatible_error
     template<class T>
     T get(short column, const T& fallback) const;
 
-    //! \brief Returns true if and only if the given column in the selected row of the current rowset is null.
+    //! \brief Gets data from the given column by name of the current rowset.
+    //!
+    //! \param column column's name.
+    //! \param row If there are multiple rows in this rowset, get from the specified row.
+    //! \throws database_error, index_range_error, type_incompatible_error, null_access_error
+    template<class T>
+    T get(const string_type& column_name) const;
+
+    //! \brief Gets data from the given column by name of the current rowset.
+    //! If the data is null, fallback is returned instead.
+    //!
+    //! \param column_name column's name.
+    //! \param fallback if value is null, return fallback instead.
+    //! \throws database_error, index_range_error, type_incompatible_error
+    template<class T>
+    T get(const string_type& column_name, const T& fallback) const;
+
+    //! \brief Returns true if and only if the given column of the current rowset is null.
     //!
     //! Columns are numbered from left to right and 0-indexed.
-    //! \param Column position. 
-    //! \param row If there are multiple rows in this rowset, get from the specified row.
+    //! \param column position. 
     //! \throws database_error, index_range_error
     bool is_null(short column) const;
+
+    //! \brief Returns true if and only if the given column by name of the current rowset is null.
+    //!
+    //! \param column column's name. 
+    //! \throws database_error, index_range_error
+    bool is_null(const string_type& column_name) const;
 
     //! \brief Returns the name of the specified column.
     //!
     //! Columns are numbered from left to right and 0-indexed.
-    //! \param Column position. 
+    //! \param column position. 
     //! \throws index_range_error
     string_type column_name(short column) const;
 
+    //! \brief Returns the column number of the specified column name.
+    //!
+    //! Columns are numbered from left to right and 0-indexed.
+    //! \param column column's name. 
+    //! \throws index_range_error
+    short column(const string_type& column_name) const;
+
     //! Returns a identifying integer value representing the C type of this column.
     int column_datatype(short column) const;
+
+    //! Returns a identifying integer value representing the C type of this column by name.
+    int column_datatype(const string_type& column_name) const;
 
     //! Returns the next result, for example when stored procedure returns multiple result sets.
     bool next_result() const;

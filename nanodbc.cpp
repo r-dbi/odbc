@@ -338,6 +338,7 @@ namespace
     public:
         bound_column()
         : name_()
+        , column_(0)
         , sqltype_(0)
         , sqlsize_(0)
         , scale_(0)
@@ -359,6 +360,7 @@ namespace
 
     public:
         nanodbc::string_type name_;
+        short column_;
         SQLSMALLINT sqltype_;
         SQLULEN sqlsize_;
         SQLSMALLINT scale_;
@@ -1035,6 +1037,7 @@ public:
     , bound_columns_(0)
     , bound_columns_size_(0)
     , rowset_position_(0)
+    , bound_columns_by_name_()
     {
         RETCODE rc;
         NANODBC_CALL_RC(
@@ -1175,6 +1178,12 @@ public:
         return col.cbdata_[rowset_position_] == SQL_NULL_DATA;
     }
 
+    bool is_null(const string_type& column_name) const
+    {
+        const short column = this->column(column_name);
+        return is_null(column);
+    }
+
     string_type column_name(short column) const
     {
         if(column >= bound_columns_size_)
@@ -1182,10 +1191,26 @@ public:
         return bound_columns_[column].name_;
     }
 
+    short column(const string_type& column_name) const
+    {
+        typedef std::map<string_type, bound_column*>::const_iterator iter;
+        iter i = bound_columns_by_name_.find(column_name);
+        if(i == bound_columns_by_name_.end())
+            throw index_range_error();
+        return i->second->column_;
+    }
+
     int column_datatype(short column) const
     {
         if(column >= bound_columns_size_)
             throw index_range_error();
+        bound_column& col = bound_columns_[column];
+        return col.sqltype_;
+    }
+
+    int column_datatype(const string_type& column_name) const
+    {
+        const short column = this->column(column_name);
         bound_column& col = bound_columns_[column];
         return col.sqltype_;
     }
@@ -1219,6 +1244,24 @@ public:
     {
         if(column >= bound_columns_size_)
             throw index_range_error();
+        if(is_null(column))
+            return fallback;
+        return get_impl<T>(column);
+    }
+
+    template<class T>
+    T get(const string_type& column_name) const
+    {
+        const short column = this->column(column_name);
+        if(is_null(column))
+            throw null_access_error();
+        return get_impl<T>(column);
+    }
+
+    template<class T>
+    T get(const string_type& column_name, const T& fallback) const
+    {
+        const short column = this->column(column_name);
         if(is_null(column))
             return fallback;
         return get_impl<T>(column);
@@ -1304,9 +1347,11 @@ private:
 
             bound_column& col = bound_columns_[i];
             col.name_ = reinterpret_cast<string_type::value_type*>(column_name);
+            col.column_ = i;
             col.sqltype_ = sqltype;
             col.sqlsize_ = sqlsize;
             col.scale_ = scale;
+            bound_columns_by_name_[col.name_] = &col;
 
             using namespace std; // if int64_t is in std namespace (in c++11)
             switch(col.sqltype_)
@@ -1416,6 +1461,7 @@ private:
     bound_column* bound_columns_;
     short bound_columns_size_;
     long rowset_position_;
+    std::map<string_type, bound_column*> bound_columns_by_name_;
 };
 
 template<>
@@ -2061,14 +2107,29 @@ bool result::is_null(short column) const
     return impl_->is_null(column);
 }
 
+bool result::is_null(const string_type& column_name) const
+{
+    return impl_->is_null(column_name);
+}
+
 string_type result::column_name(short column) const
 {
     return impl_->column_name(column);
 }
 
+short result::column(const string_type& column_name) const
+{
+    return impl_->column(column_name);
+}
+
 int result::column_datatype(short column) const
 {
     return impl_->column_datatype(column);
+}
+
+int result::column_datatype(const string_type& column_name) const
+{
+    return impl_->column_datatype(column_name);   
 }
 
 bool result::next_result() const
@@ -2086,6 +2147,18 @@ template<class T>
 T result::get(short column, const T& fallback) const
 {
     return impl_->get<T>(column, fallback);
+}
+
+template<class T>
+T result::get(const string_type& column_name) const
+{
+    return impl_->get<T>(column_name);
+}
+
+template<class T>
+T result::get(const string_type& column_name, const T& fallback) const
+{
+    return impl_->get<T>(column_name, fallback);
 }
 
 #ifdef NANODBC_USE_CPP11
@@ -2116,6 +2189,21 @@ template string_type result::get(short) const;
 template date result::get(short) const;
 template timestamp result::get(short) const;
 
+template string_type::value_type result::get(const string_type&) const;
+template short result::get(const string_type&) const;
+template unsigned short result::get(const string_type&) const;
+template long result::get(const string_type&) const;
+template unsigned long result::get(const string_type&) const;
+template long long result::get(const string_type&) const;
+template unsigned long long result::get(const string_type&) const;
+template int result::get(const string_type&) const;
+template unsigned int result::get(const string_type&) const;
+template float result::get(const string_type&) const;
+template double result::get(const string_type&) const;
+template string_type result::get(const string_type&) const;
+template date result::get(const string_type&) const;
+template timestamp result::get(const string_type&) const;
+
 // The following are the only supported instantiations of result::get() with fallback.
 template string_type::value_type result::get(short, const string_type::value_type&) const;
 template short result::get(short, const short&) const;
@@ -2131,6 +2219,21 @@ template double result::get(short, const double&) const;
 template string_type result::get(short, const string_type&) const;
 template date result::get(short, const date&) const;
 template timestamp result::get(short, const timestamp&) const;
+
+template string_type::value_type result::get(const string_type&, const string_type::value_type&) const;
+template short result::get(const string_type&, const short&) const;
+template unsigned short result::get(const string_type&, const unsigned short&) const;
+template long result::get(const string_type&, const long&) const;
+template unsigned long result::get(const string_type&, const unsigned long&) const;
+template long long result::get(const string_type&, const long long&) const;
+template unsigned long long result::get(const string_type&, const unsigned long long&) const;
+template int result::get(const string_type&, const int&) const;
+template unsigned int result::get(const string_type&, const unsigned int&) const;
+template float result::get(const string_type&, const float&) const;
+template double result::get(const string_type&, const double&) const;
+template string_type result::get(const string_type&, const string_type&) const;
+template date result::get(const string_type&, const date&) const;
+template timestamp result::get(const string_type&, const timestamp&) const;
 
 } // namespace nanodbc
 
