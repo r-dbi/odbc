@@ -480,6 +480,9 @@ public:
     connection(const string_type& connection_string, long timeout = 0);
 
     //! \brief Automatically disconnects from the database and frees all associated resources.
+    //!
+    //! Will not throw even if disconnecting causes some kind of error and raises an exception.
+    //! If you explicitly need to know if disconnect() succeeds, call it directly.
     ~connection() throw();
 
     //! \brief Create new connection object and immediately connect to the given data source.
