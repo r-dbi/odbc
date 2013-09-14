@@ -752,12 +752,12 @@ public:
         open(conn);
     }
 
-    statement_impl(class connection& conn, const string_type& query)
+    statement_impl(class connection& conn, const string_type& query, long timeout)
     : stmt_(0)
     , open_(false)
     , conn_()
     {
-        prepare(conn, query);
+        prepare(conn, query, timeout);
     }
 
     ~statement_impl() throw()
@@ -839,16 +839,17 @@ public:
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
-    void prepare(class connection& conn, const string_type& query)
+    void prepare(class connection& conn, const string_type& query, long timeout)
     {
         open(conn);
-        prepare(query);
+        prepare(query, timeout);
     }
 
-    void prepare(const string_type& query)
+    void prepare(const string_type& query, long timeout)
     {
         if(!open())
             throw programming_error("statement has no associated open connection");
+
         RETCODE rc;
         NANODBC_CALL_RC(
             NANODBC_UNICODE(SQLPrepare)
@@ -858,9 +859,25 @@ public:
             , SQL_NTS);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+
+        this->timeout(timeout);
     }
 
-    result execute_direct(class connection& conn, const string_type& query, long batch_operations, statement& statement)
+    void timeout(long timeout)
+    {
+        RETCODE rc;
+        NANODBC_CALL_RC(
+            SQLSetStmtAttr
+            , rc
+            , stmt_
+            , SQL_ATTR_QUERY_TIMEOUT
+            , (SQLPOINTER)timeout,
+             0);
+        if(!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+    }
+
+    result execute_direct(class connection& conn, const string_type& query, long batch_operations, long timeout, statement& statement)
     {
         open(conn);
 
@@ -874,6 +891,8 @@ public:
             , 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+
+        this->timeout(timeout);
 
         NANODBC_CALL_RC(
             NANODBC_UNICODE(SQLExecDirect)
@@ -888,7 +907,7 @@ public:
         return result(statement, batch_operations);
     }
 
-    result execute(long batch_operations, statement& statement)
+    result execute(long batch_operations, long timeout, statement& statement)
     {
         RETCODE rc;
         NANODBC_CALL_RC(
@@ -900,6 +919,8 @@ public:
             , 0);
         if(!success(rc) && rc != SQL_NO_DATA)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+
+        this->timeout(timeout);
 
         NANODBC_CALL_RC(SQLExecute, rc, stmt_);
         if(!success(rc) && rc != SQL_NO_DATA)
@@ -1643,10 +1664,10 @@ T result::result_impl::get_impl(short column) const
 namespace nanodbc
 {
 
-result execute(connection& conn, const string_type& query, long batch_operations)
+result execute(connection& conn, const string_type& query, long batch_operations, long timeout)
 {
     class statement statement;
-    return statement.execute_direct(conn, query, batch_operations);
+    return statement.execute_direct(conn, query, batch_operations, timeout);
 }
 
 result execute(statement& stmt, long batch_operations)
@@ -1662,9 +1683,9 @@ result transact(statement& stmt, long batch_operations)
     return rvalue;
 }
 
-void prepare(statement& stmt, const string_type& query)
+void prepare(statement& stmt, const string_type& query, long timeout)
 {
-    stmt.prepare(query);
+    stmt.prepare(query, timeout);
 }
 
 } // namespace nanodbc
@@ -1866,8 +1887,8 @@ statement::statement(class connection& conn)
 
 }
 
-statement::statement(class connection& conn, const string_type& query)
-: impl_(new statement_impl(conn, query))
+statement::statement(class connection& conn, const string_type& query, long timeout)
+: impl_(new statement_impl(conn, query, timeout))
 {
 
 }
@@ -1935,24 +1956,29 @@ void statement::cancel()
     impl_->cancel();
 }
 
-void statement::prepare(class connection& conn, const string_type& query)
+void statement::prepare(class connection& conn, const string_type& query, long timeout)
 {
-    impl_->prepare(conn, query);
+    impl_->prepare(conn, query, timeout);
 }
 
-void statement::prepare(const string_type& query)
+void statement::prepare(const string_type& query, long timeout)
 {
-    impl_->prepare(query);
+    impl_->prepare(query, timeout);
 }
 
-result statement::execute_direct(class connection& conn, const string_type& query, long batch_operations)
+void statement::timeout(long timeout)
 {
-    return impl_->execute_direct(conn, query, batch_operations, *this);
+    impl_->timeout(timeout);
 }
 
-result statement::execute(long batch_operations)
+result statement::execute_direct(class connection& conn, const string_type& query, long batch_operations, long timeout)
 {
-    return impl_->execute(batch_operations, *this);
+    return impl_->execute_direct(conn, query, batch_operations, timeout, *this);
+}
+
+result statement::execute(long batch_operations, long timeout)
+{
+    return impl_->execute(batch_operations, timeout, *this);
 }
 
 long statement::affected_rows() const

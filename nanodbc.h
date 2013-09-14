@@ -322,8 +322,9 @@ public:
     //! \brief Constructs and prepares a statement using the given connection and query.
     //! \param conn The connection to use.
     //! \param query The SQL query statement.
+    //! \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
     //! \see execute(), execute_direct(), open(), prepare()
-    statement(class connection& conn, const string_type& query);
+    statement(class connection& conn, const string_type& query, long timeout = 0);
 
     //! Copy constructor.
     statement(const statement& rhs);
@@ -368,33 +369,41 @@ public:
     //! \brief Opens and prepares the given statement to execute on the given connection.
     //! \param conn The connection where the statement will be executed.
     //! \param query The SQL query that will be executed.
+    //! \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
     //! \see open()
     //! \throws database_error
-    void prepare(class connection& conn, const string_type& query);
+    void prepare(class connection& conn, const string_type& query, long timeout = 0);
 
     //! \brief Prepares the given statement to execute its associated connection.
     //! If the statement is not open throws programming_error.
     //! \param query The SQL query that will be executed.
+    //! \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
     //! \see open()
     //! \throws database_error, programming_error
-    void prepare(const string_type& query);
+    void prepare(const string_type& query, long timeout = 0);
+
+    //! \brief Sets the number in seconds before query timeout. Default is 0 indicating no timeout.
+    //! \throws database_error
+    void timeout(long timeout = 0);
 
     //! \brief Immediately opens, prepares, and executes the given query directly on the given connection.
     //! \param conn The connection where the statement will be executed.
     //! \param query The SQL query that will be executed.
     //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+    //! \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
     //! \return A result set object.
     //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
     //! \see open(), prepare(), execute(), result, transaction
-    class result execute_direct(class connection& conn, const string_type& query, long batch_operations = 1);
+    class result execute_direct(class connection& conn, const string_type& query, long batch_operations = 1, long timeout = 0);
 
     //! \brief Execute the previously prepared query now.
     //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+    //! \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
     //! \throws database_error
     //! \return A result set object.
     //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
     //! \see open(), prepare(), execute(), result, transaction
-    class result execute(long batch_operations = 1);
+    class result execute(long batch_operations = 1, long timeout = 0);
 
     //! \brief Returns the number of rows affected by the request or –1 if the number of affected rows is not available.
     //! \throws database_error
@@ -722,10 +731,11 @@ private:
 //! \param conn The connection where the statement will be executed.
 //! \param query The SQL query that will be executed.
 //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+//! \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
 //! \return A result set object.
 //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
 //! \see open(), prepare(), execute(), result, transaction
-result execute(connection& conn, const string_type& query, long batch_operations = 1);
+result execute(connection& conn, const string_type& query, long batch_operations = 1, long timeout = 0);
 
 //! \brief Execute the previously prepared query now.
 //! \param stmt The prepared statement that will be executed.
@@ -749,9 +759,10 @@ result transact(statement& stmt, long batch_operations);
 //! If the statement is not open throws programming_error.
 //! \param conn The connection where the statement will be executed.
 //! \param query The SQL query that will be executed.
+//! \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
 //! \see open()
 //! \throws database_error, programming_error
-void prepare(statement& stmt, const string_type& query);
+void prepare(statement& stmt, const string_type& query, long timeout = 0);
 
 //! @}
 
