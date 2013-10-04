@@ -318,17 +318,17 @@ namespace
         static const SQLSMALLINT sqltype = SQL_TIMESTAMP;
     };
 
-     const nanodbc::string_type::value_type* const sql_type_info<wchar_t>::format = NANODBC_TEXT("%lc");
-     const nanodbc::string_type::value_type* const sql_type_info<short>::format = NANODBC_TEXT("%hd");
-     const nanodbc::string_type::value_type* const sql_type_info<unsigned short>::format = NANODBC_TEXT("%hu");
-     const nanodbc::string_type::value_type* const sql_type_info<int32_t>::format = NANODBC_TEXT("%ld");
-     const nanodbc::string_type::value_type* const sql_type_info<uint32_t>::format = NANODBC_TEXT("%lu");
-     const nanodbc::string_type::value_type* const sql_type_info<int64_t>::format = NANODBC_TEXT("%ld");
-     const nanodbc::string_type::value_type* const sql_type_info<uint64_t>::format = NANODBC_TEXT("%lu");
-     const nanodbc::string_type::value_type* const sql_type_info<float>::format = NANODBC_TEXT("%f");
-     const nanodbc::string_type::value_type* const sql_type_info<double>::format = NANODBC_TEXT("%lf");
+	const nanodbc::string_type::value_type* const sql_type_info<wchar_t>::format = NANODBC_TEXT("%lc");
+	const nanodbc::string_type::value_type* const sql_type_info<short>::format = NANODBC_TEXT("%hd");
+	const nanodbc::string_type::value_type* const sql_type_info<unsigned short>::format = NANODBC_TEXT("%hu");
+	const nanodbc::string_type::value_type* const sql_type_info<int32_t>::format = NANODBC_TEXT("%ld");
+	const nanodbc::string_type::value_type* const sql_type_info<uint32_t>::format = NANODBC_TEXT("%lu");
+	const nanodbc::string_type::value_type* const sql_type_info<int64_t>::format = NANODBC_TEXT("%ld");
+	const nanodbc::string_type::value_type* const sql_type_info<uint64_t>::format = NANODBC_TEXT("%lu");
+	const nanodbc::string_type::value_type* const sql_type_info<float>::format = NANODBC_TEXT("%f");
+	const nanodbc::string_type::value_type* const sql_type_info<double>::format = NANODBC_TEXT("%lf");
 
-    // Converts the given string to the given type T.
+	// Converts the given string to the given type T.
     template<class T>
     inline T convert(const nanodbc::string_type& s)
     {
@@ -528,7 +528,7 @@ public:
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
-        string_type::value_type dsn[1024];
+        NANODBC_SQLCHAR dsn[1024];
         SQLSMALLINT dsn_size = 0;
         NANODBC_CALL_RC(
             NANODBC_UNICODE(SQLDriverConnect)
@@ -536,7 +536,8 @@ public:
             , conn_
             , 0
             , (NANODBC_SQLCHAR*)connection_string.c_str(), SQL_NTS
-            , (NANODBC_SQLCHAR*)dsn, sizeof(dsn)
+            , dsn
+			, sizeof(dsn) / sizeof(NANODBC_SQLCHAR)
             , &dsn_size
             , SQL_DRIVER_NOPROMPT);
         if(!success(rc))
@@ -579,7 +580,7 @@ public:
 
     string_type driver_name() const
     {
-        string_type::value_type name[1024];
+        NANODBC_SQLCHAR name[1024];
         SQLSMALLINT length;
         RETCODE rc;
         NANODBC_CALL_RC(
@@ -588,7 +589,7 @@ public:
             , conn_
             , SQL_DRIVER_NAME
             , name
-            , sizeof(name)
+            , sizeof(name) / sizeof(NANODBC_SQLCHAR)
             , &length);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
@@ -860,8 +861,8 @@ public:
             NANODBC_UNICODE(SQLPrepare)
             , rc
             , stmt_
-            , (NANODBC_SQLCHAR*)query.c_str()
-            , SQL_NTS);
+            , (SQLWCHAR*)query.c_str()
+            , (SQLINTEGER)query.size() );
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
@@ -870,16 +871,16 @@ public:
 
     void timeout(long timeout)
     {
-        RETCODE rc;
-        NANODBC_CALL_RC(
-            SQLSetStmtAttr
-            , rc
-            , stmt_
-            , SQL_ATTR_QUERY_TIMEOUT
-            , (SQLPOINTER)timeout,
-             0);
-        if(!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+		RETCODE rc;
+		NANODBC_CALL_RC(
+			SQLSetStmtAttr
+			, rc
+			, stmt_
+			, SQL_ATTR_QUERY_TIMEOUT
+			, (SQLPOINTER)timeout,
+			 0);
+		if(!success(rc))
+			NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);       
     }
 
     result execute_direct(class connection& conn, const string_type& query, long batch_operations, long timeout, statement& statement)
@@ -980,7 +981,7 @@ public:
     }
 
     template<class T>
-    void bind_parameter(short param, const T* value, null_type* nulls, param_direction direction)
+	void bind_parameter(short param, const T* value, std::size_t value_length, null_type* nulls, param_direction direction)
     {
         RETCODE rc;
         SQLSMALLINT data_type;
@@ -1028,7 +1029,7 @@ public:
             , parameter_size // column size ignored for many types, but needed for strings
             , 0
             , (SQLPOINTER)value
-            , parameter_size
+            , value_length
             , nulls);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
@@ -1066,15 +1067,15 @@ public:
     , bound_columns_by_name_()
     {
         RETCODE rc;
-        NANODBC_CALL_RC(
-            SQLSetStmtAttr
-            , rc
-            , stmt_.native_statement_handle()
-            , SQL_ATTR_ROW_ARRAY_SIZE
-            , (SQLPOINTER)rowset_size_
-            , 0);
-        if(!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
+		NANODBC_CALL_RC(
+			SQLSetStmtAttr
+			, rc
+			, stmt_.native_statement_handle()
+			, SQL_ATTR_ROW_ARRAY_SIZE
+			, (SQLPOINTER)rowset_size_
+			, 0);
+		if(!success(rc))
+			NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
 
         NANODBC_CALL_RC(SQLSetStmtAttr
             , rc
@@ -1084,7 +1085,7 @@ public:
             , 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
-
+            
         auto_bind();
     }
 
@@ -1362,7 +1363,7 @@ private:
                 , stmt_.native_statement_handle()
                 , i + 1
                 , (NANODBC_SQLCHAR*)column_name
-                , sizeof(column_name)
+                , sizeof(column_name)/sizeof(NANODBC_SQLCHAR)
                 , &len
                 , &sqltype
                 , &sqlsize
@@ -1414,12 +1415,12 @@ private:
                 case SQL_CHAR:
                 case SQL_VARCHAR:
                     col.ctype_ = SQL_C_CHAR;
-                    col.clen_ = col.sqlsize_ + 1;
+                    col.clen_ = col.sqlsize_ + sizeof(NANODBC_SQLCHAR);
                     break;
                 case SQL_WCHAR:
                 case SQL_WVARCHAR:
                     col.ctype_ = SQL_C_WCHAR;
-                    col.clen_ = col.sqlsize_ + 1;
+                    col.clen_ = col.sqlsize_ + sizeof(NANODBC_SQLCHAR);
                     break;
                 case SQL_LONGVARCHAR:
                     col.ctype_ = SQL_C_CHAR;
@@ -1429,7 +1430,7 @@ private:
                 case SQL_BINARY:
                 case SQL_VARBINARY:
                     col.ctype_ = SQL_C_BINARY;
-                    col.clen_ = col.sqlsize_ + 1;
+                    col.clen_ = col.sqlsize_ + sizeof(NANODBC_SQLCHAR);
                     break;
                 case SQL_LONGVARBINARY:
                     col.ctype_ = SQL_C_BINARY;
@@ -1483,7 +1484,7 @@ private:
 private:
     statement stmt_;
     const long rowset_size_;
-    long row_count_;
+    SQLULEN  row_count_;
     bound_column* bound_columns_;
     short bound_columns_size_;
     long rowset_position_;
@@ -1612,7 +1613,7 @@ inline string_type result::result_impl::get_impl<string_type>(short column) cons
             char* old_lc_time = std::setlocale(LC_TIME, NULL);
             std::setlocale(LC_TIME, "");
             string_type::value_type date_str[512];
-            NANODBC_STRFTIME(date_str, sizeof(date_str) / sizeof(string_type::value_type), NANODBC_TEXT("%F"), &st);
+            NANODBC_STRFTIME(date_str, sizeof(date_str) / sizeof(string_type::value_type), NANODBC_TEXT("%Y-%m-%d"), &st);
             std::setlocale(LC_TIME, old_lc_time);
             return string_type(date_str);
         }
@@ -1630,7 +1631,7 @@ inline string_type result::result_impl::get_impl<string_type>(short column) cons
             char* old_lc_time = std::setlocale(LC_TIME, NULL);
             std::setlocale(LC_TIME, "");
             string_type::value_type date_str[512];
-            NANODBC_STRFTIME(date_str, sizeof(date_str) / sizeof(string_type::value_type), NANODBC_TEXT("%FT%H:%M:%S%z"), &st);
+			NANODBC_STRFTIME(date_str, sizeof(date_str) / sizeof(string_type::value_type), NANODBC_TEXT("%Y-%m-%d %H:%M:%S %z"), &st);
             std::setlocale(LC_TIME, old_lc_time);
             return string_type(date_str);
         }
@@ -2001,28 +2002,28 @@ void statement::reset_parameters() throw()
     impl_->reset_parameters();
 }
 
-unsigned long statement::parameter_size(short param) const
+unsigned long statement::parameter_size(long param) const
 {
     return impl_->parameter_size(param);
 }
 
 template<class T>
-void statement::bind_parameter(short param, const T* value, null_type* nulls, param_direction direction)
+void statement::bind_parameter(long param, const T* value, null_type* nulls, param_direction direction, std::size_t value_length)
 {
-    impl_->bind_parameter(param, reinterpret_cast<const T*>(value), nulls, direction);
+    impl_->bind_parameter(param, reinterpret_cast<const T*>(value), value_length, nulls, direction);
 }
 
 // The following are the only supported instantiations of statement::bind_parameter().
-template void statement::bind_parameter(short, const char*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(short, const short*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(short, const unsigned short*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(short, const int32_t*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(short, const uint32_t*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(short, const int64_t*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(short, const uint64_t*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(short, const float*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(short, const double*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(short, const date*, nanodbc::null_type*, param_direction);
+template void statement::bind_parameter(long, const string_type::value_type*, nanodbc::null_type*, param_direction, std::size_t);
+template void statement::bind_parameter(long, const short*, nanodbc::null_type*, param_direction, std::size_t);
+template void statement::bind_parameter(long, const unsigned short*, nanodbc::null_type*, param_direction, std::size_t);
+template void statement::bind_parameter(long, const int32_t*, nanodbc::null_type*, param_direction, std::size_t);
+template void statement::bind_parameter(long, const uint32_t*, nanodbc::null_type*, param_direction, std::size_t);
+template void statement::bind_parameter(long, const int64_t*, nanodbc::null_type*, param_direction, std::size_t);
+template void statement::bind_parameter(long, const uint64_t*, nanodbc::null_type*, param_direction, std::size_t);
+template void statement::bind_parameter(long, const float*, nanodbc::null_type*, param_direction, std::size_t);
+template void statement::bind_parameter(long, const double*, nanodbc::null_type*, param_direction, std::size_t);
+template void statement::bind_parameter(long, const date*, nanodbc::null_type*, param_direction, std::size_t);
 
 } // namespace nanodbc
 
