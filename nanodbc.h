@@ -424,29 +424,32 @@ public:
     //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     //! Placeholder numbers count from left to right and are 0-indexed.
     //! 
+	//! It is possible to use this function for bulk operations.
+	//! 
     //! \param param Placeholder position.
     //! \param value Value to substitute into placeholder.
     //! \param nulls Used to batch insert nulls into the database.
     //! \param param_direciton ODBC parameter direction.
     //! \throws database_error
     template<class T>
-    void bind_parameter(long param, const T* value, null_type* nulls = 0, param_direction direction = PARAM_IN);
+	void bind_parameter(long param, const T* value, null_type* nulls = 0, param_direction direction = PARAM_IN, std::size_t value_length = sizeof(T));
 
     //! \brief Binds the given values to the given parameter placeholder number in the prepared statement.
     //!
     //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     //! Placeholder numbers count from left to right and are 0-indexed.
     //! 
-    //! Typically you would use bulk operations with a row size of N when executing a statement bound this way.
+	//! This function is dedicated to bulk operations involving strings.
     //! 
     //! \param param Placeholder position.
     //! \param values Values to bulk substitute into placeholder.
     //! \throws database_error
-    template<class T, std::size_t N>
-    void bind_parameter(long param, const T(*values)[N])
+	template<std::size_t N, std::size_t M>
+	void bind_parameter_string_array(long param, const string_type::value_type (&values)[N][M], null_type* nulls = 0, param_direction direction = PARAM_IN)
     {
-        bind_parameter(param, reinterpret_cast<const T*>(values));
+        bind_parameter(param, reinterpret_cast<const string_type::value_type*>(values), nulls, direction, M*sizeof(string_type::value_type));
     }
+
 
 private:
     class statement_impl;
