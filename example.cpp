@@ -78,7 +78,7 @@ void run_test(const char* connection_string)
         prepare(statement, "insert into public.batch_test (x, y, z) values (?, ?, ?);");
 
         const char xdata[][10] = {"this", "is", "a", "test"};
-        statement.bind_parameter(0, xdata);
+        statement.bind_parameter(0, (char*)xdata);
         
         int ydata[] = { 1, 2, 3, 4 };
         statement.bind_parameter(1, ydata);
