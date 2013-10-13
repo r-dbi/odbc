@@ -38,6 +38,7 @@
         #define NANODBC_SSCANF std::swscanf
         #define NANODBC_SNPRINTF swprintf
         #define NANODBC_STRFTIME std::wcsftime
+		#define NANODBC_STRLEN wcslen
         #define NANODBC_UNICODE(f) f ## W
         #define NANODBC_SQLCHAR SQLWCHAR
     #else
@@ -45,6 +46,7 @@
         #define NANODBC_SSCANF std::sscanf
         #define NANODBC_SNPRINTF _snprintf
         #define NANODBC_STRFTIME std::strftime
+		#define NANODBC_STRLEN strlen
         #define NANODBC_UNICODE(f) f
         #define NANODBC_SQLCHAR SQLCHAR
     #endif
@@ -54,6 +56,7 @@
         #define NANODBC_SSCANF std::swscanf
         #define NANODBC_SNPRINTF swprintf
         #define NANODBC_STRFTIME std::wcsftime
+		#define NANODBC_STRLEN wcslen
         #define NANODBC_UNICODE(f) f ## W
         #define NANODBC_SQLCHAR SQLWCHAR
     #else
@@ -61,6 +64,7 @@
         #define NANODBC_SSCANF std::sscanf
         #define NANODBC_SNPRINTF std::snprintf
         #define NANODBC_STRFTIME std::strftime
+		#define NANODBC_STRLEN strlen
         #define NANODBC_UNICODE(f) f
         #define NANODBC_SQLCHAR SQLCHAR
     #endif
@@ -111,8 +115,8 @@ namespace
     // Attempts to get the last ODBC error as a string.
     inline std::string last_error(SQLHANDLE handle, SQLSMALLINT handle_type)
     {
-        SQLCHAR sql_state[6];
-        SQLCHAR sql_message[SQL_MAX_MESSAGE_LENGTH];
+        NANODBC_SQLCHAR sql_state[6];
+        NANODBC_SQLCHAR sql_message[SQL_MAX_MESSAGE_LENGTH];
         SQLINTEGER native_error;
         SQLSMALLINT total_bytes;
         RETCODE rc;
@@ -122,16 +126,17 @@ namespace
             , handle_type
             , handle
             , 1
-            , (SQLCHAR*)sql_state
+            , sql_state
             , &native_error
-            , (SQLCHAR*)sql_message
+            , sql_message
             , sizeof(sql_message)
             , &total_bytes);
         if(success(rc))
         {
-            std::string error = reinterpret_cast<std::string::value_type*>(sql_message);
-            std::string status = reinterpret_cast<std::string::value_type*>(sql_state);
-            return status + ": " + error;
+			std::string status( &sql_state[0], &sql_state[NANODBC_STRLEN(sql_state)] );
+			status += ": ";
+			status += std::string( &sql_message[0], &sql_message[NANODBC_STRLEN(sql_message)] );
+			return status;
         }
         return "Unknown Error: SQLGetDiagRec() call failed";
     }
@@ -955,7 +960,7 @@ public:
         NANODBC_CALL(SQLFreeStmt, stmt_, SQL_RESET_PARAMS);
     }
 
-    unsigned long parameter_size(long param) const
+    unsigned long parameter_size(short param) const
     {
         RETCODE rc;
         SQLSMALLINT data_type;
@@ -975,7 +980,7 @@ public:
     }
 
     template<class T>
-    void bind_parameter(long param, const T* value, null_type* nulls, param_direction direction)
+    void bind_parameter(short param, const T* value, null_type* nulls, param_direction direction)
     {
         RETCODE rc;
         SQLSMALLINT data_type;
@@ -1575,7 +1580,7 @@ inline string_type result::result_impl::get_impl<string_type>(short column) cons
                     , NANODBC_TEXT("%ld")
                     , *(long*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
                 throw type_incompatible_error();
-            buffer.resize(strlen(buffer.c_str()));
+            buffer.resize(NANODBC_STRLEN(buffer.c_str()));
             return buffer;
         }
 
@@ -1588,7 +1593,7 @@ inline string_type result::result_impl::get_impl<string_type>(short column) cons
                     , NANODBC_TEXT("%f")
                     , *(float*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
                 throw type_incompatible_error();
-            buffer.resize(strlen(buffer.c_str()));
+            buffer.resize(NANODBC_STRLEN(buffer.c_str()));
             return buffer;
         }
 
@@ -1601,7 +1606,7 @@ inline string_type result::result_impl::get_impl<string_type>(short column) cons
                     , NANODBC_TEXT("%lf")
                     , *(double*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
                 throw type_incompatible_error();
-            buffer.resize(strlen(buffer.c_str()));
+            buffer.resize(NANODBC_STRLEN(buffer.c_str()));
             return buffer;
         }
 
@@ -2004,28 +2009,28 @@ void statement::reset_parameters() throw()
     impl_->reset_parameters();
 }
 
-unsigned long statement::parameter_size(long param) const
+unsigned long statement::parameter_size(short param) const
 {
     return impl_->parameter_size(param);
 }
 
 template<class T>
-void statement::bind_parameter(long param, const T* value, null_type* nulls, param_direction direction)
+void statement::bind_parameter(short param, const T* value, null_type* nulls, param_direction direction)
 {
     impl_->bind_parameter(param, reinterpret_cast<const T*>(value), nulls, direction);
 }
 
 // The following are the only supported instantiations of statement::bind_parameter().
-template void statement::bind_parameter(long, const char*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(long, const short*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(long, const unsigned short*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(long, const int32_t*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(long, const uint32_t*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(long, const int64_t*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(long, const uint64_t*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(long, const float*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(long, const double*, nanodbc::null_type*, param_direction);
-template void statement::bind_parameter(long, const date*, nanodbc::null_type*, param_direction);
+template void statement::bind_parameter(short, const char*, nanodbc::null_type*, param_direction);
+template void statement::bind_parameter(short, const short*, nanodbc::null_type*, param_direction);
+template void statement::bind_parameter(short, const unsigned short*, nanodbc::null_type*, param_direction);
+template void statement::bind_parameter(short, const int32_t*, nanodbc::null_type*, param_direction);
+template void statement::bind_parameter(short, const uint32_t*, nanodbc::null_type*, param_direction);
+template void statement::bind_parameter(short, const int64_t*, nanodbc::null_type*, param_direction);
+template void statement::bind_parameter(short, const uint64_t*, nanodbc::null_type*, param_direction);
+template void statement::bind_parameter(short, const float*, nanodbc::null_type*, param_direction);
+template void statement::bind_parameter(short, const double*, nanodbc::null_type*, param_direction);
+template void statement::bind_parameter(short, const date*, nanodbc::null_type*, param_direction);
 
 } // namespace nanodbc
 
