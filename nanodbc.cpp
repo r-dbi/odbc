@@ -36,9 +36,9 @@
     #ifdef NANODBC_USE_UNICODE
         #define NANODBC_TEXT(s) L ## s
         #define NANODBC_SSCANF std::swscanf
-        #define NANODBC_SNPRINTF swprintf
+        #define NANODBC_SNPRINTF std::swprintf
         #define NANODBC_STRFTIME std::wcsftime
-		#define NANODBC_STRLEN wcslen
+        #define NANODBC_STRLEN std::wcslen
         #define NANODBC_UNICODE(f) f ## W
         #define NANODBC_SQLCHAR SQLWCHAR
     #else
@@ -46,7 +46,7 @@
         #define NANODBC_SSCANF std::sscanf
         #define NANODBC_SNPRINTF _snprintf
         #define NANODBC_STRFTIME std::strftime
-		#define NANODBC_STRLEN strlen
+        #define NANODBC_STRLEN std::strlen
         #define NANODBC_UNICODE(f) f
         #define NANODBC_SQLCHAR SQLCHAR
     #endif
@@ -54,9 +54,9 @@
     #ifdef NANODBC_USE_UNICODE
         #define NANODBC_TEXT(s) L ## s
         #define NANODBC_SSCANF std::swscanf
-        #define NANODBC_SNPRINTF swprintf
+        #define NANODBC_SNPRINTF std::swprintf
         #define NANODBC_STRFTIME std::wcsftime
-		#define NANODBC_STRLEN wcslen
+        #define NANODBC_STRLEN std::wcslen
         #define NANODBC_UNICODE(f) f ## W
         #define NANODBC_SQLCHAR SQLWCHAR
     #else
@@ -64,7 +64,7 @@
         #define NANODBC_SSCANF std::sscanf
         #define NANODBC_SNPRINTF std::snprintf
         #define NANODBC_STRFTIME std::strftime
-		#define NANODBC_STRLEN strlen
+        #define NANODBC_STRLEN std::strlen
         #define NANODBC_UNICODE(f) f
         #define NANODBC_SQLCHAR SQLCHAR
     #endif
@@ -112,6 +112,23 @@ namespace
         return rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO;
     }
 
+    // Returns the array size
+    template<typename T, std::size_t N>
+    inline std::size_t arrlen(T(&)[N])
+    {
+        return N;
+    }
+
+    // Operates like strlen() on a character array
+    template<typename T, std::size_t N>
+    inline std::size_t strarrlen(T(&a)[N])
+    {
+        const T* s = &a[0];
+        std::size_t i = 0;
+        while(*s++ && i < N) i++;
+        return i;
+    }
+
     // Attempts to get the last ODBC error as a string.
     inline std::string last_error(SQLHANDLE handle, SQLSMALLINT handle_type)
     {
@@ -133,10 +150,10 @@ namespace
             , &total_bytes);
         if(success(rc))
         {
-			std::string status( &sql_state[0], &sql_state[NANODBC_STRLEN(sql_state)] );
-			status += ": ";
-			status += std::string( &sql_message[0], &sql_message[NANODBC_STRLEN(sql_message)] );
-			return status;
+            std::string status(&sql_state[0], &sql_state[arrlen(sql_state)]);
+            status += ": ";
+            status += std::string(&sql_message[0], &sql_message[strarrlen(sql_message)]);
+            return status;
         }
         return "Unknown Error: SQLGetDiagRec() call failed";
     }
@@ -318,15 +335,15 @@ namespace
         static const SQLSMALLINT sqltype = SQL_TIMESTAMP;
     };
 
-     const nanodbc::string_type::value_type* const sql_type_info<wchar_t>::format = NANODBC_TEXT("%lc");
-     const nanodbc::string_type::value_type* const sql_type_info<short>::format = NANODBC_TEXT("%hd");
-     const nanodbc::string_type::value_type* const sql_type_info<unsigned short>::format = NANODBC_TEXT("%hu");
-     const nanodbc::string_type::value_type* const sql_type_info<int32_t>::format = NANODBC_TEXT("%ld");
-     const nanodbc::string_type::value_type* const sql_type_info<uint32_t>::format = NANODBC_TEXT("%lu");
-     const nanodbc::string_type::value_type* const sql_type_info<int64_t>::format = NANODBC_TEXT("%ld");
-     const nanodbc::string_type::value_type* const sql_type_info<uint64_t>::format = NANODBC_TEXT("%lu");
-     const nanodbc::string_type::value_type* const sql_type_info<float>::format = NANODBC_TEXT("%f");
-     const nanodbc::string_type::value_type* const sql_type_info<double>::format = NANODBC_TEXT("%lf");
+    const nanodbc::string_type::value_type* const sql_type_info<wchar_t>::format = NANODBC_TEXT("%lc");
+    const nanodbc::string_type::value_type* const sql_type_info<short>::format = NANODBC_TEXT("%hd");
+    const nanodbc::string_type::value_type* const sql_type_info<unsigned short>::format = NANODBC_TEXT("%hu");
+    const nanodbc::string_type::value_type* const sql_type_info<int32_t>::format = NANODBC_TEXT("%ld");
+    const nanodbc::string_type::value_type* const sql_type_info<uint32_t>::format = NANODBC_TEXT("%lu");
+    const nanodbc::string_type::value_type* const sql_type_info<int64_t>::format = NANODBC_TEXT("%ld");
+    const nanodbc::string_type::value_type* const sql_type_info<uint64_t>::format = NANODBC_TEXT("%lu");
+    const nanodbc::string_type::value_type* const sql_type_info<float>::format = NANODBC_TEXT("%f");
+    const nanodbc::string_type::value_type* const sql_type_info<double>::format = NANODBC_TEXT("%lf");
 
     // Converts the given string to the given type T.
     template<class T>
@@ -592,7 +609,7 @@ public:
             , &length);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-        return name;
+        return string_type(&name[0], &name[strarrlen(name)]);
     }
 
     std::size_t ref_transaction()
@@ -1620,7 +1637,7 @@ inline string_type result::result_impl::get_impl<string_type>(short column) cons
             char* old_lc_time = std::setlocale(LC_TIME, NULL);
             std::setlocale(LC_TIME, "");
             string_type::value_type date_str[512];
-            NANODBC_STRFTIME(date_str, sizeof(date_str) / sizeof(string_type::value_type), NANODBC_TEXT("%F"), &st);
+            NANODBC_STRFTIME(date_str, sizeof(date_str) / sizeof(string_type::value_type), NANODBC_TEXT("%Y-%m-%d"), &st);
             std::setlocale(LC_TIME, old_lc_time);
             return string_type(date_str);
         }
@@ -1638,7 +1655,7 @@ inline string_type result::result_impl::get_impl<string_type>(short column) cons
             char* old_lc_time = std::setlocale(LC_TIME, NULL);
             std::setlocale(LC_TIME, "");
             string_type::value_type date_str[512];
-            NANODBC_STRFTIME(date_str, sizeof(date_str) / sizeof(string_type::value_type), NANODBC_TEXT("%FT%H:%M:%S%z"), &st);
+            NANODBC_STRFTIME(date_str, sizeof(date_str) / sizeof(string_type::value_type), NANODBC_TEXT("%Y-%m-%d %H:%M:%S %z"), &st);
             std::setlocale(LC_TIME, old_lc_time);
             return string_type(date_str);
         }

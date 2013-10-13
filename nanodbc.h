@@ -417,7 +417,7 @@ public:
     void reset_parameters() throw();
 
     //! \brief Returns the parameter size for the indicated parameter placeholder within a prepared statement.
-    unsigned long parameter_size(long param) const;
+    unsigned long parameter_size(short param) const;
 
     //! \brief Binds the given value to the given parameter placeholder number in the prepared statement.
     //!
@@ -430,7 +430,7 @@ public:
     //! \param param_direciton ODBC parameter direction.
     //! \throws database_error
     template<class T>
-    void bind_parameter(long param, const T* value, null_type* nulls = 0, param_direction direction = PARAM_IN);
+    void bind_parameter(short param, const T* value, null_type* nulls = 0, param_direction direction = PARAM_IN);
 
     //! \brief Binds the given values to the given parameter placeholder number in the prepared statement.
     //!
@@ -443,7 +443,7 @@ public:
     //! \param values Values to bulk substitute into placeholder.
     //! \throws database_error
     template<class T, std::size_t N>
-    void bind_parameter(long param, const T(*values)[N])
+    void bind_parameter(short param, const T(*values)[N])
     {
         bind_parameter(param, reinterpret_cast<const T*>(values));
     }
