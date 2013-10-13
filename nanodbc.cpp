@@ -545,7 +545,7 @@ public:
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
-        string_type::value_type dsn[1024];
+        NANODBC_SQLCHAR dsn[1024];
         SQLSMALLINT dsn_size = 0;
         NANODBC_CALL_RC(
             NANODBC_UNICODE(SQLDriverConnect)
@@ -553,7 +553,8 @@ public:
             , conn_
             , 0
             , (NANODBC_SQLCHAR*)connection_string.c_str(), SQL_NTS
-            , (NANODBC_SQLCHAR*)dsn, sizeof(dsn)
+            , dsn
+            , sizeof(dsn) / sizeof(NANODBC_SQLCHAR)
             , &dsn_size
             , SQL_DRIVER_NOPROMPT);
         if(!success(rc))
@@ -596,7 +597,7 @@ public:
 
     string_type driver_name() const
     {
-        string_type::value_type name[1024];
+        NANODBC_SQLCHAR name[1024];
         SQLSMALLINT length;
         RETCODE rc;
         NANODBC_CALL_RC(
@@ -605,7 +606,7 @@ public:
             , conn_
             , SQL_DRIVER_NAME
             , name
-            , sizeof(name)
+            , sizeof(name) / sizeof(NANODBC_SQLCHAR)
             , &length);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
@@ -878,7 +879,7 @@ public:
             , rc
             , stmt_
             , (NANODBC_SQLCHAR*)query.c_str()
-            , SQL_NTS);
+            , (SQLINTEGER)query.size());
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
@@ -896,7 +897,7 @@ public:
             , (SQLPOINTER)timeout,
              0);
         if(!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);       
     }
 
     result execute_direct(class connection& conn, const string_type& query, long batch_operations, long timeout, statement& statement)
@@ -1101,7 +1102,7 @@ public:
             , 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
-
+            
         auto_bind();
     }
 
@@ -1387,7 +1388,7 @@ private:
                 , stmt_.native_statement_handle()
                 , i + 1
                 , (NANODBC_SQLCHAR*)column_name
-                , sizeof(column_name)
+                , sizeof(column_name)/sizeof(NANODBC_SQLCHAR)
                 , &len
                 , &sqltype
                 , &sqlsize
@@ -1439,12 +1440,12 @@ private:
                 case SQL_CHAR:
                 case SQL_VARCHAR:
                     col.ctype_ = SQL_C_CHAR;
-                    col.clen_ = col.sqlsize_ + 1;
+                    col.clen_ = col.sqlsize_ + sizeof(NANODBC_SQLCHAR);
                     break;
                 case SQL_WCHAR:
                 case SQL_WVARCHAR:
                     col.ctype_ = SQL_C_WCHAR;
-                    col.clen_ = col.sqlsize_ + 1;
+                    col.clen_ = col.sqlsize_ + sizeof(NANODBC_SQLCHAR);
                     break;
                 case SQL_LONGVARCHAR:
                     col.ctype_ = SQL_C_CHAR;
@@ -1454,7 +1455,7 @@ private:
                 case SQL_BINARY:
                 case SQL_VARBINARY:
                     col.ctype_ = SQL_C_BINARY;
-                    col.clen_ = col.sqlsize_ + 1;
+                    col.clen_ = col.sqlsize_ + sizeof(NANODBC_SQLCHAR);
                     break;
                 case SQL_LONGVARBINARY:
                     col.ctype_ = SQL_C_BINARY;
@@ -1508,7 +1509,7 @@ private:
 private:
     statement stmt_;
     const long rowset_size_;
-    long row_count_;
+    SQLULEN  row_count_;
     bound_column* bound_columns_;
     short bound_columns_size_;
     long rowset_position_;

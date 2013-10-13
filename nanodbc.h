@@ -424,6 +424,8 @@ public:
     //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     //! Placeholder numbers count from left to right and are 0-indexed.
     //! 
+    //! It is possible to use this function for bulk operations.
+    //! 
     //! \param param Placeholder position.
     //! \param value Value to substitute into placeholder.
     //! \param nulls Used to batch insert nulls into the database.
