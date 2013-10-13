@@ -681,6 +681,13 @@ public:
     //! \throws index_range_error
     string_type column_name(short column) const;
 
+    //! \brief Returns the size of the specified column.
+    //!
+    //! Columns are numbered from left to right and 0-indexed.
+    //! \param Column position. 
+    //! \throws index_range_error
+    long column_size(short column) const;
+
     //! \brief Returns the column number of the specified column name.
     //!
     //! Columns are numbered from left to right and 0-indexed.

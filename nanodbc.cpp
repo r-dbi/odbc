@@ -1212,6 +1212,14 @@ public:
         return bound_columns_[column].name_;
     }
 
+    long column_size(short column) const
+    {
+        if(column >= bound_columns_size_)
+            throw index_range_error();
+        bound_column& col = bound_columns_[column];
+        return col.sqlsize_;
+    }
+
     short column(const string_type& column_name) const
     {
         typedef std::map<string_type, bound_column*>::const_iterator iter;
@@ -2141,6 +2149,11 @@ bool result::is_null(const string_type& column_name) const
 string_type result::column_name(short column) const
 {
     return impl_->column_name(column);
+}
+
+long result::column_size(short column) const
+{
+    return impl_->column_size(column);
 }
 
 short result::column(const string_type& column_name) const
