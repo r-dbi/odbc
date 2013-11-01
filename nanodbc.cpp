@@ -153,6 +153,8 @@ namespace
             std::string status(&sql_state[0], &sql_state[arrlen(sql_state)]);
             status += ": ";
             status += std::string(&sql_message[0], &sql_message[strarrlen(sql_message)]);
+            using std::replace;
+            replace(status.begin(), status.end(), '\0', ' '); // some drivers insert \0 into error messages for unknown reasons
             return status;
         }
         return "Unknown Error: SQLGetDiagRec() call failed";
@@ -2049,6 +2051,7 @@ template void statement::bind_parameter(short, const uint64_t*, nanodbc::null_ty
 template void statement::bind_parameter(short, const float*, nanodbc::null_type*, param_direction);
 template void statement::bind_parameter(short, const double*, nanodbc::null_type*, param_direction);
 template void statement::bind_parameter(short, const date*, nanodbc::null_type*, param_direction);
+template void statement::bind_parameter(short, const timestamp*, nanodbc::null_type*, param_direction);
 
 } // namespace nanodbc
 
