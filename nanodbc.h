@@ -63,6 +63,17 @@
 
 #include <stdexcept>
 #include <string>
+#include <ciso646> // no effect, but will result in compiler macros being defined
+
+// Define NANODBC_HAS_TR1_NAMESPACE if your compiler's standard library implementation
+// has a std::tr1 namespace, otherwise we try to detect automatically.
+#ifndef NANODBC_HAS_TR1_NAMESPACE
+    #if defined(_LIBCPP_VERSION) // libc++
+        #define NANODBC_HAS_TR1_NAMESPACE 0
+    #elif defined(__GLIBCXX__) // stdlibc++
+        #define NANODBC_HAS_TR1_NAMESPACE 1
+    #endif
+#endif
 
 #ifdef NANODBC_USE_BOOST
     #define NANODBC_TR1_STD std::
@@ -76,9 +87,15 @@
     // You must explicitly request C++11 support by defining NANODBC_USE_CPP11 at compile time
     // , otherwise nanodbc will assume it must use tr1 instead.
     #ifndef NANODBC_USE_CPP11
-        #include <tr1/cstdint>
-        #include <tr1/memory>
-        #define NANODBC_TR1_STD std::tr1::
+        #if NANODBC_HAS_TR1_NAMESPACE
+            #include <tr1/cstdint>
+            #include <tr1/memory>
+            #define NANODBC_TR1_STD std::tr1::
+        #else
+            #include <cstdint>
+            #include <memory>
+            #define NANODBC_TR1_STD std::
+        #endif
     #else
         #include <cstdint>
         #include <memory>
