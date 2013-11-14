@@ -1,4 +1,6 @@
 #include "nanodbc.h"
+#include <sql.h> // including only for SQL_NULL_DATA
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
@@ -37,6 +39,20 @@ void run_test(const char* connection_string)
     execute(connection, "insert into public.simple_test (b) values ('z');");
     nanodbc::result results = execute(connection, "select * from public.simple_test;");
     show(results);
+
+    // Inserting NULL values using bind_parameter()
+    {
+        nanodbc::statement statement(connection);
+        prepare(statement, "insert into public.simple_test (a, b) values (?, ?);");
+        const int howmany = 5;
+        nanodbc::null_type nulls[howmany];
+        fill(&nulls[0], &nulls[howmany], SQL_NULL_DATA);
+        statement.bind_parameter(0, (int*)0, nulls);
+        statement.bind_parameter(1, (char*)0, nulls);
+        execute(statement, howmany);
+        nanodbc::result results = execute(connection, "select * from public.simple_test;");
+        show(results);
+    }
 
     // Accessing results by name, or column number
     results = execute(connection, "select a as first, b as second from public.simple_test where a = 1;");
