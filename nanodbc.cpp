@@ -136,8 +136,10 @@ namespace
     // Attempts to get the last ODBC error as a string.
     inline std::string last_error(SQLHANDLE handle, SQLSMALLINT handle_type)
     {
-        NANODBC_SQLCHAR sql_state[6];
-        NANODBC_SQLCHAR sql_message[SQL_MAX_MESSAGE_LENGTH];
+        // last error always retrieved as char*, even in unicode mode
+        SQLCHAR sql_state[6];
+        SQLCHAR sql_message[SQL_MAX_MESSAGE_LENGTH];
+
         SQLINTEGER native_error;
         SQLSMALLINT total_bytes;
         RETCODE rc;
@@ -152,6 +154,7 @@ namespace
             , sql_message
             , sizeof(sql_message)
             , &total_bytes);
+
         if(success(rc))
         {
             std::string status(&sql_state[0], &sql_state[arrlen(sql_state)]);
@@ -161,6 +164,7 @@ namespace
             replace(status.begin(), status.end(), '\0', ' '); // some drivers insert \0 into error messages for unknown reasons
             return status;
         }
+
         return "Unknown Error: SQLGetDiagRec() call failed";
     }
 } // namespace
@@ -1731,14 +1735,26 @@ inline string_type result::result_impl::get_impl<string_type>(short column) cons
         }
 
         case SQL_C_LONG:
+        {
+           string_type buffer(column_size, 0);
+           if(NANODBC_SNPRINTF(
+                    const_cast<string_type::value_type*>(buffer.data())
+                    , column_size
+                    , NANODBC_TEXT("%d")
+                    , *(int32_t*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
+               throw type_incompatible_error();
+           buffer.resize(NANODBC_STRLEN(buffer.c_str()));
+           return buffer;
+        }
+
         case SQL_C_SBIGINT:
         {
             string_type buffer(column_size, 0);
             if(NANODBC_SNPRINTF(
                     const_cast<string_type::value_type*>(buffer.data())
                     , column_size
-                    , NANODBC_TEXT("%ld")
-                    , *(long*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
+                    , NANODBC_TEXT("%lld")
+                    , *(int64_t*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
                 throw type_incompatible_error();
             buffer.resize(NANODBC_STRLEN(buffer.c_str()));
             return buffer;
@@ -1817,9 +1833,9 @@ T result::result_impl::get_impl(short column) const
         case SQL_C_CHAR: return (T)*(char*)(s);
         case SQL_C_SSHORT: return (T)*(short*)(s);
         case SQL_C_USHORT: return (T)*(unsigned short*)(s);
-        case SQL_C_LONG: return (T)*(long*)(s);
-        case SQL_C_SLONG: return (T)*(long*)(s);
-        case SQL_C_ULONG: return (T)*(unsigned long*)(s);
+        case SQL_C_LONG: return (T)*(int32_t*)(s);
+        case SQL_C_SLONG: return (T)*(int32_t*)(s);
+        case SQL_C_ULONG: return (T)*(uint32_t*)(s);
         case SQL_C_FLOAT: return (T)*(float*)(s);
         case SQL_C_DOUBLE: return (T)*(double*)(s);
         case SQL_C_SBIGINT: return (T)*(int64_t*)(s);

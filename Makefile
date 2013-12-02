@@ -6,6 +6,10 @@ all:
 	# Example build for clang++
 	clang++ example.cpp nanodbc.cpp -o example $(${ODBC_CONFIG} --libs) ${ODBC_FLAGS} -Wall -g -std=c++03
 
+unicode:
+	# Example unicode build for clang++
+	clang++ example.cpp nanodbc.cpp -o example $(${ODBC_CONFIG} --libs) ${ODBC_FLAGS} -Wall -g -std=c++03 -DNANODBC_USE_UNICODE
+
 cpp11:
 	# Example build for clang++ with C++11
 	clang++ example.cpp nanodbc.cpp -o example $(${ODBC_CONFIG} --libs) ${ODBC_FLAGS} -Wall -g -std=c++11 -DNANODBC_USE_CPP11
