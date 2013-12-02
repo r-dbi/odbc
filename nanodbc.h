@@ -443,7 +443,6 @@ public:
     //! 
     //! @{
 
-    //! \addtogroup bind_single Binding a single value
     //! \brief Binds the given value to the given parameter placeholder number in the prepared statement.
     //!
     //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
@@ -453,23 +452,10 @@ public:
     //! 
     //! \param param Placeholder position.
     //! \param value Value to substitute into placeholder.
-    //! \param null_sentry Value which should represent a null value.
     //! \param param_direciton ODBC parameter direction.
     //! \throws database_error
-    //!
-    //! @{
-
-    //! \brief Binds a single value.
-    //! \see bind_single
     template<class T>
     void bind(short param, const T* value, param_direction direction = PARAM_IN);
-
-    //! \brief Binds a single value.
-    //! \see bind_single
-    template<class T>
-    void bind(short param, const T* value, const T* null_sentry, param_direction direction = PARAM_IN);
-
-    //! @}
 
     //! \addtogroup bind_multi Binding multiple non-string values
     //! \brief Binds the given values to the given parameter placeholder number in the prepared statement.
@@ -483,6 +469,7 @@ public:
     //! \param values Values to substitute into placeholder.
     //! \param elements The number of elements being bound.
     //! \param null_sentry Value which should represent a null value.
+    //! \param nulls Flags for values that should be set to a null value.
     //! \param param_direciton ODBC parameter direction.
     //! \throws database_error
     //!
@@ -497,6 +484,11 @@ public:
     //! \see bind_multi
     template<class T>
     void bind(short param, const T* values, std::size_t elements, const T* null_sentry, param_direction direction = PARAM_IN);
+
+    //! \brief Binds multiple values.
+    //! \see bind_multi
+    template<class T>
+    void bind(short param, const T* values, std::size_t elements, const bool* nulls, param_direction direction = PARAM_IN);
 
     //! @}
 
@@ -513,6 +505,7 @@ public:
     //! \param length Maximum length of string elements.
     //! \param elements The number of elements being bound. Otherwise the value N is taken as the number of elements.
     //! \param null_sentry Value which should represent a null value.
+    //! \param nulls Flags for values that should be set to a null value.
     //! \param param_direciton ODBC parameter direction.
     //! \throws database_error
     //!
@@ -540,6 +533,18 @@ public:
     void bind_strings(short param, const string_type::value_type(&values)[N][M], const string_type::value_type* null_sentry, param_direction direction = PARAM_IN)
     {
         bind_strings(param, reinterpret_cast<const string_type::value_type*>(values), M, N, null_sentry, direction);
+    }
+
+    //! \brief Binds multiple string values.
+    //! \see bind_strings
+    void bind_strings(short param, const string_type::value_type* values, std::size_t length, std::size_t elements, const bool* nulls, param_direction direction = PARAM_IN);
+
+    //! \brief Binds multiple string values.
+    //! \see bind_strings
+    template<std::size_t N, std::size_t M>
+    void bind_strings(short param, const string_type::value_type(&values)[N][M], const bool* nulls, param_direction direction = PARAM_IN)
+    {
+        bind_strings(param, reinterpret_cast<const string_type::value_type*>(values), M, N, nulls, direction);
     }
 
     //! @}

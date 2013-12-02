@@ -44,26 +44,6 @@ void run_test(const char* connection_string)
         show(results);
     }
 
-    // Inserting NULL values with sentry
-    {
-        nanodbc::statement statement(connection);
-        prepare(statement, "insert into public.simple_test (a, b) values (?, ?);");
-
-        const int elements = 5;
-        const int a_null = 0;
-        const char* b_null = ""; 
-        int a_data[elements] = {0, 88, 0, 0, 0};
-        char b_data[elements][10] = {"", "non-null", "", "", ""};
-
-        statement.bind(0, a_data, elements, &a_null);
-        statement.bind_strings(1, b_data, b_null);
-
-        execute(statement, elements);
-
-        nanodbc::result results = execute(connection, "select * from public.simple_test;");
-        show(results);
-    }
-
     // Accessing results by name, or column number
     {
         results = execute(connection, "select a as first, b as second from public.simple_test where a = 1;");
@@ -155,6 +135,45 @@ void run_test(const char* connection_string)
         show(results);
 
         execute(connection, "drop table if exists public.date_test;");
+    }
+
+    // Inserting NULL values with a sentry
+    {
+        nanodbc::statement statement(connection);
+        prepare(statement, "insert into public.simple_test (a, b) values (?, ?);");
+
+        const int elements = 5;
+        const int a_null = 0;
+        const char* b_null = ""; 
+        int a_data[elements] = {0, 88, 0, 0, 0};
+        char b_data[elements][10] = {"", "non-null", "", "", ""};
+
+        statement.bind(0, a_data, elements, &a_null);
+        statement.bind_strings(1, b_data, b_null);
+
+        execute(statement, elements);
+
+        nanodbc::result results = execute(connection, "select * from public.simple_test;");
+        show(results);
+    }
+
+    // Inserting NULL values with flags
+    {
+        nanodbc::statement statement(connection);
+        prepare(statement, "insert into public.simple_test (a, b) values (?, ?);");
+
+        const int elements = 2;
+        int a_data[elements] = {0, 42};
+        char b_data[elements][10] = {"", "every"};
+        bool nulls[elements] = {true, false};
+
+        statement.bind(0, a_data, elements, nulls);
+        statement.bind_strings(1, b_data, nulls);
+
+        execute(statement, elements);
+
+        nanodbc::result results = execute(connection, "select * from public.simple_test;");
+        show(results);
     }
 
     // Cleanup
