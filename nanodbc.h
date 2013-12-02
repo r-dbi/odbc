@@ -2,12 +2,23 @@
 
 //! \mainpage
 //! 
+//! \section synopsis Synopsis
+//! This library provides a wrapper API for the native ODBC API. It aims to do everything ODBC does, but with a \b much nicer interface.
+//! Anything it doesn't (yet) do can be done by retrieving the native ODBC handles and dropping down to straight ODBC C API code.
+//! For more propaganda, please see the <a href="http://lexicalunit.github.com/nanodbc/">project homepage</a>.
+//!
 //! \section toc Table of Contents
-//! \li \ref license "License"
-//! \li \ref credits "Credits"
-//! \li \ref examples "Example Usage"
-//! \li \ref nanodbc "Namespace Reference"
-//! \li <a href="http://lexicalunit.github.com/nanodbc/">Project Homepage</a>
+//! - \ref license "License"
+//! - \ref credits "Credits"
+//! - \ref examples "Examples"
+//! - Source level documentation:
+//!     - \ref nanodbc "nanodbc namespace"
+//!     - \ref exceptions
+//!     - \ref utility
+//!     - \ref main
+//!     - \ref binding
+//!     - \ref bind_multi
+//!     - \ref bind_strings
 //! 
 //! \section license License
 //! Copyright (C) 2013 lexicalunit <amy@lexicalunit.com>
@@ -142,8 +153,7 @@ namespace detail
 #endif // DOXYGEN
 
 //! \brief The entirety of nanodbc can be found within this one namespace.
-//! \todo Implement retrieval of blob data.
-//! \todo Implement reflective features for columns, such as type, to enable visitation.
+//! \note This library does not make any exception safety guarantees, but should work just fine with a threading enabled ODBC driver. If you want to use nanodbc objects in threads I recommend each thread keep their own connection to the database. Otherwise you must synchronize any access to nanodbc objects.
 namespace nanodbc
 {
 
