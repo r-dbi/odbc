@@ -1,8 +1,6 @@
 #include "nanodbc.h"
-#include <sql.h> // including only for SQL_NULL_DATA
 #include <algorithm>
 #include <iostream>
-#include <vector>
 
 using namespace std;
 
@@ -30,61 +28,90 @@ void run_test(const char* connection_string)
     // or connection("data source name", "username", "password", timeout_seconds);
     cout << "Connected with driver " << connection.driver_name() << endl;
 
-    // Direct execution
+    // Setup
     execute(connection, "drop table if exists public.simple_test;");
     execute(connection, "create table public.simple_test (a int, b varchar(10));");
-    execute(connection, "insert into public.simple_test values (1, 'one');");
-    execute(connection, "insert into public.simple_test values (2, 'two');");
-    execute(connection, "insert into public.simple_test values (3, 'tri');");
-    execute(connection, "insert into public.simple_test (b) values ('z');");
-    nanodbc::result results = execute(connection, "select * from public.simple_test;");
-    show(results);
 
-    // Inserting NULL values using bind_parameter()
+    nanodbc::result results;
+
+    // Direct execution
+    {
+        execute(connection, "insert into public.simple_test values (1, 'one');");
+        execute(connection, "insert into public.simple_test values (2, 'two');");
+        execute(connection, "insert into public.simple_test values (3, 'tri');");
+        execute(connection, "insert into public.simple_test (b) values ('z');");
+        results = execute(connection, "select * from public.simple_test;");
+        show(results);
+    }
+
+    // Inserting NULL values with sentry
     {
         nanodbc::statement statement(connection);
         prepare(statement, "insert into public.simple_test (a, b) values (?, ?);");
-        const int howmany = 5;
-        nanodbc::null_type nulls[howmany];
-        fill(&nulls[0], &nulls[howmany], SQL_NULL_DATA);
-        statement.bind_parameter(0, (int*)0, nulls);
-        statement.bind_parameter(1, (char*)0, nulls);
-        execute(statement, howmany);
+
+        const int elements = 5;
+        const int a_null = 0;
+        const char* b_null = ""; 
+        int a_data[elements] = {0, 88, 0, 0, 0};
+        char b_data[elements][10] = {"", "non-null", "", "", ""};
+
+        statement.bind(0, a_data, elements, &a_null);
+        statement.bind_strings(1, b_data, b_null);
+
+        execute(statement, elements);
+
         nanodbc::result results = execute(connection, "select * from public.simple_test;");
         show(results);
     }
 
     // Accessing results by name, or column number
-    results = execute(connection, "select a as first, b as second from public.simple_test where a = 1;");
-    results.next();
-    cout << endl << results.get<int>("first") << ", " << results.get<string>(1) << endl;
+    {
+        results = execute(connection, "select a as first, b as second from public.simple_test where a = 1;");
+        results.next();
+        cout << endl << results.get<int>("first") << ", " << results.get<string>(1) << endl;
+    }
 
     // Binding parameters
     {
         nanodbc::statement statement(connection);
+
+        // Inserting values
         prepare(statement, "insert into public.simple_test (a, b) values (?, ?);");
         const int eight_int = 8;
-        statement.bind_parameter(0, &eight_int);
+        statement.bind(0, &eight_int);
         const string eight_str = "eight";
-        statement.bind_parameter(1, eight_str.c_str());
+        statement.bind(1, eight_str.c_str());
         execute(statement);
 
-        prepare(statement, "select * from public.simple_test where a = ?;");
-        statement.bind_parameter(0, &eight_int);
+        // Inserting null values
+        prepare(statement, "insert into public.simple_test (a, b) values (?, ?);");
+        statement.bind_null(0);
+        statement.bind_null(1);
+        execute(statement);
+
+        // Inserting multiple null values
+        prepare(statement, "insert into public.simple_test (a, b) values (?, ?);");
+        statement.bind_null(0, 2);
+        statement.bind_null(1, 2);
+        execute(statement, 2);
+
+        prepare(statement, "select * from public.simple_test;");
         results = execute(statement);
         show(results);
     }
 
     // Transactions
     {
-        cout << "\ndeleting all rows ... " << flush;
-        nanodbc::transaction transaction(connection);
-        execute(connection, "delete from public.simple_test;");
-        // transaction will be rolled back if we don't call transaction.commit()
+        {
+            cout << "\ndeleting all rows ... " << flush;
+            nanodbc::transaction transaction(connection);
+            execute(connection, "delete from public.simple_test;");
+            // transaction will be rolled back if we don't call transaction.commit()
+        }
+        results = execute(connection, "select count(1) from public.simple_test;");
+        results.next();
+        cout << "still have " << results.get<int>(0) << " rows!" << endl;
     }
-    results = execute(connection, "select count(1) from public.simple_test;");
-    results.next();
-    cout << "still have " << results.get<int>(0) << " rows!" << endl;
 
     // Batch inserting
     {
@@ -93,19 +120,23 @@ void run_test(const char* connection_string)
         execute(connection, "create table public.batch_test (x varchar(10), y int, z float);");
         prepare(statement, "insert into public.batch_test (x, y, z) values (?, ?, ?);");
 
-        const char xdata[][10] = {"this", "is", "a", "test"};
-        statement.bind_parameter(0, xdata);
-        
-        int ydata[] = { 1, 2, 3, 4 };
-        statement.bind_parameter(1, ydata);
+        const std::size_t elements = 4;
 
-        float zdata[] = { 1.1, 2.2, 3.3, 4.4 };
-        statement.bind_parameter(2, zdata);
+        char xdata[elements][10] = { "this", "is", "a", "test" };
+        statement.bind_strings(0, xdata);
 
-        transact(statement, 4);
+        int ydata[elements] = { 1, 2, 3, 4 };
+        statement.bind(1, ydata, elements);
+
+        float zdata[elements] = { 1.1, 2.2, 3.3, 4.4 };
+        statement.bind(2, zdata, elements);
+
+        transact(statement, elements);
 
         results = execute(connection, "select * from public.batch_test;", 3);
         show(results);
+    
+        execute(connection, "drop table if exists public.batch_test;");
     }
 
     // Dates and Times
@@ -113,18 +144,21 @@ void run_test(const char* connection_string)
         execute(connection, "drop table if exists public.date_test;");
         execute(connection, "create table public.date_test (x datetime);");
         execute(connection, "insert into public.date_test values (current_timestamp);");
+
         results = execute(connection, "select * from public.date_test;");
         results.next();
+
         nanodbc::date date = results.get<nanodbc::date>(0);
         cout << endl << date.year << "-" << date.month << "-" << date.day << endl;
+
         results = execute(connection, "select * from public.date_test;");
         show(results);
+
+        execute(connection, "drop table if exists public.date_test;");
     }
 
     // Cleanup
     execute(connection, "drop table if exists public.simple_test;");
-    execute(connection, "drop table if exists public.batch_test;");
-    execute(connection, "drop table if exists public.date_test;");
 }
 
 void show(nanodbc::result& results)

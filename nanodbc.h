@@ -61,9 +61,10 @@
 #ifndef NANODBC_H
 #define NANODBC_H
 
+#include <functional>
 #include <stdexcept>
 #include <string>
-#include <ciso646> // no effect, but will result in compiler macros being defined
+#include <vector>
 
 // Define NANODBC_HAS_TR1_NAMESPACE if your compiler's standard library implementation
 // has a std::tr1 namespace, otherwise we try to detect automatically.
@@ -72,6 +73,7 @@
         #define NANODBC_HAS_TR1_NAMESPACE 0
     #elif defined(__GLIBCXX__) // stdlibc++
         #define NANODBC_HAS_TR1_NAMESPACE 1
+        #include <tr1/functional>
     #endif
 #endif
 
@@ -170,7 +172,7 @@ namespace nanodbc
     typedef unspecified-type null_type;
 #endif // DOXYGEN
 
-//! \addtogroup exceptions Exception Types
+//! \addtogroup exceptions Exception types
 //! \brief Possible error conditions.
 //!
 //! Specific errors such as type_incompatible_error, null_access_error, and index_range_error can arise
@@ -230,8 +232,8 @@ public:
 
 //! @}
 
-//! \addtogroup utility Utility Classes
-//! \brief Additional nanodbc utility classes.
+//! \addtogroup utility Utilities
+//! \brief Additional nanodbc utility classes and functions.
 //!
 //! \{
 
@@ -257,7 +259,7 @@ struct timestamp
 
 //! \}
 
-//! \addtogroup main Main Classes
+//! \addtogroup main Main classes
 //! \brief Main nanodbc classes.
 //!
 //! @{
@@ -317,7 +319,7 @@ class statement
 {
 public:
     //! \brief Provides support for retrieving output/return parameters.
-    //! \see bind_parameter()
+    //! \see binding
     enum param_direction
     {
         PARAM_IN //!< Binding an input parameter.
@@ -436,7 +438,113 @@ public:
     //! \brief Returns the parameter size for the indicated parameter placeholder within a prepared statement.
     unsigned long parameter_size(short param) const;
 
+    //! \addtogroup binding Binding parameters
+    //! \brief These functions are used to bind values to ODBC parameters.
+    //! 
+    //! @{
+
+    //! \addtogroup bind_single Binding a single value
     //! \brief Binds the given value to the given parameter placeholder number in the prepared statement.
+    //!
+    //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
+    //! Placeholder numbers count from left to right and are 0-indexed.
+    //! 
+    //! It is NOT possible to use these functions for bulk operations as number of elements is not specified here.
+    //! 
+    //! \param param Placeholder position.
+    //! \param value Value to substitute into placeholder.
+    //! \param null_sentry Value which should represent a null value.
+    //! \param param_direciton ODBC parameter direction.
+    //! \throws database_error
+    //!
+    //! @{
+
+    //! \brief Binds a single value.
+    //! \see bind_single
+    template<class T>
+    void bind(short param, const T* value, param_direction direction = PARAM_IN);
+
+    //! \brief Binds a single value.
+    //! \see bind_single
+    template<class T>
+    void bind(short param, const T* value, const T* null_sentry, param_direction direction = PARAM_IN);
+
+    //! @}
+
+    //! \addtogroup bind_multi Binding multiple non-string values
+    //! \brief Binds the given values to the given parameter placeholder number in the prepared statement.
+    //!
+    //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
+    //! Placeholder numbers count from left to right and are 0-indexed.
+    //! 
+    //! It is possible to use these functions for bulk operations.
+    //! 
+    //! \param param Placeholder position.
+    //! \param values Values to substitute into placeholder.
+    //! \param elements The number of elements being bound.
+    //! \param null_sentry Value which should represent a null value.
+    //! \param param_direciton ODBC parameter direction.
+    //! \throws database_error
+    //!
+    //! @{
+
+    //! \brief Binds multiple values.
+    //! \see bind_multi
+    template<class T>
+    void bind(short param, const T* values, std::size_t elements, param_direction direction = PARAM_IN);
+
+    //! \brief Binds multiple values.
+    //! \see bind_multi
+    template<class T>
+    void bind(short param, const T* values, std::size_t elements, const T* null_sentry, param_direction direction = PARAM_IN);
+
+    //! @}
+
+    //! \addtogroup bind_strings Binding multiple string values
+    //! \brief Binds the given string values to the given parameter placeholder number in the prepared statement.
+    //!
+    //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
+    //! Placeholder numbers count from left to right and are 0-indexed.
+    //! 
+    //! It is possible to use these functions for bulk operations.
+    //! 
+    //! \param param Placeholder position.
+    //! \param values Values to substitute into placeholder.
+    //! \param length Maximum length of string elements.
+    //! \param elements The number of elements being bound. Otherwise the value N is taken as the number of elements.
+    //! \param null_sentry Value which should represent a null value.
+    //! \param param_direciton ODBC parameter direction.
+    //! \throws database_error
+    //!
+    //! @{
+
+    //! \brief Binds multiple string values.
+    //! \see bind_strings
+    void bind_strings(short param, const string_type::value_type* values, std::size_t length, std::size_t elements, param_direction direction = PARAM_IN);
+
+    //! \brief Binds multiple string values.
+    //! \see bind_strings
+    template<std::size_t N, std::size_t M>
+    void bind_strings(short param, const string_type::value_type(&values)[N][M], param_direction direction = PARAM_IN)
+    {
+        bind_strings(param, reinterpret_cast<const string_type::value_type*>(values), M, N, direction);
+    }
+
+    //! \brief Binds multiple string values.
+    //! \see bind_strings
+    void bind_strings(short param, const string_type::value_type* values, std::size_t length, std::size_t elements, const string_type::value_type* null_sentry, param_direction direction = PARAM_IN);
+
+    //! \brief Binds multiple string values.
+    //! \see bind_strings
+    template<std::size_t N, std::size_t M>
+    void bind_strings(short param, const string_type::value_type(&values)[N][M], const string_type::value_type* null_sentry, param_direction direction = PARAM_IN)
+    {
+        bind_strings(param, reinterpret_cast<const string_type::value_type*>(values), M, N, null_sentry, direction);
+    }
+
+    //! @}
+
+    //! \brief Binds null values to the given parameter placeholder number in the prepared statement.
     //!
     //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     //! Placeholder numbers count from left to right and are 0-indexed.
@@ -444,48 +552,14 @@ public:
     //! It is possible to use this function for bulk operations.
     //! 
     //! \param param Placeholder position.
-    //! \param value Value to substitute into placeholder.
-    //! \param nulls Used to batch insert nulls into the database.
-    //! \param param_direciton ODBC parameter direction.
+    //! \param elements The number of elements being bound.
     //! \throws database_error
-    template<class T>
-    void bind_parameter(short param, const T* value, null_type* nulls = 0, param_direction direction = PARAM_IN);
+    void bind_null(short param, std::size_t elements = 1);
 
-    //! \brief Binds the given values to the given parameter placeholder number in the prepared statement.
-    //!
-    //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
-    //! Placeholder numbers count from left to right and are 0-indexed.
-    //! 
-    //! Typically you would use bulk operations with a row size of N when executing a statement bound this way.
-    //! 
-    //! \param param Placeholder position.
-    //! \param values Values to bulk substitute into placeholder.
-    //! \param nulls Used to batch insert nulls into the database.
-    //! \param param_direciton ODBC parameter direction.
-    //! \throws database_error
-    template<class T, std::size_t N>
-    void bind_parameter(short param, const T(*values)[N], null_type* nulls = 0, param_direction direction = PARAM_IN)
-    {
-        bind_parameter(param, reinterpret_cast<const T*>(values), nulls, direction);
-    }
+    //! @}
 
-    //! \brief Binds the given string values to the given parameter placeholder number in the prepared statement.
-    //!
-    //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
-    //! Placeholder numbers count from left to right and are 0-indexed.
-    //! 
-    //! This function is dedicated to bulk operations involving strings.
-    //! 
-    //! \param param Placeholder position.
-    //! \param values Values to bulk substitute into placeholder.
-    //! \param nulls Used to batch insert nulls into the database.
-    //! \param param_direciton ODBC parameter direction.
-    //! \throws database_error
-    template<std::size_t N, std::size_t M>
-    void bind_strings(long param, const string_type::value_type (&values)[N][M], null_type* nulls = 0, param_direction direction = PARAM_IN)
-    {
-        bind_parameter(param, reinterpret_cast<const string_type::value_type*>(values), nulls, direction);
-    }
+private:
+    typedef NANODBC_TR1_STD function<bool (std::size_t)> null_predicate_type;
 
 private:
     class statement_impl;
