@@ -526,8 +526,8 @@ public:
             , rc
             , conn_
             , (NANODBC_SQLCHAR*)dsn.c_str(), SQL_NTS
-            , user.empty() ? (NANODBC_SQLCHAR*)user.c_str() : 0, SQL_NTS
-            , pass.empty() ? (NANODBC_SQLCHAR*)pass.c_str() : 0, SQL_NTS);
+            , !user.empty() ? (NANODBC_SQLCHAR*)user.c_str() : 0, SQL_NTS
+            , !pass.empty() ? (NANODBC_SQLCHAR*)pass.c_str() : 0, SQL_NTS);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
