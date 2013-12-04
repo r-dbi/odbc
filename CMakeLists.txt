@@ -48,3 +48,12 @@ install(TARGETS nanodbc LIBRARY DESTINATION lib)
 ########################################
 add_executable(example EXCLUDE_FROM_ALL example.cpp)
 target_link_libraries(example nanodbc)
+
+########################################
+## unit tests
+########################################
+add_subdirectory(test)
+
+enable_testing()
+add_test(NAME test COMMAND tests)
+add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} DEPENDS tests)

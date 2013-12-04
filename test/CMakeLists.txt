@@ -1,0 +1,11 @@
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+
+if(Boost_FOUND)
+	include_directories(${CMAKE_SOURCE_DIR} ${Boost_INCLUDE_DIRS})
+	link_directories(${CMAKE_BINARY_DIR} ${Boost_LIBRARY_DIRS})
+	file(GLOB sources *.cpp)
+	add_executable(tests EXCLUDE_FROM_ALL ${sources})
+	target_link_libraries(tests nanodbc ${Boost_LIBRARIES})
+endif()
