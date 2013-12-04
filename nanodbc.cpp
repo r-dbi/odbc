@@ -110,20 +110,39 @@
 
 namespace
 {
+    inline nanodbc::string_type return_code(RETCODE rc)
+    {
+        switch(rc)
+        {
+            case SQL_SUCCESS: return NANODBC_UNICODE("SQL_SUCCESS");
+            case SQL_SUCCESS_WITH_INFO: return NANODBC_UNICODE("SQL_SUCCESS_WITH_INFO");
+            case SQL_ERROR: return NANODBC_UNICODE("SQL_ERROR");
+            case SQL_INVALID_HANDLE: return NANODBC_UNICODE("SQL_INVALID_HANDLE");
+            case SQL_NO_DATA: return NANODBC_UNICODE("SQL_NO_DATA");
+            case SQL_NEED_DATA: return NANODBC_UNICODE("SQL_NEED_DATA");
+            case SQL_STILL_EXECUTING: return NANODBC_UNICODE("SQL_STILL_EXECUTING");
+        }
+        assert(0);
+        return "unknown"; // should never make it here
+    }
+
     // Easy way to check if a return code signifies success.
     inline bool success(RETCODE rc)
     {
+        #ifdef NANODBC_ODBC_API_DEBUG
+            std::cerr << "<-- rc: " << return_code(rc) << " | ";
+        #endif
         return rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO;
     }
 
-    // Returns the array size
+    // Returns the array size.
     template<typename T, std::size_t N>
     inline std::size_t arrlen(T(&)[N])
     {
         return N;
     }
 
-    // Operates like strlen() on a character array
+    // Operates like strlen() on a character array.
     template<typename T, std::size_t N>
     inline std::size_t strarrlen(T(&a)[N])
     {
