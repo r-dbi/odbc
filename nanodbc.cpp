@@ -10,10 +10,11 @@
 #include <ctime>
 #include <map>
 
-#if defined(_MSC_VER) && _MSC_VER <= 1500
-    // silence spurious Visual C++ 2005 warnings 
-    #pragma warning(disable:4244)
-    #pragma warning(disable:4312)
+#if defined(_MSC_VER) && _MSC_VER <= 1600
+    // silence spurious Visual C++ warnings 
+    #pragma warning(disable:4244) // warning about integer conversion issues.
+    #pragma warning(disable:4312) // warning about 64-bit portability issues.
+	#pragma warning(disable:4996) // warning about snprintf() deprecated.
 #endif
 
 #ifdef __APPLE__
@@ -1611,13 +1612,13 @@ private:
                 case SQL_CHAR:
                 case SQL_VARCHAR:
                     col.ctype_ = SQL_C_CHAR;
-                    col.clen_ = col.sqlsize_ + sizeof(NANODBC_SQLCHAR);
-                    break;
+                    col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLCHAR);
+					break;
                 case SQL_WCHAR:
                 case SQL_WVARCHAR:
                     col.ctype_ = SQL_C_WCHAR;
-                    col.clen_ = col.sqlsize_ + sizeof(NANODBC_SQLCHAR);
-                    break;
+                    col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLWCHAR);
+					break;
                 case SQL_LONGVARCHAR:
                     col.ctype_ = SQL_C_CHAR;
                     col.blob_ = true;
