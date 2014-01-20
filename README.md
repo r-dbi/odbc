@@ -12,7 +12,7 @@ You don't necessarily need to build nanodbc, as you can just drop the header and
     $ mkdir build
     $ cd build
     $ cmake ..
-    # make # creates shared library
+    $ make # creates shared library
     $ make nanodbc # creates shared library
     $ make tests # builds unit tests
     $ make test # runs unit tests
