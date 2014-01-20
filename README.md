@@ -8,12 +8,14 @@ You don't necessarily need to build nanodbc, as you can just drop the header and
 
 ## Example Build Process
 
-    $ cd path/to/nanodbc/repository
-    $ mkdir build
-    $ cd build
-    $ cmake ..
-    $ make # creates shared library
-    $ make nanodbc # creates shared library
-    $ make tests # builds unit tests
-    $ make test # runs unit tests
-    $ make install # installs nanodbc.h and shared library
+```bash
+cd path/to/nanodbc/repository
+mkdir build
+cd build
+cmake ..
+make # creates shared library
+make nanodbc # creates shared library
+make tests # builds unit tests
+make test # runs unit tests
+make install # installs nanodbc.h and shared library
+```
