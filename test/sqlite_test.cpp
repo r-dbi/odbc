@@ -141,20 +141,36 @@ BOOST_AUTO_TEST_CASE(string_test)
 BOOST_AUTO_TEST_CASE_TEMPLATE(integral_test, T, integral_test_types)
 {
     nanodbc::connection connection = connect();
-    BOOST_CHECK(connection.connected());
 
-    execute(connection, "drop table if exists simple_test;");
-    execute(connection, "create table simple_test (a int, b varchar(10));");
+    execute(connection, "drop table if exists integral_test;");
+    execute(connection, "create table integral_test (i int, f float, d double, c char);");
 
     nanodbc::statement statement(connection);
-    prepare(statement, "insert into simple_test (a, b) values (?, ?);");
-    const int eight_int = 8;
-    statement.bind(0, &eight_int);
-    const string eight_str = "eight";
-    statement.bind(1, eight_str.c_str());
+    prepare(statement, "insert into integral_test (i, f, d, c) values (?, ?, ?, ?);");
+
+    srand(0);
+    const int32_t i = rand() % 5000;
+    const float f = rand() / (rand() + 1.0);
+    const double d = - rand() / (rand() + 1.0);
+    const char c = rand() % 256;
+
+    short p = 0;
+    statement.bind(p++, &i);
+    statement.bind(p++, &f);
+    statement.bind(p++, &d);
+    statement.bind(p++, &c);
 
     BOOST_CHECK(statement.connected());
     execute(statement);
+
+    nanodbc::result results = execute(connection, "select * from integral_test;");
+    BOOST_CHECK(results.next());
+
+    p = 0;
+    BOOST_CHECK_EQUAL(results.get<T>(p++), static_cast<T>(i));
+    BOOST_CHECK_CLOSE(static_cast<float>(results.get<T>(p++)), static_cast<T>(f), 1e-6);
+    BOOST_CHECK_CLOSE(static_cast<double>(results.get<T>(p++)), static_cast<T>(d), 1e-6);
+    BOOST_CHECK_EQUAL(results.get<T>(p++), static_cast<T>(c));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
