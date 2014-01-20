@@ -117,21 +117,23 @@
 
 namespace
 {
-    inline nanodbc::string_type return_code(RETCODE rc)
-    {
-        switch(rc)
+    #ifdef NANODBC_ODBC_API_DEBUG
+        inline nanodbc::string_type return_code(RETCODE rc)
         {
-            case SQL_SUCCESS: return NANODBC_UNICODE("SQL_SUCCESS");
-            case SQL_SUCCESS_WITH_INFO: return NANODBC_UNICODE("SQL_SUCCESS_WITH_INFO");
-            case SQL_ERROR: return NANODBC_UNICODE("SQL_ERROR");
-            case SQL_INVALID_HANDLE: return NANODBC_UNICODE("SQL_INVALID_HANDLE");
-            case SQL_NO_DATA: return NANODBC_UNICODE("SQL_NO_DATA");
-            case SQL_NEED_DATA: return NANODBC_UNICODE("SQL_NEED_DATA");
-            case SQL_STILL_EXECUTING: return NANODBC_UNICODE("SQL_STILL_EXECUTING");
+            switch(rc)
+            {
+                case SQL_SUCCESS: return NANODBC_UNICODE("SQL_SUCCESS");
+                case SQL_SUCCESS_WITH_INFO: return NANODBC_UNICODE("SQL_SUCCESS_WITH_INFO");
+                case SQL_ERROR: return NANODBC_UNICODE("SQL_ERROR");
+                case SQL_INVALID_HANDLE: return NANODBC_UNICODE("SQL_INVALID_HANDLE");
+                case SQL_NO_DATA: return NANODBC_UNICODE("SQL_NO_DATA");
+                case SQL_NEED_DATA: return NANODBC_UNICODE("SQL_NEED_DATA");
+                case SQL_STILL_EXECUTING: return NANODBC_UNICODE("SQL_STILL_EXECUTING");
+            }
+            assert(0);
+            return "unknown"; // should never make it here
         }
-        assert(0);
-        return "unknown"; // should never make it here
-    }
+    #endif
 
     // Easy way to check if a return code signifies success.
     inline bool success(RETCODE rc)
