@@ -24,11 +24,23 @@ struct sqlite_fixture
 
     ~sqlite_fixture()
     {
-        // system("rm nanodbc.db");
+        std::remove("nanodbc.db");
     }
 
     int i;
 };
+
+typedef boost::mpl::list<
+    string_type::value_type
+    , short
+    , unsigned short
+    , int32_t
+    , uint32_t
+    , int64_t
+    , uint64_t
+    , float
+    , double
+    > integral_test_types;
 
 BOOST_FIXTURE_TEST_SUITE(s, sqlite_fixture)
 
@@ -100,6 +112,49 @@ BOOST_AUTO_TEST_CASE(simple_test)
     connection.disconnect();
     BOOST_CHECK(!connection.connected());
     BOOST_CHECK(!connection_copy.connected());
+}
+
+BOOST_AUTO_TEST_CASE(string_test)
+{
+    nanodbc::connection connection = connect();
+    BOOST_CHECK(connection.connected());
+    BOOST_CHECK(connection.native_dbc_handle());
+    BOOST_CHECK(connection.native_env_handle());
+    BOOST_CHECK_EQUAL(connection.transactions(), 0);
+    BOOST_CHECK_EQUAL(connection.driver_name(), "sqlite3odbc.so");
+
+    const std::string name = "Fred";
+
+    execute(connection, "drop table if exists string_test;");
+    execute(connection, "create table string_test (s varchar(10));");
+
+    nanodbc::statement query(connection);
+    prepare(query, "insert into string_test(s) values(?)");
+    query.bind(0, name.c_str());
+    nanodbc::execute(query);
+
+    nanodbc::result results = execute(connection, "select s from string_test;");
+    BOOST_CHECK(results.next());
+    BOOST_CHECK_EQUAL(results.get<std::string>(0), "Fred");
+}
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(integral_test, T, integral_test_types)
+{
+    nanodbc::connection connection = connect();
+    BOOST_CHECK(connection.connected());
+
+    execute(connection, "drop table if exists simple_test;");
+    execute(connection, "create table simple_test (a int, b varchar(10));");
+
+    nanodbc::statement statement(connection);
+    prepare(statement, "insert into simple_test (a, b) values (?, ?);");
+    const int eight_int = 8;
+    statement.bind(0, &eight_int);
+    const string eight_str = "eight";
+    statement.bind(1, eight_str.c_str());
+
+    BOOST_CHECK(statement.connected());
+    execute(statement);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
