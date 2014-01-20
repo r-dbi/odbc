@@ -4,12 +4,17 @@
 
 #include <algorithm>
 #include <cassert>
-#include <cinttypes>
 #include <clocale>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
 #include <map>
+
+#ifdef NANODBC_USE_CPP11
+    #include <cstdint>
+#else
+    #include <stdint.h> // assuming we have C99 intmax_t
+#endif
 
 #if defined(_MSC_VER) && _MSC_VER <= 1600
     // silence spurious Visual C++ warnings 
@@ -1809,12 +1814,13 @@ inline string_type result::result_impl::get_impl<string_type>(short column) cons
 
         case SQL_C_SBIGINT:
         {
+            using namespace std; // in case intmax_t is in namespace std
             string_type buffer(column_size, 0);
             if(NANODBC_SNPRINTF(
                     const_cast<string_type::value_type*>(buffer.data())
                     , column_size
-                    , NANODBC_TEXT("%" PRId64)
-                    , *(int64_t*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
+                    , NANODBC_TEXT("%jd")
+                    , (intmax_t) *(int64_t*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
                 throw type_incompatible_error();
             buffer.resize(NANODBC_STRLEN(buffer.c_str()));
             return buffer;
