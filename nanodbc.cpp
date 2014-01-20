@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cinttypes>
 #include <clocale>
 #include <cstdio>
 #include <cstring>
@@ -1812,7 +1813,7 @@ inline string_type result::result_impl::get_impl<string_type>(short column) cons
             if(NANODBC_SNPRINTF(
                     const_cast<string_type::value_type*>(buffer.data())
                     , column_size
-                    , NANODBC_TEXT("%lld")
+                    , NANODBC_TEXT("%" PRId64)
                     , *(int64_t*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
                 throw type_incompatible_error();
             buffer.resize(NANODBC_STRLEN(buffer.c_str()));
