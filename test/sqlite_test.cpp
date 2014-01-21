@@ -2,9 +2,10 @@
 
 #define BOOST_TEST_MODULE nanodbc
 
-#include <boost/test/unit_test.hpp>
-#include <boost/test/test_case_template.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/mpl/list.hpp>
+#include <boost/test/test_case_template.hpp>
+#include <boost/test/unit_test.hpp>
 
 using nanodbc::string_type;
 using namespace std;
@@ -51,7 +52,7 @@ BOOST_AUTO_TEST_CASE(simple_test)
     BOOST_CHECK(connection.native_dbc_handle());
     BOOST_CHECK(connection.native_env_handle());
     BOOST_CHECK_EQUAL(connection.transactions(), 0);
-    BOOST_CHECK_EQUAL(connection.driver_name(), "sqlite3odbc.so");
+    BOOST_CHECK(boost::icontains(connection.driver_name(), "sqlite"));
 
     execute(connection, "drop table if exists simple_test;");
     execute(connection, "create table simple_test (a int, b varchar(10));");
@@ -114,6 +115,43 @@ BOOST_AUTO_TEST_CASE(simple_test)
     BOOST_CHECK(!connection_copy.connected());
 }
 
+BOOST_AUTO_TEST_CASE(null_test)
+{
+    nanodbc::connection connection = connect();
+    BOOST_CHECK(connection.connected());
+
+    execute(connection, "drop table if exists null_test;");
+    execute(connection, "create table null_test (a int, b varchar(10));");
+
+    nanodbc::statement statement(connection);
+
+    prepare(statement, "insert into null_test (a, b) values (?, ?);");
+    statement.bind_null(0);
+    statement.bind_null(1);
+    execute(statement);
+
+    prepare(statement, "insert into null_test (a, b) values (?, ?);");
+    statement.bind_null(0, 2);
+    statement.bind_null(1, 2);
+    execute(statement, 2);
+
+    nanodbc::result results = execute(connection, "select a, b from null_test order by a;");
+
+    BOOST_CHECK(results.next());
+    BOOST_CHECK(results.is_null(0));
+    BOOST_CHECK(results.is_null(1));
+
+    BOOST_CHECK(results.next());
+    BOOST_CHECK(results.is_null(0));
+    BOOST_CHECK(results.is_null(1));
+
+    BOOST_CHECK(results.next());
+    BOOST_CHECK(results.is_null(0));
+    BOOST_CHECK(results.is_null(1));
+
+    BOOST_CHECK(!results.next());
+}
+
 BOOST_AUTO_TEST_CASE(string_test)
 {
     nanodbc::connection connection = connect();
@@ -121,7 +159,6 @@ BOOST_AUTO_TEST_CASE(string_test)
     BOOST_CHECK(connection.native_dbc_handle());
     BOOST_CHECK(connection.native_env_handle());
     BOOST_CHECK_EQUAL(connection.transactions(), 0);
-    BOOST_CHECK_EQUAL(connection.driver_name(), "sqlite3odbc.so");
 
     const std::string name = "Fred";
 
@@ -171,6 +208,60 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(integral_test, T, integral_test_types)
     BOOST_CHECK_CLOSE(static_cast<float>(results.get<T>(p++)), static_cast<T>(f), 1e-6);
     BOOST_CHECK_CLOSE(static_cast<double>(results.get<T>(p++)), static_cast<T>(d), 1e-6);
     BOOST_CHECK_EQUAL(results.get<T>(p++), static_cast<T>(c));
+}
+
+void check_rows_equal(nanodbc::result results, std::size_t rows)
+{
+    BOOST_CHECK(results.next());
+    BOOST_CHECK_EQUAL(results.get<int>(0), rows);
+}
+
+BOOST_AUTO_TEST_CASE(transaction_test)
+{
+    nanodbc::connection connection = connect();
+    BOOST_CHECK(connection.connected());
+
+    execute(connection, "drop table if exists transaction_test;");
+    execute(connection, "create table transaction_test (i int);");
+
+    nanodbc::statement statement(connection);
+    prepare(statement, "insert into transaction_test (i) values (?);");
+
+    static const int elements = 10;
+    int data[elements] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    statement.bind(0, data, elements);
+    execute(statement, elements);
+
+    static const char* query = "select count(1) from transaction_test;";
+
+    check_rows_equal(execute(connection, query), 10);
+
+    {
+        nanodbc::transaction transaction(connection);
+        execute(connection, "delete from transaction_test;");
+        check_rows_equal(execute(connection, query), 0);
+        // ~transaction() calls rollback()
+    }
+
+    check_rows_equal(execute(connection, query), 10);
+
+    {
+        nanodbc::transaction transaction(connection);
+        execute(connection, "delete from transaction_test;");
+        check_rows_equal(execute(connection, query), 0);
+        transaction.rollback();
+    }
+
+    check_rows_equal(execute(connection, query), 10);
+
+    {
+        nanodbc::transaction transaction(connection);
+        execute(connection, "delete from transaction_test;");
+        check_rows_equal(execute(connection, query), 0);
+        transaction.commit();
+    }
+
+    check_rows_equal(execute(connection, query), 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
