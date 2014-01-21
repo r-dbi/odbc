@@ -20,5 +20,6 @@ make nanodbc # creates shared library
 make example # builds example program
 make tests # builds unit tests
 make test # runs unit tests
+make check # builds and then runs unit tests
 make install # installs nanodbc.h and shared library
 ```
