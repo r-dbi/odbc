@@ -1248,7 +1248,7 @@ void statement::statement_impl::bind_strings(short param, const string_type::val
         for(std::size_t i = 0; i < elements; ++i)
         {
             if(!nulls[i])
-                bind_len_or_null_[param][i] = parameter_size;
+                bind_len_or_null_[param][i] = SQL_NTS; // null terminated
         }
     }
 
