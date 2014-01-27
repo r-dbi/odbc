@@ -523,38 +523,83 @@ public:
 
     //! \brief Binds multiple string values.
     //! \see bind_strings
-    void bind_strings(short param, const string_type::value_type* values, std::size_t length, std::size_t elements, param_direction direction = PARAM_IN);
+    void bind_strings(
+        short param
+        , const string_type::value_type* values
+        , std::size_t length
+        , std::size_t elements
+        , param_direction direction = PARAM_IN);
 
     //! \brief Binds multiple string values.
     //! \see bind_strings
     template<std::size_t N, std::size_t M>
-    void bind_strings(short param, const string_type::value_type(&values)[N][M], param_direction direction = PARAM_IN)
+    void bind_strings(
+        short param
+        , const string_type::value_type(&values)[N][M]
+        , param_direction direction = PARAM_IN)
     {
-        bind_strings(param, reinterpret_cast<const string_type::value_type*>(values), M, N, direction);
+        bind_strings(
+            param
+            , reinterpret_cast<const string_type::value_type*>(values)
+            , M
+            , N
+            , direction);
     }
 
     //! \brief Binds multiple string values.
     //! \see bind_strings
-    void bind_strings(short param, const string_type::value_type* values, std::size_t length, std::size_t elements, const string_type::value_type* null_sentry, param_direction direction = PARAM_IN);
+    void bind_strings(
+        short param
+        , const string_type::value_type* values
+        , std::size_t length
+        , std::size_t elements
+        , const string_type::value_type* null_sentry
+        , param_direction direction = PARAM_IN);
 
     //! \brief Binds multiple string values.
     //! \see bind_strings
     template<std::size_t N, std::size_t M>
-    void bind_strings(short param, const string_type::value_type(&values)[N][M], const string_type::value_type* null_sentry, param_direction direction = PARAM_IN)
+    void bind_strings(
+        short param
+        , const string_type::value_type(&values)[N][M]
+        , const string_type::value_type* null_sentry
+        , param_direction direction = PARAM_IN)
     {
-        bind_strings(param, reinterpret_cast<const string_type::value_type*>(values), M, N, null_sentry, direction);
+        bind_strings(
+            param
+            , reinterpret_cast<const string_type::value_type*>(values)
+            , M
+            , N
+            , null_sentry
+            , direction);
     }
 
     //! \brief Binds multiple string values.
     //! \see bind_strings
-    void bind_strings(short param, const string_type::value_type* values, std::size_t length, std::size_t elements, const bool* nulls, param_direction direction = PARAM_IN);
+    void bind_strings(
+        short param
+        , const string_type::value_type* values
+        , std::size_t length
+        , std::size_t elements
+        , const bool* nulls
+        , param_direction direction = PARAM_IN);
 
     //! \brief Binds multiple string values.
     //! \see bind_strings
     template<std::size_t N, std::size_t M>
-    void bind_strings(short param, const string_type::value_type(&values)[N][M], const bool* nulls, param_direction direction = PARAM_IN)
+    void bind_strings(
+        short param
+        , const string_type::value_type(&values)[N][M]
+        , const bool* nulls
+        , param_direction direction = PARAM_IN)
     {
-        bind_strings(param, reinterpret_cast<const string_type::value_type*>(values), M, N, nulls, direction);
+        bind_strings(
+            param
+            , reinterpret_cast<const string_type::value_type*>(values)
+            , M
+            , N
+            , nulls
+            , direction);
     }
 
     //! @}
@@ -607,7 +652,11 @@ public:
     //! \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
     //! \throws database_error
     //! \see connected(), connect()
-    connection(const string_type& dsn, const string_type& user, const string_type& pass, long timeout = 0);
+    connection(
+        const string_type& dsn
+        , const string_type& user
+        , const string_type& pass
+        , long timeout = 0);
 
     //! \brief Create new connection object and immediately connect using the given connection string.
     //! \param connection_string The connection string for establishing a connection.
@@ -629,7 +678,11 @@ public:
     //! \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
     //! \throws database_error
     //! \see connected()
-    void connect(const string_type& dsn, const string_type& user, const string_type& pass, long timeout = 0);
+    void connect(
+        const string_type& dsn
+        , const string_type& user
+        , const string_type& pass
+        , long timeout = 0);
 
     //! \brief Create new connection object and immediately connect using the given connection string.
     //! \param connection_string The connection string for establishing a connection.
@@ -870,7 +923,11 @@ private:
 //! \return A result set object.
 //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
 //! \see open(), prepare(), execute(), result, transaction
-result execute(connection& conn, const string_type& query, long batch_operations = 1, long timeout = 0);
+result execute(
+    connection& conn
+    , const string_type& query
+    , long batch_operations = 1
+    , long timeout = 0);
 
 //! \brief Execute the previously prepared query now.
 //! \param stmt The prepared statement that will be executed.
