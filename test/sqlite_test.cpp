@@ -18,7 +18,6 @@ nanodbc::connection connect()
 struct sqlite_fixture
 {
     sqlite_fixture()
-    : i(0)
     {
 
     }
@@ -28,7 +27,6 @@ struct sqlite_fixture
         std::remove("nanodbc.db");
     }
 
-    int i;
 };
 
 typedef boost::mpl::list<
