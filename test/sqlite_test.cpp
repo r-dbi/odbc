@@ -264,4 +264,36 @@ BOOST_AUTO_TEST_CASE(transaction_test)
     check_rows_equal(execute(connection, query), 0);
 }
 
+BOOST_AUTO_TEST_CASE(exception_test)
+{
+    nanodbc::connection connection = connect();
+    nanodbc::result results;
+
+    BOOST_CHECK_THROW(execute(connection, "THIS IS NOT VALID SQL!"), nanodbc::database_error);
+
+    execute(connection,
+        "drop table if exists exception_test;"
+        "create table exception_test (i int);"
+        "insert into exception_test values (-10);"
+        "insert into exception_test values (null);"
+    );
+
+    results = execute(connection, "select * from exception_test where i = -10;");
+
+    BOOST_CHECK(results.next());
+    BOOST_CHECK_THROW(results.get<nanodbc::date>(0), nanodbc::type_incompatible_error);
+    BOOST_CHECK_THROW(results.get<nanodbc::timestamp>(0), nanodbc::type_incompatible_error);
+
+    results = execute(connection, "select * from exception_test where i is null;");
+
+    BOOST_CHECK(results.next());
+    BOOST_CHECK_THROW(results.get<int>(0), nanodbc::null_access_error);
+    BOOST_CHECK_THROW(results.get<int>(42), nanodbc::index_range_error);
+
+    nanodbc::statement statement(connection);
+    BOOST_CHECK(statement.open() && statement.connected());
+    statement.close();
+    BOOST_CHECK_THROW(statement.prepare("select * from exception_test;"), nanodbc::programming_error);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
