@@ -10,13 +10,13 @@
 #include <ctime>
 #include <map>
 
-#ifdef NANODBC_USE_CPP11
+#if defined(NANODBC_USE_CPP11)
     #include <cstdint>
 #else
     #include <stdint.h> // assuming we have C99 intmax_t
 #endif
 
-#if defined(_MSC_VER) && _MSC_VER <= 1600
+#if defined(_MSC_VER) && _MSC_VER <= 1800
     // silence spurious Visual C++ warnings 
     #pragma warning(disable:4244) // warning about integer conversion issues.
     #pragma warning(disable:4312) // warning about 64-bit portability issues.
