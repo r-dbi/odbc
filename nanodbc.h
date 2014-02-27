@@ -77,6 +77,10 @@
 #include <string>
 #include <vector>
 
+#if !defined(NANODBC_USE_CPP11) && defined(_MSC_VER) && _MSC_VER >= 1800
+#define NANODBC_USE_CPP11
+#endif
+
 // Define NANODBC_HAS_TR1_NAMESPACE if your compiler's standard library implementation
 // has a std::tr1 namespace, otherwise we try to detect automatically.
 #ifndef NANODBC_HAS_TR1_NAMESPACE
