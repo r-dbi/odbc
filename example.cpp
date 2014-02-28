@@ -16,7 +16,9 @@ int main(int argc, char* argv[])
     catch(const exception& e)
     {
         cerr << e.what() << endl;
+        exit(1);
     }
+    return 0;
 }
 
 void run_test(const char* connection_string)
