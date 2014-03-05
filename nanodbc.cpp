@@ -1429,8 +1429,8 @@ template<>
 bool statement::statement_impl::equals(const date& lhs, const date& rhs)
 {
     return lhs.year == rhs.year
-        && lhs.year == rhs.year
-        && lhs.year == rhs.year;
+        && lhs.month == rhs.month
+        && lhs.day == rhs.day;
 }
 
 template<>
