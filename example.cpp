@@ -1,7 +1,7 @@
 #include "nanodbc.h"
 #include <algorithm>
-#include <iostream>
 #include <cstring>
+#include <iostream>
 
 using namespace std;
 
@@ -19,8 +19,8 @@ int main(int argc, char* argv[])
     {
         char* app_name = std::strrchr(argv[0], '/');
         app_name = app_name ? app_name + 1 : argv[0];
-        if(0 == std::strncmp(app_name, "lt-", 3)) // libtool creates an executable whose name is prefixed with "lt-"; remove it.
-            app_name += 3;
+        if(0 == std::strncmp(app_name, "lt-", 3))
+            app_name += 3; // remove libtool prefix
         usage(std::cerr, app_name);
         return 1;
     }
