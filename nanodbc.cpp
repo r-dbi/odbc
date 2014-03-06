@@ -1893,7 +1893,7 @@ private:
 private:
     statement stmt_;
     const long rowset_size_;
-    SQLULEN  row_count_;
+    SQLULEN row_count_;
     bound_column* bound_columns_;
     short bound_columns_size_;
     long rowset_position_;
