@@ -12,7 +12,7 @@ using namespace std;
 
 nanodbc::connection connect()
 {
-    return nanodbc::connection("Driver=sqlite;Database=nanodbc.db;");   
+    return nanodbc::connection("Driver=sqlite;Database=nanodbc.db;");
 }
 
 struct sqlite_fixture
