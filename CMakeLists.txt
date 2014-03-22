@@ -58,4 +58,6 @@ add_subdirectory(test)
 
 enable_testing()
 add_test(NAME test COMMAND tests)
-add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} DEPENDS tests)
+add_custom_target(check
+	COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
+	DEPENDS tests)
