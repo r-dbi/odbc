@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6) 
 project(nanodbc) 
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-unused-const-variable")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
 
 ########################################
 ## find unixODBC or iODBC config binary
@@ -54,9 +54,8 @@ target_link_libraries(example nanodbc)
 ########################################
 ## unit tests
 ########################################
-add_subdirectory(test)
-
 enable_testing()
+add_subdirectory(test)
 add_test(NAME test COMMAND tests)
 add_custom_target(check
 	COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure

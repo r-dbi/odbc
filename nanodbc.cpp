@@ -42,7 +42,6 @@
 #if defined(_MSC_VER)
     #ifdef NANODBC_USE_UNICODE
         #define NANODBC_TEXT(s) L ## s
-        #define NANODBC_SSCANF std::swscanf
         #define NANODBC_SNPRINTF std::swprintf
         #define NANODBC_STRFTIME std::wcsftime
         #define NANODBC_STRLEN std::wcslen
@@ -51,7 +50,6 @@
         #define NANODBC_SQLCHAR SQLWCHAR
     #else
         #define NANODBC_TEXT(s) s
-        #define NANODBC_SSCANF std::sscanf
         #define NANODBC_SNPRINTF _snprintf
         #define NANODBC_STRFTIME std::strftime
         #define NANODBC_STRLEN std::strlen
@@ -62,7 +60,6 @@
 #else
     #ifdef NANODBC_USE_UNICODE
         #define NANODBC_TEXT(s) L ## s
-        #define NANODBC_SSCANF std::swscanf
         #define NANODBC_SNPRINTF std::swprintf
         #define NANODBC_STRFTIME std::wcsftime
         #define NANODBC_STRLEN std::wcslen
@@ -71,7 +68,6 @@
         #define NANODBC_SQLCHAR SQLWCHAR
     #else
         #define NANODBC_TEXT(s) s
-        #define NANODBC_SSCANF std::sscanf
         #define NANODBC_SNPRINTF std::snprintf
         #define NANODBC_STRFTIME std::strftime
         #define NANODBC_STRLEN std::strlen
@@ -260,141 +256,91 @@ namespace
 {
     using namespace std; // if int64_t is in std namespace (in c++11)
 
-    // A utility for calculating the ctype, sqltype, and format specifiers for the given type T.
+    // A utility for calculating the ctype from the given type T.
     // I essentially create a lookup table based on the MSDN ODBC documentation.
-    // See also http://msdn.microsoft.com/en-us/library/windows/desktop/ms714556(v=vs.85).aspx
+    // See http://msdn.microsoft.com/en-us/library/windows/desktop/ms714556(v=vs.85).aspx
     template<class T>
-    struct sql_type_info { };
+    struct sql_ctype { };
 
     template<>
-    struct sql_type_info<char>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_CHAR; 
-        static const SQLSMALLINT sqltype = SQL_CHAR;
-        static const nanodbc::string_type::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<wchar_t>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_WCHAR; 
-        static const SQLSMALLINT sqltype = SQL_WCHAR;
-        static const nanodbc::string_type::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<short>
+    struct sql_ctype<nanodbc::string_type::value_type>
     {
-        static const SQLSMALLINT ctype = SQL_C_SSHORT;
-        static const SQLSMALLINT sqltype = SQL_SMALLINT; 
-        static const nanodbc::string_type::value_type* const format;
+        #ifdef NANODBC_USE_UNICODE
+            static const SQLSMALLINT value = SQL_C_WCHAR;
+        #else
+            static const SQLSMALLINT value = SQL_C_CHAR;
+        #endif
     };
 
     template<>
-    struct sql_type_info<unsigned short>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_USHORT; 
-        static const SQLSMALLINT sqltype = SQL_SMALLINT;    
-        static const nanodbc::string_type::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<int32_t>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_SLONG; 
-        static const SQLSMALLINT sqltype = SQL_INTEGER; 
-        static const nanodbc::string_type::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<uint32_t>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_ULONG; 
-        static const SQLSMALLINT sqltype = SQL_INTEGER; 
-        static const nanodbc::string_type::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<int64_t>
+    struct sql_ctype<short>
     {
-        static const SQLSMALLINT ctype = SQL_C_SBIGINT;
-        static const SQLSMALLINT sqltype = SQL_BIGINT;
-        static const nanodbc::string_type::value_type* const format;
+        static const SQLSMALLINT value = SQL_C_SSHORT;
     };
 
     template<>
-    struct sql_type_info<uint64_t>
+    struct sql_ctype<unsigned short>
+    { 
+        static const SQLSMALLINT value = SQL_C_USHORT; 
+    };
+
+    template<>
+    struct sql_ctype<int32_t>
+    { 
+        static const SQLSMALLINT value = SQL_C_SLONG; 
+    };
+
+    template<>
+    struct sql_ctype<uint32_t>
+    { 
+        static const SQLSMALLINT value = SQL_C_ULONG; 
+    };
+
+    template<>
+    struct sql_ctype<int64_t>
     {
-        static const SQLSMALLINT ctype = SQL_C_UBIGINT;
-        static const SQLSMALLINT sqltype = SQL_BIGINT;
-        static const nanodbc::string_type::value_type* const format;
+        static const SQLSMALLINT value = SQL_C_SBIGINT;
     };
 
     template<>
-    struct sql_type_info<float>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_FLOAT; 
-        static const SQLSMALLINT sqltype = SQL_FLOAT;
-        static const nanodbc::string_type::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<double>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_DOUBLE; 
-        static const SQLSMALLINT sqltype = SQL_DOUBLE;
-        static const nanodbc::string_type::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<std::string>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_CHAR; 
-        static const SQLSMALLINT sqltype = SQL_VARCHAR;
-        static const nanodbc::string_type::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<std::wstring>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_WCHAR; 
-        static const SQLSMALLINT sqltype = SQL_WVARCHAR;
-        static const nanodbc::string_type::value_type* const format; 
-    };
-
-    template<>
-    struct sql_type_info<nanodbc::date>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_DATE; 
-        static const SQLSMALLINT sqltype = SQL_DATE;
-    };
-
-    template<>
-    struct sql_type_info<nanodbc::timestamp>
-    { 
-        static const SQLSMALLINT ctype = SQL_C_TIMESTAMP; 
-        static const SQLSMALLINT sqltype = SQL_TIMESTAMP;
-    };
-
-    // Mapping data type to printf style formatting string.
-    const nanodbc::string_type::value_type* const sql_type_info<wchar_t>::format = NANODBC_TEXT("%lc");
-    const nanodbc::string_type::value_type* const sql_type_info<short>::format = NANODBC_TEXT("%hd");
-    const nanodbc::string_type::value_type* const sql_type_info<unsigned short>::format = NANODBC_TEXT("%hu");
-    const nanodbc::string_type::value_type* const sql_type_info<int32_t>::format = NANODBC_TEXT("%ld");
-    const nanodbc::string_type::value_type* const sql_type_info<uint32_t>::format = NANODBC_TEXT("%lu");
-    const nanodbc::string_type::value_type* const sql_type_info<int64_t>::format = NANODBC_TEXT("%ld");
-    const nanodbc::string_type::value_type* const sql_type_info<uint64_t>::format = NANODBC_TEXT("%lu");
-    const nanodbc::string_type::value_type* const sql_type_info<float>::format = NANODBC_TEXT("%f");
-    const nanodbc::string_type::value_type* const sql_type_info<double>::format = NANODBC_TEXT("%lf");
-
-    // Converts the given string to the given type T.
-    template<class T>
-    inline T convert(const nanodbc::string_type& s)
+    struct sql_ctype<uint64_t>
     {
-        T value;
-        NANODBC_SSCANF(s.c_str(), sql_type_info<T>::format, &value);
-        return value;
-    }
+        static const SQLSMALLINT value = SQL_C_UBIGINT;
+    };
+
+    template<>
+    struct sql_ctype<float>
+    { 
+        static const SQLSMALLINT value = SQL_C_FLOAT; 
+    };
+
+    template<>
+    struct sql_ctype<double>
+    { 
+        static const SQLSMALLINT value = SQL_C_DOUBLE; 
+    };
+
+    template<>
+    struct sql_ctype<nanodbc::string_type>
+    {
+        #ifdef NANODBC_USE_UNICODE
+            static const SQLSMALLINT value = SQL_C_WCHAR;
+        #else
+            static const SQLSMALLINT value = SQL_C_CHAR;
+        #endif
+    };
+
+    template<>
+    struct sql_ctype<nanodbc::date>
+    { 
+        static const SQLSMALLINT value = SQL_C_DATE; 
+    };
+
+    template<>
+    struct sql_ctype<nanodbc::timestamp>
+    { 
+        static const SQLSMALLINT value = SQL_C_TIMESTAMP; 
+    };
 
     // Encapsulates resources needed for column binding.
     class bound_column
@@ -1229,7 +1175,7 @@ public:
             , stmt_ // handle
             , param + 1 // parameter number
             , param_type // input or output type
-            , sql_type_info<T>::ctype // value type
+            , sql_ctype<T>::value // value type
             , data_type // parameter type
             , parameter_size // column size ignored for many types, but needed for strings
             , 0 // decimal digits
@@ -1338,7 +1284,7 @@ void statement::statement_impl::bind_parameter<string_type::value_type>(
         , stmt_ // handle
         , param + 1 // parameter number
         , param_type // input or output type
-        , sql_type_info<string_type::value_type>::ctype // value type
+        , sql_ctype<string_type::value_type>::value // value type
         , data_type // parameter type
         , parameter_size // column size ignored for many types, but needed for strings
         , 0 // decimal digits
@@ -1847,7 +1793,7 @@ private:
                     col.clen_ = 0;
                     break;
                 default:
-                    col.ctype_ = sql_type_info<string_type>::ctype;
+                    col.ctype_ = sql_ctype<string_type>::value;
                     col.clen_ = 128;
                     break;
             }
