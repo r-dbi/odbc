@@ -20,7 +20,7 @@ Threading               = 2
 
 ## Example Build Process
 
-It's most convenient to create a build directory for an out of source build, but this isn't required. After you've used cmake to generate your Makefiles, you probably only really need to be aware of ```make nanodbc``` which will build your shared object, or ```make check``` which will build and run the unit tests. If the unit tests fail, you can run ```ctest --output-on-failure``` directly to get detailed output. You may also want to install nanodbc to your system using ```make install```.
+It's most convenient to create a build directory for an out of source build, but this isn't required. After you've used cmake to generate your Makefiles, you probably only really need to be aware of ```make nanodbc``` which will build your shared object, or ```make check``` which will build and run the unit tests. If the unit tests fail, please don't hesitate to report it by creating an issue including a log of the output you're getting! You may also want to install nanodbc to your system using ```make install```.
 
 ```bash
 cd path/to/nanodbc/repository
@@ -33,6 +33,5 @@ make example # builds example program
 make tests # only builds the unit tests
 make test # only runs the unit tests
 make check # builds and then runs unit tests
-ctest --output-on-failure # provide more details on unit test failures
 make install # installs nanodbc.h and shared library
 ```
