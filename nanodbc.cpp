@@ -157,42 +157,66 @@ namespace
         return i;
     }
 
-    // Attempts to get the last ODBC error as a string.
-    inline std::string last_error(SQLHANDLE handle, SQLSMALLINT handle_type)
+    // Attempts to get the most recent ODBC error as a string.
+    inline std::string recent_error(SQLHANDLE handle, SQLSMALLINT handle_type)
     {
-        // last error always retrieved as char*, even in unicode mode
-        SQLCHAR sql_state[6];
-        SQLCHAR sql_message[SQL_MAX_MESSAGE_LENGTH];
+        std::string result; // always return string, even in unicode mode
+        std::vector<SQLCHAR> sql_message(SQL_MAX_MESSAGE_LENGTH);
+        sql_message[0] = '\0';
 
-        SQLINTEGER native_error;
+        SQLINTEGER i = 1;
+        SQLINTEGER native_error = 0;
         SQLSMALLINT total_bytes;
+        SQLCHAR sql_state[6];
         RETCODE rc;
-        NANODBC_CALL_RC(
-            SQLGetDiagRec
-            , rc
-            , handle_type
-            , handle
-            , 1
-            , sql_state
-            , &native_error
-            , sql_message
-            , sizeof(sql_message)
-            , &total_bytes);
 
-        if(success(rc))
+        do
         {
-            std::string status(&sql_state[0], &sql_state[arrlen(sql_state)]);
-            status += ": ";
-            status += std::string(&sql_message[0], &sql_message[strarrlen(sql_message)]);
+            NANODBC_CALL_RC(
+                SQLGetDiagRec
+                , rc
+                , handle_type
+                , handle
+                , i
+                , sql_state
+                , &native_error
+                , 0
+                , 0
+                , &total_bytes);
 
-            // some drivers insert \0 into error messages for unknown reasons
-            using std::replace;
-            replace(status.begin(), status.end(), '\0', ' ');
+            if(success(rc) && total_bytes > 0)
+                sql_message.resize(total_bytes + 1);
 
-            return status;
-        }
+            NANODBC_CALL_RC(
+                SQLGetDiagRec
+                , rc
+                , handle_type
+                , handle
+                , i
+                , sql_state
+                , &native_error
+                , sql_message.data()
+                , sql_message.size()
+                , &total_bytes);
 
-        return "Unknown Error: SQLGetDiagRec() call failed";
+            if(!success(rc))
+                return result;
+
+            if(!result.empty())
+                result += ' ';
+
+            result += std::string(sql_message.begin(), sql_message.end());
+        } while(rc != SQL_NO_DATA);
+
+        std::string status(&sql_state[0], &sql_state[arrlen(sql_state)]);
+        status += ": ";
+        status += result;
+
+        // some drivers insert \0 into error messages for unknown reasons
+        using std::replace;
+        replace(status.begin(), status.end(), '\0', ' ');
+
+        return status;
     }
 } // namespace
 
@@ -231,7 +255,7 @@ namespace nanodbc
     }
 
     database_error::database_error(void* handle, short handle_type, const std::string& info)
-    : std::runtime_error(info + last_error(handle, handle_type)) { }
+    : std::runtime_error(info + recent_error(handle, handle_type)) { }
 
     const char* database_error::what() const throw()
     {
