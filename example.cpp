@@ -5,36 +5,7 @@
 
 using namespace std;
 
-void run_test(const char* connection_string);
 void show(nanodbc::result& results);
-
-void usage(std::ostream& out, std::string const& binary_name)
-{
-    out << "usage: " << binary_name << " connection_string" << std::endl;
-}
-
-int main(int argc, char* argv[])
-{
-    if(argc != 2)
-    {
-        char* app_name = std::strrchr(argv[0], '/');
-        app_name = app_name ? app_name + 1 : argv[0];
-        if(0 == std::strncmp(app_name, "lt-", 3))
-            app_name += 3; // remove libtool prefix
-        usage(std::cerr, app_name);
-        return 1;
-    }
-
-    try
-    {
-        run_test(argv[1]);
-    }
-    catch(const exception& e)
-    {
-        cerr << e.what() << endl;
-        return 1;
-    }
-}
 
 void run_test(const char* connection_string)
 {
@@ -218,5 +189,33 @@ void show(nanodbc::result& results)
         for(short col = 0; col < columns; ++col)
             cout << "(" << results.get<string>(col, "null") << ")\t";
         cout << endl;
+    }
+}
+
+void usage(std::ostream& out, std::string const& binary_name)
+{
+    out << "usage: " << binary_name << " connection_string" << std::endl;
+}
+
+int main(int argc, char* argv[])
+{
+    if(argc != 2)
+    {
+        char* app_name = std::strrchr(argv[0], '/');
+        app_name = app_name ? app_name + 1 : argv[0];
+        if(0 == std::strncmp(app_name, "lt-", 3))
+            app_name += 3; // remove libtool prefix
+        usage(std::cerr, app_name);
+        return 1;
+    }
+
+    try
+    {
+        run_test(argv[1]);
+    }
+    catch(const exception& e)
+    {
+        cerr << e.what() << endl;
+        return 1;
     }
 }
