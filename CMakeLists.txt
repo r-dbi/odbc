@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.6) 
 project(nanodbc) 
 
+option(NANODBC_USE_CPP11 "build with c++11 support enabled" OFF)
+option(NANODBC_USE_UNICODE "build with unicode support enabled" OFF)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
 
 ########################################
@@ -16,10 +18,19 @@ if(NOT ODBC_CONFIG)
 	message(FATAL_ERROR "can not find odbc config program")
 endif()
 
-if(${NANODBC_USE_CPP11})
+if(NANODBC_USE_CPP11)
+	message(STATUS "C++11 support: Enabled")
 	add_definitions(-DNANODBC_USE_CPP11 --std=c++11)
 else()
+	message(STATUS "C++11 support: Disabled")
 	add_definitions(--std=c++03)
+endif()
+
+if(NANODBC_USE_UNICODE)
+	message(STATUS "Unicode support: Enabled")
+	add_definitions(-DNANODBC_USE_UNICODE)
+else()
+	message(STATUS "Unicode support: Disabled")
 endif()
 
 ########################################
@@ -32,9 +43,6 @@ execute_process(COMMAND ${ODBC_CONFIG} --cflags OUTPUT_VARIABLE ODBC_COMPILE_FLA
 ## optional NANODBC_USE_UNICODE
 ########################################
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ODBC_LINK_FLAGS}")
-if(${NANODBC_USE_UNICODE})
-	set(ODBC_COMPILE_FLAGS "${ODBC_COMPILE_FLAGS} -DNANODBC_USE_UNICODE")
-endif()
 
 ########################################
 ## shared library
