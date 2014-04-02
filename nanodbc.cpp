@@ -206,6 +206,7 @@ namespace
                 result += ' ';
 
             result += std::string(sql_message.begin(), sql_message.end());
+            i++;
         } while(rc != SQL_NO_DATA);
 
         std::string status(&sql_state[0], &sql_state[arrlen(sql_state)]);
