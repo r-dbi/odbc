@@ -300,4 +300,20 @@ BOOST_AUTO_TEST_CASE(exception_test)
     BOOST_CHECK_THROW(statement.prepare(NANODBC_TEXT("select * from exception_test;")), nanodbc::programming_error);
 }
 
+BOOST_AUTO_TEST_CASE(execute_multiple)
+{
+    nanodbc::connection connection = connect();
+    nanodbc::statement statement(connection);
+    nanodbc::prepare(statement, "SELECT strftime('%s','now');");
+
+    nanodbc::result results = statement.execute();
+    results.next();
+
+    results = statement.execute();
+    results.next();
+
+    results = statement.execute();
+    results.next();
+}
+
 BOOST_AUTO_TEST_SUITE_END()
