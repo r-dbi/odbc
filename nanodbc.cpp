@@ -1871,11 +1871,11 @@ private:
                     SQLBindCol
                     , rc
                     , stmt_.native_statement_handle()
-                    , i + 1
-                    , col.ctype_
-                    , col.pdata_
-                    , col.clen_
-                    , col.cbdata_);
+                    , i + 1         // ColumnNumber
+                    , col.ctype_    // TargetType
+                    , col.pdata_    // TargetValuePtr
+                    , col.clen_     // BufferLength
+                    , col.cbdata_); // StrLen_or_Ind
                 if(!success(rc))
                     NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
             }

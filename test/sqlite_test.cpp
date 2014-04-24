@@ -13,12 +13,14 @@
     #define NANODBC_TEXT(s) s
 #endif
 
+#define CONNECTION_STRING "Driver=sqlite;Database=nanodbc.db;"
+
 using nanodbc::string_type;
 using namespace std;
 
 nanodbc::connection connect()
 {
-    return nanodbc::connection(NANODBC_TEXT("Driver=sqlite;Database=nanodbc.db;"));
+    return nanodbc::connection(NANODBC_TEXT(CONNECTION_STRING));
 }
 
 struct sqlite_fixture
@@ -56,7 +58,8 @@ BOOST_AUTO_TEST_CASE(simple_test)
     BOOST_CHECK(connection.native_dbc_handle());
     BOOST_CHECK(connection.native_env_handle());
     BOOST_CHECK_EQUAL(connection.transactions(), 0);
-    BOOST_CHECK(boost::icontains(connection.driver_name(), "sqlite"));
+    if(boost::icontains(CONNECTION_STRING, "sqlite"))
+        BOOST_CHECK(boost::icontains(connection.driver_name(), "sqlite"));
 
     execute(connection, NANODBC_TEXT("drop table if exists simple_test;"));
     execute(connection, NANODBC_TEXT("create table simple_test (a int, b varchar(10));"));
@@ -184,22 +187,20 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(integral_test, T, integral_test_types)
     nanodbc::connection connection = connect();
 
     execute(connection, NANODBC_TEXT("drop table if exists integral_test;"));
-    execute(connection, NANODBC_TEXT("create table integral_test (i int, f float, d double, c char);"));
+    execute(connection, NANODBC_TEXT("create table integral_test (i int, f float, d double precision);"));
 
     nanodbc::statement statement(connection);
-    prepare(statement, NANODBC_TEXT("insert into integral_test (i, f, d, c) values (?, ?, ?, ?);"));
+    prepare(statement, NANODBC_TEXT("insert into integral_test (i, f, d) values (?, ?, ?);"));
 
     srand(0);
     const int32_t i = rand() % 5000;
     const float f = rand() / (rand() + 1.0);
-    const double d = - rand() / (rand() + 1.0);
-    const nanodbc::string_type::value_type c = rand() % 256;
+    const float d = - rand() / (rand() + 1.0);
 
     short p = 0;
     statement.bind(p++, &i);
     statement.bind(p++, &f);
     statement.bind(p++, &d);
-    statement.bind(p++, &c);
 
     BOOST_CHECK(statement.connected());
     execute(statement);
@@ -211,7 +212,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(integral_test, T, integral_test_types)
     BOOST_CHECK_EQUAL(results.get<T>(p++), static_cast<T>(i));
     BOOST_CHECK_CLOSE(static_cast<float>(results.get<T>(p++)), static_cast<T>(f), 1e-6);
     BOOST_CHECK_CLOSE(static_cast<double>(results.get<T>(p++)), static_cast<T>(d), 1e-6);
-    BOOST_CHECK_EQUAL(results.get<T>(p++), static_cast<T>(c));
 }
 
 void check_rows_equal(nanodbc::result results, std::size_t rows)
@@ -304,7 +304,7 @@ BOOST_AUTO_TEST_CASE(execute_multiple)
 {
     nanodbc::connection connection = connect();
     nanodbc::statement statement(connection);
-    nanodbc::prepare(statement, "SELECT strftime('%s','now');");
+    nanodbc::prepare(statement, "SELECT 42;");
 
     nanodbc::result results = statement.execute();
     results.next();
