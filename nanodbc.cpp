@@ -1051,7 +1051,7 @@ public:
 
         if(open())
         {
-            // The ODBC cursor must be called before subsequent executions, as described
+            // The ODBC cursor must be closed before subsequent executions, as described
             // here http://msdn.microsoft.com/en-us/library/windows/desktop/ms713584%28v=vs.85%29.aspx
             //
             // However, we don't necessarily want to call SQLCloseCursor() because that
