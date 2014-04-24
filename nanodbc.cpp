@@ -853,7 +853,6 @@ public:
     statement_impl()
     : stmt_(0)
     , open_(false)
-    , executed_(false)
     , conn_()
     , bind_len_or_null_()
     {
@@ -863,7 +862,6 @@ public:
     statement_impl(class connection& conn)
     : stmt_(0)
     , open_(false)
-    , executed_(false)
     , conn_()
     , bind_len_or_null_()
     {
@@ -873,7 +871,6 @@ public:
     statement_impl(class connection& conn, const string_type& query, long timeout)
     : stmt_(0)
     , open_(false)
-    , executed_(false)
     , conn_()
     , bind_len_or_null_()
     {
@@ -960,7 +957,6 @@ public:
         }
 
         open_ = false;
-        executed_ = false;
         stmt_ = 0;
     }
 
@@ -1044,8 +1040,6 @@ public:
         if(!success(rc) && rc != SQL_NO_DATA)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
-        executed_ = true;
-
         if(rc == SQL_NO_DATA)
             return result();
         return result(statement, batch_operations);
@@ -1055,14 +1049,20 @@ public:
     {
         RETCODE rc;
 
-        if(executed_)
+        if(open())
         {
-            // SQLCloseCursor() must be called before subsequent executions
-            // see http://msdn.microsoft.com/en-us/library/windows/desktop/ms713584%28v=vs.85%29.aspx
+            // The ODBC cursor must be called before subsequent executions, as described
+            // here http://msdn.microsoft.com/en-us/library/windows/desktop/ms713584%28v=vs.85%29.aspx
+            //
+            // However, we don't necessarily want to call SQLCloseCursor() because that
+            // will cause an invalid cursor state in the case that no cursor is currently open.
+            // A better solution is to use SQLFreeStmt() with the SQL_CLOSE option, which has
+            // the same effect without the undesired limitations.
             NANODBC_CALL_RC(
-                SQLCloseCursor
+                SQLFreeStmt
                 , rc
-                , stmt_);
+                , stmt_
+                , SQL_CLOSE);
             if(!success(rc))
                 NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         }
@@ -1085,8 +1085,6 @@ public:
             , stmt_);
         if(!success(rc) && rc != SQL_NO_DATA)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-
-        executed_ = true;
 
         if(rc == SQL_NO_DATA)
             return result();
@@ -1310,7 +1308,6 @@ private:
 private:
     HSTMT stmt_;
     bool open_;
-    bool executed_;
     class connection conn_;
     std::map<short, std::vector<null_type> > bind_len_or_null_;
 };
