@@ -13,14 +13,14 @@
     #define NANODBC_TEXT(s) s
 #endif
 
-#define CONNECTION_STRING "Driver=sqlite;Database=nanodbc.db;"
+#define CONNECTION_STRING NANODBC_TEXT("Driver=sqlite;Database=nanodbc.db;")
 
 using nanodbc::string_type;
 using namespace std;
 
 nanodbc::connection connect()
 {
-    return nanodbc::connection(NANODBC_TEXT(CONNECTION_STRING));
+    return nanodbc::connection(CONNECTION_STRING);
 }
 
 struct sqlite_fixture
@@ -304,7 +304,7 @@ BOOST_AUTO_TEST_CASE(execute_multiple)
 {
     nanodbc::connection connection = connect();
     nanodbc::statement statement(connection);
-    nanodbc::prepare(statement, "SELECT 42;");
+    nanodbc::prepare(statement, NANODBC_TEXT("SELECT 42;"));
 
     nanodbc::result results = statement.execute();
     results.next();
