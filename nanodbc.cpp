@@ -160,20 +160,20 @@ namespace
     // Attempts to get the most recent ODBC error as a string.
     inline std::string recent_error(SQLHANDLE handle, SQLSMALLINT handle_type)
     {
-        std::string result; // always return string, even in unicode mode
-        std::vector<SQLCHAR> sql_message(SQL_MAX_MESSAGE_LENGTH);
+        nanodbc::string_type result;
+        std::vector<NANODBC_SQLCHAR> sql_message(SQL_MAX_MESSAGE_LENGTH);
         sql_message[0] = '\0';
 
         SQLINTEGER i = 1;
         SQLINTEGER native_error = 0;
         SQLSMALLINT total_bytes;
-        SQLCHAR sql_state[6];
+        NANODBC_SQLCHAR sql_state[6];
         RETCODE rc;
 
         do
         {
             NANODBC_CALL_RC(
-                SQLGetDiagRec
+                NANODBC_UNICODE(SQLGetDiagRec)
                 , rc
                 , handle_type
                 , handle
@@ -188,7 +188,7 @@ namespace
                 sql_message.resize(total_bytes + 1);
 
             NANODBC_CALL_RC(
-                SQLGetDiagRec
+                NANODBC_UNICODE(SQLGetDiagRec)
                 , rc
                 , handle_type
                 , handle
@@ -200,18 +200,18 @@ namespace
                 , &total_bytes);
 
             if(!success(rc))
-                return result;
+                return std::string(result.begin(), result.end()); // always return string, even in unicode mode
 
             if(!result.empty())
                 result += ' ';
 
-            result += std::string(sql_message.begin(), sql_message.end());
+            result += nanodbc::string_type(sql_message.begin(), sql_message.end());
             i++;
         } while(rc != SQL_NO_DATA);
 
         std::string status(&sql_state[0], &sql_state[arrlen(sql_state)]);
         status += ": ";
-        status += result;
+        status += std::string(result.begin(), result.end()); // always return string, even in unicode mode
 
         // some drivers insert \0 into error messages for unknown reasons
         using std::replace;
