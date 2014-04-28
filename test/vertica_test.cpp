@@ -1,27 +1,12 @@
 #include "test/basic_test.h"
 #include <boost/test/test_case_template.hpp>
-#include <cstdio>
 
 namespace
 {
-    struct sqlite_fixture
-    {
-        sqlite_fixture()
-        {
-
-        }
-
-        ~sqlite_fixture()
-        {
-            std::remove("nanodbc.db");
-        }
-
-    };
-
-    basic_test test(NANODBC_TEXT("Driver=sqlite;Database=nanodbc.db;"));
+	basic_test test(NANODBC_TEXT("Driver=vertica;Servername=vertica;Port=5433;Database=reporting;UserName=dbadmin;Password=dbadmin;"));
 }
 
-BOOST_FIXTURE_TEST_SUITE(sqlite, sqlite_fixture)
+BOOST_AUTO_TEST_SUITE(vertica)
 
 BOOST_AUTO_TEST_CASE(simple_test)
 {
