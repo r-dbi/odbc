@@ -11,7 +11,9 @@
 #include <map>
 
 #if defined(NANODBC_USE_CPP11)
+    #include <codecvt>
     #include <cstdint>
+    #include <iomanip>
 #else
     #include <stdint.h> // assuming we have C99 intmax_t
 #endif
@@ -157,6 +159,26 @@ namespace
         return i;
     }
 
+    #if defined(NANODBC_USE_UNICODE)
+        #if defined(NANODBC_USE_CPP11)
+            inline std::string convert(const std::wstring& s)
+            {
+                std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+                return conv.to_bytes(s);
+            }
+        #else
+            inline std::string convert(const std::wstring& s)
+            {
+                return std::string(s.begin(), s.end());
+            }
+        #endif
+    #else
+        inline std::string convert(const std::string& s)
+        {
+            return s;
+        }
+    #endif
+
     // Attempts to get the most recent ODBC error as a string.
     inline std::string recent_error(SQLHANDLE handle, SQLSMALLINT handle_type)
     {
@@ -200,7 +222,7 @@ namespace
                 , &total_bytes);
 
             if(!success(rc))
-                return std::string(result.begin(), result.end()); // always return string, even in unicode mode
+                return convert(result); // always return string, even in unicode mode
 
             if(!result.empty())
                 result += ' ';
@@ -211,7 +233,7 @@ namespace
 
         std::string status(&sql_state[0], &sql_state[arrlen(sql_state)]);
         status += ": ";
-        status += std::string(result.begin(), result.end()); // always return string, even in unicode mode
+        status += convert(result); // always return string, even in unicode mode
 
         // some drivers insert \0 into error messages for unknown reasons
         using std::replace;
