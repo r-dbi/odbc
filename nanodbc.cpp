@@ -159,6 +159,7 @@ namespace
         return i;
     }
 
+    // In unicode mode we need to narrow the error message.
     #if defined(NANODBC_USE_UNICODE)
         #if defined(NANODBC_USE_CPP11)
             inline std::string convert(const std::wstring& s)
