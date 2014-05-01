@@ -218,7 +218,7 @@ struct basic_test
     {
         nanodbc::connection connection = connect();
         nanodbc::statement statement(connection);
-        nanodbc::prepare(statement, "SELECT 42;");
+        nanodbc::prepare(statement, NANODBC_TEXT("select 42;"));
 
         nanodbc::result results = statement.execute();
         results.next();
@@ -238,7 +238,7 @@ struct basic_test
         nanodbc::statement statement;
         nanodbc::result results;
 
-        statement.prepare(connection, "select 42;");
+        statement.prepare(connection, NANODBC_TEXT("select 42;"));
 
         {
             nanodbc::transaction transaction(connection);
