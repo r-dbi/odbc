@@ -2,6 +2,13 @@
 
 #include "nanodbc.h"
 
+#if defined(NANODBC_USE_UNICODE) && ! defined(NANODBC_USE_CPP11)
+    // I'm using UTF8-CPP to handle narrowing of wstring errors
+    // when unicode mode is enabled, but not c++11 mode which
+    // has standard support for dealing with unicode.
+    #include "utf8/utf8.h"
+#endif
+
 #include <algorithm>
 #include <cassert>
 #include <clocale>
@@ -170,7 +177,13 @@ namespace
         #else
             inline std::string convert(const std::wstring& s)
             {
-                return std::string(s.begin(), s.end());
+                using namespace utf8;
+                using std::back_inserter;
+
+                std::string rvalue;
+                utf16to8(s.begin(), s.end(), back_inserter(rvalue));
+
+                return rvalue;
             }
         #endif
     #else
