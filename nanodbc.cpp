@@ -29,7 +29,7 @@
     // silence spurious Visual C++ warnings 
     #pragma warning(disable:4244) // warning about integer conversion issues.
     #pragma warning(disable:4312) // warning about 64-bit portability issues.
-	#pragma warning(disable:4996) // warning about snprintf() deprecated.
+    #pragma warning(disable:4996) // warning about snprintf() deprecated.
 #endif
 
 #ifdef __APPLE__
@@ -1895,12 +1895,12 @@ private:
                 case SQL_VARCHAR:
                     col.ctype_ = SQL_C_CHAR;
                     col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLCHAR);
-					break;
+                    break;
                 case SQL_WCHAR:
                 case SQL_WVARCHAR:
                     col.ctype_ = SQL_C_WCHAR;
                     col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLWCHAR);
-					break;
+                    break;
                 case SQL_LONGVARCHAR:
                     col.ctype_ = SQL_C_CHAR;
                     col.blob_ = true;
@@ -1981,10 +1981,10 @@ inline void result::result_impl::get_ref_impl<date>(short column, date& result) 
             return;
         case SQL_C_TIMESTAMP:
         {
-			timestamp stamp = *( (timestamp*)( col.pdata_ + rowset_position_ * col.clen_ ) );
-			date d = { stamp.year, stamp.month, stamp.day };
-			result = d;
-			return;
+            timestamp stamp = *( (timestamp*)( col.pdata_ + rowset_position_ * col.clen_ ) );
+            date d = { stamp.year, stamp.month, stamp.day };
+            result = d;
+            return;
         }
     }
     throw type_incompatible_error();
@@ -1999,9 +1999,9 @@ inline void result::result_impl::get_ref_impl<timestamp>(short column, timestamp
         case SQL_C_DATE:
         {
             date d = *((date*)(col.pdata_ + rowset_position_ * col.clen_));
-			timestamp stamp = { d.year, d.month, d.day, 0, 0, 0, 0 };
-			result = stamp;
-			return;
+            timestamp stamp = { d.year, d.month, d.day, 0, 0, 0, 0 };
+            result = stamp;
+            return;
         }
         case SQL_C_TIMESTAMP:
             result = *((timestamp*)(col.pdata_ + rowset_position_ * col.clen_));

@@ -815,7 +815,7 @@ public:
     //!
     //! Columns are numbered from left to right and 0-indexed.
     //! \param column position.
-	//! \param result The column's value will be written to this parameter.
+    //! \param result The column's value will be written to this parameter.
     //! \throws database_error, index_range_error, type_incompatible_error, null_access_error
     template<class T>
     void get_ref(short column, T& result) const;
@@ -826,7 +826,7 @@ public:
     //! Columns are numbered from left to right and 0-indexed.
     //! \param column position.
     //! \param fallback if value is null, return fallback instead.
-	//! \param result The column's value will be written to this parameter.
+    //! \param result The column's value will be written to this parameter.
     //! \throws database_error, index_range_error, type_incompatible_error
     template<class T>
     void get_ref(short column, const T& fallback, T& result) const;
@@ -835,7 +835,7 @@ public:
     //!
     //! \param column column's name.
     //! \param row If there are multiple rows in this rowset, get_ref from the specified row.
-	//! \param result The column's value will be written to this parameter.
+    //! \param result The column's value will be written to this parameter.
     //! \throws database_error, index_range_error, type_incompatible_error, null_access_error
     template<class T>
     void get_ref(const string_type& column_name, T& result) const;
@@ -845,7 +845,7 @@ public:
     //!
     //! \param column_name column's name.
     //! \param fallback if value is null, return fallback instead.
-	//! \param result The column's value will be written to this parameter.
+    //! \param result The column's value will be written to this parameter.
     //! \throws database_error, index_range_error, type_incompatible_error
     template<class T>
     void get_ref(const string_type& column_name, const T& fallback, T& result) const;
