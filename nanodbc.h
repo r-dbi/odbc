@@ -926,7 +926,7 @@ public:
     int column_datatype(const string_type& column_name) const;
 
     //! Returns the next result, for example when stored procedure returns multiple result sets.
-    bool next_result() const;
+    bool next_result();
 
     #ifndef DOXYGEN
         #ifdef NANODBC_USE_CPP11
