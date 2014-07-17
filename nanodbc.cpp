@@ -1981,9 +1981,10 @@ inline void result::result_impl::get_ref_impl<date>(short column, date& result) 
             return;
         case SQL_C_TIMESTAMP:
         {
-            timestamp stamp = *((timestamp*)(col.pdata_ + rowset_position_ * col.clen_));
-            result = { stamp.year, stamp.month, stamp.day };
-            return;
+			timestamp stamp = *( (timestamp*)( col.pdata_ + rowset_position_ * col.clen_ ) );
+			date d = { stamp.year, stamp.month, stamp.day };
+			result = d;
+			return;
         }
     }
     throw type_incompatible_error();
@@ -1998,8 +1999,9 @@ inline void result::result_impl::get_ref_impl<timestamp>(short column, timestamp
         case SQL_C_DATE:
         {
             date d = *((date*)(col.pdata_ + rowset_position_ * col.clen_));
-            result = { d.year, d.month, d.day, 0, 0, 0, 0 };
-            return;
+			timestamp stamp = { d.year, d.month, d.day, 0, 0, 0, 0 };
+			result = stamp;
+			return;
         }
         case SQL_C_TIMESTAMP:
             result = *((timestamp*)(col.pdata_ + rowset_position_ * col.clen_));
