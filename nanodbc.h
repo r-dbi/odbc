@@ -438,7 +438,7 @@ public:
     //! \see open(), prepare(), execute(), result, transaction
     class result execute(long batch_operations = 1, long timeout = 0);
 
-    //! \brief Returns the number of rows affected by the request or –1 if the number of affected rows is not available.
+    //! \brief Returns the number of rows affected by the request or -1 if the number of affected rows is not available.
     //! \throws database_error
     long affected_rows() const;
 
@@ -764,7 +764,7 @@ public:
     //! \brief The rowset size for this result set.
     long rowset_size() const throw();
 
-    //! \brief Returns the number of rows affected by the request or –1 if the number of affected rows is not available.
+    //! \brief Returns the number of rows affected by the request or -1 if the number of affected rows is not available.
     //! \throws database_error
     long affected_rows() const;
 
@@ -810,6 +810,45 @@ public:
 
     //! \brief Returns true if there are no more results in the current result set.
     bool end() const throw();
+
+    //! \brief Gets data from the given column of the current rowset.
+    //!
+    //! Columns are numbered from left to right and 0-indexed.
+    //! \param column position.
+	//! \param result The column's value will be written to this parameter.
+    //! \throws database_error, index_range_error, type_incompatible_error, null_access_error
+    template<class T>
+    void get_ref(short column, T& result) const;
+
+    //! \brief Gets data from the given column of the current rowset.
+    //! If the data is null, fallback is returned instead.
+    //!
+    //! Columns are numbered from left to right and 0-indexed.
+    //! \param column position.
+    //! \param fallback if value is null, return fallback instead.
+	//! \param result The column's value will be written to this parameter.
+    //! \throws database_error, index_range_error, type_incompatible_error
+    template<class T>
+    void get_ref(short column, const T& fallback, T& result) const;
+
+    //! \brief Gets data from the given column by name of the current rowset.
+    //!
+    //! \param column column's name.
+    //! \param row If there are multiple rows in this rowset, get_ref from the specified row.
+	//! \param result The column's value will be written to this parameter.
+    //! \throws database_error, index_range_error, type_incompatible_error, null_access_error
+    template<class T>
+    void get_ref(const string_type& column_name, T& result) const;
+
+    //! \brief Gets data from the given column by name of the current rowset.
+    //! If the data is null, fallback is returned instead.
+    //!
+    //! \param column_name column's name.
+    //! \param fallback if value is null, return fallback instead.
+	//! \param result The column's value will be written to this parameter.
+    //! \throws database_error, index_range_error, type_incompatible_error
+    template<class T>
+    void get_ref(const string_type& column_name, const T& fallback, T& result) const;
 
     //! \brief Gets data from the given column of the current rowset.
     //!

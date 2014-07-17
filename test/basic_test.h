@@ -50,53 +50,73 @@ struct basic_test
         execute(connection, NANODBC_TEXT("insert into simple_test values (2, 'two');"));
         execute(connection, NANODBC_TEXT("insert into simple_test values (3, 'tri');"));
         execute(connection, NANODBC_TEXT("insert into simple_test (b) values ('z');"));
-        nanodbc::result results = execute(connection, NANODBC_TEXT("select a, b from simple_test order by a;"));
 
-        BOOST_CHECK((bool)results);
-        BOOST_CHECK_EQUAL(results.rows(), 0);
-        BOOST_CHECK_EQUAL(results.columns(), 2);
-        BOOST_CHECK_EQUAL(results.affected_rows(), 4);
-        BOOST_CHECK_EQUAL(results.rowset_size(), 1);
-        BOOST_CHECK(results.column_name(0) == NANODBC_TEXT("a"));
-        BOOST_CHECK(results.column_name(1) == NANODBC_TEXT("b"));
+        {
+            nanodbc::result results = execute(connection, NANODBC_TEXT("select a, b from simple_test order by a;"));
 
-        BOOST_CHECK(results.next());
-        BOOST_CHECK_EQUAL(results.rows(), 1);
-        BOOST_CHECK(results.is_null(0));
-        BOOST_CHECK(results.is_null(NANODBC_TEXT("a")));
-        BOOST_CHECK_EQUAL(results.get<int>(0, -1), -1);
-        BOOST_CHECK_EQUAL(results.get<int>(NANODBC_TEXT("a"), -1), -1);
-        BOOST_CHECK(results.get<nanodbc::string_type>(0, NANODBC_TEXT("null")) == NANODBC_TEXT("null"));
-        BOOST_CHECK(results.get<nanodbc::string_type>(NANODBC_TEXT("a"), NANODBC_TEXT("null")) == NANODBC_TEXT("null"));
-        BOOST_CHECK(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("z"));
-        BOOST_CHECK(results.get<nanodbc::string_type>(NANODBC_TEXT("b")) == NANODBC_TEXT("z"));
+            BOOST_CHECK((bool)results);
+            BOOST_CHECK_EQUAL(results.rows(), 0);
+            BOOST_CHECK_EQUAL(results.columns(), 2);
 
-        BOOST_CHECK(results.next());
-        BOOST_CHECK_EQUAL(results.get<int>(0), 1);
-        BOOST_CHECK_EQUAL(results.get<int>(NANODBC_TEXT("a")), 1);
-        BOOST_CHECK(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("one"));
-        BOOST_CHECK(results.get<nanodbc::string_type>(NANODBC_TEXT("b")) == NANODBC_TEXT("one"));
+            // Some drivers always return 0 for select statements, other return the number of rows selected.
+            // I'm not sure how to detect what kind of driver we have, but as far as I know the number of 
+            // affected rows will either be 0 or the number of rows selected.
+            BOOST_CHECK(results.affected_rows() == 4 || results.affected_rows() == 0);
 
-        nanodbc::result results_copy = results;
+            BOOST_CHECK_EQUAL(results.rowset_size(), 1);
+            BOOST_CHECK(results.column_name(0) == NANODBC_TEXT("a"));
+            BOOST_CHECK(results.column_name(1) == NANODBC_TEXT("b"));
 
-        BOOST_CHECK(results_copy.next());
-        BOOST_CHECK_EQUAL(results_copy.get<int>(0, -1), 2);
-        BOOST_CHECK_EQUAL(results_copy.get<int>(NANODBC_TEXT("a"), -1), 2);
-        BOOST_CHECK(results_copy.get<nanodbc::string_type>(1) == NANODBC_TEXT("two"));
-        BOOST_CHECK(results_copy.get<nanodbc::string_type>(NANODBC_TEXT("b")) == NANODBC_TEXT("two"));
+            BOOST_CHECK(results.next());
+            BOOST_CHECK_EQUAL(results.rows(), 1);
+            BOOST_CHECK(results.is_null(0));
+            BOOST_CHECK(results.is_null(NANODBC_TEXT("a")));
+            BOOST_CHECK_EQUAL(results.get<int>(0, -1), -1);
+            BOOST_CHECK_EQUAL(results.get<int>(NANODBC_TEXT("a"), -1), -1);
+            BOOST_CHECK(results.get<nanodbc::string_type>(0, NANODBC_TEXT("null")) == NANODBC_TEXT("null"));
+            BOOST_CHECK(results.get<nanodbc::string_type>(NANODBC_TEXT("a"), NANODBC_TEXT("null")) == NANODBC_TEXT("null"));
+            BOOST_CHECK(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("z"));
+            BOOST_CHECK(results.get<nanodbc::string_type>(NANODBC_TEXT("b")) == NANODBC_TEXT("z"));
 
-        BOOST_CHECK(results.position());
+            int ref_int;
+            results.get_ref(0, -1, ref_int);
+            BOOST_CHECK_EQUAL(ref_int, -1);
+            results.get_ref(NANODBC_TEXT("a"), -2, ref_int);
+            BOOST_CHECK_EQUAL(ref_int, -2);
 
-        nanodbc::result().swap(results_copy);
+            nanodbc::string_type ref_str;
+            results.get_ref<nanodbc::string_type>(0, NANODBC_TEXT("null"), ref_str);
+            BOOST_CHECK_EQUAL(ref_str, NANODBC_TEXT("null"));
+            results.get_ref<nanodbc::string_type>(NANODBC_TEXT("a"), NANODBC_TEXT("null2"), ref_str);
+            BOOST_CHECK_EQUAL(ref_str, NANODBC_TEXT("null2"));
 
-        BOOST_CHECK(results.next());
-        BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("3"));
-        BOOST_CHECK(results.get<nanodbc::string_type>(NANODBC_TEXT("a")) == NANODBC_TEXT("3"));
-        BOOST_CHECK(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("tri"));
-        BOOST_CHECK(results.get<nanodbc::string_type>(NANODBC_TEXT("b")) == NANODBC_TEXT("tri"));
+            BOOST_CHECK(results.next());
+            BOOST_CHECK_EQUAL(results.get<int>(0), 1);
+            BOOST_CHECK_EQUAL(results.get<int>(NANODBC_TEXT("a")), 1);
+            BOOST_CHECK(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("one"));
+            BOOST_CHECK(results.get<nanodbc::string_type>(NANODBC_TEXT("b")) == NANODBC_TEXT("one"));
 
-        BOOST_CHECK(!results.next());
-        BOOST_CHECK(results.end());
+            nanodbc::result results_copy = results;
+
+            BOOST_CHECK(results_copy.next());
+            BOOST_CHECK_EQUAL(results_copy.get<int>(0, -1), 2);
+            BOOST_CHECK_EQUAL(results_copy.get<int>(NANODBC_TEXT("a"), -1), 2);
+            BOOST_CHECK(results_copy.get<nanodbc::string_type>(1) == NANODBC_TEXT("two"));
+            BOOST_CHECK(results_copy.get<nanodbc::string_type>(NANODBC_TEXT("b")) == NANODBC_TEXT("two"));
+
+            BOOST_CHECK(results.position());
+
+            nanodbc::result().swap(results_copy);
+
+            BOOST_CHECK(results.next());
+            BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("3"));
+            BOOST_CHECK(results.get<nanodbc::string_type>(NANODBC_TEXT("a")) == NANODBC_TEXT("3"));
+            BOOST_CHECK(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("tri"));
+            BOOST_CHECK(results.get<nanodbc::string_type>(NANODBC_TEXT("b")) == NANODBC_TEXT("tri"));
+
+            BOOST_CHECK(!results.next());
+            BOOST_CHECK(results.end());
+        }
 
         nanodbc::connection connection_copy(connection);
 
@@ -126,6 +146,10 @@ struct basic_test
         nanodbc::result results = execute(connection, NANODBC_TEXT("select s from string_test;"));
         BOOST_CHECK(results.next());
         BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("Fred"));
+
+        nanodbc::string_type ref;
+        results.get_ref(0, ref);
+        BOOST_CHECK(ref == name);
     }
 
     static void check_rows_equal(nanodbc::result results, std::size_t rows)
@@ -316,10 +340,17 @@ struct basic_test
         nanodbc::result results = execute(connection, NANODBC_TEXT("select * from integral_test;"));
         BOOST_CHECK(results.next());
 
+        T ref;
         p = 0;
+        results.get_ref(p, ref);
+        BOOST_CHECK_EQUAL(ref, static_cast<T>(i));
         BOOST_CHECK_EQUAL(results.get<T>(p++), static_cast<T>(i));
+        results.get_ref(p, ref);
+        BOOST_CHECK_CLOSE(static_cast<float>(ref), static_cast<T>(f), 1e-6);
         BOOST_CHECK_CLOSE(static_cast<float>(results.get<T>(p++)), static_cast<T>(f), 1e-6);
-        BOOST_CHECK_CLOSE(static_cast<double>(results.get<T>(p++)), static_cast<T>(d), 1e-6);
+        results.get_ref(p, ref);
+        BOOST_CHECK_CLOSE(static_cast<double>(ref), static_cast<T>(d), 1e-6);
+        BOOST_CHECK_CLOSE(static_cast<double>(results.get<T>(p++)), static_cast<T>(d), 1e-6);        
     }
 
     const nanodbc::string_type connection_string_;
