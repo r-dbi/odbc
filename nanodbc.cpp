@@ -29,7 +29,7 @@
     // silence spurious Visual C++ warnings 
     #pragma warning(disable:4244) // warning about integer conversion issues.
     #pragma warning(disable:4312) // warning about 64-bit portability issues.
-	#pragma warning(disable:4996) // warning about snprintf() deprecated.
+    #pragma warning(disable:4996) // warning about snprintf() deprecated.
 #endif
 
 #ifdef __APPLE__
@@ -232,7 +232,7 @@ namespace
                 , sql_state
                 , &native_error
                 , sql_message.data()
-                , sql_message.size()
+                , (SQLSMALLINT)sql_message.size()
                 , &total_bytes);
 
             if(!success(rc))
@@ -812,14 +812,18 @@ public:
             conn_.unref_transaction();
         }
 
-        if(conn_.transactions() == 0 && conn_.rollback() && conn_.connected())
+        if(conn_.transactions() == 0 && conn_.connected())
         {
-            NANODBC_CALL(
-                SQLEndTran
-                , SQL_HANDLE_DBC
-                , conn_.native_dbc_handle()
-                , SQL_ROLLBACK);
-            conn_.rollback(false);
+            if(conn_.rollback())
+            {
+                NANODBC_CALL(
+                    SQLEndTran
+                    , SQL_HANDLE_DBC
+                    , conn_.native_dbc_handle()
+                    , SQL_ROLLBACK);
+                conn_.rollback(false);
+            }
+
             NANODBC_CALL(
                 SQLSetConnectAttr
                 , conn_.native_dbc_handle()
@@ -1694,41 +1698,79 @@ public:
     }
 
     template<class T>
-    T get(short column) const
+    void get_ref(short column, T& result) const
     {
         if(column >= bound_columns_size_)
             throw index_range_error();
         if(is_null(column))
             throw null_access_error();
-        return get_impl<T>(column);
+        get_ref_impl<T>(column, result);
+    }
+
+    template<class T>
+    void get_ref(short column, const T& fallback, T& result) const
+    {
+        if(column >= bound_columns_size_)
+            throw index_range_error();
+        if(is_null(column))
+        {
+            result = fallback;
+            return;
+        }
+        get_ref_impl<T>(column, result);
+    }
+
+    template<class T>
+    void get_ref(const string_type& column_name, T& result) const
+    {
+        const short column = this->column(column_name);
+        if(is_null(column))
+            throw null_access_error();
+        get_ref_impl<T>(column, result);
+    }
+
+    template<class T>
+    void get_ref(const string_type& column_name, const T& fallback, T& result) const
+    {
+        const short column = this->column(column_name);
+        if(is_null(column))
+        {
+            result = fallback;
+            return;
+        }
+        get_ref_impl<T>(column, result);
+    }
+
+    template<class T>
+    T get(short column) const
+    {
+        T result;
+        get_ref(column, result);
+        return result;
     }
 
     template<class T>
     T get(short column, const T& fallback) const
     {
-        if(column >= bound_columns_size_)
-            throw index_range_error();
-        if(is_null(column))
-            return fallback;
-        return get_impl<T>(column);
+        T result;
+        get_ref(column, fallback, result);
+        return result;
     }
 
     template<class T>
     T get(const string_type& column_name) const
     {
-        const short column = this->column(column_name);
-        if(is_null(column))
-            throw null_access_error();
-        return get_impl<T>(column);
+        T result;
+        get_ref(column_name, result);
+        return result;
     }
 
     template<class T>
     T get(const string_type& column_name, const T& fallback) const
     {
-        const short column = this->column(column_name);
-        if(is_null(column))
-            return fallback;
-        return get_impl<T>(column);
+        T result;
+        get_ref(column_name, fallback, result);
+        return result;
     }
 
 private:
@@ -1736,7 +1778,7 @@ private:
     result_impl& operator=(const result_impl&); // not defined
 
     template<class T>
-    T get_impl(short column) const;
+    void get_ref_impl(short column, T& result) const;
 
     void before_move() throw()
     {
@@ -1853,12 +1895,12 @@ private:
                 case SQL_VARCHAR:
                     col.ctype_ = SQL_C_CHAR;
                     col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLCHAR);
-					break;
+                    break;
                 case SQL_WCHAR:
                 case SQL_WVARCHAR:
                     col.ctype_ = SQL_C_WCHAR;
                     col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLWCHAR);
-					break;
+                    break;
                 case SQL_LONGVARCHAR:
                     col.ctype_ = SQL_C_CHAR;
                     col.blob_ = true;
@@ -1929,25 +1971,27 @@ private:
 };
 
 template<>
-inline date result::result_impl::get_impl<date>(short column) const
+inline void result::result_impl::get_ref_impl<date>(short column, date& result) const
 {
     bound_column& col = bound_columns_[column];
     switch(col.ctype_)
     {
         case SQL_C_DATE:
-            return *((date*)(col.pdata_ + rowset_position_ * col.clen_));
+            result = *((date*)(col.pdata_ + rowset_position_ * col.clen_));
+            return;
         case SQL_C_TIMESTAMP:
         {
-            timestamp stamp = *((timestamp*)(col.pdata_ + rowset_position_ * col.clen_));
+            timestamp stamp = *( (timestamp*)( col.pdata_ + rowset_position_ * col.clen_ ) );
             date d = { stamp.year, stamp.month, stamp.day };
-            return d;
+            result = d;
+            return;
         }
     }
     throw type_incompatible_error();
 }
 
 template<>
-inline timestamp result::result_impl::get_impl<timestamp>(short column) const
+inline void result::result_impl::get_ref_impl<timestamp>(short column, timestamp& result) const
 {
     bound_column& col = bound_columns_[column];
     switch(col.ctype_)
@@ -1955,17 +1999,19 @@ inline timestamp result::result_impl::get_impl<timestamp>(short column) const
         case SQL_C_DATE:
         {
             date d = *((date*)(col.pdata_ + rowset_position_ * col.clen_));
-            timestamp stamp = { d.year, d.month, d.day, 0, 0 , 0, 0 };
-            return stamp;
+            timestamp stamp = { d.year, d.month, d.day, 0, 0, 0, 0 };
+            result = stamp;
+            return;
         }
         case SQL_C_TIMESTAMP:
-            return *((timestamp*)(col.pdata_ + rowset_position_ * col.clen_));
+            result = *((timestamp*)(col.pdata_ + rowset_position_ * col.clen_));
+            return;
     }
     throw type_incompatible_error();
 }
 
 template<>
-inline string_type result::result_impl::get_impl<string_type>(short column) const
+inline void result::result_impl::get_ref_impl<string_type>(short column, string_type& result) const
 {
     const bound_column& col = bound_columns_[column];
     const SQLULEN column_size = col.sqlsize_;
@@ -1978,8 +2024,9 @@ inline string_type result::result_impl::get_impl<string_type>(short column) cons
                 throw std::runtime_error("blob not implemented yet");
             const char* s = col.pdata_ + rowset_position_ * col.clen_;
             const std::string::size_type str_size = std::strlen(s);
-            string_type rvalue(s, s + str_size);
-            return rvalue;
+
+            result.assign(s, s + str_size);
+            return;
         }
 
         case SQL_C_WCHAR:
@@ -1989,7 +2036,8 @@ inline string_type result::result_impl::get_impl<string_type>(short column) cons
             const wchar_t* s =
                 reinterpret_cast<wchar_t*>(col.pdata_ + rowset_position_ * col.clen_);
             const std::wstring::size_type str_size = std::wcslen(s);
-            return string_type(s, s + str_size);
+            result.assign(s, s + str_size);
+            return;
         }
 
         case SQL_C_GUID:
@@ -1998,60 +2046,61 @@ inline string_type result::result_impl::get_impl<string_type>(short column) cons
             if(col.blob_)
                 throw std::runtime_error("blob not implemented yet");
             const char* s = col.pdata_ + rowset_position_ * col.clen_;
-            return string_type(s, s + column_size);
+            result.assign(s, s + column_size);
+            return;
         }
 
         case SQL_C_LONG:
         {
-           string_type buffer(column_size, 0);
+           result.resize(column_size);
            if(NANODBC_SNPRINTF(
-                    const_cast<string_type::value_type*>(buffer.data())
+                    const_cast<string_type::value_type*>(result.data())
                     , column_size
                     , NANODBC_TEXT("%d")
                     , *(int32_t*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
                throw type_incompatible_error();
-           buffer.resize(NANODBC_STRLEN(buffer.c_str()));
-           return buffer;
+           result.resize(NANODBC_STRLEN(result.c_str()));
+           return;
         }
 
         case SQL_C_SBIGINT:
         {
             using namespace std; // in case intmax_t is in namespace std
-            string_type buffer(column_size, 0);
+            result.resize(column_size);
             if(NANODBC_SNPRINTF(
-                    const_cast<string_type::value_type*>(buffer.data())
+                    const_cast<string_type::value_type*>(result.data())
                     , column_size
                     , NANODBC_TEXT("%jd")
                     , (intmax_t) *(int64_t*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
                 throw type_incompatible_error();
-            buffer.resize(NANODBC_STRLEN(buffer.c_str()));
-            return buffer;
+            result.resize(NANODBC_STRLEN(result.c_str()));
+            return;
         }
 
         case SQL_C_FLOAT:
         {
-            string_type buffer(column_size, 0);
+            result.resize(column_size);
             if(NANODBC_SNPRINTF(
-                    const_cast<string_type::value_type*>(buffer.data())
+                    const_cast<string_type::value_type*>(result.data())
                     , column_size
                     , NANODBC_TEXT("%f")
                     , *(float*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
                 throw type_incompatible_error();
-            buffer.resize(NANODBC_STRLEN(buffer.c_str()));
-            return buffer;
+            result.resize(NANODBC_STRLEN(result.c_str()));
+            return;
         }
 
         case SQL_C_DOUBLE:
         {
-            string_type buffer(column_size, 0);
+            result.resize(column_size);
             if(NANODBC_SNPRINTF(
-                    const_cast<string_type::value_type*>(buffer.data())
+                    const_cast<string_type::value_type*>(result.data())
                     , column_size
                     , NANODBC_TEXT("%lf")
                     , *(double*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
                 throw type_incompatible_error();
-            buffer.resize(NANODBC_STRLEN(buffer.c_str()));
-            return buffer;
+            result.resize(NANODBC_STRLEN(result.c_str()));
+            return;
         }
 
         case SQL_C_DATE:
@@ -2070,7 +2119,8 @@ inline string_type result::result_impl::get_impl<string_type>(short column) cons
                 , NANODBC_TEXT("%Y-%m-%d")
                 , &st);
             std::setlocale(LC_TIME, old_lc_time);
-            return string_type(date_str);
+            result.assign(date_str);
+            return;
         }
 
         case SQL_C_TIMESTAMP:
@@ -2092,30 +2142,31 @@ inline string_type result::result_impl::get_impl<string_type>(short column) cons
                 , NANODBC_TEXT("%Y-%m-%d %H:%M:%S %z")
                 , &st);
             std::setlocale(LC_TIME, old_lc_time);
-            return string_type(date_str);
+           result.assign(date_str);
+           return;
         }
     }
     throw type_incompatible_error();
 }
 
 template<class T>
-T result::result_impl::get_impl(short column) const
+void result::result_impl::get_ref_impl(short column, T& result) const
 {
     bound_column& col = bound_columns_[column];
     using namespace std; // if int64_t is in std namespace (in c++11)
     const char* s = col.pdata_ + rowset_position_ * col.clen_;
     switch(col.ctype_)
     {
-        case SQL_C_CHAR: return (T)*(char*)(s);
-        case SQL_C_SSHORT: return (T)*(short*)(s);
-        case SQL_C_USHORT: return (T)*(unsigned short*)(s);
-        case SQL_C_LONG: return (T)*(int32_t*)(s);
-        case SQL_C_SLONG: return (T)*(int32_t*)(s);
-        case SQL_C_ULONG: return (T)*(uint32_t*)(s);
-        case SQL_C_FLOAT: return (T)*(float*)(s);
-        case SQL_C_DOUBLE: return (T)*(double*)(s);
-        case SQL_C_SBIGINT: return (T)*(int64_t*)(s);
-        case SQL_C_UBIGINT: return (T)*(uint64_t*)(s);
+        case SQL_C_CHAR: result = (T)*(char*)(s); return;
+        case SQL_C_SSHORT: result = (T)*(short*)(s); return;
+        case SQL_C_USHORT: result = (T)*(unsigned short*)(s); return;
+        case SQL_C_LONG: result = (T)*(int32_t*)(s); return;
+        case SQL_C_SLONG: result = (T)*(int32_t*)(s); return;
+        case SQL_C_ULONG: result = (T)*(uint32_t*)(s); return;
+        case SQL_C_FLOAT: result = (T)*(float*)(s); return;
+        case SQL_C_DOUBLE: result = (T)*(double*)(s); return;
+        case SQL_C_SBIGINT: result = (T)*(int64_t*)(s); return;
+        case SQL_C_UBIGINT: result = (T)*(uint64_t*)(s); return;
     }
     throw type_incompatible_error();
 }
@@ -2729,6 +2780,30 @@ bool result::next_result() const
 }
 
 template<class T>
+void result::get_ref(short column, T& result) const
+{
+    return impl_->get_ref<T>(column, result);
+}
+
+template<class T>
+void result::get_ref(short column, const T& fallback, T& result) const
+{
+    return impl_->get_ref<T>(column, fallback, result);
+}
+
+template<class T>
+void result::get_ref(const string_type& column_name, T& result) const
+{
+    return impl_->get_ref<T>(column_name, result);
+}
+
+template<class T>
+void result::get_ref(const string_type& column_name, const T& fallback, T& result) const
+{
+    return impl_->get_ref<T>(column_name, fallback, result);
+}
+
+template<class T>
 T result::get(short column) const
 {
     return impl_->get<T>(column);
@@ -2763,6 +2838,60 @@ T result::get(const string_type& column_name, const T& fallback) const
         return impl_;
     }
 #endif // NANODBC_USE_CPP11
+
+// The following are the only supported instantiations of result::get_ref().
+template void result::get_ref(short, string_type::value_type&) const;
+template void result::get_ref(short, short&) const;
+template void result::get_ref(short, unsigned short&) const;
+template void result::get_ref(short, int32_t&) const;
+template void result::get_ref(short, uint32_t&) const;
+template void result::get_ref(short, int64_t&) const;
+template void result::get_ref(short, uint64_t&) const;
+template void result::get_ref(short, float&) const;
+template void result::get_ref(short, double&) const;
+template void result::get_ref(short, string_type&) const;
+template void result::get_ref(short, date&) const;
+template void result::get_ref(short, timestamp&) const;
+
+template void result::get_ref(const string_type&, string_type::value_type&) const;
+template void result::get_ref(const string_type&, short&) const;
+template void result::get_ref(const string_type&, unsigned short&) const;
+template void result::get_ref(const string_type&, int32_t&) const;
+template void result::get_ref(const string_type&, uint32_t&) const;
+template void result::get_ref(const string_type&, int64_t&) const;
+template void result::get_ref(const string_type&, uint64_t&) const;
+template void result::get_ref(const string_type&, float&) const;
+template void result::get_ref(const string_type&, double&) const;
+template void result::get_ref(const string_type&, string_type&) const;
+template void result::get_ref(const string_type&, date&) const;
+template void result::get_ref(const string_type&, timestamp&) const;
+
+// The following are the only supported instantiations of result::get_ref() with fallback.
+template void result::get_ref(short, const string_type::value_type&, string_type::value_type&) const;
+template void result::get_ref(short, const short&, short&) const;
+template void result::get_ref(short, const unsigned short&, unsigned short&) const;
+template void result::get_ref(short, const int32_t&, int32_t&) const;
+template void result::get_ref(short, const uint32_t&, uint32_t&) const;
+template void result::get_ref(short, const int64_t&, int64_t&) const;
+template void result::get_ref(short, const uint64_t&, uint64_t&) const;
+template void result::get_ref(short, const float&, float&) const;
+template void result::get_ref(short, const double&, double&) const;
+template void result::get_ref(short, const string_type&, string_type&) const;
+template void result::get_ref(short, const date&, date&) const;
+template void result::get_ref(short, const timestamp&, timestamp&) const;
+
+template void result::get_ref(const string_type&, const string_type::value_type&, string_type::value_type&) const;
+template void result::get_ref(const string_type&, const short&, short&) const;
+template void result::get_ref(const string_type&, const unsigned short&, unsigned short&) const;
+template void result::get_ref(const string_type&, const int32_t&, int32_t&) const;
+template void result::get_ref(const string_type&, const uint32_t&, uint32_t&) const;
+template void result::get_ref(const string_type&, const int64_t&, int64_t&) const;
+template void result::get_ref(const string_type&, const uint64_t&, uint64_t&) const;
+template void result::get_ref(const string_type&, const float&, float&) const;
+template void result::get_ref(const string_type&, const double&, double&) const;
+template void result::get_ref(const string_type&, const string_type&, string_type&) const;
+template void result::get_ref(const string_type&, const date&, date&) const;
+template void result::get_ref(const string_type&, const timestamp&, timestamp&) const;
 
 // The following are the only supported instantiations of result::get().
 template string_type::value_type result::get(short) const;

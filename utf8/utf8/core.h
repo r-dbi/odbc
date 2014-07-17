@@ -311,7 +311,7 @@ namespace internal
             ((it != end) && (utf8::internal::mask8(*it))   == bom[2])
            );
     }
-	
+
     //Deprecated in release 2.3 
     template <typename octet_iterator>
     inline bool is_bom (octet_iterator it)
@@ -325,5 +325,3 @@ namespace internal
 } // namespace utf8
 
 #endif // header guard
-
-

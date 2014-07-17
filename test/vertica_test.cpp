@@ -3,7 +3,7 @@
 
 namespace
 {
-	basic_test test(NANODBC_TEXT("Driver=vertica;Servername=vertica;Port=5433;Database=reporting;UserName=dbadmin;Password=dbadmin;"));
+    basic_test test(NANODBC_TEXT("Driver=vertica;Servername=vertica;Port=5433;Database=reporting;UserName=dbadmin;Password=dbadmin;"));
 }
 
 BOOST_AUTO_TEST_SUITE(vertica)
