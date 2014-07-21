@@ -1131,6 +1131,36 @@ public:
         return result(statement, batch_operations);
     }
 
+    result procedure_columns(
+        const string_type& catalog
+        , const string_type& schema
+        , const string_type& procedure
+        , const string_type& column
+        , statement& statement)
+    {
+        if(!open())
+            throw programming_error("statement has no associated open connection");
+        
+        RETCODE rc;
+        NANODBC_CALL_RC(
+            NANODBC_UNICODE(SQLProcedureColumns)
+            , rc
+            , stmt_
+            , (NANODBC_SQLCHAR*)(catalog.empty() ? NULL : catalog.c_str())
+            , (catalog.empty() ? 0 : SQL_NTS)
+            , (NANODBC_SQLCHAR*)(schema.empty() ? NULL : schema.c_str())
+            , (schema.empty() ? 0 : SQL_NTS)
+            , (NANODBC_SQLCHAR*)procedure.c_str()
+            , SQL_NTS
+            , (NANODBC_SQLCHAR*)(column.empty() ? NULL : column.c_str())
+            , (column.empty() ? 0 : SQL_NTS));
+
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+
+        return result(statement, 1);
+    }
+    
     long affected_rows() const
     {
         SQLLEN rows;
@@ -2518,6 +2548,15 @@ result statement::execute_direct(
 result statement::execute(long batch_operations, long timeout)
 {
     return impl_->execute(batch_operations, timeout, *this);
+}
+
+result statement::procedure_columns(
+    const string_type& catalog
+    , const string_type& schema
+    , const string_type& procedure
+    , const string_type& column)
+{
+    return impl_->procedure_columns(catalog, schema, procedure, column, *this);
 }
 
 long statement::affected_rows() const
