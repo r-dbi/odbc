@@ -26,7 +26,7 @@
 #endif
 
 #if defined(_MSC_VER) && _MSC_VER <= 1800
-    // silence spurious Visual C++ warnings 
+    // silence spurious Visual C++ warnings
     #pragma warning(disable:4244) // warning about integer conversion issues.
     #pragma warning(disable:4312) // warning about 64-bit portability issues.
     #pragma warning(disable:4996) // warning about snprintf() deprecated.
@@ -261,7 +261,7 @@ namespace nanodbc
 {
     type_incompatible_error::type_incompatible_error()
     : std::runtime_error("type incompatible") { }
-    
+
     const char* type_incompatible_error::what() const throw()
     {
         return std::runtime_error::what();
@@ -269,7 +269,7 @@ namespace nanodbc
 
     null_access_error::null_access_error()
     : std::runtime_error("null access") { }
-    
+
     const char* null_access_error::what() const throw()
     {
         return std::runtime_error::what();
@@ -277,7 +277,7 @@ namespace nanodbc
 
     index_range_error::index_range_error()
     : std::runtime_error("index out of range") { }
-    
+
     const char* index_range_error::what() const throw()
     {
         return std::runtime_error::what();
@@ -285,7 +285,7 @@ namespace nanodbc
 
     programming_error::programming_error(const std::string& info)
     : std::runtime_error(info.c_str()) { }
-    
+
     const char* programming_error::what() const throw()
     {
         return std::runtime_error::what();
@@ -341,20 +341,20 @@ namespace
 
     template<>
     struct sql_ctype<unsigned short>
-    { 
-        static const SQLSMALLINT value = SQL_C_USHORT; 
+    {
+        static const SQLSMALLINT value = SQL_C_USHORT;
     };
 
     template<>
     struct sql_ctype<int32_t>
-    { 
-        static const SQLSMALLINT value = SQL_C_SLONG; 
+    {
+        static const SQLSMALLINT value = SQL_C_SLONG;
     };
 
     template<>
     struct sql_ctype<uint32_t>
-    { 
-        static const SQLSMALLINT value = SQL_C_ULONG; 
+    {
+        static const SQLSMALLINT value = SQL_C_ULONG;
     };
 
     template<>
@@ -371,14 +371,14 @@ namespace
 
     template<>
     struct sql_ctype<float>
-    { 
-        static const SQLSMALLINT value = SQL_C_FLOAT; 
+    {
+        static const SQLSMALLINT value = SQL_C_FLOAT;
     };
 
     template<>
     struct sql_ctype<double>
-    { 
-        static const SQLSMALLINT value = SQL_C_DOUBLE; 
+    {
+        static const SQLSMALLINT value = SQL_C_DOUBLE;
     };
 
     template<>
@@ -393,14 +393,14 @@ namespace
 
     template<>
     struct sql_ctype<nanodbc::date>
-    { 
-        static const SQLSMALLINT value = SQL_C_DATE; 
+    {
+        static const SQLSMALLINT value = SQL_C_DATE;
     };
 
     template<>
     struct sql_ctype<nanodbc::timestamp>
-    { 
-        static const SQLSMALLINT value = SQL_C_TIMESTAMP; 
+    {
+        static const SQLSMALLINT value = SQL_C_TIMESTAMP;
     };
 
     // Encapsulates resources needed for column binding.
@@ -1046,7 +1046,7 @@ public:
             , (SQLPOINTER)timeout,
              0);
         if(!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);       
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
     result execute_direct(
@@ -1140,7 +1140,7 @@ public:
     {
         if(!open())
             throw programming_error("statement has no associated open connection");
-        
+
         RETCODE rc;
         NANODBC_CALL_RC(
             NANODBC_UNICODE(SQLProcedureColumns)
@@ -1160,7 +1160,7 @@ public:
 
         return result(statement, 1);
     }
-    
+
     long affected_rows() const
     {
         SQLLEN rows;
@@ -1548,7 +1548,7 @@ public:
             , 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
-            
+
         auto_bind();
     }
 
@@ -2056,7 +2056,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
 {
     const bound_column& col = bound_columns_[column];
     const SQLULEN column_size = col.sqlsize_;
-    
+
     switch(col.ctype_)
     {
         case SQL_C_CHAR:
@@ -2821,7 +2821,7 @@ int result::column_datatype(short column) const
 
 int result::column_datatype(const string_type& column_name) const
 {
-    return impl_->column_datatype(column_name);   
+    return impl_->column_datatype(column_name);
 }
 
 bool result::next_result()

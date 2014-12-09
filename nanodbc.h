@@ -1,7 +1,7 @@
 //! \file nanodbc.h The entirety of nanodbc can be found within this file and nanodbc.cpp.
 
 //! \mainpage
-//! 
+//!
 //! \section synopsis Synopsis
 //! This library provides a wrapper API for the native ODBC API. It aims to do everything ODBC does, but with a \b much nicer interface.
 //! Anything it doesn't (yet) do can be done by retrieving the native ODBC handles and dropping down to straight ODBC C API code.
@@ -19,22 +19,22 @@
 //!     - \ref binding
 //!     - \ref bind_multi
 //!     - \ref bind_strings
-//! 
+//!
 //! \section license License
-//! Copyright (C) 2013 lexicalunit <amy@lexicalunit.com>
-//! 
+//! Copyright (C) 2013 lexicalunit <lexicalunit@lexicalunit.com>
+//!
 //! The MIT License
-//! 
+//!
 //! Permission is hereby granted, free of charge, to any person obtaining a copy
 //! of this software and associated documentation files (the "Software"), to deal
 //! in the Software without restriction, including without limitation the rights
 //! to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 //! copies of the Software, and to permit persons to whom the Software is
 //! furnished to do so, subject to the following conditions:
-//! 
+//!
 //! The above copyright notice and this permission notice shall be included in
 //! all copies or substantial portions of the Software.
-//! 
+//!
 //! THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //! IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //! FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,23 +42,23 @@
 //! LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //! OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //! THE SOFTWARE.
-//! 
+//!
 //! \section credits Credits
 //! Much of the code in this file was originally derived from TinyODBC.<br />
 //! TinyODBC is hosted at http://code.google.com/p/tiodbc/<br />
 //! Copyright (C) 2008 SqUe squarious@gmail.com<br />
 //! License: The MIT License<br />
-//! 
+//!
 //! Transaction support was based on the implementation in SimpleDB: C++ ODBC database API.<br/>
 //! SimpleDB is hosted at http://simpledb.sourceforge.net<br/>
 //! Copyright (C) 2006 Eminence Technology Pty Ltd<br/>
 //! Copyright (C) 2008-2010,2012 Russell Kliese russell@kliese.id.au<br/>
 //! License: GNU Lesser General Public version 2.1<br/>
-//! 
+//!
 //! Some improvements and features are based on The Python ODBC Library.<br/>
 //! The Python ODBC Library is hosted at http://code.google.com/p/pyodbc/<br/>
 //! License: The MIT License<br/>
-//! 
+//!
 //! Implementation of column binding inspired by Nick E. Geht's source code posted to on CodeGuru.<br />
 //! GSODBC hosted at http://www.codeguru.com/mfc_database/gsodbc.html<br />
 //! Copyright (C) 2002 Nick E. Geht<br />
@@ -138,8 +138,8 @@ namespace detail
         safe_bool_base& operator=(const safe_bool_base&) {return *this;}
         ~safe_bool_base() {}
     };
-     
-    template <typename T=void> 
+
+    template <typename T=void>
     class safe_bool : private safe_bool_base
     {
       // private or protected inheritance is very important here as it triggers the
@@ -446,7 +446,7 @@ public:
     //! \throws database_error
     //! \return A result set object.
     class result procedure_columns(const string_type& catalog, const string_type& schema, const string_type& procedure, const string_type& column);
-    
+
     //! \brief Returns the number of rows affected by the request or -1 if the number of affected rows is not available.
     //! \throws database_error
     long affected_rows() const;
@@ -463,16 +463,16 @@ public:
 
     //! \addtogroup binding Binding parameters
     //! \brief These functions are used to bind values to ODBC parameters.
-    //! 
+    //!
     //! @{
 
     //! \brief Binds the given value to the given parameter placeholder number in the prepared statement.
     //!
     //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     //! Placeholder numbers count from left to right and are 0-indexed.
-    //! 
+    //!
     //! It is NOT possible to use these functions for bulk operations as number of elements is not specified here.
-    //! 
+    //!
     //! \param param Placeholder position.
     //! \param value Value to substitute into placeholder.
     //! \param param_direciton ODBC parameter direction.
@@ -485,9 +485,9 @@ public:
     //!
     //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     //! Placeholder numbers count from left to right and are 0-indexed.
-    //! 
+    //!
     //! It is possible to use these functions for bulk operations.
-    //! 
+    //!
     //! \param param Placeholder position.
     //! \param values Values to substitute into placeholder.
     //! \param elements The number of elements being bound.
@@ -520,9 +520,9 @@ public:
     //!
     //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     //! Placeholder numbers count from left to right and are 0-indexed.
-    //! 
+    //!
     //! It is possible to use these functions for bulk operations.
-    //! 
+    //!
     //! \param param Placeholder position.
     //! \param values Values to substitute into placeholder.
     //! \param length Maximum length of string elements.
@@ -621,9 +621,9 @@ public:
     //!
     //! If your prepared SQL query has any ? placeholders, this is how you bind values to them.
     //! Placeholder numbers count from left to right and are 0-indexed.
-    //! 
+    //!
     //! It is possible to use this function for bulk operations.
-    //! 
+    //!
     //! \param param Placeholder position.
     //! \param elements The number of elements being bound.
     //! \throws database_error
@@ -897,34 +897,34 @@ public:
     //! \brief Returns true if and only if the given column of the current rowset is null.
     //!
     //! Columns are numbered from left to right and 0-indexed.
-    //! \param column position. 
+    //! \param column position.
     //! \throws database_error, index_range_error
     bool is_null(short column) const;
 
     //! \brief Returns true if and only if the given column by name of the current rowset is null.
     //!
-    //! \param column column's name. 
+    //! \param column column's name.
     //! \throws database_error, index_range_error
     bool is_null(const string_type& column_name) const;
 
     //! \brief Returns the name of the specified column.
     //!
     //! Columns are numbered from left to right and 0-indexed.
-    //! \param column position. 
+    //! \param column position.
     //! \throws index_range_error
     string_type column_name(short column) const;
 
     //! \brief Returns the size of the specified column.
     //!
     //! Columns are numbered from left to right and 0-indexed.
-    //! \param Column position. 
+    //! \param Column position.
     //! \throws index_range_error
     long column_size(short column) const;
 
     //! \brief Returns the column number of the specified column name.
     //!
     //! Columns are numbered from left to right and 0-indexed.
-    //! \param column column's name. 
+    //! \param column column's name.
     //! \throws index_range_error
     short column(const string_type& column_name) const;
 
