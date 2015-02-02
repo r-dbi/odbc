@@ -1080,8 +1080,10 @@ public:
         if(!success(rc) && rc != SQL_NO_DATA)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
-        if(rc == SQL_NO_DATA)
-            return result();
+        #ifdef NANODBC_HANDLE_NODATA_BUG
+            if(rc == SQL_NO_DATA)
+                return result();
+        #endif
         return result(statement, batch_operations);
     }
 
@@ -1126,8 +1128,10 @@ public:
         if(!success(rc) && rc != SQL_NO_DATA)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
-        if(rc == SQL_NO_DATA)
-            return result();
+        #ifdef NANODBC_HANDLE_NODATA_BUG
+            if(rc == SQL_NO_DATA)
+                return result();
+        #endif
         return result(statement, batch_operations);
     }
 
