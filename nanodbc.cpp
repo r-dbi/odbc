@@ -2068,7 +2068,8 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
             if(col.blob_)
                 throw std::runtime_error("blob not implemented yet");
             const char* s = col.pdata_ + rowset_position_ * col.clen_;
-            const std::string::size_type str_size = std::strlen(s);
+			const string_type::size_type str_size = *col.cbdata_ / sizeof(char);
+
 
             result.assign(s, s + str_size);
             return;
@@ -2078,10 +2079,11 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
         {
             if(col.blob_)
                 throw std::runtime_error("blob not implemented yet");
-            const wchar_t* s =
-                reinterpret_cast<wchar_t*>(col.pdata_ + rowset_position_ * col.clen_);
-            const std::wstring::size_type str_size = std::wcslen(s);
-            result.assign(s, s + str_size);
+			const SQLWCHAR* s =
+				reinterpret_cast<SQLWCHAR*>(col.pdata_ + rowset_position_ * col.clen_);
+			const string_type::size_type str_size = *col.cbdata_ / sizeof(SQLWCHAR);
+			// TODO: convert() if string_type::value_type is not SQLWCHAR
+			result.assign(s, s + str_size);
             return;
         }
 
