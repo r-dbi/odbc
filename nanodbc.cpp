@@ -1045,7 +1045,10 @@ public:
             , SQL_ATTR_QUERY_TIMEOUT
             , (SQLPOINTER)timeout,
              0);
-        if(!success(rc))
+
+        // some drivers don't support timeout for statements,
+        // so only raise the error if a non-default timeout was requested.
+        if(!success(rc) && (timeout != 0))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
