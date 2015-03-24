@@ -21,6 +21,7 @@
 //!     - \ref bind_strings
 //!
 //! \section license License
+//! <div class="license">
 //! Copyright (C) 2013 lexicalunit <lexicalunit@lexicalunit.com>
 //!
 //! The MIT License
@@ -42,28 +43,33 @@
 //! LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //! OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //! THE SOFTWARE.
+//! </div>
 //!
 //! \section credits Credits
-//! Much of the code in this file was originally derived from TinyODBC.<br />
-//! TinyODBC is hosted at http://code.google.com/p/tiodbc/<br />
-//! Copyright (C) 2008 SqUe squarious@gmail.com<br />
-//! License: The MIT License<br />
+//! <div class="license">
+//! Much of the code in this file was originally derived from TinyODBC.
+//! TinyODBC is hosted at http://code.google.com/p/tiodbc/
+//! Copyright (C) 2008 SqUe squarious@gmail.com
+//! License: The MIT License
 //!
-//! Transaction support was based on the implementation in SimpleDB: C++ ODBC database API.<br/>
-//! SimpleDB is hosted at http://simpledb.sourceforge.net<br/>
-//! Copyright (C) 2006 Eminence Technology Pty Ltd<br/>
-//! Copyright (C) 2008-2010,2012 Russell Kliese russell@kliese.id.au<br/>
-//! License: GNU Lesser General Public version 2.1<br/>
+//! The idea for using RAII for transactions was inspired by SimpleDB: C++ ODBC database API,
+//! however the code in nanodbc is original and not derived from SimpleDB. Therefore
+//! the LGPL license under which SimpleDB is distributed does NOT apply to nanodbc.
+//! SimpleDB is hosted at http://simpledb.sourceforge.net
+//! Copyright (C) 2006 Eminence Technology Pty Ltd
+//! Copyright (C) 2008-2010,2012 Russell Kliese russell@kliese.id.au
+//! License: GNU Lesser General Public version 2.1
 //!
-//! Some improvements and features are based on The Python ODBC Library.<br/>
-//! The Python ODBC Library is hosted at http://code.google.com/p/pyodbc/<br/>
-//! License: The MIT License<br/>
+//! Some improvements and features are based on The Python ODBC Library.
+//! The Python ODBC Library is hosted at http://code.google.com/p/pyodbc/
+//! License: The MIT License
 //!
-//! Implementation of column binding inspired by Nick E. Geht's source code posted to on CodeGuru.<br />
-//! GSODBC hosted at http://www.codeguru.com/mfc_database/gsodbc.html<br />
-//! Copyright (C) 2002 Nick E. Geht<br />
-//! License: Perpetual license to reproduce, distribute, adapt, perform, display, and sublicense.<br/>
-//! See http://www.codeguru.com/submission-guidelines.php for details.<br />
+//! Implementation of column binding inspired by Nick E. Geht's source code posted to on CodeGuru.
+//! GSODBC hosted at http://www.codeguru.com/mfc_database/gsodbc.html
+//! Copyright (C) 2002 Nick E. Geht
+//! License: Perpetual license to reproduce, distribute, adapt, perform, display, and sublicense.
+//! See http://www.codeguru.com/submission-guidelines.php for details.
+//! </div>
 
 //! \page examples Example Usage
 //! \brief Example library usage.
