@@ -2068,41 +2068,47 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
     {
         case SQL_C_CHAR:
         {
-        	if (col.blob_)
-        	{
-        		result.clear();
-				char buff[1024];
-				size_t buff_size = sizeof(buff);
-		
-				SQLINTEGER   ValueLenOrInd;
-				SQLRETURN ret;
-		
-				void * handle = native_statement_handle();
-				do
-				{
-					ret = SQLGetData(handle, column + 1, SQL_C_CHAR, buff, buff_size, &ValueLenOrInd);
-					if (ValueLenOrInd > 0)
-						result.append(buff);
-				} while (ret > 0);
-			}
-			else {
-				const char* s = col.pdata_ + rowset_position_ * col.clen_;
-				const std::string::size_type str_size = std::strlen(s);
-		
-				result.assign(s, s + str_size);
-			}
+            if(col.blob_)
+            {
+                result.clear();
+                char buff[1024];
+                std::size_t buff_size = sizeof(buff);
+                SQLLEN ValueLenOrInd;
+                SQLRETURN rc;
+                void* handle = native_statement_handle();
+                do
+                {
+                    NANODBC_CALL_RC(
+                        SQLGetData
+                        , rc
+                        , handle            // StatementHandle
+                        , column + 1        // Col_or_Param_Num
+                        , SQL_C_CHAR        // TargetType
+                        , buff              // TargetValuePtr
+                        , buff_size         // BufferLength
+                        , &ValueLenOrInd);  // StrLen_or_IndPtr
+                    if(ValueLenOrInd > 0)
+                        result.append(buff);
+                } while(rc > 0);
+            }
+            else
+            {
+                const char* s = col.pdata_ + rowset_position_ * col.clen_;
+                const std::string::size_type str_size = std::strlen(s);
+                result.assign(s, s + str_size);
+            }
             return;
         }
 
         case SQL_C_WCHAR:
         {
             if(col.blob_)
-                throw std::runtime_error("blob not implemented yet");
-			const SQLWCHAR* s =
-				reinterpret_cast<SQLWCHAR*>(col.pdata_ + rowset_position_ * col.clen_);
-			const string_type::size_type str_size = *col.cbdata_ / sizeof(SQLWCHAR);
-			// TODO: convert() if string_type::value_type is not SQLWCHAR
-			result.assign(s, s + str_size);
+                throw std::runtime_error("CLOB/BLOB not implemented yet for wide char types");
+            const SQLWCHAR* s =
+                reinterpret_cast<SQLWCHAR*>(col.pdata_ + rowset_position_ * col.clen_);
+            const string_type::size_type str_size = *col.cbdata_ / sizeof(SQLWCHAR);
+            // TODO: convert() if string_type::value_type is not SQLWCHAR
+            result.assign(s, s + str_size);
             return;
         }
 
