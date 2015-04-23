@@ -2068,13 +2068,29 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
     {
         case SQL_C_CHAR:
         {
-            if(col.blob_)
-                throw std::runtime_error("blob not implemented yet");
-            const char* s = col.pdata_ + rowset_position_ * col.clen_;
-			const string_type::size_type str_size = *col.cbdata_ / sizeof(char);
-
-
-            result.assign(s, s + str_size);
+        	if (col.blob_)
+        	{
+        		result.clear();
+				char buff[1024];
+				size_t buff_size = sizeof(buff);
+		
+				SQLINTEGER   ValueLenOrInd;
+				SQLRETURN ret;
+		
+				void * handle = native_statement_handle();
+				do
+				{
+					ret = SQLGetData(handle, column + 1, SQL_C_CHAR, buff, buff_size, &ValueLenOrInd);
+					if (ValueLenOrInd > 0)
+						result.append(buff);
+				} while (ret > 0);
+			}
+			else {
+				const char* s = col.pdata_ + rowset_position_ * col.clen_;
+				const std::string::size_type str_size = std::strlen(s);
+		
+				result.assign(s, s + str_size);
+			}
             return;
         }
 
