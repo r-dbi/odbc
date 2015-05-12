@@ -29,7 +29,7 @@
 #if defined(_MSC_VER) && _MSC_VER <= 1800
     // silence spurious Visual C++ warnings
     #pragma warning(disable:4244) // warning about integer conversion issues.
-    //#pragma warning(disable:4312) // warning about 64-bit portability issues.
+    #pragma warning(disable:4312) // warning about 64-bit portability issues.
     #pragma warning(disable:4996) // warning about snprintf() deprecated.
 #endif
 
@@ -1281,7 +1281,8 @@ public:
                 return SQL_PARAM_OUTPUT;
                 break;
         }
-        assert(false);
+        // Remove warning C4702 : unreachable code nanodbc.cpp 1284	Nanodbc
+        //assert(false);
     }
 
     // initializes bind_len_or_null_ and gets information for bind
@@ -1324,7 +1325,7 @@ public:
     void bind_parameter(
         short param
         , const T* data
-        , std::size_t elements
+        , std::size_t /*elements*/
         , SQLSMALLINT data_type
         , SQLSMALLINT param_type
         , SQLULEN parameter_size)
@@ -1356,7 +1357,7 @@ public:
     void bind_strings(
         short param
         , const string_type::value_type* values
-        , std::size_t length
+        , std::size_t /*length*/
         , std::size_t elements
         , param_direction direction)
     {
@@ -2138,7 +2139,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
             {
                 // Input is always std::string, while output may be std::string or std::wstring
                 stringstream ss;
-				char buff[1024] = {0};
+                char buff[1024] = {0};
                 std::size_t buff_size = sizeof(buff);
 
                 SQLLEN ValueLenOrInd;
@@ -2158,13 +2159,13 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
 
                     if(ValueLenOrInd > 0)
                     {
-						ss << buff;
-						//result.append(buff);
-					}
+                        ss << buff;
+                        //result.append(buff);
+                    }
                 } while(rc > 0);
 
-				// Run the string through the converter (if necessary)
-				convert(ss.str(), result);
+                // Run the string through the converter (if necessary)
+                convert(ss.str(), result);
             }
             else
             {
@@ -2217,9 +2218,9 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                     reinterpret_cast<SQLWCHAR*>(col.pdata_ + rowset_position_ * col.clen_);
                 const string_type::size_type str_size = *col.cbdata_ / sizeof(SQLWCHAR);
 
-				std::wstring tempResult(s, s + str_size);
+                std::wstring tempResult(s, s + str_size);
 
-				convert(tempResult, result);
+                convert(tempResult, result);
 
             }
 
