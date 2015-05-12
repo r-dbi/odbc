@@ -2136,9 +2136,11 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
         {
             if(col.blob_)
             {
-                result.clear();
-                char buff[1024];
+                // Input is always std::string, while output may be std::string or std::wstring
+                stringstream ss;
+				char buff[1024] = {0};
                 std::size_t buff_size = sizeof(buff);
+
                 SQLLEN ValueLenOrInd;
                 SQLRETURN rc;
                 void* handle = native_statement_handle();
@@ -2153,9 +2155,16 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                         , buff              // TargetValuePtr
                         , buff_size         // BufferLength
                         , &ValueLenOrInd);  // StrLen_or_IndPtr
+
                     if(ValueLenOrInd > 0)
-                        result.append(buff);
+                    {
+						ss << buff;
+						//result.append(buff);
+					}
                 } while(rc > 0);
+
+				// Run the string through the converter (if necessary)
+				convert(ss.str(), result);
             }
             else
             {
@@ -2208,20 +2217,10 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                     reinterpret_cast<SQLWCHAR*>(col.pdata_ + rowset_position_ * col.clen_);
                 const string_type::size_type str_size = *col.cbdata_ / sizeof(SQLWCHAR);
 
-                #ifdef NANODBC_USE_CPP11
-                #ifdef NANODBC_USE_UNICODE
-                    // TODO: convert() if string_type::value_type is not SQLWCHAR
-                    // From Unicode to Unicode
-                    result.assign(s, s + str_size);
+				std::wstring tempResult(s, s + str_size);
 
-                #else
-                    // From Unicode to ASCII
-                    std::wstring tempResult(s, s + str_size);
-                    convert(tempResult, result);
-                #endif
-                #else
-                    #error Not implemented for non-CPP11
-                #endif
+				convert(tempResult, result);
+
             }
 
             return;
