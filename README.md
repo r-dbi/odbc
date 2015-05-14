@@ -58,4 +58,4 @@ Moving forward, nanodbc will target C++11. Since it was originally developed for
 
 - More tests for a large variety of drivers. Include performance tests.
 - Clean up `bind_*` family of functions, reduce any duplication.
-- Improve documentation.
+- Improve documentation: The main website and API docs should be more responsive.
