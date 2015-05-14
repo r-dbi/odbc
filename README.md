@@ -2,6 +2,15 @@
 
 A very small C++ wrapper for the native C ODBC API. Please see the [online documentation](http://lexicalunit.github.com/nanodbc/) for user information, example usage, propaganda, and detailed source level documentation.
 
+# Versions
+
+| Tag or Branch | Description |
+| --------------| ----------- |
+| `master`      | This branch contains the latest development code, possibly not ready for release yet. |
+| `release`     | This branch is always tagged to the most recent stable release. |
+| `v2.0.0`      | Supports C++11 only. All future development with build on this version. |
+| `v1.0.0`      | Supports C++03 and optionally C++11. *There is no longer any support for this version.* |
+
 # Building
 
 You don't necessarily need to build nanodbc, as you can just drop the header and implementation files into your project. However I have provided [CMake](www.cmake.org/) files which can be used to build a shared library object, or build and run the included unit tests. The CMake files will also support out of source builds.
