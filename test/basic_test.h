@@ -59,7 +59,7 @@ struct basic_test
             BOOST_CHECK_EQUAL(results.columns(), 2);
 
             // Some drivers always return 0 for select statements, other return the number of rows selected.
-            // I'm not sure how to detect what kind of driver we have, but as far as I know the number of 
+            // I'm not sure how to detect what kind of driver we have, but as far as I know the number of
             // affected rows will either be 0 or the number of rows selected.
             BOOST_CHECK(results.affected_rows() == 4 || results.affected_rows() == 0);
 
@@ -86,9 +86,9 @@ struct basic_test
 
             nanodbc::string_type ref_str;
             results.get_ref<nanodbc::string_type>(0, NANODBC_TEXT("null"), ref_str);
-            BOOST_CHECK_EQUAL(ref_str, NANODBC_TEXT("null"));
+            BOOST_CHECK(ref_str == NANODBC_TEXT("null"));
             results.get_ref<nanodbc::string_type>(NANODBC_TEXT("a"), NANODBC_TEXT("null2"), ref_str);
-            BOOST_CHECK_EQUAL(ref_str, NANODBC_TEXT("null2"));
+            BOOST_CHECK(ref_str == NANODBC_TEXT("null2"));
 
             BOOST_CHECK(results.next());
             BOOST_CHECK_EQUAL(results.get<int>(0), 1);
@@ -266,7 +266,7 @@ struct basic_test
 
         {
             nanodbc::transaction transaction(connection);
-            results = statement.execute();   
+            results = statement.execute();
             results.next();
             BOOST_CHECK_EQUAL(results.get<int>(0), 42);
         }
@@ -350,7 +350,7 @@ struct basic_test
         BOOST_CHECK_CLOSE(static_cast<float>(results.get<T>(p++)), static_cast<T>(f), 1e-6);
         results.get_ref(p, ref);
         BOOST_CHECK_CLOSE(static_cast<double>(ref), static_cast<T>(d), 1e-6);
-        BOOST_CHECK_CLOSE(static_cast<double>(results.get<T>(p++)), static_cast<T>(d), 1e-6);        
+        BOOST_CHECK_CLOSE(static_cast<double>(results.get<T>(p++)), static_cast<T>(d), 1e-6);
     }
 
     const nanodbc::string_type connection_string_;

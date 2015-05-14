@@ -2,29 +2,17 @@
 
 #include "nanodbc.h"
 
-#if defined(NANODBC_USE_UNICODE) && ! defined(NANODBC_USE_CPP11)
-    // I'm using UTF8-CPP to handle narrowing of wstring errors
-    // when unicode mode is enabled, but not c++11 mode which
-    // has standard support for dealing with unicode.
-    #include "utf8/utf8.h"
-#endif
-
 #include <algorithm>
 #include <cassert>
 #include <clocale>
+#include <codecvt>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
+#include <iomanip>
 #include <map>
 #include <sstream>
-
-#if defined(NANODBC_USE_CPP11)
-    #include <codecvt>
-    #include <cstdint>
-    #include <iomanip>
-#else
-    #include <stdint.h> // assuming we have C99 intmax_t
-#endif
 
 #if defined(_MSC_VER) && _MSC_VER <= 1800
     // silence spurious Visual C++ warnings
@@ -168,73 +156,36 @@ namespace
         return i;
     }
 
-    // In unicode mode we need to narrow the error message.
-    #if defined(NANODBC_USE_UNICODE)
-        #if defined(NANODBC_USE_CPP11)
-            inline std::string convert(const std::wstring& s)
-            {
-                std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-                return conv.to_bytes(s);
-            }
-        #else
-            inline std::string convert(const std::wstring& s)
-            {
-                using namespace utf8;
-                using std::back_inserter;
+    inline void convert(const std::wstring& in, std::string& out)
+    {
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+        out = conv.to_bytes(in);
+    }
 
-                std::string rvalue;
-                utf16to8(s.begin(), s.end(), back_inserter(rvalue));
-
-                return rvalue;
-            }
-        #endif
-    #else
-        inline std::string convert(const std::string& s)
-        {
-            return s;
-        }
-    #endif
-
-        inline void convert(const std::string& in, std::wstring & out);
-        inline void convert(const std::wstring& in, std::string & out);
-
-    #if defined(NANODBC_USE_CPP11)
-        // Convert std::string to std::wstring
-        inline void convert(const std::string& in, std::wstring & out)
+    #ifdef NANODBC_USE_UNICODE
+        inline void convert(const std::string& in, std::wstring& out)
         {
             std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
             out = conv.from_bytes(in);
         }
 
-        // Convert std::wstring to std::string
-        inline void convert(const std::wstring& in, std::string & out)
-        {
-            std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-            out = conv.to_bytes(in);
-        }
-    #else
-        #error Not implemented (use utf8 library)
-    #endif
-
-        // Courtesy method to avoid #if defined(NANODBC_USE_UNICODE) 
-        // all over the place
-        inline void convert(const std::string& in, std::string & out)
-        {
-            out = in;
-        }
-
-        // Courtesy method to avoid #if defined(NANODBC_USE_UNICODE)
-        // all over the place
         inline void convert(const std::wstring& in, std::wstring & out)
         {
             out = in;
         }
-
+    #else
+        inline void convert(const std::string& in, std::string& out)
+        {
+            out = in;
+        }
+    #endif
 
     // Attempts to get the most recent ODBC error as a string.
+    // Always returns std::string, even in unicode mode.
     inline std::string recent_error(SQLHANDLE handle, SQLSMALLINT handle_type)
     {
         nanodbc::string_type result;
+        std::string rvalue;
         std::vector<NANODBC_SQLCHAR> sql_message(SQL_MAX_MESSAGE_LENGTH);
         sql_message[0] = '\0';
 
@@ -273,8 +224,10 @@ namespace
                 , (SQLSMALLINT)sql_message.size()
                 , &total_bytes);
 
-            if(!success(rc))
-                return convert(result); // always return string, even in unicode mode
+            if(!success(rc)) {
+                convert(result, rvalue);
+                return rvalue;
+            }
 
             if(!result.empty())
                 result += ' ';
@@ -283,9 +236,10 @@ namespace
             i++;
         } while(rc != SQL_NO_DATA);
 
+        convert(result, rvalue);
         std::string status(&sql_state[0], &sql_state[arrlen(sql_state)]);
         status += ": ";
-        status += convert(result); // always return string, even in unicode mode
+        status += rvalue;
 
         // some drivers insert \0 into error messages for unknown reasons
         using std::replace;
@@ -1282,7 +1236,7 @@ public:
                 break;
         }
         // Remove warning C4702 : unreachable code nanodbc.cpp 1284	Nanodbc
-        //assert(false);
+        assert(false);
     }
 
     // initializes bind_len_or_null_ and gets information for bind
@@ -1939,7 +1893,7 @@ private:
                 NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
 
             // Adjust the sqlsize parameter in case of "unlimited" data (varchar(max), nvarchar(max)).
-            bool isBlob = false;
+            bool is_blob = false;
 
             if (sqlsize == 0)
             {
@@ -1950,7 +1904,7 @@ private:
                     {
                         //// Divide in half, due to sqlsize being 32-bit in Win32 (and 64-bit in x64)
                         //sqlsize = std::numeric_limits<int32_t>::max() / 2 - 1;
-                        isBlob = true;
+                        is_blob = true;
                     }
 
                 }
@@ -2000,7 +1954,7 @@ private:
                 case SQL_VARCHAR:
                     col.ctype_ = SQL_C_CHAR;
                     col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLCHAR);
-                    if (isBlob)
+                    if (is_blob)
                     {
                         col.clen_ = 0;
                         col.blob_ = true;
@@ -2010,7 +1964,7 @@ private:
                 case SQL_WVARCHAR:
                     col.ctype_ = SQL_C_WCHAR;
                     col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLWCHAR);
-                    if (isBlob)
+                    if (is_blob)
                     {
                         col.clen_ = 0;
                         col.blob_ = true;
@@ -2138,10 +2092,9 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
             if(col.blob_)
             {
                 // Input is always std::string, while output may be std::string or std::wstring
-                stringstream ss;
+                std::stringstream ss;
                 char buff[1024] = {0};
                 std::size_t buff_size = sizeof(buff);
-
                 SQLLEN ValueLenOrInd;
                 SQLRETURN rc;
                 void* handle = native_statement_handle();
@@ -2156,15 +2109,9 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                         , buff              // TargetValuePtr
                         , buff_size         // BufferLength
                         , &ValueLenOrInd);  // StrLen_or_IndPtr
-
-                    if(ValueLenOrInd > 0)
-                    {
+                    if (ValueLenOrInd > 0)
                         ss << buff;
-                        //result.append(buff);
-                    }
                 } while(rc > 0);
-
-                // Run the string through the converter (if necessary)
                 convert(ss.str(), result);
             }
             else
@@ -2178,13 +2125,12 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
 
         case SQL_C_WCHAR:
         {
-            if (col.blob_)                
+            if (col.blob_)
             {
                 // Input is always std::wstring, output might be std::string or std::wstring.
                 // Use a string builder to build the output string.
-                wstringstream ss;
-                wchar_t buffer[512] = { 0 };
-
+                std::wstringstream ss;
+                wchar_t buffer[512] = {0};
                 std::size_t buffer_size = sizeof(buffer);
                 SQLLEN ValueLenOrInd;
                 SQLRETURN rc;
@@ -2196,34 +2142,23 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                         , rc
                         , handle            // StatementHandle
                         , column + 1        // Col_or_Param_Num
-                        , SQL_C_WCHAR        // TargetType
-                        , buffer              // TargetValuePtr
-                        , buffer_size         // BufferLength
+                        , SQL_C_WCHAR       // TargetType
+                        , buffer            // TargetValuePtr
+                        , buffer_size       // BufferLength
                         , &ValueLenOrInd);  // StrLen_or_IndPtr
                     if (ValueLenOrInd > 0)
-                    {
-                        //result.append(buff);
                         ss << buffer;
-                    }
                 } while (rc > 0);
-
-
-                // Run the wstring through the converter (if necessary)
                 convert(ss.str(), result);
             }
             else
             {
                 // Type is unicode in the database, convert if necessary
-                const SQLWCHAR* s =
-                    reinterpret_cast<SQLWCHAR*>(col.pdata_ + rowset_position_ * col.clen_);
+                const SQLWCHAR* s = reinterpret_cast<SQLWCHAR*>(col.pdata_ + rowset_position_ * col.clen_);
                 const string_type::size_type str_size = *col.cbdata_ / sizeof(SQLWCHAR);
-
-                std::wstring tempResult(s, s + str_size);
-
-                convert(tempResult, result);
-
+                std::wstring temp(s, s + str_size);
+                convert(temp, result);
             }
-
             return;
         }
 
@@ -3023,17 +2958,10 @@ T result::get(const string_type& column_name, const T& fallback) const
     return impl_->get<T>(column_name, fallback);
 }
 
-#ifdef NANODBC_USE_CPP11
-    result::operator bool() const
-    {
-        return static_cast<bool>(impl_);
-    }
-#else
-    bool result::boolean_test() const
-    {
-        return impl_;
-    }
-#endif // NANODBC_USE_CPP11
+result::operator bool() const
+{
+    return static_cast<bool>(impl_);
+}
 
 // The following are the only supported instantiations of result::get_ref().
 template void result::get_ref(short, string_type::value_type&) const;

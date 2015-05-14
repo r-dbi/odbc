@@ -20,13 +20,13 @@ Threading               = 2
 
 ## Example Build Process
 
-It's most convenient to create a build directory for an out of source build, but this isn't required. After you've used cmake to generate your Makefiles, you probably only really need to be aware of ```make nanodbc``` which will build your shared object, or ```make check``` which will build and run the unit tests. If the unit tests fail, please don't hesitate to report it by creating an issue including a log of the output you're getting! You may also want to install nanodbc to your system using ```make install```.
+It's most convenient to create a build directory for an out of source build, but this isn't required. After you've used cmake to generate your Makefiles, you probably only really need to be aware of ```make nanodbc``` which will build your shared object, or ```make check``` which will build and run the unit tests. If the unit tests fail, please don't hesitate to report it by creating an issue [with your detailed test log](http://stackoverflow.com/questions/5709914/using-cmake-how-do-i-get-verbose-output-from-ctest)! You may also want to install nanodbc to your system using ```make install```.
 
 ```bash
 cd path/to/nanodbc/repository
 mkdir build
 cd build
-cmake .. [-DNANODBC_USE_CPP11=ON] [-DNANODBC_USE_UNICODE=ON]
+cmake .. [-DNANODBC_USE_UNICODE=ON]
 make # creates shared library
 make nanodbc # creates shared library
 make tests # only builds the unit tests
@@ -34,3 +34,19 @@ make test # only runs the unit tests
 make check # builds and then runs unit tests
 make install # installs nanodbc.h and shared library
 ```
+
+## Future work
+
+### NANODBC_HANDLE_NODATA_BUG
+
+A macro `NANODBC_HANDLE_NODATA_BUG` was introduced to handle drivers like vertica's which return `SQL_NO_DATA` where they probably shouldn't. It would be nice to have the library *just work* instead of having to rely on users compiling with this flag set properly for their driver.
+
+### C++11
+
+Moving forward, nanodbc will target C++11. Since it was originally developed for C++03, it would probably be a good idea to go through it and see what places it can be updated. This shouldn't be too bad because nanodbc has had optional C++11 support for a long time.
+
+### Todo
+
+- More tests for a large variety of drivers. Include performance tests.
+- Clean up `bind_*` family of functions, reduce any duplication.
+- Improve documentation.

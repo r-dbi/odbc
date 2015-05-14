@@ -78,89 +78,12 @@
 #ifndef NANODBC_H
 #define NANODBC_H
 
+#include <cstdint>
 #include <functional>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
-
-#if !defined(NANODBC_USE_CPP11) && defined(_MSC_VER) && _MSC_VER >= 1800
-#define NANODBC_USE_CPP11
-#endif
-
-// Define NANODBC_HAS_TR1_NAMESPACE if your compiler's standard library implementation
-// has a std::tr1 namespace, otherwise we try to detect automatically.
-#ifndef NANODBC_HAS_TR1_NAMESPACE
-    #if defined(_LIBCPP_VERSION) // libc++
-        #define NANODBC_HAS_TR1_NAMESPACE 0
-    #elif defined(__GLIBCXX__) // stdlibc++
-        #define NANODBC_HAS_TR1_NAMESPACE 1
-        #include <tr1/functional>
-    #endif
-#endif
-
-#ifdef NANODBC_USE_BOOST
-    #define NANODBC_TR1_STD std::
-    #include <boost/smart_ptr.hpp>
-    #include <boost/cstdint.hpp>
-    namespace std
-    {
-        using namespace boost;
-    }
-#else
-    // You must explicitly request C++11 support by defining NANODBC_USE_CPP11 at compile time
-    // , otherwise nanodbc will assume it must use tr1 instead.
-    #ifndef NANODBC_USE_CPP11
-        #if NANODBC_HAS_TR1_NAMESPACE
-            #include <tr1/cstdint>
-            #include <tr1/memory>
-            #define NANODBC_TR1_STD std::tr1::
-        #else
-            #include <cstdint>
-            #include <memory>
-            #define NANODBC_TR1_STD std::
-        #endif
-    #else
-        #include <cstdint>
-        #include <memory>
-        #define NANODBC_TR1_STD std::
-    #endif
-#endif
-
-#ifndef DOXYGEN
-namespace detail
-{
-    // Safe Bool idiom from http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Safe_bool#Solution_and_Sample_Code
-    // Creative Commons Attribution/Share-Alike License: http://creativecommons.org/licenses/by-sa/3.0/
-    // In C++11 and on we can simply use explicit conversion operators instead of all this boilerplate
-    class safe_bool_base
-    {
-    public:
-        typedef void (safe_bool_base::*bool_type)() const;
-        void this_type_does_not_support_comparisons() const {}
-
-    protected:
-        safe_bool_base() {}
-        safe_bool_base(const safe_bool_base&) {}
-        safe_bool_base& operator=(const safe_bool_base&) {return *this;}
-        ~safe_bool_base() {}
-    };
-
-    template <typename T=void>
-    class safe_bool : private safe_bool_base
-    {
-      // private or protected inheritance is very important here as it triggers the
-      // access control violation in main.
-    public:
-        operator bool_type() const
-        {
-            return (static_cast<const T*>(this))->boolean_test() ? &safe_bool_base::this_type_does_not_support_comparisons : 0;
-        }
-
-    protected:
-        ~safe_bool() {}
-    };
-} // namespace detail
-#endif // DOXYGEN
 
 //! \brief The entirety of nanodbc can be found within this one namespace.
 //! \note This library does not make any exception safety guarantees, but should work just fine with a threading enabled ODBC driver. If you want to use nanodbc objects in threads I recommend each thread keep their own connection to the database. Otherwise you must synchronize any access to nanodbc objects.
@@ -177,7 +100,7 @@ namespace nanodbc
 
     #if defined(_WIN64)
         // LLP64 machine, Windows
-        typedef NANODBC_TR1_STD int64_t null_type;
+        typedef std::int64_t null_type;
     #elif !defined(_WIN64) && defined(__LP64__)
         // LP64 machine, OS X or Linux
         typedef long null_type;
@@ -260,21 +183,21 @@ public:
 //! \brief A type for representing date data.
 struct date
 {
-    NANODBC_TR1_STD int16_t year; //!< Year [0-inf).
-    NANODBC_TR1_STD int16_t month; //!< Month of the year [1-12].
-    NANODBC_TR1_STD int16_t day; //!< Day of the month [1-31].
+    std::int16_t year; //!< Year [0-inf).
+    std::int16_t month; //!< Month of the year [1-12].
+    std::int16_t day; //!< Day of the month [1-31].
 };
 
 //! \brief A type for representing timestamp data.
 struct timestamp
 {
-    NANODBC_TR1_STD int16_t year;   //!< Year [0-inf).
-    NANODBC_TR1_STD int16_t month;  //!< Month of the year [1-12].
-    NANODBC_TR1_STD int16_t day;    //!< Day of the month [1-31].
-    NANODBC_TR1_STD int16_t hour;   //!< Hours since midnight [0-23].
-    NANODBC_TR1_STD int16_t min;    //!< Minutes after the hour [0-59].
-    NANODBC_TR1_STD int16_t sec;    //!< Seconds after the minute.
-    NANODBC_TR1_STD int32_t fract;  //!< Fractional seconds.
+    std::int16_t year;   //!< Year [0-inf).
+    std::int16_t month;  //!< Month of the year [1-12].
+    std::int16_t day;    //!< Day of the month [1-31].
+    std::int16_t hour;   //!< Hours since midnight [0-23].
+    std::int16_t min;    //!< Minutes after the hour [0-59].
+    std::int16_t sec;    //!< Seconds after the minute.
+    std::int32_t fract;  //!< Fractional seconds.
 };
 
 //! \}
@@ -331,7 +254,7 @@ private:
     friend class nanodbc::connection;
 
 private:
-    NANODBC_TR1_STD shared_ptr<transaction_impl> impl_;
+    std::shared_ptr<transaction_impl> impl_;
 };
 
 //! \brief Represents a statement on the database.
@@ -638,14 +561,14 @@ public:
     //! @}
 
 private:
-    typedef NANODBC_TR1_STD function<bool (std::size_t)> null_predicate_type;
+    typedef std::function<bool (std::size_t)> null_predicate_type;
 
 private:
     class statement_impl;
     friend class nanodbc::result;
 
 private:
-    NANODBC_TR1_STD shared_ptr<statement_impl> impl_;
+    std::shared_ptr<statement_impl> impl_;
 };
 
 //! \brief Manages and encapsulates ODBC resources such as the connection and environment handles.
@@ -740,22 +663,14 @@ private:
     friend class nanodbc::transaction::transaction_impl;
 
 private:
-    NANODBC_TR1_STD shared_ptr<connection_impl> impl_;
+    std::shared_ptr<connection_impl> impl_;
 };
 
-#ifndef DOXYGEN
-    #ifdef NANODBC_USE_CPP11
-        class result
-    #else
-        class result : public detail::safe_bool<result>
-    #endif
-#else
-    //! \brief A resource for managing result sets from statement execution.
-    //!
-    //! \see statement::execute(), statement::execute_direct()
-    //! \note result objects may be copied, however all copies will refer to the same underlying ODBC result set.
-    class result
-#endif // doxygen
+//! \brief A resource for managing result sets from statement execution.
+//!
+//! \see statement::execute(), statement::execute_direct()
+//! \note result objects may be copied, however all copies will refer to the same underlying ODBC result set.
+class result
 {
 public:
     //! Empty result set.
@@ -943,17 +858,8 @@ public:
     //! Returns the next result, for example when stored procedure returns multiple result sets.
     bool next_result();
 
-    #ifndef DOXYGEN
-        #ifdef NANODBC_USE_CPP11
-            explicit operator bool() const;
-        #else
-            bool boolean_test() const;
-        #endif // NANODBC_USE_CPP11
-    #else
-        //! If and only if result object is valid, returns true.
-        //! \note A safe-bool idiom is used if NANODBC_USE_CPP11 is not defined, otherwise an explicit conversion operator is used.
-        operator bool() const;
-    #endif // DOXYGEN
+    //! If and only if result object is valid, returns true.
+    explicit operator bool() const;
 
 private:
     result(statement statement, long rowset_size);
@@ -963,7 +869,7 @@ private:
     friend class nanodbc::statement::statement_impl;
 
 private:
-    NANODBC_TR1_STD shared_ptr<result_impl> impl_;
+    std::shared_ptr<result_impl> impl_;
 };
 
 //! @}
@@ -1017,7 +923,5 @@ void prepare(statement& stmt, const string_type& query, long timeout = 0);
 //! @}
 
 } // namespace nanodbc
-
-#undef NANODBC_TR1_STD
 
 #endif // NANODBC_H

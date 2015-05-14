@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 project(nanodbc)
 
-option(NANODBC_USE_CPP11 "build with c++11 support enabled" OFF)
 option(NANODBC_USE_UNICODE "build with unicode support enabled" OFF)
 option(NANODBC_HANDLE_NODATA_BUG "enable special handling for SQL_NO_DATA (required for vertica)" OFF)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
@@ -9,6 +8,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
 if(APPLE)
 	set(CMAKE_MACOSX_RPATH ON)
 endif()
+
+add_definitions(--std=c++11)
 
 ########################################
 ## find unixODBC or iODBC config binary
@@ -21,14 +22,6 @@ endif()
 
 if(NOT ODBC_CONFIG)
 	message(FATAL_ERROR "can not find odbc config program")
-endif()
-
-if(NANODBC_USE_CPP11)
-	message(STATUS "C++11 support: Enabled")
-	add_definitions(-DNANODBC_USE_CPP11 --std=c++11)
-else()
-	message(STATUS "C++11 support: Disabled")
-	add_definitions(--std=c++03)
 endif()
 
 if(NANODBC_USE_UNICODE)
