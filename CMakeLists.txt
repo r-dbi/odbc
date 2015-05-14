@@ -59,17 +59,14 @@ set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ODBC_LINK_FLAGS}")
 ########################################
 ## shared library
 ########################################
-add_library(nanodbc SHARED nanodbc.cpp)
-set_target_properties(nanodbc PROPERTIES COMPILE_FLAGS "${ODBC_COMPILE_FLAGS}")
+add_library(nanodbc SHARED src/nanodbc.cpp)
+set_target_properties(nanodbc PROPERTIES
+	COMPILE_FLAGS "${ODBC_COMPILE_FLAGS}"
+	LIBRARY_OUTPUT_DIRECTORY "lib"
+)
 
-install(FILES nanodbc.h DESTINATION include)
+install(FILES src/nanodbc.h DESTINATION include)
 install(TARGETS nanodbc LIBRARY DESTINATION lib)
-
-########################################
-## executable example
-########################################
-add_executable(example EXCLUDE_FROM_ALL example.cpp)
-target_link_libraries(example nanodbc)
 
 ########################################
 ## unit tests

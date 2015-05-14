@@ -16,7 +16,7 @@ Description             = SQLite ODBC Driver
 Driver                  = /usr/lib/libsqlite3odbc-0.93.dylib
 Setup                   = /usr/lib/libsqlite3odbc-0.93.dylib
 Threading               = 2
-```	
+```
 
 ## Example Build Process
 
@@ -29,7 +29,6 @@ cd build
 cmake .. [-DNANODBC_USE_CPP11=ON] [-DNANODBC_USE_UNICODE=ON]
 make # creates shared library
 make nanodbc # creates shared library
-make example # builds example program
 make tests # only builds the unit tests
 make test # only runs the unit tests
 make check # builds and then runs unit tests
