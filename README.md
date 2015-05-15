@@ -8,7 +8,7 @@ A very small C++ wrapper for the native C ODBC API. Please see the [online docum
 | --------------| ----------- |
 | `master`      | This branch contains the latest development code, possibly not ready for release yet. |
 | `release`     | This branch is always tagged to the most recent stable release. |
-| `v2.0.0`      | Supports C++11 only. All future development with build on this version. |
+| `v2.0.0`      | Supports C++11 only. All future development will build upon this version. |
 | `v1.0.0`      | Supports C++03 and optionally C++11. *There is no longer any support for this version.* |
 
 # Building
