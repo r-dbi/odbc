@@ -10,12 +10,12 @@
 //! \section toc Table of Contents
 //! - \ref license "License"
 //! - \ref credits "Credits"
-//! - \ref examples "Examples"
 //! - Source level documentation:
 //!     - \ref nanodbc "nanodbc namespace"
 //!     - \ref exceptions
 //!     - \ref utility
-//!     - \ref main
+//!     - \ref mainc
+//!     - \ref mainf
 //!     - \ref binding
 //!     - \ref bind_multi
 //!     - \ref bind_strings
@@ -70,10 +70,6 @@
 //! License: Perpetual license to reproduce, distribute, adapt, perform, display, and sublicense.
 //! See http://www.codeguru.com/submission-guidelines.php for details.
 //! </div>
-
-//! \page examples Example Usage
-//! \brief Example library usage.
-//! \include example.cpp
 
 #ifndef NANODBC_H
 #define NANODBC_H
@@ -202,7 +198,7 @@ struct timestamp
 
 //! \}
 
-//! \addtogroup main Main classes
+//! \addtogroup mainc Main classes
 //! \brief Main nanodbc classes.
 //!
 //! @{
@@ -404,7 +400,7 @@ public:
     //!
     //! \param param Placeholder position.
     //! \param value Value to substitute into placeholder.
-    //! \param param_direciton ODBC parameter direction.
+    //! \param direction ODBC parameter direction.
     //! \throws database_error
     template<class T>
     void bind(short param, const T* value, param_direction direction = PARAM_IN);
@@ -763,8 +759,7 @@ public:
 
     //! \brief Gets data from the given column by name of the current rowset.
     //!
-    //! \param column column's name.
-    //! \param row If there are multiple rows in this rowset, get_ref from the specified row.
+    //! \param column_name column's name.
     //! \param result The column's value will be written to this parameter.
     //! \throws database_error, index_range_error, type_incompatible_error, null_access_error
     template<class T>
@@ -800,8 +795,7 @@ public:
 
     //! \brief Gets data from the given column by name of the current rowset.
     //!
-    //! \param column column's name.
-    //! \param row If there are multiple rows in this rowset, get from the specified row.
+    //! \param column_name column's name.
     //! \throws database_error, index_range_error, type_incompatible_error, null_access_error
     template<class T>
     T get(const string_type& column_name) const;
@@ -824,7 +818,7 @@ public:
 
     //! \brief Returns true if and only if the given column by name of the current rowset is null.
     //!
-    //! \param column column's name.
+    //! \param column_name column's name.
     //! \throws database_error, index_range_error
     bool is_null(const string_type& column_name) const;
 
@@ -838,14 +832,14 @@ public:
     //! \brief Returns the size of the specified column.
     //!
     //! Columns are numbered from left to right and 0-indexed.
-    //! \param Column position.
+    //! \param column position.
     //! \throws index_range_error
     long column_size(short column) const;
 
     //! \brief Returns the column number of the specified column name.
     //!
     //! Columns are numbered from left to right and 0-indexed.
-    //! \param column column's name.
+    //! \param column_name column's name.
     //! \throws index_range_error
     short column(const string_type& column_name) const;
 
@@ -874,7 +868,7 @@ private:
 
 //! @}
 
-//! \addtogroup main Free Functions
+//! \addtogroup mainf Free Functions
 //! \brief Convenience functions.
 //!
 //! @{
@@ -913,7 +907,7 @@ result transact(statement& stmt, long batch_operations);
 
 //! \brief Prepares the given statement to execute on it associated connection.
 //! If the statement is not open throws programming_error.
-//! \param conn The connection where the statement will be executed.
+//! \param stmt The prepared statement that will be executed in batch.
 //! \param query The SQL query that will be executed.
 //! \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
 //! \see open()

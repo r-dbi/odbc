@@ -1,4 +1,5 @@
 //! \file nanodbc.cpp Implementation details.
+#ifndef DOXYGEN
 
 #include "nanodbc.h"
 
@@ -3078,3 +3079,5 @@ template timestamp result::get(const string_type&, const timestamp&) const;
 #undef NANODBC_STRINGIZE_I
 #undef NANODBC_CALL_RC
 #undef NANODBC_CALL
+
+#endif // DOXYGEN
