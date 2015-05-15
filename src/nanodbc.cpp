@@ -400,6 +400,9 @@ namespace
     class bound_column
     {
     public:
+        bound_column(const bound_column& rhs) =delete;
+        bound_column& operator=(bound_column rhs) =delete;
+
         bound_column()
         : name_()
         , column_(0)
@@ -434,10 +437,6 @@ namespace
         long rowset_size_;
         nanodbc::null_type* cbdata_;
         char* pdata_;
-
-    private:
-        bound_column(const bound_column& rhs); // not defined
-        bound_column& operator=(bound_column rhs); // not defined
     };
 
     // Allocates the native ODBC handles.
@@ -495,6 +494,9 @@ namespace nanodbc
 class connection::connection_impl
 {
 public:
+    connection_impl(const connection_impl&) =delete;
+    connection_impl& operator=(const connection_impl&) =delete;
+
     connection_impl()
     : env_(0)
     , conn_(0)
@@ -754,10 +756,6 @@ public:
     }
 
 private:
-    connection_impl(const connection_impl&); // not defined
-    connection_impl& operator=(const connection_impl&); // not defined
-
-private:
     HENV env_;
     HDBC conn_;
     bool connected_;
@@ -777,6 +775,9 @@ namespace nanodbc
 class transaction::transaction_impl
 {
 public:
+    transaction_impl(const transaction_impl&) =delete;
+    transaction_impl& operator=(const transaction_impl&) =delete;
+
     transaction_impl(const class connection& conn)
     : conn_(conn)
     , committed_(false)
@@ -863,10 +864,6 @@ public:
     }
 
 private:
-    transaction_impl(const transaction_impl&); // not defined
-    transaction_impl& operator=(const transaction_impl&); // not defined
-
-private:
     class connection conn_;
     bool committed_;
 };
@@ -883,6 +880,9 @@ namespace nanodbc
 class statement::statement_impl
 {
 public:
+    statement_impl(const statement_impl&) =delete;
+    statement_impl& operator=(const statement_impl&) =delete;
+
     statement_impl()
     : stmt_(0)
     , open_(false)
@@ -1373,10 +1373,6 @@ public:
         , param_direction direction);
 
 private:
-    statement_impl(const statement_impl&); // not defined
-    statement_impl& operator=(const statement_impl&); // not defined
-
-private:
     HSTMT stmt_;
     bool open_;
     class connection conn_;
@@ -1520,6 +1516,9 @@ namespace nanodbc
 class result::result_impl
 {
 public:
+    result_impl(const result_impl&) =delete;
+    result_impl& operator=(const result_impl&) =delete;
+
     result_impl(statement stmt, long rowset_size)
     : stmt_(stmt)
     , rowset_size_(rowset_size)
@@ -1805,9 +1804,6 @@ public:
     }
 
 private:
-    result_impl(const result_impl&); // not defined
-    result_impl& operator=(const result_impl&); // not defined
-
     template<class T>
     void get_ref_impl(short column, T& result) const;
 
