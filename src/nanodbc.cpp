@@ -89,14 +89,16 @@
 #ifdef NANODBC_ODBC_API_DEBUG
     #include <iostream>
     #define NANODBC_CALL_RC(FUNC, RC, ...)                                    \
-        do {                                                                  \
+        do                                                                    \
+        {                                                                     \
             std::cerr << __FILE__ ":" NANODBC_STRINGIZE(__LINE__) " "         \
                 NANODBC_STRINGIZE(FUNC) "(" #__VA_ARGS__ ")" << std::endl;    \
             RC = FUNC(__VA_ARGS__);                                           \
         } while(false)                                                        \
         /**/
     #define NANODBC_CALL(FUNC, ...)                                           \
-        do {                                                                  \
+        do                                                                    \
+        {                                                                     \
             std::cerr << __FILE__ ":" NANODBC_STRINGIZE(__LINE__) " "         \
                 NANODBC_STRINGIZE(FUNC) "(" #__VA_ARGS__ ")" << std::endl;    \
             FUNC(__VA_ARGS__);                                                \
@@ -225,7 +227,8 @@ namespace
                 , (SQLSMALLINT)sql_message.size()
                 , &total_bytes);
 
-            if(!success(rc)) {
+            if(!success(rc))
+            {
                 convert(result, rvalue);
                 return rvalue;
             }
@@ -255,7 +258,7 @@ namespace nanodbc
     type_incompatible_error::type_incompatible_error()
     : std::runtime_error("type incompatible") { }
 
-    const char* type_incompatible_error::what() const throw()
+    const char* type_incompatible_error::what() const noexcept
     {
         return std::runtime_error::what();
     }
@@ -263,7 +266,7 @@ namespace nanodbc
     null_access_error::null_access_error()
     : std::runtime_error("null access") { }
 
-    const char* null_access_error::what() const throw()
+    const char* null_access_error::what() const noexcept
     {
         return std::runtime_error::what();
     }
@@ -271,7 +274,7 @@ namespace nanodbc
     index_range_error::index_range_error()
     : std::runtime_error("index out of range") { }
 
-    const char* index_range_error::what() const throw()
+    const char* index_range_error::what() const noexcept
     {
         return std::runtime_error::what();
     }
@@ -279,7 +282,7 @@ namespace nanodbc
     programming_error::programming_error(const std::string& info)
     : std::runtime_error(info.c_str()) { }
 
-    const char* programming_error::what() const throw()
+    const char* programming_error::what() const noexcept
     {
         return std::runtime_error::what();
     }
@@ -287,7 +290,7 @@ namespace nanodbc
     database_error::database_error(void* handle, short handle_type, const std::string& info)
     : std::runtime_error(info + recent_error(handle, handle_type)) { }
 
-    const char* database_error::what() const throw()
+    const char* database_error::what() const noexcept
     {
         return std::runtime_error::what();
     }
@@ -563,7 +566,7 @@ public:
         }
     }
 
-    ~connection_impl() throw()
+    ~connection_impl() noexcept
     {
         try
         {
@@ -798,7 +801,7 @@ public:
         conn_.ref_transaction();
     }
 
-    ~transaction_impl() throw()
+    ~transaction_impl() noexcept
     {
         if(!committed_)
         {
@@ -846,7 +849,7 @@ public:
         }
     }
 
-    void rollback() throw()
+    void rollback() noexcept
     {
         if(committed_)
             return;
@@ -910,7 +913,7 @@ public:
         prepare(conn, query, timeout);
     }
 
-    ~statement_impl() throw()
+    ~statement_impl() noexcept
     {
         if(open() && connected())
         {
@@ -1052,6 +1055,23 @@ public:
         , long timeout
         , statement& statement)
     {
+        #ifdef NANODBC_HANDLE_NODATA_BUG
+            const RETCODE rc = just_execute_direct(conn, query, batch_operations, timeout, statement);
+            if(rc == SQL_NO_DATA)
+                return result();
+        #else
+            just_execute_direct(conn, query, batch_operations, timeout, statement);
+        #endif
+        return result(statement, batch_operations);
+    }
+
+    RETCODE just_execute_direct(
+        class connection& conn
+        , const string_type& query
+        , long batch_operations
+        , long timeout
+        , statement& statement)
+    {
         open(conn);
 
         RETCODE rc;
@@ -1076,14 +1096,22 @@ public:
         if(!success(rc) && rc != SQL_NO_DATA)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
+        return rc;
+    }
+
+    result execute(long batch_operations, long timeout, statement& statement)
+    {
         #ifdef NANODBC_HANDLE_NODATA_BUG
+            const RETCODE rc = just_execute(batch_operations, timeout, statement);
             if(rc == SQL_NO_DATA)
                 return result();
+        #else
+            just_execute(batch_operations, timeout, statement);
         #endif
         return result(statement, batch_operations);
     }
 
-    result execute(long batch_operations, long timeout, statement& statement)
+    RETCODE just_execute(long batch_operations, long timeout, statement& statement)
     {
         RETCODE rc;
 
@@ -1124,11 +1152,7 @@ public:
         if(!success(rc) && rc != SQL_NO_DATA)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
-        #ifdef NANODBC_HANDLE_NODATA_BUG
-            if(rc == SQL_NO_DATA)
-                return result();
-        #endif
-        return result(statement, batch_operations);
+        return rc;
     }
 
     result procedure_columns(
@@ -1189,7 +1213,7 @@ public:
         return cols;
     }
 
-    void reset_parameters() throw()
+    void reset_parameters() noexcept
     {
         NANODBC_CALL(
             SQLFreeStmt
@@ -1552,7 +1576,7 @@ public:
         auto_bind();
     }
 
-    ~result_impl() throw()
+    ~result_impl() noexcept
     {
         cleanup_bound_columns();
     }
@@ -1572,7 +1596,7 @@ public:
         return stmt_.affected_rows();
     }
 
-    long rows() const throw()
+    long rows() const noexcept
     {
         return row_count_;
     }
@@ -1642,7 +1666,7 @@ public:
         return pos - 1 + rowset_position_;
     }
 
-    bool end() const throw()
+    bool end() const noexcept
     {
         SQLULEN pos = 0; // necessary to initialize to 0
         RETCODE rc;
@@ -1807,7 +1831,7 @@ private:
     template<class T>
     void get_ref_impl(short column, T& result) const;
 
-    void before_move() throw()
+    void before_move() noexcept
     {
         for(short i = 0; i < bound_columns_size_; ++i)
         {
@@ -1819,7 +1843,7 @@ private:
         }
     }
 
-    void release_bound_resources(short column) throw()
+    void release_bound_resources(short column) noexcept
     {
         assert(column < bound_columns_size_);
         bound_column& col = bound_columns_[column];
@@ -1828,7 +1852,7 @@ private:
         col.clen_ = 0;
     }
 
-    void cleanup_bound_columns() throw()
+    void cleanup_bound_columns() noexcept
     {
         before_move();
         delete[] bound_columns_;
@@ -2305,9 +2329,19 @@ result execute(connection& conn, const string_type& query, long batch_operations
     return statement.execute_direct(conn, query, batch_operations, timeout);
 }
 
+void just_execute(connection& conn, const string_type& query, long batch_operations, long timeout) {
+    class statement statement;
+    statement.just_execute_direct(conn, query, batch_operations, timeout);
+}
+
 result execute(statement& stmt, long batch_operations)
 {
     return stmt.execute(batch_operations);
+}
+
+void just_execute(statement& stmt, long batch_operations)
+{
+    return stmt.just_execute(batch_operations);
 }
 
 result transact(statement& stmt, long batch_operations)
@@ -2316,6 +2350,13 @@ result transact(statement& stmt, long batch_operations)
     result rvalue = stmt.execute(batch_operations);
     transaction.commit();
     return rvalue;
+}
+
+void just_transact(statement& stmt, long batch_operations)
+{
+    class transaction transaction(stmt.connection());
+    stmt.just_execute(batch_operations);
+    transaction.commit();
 }
 
 void prepare(statement& stmt, const string_type& query, long timeout)
@@ -2350,7 +2391,7 @@ connection& connection::operator=(connection rhs)
     return *this;
 }
 
-void connection::swap(connection& rhs) throw()
+void connection::swap(connection& rhs) noexcept
 {
     using std::swap;
     swap(impl_, rhs.impl_);
@@ -2372,7 +2413,7 @@ connection::connection(const string_type& connection_string, long timeout)
 
 }
 
-connection::~connection() throw()
+connection::~connection() noexcept
 {
 
 }
@@ -2468,13 +2509,13 @@ transaction& transaction::operator=(transaction rhs)
     return *this;
 }
 
-void transaction::swap(transaction& rhs) throw()
+void transaction::swap(transaction& rhs) noexcept
 {
     using std::swap;
     swap(impl_, rhs.impl_);
 }
 
-transaction::~transaction() throw()
+transaction::~transaction() noexcept
 {
 
 }
@@ -2484,7 +2525,7 @@ void transaction::commit()
     impl_->commit();
 }
 
-void transaction::rollback() throw()
+void transaction::rollback() noexcept
 {
     impl_->rollback();
 }
@@ -2548,13 +2589,13 @@ statement& statement::operator=(statement rhs)
     return *this;
 }
 
-void statement::swap(statement& rhs) throw()
+void statement::swap(statement& rhs) noexcept
 {
     using std::swap;
     swap(impl_, rhs.impl_);
 }
 
-statement::~statement() throw()
+statement::~statement() noexcept
 {
 
 }
@@ -2623,9 +2664,23 @@ result statement::execute_direct(
     return impl_->execute_direct(conn, query, batch_operations, timeout, *this);
 }
 
+void statement::just_execute_direct(
+    class connection& conn
+    , const string_type& query
+    , long batch_operations
+    , long timeout)
+{
+    impl_->just_execute_direct(conn, query, batch_operations, timeout, *this);
+}
+
 result statement::execute(long batch_operations, long timeout)
 {
     return impl_->execute(batch_operations, timeout, *this);
+}
+
+void statement::just_execute(long batch_operations, long timeout)
+{
+    impl_->just_execute(batch_operations, timeout, *this);
 }
 
 result statement::procedure_columns(
@@ -2647,7 +2702,7 @@ short statement::columns() const
     return impl_->columns();
 }
 
-void statement::reset_parameters() throw()
+void statement::reset_parameters() noexcept
 {
     impl_->reset_parameters();
 }
@@ -2773,7 +2828,7 @@ result::result()
 
 }
 
-result::~result() throw()
+result::~result() noexcept
 {
 
 }
@@ -2796,7 +2851,7 @@ result& result::operator=(result rhs)
     return *this;
 }
 
-void result::swap(result& rhs) throw()
+void result::swap(result& rhs) noexcept
 {
     using std::swap;
     swap(impl_, rhs.impl_);
@@ -2807,7 +2862,7 @@ void* result::native_statement_handle() const
     return impl_->native_statement_handle();
 }
 
-long result::rowset_size() const throw()
+long result::rowset_size() const noexcept
 {
     return impl_->rowset_size();
 }
@@ -2817,7 +2872,7 @@ long result::affected_rows() const
     return impl_->affected_rows();
 }
 
-long result::rows() const throw()
+long result::rows() const noexcept
 {
     return impl_->rows();
 }
@@ -2862,7 +2917,7 @@ unsigned long result::position() const
     return impl_->position();
 }
 
-bool result::end() const throw()
+bool result::end() const noexcept
 {
     return impl_->end();
 }
