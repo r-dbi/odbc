@@ -355,6 +355,8 @@ public:
     class result execute_direct(class connection& conn, const string_type& query, long batch_operations = 1, long timeout = 0);
 
     //! \brief Execute the previously prepared query now without constructing result object.
+    //! \param conn The connection where the statement will be executed.
+    //! \param query The SQL query that will be executed.
     //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
     //! \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
     //! \throws database_error
