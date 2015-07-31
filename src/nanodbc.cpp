@@ -1736,6 +1736,21 @@ public:
         return col.sqltype_;
     }
 
+    int column_c_datatype(short column) const
+    {
+        if(column >= bound_columns_size_)
+            throw index_range_error();
+        bound_column& col = bound_columns_[column];
+        return col.ctype_;
+    }
+
+    int column_c_datatype(const string_type& column_name) const
+    {
+        const short column = this->column(column_name);
+        bound_column& col = bound_columns_[column];
+        return col.ctype_;
+    }
+
     bool next_result()
     {
         RETCODE rc;
