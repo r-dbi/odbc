@@ -861,10 +861,10 @@ public:
     //! \throws index_range_error
     short column(const string_type& column_name) const;
 
-    //! Returns a identifying integer value representing the C type of this column.
+    //! Returns a identifying integer value representing the SQL type of this column.
     int column_datatype(short column) const;
 
-    //! Returns a identifying integer value representing the C type of this column by name.
+    //! Returns a identifying integer value representing the SQL type of this column by name.
     int column_datatype(const string_type& column_name) const;
 
     //! Returns the next result, for example when stored procedure returns multiple result sets.
