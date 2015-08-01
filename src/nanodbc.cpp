@@ -2972,6 +2972,16 @@ int result::column_datatype(const string_type& column_name) const
     return impl_->column_datatype(column_name);
 }
 
+int result::column_c_datatype(short column) const
+{
+    return impl_->column_c_datatype(column);
+}
+
+int result::column_c_datatype(const string_type& column_name) const
+{
+    return impl_->column_c_datatype(column_name);
+}
+
 bool result::next_result()
 {
     return impl_->next_result();
