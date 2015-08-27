@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <cassert>
 #include <clocale>
-#include <codecvt>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -17,6 +16,12 @@
 #include <iomanip>
 #include <map>
 #include <sstream>
+
+#ifdef NANODBC_USE_BOOST_CONVERT
+    #include <boost/locale/encoding_utf.hpp>
+#else
+    #include <codecvt>
+#endif
 
 #if defined(_MSC_VER) && _MSC_VER <= 1800
     // silence spurious Visual C++ warnings
@@ -187,15 +192,23 @@ namespace
 
     inline void convert(const std::wstring& in, std::string& out)
     {
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-        out = conv.to_bytes(in);
+        #ifdef NANODBC_USE_BOOST_CONVERT
+            using boost::locale::conv::utf_to_utf;
+            out = utf_to_utf<char>(in.c_str(), in.c_str() + in.size());
+        #else
+            out = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(in);
+        #endif
     }
 
     #ifdef NANODBC_USE_UNICODE
         inline void convert(const std::string& in, std::wstring& out)
         {
-            std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-            out = conv.from_bytes(in);
+            #ifdef NANODBC_USE_BOOST_CONVERT
+                using boost::locale::conv::utf_to_utf;
+                out = utf_to_utf<wchar_t>(in.c_str(), in.c_str() + in.size());
+            #else
+                out = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(in);
+            #endif
         }
 
         inline void convert(const std::wstring& in, std::wstring & out)
