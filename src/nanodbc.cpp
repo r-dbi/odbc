@@ -510,7 +510,7 @@ namespace
                 , rc
                 , env
                 , SQL_ATTR_ODBC_VERSION
-                , (SQLPOINTER)SQL_OV_ODBC3
+                , (SQLPOINTER)SQL_OV_ODBC3_80
                 , SQL_IS_UINTEGER);
             if(!success(rc))
                 NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
