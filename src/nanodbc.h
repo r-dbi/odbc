@@ -354,6 +354,21 @@ public:
     //! \see open(), prepare(), execute(), result, transaction
     class result execute_direct(class connection& conn, const string_type& query, long batch_operations = 1, long timeout = 0);
 
+    //! \brief Immediately opens, prepares, and executes the given query directly on the given connection, in asynchronous mode.
+    //! \param conn The connection where the statement will be executed.
+    //! \param event_handler The event handler for which the caller will wait before calling async_complete.
+    //! \param query The SQL query that will be executed.
+    //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+    //! \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
+    //! \return A result set object.
+    //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
+    //! \see open(), prepare(), execute(), result, transaction
+    void async_execute_direct(class connection& conn, void* event_handler, const string_type& query, long batch_operations = 1, long timeout = 0);
+
+    //! \brief Completes a previously initiated asynchronous query operation, returning the result.
+    //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
+    class result async_complete(long batch_operations = 1);
+
     //! \brief Execute the previously prepared query now without constructing result object.
     //! \param conn The connection where the statement will be executed.
     //! \param query The SQL query that will be executed.

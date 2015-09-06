@@ -1123,6 +1123,74 @@ public:
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
+    void enable_async(void* event_handle)
+    {
+        RETCODE rc;
+        NANODBC_CALL_RC(
+            SQLSetStmtAttr
+            , rc
+            , stmt_
+            , SQL_ATTR_ASYNC_ENABLE
+            , (SQLPOINTER)SQL_ASYNC_ENABLE_ON,
+             SQL_IS_INTEGER);
+
+        if(!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+
+        NANODBC_CALL_RC(
+            SQLSetStmtAttr
+            , rc
+            , stmt_
+            , SQL_ATTR_ASYNC_STMT_EVENT
+            , event_handle,
+             SQL_IS_POINTER);
+
+        if(!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+    }
+
+    void async_execute_direct(
+        class connection& conn
+        , void* event_handle
+        , const string_type& query
+        , long batch_operations
+        , long timeout
+        , statement& statement)
+    {
+        RETCODE rc = just_execute_direct(conn, query, batch_operations, timeout, statement, event_handle);
+
+        if (rc != SQL_STILL_EXECUTING)
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+    }
+
+    result async_complete(long batch_operations, statement& statement)
+    {
+        RETCODE rc, arc;
+     
+        NANODBC_CALL_RC(
+            SQLCompleteAsync
+            , rc
+            , SQL_HANDLE_STMT
+            , stmt_
+            , &arc);
+
+        if(!success(rc) || !success(arc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        
+        NANODBC_CALL_RC(
+            SQLSetStmtAttr
+            , rc
+            , stmt_
+            , SQL_ATTR_ASYNC_ENABLE
+            , (SQLPOINTER)SQL_ASYNC_ENABLE_OFF,
+             SQL_IS_INTEGER);
+
+        if(!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+
+        return result(statement, batch_operations);
+    }
+
     result execute_direct(
         class connection& conn
         , const string_type& query
@@ -2788,6 +2856,21 @@ result statement::execute_direct(
     , long timeout)
 {
     return impl_->execute_direct(conn, query, batch_operations, timeout, *this);
+}
+
+void statement::async_execute_direct(
+    class connection& conn
+    , void* event_handler
+    , const string_type& query
+    , long batch_operations
+    , long timeout)
+{
+    impl_->async_execute_direct(conn, event_handler, query, batch_operations, timeout, *this);
+}
+
+result statement::async_complete(long batch_operations)
+{
+    return impl_->async_complete(batch_operations, *this);
 }
 
 void statement::just_execute_direct(
