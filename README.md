@@ -35,7 +35,7 @@ It's most convenient to create a build directory for an out of source build, but
 cd path/to/nanodbc/repository
 mkdir build
 cd build
-cmake .. [Build Options]
+cmake [Build Options] ..
 make # creates shared library
 make nanodbc # creates shared library
 make tests # builds the unit tests
