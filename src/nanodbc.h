@@ -355,6 +355,11 @@ public:
     class result execute_direct(class connection& conn, const string_type& query, long batch_operations = 1, long timeout = 0);
 
     //! \brief Immediately opens, prepares, and executes the given query directly on the given connection, in asynchronous mode.
+    //!
+    //! This method will only be available if nanodbc is built against ODBC headers and library that supports asynchronous mode.
+    //! Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant. Otherwise
+    //! this method will be defined, but not implemented.
+    //!
     //! \param conn The connection where the statement will be executed.
     //! \param event_handler The event handler for which the caller will wait before calling async_complete.
     //! \param query The SQL query that will be executed.
@@ -366,6 +371,11 @@ public:
     void async_execute_direct(class connection& conn, void* event_handler, const string_type& query, long batch_operations = 1, long timeout = 0);
 
     //! \brief Completes a previously initiated asynchronous query operation, returning the result.
+    //!
+    //! This method will only be available if nanodbc is built against ODBC headers and library that supports asynchronous mode.
+    //! Such that the identifiers `SQL_ATTR_ASYNC_STMT_EVENT` and `SQLCompleteAsync` are extant. Otherwise
+    //! this method will be defined, but not implemented.
+    //!
     //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
     class result async_complete(long batch_operations = 1);
 
