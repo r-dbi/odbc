@@ -10,7 +10,22 @@ if(APPLE)
 	set(CMAKE_MACOSX_RPATH ON)
 endif()
 
-add_definitions(--std=c++11)
+########################################
+## require and enable C++0x/11/14
+########################################
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+if(COMPILER_SUPPORTS_CXX14)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+elseif(COMPILER_SUPPORTS_CXX11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+elseif(COMPILER_SUPPORTS_CXX0X)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+else()
+    message(WARNING "Compiler ${CMAKE_CXX_COMPILER} has no C++ 0x/11/14 support.")
+endif()
 
 ########################################
 ## find unixODBC or iODBC config binary
@@ -23,6 +38,13 @@ endif()
 
 if(NOT ODBC_CONFIG)
 	message(FATAL_ERROR "can not find odbc config program")
+endif()
+
+########################################
+## build options
+########################################
+if(NANODBC_ODBC_VERSION)
+	message(STATUS "ODBC Version Override: ${NANODBC_ODBC_VERSION}")
 endif()
 
 if(NANODBC_USE_UNICODE)

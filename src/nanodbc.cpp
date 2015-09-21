@@ -23,6 +23,17 @@
     #include <codecvt>
 #endif
 
+// Default to ODBC version defined by NANODBC_ODBC_VERSION if provided.
+#ifndef NANODBC_ODBC_VERSION
+    #ifdef SQL_OV_ODBC3_80
+        // Otherwise, use ODBC v3.8 if it's available...
+        #define NANODBC_ODBC_VERSION SQL_OV_ODBC3_80
+    #else
+        // or fallback to ODBC v3.x.
+        #define NANODBC_ODBC_VERSION SQL_OV_ODBC3
+    #endif
+#endif
+
 #if defined(_MSC_VER) && _MSC_VER <= 1800
     // silence spurious Visual C++ warnings
     #pragma warning(disable:4244) // warning about integer conversion issues.
@@ -512,7 +523,7 @@ namespace
                 , rc
                 , env
                 , SQL_ATTR_ODBC_VERSION
-                , (SQLPOINTER)SQL_OV_ODBC3_80
+                , (SQLPOINTER)NANODBC_ODBC_VERSION
                 , SQL_IS_UINTEGER);
             if(!success(rc))
                 NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
