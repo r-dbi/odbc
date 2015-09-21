@@ -87,6 +87,11 @@
         #define NANADBC_STRNCMP std::strncmp
         #define NANODBC_UNICODE(f) f
         #define NANODBC_SQLCHAR SQLCHAR
+
+        // Disable unicode in sqlucode.h on Windows when NANODBC_USE_UNICODE
+        // is not defined. This is required because unicode is enabled by
+        // default on many Windows systems.
+        #define SQL_NOUNICODEMAP
     #endif
 #else
     #ifdef NANODBC_USE_UNICODE
