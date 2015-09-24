@@ -31,9 +31,189 @@ struct basic_test
 
     }
 
+    // Utilities
+
+    const nanodbc::string_type connection_string_;
+
     nanodbc::connection connect()
     {
         return nanodbc::connection(connection_string_);
+    }
+
+    static void check_rows_equal(nanodbc::result results, std::size_t rows)
+    {
+        BOOST_CHECK(results.next());
+        BOOST_CHECK_EQUAL(results.get<int>(0), rows);
+    }
+
+    // Test Cases
+
+    void decimal_conversion_test()
+    {
+        nanodbc::connection connection = connect();
+        nanodbc::result results;
+        execute(connection, NANODBC_TEXT("drop table if exists decimal_conversion_test;"));
+        execute(connection, NANODBC_TEXT("create table decimal_conversion_test (d decimal(8, 3));"));
+        execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (5.6);"));
+        execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (1);"));
+        execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (-1.333);"));
+        results = execute(connection, NANODBC_TEXT("select * from decimal_conversion_test order by 1 desc;"));
+
+        BOOST_CHECK(results.next());
+        BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("5.6"));
+
+        BOOST_CHECK(results.next());
+        BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("1"));
+
+        BOOST_CHECK(results.next());
+        BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("-1.333"));
+    }
+
+    void exception_test()
+    {
+        nanodbc::connection connection = connect();
+        nanodbc::result results;
+
+        BOOST_CHECK_THROW(execute(connection, NANODBC_TEXT("THIS IS NOT VALID SQL!")), nanodbc::database_error);
+
+        execute(connection,
+            NANODBC_TEXT("drop table if exists exception_test;")
+            NANODBC_TEXT("create table exception_test (i int);")
+            NANODBC_TEXT("insert into exception_test values (-10);")
+            NANODBC_TEXT("insert into exception_test values (null);")
+        );
+
+        results = execute(connection, NANODBC_TEXT("select * from exception_test where i = -10;"));
+
+        BOOST_CHECK(results.next());
+        BOOST_CHECK_THROW(results.get<nanodbc::date>(0), nanodbc::type_incompatible_error);
+        BOOST_CHECK_THROW(results.get<nanodbc::timestamp>(0), nanodbc::type_incompatible_error);
+
+        results = execute(connection, NANODBC_TEXT("select * from exception_test where i is null;"));
+
+        BOOST_CHECK(results.next());
+        BOOST_CHECK_THROW(results.get<int>(0), nanodbc::null_access_error);
+        BOOST_CHECK_THROW(results.get<int>(42), nanodbc::index_range_error);
+
+        nanodbc::statement statement(connection);
+        BOOST_CHECK(statement.open() && statement.connected());
+        statement.close();
+        BOOST_CHECK_THROW(statement.prepare(NANODBC_TEXT("select * from exception_test;")), nanodbc::programming_error);
+    }
+
+    void execute_multiple_transaction_test()
+    {
+        nanodbc::connection connection = connect();
+        nanodbc::statement statement;
+        nanodbc::result results;
+
+        statement.prepare(connection, NANODBC_TEXT("select 42;"));
+
+        {
+            nanodbc::transaction transaction(connection);
+            results = statement.execute();
+            results.next();
+            BOOST_CHECK_EQUAL(results.get<int>(0), 42);
+        }
+
+        results = statement.execute();
+        results.next();
+        BOOST_CHECK_EQUAL(results.get<int>(0), 42);
+    }
+
+    void execute_multiple_test()
+    {
+        nanodbc::connection connection = connect();
+        nanodbc::statement statement(connection);
+        nanodbc::prepare(statement, NANODBC_TEXT("select 42;"));
+
+        nanodbc::result results = statement.execute();
+        results.next();
+
+        results = statement.execute();
+        results.next();
+        BOOST_CHECK_EQUAL(results.get<int>(0), 42);
+
+        results = statement.execute();
+        results.next();
+        BOOST_CHECK_EQUAL(results.get<int>(0), 42);
+    }
+
+    template<class T>
+    void integral_test_template()
+    {
+        nanodbc::connection connection = connect();
+
+        execute(connection, NANODBC_TEXT("drop table if exists integral_test;"));
+        execute(connection, NANODBC_TEXT("create table integral_test (i int, f float, d double precision);"));
+
+        nanodbc::statement statement(connection);
+        prepare(statement, NANODBC_TEXT("insert into integral_test (i, f, d) values (?, ?, ?);"));
+
+        srand(0);
+        const int32_t i = rand() % 5000;
+        const float f = rand() / (rand() + 1.0);
+        const float d = - rand() / (rand() + 1.0);
+
+        short p = 0;
+        statement.bind(p++, &i);
+        statement.bind(p++, &f);
+        statement.bind(p++, &d);
+
+        BOOST_CHECK(statement.connected());
+        execute(statement);
+
+        nanodbc::result results = execute(connection, NANODBC_TEXT("select * from integral_test;"));
+        BOOST_CHECK(results.next());
+
+        T ref;
+        p = 0;
+        results.get_ref(p, ref);
+        BOOST_CHECK_EQUAL(ref, static_cast<T>(i));
+        BOOST_CHECK_EQUAL(results.get<T>(p++), static_cast<T>(i));
+        results.get_ref(p, ref);
+        BOOST_CHECK_CLOSE(static_cast<float>(ref), static_cast<T>(f), 1e-6);
+        BOOST_CHECK_CLOSE(static_cast<float>(results.get<T>(p++)), static_cast<T>(f), 1e-6);
+        results.get_ref(p, ref);
+        BOOST_CHECK_CLOSE(static_cast<double>(ref), static_cast<T>(d), 1e-6);
+        BOOST_CHECK_CLOSE(static_cast<double>(results.get<T>(p++)), static_cast<T>(d), 1e-6);
+    }
+
+    void null_test()
+    {
+        nanodbc::connection connection = connect();
+        BOOST_CHECK(connection.connected());
+
+        execute(connection, NANODBC_TEXT("drop table if exists null_test;"));
+        execute(connection, NANODBC_TEXT("create table null_test (a int, b varchar(10));"));
+
+        nanodbc::statement statement(connection);
+
+        prepare(statement, NANODBC_TEXT("insert into null_test (a, b) values (?, ?);"));
+        statement.bind_null(0);
+        statement.bind_null(1);
+        execute(statement);
+
+        prepare(statement, NANODBC_TEXT("insert into null_test (a, b) values (?, ?);"));
+        statement.bind_null(0, 2);
+        statement.bind_null(1, 2);
+        execute(statement, 2);
+
+        nanodbc::result results = execute(connection, NANODBC_TEXT("select a, b from null_test order by a;"));
+
+        BOOST_CHECK(results.next());
+        BOOST_CHECK(results.is_null(0));
+        BOOST_CHECK(results.is_null(1));
+
+        BOOST_CHECK(results.next());
+        BOOST_CHECK(results.is_null(0));
+        BOOST_CHECK(results.is_null(1));
+
+        BOOST_CHECK(results.next());
+        BOOST_CHECK(results.is_null(0));
+        BOOST_CHECK(results.is_null(1));
+
+        BOOST_CHECK(!results.next());
     }
 
     void simple_test()
@@ -152,12 +332,6 @@ struct basic_test
         BOOST_CHECK(ref == name);
     }
 
-    static void check_rows_equal(nanodbc::result results, std::size_t rows)
-    {
-        BOOST_CHECK(results.next());
-        BOOST_CHECK_EQUAL(results.get<int>(0), rows);
-    }
-
     void transaction_test()
     {
         nanodbc::connection connection = connect();
@@ -205,155 +379,6 @@ struct basic_test
 
         check_rows_equal(execute(connection, query), 0);
     }
-
-    void exception_test()
-    {
-        nanodbc::connection connection = connect();
-        nanodbc::result results;
-
-        BOOST_CHECK_THROW(execute(connection, NANODBC_TEXT("THIS IS NOT VALID SQL!")), nanodbc::database_error);
-
-        execute(connection,
-            NANODBC_TEXT("drop table if exists exception_test;")
-            NANODBC_TEXT("create table exception_test (i int);")
-            NANODBC_TEXT("insert into exception_test values (-10);")
-            NANODBC_TEXT("insert into exception_test values (null);")
-        );
-
-        results = execute(connection, NANODBC_TEXT("select * from exception_test where i = -10;"));
-
-        BOOST_CHECK(results.next());
-        BOOST_CHECK_THROW(results.get<nanodbc::date>(0), nanodbc::type_incompatible_error);
-        BOOST_CHECK_THROW(results.get<nanodbc::timestamp>(0), nanodbc::type_incompatible_error);
-
-        results = execute(connection, NANODBC_TEXT("select * from exception_test where i is null;"));
-
-        BOOST_CHECK(results.next());
-        BOOST_CHECK_THROW(results.get<int>(0), nanodbc::null_access_error);
-        BOOST_CHECK_THROW(results.get<int>(42), nanodbc::index_range_error);
-
-        nanodbc::statement statement(connection);
-        BOOST_CHECK(statement.open() && statement.connected());
-        statement.close();
-        BOOST_CHECK_THROW(statement.prepare(NANODBC_TEXT("select * from exception_test;")), nanodbc::programming_error);
-    }
-
-    void execute_multiple()
-    {
-        nanodbc::connection connection = connect();
-        nanodbc::statement statement(connection);
-        nanodbc::prepare(statement, NANODBC_TEXT("select 42;"));
-
-        nanodbc::result results = statement.execute();
-        results.next();
-
-        results = statement.execute();
-        results.next();
-        BOOST_CHECK_EQUAL(results.get<int>(0), 42);
-
-        results = statement.execute();
-        results.next();
-        BOOST_CHECK_EQUAL(results.get<int>(0), 42);
-    }
-
-    void execute_multiple_transaction()
-    {
-        nanodbc::connection connection = connect();
-        nanodbc::statement statement;
-        nanodbc::result results;
-
-        statement.prepare(connection, NANODBC_TEXT("select 42;"));
-
-        {
-            nanodbc::transaction transaction(connection);
-            results = statement.execute();
-            results.next();
-            BOOST_CHECK_EQUAL(results.get<int>(0), 42);
-        }
-
-        results = statement.execute();
-        results.next();
-        BOOST_CHECK_EQUAL(results.get<int>(0), 42);
-    }
-
-    void null_test()
-    {
-        nanodbc::connection connection = connect();
-        BOOST_CHECK(connection.connected());
-
-        execute(connection, NANODBC_TEXT("drop table if exists null_test;"));
-        execute(connection, NANODBC_TEXT("create table null_test (a int, b varchar(10));"));
-
-        nanodbc::statement statement(connection);
-
-        prepare(statement, NANODBC_TEXT("insert into null_test (a, b) values (?, ?);"));
-        statement.bind_null(0);
-        statement.bind_null(1);
-        execute(statement);
-
-        prepare(statement, NANODBC_TEXT("insert into null_test (a, b) values (?, ?);"));
-        statement.bind_null(0, 2);
-        statement.bind_null(1, 2);
-        execute(statement, 2);
-
-        nanodbc::result results = execute(connection, NANODBC_TEXT("select a, b from null_test order by a;"));
-
-        BOOST_CHECK(results.next());
-        BOOST_CHECK(results.is_null(0));
-        BOOST_CHECK(results.is_null(1));
-
-        BOOST_CHECK(results.next());
-        BOOST_CHECK(results.is_null(0));
-        BOOST_CHECK(results.is_null(1));
-
-        BOOST_CHECK(results.next());
-        BOOST_CHECK(results.is_null(0));
-        BOOST_CHECK(results.is_null(1));
-
-        BOOST_CHECK(!results.next());
-    }
-
-    template<class T>
-    void integral_test_template()
-    {
-        nanodbc::connection connection = connect();
-
-        execute(connection, NANODBC_TEXT("drop table if exists integral_test;"));
-        execute(connection, NANODBC_TEXT("create table integral_test (i int, f float, d double precision);"));
-
-        nanodbc::statement statement(connection);
-        prepare(statement, NANODBC_TEXT("insert into integral_test (i, f, d) values (?, ?, ?);"));
-
-        srand(0);
-        const int32_t i = rand() % 5000;
-        const float f = rand() / (rand() + 1.0);
-        const float d = - rand() / (rand() + 1.0);
-
-        short p = 0;
-        statement.bind(p++, &i);
-        statement.bind(p++, &f);
-        statement.bind(p++, &d);
-
-        BOOST_CHECK(statement.connected());
-        execute(statement);
-
-        nanodbc::result results = execute(connection, NANODBC_TEXT("select * from integral_test;"));
-        BOOST_CHECK(results.next());
-
-        T ref;
-        p = 0;
-        results.get_ref(p, ref);
-        BOOST_CHECK_EQUAL(ref, static_cast<T>(i));
-        BOOST_CHECK_EQUAL(results.get<T>(p++), static_cast<T>(i));
-        results.get_ref(p, ref);
-        BOOST_CHECK_CLOSE(static_cast<float>(ref), static_cast<T>(f), 1e-6);
-        BOOST_CHECK_CLOSE(static_cast<float>(results.get<T>(p++)), static_cast<T>(f), 1e-6);
-        results.get_ref(p, ref);
-        BOOST_CHECK_CLOSE(static_cast<double>(ref), static_cast<T>(d), 1e-6);
-        BOOST_CHECK_CLOSE(static_cast<double>(results.get<T>(p++)), static_cast<T>(d), 1e-6);
-    }
-
-    const nanodbc::string_type connection_string_;
 };
 
 #endif // NANODBC_TEST_BASIC_TEST_H

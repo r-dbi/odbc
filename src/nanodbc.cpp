@@ -2428,13 +2428,14 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
 
         case SQL_C_DOUBLE:
         {
-            result.resize(column_size);
+            result.resize(column_size + 2);     // account for decimal mark and sign
             if(NANODBC_SNPRINTF(
-                    const_cast<string_type::value_type*>(result.data())
-                    , column_size
-                    , NANODBC_TEXT("%lf")
-                    , *(double*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
-                throw type_incompatible_error();
+                const_cast<string_type::value_type*>(result.data())
+                , column_size + 2
+                , NANODBC_TEXT("%.*lf")         // restrict the number of digits
+                , col.scale_                    // number of digits after the decimal point
+                , *(double*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
+            throw type_incompatible_error();
             result.resize(NANODBC_STRLEN(result.c_str()));
             return;
         }
