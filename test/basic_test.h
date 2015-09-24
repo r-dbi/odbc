@@ -2,6 +2,7 @@
 #define NANODBC_TEST_BASIC_TEST_H
 
 #include "nanodbc.h"
+#include <boost/config.hpp>
 #include <boost/mpl/list.hpp>
 #include <boost/test/unit_test.hpp>
 
@@ -182,6 +183,34 @@ struct basic_test
         BOOST_CHECK_CLOSE(static_cast<double>(ref), static_cast<T>(d), 1e-6);
         BOOST_CHECK_CLOSE(static_cast<double>(results.get<T>(p++)), static_cast<T>(d), 1e-6);
     }
+
+    #ifndef BOOST_NO_RVALUE_REFERENCES
+    void move_test()
+    {
+        nanodbc::connection orig_connection = connect();
+        execute(orig_connection,
+            NANODBC_TEXT("drop table if exists move_test;")
+            NANODBC_TEXT("create table move_test (i int);")
+            NANODBC_TEXT("insert into move_test values (10);")
+        );
+
+        nanodbc::connection new_connection = std::move(orig_connection);
+        execute(new_connection, NANODBC_TEXT("insert into move_test values (30);"));
+        execute(new_connection, NANODBC_TEXT("insert into move_test values (20);"));
+
+        nanodbc::result orig_results = execute(new_connection,
+            NANODBC_TEXT("select i from move_test order by i desc;")
+        );
+        BOOST_CHECK(orig_results.next());
+        BOOST_CHECK_EQUAL(orig_results.get<int>(0), 30);
+        BOOST_CHECK(orig_results.next());
+        BOOST_CHECK_EQUAL(orig_results.get<int>(0), 20);
+
+        nanodbc::result new_results = std::move(orig_results);
+        BOOST_CHECK(new_results.next());
+        BOOST_CHECK_EQUAL(new_results.get<int>(0), 10);
+    }
+    #endif // BOOST_NO_RVALUE_REFERENCES
 
     void null_test()
     {

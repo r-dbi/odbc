@@ -86,6 +86,19 @@
 namespace nanodbc
 {
 
+//  .d8888b.                     .d888 d8b                                   888    d8b
+// d88P  Y88b                   d88P"  Y8P                                   888    Y8P
+// 888    888                   888                                          888
+// 888         .d88b.  88888b.  888888 888  .d88b.  888  888 888d888 8888b.  888888 888  .d88b.  88888b.
+// 888        d88""88b 888 "88b 888    888 d88P"88b 888  888 888P"      "88b 888    888 d88""88b 888 "88b
+// 888    888 888  888 888  888 888    888 888  888 888  888 888    .d888888 888    888 888  888 888  888
+// Y88b  d88P Y88..88P 888  888 888    888 Y88b 888 Y88b 888 888    888  888 Y88b.  888 Y88..88P 888  888
+//  "Y8888P"   "Y88P"  888  888 888    888  "Y88888  "Y88888 888    "Y888888  "Y888 888  "Y88P"  888  888
+//                                              888
+//                                         Y8b d88P
+//                                          "Y88P"
+// MARK: Configuration -
+
 // You must explicitly request Unicode support by defining NANODBC_USE_UNICODE at compile time.
 #ifndef DOXYGEN
     #ifdef NANODBC_USE_UNICODE
@@ -111,6 +124,27 @@ namespace nanodbc
     typedef unspecified-type null_type;
 #endif // DOXYGEN
 
+#if defined(_MSC_VER) && _MSC_VER <= 1800
+    // These versions of Visual C++ do not yet support noexcept or std::move.
+    #define NANODBC_NOEXCEPT
+    #define NANODBC_NO_MOVE_CTOR
+#else
+    #define NANODBC_NOEXCEPT noexcept
+#endif
+
+// 8888888888                                      888    888                        888 888 d8b
+// 888                                             888    888                        888 888 Y8P
+// 888                                             888    888                        888 888
+// 8888888    888d888 888d888 .d88b.  888d888      8888888888  8888b.  88888b.   .d88888 888 888 88888b.   .d88b.
+// 888        888P"   888P"  d88""88b 888P"        888    888     "88b 888 "88b d88" 888 888 888 888 "88b d88P"88b
+// 888        888     888    888  888 888          888    888 .d888888 888  888 888  888 888 888 888  888 888  888
+// 888        888     888    Y88..88P 888          888    888 888  888 888  888 Y88b 888 888 888 888  888 Y88b 888
+// 8888888888 888     888     "Y88P"  888          888    888 "Y888888 888  888  "Y88888 888 888 888  888  "Y88888
+//                                                                                                             888
+//                                                                                                        Y8b d88P
+//                                                                                                         "Y88P"
+// MARK: Error Handling -
+
 //! \addtogroup exceptions Exception types
 //! \brief Possible error conditions.
 //!
@@ -126,7 +160,7 @@ class type_incompatible_error : public std::runtime_error
 {
 public:
     type_incompatible_error();
-    const char* what() const throw();
+    const char* what() const NANODBC_NOEXCEPT;
 };
 
 //! \brief Accessed null data.
@@ -135,7 +169,7 @@ class null_access_error : public std::runtime_error
 {
 public:
     null_access_error();
-    const char* what() const throw();
+    const char* what() const NANODBC_NOEXCEPT;
 };
 
 //! \brief Index out of range.
@@ -144,7 +178,7 @@ class index_range_error : public std::runtime_error
 {
 public:
     index_range_error();
-    const char* what() const throw();
+    const char* what() const NANODBC_NOEXCEPT;
 };
 
 //! \brief Programming logic error.
@@ -153,7 +187,7 @@ class programming_error : public std::runtime_error
 {
 public:
     explicit programming_error(const std::string& info);
-    const char* what() const throw();
+    const char* what() const NANODBC_NOEXCEPT;
 };
 
 //! \brief General database error.
@@ -166,10 +200,20 @@ public:
     //! \param handle_type The native ODBC handle type code for the given handle.
     //! \param info Additional information that will be appended to the beginning of the error message.
     database_error(void* handle, short handle_type, const std::string& info = "");
-    const char* what() const throw();
+    const char* what() const NANODBC_NOEXCEPT;
 };
 
 //! @}
+
+// 888     888 888    d8b 888 d8b 888    d8b
+// 888     888 888    Y8P 888 Y8P 888    Y8P
+// 888     888 888        888     888
+// 888     888 888888 888 888 888 888888 888  .d88b.  .d8888b
+// 888     888 888    888 888 888 888    888 d8P  Y8b 88K
+// 888     888 888    888 888 888 888    888 88888888 "Y8888b.
+// Y88b. .d88P Y88b.  888 888 888 Y88b.  888 Y8b.          X88
+//  "Y88888P"   "Y888 888 888 888  "Y888 888  "Y8888   88888P'
+// MARK: Utilities -
 
 //! \addtogroup utility Utilities
 //! \brief Additional nanodbc utility classes and functions.
@@ -203,6 +247,16 @@ struct timestamp
 //!
 //! @{
 
+// 88888888888                                                  888    d8b
+//     888                                                      888    Y8P
+//     888                                                      888
+//     888  888d888 8888b.  88888b.  .d8888b   8888b.   .d8888b 888888 888  .d88b.  88888b.
+//     888  888P"      "88b 888 "88b 88K          "88b d88P"    888    888 d88""88b 888 "88b
+//     888  888    .d888888 888  888 "Y8888b. .d888888 888      888    888 888  888 888  888
+//     888  888    888  888 888  888      X88 888  888 Y88b.    Y88b.  888 Y88..88P 888  888
+//     888  888    "Y888888 888  888  88888P' "Y888888  "Y8888P  "Y888 888  "Y88P"  888  888
+// MARK: Transaction -
+
 //! \brief A resource for managing transaction commits and rollbacks.
 //!
 //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
@@ -217,21 +271,26 @@ public:
     //! Copy constructor.
     transaction(const transaction& rhs);
 
+    #ifndef NANODBC_NO_MOVE_CTOR
+        //! Move constructor.
+        transaction(transaction&& rhs) NANODBC_NOEXCEPT;
+    #endif
+
     //! Assignment.
     transaction& operator=(transaction rhs);
 
     //! Member swap.
-    void swap(transaction& rhs) throw();
+    void swap(transaction& rhs) NANODBC_NOEXCEPT;
 
     //! \brief If this transaction has not been committed, will will rollback any modifying operations.
-    ~transaction() throw();
+    ~transaction() NANODBC_NOEXCEPT;
 
     //! \brief Marks this transaction for commit.
     //! \throws database_error
     void commit();
 
     //! \brief Marks this transaction for rollback.
-    void rollback() throw();
+    void rollback() NANODBC_NOEXCEPT;
 
     //! Returns the connection object.
     class connection& connection();
@@ -252,6 +311,16 @@ private:
 private:
     std::shared_ptr<transaction_impl> impl_;
 };
+
+//  .d8888b.  888             888                                            888
+// d88P  Y88b 888             888                                            888
+// Y88b.      888             888                                            888
+//  "Y888b.   888888  8888b.  888888 .d88b.  88888b.d88b.   .d88b.  88888b.  888888
+//     "Y88b. 888        "88b 888   d8P  Y8b 888 "888 "88b d8P  Y8b 888 "88b 888
+//       "888 888    .d888888 888   88888888 888  888  888 88888888 888  888 888
+// Y88b  d88P Y88b.  888  888 Y88b. Y8b.     888  888  888 Y8b.     888  888 Y88b.
+//  "Y8888P"   "Y888 "Y888888  "Y888 "Y8888  888  888  888  "Y8888  888  888  "Y888
+// MARK: Statement -
 
 //! \brief Represents a statement on the database.
 class statement
@@ -287,15 +356,20 @@ public:
     //! Copy constructor.
     statement(const statement& rhs);
 
+    #ifndef NANODBC_NO_MOVE_CTOR
+        //! Move constructor.
+        statement(statement&& rhs) NANODBC_NOEXCEPT;
+    #endif
+
     //! Assignment.
     statement& operator=(statement rhs);
 
     //! Member swap.
-    void swap(statement& rhs) throw();
+    void swap(statement& rhs) NANODBC_NOEXCEPT;
 
     //! \brief Closes the statement.
     //! \see close()
-    ~statement() throw();
+    ~statement() NANODBC_NOEXCEPT;
 
     //! \brief Creates a statement for the given connection.
     //! \param conn The connection where the statement will be executed.
@@ -426,7 +500,7 @@ public:
     short columns() const;
 
     //! \brief Resets all currently bound parameters.
-    void reset_parameters() throw();
+    void reset_parameters() NANODBC_NOEXCEPT;
 
     //! \brief Returns the parameter size for the indicated parameter placeholder within a prepared statement.
     unsigned long parameter_size(short param) const;
@@ -612,6 +686,16 @@ private:
     std::shared_ptr<statement_impl> impl_;
 };
 
+//  .d8888b.                                               888    d8b
+// d88P  Y88b                                              888    Y8P
+// 888    888                                              888
+// 888         .d88b.  88888b.  88888b.   .d88b.   .d8888b 888888 888  .d88b.  88888b.
+// 888        d88""88b 888 "88b 888 "88b d8P  Y8b d88P"    888    888 d88""88b 888 "88b
+// 888    888 888  888 888  888 888  888 88888888 888      888    888 888  888 888  888
+// Y88b  d88P Y88..88P 888  888 888  888 Y8b.     Y88b.    Y88b.  888 Y88..88P 888  888
+//  "Y8888P"   "Y88P"  888  888 888  888  "Y8888   "Y8888P  "Y888 888  "Y88P"  888  888
+// MARK: Connection -
+
 //! \brief Manages and encapsulates ODBC resources such as the connection and environment handles.
 class connection
 {
@@ -622,11 +706,16 @@ public:
     //! Copy constructor.
     connection(const connection& rhs);
 
+    #ifndef NANODBC_NO_MOVE_CTOR
+        //! Move constructor.
+        connection(connection&& rhs) NANODBC_NOEXCEPT;
+    #endif
+
     //! Assignment.
     connection& operator=(connection rhs);
 
     //! Member swap.
-    void swap(connection&) throw();
+    void swap(connection&) NANODBC_NOEXCEPT;
 
     //! \brief Create new connection object and immediately connect to the given data source.
     //! \param dsn The name of the data source.
@@ -652,7 +741,7 @@ public:
     //!
     //! Will not throw even if disconnecting causes some kind of error and raises an exception.
     //! If you explicitly need to know if disconnect() succeeds, call it directly.
-    ~connection() throw();
+    ~connection() NANODBC_NOEXCEPT;
 
     //! \brief Create new connection object and immediately connect to the given data source.
     //! \param dsn The name of the data source.
@@ -707,6 +796,16 @@ private:
     std::shared_ptr<connection_impl> impl_;
 };
 
+// 8888888b.                            888 888
+// 888   Y88b                           888 888
+// 888    888                           888 888
+// 888   d88P .d88b.  .d8888b  888  888 888 888888
+// 8888888P" d8P  Y8b 88K      888  888 888 888
+// 888 T88b  88888888 "Y8888b. 888  888 888 888
+// 888  T88b Y8b.          X88 Y88b 888 888 Y88b.
+// 888   T88b "Y8888   88888P'  "Y88888 888  "Y888
+// MARK: Result -
+
 //! \brief A resource for managing result sets from statement execution.
 //!
 //! \see statement::execute(), statement::execute_direct()
@@ -718,29 +817,34 @@ public:
     result();
 
     //! Free result set.
-    ~result() throw();
+    ~result() NANODBC_NOEXCEPT;
 
     //! Copy constructor.
     result(const result& rhs);
+
+    #ifndef NANODBC_NO_MOVE_CTOR
+        //! Move constructor.
+        result(result&& rhs) NANODBC_NOEXCEPT;
+    #endif
 
     //! Assignment.
     result& operator=(result rhs);
 
     //! Member swap.
-    void swap(result& rhs) throw();
+    void swap(result& rhs) NANODBC_NOEXCEPT;
 
     //! \brief Returns the native ODBC statement handle.
     void* native_statement_handle() const;
 
     //! \brief The rowset size for this result set.
-    long rowset_size() const throw();
+    long rowset_size() const NANODBC_NOEXCEPT;
 
     //! \brief Returns the number of rows affected by the request or -1 if the number of affected rows is not available.
     //! \throws database_error
     long affected_rows() const;
 
     //! \brief Returns the number of rows in the current rowset or 0 if the number of rows is not available.
-    long rows() const throw();
+    long rows() const NANODBC_NOEXCEPT;
 
     //! \brief Returns the number of columns in a result set.
     //! \throws database_error
@@ -780,7 +884,7 @@ public:
     unsigned long position() const;
 
     //! \brief Returns true if there are no more results in the current result set.
-    bool end() const throw();
+    bool end() const NANODBC_NOEXCEPT;
 
     //! \brief Gets data from the given column of the current rowset.
     //!
@@ -918,6 +1022,16 @@ private:
 };
 
 //! @}
+
+// 8888888888                            8888888888                         888    d8b
+// 888                                   888                                888    Y8P
+// 888                                   888                                888
+// 8888888 888d888 .d88b.   .d88b.       8888888 888  888 88888b.   .d8888b 888888 888  .d88b.  88888b.  .d8888b
+// 888     888P"  d8P  Y8b d8P  Y8b      888     888  888 888 "88b d88P"    888    888 d88""88b 888 "88b 88K
+// 888     888    88888888 88888888      888     888  888 888  888 888      888    888 888  888 888  888 "Y8888b.
+// 888     888    Y8b.     Y8b.          888     Y88b 888 888  888 Y88b.    Y88b.  888 Y88..88P 888  888      X88
+// 888     888     "Y8888   "Y8888       888      "Y88888 888  888  "Y8888P  "Y888 888  "Y88P"  888  888  88888P'
+// MARK: Free Functions -
 
 //! \addtogroup mainf Free Functions
 //! \brief Convenience functions.

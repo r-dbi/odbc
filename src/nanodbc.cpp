@@ -39,11 +39,6 @@
     #pragma warning(disable:4244) // warning about integer conversion issues.
     #pragma warning(disable:4312) // warning about 64-bit portability issues.
     #pragma warning(disable:4996) // warning about snprintf() deprecated.
-
-    // these versions of Visual C++ do not yet support noexcept
-    #define NOEXCEPT
-#else
-    #define NOEXCEPT noexcept
 #endif
 
 #ifdef __APPLE__
@@ -68,7 +63,7 @@
 // 888     888 888  888 888 888     888  888 888  888 88888888
 // Y88b. .d88P 888  888 888 Y88b.   Y88..88P Y88b 888 Y8b.
 //  "Y88888P"  888  888 888  "Y8888P "Y88P"   "Y88888  "Y8888
-// MARK: - Unicode
+// MARK: Unicode -
 
 #if defined(_MSC_VER)
     #ifdef NANODBC_USE_UNICODE
@@ -121,7 +116,7 @@
 // 888     888 888    888 888    888 888    888      888  Y8P  888 .d888888 888      888    888  888 "Y8888b.
 // Y88b. .d88P 888  .d88P 888   d88P Y88b  d88P      888   "   888 888  888 Y88b.    888    Y88..88P      X88
 //  "Y88888P"  8888888P"  8888888P"   "Y8888P"       888       888 "Y888888  "Y8888P 888     "Y88P"   88888P'
-// MARK: - ODBC Macros
+// MARK: ODBC Macros -
 
 #define NANODBC_STRINGIZE_I(text) #text
 #define NANODBC_STRINGIZE(text) NANODBC_STRINGIZE_I(text)
@@ -163,7 +158,7 @@
 //                                                                                                             888
 //                                                                                                        Y8b d88P
 //                                                                                                         "Y88P"
-// MARK: - Error Handling
+// MARK: Error Handling -
 
 namespace
 {
@@ -318,7 +313,7 @@ namespace nanodbc
     type_incompatible_error::type_incompatible_error()
     : std::runtime_error("type incompatible") { }
 
-    const char* type_incompatible_error::what() const NOEXCEPT
+    const char* type_incompatible_error::what() const NANODBC_NOEXCEPT
     {
         return std::runtime_error::what();
     }
@@ -326,7 +321,7 @@ namespace nanodbc
     null_access_error::null_access_error()
     : std::runtime_error("null access") { }
 
-    const char* null_access_error::what() const NOEXCEPT
+    const char* null_access_error::what() const NANODBC_NOEXCEPT
     {
         return std::runtime_error::what();
     }
@@ -334,7 +329,7 @@ namespace nanodbc
     index_range_error::index_range_error()
     : std::runtime_error("index out of range") { }
 
-    const char* index_range_error::what() const NOEXCEPT
+    const char* index_range_error::what() const NANODBC_NOEXCEPT
     {
         return std::runtime_error::what();
     }
@@ -342,7 +337,7 @@ namespace nanodbc
     programming_error::programming_error(const std::string& info)
     : std::runtime_error(info.c_str()) { }
 
-    const char* programming_error::what() const NOEXCEPT
+    const char* programming_error::what() const NANODBC_NOEXCEPT
     {
         return std::runtime_error::what();
     }
@@ -350,7 +345,7 @@ namespace nanodbc
     database_error::database_error(void* handle, short handle_type, const std::string& info)
     : std::runtime_error(info + recent_error(handle, handle_type)) { }
 
-    const char* database_error::what() const NOEXCEPT
+    const char* database_error::what() const NANODBC_NOEXCEPT
     {
         return std::runtime_error::what();
     }
@@ -373,7 +368,7 @@ namespace nanodbc
 // 888    888 88888888 888    .d888888 888 888 "Y8888b.
 // 888  .d88P Y8b.     Y88b.  888  888 888 888      X88
 // 8888888P"   "Y8888   "Y888 "Y888888 888 888  88888P'
-// MARK: - Details
+// MARK: Details -
 
 namespace
 {
@@ -564,7 +559,7 @@ namespace
 //                                                                                                                      888
 //                                                                                                                      888
 //                                                                                                                      888
-// MARK: - Connection Impl
+// MARK: Connection Impl -
 
 namespace nanodbc
 {
@@ -641,7 +636,7 @@ public:
         }
     }
 
-    ~connection_impl() NOEXCEPT
+    ~connection_impl() NANODBC_NOEXCEPT
     {
         try
         {
@@ -854,7 +849,7 @@ private:
 //                                                                                                                           888
 //                                                                                                                           888
 //                                                                                                                           888
-// MARK: - Transaction Impl
+// MARK: Transaction Impl -
 
 namespace nanodbc
 {
@@ -885,7 +880,7 @@ public:
         conn_.ref_transaction();
     }
 
-    ~transaction_impl() NOEXCEPT
+    ~transaction_impl() NANODBC_NOEXCEPT
     {
         if(!committed_)
         {
@@ -933,7 +928,7 @@ public:
         }
     }
 
-    void rollback() NOEXCEPT
+    void rollback() NANODBC_NOEXCEPT
     {
         if(committed_)
             return;
@@ -968,7 +963,7 @@ private:
 //                                                                                                                  888
 //                                                                                                                  888
 //                                                                                                                  888
-// MARK: - Statement Impl
+// MARK: Statement Impl -
 
 namespace nanodbc
 {
@@ -1006,7 +1001,7 @@ public:
         prepare(conn, query, timeout);
     }
 
-    ~statement_impl() NOEXCEPT
+    ~statement_impl() NANODBC_NOEXCEPT
     {
         if(open() && connected())
         {
@@ -1383,7 +1378,7 @@ public:
         return cols;
     }
 
-    void reset_parameters() NOEXCEPT
+    void reset_parameters() NANODBC_NOEXCEPT
     {
         NANODBC_CALL(
             SQLFreeStmt
@@ -1718,7 +1713,7 @@ bool statement::statement_impl::equals(const timestamp& lhs, const timestamp& rh
 //                                                                                 888
 //                                                                                 888
 //                                                                                 888
-// MARK: - Result Impl
+// MARK: Result Impl -
 
 namespace nanodbc
 {
@@ -1762,7 +1757,7 @@ public:
         auto_bind();
     }
 
-    ~result_impl() NOEXCEPT
+    ~result_impl() NANODBC_NOEXCEPT
     {
         cleanup_bound_columns();
     }
@@ -1782,7 +1777,7 @@ public:
         return stmt_.affected_rows();
     }
 
-    long rows() const NOEXCEPT
+    long rows() const NANODBC_NOEXCEPT
     {
         return row_count_;
     }
@@ -1852,7 +1847,7 @@ public:
         return pos - 1 + rowset_position_;
     }
 
-    bool end() const NOEXCEPT
+    bool end() const NANODBC_NOEXCEPT
     {
         SQLULEN pos = 0; // necessary to initialize to 0
         RETCODE rc;
@@ -2032,7 +2027,7 @@ private:
     template<class T>
     void get_ref_impl(short column, T& result) const;
 
-    void before_move() NOEXCEPT
+    void before_move() NANODBC_NOEXCEPT
     {
         for(short i = 0; i < bound_columns_size_; ++i)
         {
@@ -2044,7 +2039,7 @@ private:
         }
     }
 
-    void release_bound_resources(short column) NOEXCEPT
+    void release_bound_resources(short column) NANODBC_NOEXCEPT
     {
         assert(column < bound_columns_size_);
         bound_column& col = bound_columns_[column];
@@ -2053,7 +2048,7 @@ private:
         col.clen_ = 0;
     }
 
-    void cleanup_bound_columns() NOEXCEPT
+    void cleanup_bound_columns() NANODBC_NOEXCEPT
     {
         before_move();
         delete[] bound_columns_;
@@ -2525,7 +2520,7 @@ void result::result_impl::get_ref_impl(short column, T& result) const
 // 888     888    88888888 88888888      888     888  888 888  888 888      888    888 888  888 888  888 "Y8888b.
 // 888     888    Y8b.     Y8b.          888     Y88b 888 888  888 Y88b.    Y88b.  888 Y88..88P 888  888      X88
 // 888     888     "Y8888   "Y8888       888      "Y88888 888  888  "Y8888P  "Y888 888  "Y88P"  888  888  88888P'
-// MARK: - Free Functions
+// MARK: Free Functions -
 
 namespace nanodbc
 {
@@ -2581,7 +2576,7 @@ void prepare(statement& stmt, const string_type& query, long timeout)
 // 888    888 888  888 888  888 888  888 88888888 888      888    888 888  888 888  888           888     888  888  888 888  888
 // Y88b  d88P Y88..88P 888  888 888  888 Y8b.     Y88b.    Y88b.  888 Y88..88P 888  888           888     Y88b 888 d88P Y88b 888
 //  "Y8888P"   "Y88P"  888  888 888  888  "Y8888   "Y8888P  "Y888 888  "Y88P"  888  888           888      "Y8888888P"   "Y88888
-// MARK: - Connection Fwd
+// MARK: Connection Fwd -
 
 namespace nanodbc
 {
@@ -2598,13 +2593,21 @@ connection::connection(const connection& rhs)
 
 }
 
+#ifndef NANODBC_NO_MOVE_CTOR
+    connection::connection(connection&& rhs) NANODBC_NOEXCEPT
+    : impl_(std::move(rhs.impl_))
+    {
+
+    }
+#endif
+
 connection& connection::operator=(connection rhs)
 {
     swap(rhs);
     return *this;
 }
 
-void connection::swap(connection& rhs) NOEXCEPT
+void connection::swap(connection& rhs) NANODBC_NOEXCEPT
 {
     using std::swap;
     swap(impl_, rhs.impl_);
@@ -2626,7 +2629,7 @@ connection::connection(const string_type& connection_string, long timeout)
 
 }
 
-connection::~connection() NOEXCEPT
+connection::~connection() NANODBC_NOEXCEPT
 {
 
 }
@@ -2705,7 +2708,7 @@ void connection::rollback(bool onoff)
 //     888  888    .d888888 888  888 "Y8888b. .d888888 888      888    888 888  888 888  888           888     888  888  888 888  888 "Y8888b.
 //     888  888    888  888 888  888      X88 888  888 Y88b.    Y88b.  888 Y88..88P 888  888           888     Y88b 888 d88P Y88b 888      X88
 //     888  888    "Y888888 888  888  88888P' "Y888888  "Y8888P  "Y888 888  "Y88P"  888  888           888      "Y8888888P"   "Y88888  88888P'
-// MARK: - Transaction Fwd
+// MARK: Transaction Fwd -
 
 namespace nanodbc
 {
@@ -2722,19 +2725,27 @@ transaction::transaction(const transaction& rhs)
 
 }
 
+#ifndef NANODBC_NO_MOVE_CTOR
+    transaction::transaction(transaction&& rhs) NANODBC_NOEXCEPT
+    : impl_(std::move(rhs.impl_))
+    {
+
+    }
+#endif
+
 transaction& transaction::operator=(transaction rhs)
 {
     swap(rhs);
     return *this;
 }
 
-void transaction::swap(transaction& rhs) NOEXCEPT
+void transaction::swap(transaction& rhs) NANODBC_NOEXCEPT
 {
     using std::swap;
     swap(impl_, rhs.impl_);
 }
 
-transaction::~transaction() NOEXCEPT
+transaction::~transaction() NANODBC_NOEXCEPT
 {
 
 }
@@ -2744,7 +2755,7 @@ void transaction::commit()
     impl_->commit();
 }
 
-void transaction::rollback() NOEXCEPT
+void transaction::rollback() NANODBC_NOEXCEPT
 {
     impl_->rollback();
 }
@@ -2779,7 +2790,7 @@ transaction::operator const class connection&() const
 //       "888 888    .d888888 888   88888888 888  888  888 88888888 888  888 888              888     888  888  888 888  888
 // Y88b  d88P Y88b.  888  888 Y88b. Y8b.     888  888  888 Y8b.     888  888 Y88b.            888     Y88b 888 d88P Y88b 888
 //  "Y8888P"   "Y888 "Y888888  "Y888 "Y8888  888  888  888  "Y8888  888  888  "Y888           888      "Y8888888P"   "Y88888
-// MARK: - Statement Fwd
+// MARK: Statement Fwd -
 
 namespace nanodbc
 {
@@ -2795,6 +2806,14 @@ statement::statement(class connection& conn)
 {
 
 }
+
+#ifndef NANODBC_NO_MOVE_CTOR
+    statement::statement(statement&& rhs) NANODBC_NOEXCEPT
+    : impl_(std::move(rhs.impl_))
+    {
+
+    }
+#endif
 
 statement::statement(class connection& conn, const string_type& query, long timeout)
 : impl_(new statement_impl(conn, query, timeout))
@@ -2814,13 +2833,13 @@ statement& statement::operator=(statement rhs)
     return *this;
 }
 
-void statement::swap(statement& rhs) NOEXCEPT
+void statement::swap(statement& rhs) NANODBC_NOEXCEPT
 {
     using std::swap;
     swap(impl_, rhs.impl_);
 }
 
-statement::~statement() NOEXCEPT
+statement::~statement() NANODBC_NOEXCEPT
 {
 
 }
@@ -2944,7 +2963,7 @@ short statement::columns() const
     return impl_->columns();
 }
 
-void statement::reset_parameters() NOEXCEPT
+void statement::reset_parameters() NANODBC_NOEXCEPT
 {
     impl_->reset_parameters();
 }
@@ -3065,7 +3084,7 @@ void statement::bind_null(short param, std::size_t elements)
 // 888 T88b  88888888 "Y8888b. 888  888 888 888              888     888  888  888 888  888
 // 888  T88b Y8b.          X88 Y88b 888 888 Y88b.            888     Y88b 888 d88P Y88b 888
 // 888   T88b "Y8888   88888P'  "Y88888 888  "Y888           888      "Y8888888P"   "Y88888
-// MARK: - Result Fwd
+// MARK: Result Fwd -
 
 namespace nanodbc
 {
@@ -3076,7 +3095,7 @@ result::result()
 
 }
 
-result::~result() NOEXCEPT
+result::~result() NANODBC_NOEXCEPT
 {
 
 }
@@ -3086,6 +3105,14 @@ result::result(statement stmt, long rowset_size)
 {
 
 }
+
+#ifndef NANODBC_NO_MOVE_CTOR
+    result::result(result&& rhs) NANODBC_NOEXCEPT
+    : impl_(std::move(rhs.impl_))
+    {
+
+    }
+#endif
 
 result::result(const result& rhs)
 : impl_(rhs.impl_)
@@ -3099,7 +3126,7 @@ result& result::operator=(result rhs)
     return *this;
 }
 
-void result::swap(result& rhs) NOEXCEPT
+void result::swap(result& rhs) NANODBC_NOEXCEPT
 {
     using std::swap;
     swap(impl_, rhs.impl_);
@@ -3110,7 +3137,7 @@ void* result::native_statement_handle() const
     return impl_->native_statement_handle();
 }
 
-long result::rowset_size() const NOEXCEPT
+long result::rowset_size() const NANODBC_NOEXCEPT
 {
     return impl_->rowset_size();
 }
@@ -3120,7 +3147,7 @@ long result::affected_rows() const
     return impl_->affected_rows();
 }
 
-long result::rows() const NOEXCEPT
+long result::rows() const NANODBC_NOEXCEPT
 {
     return impl_->rows();
 }
@@ -3165,7 +3192,7 @@ unsigned long result::position() const
     return impl_->position();
 }
 
-bool result::end() const NOEXCEPT
+bool result::end() const NANODBC_NOEXCEPT
 {
     return impl_->end();
 }

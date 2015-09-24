@@ -48,6 +48,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(integral_test, T, basic_test::integral_test_types)
     test.integral_test_template<T>();
 }
 
+#ifndef BOOST_NO_RVALUE_REFERENCES
+    BOOST_AUTO_TEST_CASE(move_test)
+    {
+        test.move_test();
+    }
+#endif
+
 BOOST_AUTO_TEST_CASE(null_test)
 {
     test.null_test();
