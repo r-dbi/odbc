@@ -242,7 +242,7 @@ struct basic_test
             BOOST_CHECK_EQUAL(results.rows(), 0);
             BOOST_CHECK_EQUAL(results.columns(), 2);
 
-            // Some drivers always return 0 for select statements, other return the number of rows selected.
+            // Some drivers always return 0 for select statements, others return the number of rows selected.
             // I'm not sure how to detect what kind of driver we have, but as far as I know the number of
             // affected rows will either be 0 or the number of rows selected.
             BOOST_CHECK(results.affected_rows() == 4 || results.affected_rows() == 0);
