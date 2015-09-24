@@ -53,11 +53,15 @@ struct basic_test
         nanodbc::connection connection = connect();
         nanodbc::result results;
         execute(connection, NANODBC_TEXT("drop table if exists decimal_conversion_test;"));
-        execute(connection, NANODBC_TEXT("create table decimal_conversion_test (d decimal(8, 3));"));
+        execute(connection, NANODBC_TEXT("create table decimal_conversion_test (d decimal(9, 3));"));
+        execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (12345.987);"));
         execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (5.6);"));
         execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (1);"));
         execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (-1.333);"));
         results = execute(connection, NANODBC_TEXT("select * from decimal_conversion_test order by 1 desc;"));
+
+        BOOST_CHECK(results.next());
+        BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("12345.987"));
 
         BOOST_CHECK(results.next());
         BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("5.6"));

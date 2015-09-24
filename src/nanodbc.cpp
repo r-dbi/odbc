@@ -1441,7 +1441,8 @@ public:
         , param_direction direction
         , SQLSMALLINT& data_type
         , SQLSMALLINT& param_type
-        , SQLULEN& parameter_size)
+        , SQLULEN& parameter_size
+        , SQLSMALLINT& scale)
     {
         RETCODE rc;
         NANODBC_CALL_RC(
@@ -1451,7 +1452,7 @@ public:
             , param + 1
             , &data_type
             , &parameter_size
-            , 0
+            , &scale
             , 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
@@ -1477,7 +1478,8 @@ public:
         , std::size_t /*elements*/
         , SQLSMALLINT data_type
         , SQLSMALLINT param_type
-        , SQLULEN parameter_size)
+        , SQLULEN parameter_size
+        , SQLSMALLINT scale)
     {
         RETCODE rc;
         NANODBC_CALL_RC(
@@ -1489,7 +1491,7 @@ public:
             , sql_ctype<T>::value // value type
             , data_type // parameter type
             , parameter_size // column size ignored for many types, but needed for strings
-            , 0 // decimal digits
+            , scale // decimal digits
             , (SQLPOINTER)data // parameter value
             , parameter_size // buffer length
             , bind_len_or_null_[param].data());
@@ -1519,7 +1521,8 @@ public:
         SQLSMALLINT data_type;
         SQLSMALLINT param_type;
         SQLULEN parameter_size;
-        prepare_bind(param, elements, PARAM_IN, data_type, param_type, parameter_size);
+        SQLSMALLINT scale;
+        prepare_bind(param, elements, PARAM_IN, data_type, param_type, parameter_size, scale);
 
         RETCODE rc;
         NANODBC_CALL_RC(
@@ -1582,7 +1585,8 @@ void statement::statement_impl::bind_parameter<string_type::value_type>(
     , std::size_t elements
     , SQLSMALLINT data_type
     , SQLSMALLINT param_type
-    , SQLULEN parameter_size)
+    , SQLULEN parameter_size
+    , SQLSMALLINT scale)
 {
     RETCODE rc;
     NANODBC_CALL_RC(
@@ -1594,7 +1598,7 @@ void statement::statement_impl::bind_parameter<string_type::value_type>(
         , sql_ctype<string_type::value_type>::value // value type
         , data_type // parameter type
         , parameter_size // column size ignored for many types, but needed for strings
-        , 0 // decimal digits
+        , scale // decimal digits
         , (SQLPOINTER)data // parameter value
         , parameter_size // buffer length
         , (elements <= 1 ? NULL : bind_len_or_null_[param].data()));
@@ -1613,12 +1617,13 @@ void statement::statement_impl::bind(
     SQLSMALLINT data_type;
     SQLSMALLINT param_type;
     SQLULEN parameter_size;
-    prepare_bind(param, elements, direction, data_type, param_type, parameter_size);
+    SQLSMALLINT scale;
+    prepare_bind(param, elements, direction, data_type, param_type, parameter_size, scale);
 
     for(std::size_t i = 0; i < elements; ++i)
         bind_len_or_null_[param][i] = parameter_size;
 
-    bind_parameter(param, values, elements, data_type, param_type, parameter_size);
+    bind_parameter(param, values, elements, data_type, param_type, parameter_size, scale);
 }
 
 template<class T>
@@ -1633,13 +1638,14 @@ void statement::statement_impl::bind(
     SQLSMALLINT data_type;
     SQLSMALLINT param_type;
     SQLULEN parameter_size;
-    prepare_bind(param, elements, direction, data_type, param_type, parameter_size);
+    SQLSMALLINT scale;
+    prepare_bind(param, elements, direction, data_type, param_type, parameter_size, scale);
 
     for(std::size_t i = 0; i < elements; ++i)
         if((null_sentry && !equals(values[i], *null_sentry)) || (nulls && !nulls[i]))
             bind_len_or_null_[param][i] = parameter_size;
 
-    bind_parameter(param, values, elements, data_type, param_type, parameter_size);
+    bind_parameter(param, values, elements, data_type, param_type, parameter_size, scale);
 }
 
 void statement::statement_impl::bind_strings(
@@ -1654,7 +1660,8 @@ void statement::statement_impl::bind_strings(
     SQLSMALLINT data_type;
     SQLSMALLINT param_type;
     SQLULEN parameter_size;
-    prepare_bind(param, elements, direction, data_type, param_type, parameter_size);
+    SQLSMALLINT scale;
+    prepare_bind(param, elements, direction, data_type, param_type, parameter_size, scale);
 
     if(null_sentry)
     {
@@ -1675,7 +1682,7 @@ void statement::statement_impl::bind_strings(
         }
     }
 
-    bind_parameter(param, values, elements, data_type, param_type, parameter_size);
+    bind_parameter(param, values, elements, data_type, param_type, parameter_size, scale);
 }
 
 template<>
