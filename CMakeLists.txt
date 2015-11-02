@@ -4,7 +4,8 @@ project(nanodbc)
 option(NANODBC_USE_UNICODE "build with unicode support enabled" OFF)
 option(NANODBC_USE_BOOST_CONVERT "build using Boost.Locale for string convert" OFF)
 option(NANODBC_HANDLE_NODATA_BUG "enable special handling for SQL_NO_DATA (required for vertica)" OFF)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
+option(NANODBC_TEST "build tests" ON)
+option(NANODBC_INSTALL "generate install target" ON)
 
 if(APPLE)
 	set(CMAKE_MACOSX_RPATH ON)
@@ -13,31 +14,43 @@ endif()
 ########################################
 ## require and enable C++0x/11/14
 ########################################
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-if(COMPILER_SUPPORTS_CXX14)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-elseif(COMPILER_SUPPORTS_CXX11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-elseif(COMPILER_SUPPORTS_CXX0X)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-else()
-    message(WARNING "Compiler ${CMAKE_CXX_COMPILER} has no C++ 0x/11/14 support.")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
+	include(CheckCXXCompilerFlag)
+	CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
+	CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+	CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+	if(COMPILER_SUPPORTS_CXX14)
+	    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+	elseif(COMPILER_SUPPORTS_CXX11)
+	    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+	elseif(COMPILER_SUPPORTS_CXX0X)
+	    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+	else()
+	    message(WARNING "Compiler ${CMAKE_CXX_COMPILER} has no C++ 0x/11/14 support.")
+	endif()
+elseif(MSVC)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /WX")
+	if (NOT (MSVC_VERSION LESS 1700))
+		set(COMPILER_SUPPORTS_CXX0X TRUE)
+	elseif (NOT (MSVC_VERSION LESS 1900))
+		set(COMPILER_SUPPORTS_CXX11 TRUE)
+	endif()
 endif()
 
 ########################################
 ## find unixODBC or iODBC config binary
 ########################################
-find_program(ODBC_CONFIG odbc_config $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin PATHS)
+if (UNIX)
+	find_program(ODBC_CONFIG odbc_config $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin PATHS)
 
-if(NOT ODBC_CONFIG)
-	find_program(ODBC_CONFIG iodbc-config $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin PATHS)
-endif()
+	if(NOT ODBC_CONFIG)
+		find_program(ODBC_CONFIG iodbc-config $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin PATHS)
+	endif()
 
-if(NOT ODBC_CONFIG)
-	message(FATAL_ERROR "can not find odbc config program")
+	if(NOT ODBC_CONFIG)
+		message(FATAL_ERROR "can not find odbc config program")
+	endif()
 endif()
 
 ########################################
@@ -80,9 +93,11 @@ endif()
 ########################################
 ## get ODBC compile and link flags
 ########################################
-execute_process(COMMAND ${ODBC_CONFIG} --libs OUTPUT_VARIABLE ODBC_LINK_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND ${ODBC_CONFIG} --cflags OUTPUT_VARIABLE ODBC_COMPILE_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ODBC_LINK_FLAGS}")
+if (UNIX)
+	execute_process(COMMAND ${ODBC_CONFIG} --libs OUTPUT_VARIABLE ODBC_LINK_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+	execute_process(COMMAND ${ODBC_CONFIG} --cflags OUTPUT_VARIABLE ODBC_COMPILE_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ODBC_LINK_FLAGS}")
+endif()
 
 ########################################
 ## shared library
@@ -97,15 +112,26 @@ set_target_properties(nanodbc PROPERTIES
 	LIBRARY_OUTPUT_DIRECTORY "lib"
 )
 
-install(FILES src/nanodbc.h DESTINATION include)
-install(TARGETS nanodbc LIBRARY DESTINATION lib)
+if (NANODBC_INSTALL)
+	install(FILES src/nanodbc.h DESTINATION include)
+	install(TARGETS nanodbc LIBRARY DESTINATION lib)
+	message(STATUS "Target install: Enabled")
+else()
+	message(STATUS "Target install: Disabled")
+endif()
 
 ########################################
 ## unit tests
 ########################################
-enable_testing()
-add_subdirectory(test)
-add_test(NAME test COMMAND tests)
-add_custom_target(check
-	COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
-	DEPENDS tests)
+if (NANODBC_TEST)
+	enable_testing()
+	add_subdirectory(test)
+	add_test(NAME test COMMAND tests)
+	add_custom_target(check
+		COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
+		DEPENDS tests)
+		message(STATUS "Target test: Enabled")
+	else()
+		message(STATUS "Target test: Disabled")
+
+endif()
