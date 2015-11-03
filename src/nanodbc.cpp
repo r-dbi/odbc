@@ -76,7 +76,7 @@
         #define NANODBC_SQLCHAR SQLWCHAR
     #else
         #define NANODBC_TEXT(s) s
-        #define NANODBC_SNPRINTF _snprintf
+        #define NANODBC_SNPRINTF(buffer, count, format, ...) _snprintf_s(buffer, count, _TRUNCATE, format, __VA_ARGS__)
         #define NANODBC_STRFTIME std::strftime
         #define NANODBC_STRLEN std::strlen
         #define NANADBC_STRNCMP std::strncmp
