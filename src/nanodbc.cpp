@@ -1409,9 +1409,6 @@ public:
     {
         switch(direction)
         {
-            default:
-                assert(false);
-                // fallthrough
             case PARAM_IN:
                 return SQL_PARAM_INPUT;
                 break;
@@ -1424,9 +1421,10 @@ public:
             case PARAM_RETURN:
                 return SQL_PARAM_OUTPUT;
                 break;
+            default:
+                assert(false);
+                throw programming_error("unrecognized param_direction value");
         }
-        // Remove warning C4702 : unreachable code nanodbc.cpp 1284	Nanodbc
-        assert(false);
     }
 
     // initializes bind_len_or_null_ and gets information for bind
