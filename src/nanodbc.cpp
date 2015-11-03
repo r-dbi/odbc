@@ -260,7 +260,7 @@ namespace
                 , rc
                 , handle_type
                 , handle
-                , i
+                , (SQLSMALLINT)i
                 , sql_state
                 , &native_error
                 , 0
@@ -275,7 +275,7 @@ namespace
                 , rc
                 , handle_type
                 , handle
-                , i
+                , (SQLSMALLINT)i
                 , sql_state
                 , &native_error
                 , sql_message.data()
