@@ -51,6 +51,8 @@ if (UNIX)
 	if(NOT ODBC_CONFIG)
 		message(FATAL_ERROR "can not find odbc config program")
 	endif()
+elseif(MSVC)
+	set(ODBC_LIBRARIES odbc32.lib odbccp32.lib Ws2_32.lib)
 endif()
 
 ########################################
@@ -106,11 +108,12 @@ if(Boost_FOUND)
 	include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src ${Boost_INCLUDE_DIRS})
 	link_directories(${CMAKE_BINARY_DIR}/lib ${Boost_LIBRARY_DIRS})
 endif()
-add_library(nanodbc SHARED src/nanodbc.cpp ${Boost_LIBRARIES})
+add_library(nanodbc SHARED src/nanodbc.cpp)
 set_target_properties(nanodbc PROPERTIES
 	COMPILE_FLAGS "${ODBC_COMPILE_FLAGS}"
 	LIBRARY_OUTPUT_DIRECTORY "lib"
 )
+target_link_libraries(nanodbc ${Boost_LIBRARIES} ${ODBC_LIBRARIES})
 
 if (NANODBC_INSTALL)
 	install(FILES src/nanodbc.h DESTINATION include)
