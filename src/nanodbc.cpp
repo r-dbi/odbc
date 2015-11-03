@@ -1229,7 +1229,7 @@ public:
         , const string_type& query
         , long batch_operations
         , long timeout
-        , statement& statement
+        , statement& /*statement*/
         , void* event_handle = NULL)
     {
         open(conn);
@@ -1276,7 +1276,7 @@ public:
         return result(statement, batch_operations);
     }
 
-    RETCODE just_execute(long batch_operations, long timeout, statement& statement)
+    RETCODE just_execute(long batch_operations, long timeout, statement& /*statement*/)
     {
         RETCODE rc;
 
