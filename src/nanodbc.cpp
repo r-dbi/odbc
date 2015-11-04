@@ -23,17 +23,6 @@
     #include <codecvt>
 #endif
 
-// Default to ODBC version defined by NANODBC_ODBC_VERSION if provided.
-#ifndef NANODBC_ODBC_VERSION
-    #ifdef SQL_OV_ODBC3_80
-        // Otherwise, use ODBC v3.8 if it's available...
-        #define NANODBC_ODBC_VERSION SQL_OV_ODBC3_80
-    #else
-        // or fallback to ODBC v3.x.
-        #define NANODBC_ODBC_VERSION SQL_OV_ODBC3
-    #endif
-#endif
-
 #if defined(_MSC_VER) && _MSC_VER <= 1800
     // silence spurious Visual C++ warnings
     #pragma warning(disable:4244) // warning about integer conversion issues.
@@ -54,6 +43,17 @@
 
 #include <sql.h>
 #include <sqlext.h>
+
+// Default to ODBC version defined by NANODBC_ODBC_VERSION if provided.
+#ifndef NANODBC_ODBC_VERSION
+    #ifdef SQL_OV_ODBC3_80
+        // Otherwise, use ODBC v3.8 if it's available...
+        #define NANODBC_ODBC_VERSION SQL_OV_ODBC3_80
+    #else
+        // or fallback to ODBC v3.x.
+        #define NANODBC_ODBC_VERSION SQL_OV_ODBC3
+    #endif
+#endif
 
 // 888     888          d8b                       888
 // 888     888          Y8P                       888
@@ -1136,7 +1136,7 @@ public:
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
-#ifdef SQL_ATTR_ASYNC_STMT_EVENT
+#if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC)
     void enable_async(void* event_handle)
     {
         RETCODE rc;
@@ -1205,7 +1205,7 @@ public:
 
         return result(statement, batch_operations);
     }
-#endif // SQL_ATTR_ASYNC_STMT_EVENT
+#endif // SQL_ATTR_ASYNC_STMT_EVENT && SQL_API_SQLCOMPLETEASYNC
 
     result execute_direct(
         class connection& conn
@@ -1234,7 +1234,7 @@ public:
     {
         open(conn);
 
-        #ifdef SQL_ATTR_ASYNC_STMT_EVENT
+        #if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC)
             if (event_handle != NULL)
                 enable_async(event_handle);
         #endif
@@ -2908,7 +2908,7 @@ result statement::execute_direct(
     return impl_->execute_direct(conn, query, batch_operations, timeout, *this);
 }
 
-#ifdef SQL_ATTR_ASYNC_STMT_EVENT
+#if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC)
     void statement::async_execute_direct(
         class connection& conn
         , void* event_handler
