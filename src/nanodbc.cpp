@@ -23,17 +23,6 @@
     #include <codecvt>
 #endif
 
-// Default to ODBC version defined by NANODBC_ODBC_VERSION if provided.
-#ifndef NANODBC_ODBC_VERSION
-    #ifdef SQL_OV_ODBC3_80
-        // Otherwise, use ODBC v3.8 if it's available...
-        #define NANODBC_ODBC_VERSION SQL_OV_ODBC3_80
-    #else
-        // or fallback to ODBC v3.x.
-        #define NANODBC_ODBC_VERSION SQL_OV_ODBC3
-    #endif
-#endif
-
 #if defined(_MSC_VER) && _MSC_VER <= 1800
     // silence spurious Visual C++ warnings
     #pragma warning(disable:4244) // warning about integer conversion issues.
@@ -54,6 +43,17 @@
 
 #include <sql.h>
 #include <sqlext.h>
+
+// Default to ODBC version defined by NANODBC_ODBC_VERSION if provided.
+#ifndef NANODBC_ODBC_VERSION
+    #ifdef SQL_OV_ODBC3_80
+        // Otherwise, use ODBC v3.8 if it's available...
+        #define NANODBC_ODBC_VERSION SQL_OV_ODBC3_80
+    #else
+        // or fallback to ODBC v3.x.
+        #define NANODBC_ODBC_VERSION SQL_OV_ODBC3
+    #endif
+#endif
 
 // 888     888          d8b                       888
 // 888     888          Y8P                       888
@@ -240,7 +240,7 @@ namespace
 
     // Attempts to get the most recent ODBC error as a string.
     // Always returns std::string, even in unicode mode.
-    inline std::string recent_error(SQLHANDLE handle, SQLSMALLINT handle_type)
+    inline std::string recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long &native, std::string &state)
     {
         nanodbc::string_type result;
         std::string rvalue;
@@ -248,7 +248,7 @@ namespace
         sql_message[0] = '\0';
 
         SQLINTEGER i = 1;
-        SQLINTEGER native_error = 0;
+        SQLINTEGER native_error;
         SQLSMALLINT total_bytes;
         NANODBC_SQLCHAR sql_state[6];
         RETCODE rc;
@@ -269,6 +269,9 @@ namespace
 
             if(success(rc) && total_bytes > 0)
                 sql_message.resize(total_bytes + 1);
+
+            if(rc == SQL_NO_DATA)
+                break;
 
             NANODBC_CALL_RC(
                 NANODBC_UNICODE(SQLGetDiagRec)
@@ -296,7 +299,9 @@ namespace
         } while(rc != SQL_NO_DATA);
 
         convert(result, rvalue);
-        std::string status(&sql_state[0], &sql_state[arrlen(sql_state)]);
+        state = std::string(&sql_state[0], &sql_state[arrlen(sql_state) - 1]);
+        native = native_error;
+        std::string status = state;
         status += ": ";
         status += rvalue;
 
@@ -343,12 +348,26 @@ namespace nanodbc
     }
 
     database_error::database_error(void* handle, short handle_type, const std::string& info)
-    : std::runtime_error(info + recent_error(handle, handle_type)) { }
+    : std::runtime_error(info), native_error(0), sql_state("00000")
+    { 
+        message = std::string(std::runtime_error::what()) + recent_error(handle, handle_type, native_error, sql_state);
+    }
 
     const char* database_error::what() const NANODBC_NOEXCEPT
     {
-        return std::runtime_error::what();
+        return message.c_str();
     }
+
+    const long database_error::native() const NANODBC_NOEXCEPT
+    {
+        return native_error;
+    }
+
+    const std::string database_error::state() const NANODBC_NOEXCEPT
+    {
+        return sql_state;
+    }
+
 } // namespace nanodbc
 
 // Throwing exceptions using NANODBC_THROW_DATABASE_ERROR enables file name
@@ -656,11 +675,63 @@ public:
             , env_);
     }
 
+#ifdef SQL_ATTR_ASYNC_DBC_EVENT
+    void enable_async(void* event_handle)
+    {
+        RETCODE rc;
+        NANODBC_CALL_RC(
+            SQLSetConnectAttr
+            , rc
+            , conn_
+            , SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE
+            , (SQLPOINTER)SQL_ASYNC_DBC_ENABLE_ON
+            , SQL_IS_INTEGER);
+        if(!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+
+        NANODBC_CALL_RC(
+            SQLSetConnectAttr
+            , rc
+            , conn_
+            , SQL_ATTR_ASYNC_DBC_EVENT
+            , event_handle
+            , SQL_IS_POINTER);
+        if(!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+    }
+
+    void async_complete()
+    {
+        RETCODE rc, arc;
+        NANODBC_CALL_RC(
+            SQLCompleteAsync
+            , rc
+            , SQL_HANDLE_DBC
+            , conn_
+            , &arc);
+        if(!success(rc) || !success(arc))
+            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+
+        NANODBC_CALL_RC(
+            SQLSetConnectAttr
+            , rc
+            , conn_
+            , SQL_ATTR_ASYNC_ENABLE
+            , (SQLPOINTER)SQL_ASYNC_ENABLE_OFF
+            , SQL_IS_INTEGER);
+        if(!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+
+        connected_ = success(rc);
+    }
+#endif // SQL_ATTR_ASYNC_DBC_EVENT
+
     void connect(
         const string_type& dsn
         , const string_type& user
         , const string_type& pass
-        , long timeout)
+        , long timeout
+        , void* event_handle = NULL)
     {
         disconnect();
 
@@ -691,6 +762,11 @@ public:
             , 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+
+        #ifdef SQL_ATTR_ASYNC_DBC_EVENT
+            if (event_handle != NULL)
+                enable_async(event_handle);
+        #endif
 
         NANODBC_CALL_RC(
             NANODBC_UNICODE(SQLConnect)
@@ -699,13 +775,13 @@ public:
             , (NANODBC_SQLCHAR*)dsn.c_str(), SQL_NTS
             , !user.empty() ? (NANODBC_SQLCHAR*)user.c_str() : 0, SQL_NTS
             , !pass.empty() ? (NANODBC_SQLCHAR*)pass.c_str() : 0, SQL_NTS);
-        if(!success(rc))
+        if(!success(rc) && (event_handle == NULL || rc != SQL_STILL_EXECUTING))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
         connected_ = success(rc);
     }
 
-    void connect(const string_type& connection_string, long timeout)
+    void connect(const string_type& connection_string, long timeout, void* event_handle = NULL)
     {
         disconnect();
 
@@ -736,6 +812,11 @@ public:
             , 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+
+        #ifdef SQL_ATTR_ASYNC_DBC_EVENT
+            if (event_handle != NULL)
+                enable_async(event_handle);
+        #endif
 
         NANODBC_SQLCHAR dsn[1024];
         SQLSMALLINT dsn_size = 0;
@@ -749,7 +830,7 @@ public:
             , sizeof(dsn) / sizeof(NANODBC_SQLCHAR)
             , &dsn_size
             , SQL_DRIVER_NOPROMPT);
-        if(!success(rc))
+        if(!success(rc) && (event_handle == NULL || rc != SQL_STILL_EXECUTING))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
         connected_ = success(rc);
@@ -2648,6 +2729,28 @@ void connection::connect(const string_type& connection_string, long timeout)
     impl_->connect(connection_string, timeout);
 }
 
+#ifdef SQL_ATTR_ASYNC_DBC_EVENT
+void connection::async_connect(
+    const string_type& dsn
+    , const string_type& user
+    , const string_type& pass
+    , void* event_handle
+    , long timeout)
+{
+    impl_->connect(dsn, user, pass, timeout, event_handle);
+}
+
+void connection::async_connect(const string_type& connection_string, void* event_handle, long timeout)
+{
+    impl_->connect(connection_string, timeout, event_handle);
+}
+
+void connection::async_complete()
+{
+    impl_->async_complete();
+}
+#endif // SQL_ATTR_ASYNC_DBC_EVENT
+
 bool connection::connected() const
 {
     return impl_->connected();
@@ -2911,12 +3014,12 @@ result statement::execute_direct(
 #ifdef SQL_ATTR_ASYNC_STMT_EVENT
     void statement::async_execute_direct(
         class connection& conn
-        , void* event_handler
+        , void* event_handle
         , const string_type& query
         , long batch_operations
         , long timeout)
     {
-        impl_->async_execute_direct(conn, event_handler, query, batch_operations, timeout, *this);
+        impl_->async_execute_direct(conn, event_handle, query, batch_operations, timeout, *this);
     }
 
     result statement::async_complete(long batch_operations)
