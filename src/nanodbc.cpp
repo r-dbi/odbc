@@ -76,7 +76,7 @@
         #define NANODBC_SQLCHAR SQLWCHAR
     #else
         #define NANODBC_TEXT(s) s
-        #define NANODBC_SNPRINTF _snprintf
+        #define NANODBC_SNPRINTF(buffer, count, format, ...) _snprintf_s(buffer, count, _TRUNCATE, format, __VA_ARGS__)
         #define NANODBC_STRFTIME std::strftime
         #define NANODBC_STRLEN std::strlen
         #define NANADBC_STRNCMP std::strncmp
@@ -260,7 +260,7 @@ namespace
                 , rc
                 , handle_type
                 , handle
-                , i
+                , (SQLSMALLINT)i
                 , sql_state
                 , &native_error
                 , 0
@@ -275,7 +275,7 @@ namespace
                 , rc
                 , handle_type
                 , handle
-                , i
+                , (SQLSMALLINT)i
                 , sql_state
                 , &native_error
                 , sql_message.data()
@@ -1229,7 +1229,7 @@ public:
         , const string_type& query
         , long batch_operations
         , long timeout
-        , statement& statement
+        , statement& /*statement*/
         , void* event_handle = NULL)
     {
         open(conn);
@@ -1276,7 +1276,7 @@ public:
         return result(statement, batch_operations);
     }
 
-    RETCODE just_execute(long batch_operations, long timeout, statement& statement)
+    RETCODE just_execute(long batch_operations, long timeout, statement& /*statement*/)
     {
         RETCODE rc;
 
@@ -1409,9 +1409,6 @@ public:
     {
         switch(direction)
         {
-            default:
-                assert(false);
-                // fallthrough
             case PARAM_IN:
                 return SQL_PARAM_INPUT;
                 break;
@@ -1424,9 +1421,10 @@ public:
             case PARAM_RETURN:
                 return SQL_PARAM_OUTPUT;
                 break;
+            default:
+                assert(false);
+                throw programming_error("unrecognized param_direction value");
         }
-        // Remove warning C4702 : unreachable code nanodbc.cpp 1284	Nanodbc
-        assert(false);
     }
 
     // initializes bind_len_or_null_ and gets information for bind
