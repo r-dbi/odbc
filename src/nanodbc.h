@@ -201,6 +201,12 @@ public:
     //! \param info Additional information that will be appended to the beginning of the error message.
     database_error(void* handle, short handle_type, const std::string& info = "");
     const char* what() const NANODBC_NOEXCEPT;
+    const long native() const NANODBC_NOEXCEPT;
+    const std::string state() const NANODBC_NOEXCEPT;
+private:
+    long native_error;
+    std::string sql_state;
+    std::string message;
 };
 
 //! @}
@@ -435,14 +441,13 @@ public:
     //! this method will be defined, but not implemented.
     //!
     //! \param conn The connection where the statement will be executed.
-    //! \param event_handler The event handler for which the caller will wait before calling async_complete.
+    //! \param event_handle The event handle for which the caller will wait before calling async_complete.
     //! \param query The SQL query that will be executed.
     //! \param batch_operations Numbers of rows to fetch per rowset, or the number of batch parameters to process.
     //! \param timeout The number in seconds before query timeout. Default is 0 indicating no timeout.
-    //! \return A result set object.
     //! \attention You will want to use transactions if you are doing batch operations because it will prevent auto commits from occurring after each individual operation is executed.
     //! \see open(), prepare(), execute(), result, transaction
-    void async_execute_direct(class connection& conn, void* event_handler, const string_type& query, long batch_operations = 1, long timeout = 0);
+    void async_execute_direct(class connection& conn, void* event_handle, const string_type& query, long batch_operations = 1, long timeout = 0);
 
     //! \brief Completes a previously initiated asynchronous query operation, returning the result.
     //!
@@ -743,7 +748,7 @@ public:
     //! If you explicitly need to know if disconnect() succeeds, call it directly.
     ~connection() NANODBC_NOEXCEPT;
 
-    //! \brief Create new connection object and immediately connect to the given data source.
+    //! \brief Connect to the given data source.
     //! \param dsn The name of the data source.
     //! \param user The username for authenticating to the data source.
     //! \param pass The password for authenticating to the data source.
@@ -756,12 +761,48 @@ public:
         , const string_type& pass
         , long timeout = 0);
 
-    //! \brief Create new connection object and immediately connect using the given connection string.
+    //! \brief Connect using the given connection string.
     //! \param connection_string The connection string for establishing a connection.
     //! \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
     //! \throws database_error
     //! \see connected()
     void connect(const string_type& connection_string, long timeout = 0);
+
+    //! \brief Initiate an asynchronous connection operation to the given data source.
+    //!
+    //! This method will only be available if nanodbc is built against ODBC headers and library that supports asynchronous mode.
+    //! Such that the identifiers `SQL_ATTR_ASYNC_DBC_EVENT` and `SQLCompleteAsync` are extant. Otherwise
+    //! this method will be defined, but not implemented.
+    //!
+    //! \param dsn The name of the data source.
+    //! \param user The username for authenticating to the data source.
+    //! \param pass The password for authenticating to the data source.
+    //! \param event_handle The event handle for which the caller will wait before calling async_complete.
+    //! \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
+    //! \throws database_error
+    //! \see connected()
+    void async_connect(
+        const string_type& dsn
+        , const string_type& user
+        , const string_type& pass
+        , void* event_handle
+        , long timeout = 0);
+
+    //! \brief Initiate an asynchronous connection operation using the given connection string.
+    //!
+    //! This method will only be available if nanodbc is built against ODBC headers and library that supports asynchronous mode.
+    //! Such that the identifiers `SQL_ATTR_ASYNC_DBC_EVENT` and `SQLCompleteAsync` are extant. Otherwise
+    //! this method will be defined, but not implemented.
+    //!
+    //! \param connection_string The connection string for establishing a connection.
+    //! \param event_handle The event handle for which the caller will wait before calling async_complete.
+    //! \param timeout The number in seconds before connection timeout. Default is 0 indicating no timeout.
+    //! \throws database_error
+    //! \see connected()
+    void async_connect(const string_type& connection_string, void* event_handle, long timeout = 0);
+
+    //! \brief Completes a previously initiated asynchronous connection operation.
+    void async_complete();
 
     //! \brief Returns true if connected to the database.
     bool connected() const;
