@@ -349,7 +349,7 @@ namespace nanodbc
 
     database_error::database_error(void* handle, short handle_type, const std::string& info)
     : std::runtime_error(info), native_error(0), sql_state("00000")
-    { 
+    {
         message = std::string(std::runtime_error::what()) + recent_error(handle, handle_type, native_error, sql_state);
     }
 
