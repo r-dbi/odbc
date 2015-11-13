@@ -58,29 +58,32 @@ endif()
 ########################################
 ## build options
 ########################################
-if(NANODBC_ODBC_VERSION)
+IF(NOT DEFINED NANODBC_ODBC_VERSION)
+	message(STATUS "ODBC Version Override: Turned off")
+else()
 	message(STATUS "ODBC Version Override: ${NANODBC_ODBC_VERSION}")
+	add_definitions(-DNANODBC_ODBC_VERSION=${NANODBC_ODBC_VERSION})
 endif()
 
 if(NANODBC_USE_UNICODE)
 	message(STATUS "Unicode support: Enabled")
 	add_definitions(-DNANODBC_USE_UNICODE)
 else()
-	message(STATUS "Unicode support: Disabled")
+	message(STATUS "Unicode support: Turned off")
 endif()
 
 if(NANODBC_USE_BOOST_CONVERT)
 	message(STATUS "Boost string convert: Enabled")
 	add_definitions(-DNANODBC_USE_BOOST_CONVERT)
 else()
-	message(STATUS "Boost string convert: Disabled")
+	message(STATUS "Boost string convert: Turned off")
 endif()
 
 if(NANODBC_HANDLE_NODATA_BUG)
 	message(STATUS "Handle SQL_NO_DATA bug: Enabled")
 	add_definitions(-DNANODBC_HANDLE_NODATA_BUG)
 else()
-	message(STATUS "Handle SQL_NO_DATA bug: Disabled")
+	message(STATUS "Handle SQL_NO_DATA bug: Turned off")
 endif()
 
 ########################################
@@ -120,7 +123,7 @@ if (NANODBC_INSTALL)
 	install(TARGETS nanodbc LIBRARY DESTINATION lib)
 	message(STATUS "Target install: Enabled")
 else()
-	message(STATUS "Target install: Disabled")
+	message(STATUS "Target install: Turned off")
 endif()
 
 ########################################
@@ -135,6 +138,6 @@ if (NANODBC_TEST)
 		DEPENDS tests)
 		message(STATUS "Target test: Enabled")
 	else()
-		message(STATUS "Target test: Disabled")
+		message(STATUS "Target test: Turned off")
 
 endif()
