@@ -2377,7 +2377,7 @@ inline void result::result_impl::get_ref_impl<timestamp>(short column, timestamp
 template<>
 inline void result::result_impl::get_ref_impl<string_type>(short column, string_type& result) const
 {
-    const bound_column& col = bound_columns_[column];
+    bound_column& col = bound_columns_[column];
     const SQLULEN column_size = col.sqlsize_;
 
     switch(col.ctype_)
@@ -2406,6 +2406,8 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                         , &ValueLenOrInd);  // StrLen_or_IndPtr
                     if (ValueLenOrInd > 0)
                         ss << buff;
+                    else if (ValueLenOrInd == SQL_NULL_DATA)
+                        *col.cbdata_ = (SQLINTEGER) SQL_NULL_DATA;
                 } while(rc > 0);
                 convert(ss.str(), result);
             }
@@ -2443,6 +2445,8 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                         , &ValueLenOrInd);  // StrLen_or_IndPtr
                     if (ValueLenOrInd > 0)
                         ss << buffer;
+                    else if (ValueLenOrInd == SQL_NULL_DATA)
+                        *col.cbdata_ = (SQLINTEGER) SQL_NULL_DATA;
                 } while (rc > 0);
                 convert(ss.str(), result);
             }
