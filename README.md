@@ -55,6 +55,20 @@ The following build options are available via CMake. If you are not using CMake 
 | `‑DNANODBC_USE_BOOST_CONVERT=...` | `OFF` or `ON`        | `OFF`       | Provided as workaround to issue [#44](https://github.com/lexicalunit/nanodbc/issues/44). |
 | `‑DNANODBC_ODBC_VERSION=...`      | `SQL_OV_ODBC3[...]`  | See Details | **[Optional]** Sets the ODBC version macro for nanodbc to use. Default is `SQL_OV_ODBC3_80` if available, otherwise `SQL_OV_ODBC3`. |
 
+# Publish and Release Process
+
+Once your local `master` branch is ready for publishing (i.e. [semantic versioning](http://semver.org/)), use the `scripts/publish.sh` script. This script bumps the major, minor, or patch version, then updates the repository's `VERSION` file, adds a "Preparing" commit, and creates git tags appropriately. For example to make a minor update you would run `./scripts/publish.sh minor`.
+
+To do this manually instead, use the following steps &mdash; for example a minor update from `2.9.x` to `2.10.0`:
+
+1. `echo "2.10.0" > VERSION`
+2. `git add VERSION`
+3. `git commit -m "Preparing 2.10.0 release."`
+4. `git tag -f "v2.10.0"`
+5. `git push -f origin "v2.10.0"`
+
+Release nanodbc with the `scripts/release.sh` script. All this script does is push out the `master` branch to the `release` branch, indicating that a new stable version of nanodbc exists. To do so manually, execute `git push -f origin master:release`.
+
 # Future work
 
 - Update codebase to use more C++14 idioms and patterns.
