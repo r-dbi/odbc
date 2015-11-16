@@ -69,6 +69,17 @@ To do this manually instead, use the following steps &mdash; for example a minor
 
 Release nanodbc with the `scripts/release.sh` script. All this script does is push out the `master` branch to the `release` branch, indicating that a new stable version of nanodbc exists. To do so manually, execute `git push -f origin master:release`.
 
+# Source Level Documentation
+
+Source level documentation provided via [GitHub's gh-pages](https://help.github.com/articles/what-are-github-pages/) is available at [nanodbc.lexicalunit.com](http://lexicalunit.github.io/nanodbc/). To re-build and update it, preform the following steps from the root directory of the repository:
+
+1. `git clone -b gh-pages git@github.com:lexicalunit/nanodbc.git doc` (necessary the first time, not subsequently)
+2. `cd doc`
+3. `make` Generates updated documentation locally.
+4. `make commit` Commits and pushes new local documentation up to github.
+
+Building documentation and gh-pages requires the use of [Doxygen](www.doxygen.org) and [jekyll](https://jekyllrb.com/). See the `Makefile` on the `gh-pages` branch of nanodbc for more details.
+
 # Future work
 
 - Update codebase to use more C++14 idioms and patterns.
