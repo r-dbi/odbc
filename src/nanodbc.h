@@ -1001,13 +1001,22 @@ public:
 
     //! \brief Returns true if and only if the given column of the current rowset is null.
     //!
+    //! There is a bug/limitation in ODBC drivers for SQL Server (and possibly others)
+    //! which causes SQLBindCol() to never write SQL_NOT_NULL to the length/indicator
+    //! buffer unless you also bind the data column. Nanodbc's is_null() will return
+    //! correct values for (n)varchar(max) columns when you ensure that SQLGetData()
+    //! has been called for that column (i.e. after get() or get_ref() is called).
+    //!
     //! Columns are numbered from left to right and 0-indexed.
+    //! \see get(), get_ref()
     //! \param column position.
     //! \throws database_error, index_range_error
     bool is_null(short column) const;
 
     //! \brief Returns true if and only if the given column by name of the current rowset is null.
     //!
+    //! See is_null(short column) for details on a bug/limitation of some ODBC drivers.
+    //! \see is_null()
     //! \param column_name column's name.
     //! \throws database_error, index_range_error
     bool is_null(const string_type& column_name) const;
