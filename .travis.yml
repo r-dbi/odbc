@@ -1,0 +1,31 @@
+sudo: false
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-5
+      - gcc-5
+      - libboost-dev
+      - libboost-test-dev
+      - libiodbc2
+      - libiodbc2-dev
+      - libsqliteodbc
+
+language: cpp
+
+compiler:
+  - gcc
+
+before_script:
+  - if [ "$CC" == "gcc" ]; then export CC="gcc-5"; fi
+  - if [ "$CXX" == "g++" ]; then export CXX="g++-5"; fi
+  - cat /etc/odbc.ini
+
+script:
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make VERBOSE=1
+  - make VERBOSE=1 tests
