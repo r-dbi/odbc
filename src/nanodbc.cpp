@@ -758,7 +758,7 @@ public:
             , rc
             , conn_
             , SQL_LOGIN_TIMEOUT
-            , (SQLPOINTER)timeout
+            , (SQLPOINTER)(std::intptr_t)timeout
             , 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
@@ -808,7 +808,7 @@ public:
             , rc
             , conn_
             , SQL_LOGIN_TIMEOUT
-            , (SQLPOINTER)timeout
+            , (SQLPOINTER)(std::intptr_t)timeout
             , 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
@@ -1208,7 +1208,7 @@ public:
             , rc
             , stmt_
             , SQL_ATTR_QUERY_TIMEOUT
-            , (SQLPOINTER)timeout,
+            , (SQLPOINTER)(std::intptr_t)timeout,
              0);
 
         // some drivers don't support timeout for statements,
@@ -1326,7 +1326,7 @@ public:
             , rc
             , stmt_
             , SQL_ATTR_PARAMSET_SIZE
-            , (SQLPOINTER)batch_operations
+            , (SQLPOINTER)(std::intptr_t)batch_operations
             , 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
@@ -1384,7 +1384,7 @@ public:
             , rc
             , stmt_
             , SQL_ATTR_PARAMSET_SIZE
-            , (SQLPOINTER)batch_operations
+            , (SQLPOINTER)(std::intptr_t)batch_operations
             , 0);
         if(!success(rc) && rc != SQL_NO_DATA)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
@@ -1442,7 +1442,8 @@ public:
             , &rows);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-        return rows;
+        assert(rows <= static_cast<SQLLEN>(std::numeric_limits<long>::max()));
+        return static_cast<long>(rows);
     }
 
     short columns() const
@@ -1483,7 +1484,8 @@ public:
             , 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-        return parameter_size;
+        assert(parameter_size <= static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
+        return static_cast<unsigned long>(parameter_size);
     }
 
     static SQLSMALLINT param_type_from_direction(param_direction direction)
@@ -1818,7 +1820,7 @@ public:
             , rc
             , stmt_.native_statement_handle()
             , SQL_ATTR_ROW_ARRAY_SIZE
-            , (SQLPOINTER)rowset_size_
+            , (SQLPOINTER)(std::intptr_t)rowset_size_
             , 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
@@ -1858,7 +1860,8 @@ public:
 
     long rows() const NANODBC_NOEXCEPT
     {
-        return row_count_;
+        assert(row_count_ <= static_cast<SQLULEN>(std::numeric_limits<long>::max()));
+        return static_cast<long>(row_count_);
     }
 
     short columns() const
@@ -1923,7 +1926,9 @@ public:
             , 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
-        return pos - 1 + rowset_position_;
+
+        assert(pos - 1 + rowset_position_ <= static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
+        return static_cast<unsigned long>(pos) - 1 + rowset_position_;
     }
 
     bool end() const NANODBC_NOEXCEPT
@@ -1969,7 +1974,8 @@ public:
         if(column >= bound_columns_size_)
             throw index_range_error();
         bound_column& col = bound_columns_[column];
-        return col.sqlsize_;
+        assert(col.sqlsize_ <= static_cast<SQLULEN>(std::numeric_limits<long>::max()));
+        return static_cast<long>(col.sqlsize_);
     }
 
     short column(const string_type& column_name) const
