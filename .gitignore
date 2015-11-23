@@ -12,6 +12,7 @@
 *.la
 *.a
 
+/.vagrant
 /doc
 /build*
 example
