@@ -13,6 +13,6 @@
 *.a
 
 /doc
-/build
+/build*
 example
 example.dSYM/
