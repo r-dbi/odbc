@@ -7,7 +7,8 @@ $provision_script = <<SCRIPT
 export DEBIAN_FRONTEND="noninteractive"
 sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt-get update -y -q
-sudo apt-get -y -q install cmake g++-5 gcc-5 libboost-dev libboost-test-dev \
+sudo apt-get -y -q install cmake g++-5 gcc-5 \
+    libboost1.48-dev libboost-locale1.48-dev libboost-test1.48-dev \
     libiodbc2 libiodbc2-dev libsqliteodbc
 SCRIPT
 
