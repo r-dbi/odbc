@@ -98,7 +98,7 @@ endif()
 if(NANODBC_USE_BOOST_CONVERT)
 	set(Boost_USE_STATIC_LIBS ON)
 	set(Boost_USE_MULTITHREADED ON)
-	find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+	find_package(Boost COMPONENTS unit_test_framework locale REQUIRED)
 endif()
 
 ########################################

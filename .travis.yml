@@ -4,11 +4,13 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
+      - boost-latest
     packages:
       - g++-5
       - gcc-5
-      - libboost-dev
-      - libboost-test-dev
+      - libboost1.55-dev
+      - libboost-locale1.55-dev
+      - libboost-test1.55-dev
       - libiodbc2
       - libiodbc2-dev
       - libsqliteodbc
@@ -18,14 +20,22 @@ language: cpp
 compiler:
   - gcc
 
-before_script:
-  - if [ "$CC" == "gcc" ]; then export CC="gcc-5"; fi
-  - if [ "$CXX" == "g++" ]; then export CXX="g++-5"; fi
+env:
+    - USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
+    - USE_UNICODE=OFF USE_BOOST_CONVERT=ON
+    - USE_UNICODE=ON  USE_BOOST_CONVERT=OFF
+    - USE_UNICODE=ON  USE_BOOST_CONVERT=ON
+
+install:
   - cat /etc/odbc.ini
 
-script:
+before_script:
+  - if [[ "$CC" == "gcc" ]]; then export CC="gcc-5"; fi
+  - if [[ "$CXX" == "g++" ]]; then export CXX="g++-5"; fi
   - mkdir build
   - cd build
-  - cmake ..
+
+script:
+  - cmake -D NANODBC_USE_UNICODE=${USE_UNICODE} -DNANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} ..
   - make VERBOSE=1
   - make VERBOSE=1 tests
