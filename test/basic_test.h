@@ -4,6 +4,10 @@
 #include "nanodbc.h"
 #include <boost/config.hpp>
 #include <boost/mpl/list.hpp>
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4244) //conversion from 'T1' to 'T2' possible loss of data
+#endif
 #include <boost/test/unit_test.hpp>
 
 #ifdef NANODBC_USE_UNICODE
@@ -413,5 +417,9 @@ struct basic_test
         check_rows_equal(execute(connection, query), 0);
     }
 };
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif // NANODBC_TEST_BASIC_TEST_H
