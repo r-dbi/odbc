@@ -7,7 +7,6 @@
 #include "nanodbc.h"
 
 #include <algorithm>
-#include <cassert>
 #include <clocale>
 #include <cstdint>
 #include <cstdio>
@@ -16,6 +15,12 @@
 #include <iomanip>
 #include <map>
 #include <sstream>
+
+// User may redefine NANODBC_ASSERT macro in nanodbc.h
+#ifndef NANODBC_ASSERT
+#include <cassert>
+#define NANODBC_ASSERT(expr) assert(expr)
+#endif
 
 #ifdef NANODBC_USE_BOOST_CONVERT
     #include <boost/locale/encoding_utf.hpp>
@@ -175,7 +180,7 @@ namespace
                 case SQL_NEED_DATA: return NANODBC_UNICODE("SQL_NEED_DATA");
                 case SQL_STILL_EXECUTING: return NANODBC_UNICODE("SQL_STILL_EXECUTING");
             }
-            assert(0);
+            NANODBC_ASSERT(0);
             return "unknown"; // should never make it here
         }
     #endif
@@ -1442,7 +1447,7 @@ public:
             , &rows);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-        assert(rows <= static_cast<SQLLEN>(std::numeric_limits<long>::max()));
+        NANODBC_ASSERT(rows <= static_cast<SQLLEN>(std::numeric_limits<long>::max()));
         return static_cast<long>(rows);
     }
 
@@ -1484,7 +1489,7 @@ public:
             , 0);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
-        assert(parameter_size <= static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
+        NANODBC_ASSERT(parameter_size <= static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
         return static_cast<unsigned long>(parameter_size);
     }
 
@@ -1505,7 +1510,7 @@ public:
                 return SQL_PARAM_OUTPUT;
                 break;
             default:
-                assert(false);
+                NANODBC_ASSERT(false);
                 throw programming_error("unrecognized param_direction value");
         }
     }
@@ -1860,7 +1865,7 @@ public:
 
     long rows() const NANODBC_NOEXCEPT
     {
-        assert(row_count_ <= static_cast<SQLULEN>(std::numeric_limits<long>::max()));
+        NANODBC_ASSERT(row_count_ <= static_cast<SQLULEN>(std::numeric_limits<long>::max()));
         return static_cast<long>(row_count_);
     }
 
@@ -1927,7 +1932,7 @@ public:
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
 
-        assert(pos - 1 + rowset_position_ <= static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
+        NANODBC_ASSERT(pos - 1 + rowset_position_ <= static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
         return static_cast<unsigned long>(pos) - 1 + rowset_position_;
     }
 
@@ -1974,7 +1979,7 @@ public:
         if(column >= bound_columns_size_)
             throw index_range_error();
         bound_column& col = bound_columns_[column];
-        assert(col.sqlsize_ <= static_cast<SQLULEN>(std::numeric_limits<long>::max()));
+        NANODBC_ASSERT(col.sqlsize_ <= static_cast<SQLULEN>(std::numeric_limits<long>::max()));
         return static_cast<long>(col.sqlsize_);
     }
 
@@ -2126,7 +2131,7 @@ private:
 
     void release_bound_resources(short column) NANODBC_NOEXCEPT
     {
-        assert(column < bound_columns_size_);
+        NANODBC_ASSERT(column < bound_columns_size_);
         bound_column& col = bound_columns_[column];
         delete[] col.pdata_;
         col.pdata_ = 0;
@@ -2167,8 +2172,8 @@ private:
         if(n_columns < 1)
             return;
 
-        assert(!bound_columns_);
-        assert(!bound_columns_size_);
+        NANODBC_ASSERT(!bound_columns_);
+        NANODBC_ASSERT(!bound_columns_size_);
         bound_columns_ = new bound_column[n_columns];
         bound_columns_size_ = n_columns;
 
