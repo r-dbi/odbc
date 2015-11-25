@@ -58,7 +58,9 @@ The following build options are available via CMake. If you are not using CMake 
 | `‑DNANODBC_STATIC=...`            | `OFF` or `ON`        | `OFF`       | Enables building a static library, otherwise the build process produces a shared library. |
 | `‑DNANODBC_ODBC_VERSION=...`      | `SQL_OV_ODBC3[...]`  | See Details | **[Optional]** Sets the ODBC version macro for nanodbc to use. Default is `SQL_OV_ODBC3_80` if available, otherwise `SQL_OV_ODBC3`. |
 
-# Publish and Release Process
+# Contributing
+
+## Publish and Release Process
 
 Once your local `master` branch is ready for publishing (i.e. [semantic versioning](http://semver.org/)), use the `scripts/publish.sh` script. This script bumps the major, minor, or patch version, then updates the repository's `VERSION` file, adds a "Preparing" commit, and creates git tags appropriately. For example to make a minor update you would run `./scripts/publish.sh minor`.
 
@@ -72,7 +74,7 @@ To do this manually instead, use the following steps &mdash; for example a minor
 
 Release nanodbc with the `scripts/release.sh` script. All this script does is push out the `master` branch to the `release` branch, indicating that a new stable version of nanodbc exists. To do so manually, execute `git push -f origin master:release`.
 
-# Source Level Documentation
+## Source Level Documentation
 
 Source level documentation provided via [GitHub's gh-pages](https://help.github.com/articles/what-are-github-pages/) is available at [nanodbc.lexicalunit.com](http://lexicalunit.github.io/nanodbc/). To re-build and update it, preform the following steps from the root directory of the repository:
 
@@ -83,10 +85,13 @@ Source level documentation provided via [GitHub's gh-pages](https://help.github.
 
 Building documentation and gh-pages requires the use of [Doxygen](www.doxygen.org) and [jekyll](https://jekyllrb.com/). See the `Makefile` on the `gh-pages` branch of nanodbc for more details.
 
-# Future work
+## Future work
 
 - Update codebase to use more C++14 idioms and patterns.
+- Write more tests with the goal to have much higher code coverage.
 - More tests for a large variety of drivers. Include performance tests.
 - Clean up `bind_*` family of functions, reduce any duplication.
 - Improve documentation: The main website and API docs should be more responsive.
+- Provide more examples in documentation, more details, and point out any gotchas.
 - Refactor code to remove the need for the `NANODBC_HANDLE_NODATA_BUG` option.
+- Fill out the Contributing section of this readme with more helpful information. Maybe a getting started section?
