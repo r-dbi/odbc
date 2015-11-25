@@ -100,23 +100,28 @@ namespace nanodbc
 // MARK: Configuration -
 
 //! \addtogroup macros Macros
+//! \brief Macros that nanodbc uses, can be overriden by users.
+//!
 //! @{
-//!
-//! \def NANODBC_ASSERT(expression)
-//! \brief Assertion.
-//!
-//! By default, nanodbc uses C \c assert() for internal assertions.
-//! User can override it by defining NANODBC_ASSERT(expr) macro
-//! in the nanodbc.h file and customizing it as desired,
-//! before building the library.
-//!
-//! \code{.cpp}
-//! #ifdef _DEBUG
-//! #include <crtdbg.h>
-//! #define NANODBC_ASSERT _ASSERTE
-//! #endif
-//! \endcode
-//!
+
+#ifdef DOXYGEN
+    //! \def NANODBC_ASSERT(expression)
+    //! \brief Assertion.
+    //!
+    //! By default, nanodbc uses C \c assert() for internal assertions.
+    //! User can override it by defining NANODBC_ASSERT(expr) macro
+    //! in the nanodbc.h file and customizing it as desired,
+    //! before building the library.
+    //!
+    //! \code{.cpp}
+    //! #ifdef _DEBUG
+    //! #include <crtdbg.h>
+    //! #define NANODBC_ASSERT _ASSERTE
+    //! #endif
+    //! \endcode
+    #define NANODBC_ASSERT(expression) assert(expression)
+#endif
+
 //! @}
 
 // You must explicitly request Unicode support by defining NANODBC_USE_UNICODE at compile time.
