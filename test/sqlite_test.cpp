@@ -18,7 +18,17 @@ namespace
 
     };
 
-    basic_test test(NANODBC_TEXT("Driver=sqlite;Database=nanodbc.db;"));
+    // According to the sqliteodbc documentation,
+    // driver name is different on Windows and Unix.
+#ifdef _WIN32
+    const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3 ODBC Driver"));
+#else
+    const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3"));
+#endif
+    const nanodbc::string_type connection_string
+        = NANODBC_TEXT("Driver=") + driver_name
+        + NANODBC_TEXT(";Database=nanodbc.db;");
+    basic_test test(connection_string);
 }
 
 BOOST_FIXTURE_TEST_SUITE(sqlite, sqlite_fixture)
