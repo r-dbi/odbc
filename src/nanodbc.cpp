@@ -2111,7 +2111,7 @@ private:
         for(short i = 0; i < bound_columns_size_; ++i)
         {
             bound_column& col = bound_columns_[i];
-            for(long j = 0; j < col.rowset_size_; ++j)
+            for(long j = 0; j < rowset_size_; ++j)
                 col.cbdata_[j] = 0;
             if(col.blob_ && col.pdata_)
                 release_bound_resources(i);
