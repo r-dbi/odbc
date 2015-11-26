@@ -14,6 +14,8 @@
 
 /.vagrant
 /doc
-/build*
+/build/
+/build32/
+/build64/
 example
 example.dSYM/
