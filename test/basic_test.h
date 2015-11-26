@@ -45,7 +45,7 @@ struct basic_test
         return nanodbc::connection(connection_string_);
     }
 
-    static void check_rows_equal(nanodbc::result results, std::size_t rows)
+    static void check_rows_equal(nanodbc::result results, int rows)
     {
         BOOST_CHECK(results.next());
         BOOST_CHECK_EQUAL(results.get<int>(0), rows);
@@ -259,7 +259,7 @@ struct basic_test
         BOOST_CHECK(connection.connected());
         BOOST_CHECK(connection.native_dbc_handle());
         BOOST_CHECK(connection.native_env_handle());
-        BOOST_CHECK_EQUAL(connection.transactions(), 0);
+        BOOST_CHECK_EQUAL(connection.transactions(), std::size_t(0));
 
         execute(connection, NANODBC_TEXT("drop table if exists simple_test;"));
         execute(connection, NANODBC_TEXT("create table simple_test (a int, b varchar(10));"));
@@ -270,7 +270,6 @@ struct basic_test
 
         {
             nanodbc::result results = execute(connection, NANODBC_TEXT("select a, b from simple_test order by a;"));
-
             BOOST_CHECK((bool)results);
             BOOST_CHECK_EQUAL(results.rows(), 0);
             BOOST_CHECK_EQUAL(results.columns(), 2);
@@ -348,7 +347,7 @@ struct basic_test
         BOOST_CHECK(connection.connected());
         BOOST_CHECK(connection.native_dbc_handle());
         BOOST_CHECK(connection.native_env_handle());
-        BOOST_CHECK_EQUAL(connection.transactions(), 0);
+        BOOST_CHECK_EQUAL(connection.transactions(), std::size_t(0));
 
         const nanodbc::string_type name = NANODBC_TEXT("Fred");
 
