@@ -25,11 +25,5 @@ fi
 
 pushd "$(git rev-parse --show-toplevel)" >/dev/null
 
-version=$(cat VERSION)
-echo "Releasing nanodbc version: $version"
-tag="v$version"
-
 set -x
-git tag -f "$tag"
-git push -f origin "$tag"
 git push -f origin master:release

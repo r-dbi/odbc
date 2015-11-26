@@ -44,7 +44,11 @@ else
 fi
 
 version="$major.$minor.$patch"
+tag="v$version"
+echo "Publishing nanodbc version: $version"
+set -x
 echo "$version" > VERSION
 git add VERSION
-set -x
 git commit -m "Preparing $version release."
+git tag -f "$tag"
+git push -f origin "$tag"

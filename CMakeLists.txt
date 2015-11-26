@@ -4,6 +4,7 @@ project(nanodbc)
 option(NANODBC_USE_UNICODE "build with unicode support enabled" OFF)
 option(NANODBC_USE_BOOST_CONVERT "build using Boost.Locale for string convert" OFF)
 option(NANODBC_HANDLE_NODATA_BUG "enable special handling for SQL_NO_DATA (required for vertica)" OFF)
+option(NANODBC_STATIC "build static instead of shared library" OFF)
 option(NANODBC_TEST "build tests" ON)
 option(NANODBC_INSTALL "generate install target" ON)
 
@@ -42,17 +43,23 @@ endif()
 ## find unixODBC or iODBC config binary
 ########################################
 if (UNIX)
-	find_program(ODBC_CONFIG odbc_config $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin PATHS)
-
-	if(NOT ODBC_CONFIG)
-		find_program(ODBC_CONFIG iodbc-config $ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin PATHS)
+	find_program(ODBC_CONFIG odbc_config
+		$ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin PATHS)
+	if(ODBC_CONFIG)
+		set(ODBCLIB odbc)
+		set(ODBCINSTLIB odbcinst)
+  else()
+		find_program(ODBC_CONFIG iodbc-config
+			$ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin PATHS)
+		if(ODBC_CONFIG)
+			set(ODBCLIB iodbc)
+			set(ODBCINSTLIB iodbcinst)
+		endif()
 	endif()
 
 	if(NOT ODBC_CONFIG)
 		message(FATAL_ERROR "can not find odbc config program")
 	endif()
-elseif(MSVC)
-	set(ODBC_LIBRARIES odbc32.lib odbccp32.lib Ws2_32.lib)
 endif()
 
 ########################################
@@ -92,16 +99,16 @@ endif()
 if(NANODBC_USE_BOOST_CONVERT)
 	set(Boost_USE_STATIC_LIBS ON)
 	set(Boost_USE_MULTITHREADED ON)
-	find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+	find_package(Boost COMPONENTS unit_test_framework locale REQUIRED)
 endif()
 
 ########################################
 ## get ODBC compile and link flags
 ########################################
 if (UNIX)
-	execute_process(COMMAND ${ODBC_CONFIG} --libs OUTPUT_VARIABLE ODBC_LINK_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-	execute_process(COMMAND ${ODBC_CONFIG} --cflags OUTPUT_VARIABLE ODBC_COMPILE_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ODBC_LINK_FLAGS}")
+	set(ODBC_LIBRARIES ${ODBCLIB} ${ODBCLIBINST})
+elseif(MSVC)
+	set(ODBC_LIBRARIES odbc32.lib odbccp32.lib Ws2_32.lib)
 endif()
 
 ########################################
@@ -111,16 +118,22 @@ if(Boost_FOUND)
 	include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src ${Boost_INCLUDE_DIRS})
 	link_directories(${CMAKE_BINARY_DIR}/lib ${Boost_LIBRARY_DIRS})
 endif()
-add_library(nanodbc SHARED src/nanodbc.cpp)
-set_target_properties(nanodbc PROPERTIES
-	COMPILE_FLAGS "${ODBC_COMPILE_FLAGS}"
-	LIBRARY_OUTPUT_DIRECTORY "lib"
-)
-target_link_libraries(nanodbc ${Boost_LIBRARIES} ${ODBC_LIBRARIES})
+if (NANODBC_STATIC)
+	add_library(nanodbc STATIC src/nanodbc.cpp src/nanodbc.h)
+		message(STATUS "Build target: STATIC")
+else()
+	add_library(nanodbc SHARED src/nanodbc.cpp src/nanodbc.h)
+	target_link_libraries(nanodbc ${Boost_LIBRARIES} ${ODBC_LIBRARIES})
+	message(STATUS "Build target: SHARED")
+endif()
 
 if (NANODBC_INSTALL)
 	install(FILES src/nanodbc.h DESTINATION include)
-	install(TARGETS nanodbc LIBRARY DESTINATION lib)
+	if (NANODBC_STATIC)
+		install(TARGETS nanodbc ARCHIVE DESTINATION lib)
+	else()
+		install(TARGETS nanodbc LIBRARY DESTINATION lib)
+	endif()
 	message(STATUS "Target install: Enabled")
 else()
 	message(STATUS "Target install: Turned off")
@@ -136,8 +149,7 @@ if (NANODBC_TEST)
 	add_custom_target(check
 		COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
 		DEPENDS tests)
-		message(STATUS "Target test: Enabled")
-	else()
-		message(STATUS "Target test: Turned off")
-
+	message(STATUS "Target test: Enabled")
+else()
+	message(STATUS "Target test: Turned off")
 endif()

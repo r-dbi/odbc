@@ -1,5 +1,7 @@
 # Synopsis
 
+[![Build Status](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master)](https://travis-ci.org/lexicalunit/nanodbc)
+
 A small C++ wrapper for the native C ODBC API. Please see the [online documentation](http://lexicalunit.github.com/nanodbc/) for user information, example usage, propaganda, and detailed source level documentation.
 
 # Versions
@@ -53,12 +55,43 @@ The following build options are available via CMake. If you are not using CMake 
 | `‑DNANODBC_USE_UNICODE=...`       | `OFF` or `ON`        | `OFF`       | Enables full unicode support. `nanodbc::string` becomes `std::wstring`. |
 | `‑DNANODBC_HANDLE_NODATA_BUG=...` | `OFF` or `ON`        | `OFF`       | Provided to resolve issue [#33](https://github.com/lexicalunit/nanodbc/issues/33), details [in this commit](https://github.com/lexicalunit/nanodbc/commit/918d73cdf12d5903098381344eecde8e7d5d896e). |
 | `‑DNANODBC_USE_BOOST_CONVERT=...` | `OFF` or `ON`        | `OFF`       | Provided as workaround to issue [#44](https://github.com/lexicalunit/nanodbc/issues/44). |
+| `‑DNANODBC_STATIC=...`            | `OFF` or `ON`        | `OFF`       | Enables building a static library, otherwise the build process produces a shared library. |
 | `‑DNANODBC_ODBC_VERSION=...`      | `SQL_OV_ODBC3[...]`  | See Details | **[Optional]** Sets the ODBC version macro for nanodbc to use. Default is `SQL_OV_ODBC3_80` if available, otherwise `SQL_OV_ODBC3`. |
 
-# Future work
+# Contributing
+
+## Publish and Release Process
+
+Once your local `master` branch is ready for publishing (i.e. [semantic versioning](http://semver.org/)), use the `scripts/publish.sh` script. This script bumps the major, minor, or patch version, then updates the repository's `VERSION` file, adds a "Preparing" commit, and creates git tags appropriately. For example to make a minor update you would run `./scripts/publish.sh minor`.
+
+To do this manually instead, use the following steps &mdash; for example a minor update from `2.9.x` to `2.10.0`:
+
+1. `echo "2.10.0" > VERSION`
+2. `git add VERSION`
+3. `git commit -m "Preparing 2.10.0 release."`
+4. `git tag -f "v2.10.0"`
+5. `git push -f origin "v2.10.0"`
+
+Release nanodbc with the `scripts/release.sh` script. All this script does is push out the `master` branch to the `release` branch, indicating that a new stable version of nanodbc exists. To do so manually, execute `git push -f origin master:release`.
+
+## Source Level Documentation
+
+Source level documentation provided via [GitHub's gh-pages](https://help.github.com/articles/what-are-github-pages/) is available at [nanodbc.lexicalunit.com](http://lexicalunit.github.io/nanodbc/). To re-build and update it, preform the following steps from the root directory of the repository:
+
+1. `git clone -b gh-pages git@github.com:lexicalunit/nanodbc.git doc` (necessary the first time, not subsequently)
+2. `cd doc`
+3. `make` Generates updated documentation locally.
+4. `make commit` Commits and pushes new local documentation up to github.
+
+Building documentation and gh-pages requires the use of [Doxygen](www.doxygen.org) and [jekyll](https://jekyllrb.com/). See the `Makefile` on the `gh-pages` branch of nanodbc for more details.
+
+## Future work
 
 - Update codebase to use more C++14 idioms and patterns.
+- Write more tests with the goal to have much higher code coverage.
 - More tests for a large variety of drivers. Include performance tests.
 - Clean up `bind_*` family of functions, reduce any duplication.
 - Improve documentation: The main website and API docs should be more responsive.
+- Provide more examples in documentation, more details, and point out any gotchas.
 - Refactor code to remove the need for the `NANODBC_HANDLE_NODATA_BUG` option.
+- Fill out the Contributing section of this readme with more helpful information. Maybe a getting started section?

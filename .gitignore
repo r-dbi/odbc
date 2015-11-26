@@ -12,7 +12,8 @@
 *.la
 *.a
 
+/.vagrant
 /doc
-/build
+/build*
 example
 example.dSYM/
