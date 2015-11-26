@@ -500,7 +500,6 @@ namespace
         , ctype_(0)
         , clen_(0)
         , blob_(false)
-        , rowset_size_(0)
         , cbdata_(0)
         , pdata_(0)
         {
@@ -522,7 +521,6 @@ namespace
         SQLSMALLINT ctype_;
         SQLULEN clen_;
         bool blob_;
-        long rowset_size_;
         nanodbc::null_type* cbdata_;
         char* pdata_;
     };
@@ -2122,7 +2120,7 @@ private:
         for(short i = 0; i < bound_columns_size_; ++i)
         {
             bound_column& col = bound_columns_[i];
-            for(long j = 0; j < col.rowset_size_; ++j)
+            for(long j = 0; j < rowset_size_; ++j)
                 col.cbdata_[j] = 0;
             if(col.blob_ && col.pdata_)
                 release_bound_resources(i);
@@ -2318,7 +2316,6 @@ private:
             }
             else
             {
-                col.rowset_size_ = rowset_size_;
                 col.pdata_ = new char[rowset_size_ * col.clen_];
                 NANODBC_CALL_RC(
                     SQLBindCol
