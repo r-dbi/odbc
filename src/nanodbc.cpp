@@ -500,7 +500,6 @@ namespace
         , ctype_(0)
         , clen_(0)
         , blob_(false)
-        , rowset_size_(0)
         , cbdata_(0)
         , pdata_(0)
         {
@@ -522,7 +521,6 @@ namespace
         SQLSMALLINT ctype_;
         SQLULEN clen_;
         bool blob_;
-        long rowset_size_;
         nanodbc::null_type* cbdata_;
         char* pdata_;
     };
@@ -2318,7 +2316,6 @@ private:
             }
             else
             {
-                col.rowset_size_ = rowset_size_;
                 col.pdata_ = new char[rowset_size_ * col.clen_];
                 NANODBC_CALL_RC(
                     SQLBindCol
