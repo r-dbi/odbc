@@ -17,7 +17,7 @@ goto :Usage
 
 :32
 set NANOP=32
-set MSBUILDP=x86
+set MSBUILDP=Win32
 set GENERATOR="Visual Studio 14 2015"
 goto :Build
 
