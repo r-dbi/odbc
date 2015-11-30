@@ -1930,7 +1930,8 @@ public:
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
 
-        NANODBC_ASSERT(pos - 1 + rowset_position_ <= static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
+        NANODBC_ASSERT(pos == static_cast<SQLULEN>(SQL_ROW_NUMBER_UNKNOWN)
+            || pos - 1 + rowset_position_ <= static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
         return static_cast<unsigned long>(pos) - 1 + rowset_position_;
     }
 
