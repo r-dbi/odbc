@@ -23,7 +23,7 @@ namespace
 #ifdef _WIN32
     const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3 ODBC Driver"));
 #else
-    const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3"));
+    const nanodbc::string_type driver_name(NANODBC_TEXT("sqlite"));
 #endif
     const nanodbc::string_type connection_string
         = NANODBC_TEXT("Driver=") + driver_name
