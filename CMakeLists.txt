@@ -55,6 +55,12 @@ if(UNIX)
 		message(STATUS "ODBC: unixODBC")
 		set(ODBCLIB odbc)
 		set(ODBCINSTLIB odbcinst)
+		execute_process(COMMAND ${ODBC_CONFIG} --include-prefix
+			OUTPUT_VARIABLE ODBC_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+		set(ODBC_CFLAGS "-I${ODBC_INCLUDE_DIR}")
+		set(CMAKE_FLAGS "${CMAKE_FLAGS} ${ODBC_CFLAGS}")
+		execute_process(COMMAND ${ODBC_CONFIG} --libs
+			OUTPUT_VARIABLE ODBC_LINK_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 	else()
 		find_program(ODBC_CONFIG iodbc-config
 			$ENV{ODBC_PATH}/bin /usr/bin /usr/local/bin PATHS)
@@ -62,12 +68,20 @@ if(UNIX)
 			message(STATUS "ODBC: iODBC")
 			set(ODBCLIB iodbc)
 			set(ODBCINSTLIB iodbcinst)
+			execute_process(COMMAND ${ODBC_CONFIG} --cflags
+				OUTPUT_VARIABLE ODBC_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+			set(CMAKE_FLAGS "${CMAKE_FLAGS} ${ODBC_CFLAGS}")
+			execute_process(COMMAND ${ODBC_CONFIG} --libs
+				OUTPUT_VARIABLE ODBC_LINK_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 		endif()
 	endif()
 
 	if(NOT ODBC_CONFIG)
 		message(FATAL_ERROR "can not find odbc config program")
 	endif()
+
+	message(STATUS "ODBC compile flags: ${ODBC_CFLAGS}")
+	message(STATUS "ODBC link flags: ${ODBC_LINK_FLAGS}")
 endif()
 
 ########################################
@@ -121,6 +135,7 @@ endif()
 ########################################
 if(UNIX)
 	set(ODBC_LIBRARIES ${ODBCLIB} ${ODBCLIBINST})
+	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ODBC_LINK_FLAGS}")
 elseif(MSVC)
 	set(ODBC_LIBRARIES odbc32.lib odbccp32.lib Ws2_32.lib)
 endif()
@@ -135,6 +150,12 @@ else()
 	add_library(nanodbc SHARED src/nanodbc.cpp src/nanodbc.h)
 	target_link_libraries(nanodbc ${Boost_LIBRARIES} ${ODBC_LIBRARIES})
 	message(STATUS "Build target: SHARED")
+endif()
+
+if(UNIX)
+	set_target_properties(nanodbc PROPERTIES
+		COMPILE_FLAGS "${ODBC_CFLAGS}"
+		LIBRARY_OUTPUT_DIRECTORY "lib")
 endif()
 
 if(NANODBC_INSTALL)

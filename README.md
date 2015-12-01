@@ -1,6 +1,6 @@
 # Synopsis
 
-[![Build Status](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master)](https://travis-ci.org/lexicalunit/nanodbc)
+\[ master [![Master Build Status](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master)](https://travis-ci.org/lexicalunit/nanodbc) \]\[ release [![Release Build Status](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master)](https://travis-ci.org/lexicalunit/nanodbc) \]
 
 A small C++ wrapper for the native C ODBC API. Please see the [online documentation](http://lexicalunit.github.com/nanodbc/) for user information, example usage, propaganda, and detailed source level documentation.
 
@@ -19,11 +19,11 @@ Nanodbc is intentionally small enough that you can drag and drop the header and 
 
 Building unit tests requires [Boost.Test](http://www.boost.org/doc/libs/release/libs/test/). To build the tests you will also need to have either unixODBC or iODBC installed and discoverable by CMake. This is easy on OS X where you can use [Homebrew](http://brew.sh/) to install unixODBC with `brew install unixodbc`, or use the system provided iODBC if you have OS X 10.9 or earlier. Also note that you can install Boost via Homebrew as well, which is super convenient!
 
-The unit tests attempt to connect to a [SQLite](https://www.sqlite.org/) database, so you will have to have that and a SQLite ODBC driver installed. At the time of this writing, there happens to be a nice [SQLite ODBC driver](http://www.ch-werner.de/sqliteodbc/) available from Christian Werner's website. The tests expect to find a data source named `sqlite`. For example, your `odbcinst.ini` file on OS X will have a section like the following.
+The unit tests attempt to connect to a [SQLite](https://www.sqlite.org/) database, so you will have to have that and a SQLite ODBC driver installed. At the time of this writing, there happens to be a nice [SQLite ODBC driver](http://www.ch-werner.de/sqliteodbc/) available from Christian Werner's website, also available via Homebrew as `sqliteobdc`! The tests expect to find a data source named `sqlite` on *nix systems and `SQLite3 ODBC Driver` on Windows systems. For example, your `odbcinst.ini` file on OS X will have a section like the following.
 
 ```
 [sqlite]
-Description             = SQLite ODBC
+Description             = SQLite3 ODBC Driver
 Driver                  = /usr/lib/libsqlite3odbc-0.93.dylib
 Setup                   = /usr/lib/libsqlite3odbc-0.93.dylib
 Threading               = 2
