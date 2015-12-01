@@ -15,11 +15,11 @@ A small C++ wrapper for the native C ODBC API. Please see the [online documentat
 
 # Building
 
-Nanodbc is intentionally small enough that you can drag and drop the header and implementation files into your project and run with it. For those that want it, I have also provided [CMake](http://www.cmake.org/) files which build a shared library object, or build and run the included unit tests. The CMake files will also support out of source builds.
+Nanodbc is intentionally small enough that you can drag and drop the header and implementation files into your project and run with it. For those that want it, I have also provided [CMake](http://www.cmake.org/) files which build a library object, or build and run the included unit tests. The CMake files will also support out of source builds.
 
 Building unit tests requires [Boost.Test](http://www.boost.org/doc/libs/release/libs/test/). To build the tests you will also need to have either unixODBC or iODBC installed and discoverable by CMake. This is easy on OS X where you can use [Homebrew](http://brew.sh/) to install unixODBC with `brew install unixodbc`, or use the system provided iODBC if you have OS X 10.9 or earlier. Also note that you can install Boost via Homebrew as well, which is super convenient!
 
-The unit tests attempt to connect to a [SQLite](https://www.sqlite.org/) database, so you will have to have that and a SQLite ODBC driver installed. At the time of this writing, there happens to be a nice [SQLite ODBC driver](http://www.ch-werner.de/sqliteodbc/) available from Christian Werner's website, also available via Homebrew as `sqliteobdc`! The tests expect to find a data source named `sqlite` on *nix systems and `SQLite3 ODBC Driver` on Windows systems. For example, your `odbcinst.ini` file on OS X will have a section like the following.
+The unit tests attempt to connect to a [SQLite](https://www.sqlite.org/) database, so you will have to have that and a SQLite ODBC driver installed. At the time of this writing, there happens to be a nice [SQLite ODBC driver](http://www.ch-werner.de/sqliteodbc/) available from Christian Werner's website, also available via Homebrew as `sqliteobdc`! The tests expect to find a data source named `sqlite` on *nix systems and `SQLite3 ODBC Driver` on Windows systems. For example, your `odbcinst.ini` file on OS X must have a section like the following.
 
 ```
 [sqlite]
@@ -83,9 +83,21 @@ Source level documentation provided via [GitHub's gh-pages](https://help.github.
 1. `git clone -b gh-pages git@github.com:lexicalunit/nanodbc.git doc` (necessary the first time, not subsequently)
 2. `cd doc`
 3. `make` Generates updated documentation locally.
-4. `make commit` Commits and pushes new local documentation up to github.
+4. `make commit` Adds and commits any updated documentation. Typically followed by a `git push origin gh-pages` command.
 
 Building documentation and gh-pages requires the use of [Doxygen](www.doxygen.org) and [jekyll](https://jekyllrb.com/). See the `Makefile` on the `gh-pages` branch of nanodbc for more details.
+
+## Testing Environments
+
+To get up and running with nanodbc as quickly as possible consider using the provided Dockerfile or Vagrantfile. For example, to spin up a [docker](https://www.docker.com/) container suitable for testing nanodbc:
+
+```shell
+$ docker build -t nanodbc .
+$ docker run -v $(pwd):/opt/$(basename $(pwd)) -t -i nanodbc /bin/bash
+root@hash:/# mkdir -p /opt/nanodbc/docker_build && cd /opt/nanodbc/docker_build
+root@hash:/opt/nanodbc/docker_build# cmake -DNANODBC_USE_BOOST_CONVERT=YES ..
+root@hash:/opt/nanodbc/docker_build# make check
+```
 
 ## Future work
 
