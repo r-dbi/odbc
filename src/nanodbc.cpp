@@ -767,7 +767,7 @@ public:
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
         #ifdef SQL_ATTR_ASYNC_DBC_EVENT
-            if (event_handle != NULL)
+            if(event_handle != NULL)
                 enable_async(event_handle);
         #endif
 
@@ -817,7 +817,7 @@ public:
             NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
         #ifdef SQL_ATTR_ASYNC_DBC_EVENT
-            if (event_handle != NULL)
+            if(event_handle != NULL)
                 enable_async(event_handle);
         #endif
 
@@ -1319,7 +1319,7 @@ public:
         open(conn);
 
         #if defined(SQL_ATTR_ASYNC_STMT_EVENT) && defined(SQL_API_SQLCOMPLETEASYNC)
-            if (event_handle != NULL)
+            if(event_handle != NULL)
                 enable_async(event_handle);
         #endif
 
@@ -1398,7 +1398,7 @@ public:
             SQLExecute
             , rc
             , stmt_);
-        if (!success(rc) && rc != SQL_NO_DATA)
+        if(!success(rc) && rc != SQL_NO_DATA)
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
         return rc;
@@ -1428,7 +1428,7 @@ public:
             , (NANODBC_SQLCHAR*)(column.empty() ? NULL : column.c_str())
             , (column.empty() ? 0 : SQL_NTS));
 
-        if (!success(rc))
+        if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
         return result(statement, 1);
@@ -2201,7 +2201,7 @@ private:
             // Adjust the sqlsize parameter in case of "unlimited" data (varchar(max), nvarchar(max)).
             bool is_blob = false;
 
-            if (sqlsize == 0)
+            if(sqlsize == 0)
             {
                 switch (sqltype)
                 {
@@ -2259,7 +2259,7 @@ private:
                 case SQL_VARCHAR:
                     col.ctype_ = SQL_C_CHAR;
                     col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLCHAR);
-                    if (is_blob)
+                    if(is_blob)
                     {
                         col.clen_ = 0;
                         col.blob_ = true;
@@ -2269,7 +2269,7 @@ private:
                 case SQL_WVARCHAR:
                     col.ctype_ = SQL_C_WCHAR;
                     col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLWCHAR);
-                    if (is_blob)
+                    if(is_blob)
                     {
                         col.clen_ = 0;
                         col.blob_ = true;
@@ -2413,9 +2413,9 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                         , buff              // TargetValuePtr
                         , buff_size         // BufferLength
                         , &ValueLenOrInd);  // StrLen_or_IndPtr
-                    if (ValueLenOrInd > 0)
+                    if(ValueLenOrInd > 0)
                         ss << buff;
-                    else if (ValueLenOrInd == SQL_NULL_DATA)
+                    else if(ValueLenOrInd == SQL_NULL_DATA)
                         *col.cbdata_ = (SQLINTEGER) SQL_NULL_DATA;
                 } while(rc > 0);
                 convert(ss.str(), result);
@@ -2431,7 +2431,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
 
         case SQL_C_WCHAR:
         {
-            if (col.blob_)
+            if(col.blob_)
             {
                 // Input is always std::wstring, output might be std::string or std::wstring.
                 // Use a string builder to build the output string.
@@ -2452,11 +2452,11 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                         , buffer            // TargetValuePtr
                         , buffer_size       // BufferLength
                         , &ValueLenOrInd);  // StrLen_or_IndPtr
-                    if (ValueLenOrInd > 0)
+                    if(ValueLenOrInd > 0)
                         ss << buffer;
-                    else if (ValueLenOrInd == SQL_NULL_DATA)
+                    else if(ValueLenOrInd == SQL_NULL_DATA)
                         *col.cbdata_ = (SQLINTEGER) SQL_NULL_DATA;
-                } while (rc > 0);
+                } while(rc > 0);
                 convert(ss.str(), result);
             }
             else

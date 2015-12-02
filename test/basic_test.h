@@ -415,6 +415,22 @@ struct basic_test
 
         check_rows_equal(execute(connection, query), 0);
     }
+
+    void while_next_iteration_test()
+    {
+        nanodbc::connection connection = connect();
+        execute(connection, NANODBC_TEXT("drop table if exists while_next_iteration_test;"));
+        execute(connection, NANODBC_TEXT("create table while_next_iteration_test (i int);"));
+        execute(connection, NANODBC_TEXT("insert into while_next_iteration_test values (1);"));
+        execute(connection, NANODBC_TEXT("insert into while_next_iteration_test values (2);"));
+        execute(connection, NANODBC_TEXT("insert into while_next_iteration_test values (3);"));
+        nanodbc::result results = execute(connection, NANODBC_TEXT("select * from while_next_iteration_test order by 1 desc;"));
+        int i = 3;
+        while(results.next())
+        {
+            BOOST_CHECK_EQUAL(results.get<int>(0), i--);
+        }
+    }
 };
 
 #ifdef _MSC_VER

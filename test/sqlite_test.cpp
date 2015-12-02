@@ -85,4 +85,9 @@ BOOST_AUTO_TEST_CASE(transaction_test)
     test.transaction_test();
 }
 
+BOOST_AUTO_TEST_CASE(while_next_iteration_test)
+{
+    test.while_next_iteration_test();
+}
+
 BOOST_AUTO_TEST_SUITE_END()
