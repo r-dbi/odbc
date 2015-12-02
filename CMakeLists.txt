@@ -5,6 +5,7 @@ option(NANODBC_USE_UNICODE "build with unicode support turned on" OFF)
 option(NANODBC_USE_BOOST_CONVERT "build using Boost.Locale for string convert" OFF)
 option(NANODBC_HANDLE_NODATA_BUG "enable special handling for SQL_NO_DATA (required for vertica)" OFF)
 option(NANODBC_STATIC "build static instead of shared library" OFF)
+option(NANODBC_EXAMPLES "build examples" ON)
 option(NANODBC_TEST "build tests" ON)
 option(NANODBC_INSTALL "generate install target" ON)
 
@@ -168,6 +169,16 @@ if(NANODBC_INSTALL)
 	message(STATUS "Target install: Turned on")
 else()
 	message(STATUS "Target install: Turned off")
+endif()
+
+########################################
+## examples
+########################################
+if(NANODBC_EXAMPLES)
+	add_subdirectory(examples)
+	message(STATUS "Examples: Turned on")
+else()
+	message(STATUS "Examples: Turned off")
 endif()
 
 ########################################
