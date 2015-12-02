@@ -1,4 +1,4 @@
-set(examples northwind usage)
+set(examples northwind usage rowset_iteration)
 
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src)
 
