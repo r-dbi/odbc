@@ -57,6 +57,7 @@ The following build options are available via CMake. If you are not using CMake 
 | `‑DNANODBC_USE_BOOST_CONVERT=...` | `OFF` or `ON`        | `OFF`       | Provided as workaround to issue [#44](https://github.com/lexicalunit/nanodbc/issues/44). |
 | `‑DNANODBC_STATIC=...`            | `OFF` or `ON`        | `OFF`       | Enables building a static library, otherwise the build process produces a shared library. |
 | `‑DNANODBC_INSTALL=...`           | `OFF` or `ON`        | `ON`        | Enables install target. |
+| `‑DNANODBC_EXAMPLES=...`          | `OFF` or `ON`        | `ON`        | Enables building of examples. |
 | `‑DNANODBC_TEST=...`              | `OFF` or `ON`        | `ON`        | Enables tests target (alias `check`). |
 | `‑DNANODBC_ODBC_VERSION=...`      | `SQL_OV_ODBC3[...]`  | See Details | **[Optional]** Sets the ODBC version macro for nanodbc to use. Default is `SQL_OV_ODBC3_80` if available, otherwise `SQL_OV_ODBC3`. |
 
