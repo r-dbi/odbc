@@ -190,11 +190,10 @@ endif()
 ########################################
 if(NANODBC_TEST)
 	enable_testing()
+	# Define "make check" as alias for "make test"
+	add_custom_target(check COMMAND
+		${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure)
 	add_subdirectory(test)
-	add_test(NAME test COMMAND tests)
-	add_custom_target(check
-		COMMAND ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
-		DEPENDS tests)
 	message(STATUS "Target test: Turned on")
 else()
 	message(STATUS "Target test: Turned off")

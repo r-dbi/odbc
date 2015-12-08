@@ -9,6 +9,7 @@
 #pragma warning(disable:4244) //conversion from 'T1' to 'T2' possible loss of data
 #endif
 #include <boost/test/unit_test.hpp>
+#include <codecvt>
 
 #ifdef NANODBC_USE_UNICODE
     #define NANODBC_TEXT(s) L ## s
@@ -30,15 +31,19 @@ struct basic_test
         , double
         > integral_test_types;
 
+    basic_test()
+    : connection_string_(get_connection_string_from_env())
+    {
+    }
+
     basic_test(const nanodbc::string_type& connection_string)
     : connection_string_(connection_string)
     {
-
     }
 
     // Utilities
 
-    const nanodbc::string_type connection_string_;
+    nanodbc::string_type connection_string_;
 
     nanodbc::connection connect()
     {
@@ -51,6 +56,32 @@ struct basic_test
         BOOST_CHECK_EQUAL(results.get<int>(0), rows);
     }
 
+    nanodbc::string_type get_connection_string_from_env() const
+    {
+        const char* env_name = "NANODBC_TEST_CONNSTR";
+        char* env_value = nullptr;
+        std::string connection_string;
+#ifdef _MSC_VER
+        std::size_t env_len(0);
+        errno_t err = _dupenv_s(&env_value, &env_len, env_name);
+        if (!err && env_value)
+        {
+            connection_string = env_value;
+            std::free(env_value);
+        }
+#else
+        env_value = std::getenv(env_name);
+        if (!env_value) return nanodbc::string_type;
+        connection_string = env_value;
+#endif
+
+#ifdef NANODBC_USE_UNICODE
+        return std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(connection_string);
+#else
+        return connection_string;
+#endif
+    }
+
     // Test Cases
 
     void decimal_conversion_test()
@@ -60,8 +91,8 @@ struct basic_test
         execute(connection, NANODBC_TEXT("drop table if exists decimal_conversion_test;"));
         execute(connection, NANODBC_TEXT("create table decimal_conversion_test (d decimal(9, 3));"));
         execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (12345.987);"));
-        execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (5.6);"));
-        execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (1);"));
+        execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (5.600);"));
+        execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (1.000);"));
         execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (-1.333);"));
         results = execute(connection, NANODBC_TEXT("select * from decimal_conversion_test order by 1 desc;"));
 
@@ -69,10 +100,10 @@ struct basic_test
         BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("12345.987"));
 
         BOOST_CHECK(results.next());
-        BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("5.6"));
+        BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("5.600"));
 
         BOOST_CHECK(results.next());
-        BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("1"));
+        BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("1.000"));
 
         BOOST_CHECK(results.next());
         BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("-1.333"));
