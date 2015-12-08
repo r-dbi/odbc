@@ -71,14 +71,14 @@ struct basic_test
         }
 #else
         env_value = std::getenv(env_name);
-        if (!env_value) return nanodbc::string_type;
+        if (!env_value) return nanodbc::string_type();
         connection_string = env_value;
 #endif
 
 #ifdef NANODBC_USE_UNICODE
         return std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(connection_string);
 #else
-        return connection_string;
+        return connection_string();
 #endif
     }
 
