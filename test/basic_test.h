@@ -78,7 +78,7 @@ struct basic_test
 #ifdef NANODBC_USE_UNICODE
         return std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(connection_string);
 #else
-        return connection_string();
+        return connection_string;
 #endif
     }
 
