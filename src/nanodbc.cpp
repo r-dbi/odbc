@@ -1930,9 +1930,19 @@ public:
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
 
-        NANODBC_ASSERT(pos == static_cast<SQLULEN>(SQL_ROW_NUMBER_UNKNOWN)
-            || pos - 1 + rowset_position_ <= static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
-        return static_cast<unsigned long>(pos) - 1 + rowset_position_;
+
+        // MSDN (https://msdn.microsoft.com/en-us/library/ms712631.aspx):
+        // If the number of the current row cannot be determined or
+        // there is no current row, the driver returns 0.
+        // Otherwise, valid row number is returned, starting at 1.
+        //
+        // NOTE: We try to address incorrect implementation in some drivers (e.g. SQLite ODBC)
+        // which instead of 0 return SQL_ROW_NUMBER_UNKNOWN(-2) .
+        if (pos == 0 || pos == SQL_ROW_NUMBER_UNKNOWN)
+            return 0;
+
+        NANODBC_ASSERT(pos <= static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
+        return static_cast<unsigned long>(pos) + rowset_position_;
     }
 
     bool end() const NANODBC_NOEXCEPT
