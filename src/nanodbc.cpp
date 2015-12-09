@@ -1938,7 +1938,7 @@ public:
         //
         // NOTE: We try to address incorrect implementation in some drivers (e.g. SQLite ODBC)
         // which instead of 0 return SQL_ROW_NUMBER_UNKNOWN(-2) .
-        if (pos == 0 || pos == SQL_ROW_NUMBER_UNKNOWN)
+        if (pos == 0 || pos == static_cast<SQLULEN>(SQL_ROW_NUMBER_UNKNOWN))
             return 0;
 
         NANODBC_ASSERT(pos <= static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
