@@ -848,6 +848,14 @@ public:
     //! \throws database_error
     string_type driver_name() const;
 
+    //! \brief Returns the name of the currently connected database.
+    //! Returns the current SQL_DATABASE_NAME information value associated with the connection.
+    string_type database_name() const;
+
+    //! \brief Returns the name of the current catalog.
+    //! Returns the current setting of the connection attribute SQL_ATTR_CURRENT_CATALOG.
+    string_type catalog_name() const;
+
 private:
     std::size_t ref_transaction();
     std::size_t unref_transaction();
