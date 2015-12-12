@@ -305,10 +305,12 @@ struct basic_test
             BOOST_CHECK_EQUAL(results.rows(), 0);
             BOOST_CHECK_EQUAL(results.columns(), 2);
 
-            // Some drivers always return 0 for select statements, others return the number of rows selected.
-            // I'm not sure how to detect what kind of driver we have, but as far as I know the number of
-            // affected rows will either be 0 or the number of rows selected.
-            BOOST_CHECK(results.affected_rows() == 4 || results.affected_rows() == 0);
+            // From MSDN on SQLRowCount:
+            // Row count is either the number of rows affected by the request
+            // or -1 if the number of affected rows is not available.
+            // For other statements and functions, the driver may define the value returned (...)
+            // some data sources may be able to return the number of rows returned by a SELECT statement.
+            BOOST_CHECK(results.affected_rows() == 4 || results.affected_rows() == 0 || results.affected_rows() == -1);
 
             BOOST_CHECK_EQUAL(results.rowset_size(), 1);
             BOOST_CHECK(results.column_name(0) == NANODBC_TEXT("a"));
