@@ -23,6 +23,21 @@ namespace
 
 BOOST_FIXTURE_TEST_SUITE(odbc, odbc_fixture)
 
+BOOST_AUTO_TEST_CASE(catalog_columns_test)
+{
+    test.catalog_columns_test();
+}
+
+BOOST_AUTO_TEST_CASE(catalog_primary_keys_test)
+{
+    test.catalog_primary_keys_test();
+}
+
+BOOST_AUTO_TEST_CASE(catalog_tables_test)
+{
+    test.catalog_tables_test();
+}
+
 BOOST_AUTO_TEST_CASE(decimal_conversion_test)
 {
     test.decimal_conversion_test();

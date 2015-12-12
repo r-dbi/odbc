@@ -872,6 +872,8 @@ private:
 // 888   T88b "Y8888   88888P'  "Y88888 888  "Y888
 // MARK: Result -
 
+class catalog;
+
 //! \brief A resource for managing result sets from statement execution.
 //!
 //! \see statement::execute(), statement::execute_direct()
@@ -1091,9 +1093,180 @@ private:
 private:
     class result_impl;
     friend class nanodbc::statement::statement_impl;
+    friend class nanodbc::catalog;
 
 private:
     std::shared_ptr<result_impl> impl_;
+};
+
+
+//
+//  .d8888b.           888             888
+// d88P  Y88b          888             888
+// 888    888          888             888
+// 888         8888b.  888888  8888b.  888  .d88b.   .d88b.
+// 888            "88b 888        "88b 888 d88""88b d88P"88b
+// 888    888 .d888888 888    .d888888 888 888  888 888  888
+// Y88b  d88P 888  888 Y88b.  888  888 888 Y88..88P Y88b 888
+//  "Y8888P"  "Y888888  "Y888 "Y888888 888  "Y88P"   "Y88888
+//                                                      888
+//                                                 Y8b d88P
+//                                                  "Y88P"
+// MARK: Catalog -
+
+class catalog
+{
+public:
+
+    class tables
+    {
+    public:
+        bool next();
+        string_type table_catalog() const;
+        string_type table_schema() const;
+        string_type table_name() const;
+        string_type table_type() const;
+        string_type table_remarks() const;
+
+    private:
+        friend class nanodbc::catalog;
+        tables(result& find_result);
+        result result_;
+    };
+
+    class columns
+    {
+    public:
+
+        //! \brief
+        bool next();
+
+        //! \brief
+        string_type table_catalog() const;
+
+        //! \brief
+        string_type table_schema() const;
+
+        //! \brief
+        string_type table_name() const;
+
+        //! \brief
+        string_type column_name() const;
+
+        //! \brief
+        short data_type() const;
+
+        //! \brief
+        string_type type_name() const;
+
+        //! \brief
+        long column_size() const;
+
+        //! \brief
+        long buffer_length() const;
+
+        //! \brief
+        short decimal_digits() const;
+
+        //! \brief
+        short numeric_precision_radix() const;
+
+        //! \brief
+        short nullable() const;
+
+        //! \brief
+        string_type remarks() const;
+
+        //! \brief
+        string_type column_default() const;
+
+        //! \brief
+        short sql_data_type() const;
+
+        //! \brief
+        short sql_datetime_subtype() const;
+
+        //! \brief
+        long char_octed_length() const;
+
+        //! \brief Ordinal position of the column in the table.
+        //! The first column in the table is number 1.
+        //! Returns ORDINAL_POSITION column value in result set returned by SQLColumns.
+        long ordinal_position() const;
+
+        //! \brief
+        //! TODO: Translate "YES","NO", <empty> strings to IsNullable enum?
+        string_type is_nullable() const;
+
+    private:
+        friend class nanodbc::catalog;
+        columns(result& find_result);
+        result result_;
+    };
+
+    class primary_keys
+    {
+    public:
+        bool next();
+        string_type table_catalog() const;
+        string_type table_schema() const;
+        string_type table_name() const;
+        string_type column_name() const;
+
+        //! \brief Column sequence number in the key (starting with 1).
+        //! Returns valye of KEY_SEQ column in result set returned by SQLPrimaryKeys.
+        short column_number() const;
+
+        //! \brief Primary key name.
+        //! NULL if not applicable to the data source.
+        //! Returns valye of PK_NAME column in result set returned by SQLPrimaryKeys.
+        string_type primary_key_name() const;
+
+    private:
+        friend class nanodbc::catalog;
+        primary_keys(result& find_result);
+        result result_;
+    };
+
+    //! \brief Creates catalog operating on database accessible through the specified connection.
+    catalog(connection& conn);
+
+    //! \brief Creates result set with tables information.
+    //!
+    //! Tables information is obtained by executing SQLTable function within
+    //! scope of the connected database accessible with the specified connection.
+    //! Since this function is implemented in terms of the SQLTables, it returns
+    //! result set ordered by TABLE_TYPE, TABLE_CAT, TABLE_SCHEM, and TABLE_NAME.
+    catalog::tables find_tables(
+        const string_type& table = string_type()
+      , const string_type& type = string_type()
+      , const string_type& schema = string_type()
+      , const string_type& catalog = string_type());
+
+    //! \brief Creates result set with columns information in specified tables.
+    //!
+    //! Columns information is obtained by executing SQLColumns function within
+    //! scope of the connected database accessible with the specified connection.
+    //! Since this function is implemented in terms of the SQLColumns, it returns
+    //! result set ordered by TABLE_CAT, TABLE_SCHEM, TABLE_NAME, and ORDINAL_POSITION.
+    catalog::columns find_columns(
+        const string_type& column = string_type()
+      , const string_type& table = string_type()
+      , const string_type& schema = string_type()
+      , const string_type& catalog = string_type());
+
+    //! \brief Creates result set with primary key information.
+    //!
+    //! Returns result set with column names that make up the primary key for a table.
+    //! The primary key information is obtained by executing SQLPrimaryKey function within
+    //! scope of the connected database accessible with the specified connection.
+    catalog::primary_keys find_primary_keys(
+        const string_type& table
+      , const string_type& schema = string_type()
+      , const string_type& catalog = string_type());
+
+private:
+    connection conn_;
 };
 
 //! @}

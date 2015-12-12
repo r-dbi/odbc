@@ -17,6 +17,14 @@
     #define NANODBC_TEXT(s) s
 #endif
 
+#ifdef _WIN32
+// needs to be included above sql.h for windows
+#define NOMINMAX
+#include <windows.h>
+#endif
+#include <sql.h>
+#include <sqlext.h>
+
 struct basic_test
 {
     typedef boost::mpl::list<
@@ -83,6 +91,270 @@ struct basic_test
     }
 
     // Test Cases
+
+    void catalog_columns_test()
+    {
+        nanodbc::connection connection = connect();
+        BOOST_CHECK(connection.connected());
+        nanodbc::catalog catalog(connection);
+
+        // TODO: Tested against SQL Server only and it is failing against PostgreSQL
+        //       We are going to need postgresql_test.cpp, as we do with sqlite_test.cpp.
+
+        // Check we can iterate over any columns
+        {
+            nanodbc::catalog::columns columns = catalog.find_columns();
+            long count = 0;
+            while (columns.next())
+            {
+                // These values must not be NULL (returned as empty string)
+                BOOST_CHECK(!columns.column_name().empty());
+                count++;
+            }
+            BOOST_CHECK_GT(count, 0);
+        }
+
+        // Find a table with known name and verify its known columns
+        {
+            nanodbc::string_type const table_name(NANODBC_TEXT("catalog_columns_test"));
+            execute(connection, NANODBC_TEXT("drop table if exists ") + table_name);
+            execute(connection, NANODBC_TEXT("create table ") + table_name + NANODBC_TEXT("(")
+                + NANODBC_TEXT("c0 int PRIMARY KEY,")
+                + NANODBC_TEXT("c1 smallint NOT NULL,")
+                + NANODBC_TEXT("c2 float NULL,")
+                + NANODBC_TEXT("c3 decimal(9, 3),")
+                + NANODBC_TEXT("c4 date,") // seems more portable than datetime (SQL Server), timestamp (PostgreSQL, MySQL)
+                + NANODBC_TEXT("c5 varchar(60) DEFAULT \'sample value\',")
+                + NANODBC_TEXT("c6 nvarchar(120),")
+                + NANODBC_TEXT("c7 text,")
+                + NANODBC_TEXT("c8 varbinary,")
+                + NANODBC_TEXT("c9 varbinary(255)")
+                + NANODBC_TEXT(");")
+                );
+
+            // Check only SQL/ODBC standard properties, skip those which are driver-specific.
+            nanodbc::catalog::columns columns = catalog.find_columns(NANODBC_TEXT("%"), table_name);
+
+            BOOST_CHECK(columns.next());
+            BOOST_CHECK(columns.column_name() == NANODBC_TEXT("c0"));
+            BOOST_CHECK_EQUAL(columns.sql_data_type(), SQL_INTEGER);
+            BOOST_CHECK_EQUAL(columns.column_size(), 10);
+            BOOST_CHECK_EQUAL(columns.decimal_digits(), 0);
+            BOOST_CHECK_EQUAL(columns.nullable(), SQL_NO_NULLS);
+            BOOST_CHECK(columns.table_name() == table_name); // assume common for the whole result set, check once
+            BOOST_CHECK(!columns.type_name().empty()); // data source dependant name, check once
+            BOOST_CHECK(columns.is_nullable() == NANODBC_TEXT("NO"));
+
+            BOOST_CHECK(columns.next());
+            BOOST_CHECK(columns.column_name() == NANODBC_TEXT("c1"));
+            BOOST_CHECK_EQUAL(columns.sql_data_type(),  SQL_SMALLINT);
+            BOOST_CHECK_EQUAL(columns.column_size(), 5);
+            BOOST_CHECK_EQUAL(columns.decimal_digits(), 0);
+            BOOST_CHECK_EQUAL(columns.nullable(), SQL_NO_NULLS);
+            BOOST_CHECK(columns.is_nullable() == NANODBC_TEXT("NO"));
+
+            BOOST_CHECK(columns.next());
+            BOOST_CHECK(columns.column_name() == NANODBC_TEXT("c2"));
+            BOOST_CHECK_EQUAL(columns.sql_data_type(),  SQL_FLOAT);
+            BOOST_CHECK_EQUAL(columns.column_size(),  53); // total number of bits allowed
+            BOOST_CHECK_EQUAL(columns.nullable(), SQL_NULLABLE);
+            BOOST_CHECK(columns.is_nullable() == NANODBC_TEXT("YES"));
+
+            BOOST_CHECK(columns.next());
+            BOOST_CHECK(columns.column_name() == NANODBC_TEXT("c3"));
+            BOOST_CHECK_EQUAL(columns.sql_data_type(),  SQL_DECIMAL);
+            BOOST_CHECK_EQUAL(columns.column_size(),  9);
+            BOOST_CHECK_EQUAL(columns.decimal_digits(),  3);
+            BOOST_CHECK_EQUAL(columns.nullable(), SQL_NULLABLE);
+            BOOST_CHECK(columns.is_nullable() == NANODBC_TEXT("YES"));
+
+            BOOST_CHECK(columns.next());
+            BOOST_CHECK(columns.column_name() == NANODBC_TEXT("c4"));
+            BOOST_CHECK_EQUAL(columns.sql_data_type(),  SQL_DATE);
+            BOOST_CHECK_EQUAL(columns.column_size(),  23); // total number of characters required to display the value when it is converted to characters
+
+            BOOST_CHECK(columns.next());
+            BOOST_CHECK(columns.column_name() == NANODBC_TEXT("c5"));
+            BOOST_CHECK_EQUAL(columns.sql_data_type(),  SQL_VARCHAR);
+            BOOST_CHECK_EQUAL(columns.column_size(),  60);
+            BOOST_CHECK(columns.column_default() == NANODBC_TEXT("\'sample value\'"));
+
+            BOOST_CHECK(columns.next());
+            BOOST_CHECK(columns.column_name() == NANODBC_TEXT("c6"));
+            BOOST_CHECK_EQUAL(columns.sql_data_type(),  SQL_WVARCHAR);
+            BOOST_CHECK_EQUAL(columns.column_size(),  120);
+
+            BOOST_CHECK(columns.next());
+            BOOST_CHECK(columns.column_name() == NANODBC_TEXT("c7"));
+            BOOST_CHECK_EQUAL(columns.sql_data_type(),  SQL_LONGVARCHAR);
+            BOOST_CHECK_EQUAL(columns.column_size(),  2147483647); // TODO: confirm "text" max length
+
+            BOOST_CHECK(columns.next());
+            BOOST_CHECK(columns.column_name() == NANODBC_TEXT("c8"));
+            BOOST_CHECK_EQUAL(columns.sql_data_type(),  SQL_VARBINARY);
+            BOOST_CHECK_EQUAL(columns.column_size(),  1); // if n is not specified in [var]binary(n), the default length is 1
+
+            BOOST_CHECK(columns.next());
+            BOOST_CHECK(columns.column_name() == NANODBC_TEXT("c9"));
+            BOOST_CHECK_EQUAL(columns.sql_data_type(),  SQL_VARBINARY);
+            BOOST_CHECK_EQUAL(columns.column_size(),  255);
+
+            // expect no more records
+            BOOST_CHECK(!columns.next());
+        }
+    }
+
+    void catalog_primary_keys_test()
+    {
+        nanodbc::connection connection = connect();
+        BOOST_CHECK(connection.connected());
+        nanodbc::catalog catalog(connection);
+
+        // TODO: Tested against SQL Server only and it is failing against PostgreSQL
+        //       We are going to need postgresql_test.cpp, as we do with sqlite_test.cpp.
+
+        // Find a single-column primary key for table with known name
+        {
+            nanodbc::string_type const table_name(NANODBC_TEXT("catalog_primary_keys_simple_test"));
+            execute(connection, NANODBC_TEXT("drop table if exists ") + table_name);
+            execute(connection, NANODBC_TEXT("create table ") + table_name
+                + NANODBC_TEXT("(i int NOT NULL, CONSTRAINT pk_simple_test PRIMARY KEY (i));"));
+
+            nanodbc::catalog::primary_keys keys =  catalog.find_primary_keys(table_name);
+            BOOST_CHECK(keys.next());
+            BOOST_CHECK(keys.table_name() == table_name);
+            BOOST_CHECK(keys.column_name() == NANODBC_TEXT("i"));
+            BOOST_CHECK_EQUAL(keys.column_number(), 1);
+            BOOST_CHECK(keys.primary_key_name() == NANODBC_TEXT("pk_simple_test"));
+            // expect no more records
+            BOOST_CHECK(!keys.next());
+        }
+
+        // Find a multi-column primary key for table with known name
+        {
+            nanodbc::string_type const table_name(NANODBC_TEXT("catalog_primary_keys_composite_test"));
+            execute(connection, NANODBC_TEXT("drop table if exists ") + table_name);
+            execute(connection, NANODBC_TEXT("create table ") + table_name
+                + NANODBC_TEXT("(a int, b smallint, CONSTRAINT pk_composite_test PRIMARY KEY(a, b));"));
+
+            nanodbc::catalog::primary_keys keys =  catalog.find_primary_keys(table_name);
+            BOOST_CHECK(keys.next());
+            BOOST_CHECK(keys.table_name() == table_name);
+            BOOST_CHECK(keys.column_name() == NANODBC_TEXT("a"));
+            BOOST_CHECK_EQUAL(keys.column_number(), 1);
+            BOOST_CHECK(keys.primary_key_name() == NANODBC_TEXT("pk_composite_test"));
+
+            BOOST_CHECK(keys.next());
+            BOOST_CHECK(keys.table_name() == table_name);
+            BOOST_CHECK(keys.column_name() == NANODBC_TEXT("b"));
+            BOOST_CHECK_EQUAL(keys.column_number(), 2);
+            BOOST_CHECK(keys.primary_key_name() == NANODBC_TEXT("pk_composite_test"));
+
+            // expect no more records
+            BOOST_CHECK(!keys.next());
+        }
+    }
+    void catalog_tables_test()
+    {
+        nanodbc::connection connection = connect();
+        BOOST_CHECK(connection.connected());
+        nanodbc::catalog catalog(connection);
+
+        // TODO: Tested against SQL Server only and it is failing against PostgreSQL
+        //       We are going to need postgresql_test.cpp, as we do with sqlite_test.cpp.
+
+        // Check we can iterate over any tables
+        {
+            nanodbc::catalog::tables tables = catalog.find_tables();
+            long count = 0;
+            while (tables.next())
+            {
+                // These two values must not be NULL (returned as empty string)
+                BOOST_CHECK(!tables.table_name().empty());
+                BOOST_CHECK(!tables.table_type().empty());
+                count++;
+            }
+            BOOST_CHECK_GT(count, 0);
+        }
+
+        // Check if there are any tables (with catalog restriction)
+        {
+            nanodbc::string_type empty_name; // a placeholder, makes no restriction on the look-up
+            nanodbc::catalog::tables tables = catalog.find_tables(empty_name, NANODBC_TEXT("TABLE"), empty_name, empty_name);
+            long count = 0;
+            while (tables.next())
+            {
+                // These two values must not be NULL (returned as empty string)
+                BOOST_CHECK(!tables.table_name().empty());
+                BOOST_CHECK(!tables.table_type().empty());
+                count++;
+            }
+            BOOST_CHECK_GT(count, 0);
+        }
+
+        // Find a table with known name
+        {
+            nanodbc::string_type const table_name(NANODBC_TEXT("catalog_tables_test"));
+            execute(connection, NANODBC_TEXT("drop table if exists ") + table_name);
+            execute(connection, NANODBC_TEXT("create table ") + table_name + NANODBC_TEXT("(a int);"));
+
+            // Use brute-force look-up
+            {
+                nanodbc::catalog::tables tables = catalog.find_tables();
+                bool found = false;
+                while (tables.next())
+                {
+                    if (table_name == tables.table_name())
+                    {
+                        BOOST_CHECK(tables.table_type() == NANODBC_TEXT("TABLE"));
+                        found = true;
+                        break;
+                    }
+                }
+                BOOST_CHECK(found);
+            }
+
+            // Use SQLTables pattern search capabilities
+            {
+                nanodbc::catalog::tables tables = catalog.find_tables(table_name);
+                // expect single record with the wanted table
+                BOOST_CHECK(tables.next());
+                BOOST_CHECK(tables.table_name() == table_name);
+                BOOST_CHECK(tables.table_type() == NANODBC_TEXT("TABLE"));
+                // expect no more records
+                BOOST_CHECK(!tables.next());
+            }
+        }
+
+        // Find a VIEW with known name
+        {
+            nanodbc::string_type const view_name(NANODBC_TEXT("TABLE_PRIVILEGES"));
+
+            // Use SQLTables pattern search by name only (in any schema)
+            {
+                nanodbc::catalog::tables tables = catalog.find_tables(view_name, NANODBC_TEXT("VIEW"));
+                // expect single record with the wanted table
+                BOOST_CHECK(tables.next());
+                BOOST_CHECK(tables.table_name() == view_name);
+                BOOST_CHECK(tables.table_type() == NANODBC_TEXT("VIEW"));
+                // expect no more records
+                BOOST_CHECK(!tables.next());
+            }
+
+            // Use SQLTables pattern search by name inside given schema
+            {
+                nanodbc::string_type const schema_name(NANODBC_TEXT("INFORMATION_SCHEMA"));
+                nanodbc::catalog::tables tables = catalog.find_tables(view_name, NANODBC_TEXT("VIEW"), schema_name);
+                // expect single record with the wanted table
+                BOOST_CHECK(tables.next());
+                BOOST_CHECK(tables.table_schema() == schema_name);
+                BOOST_CHECK(tables.table_name() == view_name);
+                BOOST_CHECK(tables.table_type() == NANODBC_TEXT("VIEW"));
+                // expect no more records
+                BOOST_CHECK(!tables.next());
+            }
+        }
+    }
 
     void decimal_conversion_test()
     {
