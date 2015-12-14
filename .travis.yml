@@ -7,15 +7,10 @@ addons:
       - boost-latest
     packages:
       - g++-5
-      - gcc-5
-      - clang
-      - libc++-dev
-      - libboost1.55-dev
       - libboost-locale1.55-dev
       - libboost-test1.55-dev
-      - libiodbc2
-      - libiodbc2-dev
       - libsqliteodbc
+      - unixodbc
 
 language: cpp
 
@@ -29,6 +24,12 @@ env:
     - USE_UNICODE=ON  USE_BOOST_CONVERT=ON
 
 install:
+  - cat /etc/odbc.ini
+  - echo "[sqlite]" > /etc/odbc.ini
+  - echo "Description=SQLite3 ODBC Driver" >> /etc/odbc.ini
+  - echo "Driver=/usr/lib/odbc/libsqlite3odbc.so" >> /etc/odbc.ini
+  - echo "Setup=/usr/lib/odbc/libsqlite3odbc.so" >> /etc/odbc.ini
+  - echo "Threading=2" >> /etc/odbc.ini
   - cat /etc/odbc.ini
 
 before_script:
