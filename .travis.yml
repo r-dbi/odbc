@@ -9,6 +9,7 @@ addons:
       - g++-5
       - gcc-5
       - clang
+      - libc++-dev
       - libboost1.55-dev
       - libboost-locale1.55-dev
       - libboost-test1.55-dev
