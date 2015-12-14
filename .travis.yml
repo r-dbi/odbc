@@ -33,11 +33,10 @@ install:
   - cat /etc/odbc.ini
 
 before_script:
-  - if [[ "$CC" == "gcc" ]]; then export CC="gcc-5"; fi
   - if [[ "$CXX" == "g++" ]]; then export CXX="g++-5"; fi
   - mkdir build
   - cd build
 
 script:
-  - cmake -D NANODBC_USE_UNICODE=${USE_UNICODE} -D NANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} ..
+  - cmake -D NANODBC_USE_UNICODE=${USE_UNICODE} -D NANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -D NANODBC_ENABLE_LIBCXX=NO ..
   - make VERBOSE=1 check
