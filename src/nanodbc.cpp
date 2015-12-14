@@ -892,6 +892,47 @@ public:
         return string_type(&name[0], &name[strarrlen(name)]);
     }
 
+    string_type database_name() const
+    {
+        // FIXME: Allocate buffer of dynamic size as drivers do not agree on universal size
+        // MySQL driver limits MAX_NAME_LEN=255
+        // PostgreSQL driver MAX_INFO_STIRNG=128
+        // MFC CDatabase allocates buffer dynamically.
+        NANODBC_SQLCHAR name[255] = { 0 };
+        SQLSMALLINT length(0);
+        RETCODE rc;
+        NANODBC_CALL_RC(
+            NANODBC_UNICODE(SQLGetInfo)
+            , rc
+            , conn_
+            , SQL_DATABASE_NAME
+            , name
+            , sizeof(name) / sizeof(NANODBC_SQLCHAR)
+            , &length);
+        if(!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+        return string_type(&name[0], &name[strarrlen(name)]);
+    }
+
+    string_type catalog_name() const
+    {
+        NANODBC_SQLCHAR name[SQL_MAX_OPTION_STRING_LENGTH] = { 0 };
+        SQLINTEGER length(0);
+        RETCODE rc;
+        NANODBC_CALL_RC(
+            NANODBC_UNICODE(SQLGetConnectAttr)
+            , rc
+            , conn_
+            , SQL_ATTR_CURRENT_CATALOG
+            , name
+            , sizeof(name) / sizeof(NANODBC_SQLCHAR)
+            , &length);
+        if(!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+        return string_type(&name[0], &name[strarrlen(name)]);
+    }
+
+
     std::size_t ref_transaction()
     {
         return --transactions_;
@@ -2800,6 +2841,16 @@ void* connection::native_env_handle() const
 string_type connection::driver_name() const
 {
     return impl_->driver_name();
+}
+
+string_type connection::database_name() const
+{
+    return impl_->database_name();
+}
+
+string_type connection::catalog_name() const
+{
+    return impl_->catalog_name();
 }
 
 std::size_t connection::ref_transaction()
