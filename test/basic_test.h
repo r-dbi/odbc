@@ -320,7 +320,9 @@ struct basic_test
             BOOST_CHECK(results_copy.get<nanodbc::string_type>(1) == NANODBC_TEXT("two"));
             BOOST_CHECK(results_copy.get<nanodbc::string_type>(NANODBC_TEXT("b")) == NANODBC_TEXT("two"));
 
-            BOOST_CHECK(results.position());
+            // FIXME: not supported by the default SQL_CURSOR_FORWARD_ONLY
+            // and will require SQL_ATTR_CURSOR_TYPE set to SQL_CURSOR_STATIC at least.
+            //BOOST_CHECK(results.position());
 
             nanodbc::result().swap(results_copy);
 
