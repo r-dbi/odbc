@@ -21,7 +21,6 @@ language: cpp
 
 compiler:
   - gcc
-  - clang
 
 env:
     - USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
