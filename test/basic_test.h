@@ -3,13 +3,13 @@
 
 #include "nanodbc.h"
 #include <boost/config.hpp>
+#include <boost/locale/encoding_utf.hpp>
 #include <boost/mpl/list.hpp>
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4244) //conversion from 'T1' to 'T2' possible loss of data
 #endif
 #include <boost/test/unit_test.hpp>
-#include <codecvt>
 
 #ifdef NANODBC_USE_UNICODE
     #define NANODBC_TEXT(s) L ## s
@@ -84,7 +84,9 @@ struct basic_test
 #endif
 
 #ifdef NANODBC_USE_UNICODE
-        return std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(connection_string);
+        using boost::locale::conv::utf_to_utf;
+        return utf_to_utf<wchar_t>(connection_string.c_str(),
+            connection_string.c_str() + connection_string.size());
 #else
         return connection_string;
 #endif
