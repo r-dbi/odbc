@@ -74,12 +74,15 @@
 #ifndef NANODBC_H
 #define NANODBC_H
 
-#include <cstdint>
 #include <functional>
 #include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
+
+#ifndef __clang__
+    #include <cstdint>
+#endif
 
 //! \brief The entirety of nanodbc can be found within this one namespace.
 //! \note This library does not make any exception safety guarantees, but should work just fine with a threading enabled ODBC driver. If you want to use nanodbc objects in threads I recommend each thread keep their own connection to the database. Otherwise you must synchronize any access to nanodbc objects.

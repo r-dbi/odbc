@@ -8,13 +8,16 @@
 
 #include <algorithm>
 #include <clocale>
-#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
 #include <iomanip>
 #include <map>
 #include <sstream>
+
+#ifndef __clang__
+    #include <cstdint>
+#endif
 
 // User may redefine NANODBC_ASSERT macro in nanodbc.h
 #ifndef NANODBC_ASSERT
