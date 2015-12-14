@@ -3251,6 +3251,298 @@ void statement::bind_null(short param, std::size_t elements)
 
 } // namespace nanodbc
 
+namespace nanodbc
+{
+
+catalog::tables::tables(result& find_result)
+: result_(find_result)
+{
+}
+
+bool catalog::tables::next()
+{
+    return result_.next();
+}
+
+string_type catalog::tables::table_catalog() const
+{
+    // TABLE_CAT might be NULL
+    return result_.get<string_type>(0, string_type());
+}
+
+string_type catalog::tables::table_schema() const
+{
+    // TABLE_SCHEM might be NULL
+    return result_.get<string_type>(1, string_type());
+}
+
+string_type catalog::tables::table_name() const
+{
+    // TABLE_NAME column is never NULL
+    return result_.get<string_type>(2);
+}
+
+string_type catalog::tables::table_type() const
+{
+    // TABLE_TYPE column is never NULL
+    return result_.get<string_type>(3);
+}
+
+string_type catalog::tables::table_remarks() const
+{
+    // REMARKS might be NULL
+    return result_.get<string_type>(4, string_type());
+}
+
+catalog::primary_keys::primary_keys(result& find_result)
+: result_(find_result)
+{
+}
+
+bool catalog::primary_keys::next()
+{
+    return result_.next();
+}
+
+string_type catalog::primary_keys::table_catalog() const
+{
+    // TABLE_CAT might be NULL
+    return result_.get<string_type>(0, string_type());
+}
+
+string_type catalog::primary_keys::table_schema() const
+{
+    // TABLE_SCHEM might be NULL
+    return result_.get<string_type>(1, string_type());
+}
+
+string_type catalog::primary_keys::table_name() const
+{
+    // TABLE_NAME is never NULL
+    return result_.get<string_type>(2);
+}
+
+string_type catalog::primary_keys::column_name() const
+{
+    // COLUMN_NAME is never NULL
+    return result_.get<string_type>(3);
+}
+
+short catalog::primary_keys::column_number() const
+{
+    // KEY_SEQ is never NULL
+    return result_.get<short>(4);
+}
+
+string_type catalog::primary_keys::primary_key_name() const
+{
+    // PK_NAME might be NULL
+    return result_.get<string_type>(5);
+}
+
+catalog::columns::columns(result& find_result)
+: result_(find_result)
+{
+}
+
+bool catalog::columns::next()
+{
+    return result_.next();
+}
+
+string_type catalog::columns::table_catalog() const
+{
+    // TABLE_CAT might be NULL
+    return result_.get<string_type>(0, string_type());
+}
+
+string_type catalog::columns::table_schema() const
+{
+    // TABLE_SCHEM might be NULL
+    return result_.get<string_type>(1, string_type());
+}
+
+string_type catalog::columns::table_name() const
+{
+    // TABLE_NAME is never NULL
+    return result_.get<string_type>(2);
+}
+
+string_type catalog::columns::column_name() const
+{
+    // COLUMN_NAME is never NULL
+    return result_.get<string_type>(3);
+}
+
+short catalog::columns::data_type() const
+{
+    // DATA_TYPE is never NULL
+    return result_.get<short>(4);
+}
+
+string_type catalog::columns::type_name() const
+{
+    // TYPE_NAME is never NULL
+    return result_.get<string_type>(5);
+}
+
+long catalog::columns::column_size() const
+{
+    // COLUMN_SIZE
+    return result_.get<long>(6);
+}
+
+long catalog::columns::buffer_length() const
+{
+    // BUFFER_LENGTH
+    return result_.get<long>(7);
+}
+
+short catalog::columns::decimal_digits() const
+{
+    // DECIMAL_DIGITS might be NULL
+    return result_.get<short>(8, 0);
+}
+
+short catalog::columns::numeric_precision_radix() const
+{
+    // NUM_PREC_RADIX might be NULL
+    return result_.get<short>(9, 0);
+}
+
+short catalog::columns::nullable() const
+{
+    // NULLABLE is never NULL
+    return result_.get<short>(10);
+}
+
+string_type catalog::columns::remarks() const
+{
+    // REMARKS might be NULL
+    return result_.get<string_type>(11, string_type());
+}
+
+string_type catalog::columns::column_default() const
+{
+    // COLUMN_DEF might be NULL, if no default value is specified.
+    return result_.get<string_type>(12, string_type());
+}
+
+short catalog::columns::sql_data_type() const
+{
+    // SQL_DATA_TYPE is never NULL
+    return result_.get<short>(13);
+}
+
+short catalog::columns::sql_datetime_subtype() const
+{
+    // SQL_DATETIME_SUB might be NULL
+    return result_.get<short>(14, 0);
+}
+
+long catalog::columns::char_octed_length() const
+{
+    // CHAR_OCTET_LENGTH might be nULL
+    return result_.get<long>(15, 0);
+}
+
+long catalog::columns::ordinal_position() const
+{
+    // ORDINAL_POSITION is never NULL
+    return result_.get<long>(16);
+}
+
+string_type catalog::columns::is_nullable() const
+{
+    // IS_NULLABLE is never NULL
+    return result_.get<string_type>(17);
+}
+
+catalog::catalog(connection& conn)
+: conn_(conn)
+{
+}
+
+catalog::tables catalog::find_tables(
+    const string_type& table
+  , const string_type& type
+  , const string_type& schema
+  , const string_type& catalog)
+{
+    statement stmt(conn_);
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_UNICODE(SQLTables)
+        , rc
+        , stmt.native_statement_handle()
+        , (NANODBC_SQLCHAR*)(catalog.empty() ? NULL : catalog.c_str())
+        , (catalog.empty() ? 0 : SQL_NTS)
+        , (NANODBC_SQLCHAR*)(schema.empty() ? NULL : schema.c_str())
+        , (schema.empty() ? 0 : SQL_NTS)
+        , (NANODBC_SQLCHAR*)(table.empty() ? NULL : table.c_str())
+        , (table.empty() ? 0 : SQL_NTS)
+        , (NANODBC_SQLCHAR*)(type.empty() ? NULL : type.c_str())
+        , (type.empty() ? 0 : SQL_NTS));
+    if(!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
+
+    result find_result(stmt, 1);
+    return catalog::tables(find_result);
+}
+
+catalog::columns catalog::find_columns(
+        const string_type& column
+      , const string_type& table
+      , const string_type& schema
+      , const string_type& catalog)
+{
+    statement stmt(conn_);
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_UNICODE(SQLColumns)
+        , rc
+        , stmt.native_statement_handle()
+        , (NANODBC_SQLCHAR*)(catalog.empty() ? NULL : catalog.c_str())
+        , (catalog.empty() ? 0 : SQL_NTS)
+        , (NANODBC_SQLCHAR*)(schema.empty() ? NULL : schema.c_str())
+        , (schema.empty() ? 0 : SQL_NTS)
+        , (NANODBC_SQLCHAR*)(table.empty() ? NULL : table.c_str())
+        , (table.empty() ? 0 : SQL_NTS)
+        , (NANODBC_SQLCHAR*)(column.empty() ? NULL : column.c_str())
+        , (column.empty() ? 0 : SQL_NTS));
+    if(!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
+
+    result find_result(stmt, 1);
+    return catalog::columns(find_result);
+}
+
+catalog::primary_keys catalog::find_primary_keys(
+      const string_type& table
+    , const string_type& schema
+    , const string_type& catalog)
+{
+    statement stmt(conn_);
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_UNICODE(SQLPrimaryKeys)
+        , rc
+        , stmt.native_statement_handle()
+        , (NANODBC_SQLCHAR*)(catalog.empty() ? NULL : catalog.c_str())
+        , (catalog.empty() ? 0 : SQL_NTS)
+        , (NANODBC_SQLCHAR*)(schema.empty() ? NULL : schema.c_str())
+        , (schema.empty() ? 0 : SQL_NTS)
+        , (NANODBC_SQLCHAR*)(table.empty() ? NULL : table.c_str())
+        , (table.empty() ? 0 : SQL_NTS));
+    if(!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
+
+    result find_result(stmt, 1);
+    return catalog::primary_keys(find_result);
+}
+
+} // namespace nanodbc
+
 // 8888888b.                            888 888              8888888888                 888
 // 888   Y88b                           888 888              888                        888
 // 888    888                           888 888              888                        888
