@@ -38,4 +38,4 @@ before_script:
 
 script:
   - cmake -D NANODBC_USE_UNICODE=${USE_UNICODE} -D NANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -D NANODBC_ENABLE_LIBCXX=NO ..
-  - make VERBOSE=1 check
+  - make VERBOSE=1 sqlite_check
