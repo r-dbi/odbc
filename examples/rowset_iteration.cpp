@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
         {
             statement stmt(conn);
             prepare(stmt, NANODBC_TEXT("insert into rowset_iteration (i) values (?);"));
-            std::array<int, 5> const numbers = { 100, 80, 60, 40, 20 };
+            std::array<int, 5> const numbers {{ 100, 80, 60, 40, 20 }};
             stmt.bind(0, numbers.data(), numbers.size());
             transact(stmt, static_cast<long>(numbers.size()));
         }
