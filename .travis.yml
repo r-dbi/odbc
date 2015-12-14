@@ -8,6 +8,7 @@ addons:
     packages:
       - g++-5
       - gcc-5
+      - clang
       - libboost1.55-dev
       - libboost-locale1.55-dev
       - libboost-test1.55-dev
@@ -19,6 +20,7 @@ language: cpp
 
 compiler:
   - gcc
+  - clang
 
 env:
     - USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
@@ -36,5 +38,5 @@ before_script:
   - cd build
 
 script:
-  - cmake -D NANODBC_USE_UNICODE=${USE_UNICODE} -DNANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} ..
+  - cmake -D NANODBC_USE_UNICODE=${USE_UNICODE} -D NANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} ..
   - make VERBOSE=1 check
