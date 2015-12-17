@@ -5,7 +5,7 @@ A small C++ wrapper for the native C ODBC API. Please see the [online documentat
 | Version | Description |
 |:--- |:--- |
 | `release` | [![release](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=release)](https://travis-ci.org/lexicalunit/nanodbc) Most recent release that's been deemed "stable". Always prefer to use this version if you can! |
-| `latest` | [![latest](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=latest)](https://travis-ci.org/lexicalunit/nanodbc) Latest release; still needs testing to be deemed "stable". |
+| `latest` | [![latest](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=latest)](https://travis-ci.org/lexicalunit/nanodbc) Latest release; still needs testing to be deemed "stable". **[See all available releases.](https://github.com/lexicalunit/nanodbc/releases)** |
 | `master`  | [![master](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master)](https://travis-ci.org/lexicalunit/nanodbc) Contains the latest development code, not yet ready for a release. |
 | `v2.x.x`  | Targets C++14+. All future development will build upon this version. |
 | `v1.x.x`  | Supports C++03 and optionally C++11. *There is no longer any support for this version.* |
@@ -74,30 +74,34 @@ To do this manually instead, use the following steps &mdash; for example a minor
 3. `git commit -m "Preparing 2.10.0 release."`
 4. `git tag -f "v2.10.0"`
 5. `git push -f origin "v2.10.0"`
+6. `git push -f origin master:latest`
 
-Release nanodbc with the `scripts/release.sh` script. All this script does is push out the `master` branch to the `release` branch, indicating that a new stable version of nanodbc exists. To do so manually, execute `git push -f origin master:release`.
+### Release Process
+
+Release nanodbc with the `scripts/release.sh` script. All this script does is push out the `master` branch to the `release` branch, indicating that a new "stable" version of nanodbc exists. To do so manually, execute `git push -f origin master:release`. **Only do this for releases that have been deemed "stable" based on suitable criteria.**
 
 ## Source Level Documentation
 
 Source level documentation provided via [GitHub's gh-pages](https://help.github.com/articles/what-are-github-pages/) is available at [nanodbc.lexicalunit.com](http://lexicalunit.github.io/nanodbc/). To re-build and update it, preform the following steps from the root directory of the repository:
 
-1. `git clone -b gh-pages git@github.com:lexicalunit/nanodbc.git doc` (necessary the first time, not subsequently)
+1. `git clone -b gh-pages git@github.com:lexicalunit/nanodbc.git doc` Necessary the first time, not subsequently.
 2. `cd doc`
 3. `make` Generates updated documentation locally.
-4. `make commit` Adds and commits any updated documentation. Typically followed by a `git push origin gh-pages` command.
+4. `make commit` Adds and commits any updated documentation.
+5. `git push origin gh-pages` Deploys the changes to github.
 
 Building documentation and gh-pages requires the use of [Doxygen](www.doxygen.org) and [jekyll](https://jekyllrb.com/). See the `Makefile` on the `gh-pages` branch of nanodbc for more details.
 
 ## Testing Environments
 
-To get up and running with nanodbc as quickly as possible consider using the provided Dockerfile or Vagrantfile. For example, to spin up a [docker](https://www.docker.com/) container suitable for testing nanodbc:
+To get up and running with nanodbc as quickly as possible consider using the provided Dockerfile or Vagrantfile. For example, to spin up a [docker](https://www.docker.com/) container suitable for testing and development of nanodbc:
 
 ```shell
 $ docker build -t nanodbc .
 $ docker run -v $(pwd):/opt/$(basename $(pwd)) -t -i nanodbc /bin/bash
 root@hash:/# mkdir -p /opt/nanodbc/docker_build && cd /opt/nanodbc/docker_build
 root@hash:/opt/nanodbc/docker_build# cmake -DNANODBC_USE_BOOST_CONVERT=YES ..
-root@hash:/opt/nanodbc/docker_build# make check
+root@hash:/opt/nanodbc/docker_build# make nanodbc
 ```
 
 ## Future work
