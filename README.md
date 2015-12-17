@@ -1,15 +1,11 @@
-# Synopsis
-
-<sup>\[&nbsp;master&nbsp;</sup>[![master](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master)](https://travis-ci.org/lexicalunit/nanodbc)<sup>&nbsp;\]\[&nbsp;release&nbsp;</sup>[![release](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=release)](https://travis-ci.org/lexicalunit/nanodbc)<sup>&nbsp;\]</sup>
+![nanodbc-banner](https://cloud.githubusercontent.com/assets/1903876/11858632/cc0e21e6-a428-11e5-9a84-39fa27984914.png)
 
 A small C++ wrapper for the native C ODBC API. Please see the [online documentation](http://lexicalunit.github.com/nanodbc/) for user information, example usage, propaganda, and detailed source level documentation.
 
-# Versions
-
-| Tag&nbsp;or&nbsp;Branch | Description |
-| ---:|:--- |
-| `master`  | Contains the latest development code, not yet ready for release. |
-| `release` | Always pegged to the most recent stable release. |
+| Version | Description |
+|:--- |:--- |
+| `master`  | [![master](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master)](https://travis-ci.org/lexicalunit/nanodbc) Contains the latest development code, not yet ready for release. |
+| `release` | [![release](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=release)](https://travis-ci.org/lexicalunit/nanodbc) Always pegged to the most recent stable release. |
 | `v2.0.0`  | Targets C++14+. All future development will build upon this version. |
 | `v1.0.0`  | Supports C++03 and optionally C++11. *There is no longer any support for this version.* |
 
@@ -61,6 +57,8 @@ The following build options are available via CMake. If you are not using CMake 
 | `‑D NANODBC_TEST=...`                 | `OFF` or `ON`         | `ON`          | Enables tests target (alias `check`). |
 | `-D NANODBC_ENABLE_LIBCXX=...`        | `OFF` or `ON`         | `ON`          | Enables usage of libc++ if found on the system. |
 | `‑D NANODBC_ODBC_VERSION=...`         | `SQL_OV_ODBC3[...]`   | See Details   | **[Optional]** Sets the ODBC version macro for nanodbc to use. Default is `SQL_OV_ODBC3_80` if available, otherwise `SQL_OV_ODBC3`. |
+
+---
 
 # Contributing
 
