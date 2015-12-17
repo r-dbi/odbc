@@ -9,6 +9,7 @@ addons:
       - g++-5
       - libboost-locale1.55-dev
       - libboost-test1.55-dev
+      - libmyodbc
       - libsqliteodbc
       - unixodbc
 
@@ -23,16 +24,9 @@ env:
     - USE_UNICODE=ON  USE_BOOST_CONVERT=OFF
     - USE_UNICODE=ON  USE_BOOST_CONVERT=ON
 
-install:
-  - cat /etc/odbc.ini
-  - echo "[sqlite]" > /etc/odbc.ini
-  - echo "Description=SQLite3 ODBC Driver" >> /etc/odbc.ini
-  - echo "Driver=/usr/lib/odbc/libsqlite3odbc.so" >> /etc/odbc.ini
-  - echo "Setup=/usr/lib/odbc/libsqlite3odbc.so" >> /etc/odbc.ini
-  - echo "Threading=2" >> /etc/odbc.ini
-  - cat /etc/odbc.ini
-
 before_script:
+  - cat /etc/odbc.ini
+  - cat /etc/odbcint.ini
   - if [[ "$CXX" == "g++" ]]; then export CXX="g++-5"; fi
   - mkdir build
   - cd build
