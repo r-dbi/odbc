@@ -102,6 +102,7 @@ struct basic_test
 
         // TODO: Tested against SQL Server only and it is failing against PostgreSQL
         //       We are going to need postgresql_test.cpp, as we do with sqlite_test.cpp.
+        //       It also seems to fail for MySQL as well. -- lexicalunit
 
         // Check we can iterate over any columns
         {
@@ -390,12 +391,10 @@ struct basic_test
 
         BOOST_CHECK_THROW(execute(connection, NANODBC_TEXT("THIS IS NOT VALID SQL!")), nanodbc::database_error);
 
-        execute(connection,
-            NANODBC_TEXT("drop table if exists exception_test;")
-            NANODBC_TEXT("create table exception_test (i int);")
-            NANODBC_TEXT("insert into exception_test values (-10);")
-            NANODBC_TEXT("insert into exception_test values (null);")
-        );
+        execute(connection, NANODBC_TEXT("drop table if exists exception_test;"));
+        execute(connection, NANODBC_TEXT("create table exception_test (i int);"));
+        execute(connection, NANODBC_TEXT("insert into exception_test values (-10);"));
+        execute(connection, NANODBC_TEXT("insert into exception_test values (null);"));
 
         results = execute(connection, NANODBC_TEXT("select * from exception_test where i = -10;"));
 
@@ -486,22 +485,20 @@ struct basic_test
         BOOST_CHECK_EQUAL(ref, static_cast<T>(i));
         BOOST_CHECK_EQUAL(results.get<T>(p++), static_cast<T>(i));
         results.get_ref(p, ref);
-        BOOST_CHECK_CLOSE(static_cast<float>(ref), static_cast<T>(f), 1e-6);
-        BOOST_CHECK_CLOSE(static_cast<float>(results.get<T>(p++)), static_cast<T>(f), 1e-6);
+        BOOST_CHECK_CLOSE(static_cast<float>(ref), static_cast<T>(f), 1e-3);
+        BOOST_CHECK_CLOSE(static_cast<float>(results.get<T>(p++)), static_cast<T>(f), 1e-3);
         results.get_ref(p, ref);
-        BOOST_CHECK_CLOSE(static_cast<double>(ref), static_cast<T>(d), 1e-6);
-        BOOST_CHECK_CLOSE(static_cast<double>(results.get<T>(p++)), static_cast<T>(d), 1e-6);
+        BOOST_CHECK_CLOSE(static_cast<double>(ref), static_cast<T>(d), 1e-3);
+        BOOST_CHECK_CLOSE(static_cast<double>(results.get<T>(p++)), static_cast<T>(d), 1e-3);
     }
 
     #ifndef BOOST_NO_RVALUE_REFERENCES
     void move_test()
     {
         nanodbc::connection orig_connection = connect();
-        execute(orig_connection,
-            NANODBC_TEXT("drop table if exists move_test;")
-            NANODBC_TEXT("create table move_test (i int);")
-            NANODBC_TEXT("insert into move_test values (10);")
-        );
+        execute(orig_connection, NANODBC_TEXT("drop table if exists move_test;"));
+        execute(orig_connection, NANODBC_TEXT("create table move_test (i int);"));
+        execute(orig_connection, NANODBC_TEXT("insert into move_test values (10);"));
 
         nanodbc::connection new_connection = std::move(orig_connection);
         execute(new_connection, NANODBC_TEXT("insert into move_test values (30);"));
