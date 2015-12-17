@@ -1,5 +1,3 @@
-sudo: false
-
 addons:
   apt:
     sources:
@@ -9,9 +7,10 @@ addons:
       - g++-5
       - libboost-locale1.55-dev
       - libboost-test1.55-dev
+      - libiodbc2
+      - libiodbc2-dev
       - libmyodbc
       - libsqliteodbc
-      - unixodbc
 
 language: cpp
 
@@ -25,8 +24,11 @@ env:
     - USE_UNICODE=ON  USE_BOOST_CONVERT=ON
 
 before_script:
+  - sudo odbcinst -i -d -f /usr/share/libmyodbc/odbcinst.ini
+  - sudo odbcinst -i -s -l -f ./test/odbc.ini
+  - sudo odbcinst -i -s -l -f /usr/share/sqliteodbc/unixodbc.ini
   - cat /etc/odbc.ini
-  - cat /etc/odbcint.ini
+  - cat /etc/odbcinst.ini
   - if [[ "$CXX" == "g++" ]]; then export CXX="g++-5"; fi
   - mkdir build
   - cd build
