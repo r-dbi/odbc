@@ -13,17 +13,15 @@ sudo apt-get -y -q install \
     git \
     libboost-locale1.55-dev \
     libboost-test1.55-dev \
-    libiodbc2 \
-    libiodbc2-dev \
-    libsqliteodbc
+    libmyodbc \
+    libsqliteodbc \
+    mysql-client \
+    mysql-server \
+    unixodbc \
+    unixodbc-dev
 
-sudo bash -c "cat << EOF > "$(iodbc-config --odbcinstini)"
-[sqlite]
-Description             = SQLite ODBC Driver
-Driver                  = $(dpkg-query -L libsqliteodbc | egrep -i 'libsqlite3odbc.so$')
-Setup                   = $(dpkg-query -L libsqliteodbc | egrep -i 'libsqlite3odbc.so$')
-Threading               = 2
-EOF"
+sudo odbcinst -i -d -f /usr/share/libmyodbc/odbcinst.ini
+sudo odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini
 SCRIPT
 
 # All Vagrant configuration is done below.

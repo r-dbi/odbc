@@ -7,17 +7,17 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -y install \
         cmake \
         g++-5 \
-        libboost-locale-dev \
-        libboost-test-dev \
-        libiodbc2 \
-        libiodbc2-dev \
-        libsqliteodbc
+        git \
+        libboost-locale1.55-dev \
+        libboost-test1.55-dev \
+        libmyodbc \
+        libsqliteodbc \
+        mysql-client \
+        mysql-server \
+        unixodbc \
+        unixodbc-dev
 
-RUN echo "\n\
-[sqlite]\n\
-Description             = SQLite ODBC Driver\n\
-Driver                  = $(dpkg-query -L libsqliteodbc | egrep -i 'libsqlite3odbc.so$')\n\
-Setup                   = $(dpkg-query -L libsqliteodbc | egrep -i 'libsqlite3odbc.so$')\n\
-Threading               = 2\n" > "$(iodbc-config --odbcinstini)"
+RUN odbcinst -i -d -f /usr/share/libmyodbc/odbcinst.ini
+RUN odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini
 
 ENV CXX g++-5
