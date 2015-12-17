@@ -1,4 +1,4 @@
-#!/bin/bash -ue
+#!/bin/bash
 
 usage()
 {
@@ -13,17 +13,12 @@ if echo "$*" | egrep -q -- "--help|-h"; then
     usage
 fi
 
-abort()
-{
-    echo $'\e[1;31merror:' "$1" $'\e[0m' >&2
-    exit 1
-}
+pushd "$(git rev-parse --show-toplevel)" >/dev/null
+source scripts/shell_control
 
 if [[ -n "$(git status -s)" ]]; then
     abort "changes exist in workspace, please commit or stash them first."
 fi
-
-pushd "$(git rev-parse --show-toplevel)" >/dev/null
 
 version=$(cat VERSION)
 major="$(echo "$version" | cut -d. -f1)"
@@ -45,10 +40,11 @@ fi
 
 version="$major.$minor.$patch"
 tag="v$version"
-echo "Publishing nanodbc version: $version"
-set -x
-echo "$version" > VERSION
-git add VERSION
-git commit -m "Preparing $version release."
-git tag -f "$tag"
-git push -f origin "$tag"
+show "Publishing nanodbc version: $version"
+set -ue
+run "echo '$version' > VERSION"
+run "git add VERSION"
+run "git commit -m 'Preparing $version release.'"
+run "git tag -f '$tag'"
+run "git push -f origin '$tag'"
+run "git push -f origin master:latest"
