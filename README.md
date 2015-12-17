@@ -4,8 +4,8 @@ A small C++ wrapper for the native C ODBC API. Please see the [online documentat
 
 | Version | Description |
 |:--- |:--- |
+| `release` | [![release](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=release)](https://travis-ci.org/lexicalunit/nanodbc) Most recent stable release. Always prefer to use this version if you can! |
 | `master`  | [![master](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master)](https://travis-ci.org/lexicalunit/nanodbc) Contains the latest development code, not yet ready for release. |
-| `release` | [![release](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=release)](https://travis-ci.org/lexicalunit/nanodbc) Always pegged to the most recent stable release. |
 | `v2.0.0`  | Targets C++14+. All future development will build upon this version. |
 | `v1.0.0`  | Supports C++03 and optionally C++11. *There is no longer any support for this version.* |
 
