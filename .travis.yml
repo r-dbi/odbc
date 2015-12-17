@@ -9,7 +9,6 @@ addons:
       - libboost-test1.55-dev
       - libiodbc2
       - libiodbc2-dev
-      - libmyodbc
       - libsqliteodbc
 
 language: cpp
@@ -23,16 +22,21 @@ env:
     - USE_UNICODE=ON  USE_BOOST_CONVERT=OFF
     - USE_UNICODE=ON  USE_BOOST_CONVERT=ON
 
+install:
+  - export ODBCINST="$(iodbc-config --odbcinstini)"
+  - echo "[sqlite]" | sudo tee -a "$ODBCINST"
+  - echo "Description             = SQLite ODBC Driver" | sudo tee -a "$ODBCINST"
+  - echo "Driver                  = $(dpkg-query -L libsqliteodbc | egrep -i 'libsqlite3odbc.so$')" | sudo tee -a "$ODBCINST"
+  - echo "Setup                   = $(dpkg-query -L libsqliteodbc | egrep -i 'libsqlite3odbc.so$')" | sudo tee -a "$ODBCINST"
+  - echo "Threading               = 2" | sudo tee -a "$ODBCINST"
+  - if [[ -f /etc/odbc.ini ]]; then cat /etc/odbc.ini; fi
+  - if [[ -f /etc/odbcinst.ini ]]; then cat /etc/odbcinst.ini; fi
+
 before_script:
-  - sudo odbcinst -i -d -f /usr/share/libmyodbc/odbcinst.ini
-  - sudo odbcinst -i -s -l -f ./test/odbc.ini
-  - sudo odbcinst -i -s -l -f /usr/share/sqliteodbc/unixodbc.ini
-  - cat /etc/odbc.ini
-  - cat /etc/odbcinst.ini
-  - if [[ "$CXX" == "g++" ]]; then export CXX="g++-5"; fi
-  - mkdir build
-  - cd build
+  - export CXX="g++-5"
 
 script:
+  - mkdir build
+  - cd build
   - cmake -D NANODBC_USE_UNICODE=${USE_UNICODE} -D NANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -D NANODBC_ENABLE_LIBCXX=NO ..
   - make VERBOSE=1 sqlite_check

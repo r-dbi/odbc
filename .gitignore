@@ -15,6 +15,7 @@
 /.vagrant
 /doc
 /build/
+/docker_build/
 /build32/
 /build64/
 example
