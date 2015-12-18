@@ -1860,6 +1860,7 @@ public:
     , bound_columns_size_(0)
     , rowset_position_(0)
     , bound_columns_by_name_()
+    , at_end_(false)
     {
         RETCODE rc;
         NANODBC_CALL_RC(
@@ -1991,6 +1992,8 @@ public:
 
     bool end() const NANODBC_NOEXCEPT
     {
+        if(at_end_)
+            return true;
         SQLULEN pos = 0; // necessary to initialize to 0
         RETCODE rc;
         NANODBC_CALL_RC(
@@ -2211,7 +2214,10 @@ private:
             , orientation
             , rows);
         if(rc == SQL_NO_DATA)
+        {
+            at_end_ = true;
             return false;
+        }
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
         return true;
@@ -2395,6 +2401,7 @@ private:
     short bound_columns_size_;
     long rowset_position_;
     std::map<string_type, bound_column*> bound_columns_by_name_;
+    bool at_end_;
 };
 
 template<>
