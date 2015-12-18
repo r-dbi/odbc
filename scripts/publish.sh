@@ -14,7 +14,7 @@ if echo "$*" | egrep -q -- "--help|-h"; then
 fi
 
 pushd "$(git rev-parse --show-toplevel)" >/dev/null
-source scripts/shell_control
+source scripts/shell_control.sh
 
 if [[ -n "$(git status -s)" ]]; then
     abort "changes exist in workspace, please commit or stash them first."
@@ -40,6 +40,11 @@ fi
 
 version="$major.$minor.$patch"
 tag="v$version"
+
+if ! head -n 1 CHANGELOG.md | egrep -q "^# $tag$"; then
+    abort "Please update CHANGELOG.md! The file should start with '# $tag'."
+fi
+
 show "Publishing nanodbc version: $version"
 set -ue
 run "echo '$version' > VERSION"

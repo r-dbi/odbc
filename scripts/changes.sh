@@ -4,7 +4,7 @@ usage()
 {
     (
         echo "usage: ${0##*/}"
-        echo "Release new stable version of nanodbc."
+        echo "Print log of changes since last release. Helps when writing CHANGELOG.md."
     ) >&2
     exit 1
 }
@@ -20,8 +20,4 @@ if [[ -n "$(git status -s)" ]]; then
     abort "changes exist in workspace, please commit or stash them first."
 fi
 
-ask "Make version $(cat VERSION) the new STABLE release?"
-if [[ "$REPLY" == "y" ]]; then
-    set -e
-    run "git push -f origin master:release"
-fi
+run "git log origin/latest..HEAD"

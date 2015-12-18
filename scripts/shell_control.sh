@@ -1,4 +1,4 @@
-# shell_control
+#! shell_control.sh
 
 show()
 {
