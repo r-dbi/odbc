@@ -147,4 +147,4 @@
 
 # v1.0.0
 
-Version 1.0.0 and all commit prior are now completely unsupported.
+Version 1.0.0 and all commits prior are now completely unsupported.

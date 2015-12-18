@@ -67,6 +67,8 @@ The following build options are available via CMake. If you are not using CMake 
 
 Once your local `master` branch is ready for publishing (i.e. [semantic versioning](http://semver.org/)), use the `scripts/publish.sh` script. This script bumps the major, minor, or patch version, then updates the repository's `VERSION` file, adds a "Preparing" commit, and creates git tags appropriately. For example to make a minor update you would run `./scripts/publish.sh minor`.
 
+> **Important:** Always update [`CHANGELOG.md`](CHANGELOG.md) with information about new changes, bug fixes, and features when making a new release. Use the `./scripts/changes.sh` script to aid in your composition of this document. The publish script itself will attempt to verify that the changelog file has been properly updated.
+
 To do this manually instead, use the following steps &mdash; for example a minor update from `2.9.x` to `2.10.0`:
 
 1. `echo "2.10.0" > VERSION`
