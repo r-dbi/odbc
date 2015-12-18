@@ -72,14 +72,14 @@ struct basic_test
 #ifdef _MSC_VER
         std::size_t env_len(0);
         errno_t err = _dupenv_s(&env_value, &env_len, env_name);
-        if (!err && env_value)
+        if(!err && env_value)
         {
             connection_string = env_value;
             std::free(env_value);
         }
 #else
         env_value = std::getenv(env_name);
-        if (!env_value) return nanodbc::string_type();
+        if(!env_value) return nanodbc::string_type();
         connection_string = env_value;
 #endif
 
@@ -108,7 +108,7 @@ struct basic_test
         {
             nanodbc::catalog::columns columns = catalog.find_columns();
             long count = 0;
-            while (columns.next())
+            while(columns.next())
             {
                 // These values must not be NULL (returned as empty string)
                 BOOST_CHECK(!columns.column_name().empty());
@@ -270,7 +270,7 @@ struct basic_test
         {
             nanodbc::catalog::tables tables = catalog.find_tables();
             long count = 0;
-            while (tables.next())
+            while(tables.next())
             {
                 // These two values must not be NULL (returned as empty string)
                 BOOST_CHECK(!tables.table_name().empty());
@@ -285,7 +285,7 @@ struct basic_test
             nanodbc::string_type empty_name; // a placeholder, makes no restriction on the look-up
             nanodbc::catalog::tables tables = catalog.find_tables(empty_name, NANODBC_TEXT("TABLE"), empty_name, empty_name);
             long count = 0;
-            while (tables.next())
+            while(tables.next())
             {
                 // These two values must not be NULL (returned as empty string)
                 BOOST_CHECK(!tables.table_name().empty());
@@ -305,9 +305,9 @@ struct basic_test
             {
                 nanodbc::catalog::tables tables = catalog.find_tables();
                 bool found = false;
-                while (tables.next())
+                while(tables.next())
                 {
-                    if (table_name == tables.table_name())
+                    if(table_name == tables.table_name())
                     {
                         BOOST_CHECK(tables.table_type() == NANODBC_TEXT("TABLE"));
                         found = true;
@@ -720,6 +720,23 @@ struct basic_test
         }
 
         check_rows_equal(execute(connection, query), 0);
+    }
+
+    void while_not_end_iteration_test()
+    {
+        nanodbc::connection connection = connect();
+        execute(connection, NANODBC_TEXT("drop table if exists while_next_iteration_test;"));
+        execute(connection, NANODBC_TEXT("create table while_next_iteration_test (i int);"));
+        execute(connection, NANODBC_TEXT("insert into while_next_iteration_test values (1);"));
+        execute(connection, NANODBC_TEXT("insert into while_next_iteration_test values (2);"));
+        execute(connection, NANODBC_TEXT("insert into while_next_iteration_test values (3);"));
+        nanodbc::result results = execute(connection, NANODBC_TEXT("select * from while_next_iteration_test order by 1 desc;"));
+        int i = 3;
+        while(!results.end())
+        {
+            results.next();
+            BOOST_CHECK_EQUAL(results.get<int>(0), i--);
+        }
     }
 
     void while_next_iteration_test()
