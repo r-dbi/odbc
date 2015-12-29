@@ -22,11 +22,10 @@ env:
   - DB=mysql USE_UNICODE=OFF USE_BOOST_CONVERT=ON
   - DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=OFF
   - DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=ON
-  # FIXME: SQLite tests not working on Travis CI builds.
-  # - DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
-  # - DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=ON
-  # - DB=sqlite USE_UNICODE=ON  USE_BOOST_CONVERT=OFF
-  # - DB=sqlite USE_UNICODE=ON  USE_BOOST_CONVERT=ON
+  - DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
+  - DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=ON
+  - DB=sqlite USE_UNICODE=ON  USE_BOOST_CONVERT=OFF
+  - DB=sqlite USE_UNICODE=ON  USE_BOOST_CONVERT=ON
 before_install:
   - if [[ "$DB" == "sqlite" ]]; then sudo odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini; fi
   - if [[ "$DB" == "mysql" ]]; then sudo odbcinst -i -d -f /usr/share/libmyodbc/odbcinst.ini; fi
@@ -42,6 +41,7 @@ script:
   - cd build
   - cmake -D NANODBC_USE_UNICODE=${USE_UNICODE} -D NANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -D NANODBC_ENABLE_LIBCXX=NO ..
   - make nanodbc
-  - if [[ "$DB" == "sqlite" ]]; then make VERBOSE=1 sqlite_check; fi
-  # FIXME: Unicode enabled MySQL tests not working on Ubuntu builds.
+  # FIXME: Unicode enabled SQLite tests not working on Linux builds.
+  - if [[ "$DB" == "sqlite" && USE_UNICODE == "OFF" ]]; then make VERBOSE=1 sqlite_check; fi
+  # FIXME: Unicode enabled MySQL tests not working on Linux builds.
   - if [[ "$DB" == "mysql" && USE_UNICODE == "OFF" ]]; then make VERBOSE=1 mysql_check; fi

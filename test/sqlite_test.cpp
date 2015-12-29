@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(decimal_conversion_test)
     nanodbc::connection connection = test.connect();
     nanodbc::result results;
 
-    test.drop_table(connection, "decimal_conversion_test");
+    test.drop_table(connection, NANODBC_TEXT("decimal_conversion_test"));
     execute(connection, NANODBC_TEXT("create table decimal_conversion_test (d decimal(9, 3));"));
     execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (12345.987);"));
     execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (5.6);"));
