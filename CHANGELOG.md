@@ -8,8 +8,8 @@
 ## New Features
 
 - Major thanks again to Mateusz Łoskot for all the new features!
-- Adds Add convenient access to catalog objects (tables, columns, primary keys).
-- Adds Add `database_name` and `catalog_name `methods to connection class.
+- Adds convenient access to catalog objects (tables, columns, primary keys).
+- Adds `database_name` and `catalog_name `methods to connection class.
 - Adds CMake option `NANODBC_ENABLE_LIBCXX` to enable/disable libc++ builds.
 - Adds CMake option `NANODBC_EXAMPLES` to enable/disable the example target.
 - Adds a `latest` release branch to track most recent release.
@@ -17,7 +17,7 @@
 ## Testing
 
 - Massive updates to Travis CI continuous integration.
-- Adds Add general `odbc_test` to target variety of ODBC drivers.
+- Adds general `odbc_test` to target variety of ODBC drivers.
 - Adds specific MySQL tests.
 - Updates test target organization.
     - The way the targets were designed is such that:
