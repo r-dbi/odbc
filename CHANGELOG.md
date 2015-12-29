@@ -1,3 +1,8 @@
+# v2.11.3
+
+- Fixes segmentation fault issue with unixODBC on Linux systems.
+- Adds support for `while(!results.end())` style iteration.
+
 # v2.11.2
 
 - Adds this CHANGELOG.md file. Future releases should update it accordingly!
