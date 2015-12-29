@@ -92,6 +92,19 @@ struct basic_test
 #endif
     }
 
+    // Some databases support `DROP TABLE IF EXISTS`, but others do not. Let's be safe.
+    void drop_table(nanodbc::connection& connection, const nanodbc::string_type& name) const
+    {
+        nanodbc::result results = execute(connection,
+            NANODBC_TEXT("SELECT COUNT(1) ")
+            NANODBC_TEXT("FROM sqlite_master ")
+            NANODBC_TEXT("WHERE type='table' AND ")
+            NANODBC_TEXT("name='") + name +
+            NANODBC_TEXT("';"));
+        if(results.next() && results.get<int>(0))
+            execute(connection, NANODBC_TEXT("DROP TABLE ") + name + NANODBC_TEXT(";"));
+    }
+
     // Test Cases
 
     void catalog_columns_test()
@@ -120,7 +133,7 @@ struct basic_test
         // Find a table with known name and verify its known columns
         {
             nanodbc::string_type const table_name(NANODBC_TEXT("catalog_columns_test"));
-            execute(connection, NANODBC_TEXT("drop table if exists ") + table_name);
+            drop_table(connection, table_name);
             execute(connection, NANODBC_TEXT("create table ") + table_name + NANODBC_TEXT("(")
                 + NANODBC_TEXT("c0 int PRIMARY KEY,")
                 + NANODBC_TEXT("c1 smallint NOT NULL,")
@@ -219,7 +232,7 @@ struct basic_test
         // Find a single-column primary key for table with known name
         {
             nanodbc::string_type const table_name(NANODBC_TEXT("catalog_primary_keys_simple_test"));
-            execute(connection, NANODBC_TEXT("drop table if exists ") + table_name);
+            drop_table(connection, table_name);
             execute(connection, NANODBC_TEXT("create table ") + table_name
                 + NANODBC_TEXT("(i int NOT NULL, CONSTRAINT pk_simple_test PRIMARY KEY (i));"));
 
@@ -236,7 +249,7 @@ struct basic_test
         // Find a multi-column primary key for table with known name
         {
             nanodbc::string_type const table_name(NANODBC_TEXT("catalog_primary_keys_composite_test"));
-            execute(connection, NANODBC_TEXT("drop table if exists ") + table_name);
+            drop_table(connection, table_name);
             execute(connection, NANODBC_TEXT("create table ") + table_name
                 + NANODBC_TEXT("(a int, b smallint, CONSTRAINT pk_composite_test PRIMARY KEY(a, b));"));
 
@@ -298,7 +311,7 @@ struct basic_test
         // Find a table with known name
         {
             nanodbc::string_type const table_name(NANODBC_TEXT("catalog_tables_test"));
-            execute(connection, NANODBC_TEXT("drop table if exists ") + table_name);
+            drop_table(connection, table_name);
             execute(connection, NANODBC_TEXT("create table ") + table_name + NANODBC_TEXT("(a int);"));
 
             // Use brute-force look-up
@@ -363,7 +376,7 @@ struct basic_test
     {
         nanodbc::connection connection = connect();
         nanodbc::result results;
-        execute(connection, NANODBC_TEXT("drop table if exists decimal_conversion_test;"));
+        drop_table(connection, NANODBC_TEXT("decimal_conversion_test"));
         execute(connection, NANODBC_TEXT("create table decimal_conversion_test (d decimal(9, 3));"));
         execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (12345.987);"));
         execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (5.600);"));
@@ -391,7 +404,7 @@ struct basic_test
 
         BOOST_CHECK_THROW(execute(connection, NANODBC_TEXT("THIS IS NOT VALID SQL!")), nanodbc::database_error);
 
-        execute(connection, NANODBC_TEXT("drop table if exists exception_test;"));
+        drop_table(connection, NANODBC_TEXT("exception_test"));
         execute(connection, NANODBC_TEXT("create table exception_test (i int);"));
         execute(connection, NANODBC_TEXT("insert into exception_test values (-10);"));
         execute(connection, NANODBC_TEXT("insert into exception_test values (null);"));
@@ -457,7 +470,7 @@ struct basic_test
     {
         nanodbc::connection connection = connect();
 
-        execute(connection, NANODBC_TEXT("drop table if exists integral_test;"));
+        drop_table(connection, NANODBC_TEXT("integral_test"));
         execute(connection, NANODBC_TEXT("create table integral_test (i int, f float, d double precision);"));
 
         nanodbc::statement statement(connection);
@@ -496,7 +509,7 @@ struct basic_test
     void move_test()
     {
         nanodbc::connection orig_connection = connect();
-        execute(orig_connection, NANODBC_TEXT("drop table if exists move_test;"));
+        drop_table(orig_connection, NANODBC_TEXT("move_test"));
         execute(orig_connection, NANODBC_TEXT("create table move_test (i int);"));
         execute(orig_connection, NANODBC_TEXT("insert into move_test values (10);"));
 
@@ -523,7 +536,7 @@ struct basic_test
         nanodbc::connection connection = connect();
         BOOST_CHECK(connection.connected());
 
-        execute(connection, NANODBC_TEXT("drop table if exists null_test;"));
+        drop_table(connection, NANODBC_TEXT("null_test"));
         execute(connection, NANODBC_TEXT("create table null_test (a int, b varchar(10));"));
 
         nanodbc::statement statement(connection);
@@ -563,7 +576,7 @@ struct basic_test
         BOOST_CHECK(connection.native_env_handle());
         BOOST_CHECK_EQUAL(connection.transactions(), std::size_t(0));
 
-        execute(connection, NANODBC_TEXT("drop table if exists simple_test;"));
+        drop_table(connection, NANODBC_TEXT("simple_test"));
         execute(connection, NANODBC_TEXT("create table simple_test (a int, b varchar(10));"));
         execute(connection, NANODBC_TEXT("insert into simple_test values (1, 'one');"));
         execute(connection, NANODBC_TEXT("insert into simple_test values (2, 'two');"));
@@ -657,7 +670,7 @@ struct basic_test
 
         const nanodbc::string_type name = NANODBC_TEXT("Fred");
 
-        execute(connection, NANODBC_TEXT("drop table if exists string_test;"));
+        drop_table(connection, NANODBC_TEXT("string_test"));
         execute(connection, NANODBC_TEXT("create table string_test (s varchar(10));"));
 
         nanodbc::statement query(connection);
@@ -679,7 +692,7 @@ struct basic_test
         nanodbc::connection connection = connect();
         BOOST_CHECK(connection.connected());
 
-        execute(connection, NANODBC_TEXT("drop table if exists transaction_test;"));
+        drop_table(connection, NANODBC_TEXT("transaction_test"));
         execute(connection, NANODBC_TEXT("create table transaction_test (i int);"));
 
         nanodbc::statement statement(connection);
@@ -725,12 +738,12 @@ struct basic_test
     void while_not_end_iteration_test()
     {
         nanodbc::connection connection = connect();
-        execute(connection, NANODBC_TEXT("drop table if exists while_next_iteration_test;"));
-        execute(connection, NANODBC_TEXT("create table while_next_iteration_test (i int);"));
-        execute(connection, NANODBC_TEXT("insert into while_next_iteration_test values (1);"));
-        execute(connection, NANODBC_TEXT("insert into while_next_iteration_test values (2);"));
-        execute(connection, NANODBC_TEXT("insert into while_next_iteration_test values (3);"));
-        nanodbc::result results = execute(connection, NANODBC_TEXT("select * from while_next_iteration_test order by 1 desc;"));
+        drop_table(connection, NANODBC_TEXT("while_not_end_iteration_test"));
+        execute(connection, NANODBC_TEXT("create table while_not_end_iteration_test (i int);"));
+        execute(connection, NANODBC_TEXT("insert into while_not_end_iteration_test values (1);"));
+        execute(connection, NANODBC_TEXT("insert into while_not_end_iteration_test values (2);"));
+        execute(connection, NANODBC_TEXT("insert into while_not_end_iteration_test values (3);"));
+        nanodbc::result results = execute(connection, NANODBC_TEXT("select * from while_not_end_iteration_test order by 1 desc;"));
         int i = 3;
         while(!results.end())
         {
@@ -742,7 +755,7 @@ struct basic_test
     void while_next_iteration_test()
     {
         nanodbc::connection connection = connect();
-        execute(connection, NANODBC_TEXT("drop table if exists while_next_iteration_test;"));
+        drop_table(connection, NANODBC_TEXT("while_next_iteration_test"));
         execute(connection, NANODBC_TEXT("create table while_next_iteration_test (i int);"));
         execute(connection, NANODBC_TEXT("insert into while_next_iteration_test values (1);"));
         execute(connection, NANODBC_TEXT("insert into while_next_iteration_test values (2);"));

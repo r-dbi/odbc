@@ -99,8 +99,9 @@ Building documentation and gh-pages requires the use of [Doxygen](www.doxygen.or
 To get up and running with nanodbc as quickly as possible consider using the provided Dockerfile or Vagrantfile. For example, to spin up a [docker](https://www.docker.com/) container suitable for testing and development of nanodbc:
 
 ```shell
+$ cd /path/to/nanodbc
 $ docker build -t nanodbc .
-$ docker run -v $(pwd):/opt/$(basename $(pwd)) -t -i nanodbc /bin/bash
+$ docker run -v "$(pwd)":"/opt/$(basename $(pwd))" -it nanodbc /bin/bash
 root@hash:/# mkdir -p /opt/nanodbc/docker_build && cd /opt/nanodbc/docker_build
 root@hash:/opt/nanodbc/docker_build# cmake -DNANODBC_USE_BOOST_CONVERT=YES ..
 root@hash:/opt/nanodbc/docker_build# make nanodbc
