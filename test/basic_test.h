@@ -7,7 +7,7 @@
 #include <boost/mpl/list.hpp>
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable:4244) //conversion from 'T1' to 'T2' possible loss of data
+#pragma warning(disable:4244) // conversion from 'T1' to 'T2' possible loss of data
 #endif
 #include <boost/test/unit_test.hpp>
 
@@ -92,17 +92,9 @@ struct basic_test
 #endif
     }
 
-    // Some databases support `DROP TABLE IF EXISTS`, but others do not. Let's be safe.
     void drop_table(nanodbc::connection& connection, const nanodbc::string_type& name) const
     {
-        nanodbc::result results = execute(connection,
-            NANODBC_TEXT("SELECT COUNT(1) ")
-            NANODBC_TEXT("FROM sqlite_master ")
-            NANODBC_TEXT("WHERE type='table' AND ")
-            NANODBC_TEXT("name='") + name +
-            NANODBC_TEXT("';"));
-        if(results.next() && results.get<int>(0))
-            execute(connection, NANODBC_TEXT("DROP TABLE ") + name + NANODBC_TEXT(";"));
+        execute(connection, NANODBC_TEXT("DROP TABLE IF EXISTS ") + name + NANODBC_TEXT(";"));
     }
 
     // Test Cases

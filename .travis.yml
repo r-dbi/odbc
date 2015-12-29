@@ -40,7 +40,7 @@ script:
   - mkdir build
   - cd build
   - cmake -D NANODBC_USE_UNICODE=${USE_UNICODE} -D NANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -D NANODBC_ENABLE_LIBCXX=NO ..
-  - make nanodbc
+  - make
   # FIXME: Unicode enabled SQLite tests not working on Linux builds.
   - if [[ "$DB" == "sqlite" && USE_UNICODE == "OFF" ]]; then make VERBOSE=1 sqlite_check; fi
   # FIXME: Unicode enabled MySQL tests not working on Linux builds.

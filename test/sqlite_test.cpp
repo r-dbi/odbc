@@ -2,13 +2,20 @@
 #include <boost/test/test_case_template.hpp>
 #include <cstdio>
 
+#if defined(_MSC_VER) && _MSC_VER <= 1800
+    // These versions of Visual C++ do not yet support noexcept.
+    #define NANODBC_NOEXCEPT
+#else
+    #define NANODBC_NOEXCEPT noexcept
+#endif
+
 namespace
 {
     struct sqlite_fixture
     {
         sqlite_fixture()
         {
-            cleanup();
+            cleanup(); // in case prior test exited without proper cleanup
         }
 
         ~sqlite_fixture()
@@ -16,7 +23,7 @@ namespace
             cleanup();
         }
 
-        void cleanup()
+        void cleanup() NANODBC_NOEXCEPT
         {
             std::remove("nanodbc.db");
         }
@@ -27,12 +34,30 @@ namespace
 #ifdef _WIN32
     const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3 ODBC Driver"));
 #else
-    const nanodbc::string_type driver_name(NANODBC_TEXT("sqlite"));
+    const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3"));
 #endif
     const nanodbc::string_type connection_string
         = NANODBC_TEXT("Driver=") + driver_name
         + NANODBC_TEXT(";Database=nanodbc.db;");
     basic_test test(connection_string);
+
+    // SQLite prior to version 3.3 does not support `DROP TABLE IF EXISTS` syntax.
+    void drop_table(nanodbc::connection& connection, const nanodbc::string_type& name)
+    {
+        // NOTE: Define USE_DROP_TABLE_IF_EXISTS_WORKAROUND when testing against SQLite <3.3.
+        #ifdef USE_DROP_TABLE_IF_EXISTS_WORKAROUND
+            nanodbc::result results = execute(connection,
+                NANODBC_TEXT("SELECT COUNT(1) ")
+                NANODBC_TEXT("FROM sqlite_master ")
+                NANODBC_TEXT("WHERE type='table' AND ")
+                NANODBC_TEXT("name='") + name +
+                NANODBC_TEXT("';"));
+            if(results.next() && results.get<int>(0))
+                execute(connection, NANODBC_TEXT("DROP TABLE ") + name + NANODBC_TEXT(";"));
+        #else
+            execute(connection, NANODBC_TEXT("DROP TABLE IF EXISTS ") + name + NANODBC_TEXT(";"));
+        #endif
+    }
 }
 
 BOOST_FIXTURE_TEST_SUITE(sqlite, sqlite_fixture)
@@ -46,7 +71,7 @@ BOOST_AUTO_TEST_CASE(decimal_conversion_test)
     nanodbc::connection connection = test.connect();
     nanodbc::result results;
 
-    test.drop_table(connection, NANODBC_TEXT("decimal_conversion_test"));
+    drop_table(connection, NANODBC_TEXT("decimal_conversion_test"));
     execute(connection, NANODBC_TEXT("create table decimal_conversion_test (d decimal(9, 3));"));
     execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (12345.987);"));
     execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (5.6);"));
@@ -67,11 +92,10 @@ BOOST_AUTO_TEST_CASE(decimal_conversion_test)
     BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("-1.333"));
 }
 
-// FIXME: Expeted exceptions seem to just crash sqlite 2.8 so we can't do this test.
-// BOOST_AUTO_TEST_CASE(exception_test)
-// {
-//     test.exception_test();
-// }
+BOOST_AUTO_TEST_CASE(exception_test)
+{
+    test.exception_test();
+}
 
 BOOST_AUTO_TEST_CASE(execute_multiple_transaction_test)
 {

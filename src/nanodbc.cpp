@@ -248,7 +248,11 @@ namespace
 
     // Attempts to get the most recent ODBC error as a string.
     // Always returns std::string, even in unicode mode.
-    inline std::string recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long &native, std::string &state)
+    inline std::string recent_error(
+        SQLHANDLE handle
+        , SQLSMALLINT handle_type
+        , long &native
+        , std::string &state)
     {
         nanodbc::string_type result;
         std::string rvalue;
@@ -304,6 +308,13 @@ namespace
 
             result += nanodbc::string_type(sql_message.begin(), sql_message.end());
             i++;
+
+            // NOTE: unixODBC using PostgreSQL and SQLite drivers crash if you call SQLGetDiagRec()
+            // more than once. So as a (terrible but the best possible) workaround just exit
+            // this loop early on non-Windows systems.
+            #ifndef _MSC_VER
+                break;
+            #endif
         } while(rc != SQL_NO_DATA);
 
         convert(result, rvalue);
