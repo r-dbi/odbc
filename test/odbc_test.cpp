@@ -1,108 +1,101 @@
-#include "test/basic_test.h"
-#include <boost/test/test_case_template.hpp>
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
+
+#include "test/base_test_fixture.h"
 #include <cstdio>
 #include <cstdlib>
 
 namespace
 {
-    struct odbc_fixture
+    struct odbc_fixture : public base_test_fixture
     {
         odbc_fixture()
+        : base_test_fixture(/* connecting string from NANODBC_TEST_CONNSTR environment variable)*/)
         {
         }
 
-        ~odbc_fixture()
+        virtual ~odbc_fixture() NANODBC_NOEXCEPT
         {
         }
     };
-
-    // Reads connection string from default configuration source
-    // (e.g. NANODBC_TEST_CONNSTR environment variable)
-    basic_test test;
 }
 
-BOOST_FIXTURE_TEST_SUITE(odbc, odbc_fixture)
-
-BOOST_AUTO_TEST_CASE(dbms_info_test)
+TEST_CASE_METHOD(odbc_fixture, "catalog_columns_test", "[odbc][catalog][columns]")
 {
-    test.dbms_info_test();
+    catalog_columns_test();
 }
 
-BOOST_AUTO_TEST_CASE(catalog_columns_test)
+TEST_CASE_METHOD(odbc_fixture, "catalog_primary_keys_test", "[odbc][catalog][primary_keys]")
 {
-    test.catalog_columns_test();
+    catalog_primary_keys_test();
 }
 
-BOOST_AUTO_TEST_CASE(catalog_primary_keys_test)
+TEST_CASE_METHOD(odbc_fixture, "catalog_tables_test", "[odbc][catalog][tables]")
 {
-    test.catalog_primary_keys_test();
+    catalog_tables_test();
 }
 
-BOOST_AUTO_TEST_CASE(catalog_tables_test)
+TEST_CASE_METHOD(odbc_fixture, "dbms_info_test", "[mysql][dmbs][metadata][info]")
 {
-    test.catalog_tables_test();
+    dbms_info_test();
 }
 
-BOOST_AUTO_TEST_CASE(decimal_conversion_test)
+TEST_CASE_METHOD(odbc_fixture, "decimal_conversion_test", "[odbc][decimal][conversion]")
 {
-    test.decimal_conversion_test();
+    decimal_conversion_test();
 }
 
-BOOST_AUTO_TEST_CASE(exception_test)
+TEST_CASE_METHOD(odbc_fixture, "exception_test", "[odbc][exception]")
 {
-    test.exception_test();
+    exception_test();
 }
 
-BOOST_AUTO_TEST_CASE(execute_multiple_transaction_test)
+TEST_CASE_METHOD(odbc_fixture, "execute_multiple_transaction_test", "[odbc][execute][transaction]")
 {
-    test.execute_multiple_transaction_test();
+    execute_multiple_transaction_test();
 }
 
-BOOST_AUTO_TEST_CASE(execute_multiple_test)
+TEST_CASE_METHOD(odbc_fixture, "execute_multiple_test", "[odbc][execute]")
 {
-    test.execute_multiple_test();
+    execute_multiple_test();
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(integral_test, T, basic_test::integral_test_types)
+TEST_CASE_METHOD(odbc_fixture, "integral_test", "[odbc][integral]")
 {
-    test.integral_test_template<T>();
+    integral_test<odbc_fixture>();
 }
 
-#ifndef BOOST_NO_RVALUE_REFERENCES
-    BOOST_AUTO_TEST_CASE(move_test)
-    {
-        test.move_test();
-    }
-#endif
-
-BOOST_AUTO_TEST_CASE(null_test)
+TEST_CASE_METHOD(odbc_fixture, "move_test", "[odbc][move]")
 {
-    test.null_test();
+    move_test();
 }
 
-BOOST_AUTO_TEST_CASE(simple_test)
+TEST_CASE_METHOD(odbc_fixture, "null_test", "[odbc][null]")
 {
-    test.simple_test();
+    null_test();
 }
 
-BOOST_AUTO_TEST_CASE(string_test)
+TEST_CASE_METHOD(odbc_fixture, "simple_test", "[odbc]")
 {
-    test.string_test();
+    simple_test();
 }
 
-BOOST_AUTO_TEST_CASE(transaction_test)
+TEST_CASE_METHOD(odbc_fixture, "string_test", "[odbc][string]")
 {
-    test.transaction_test();
+    string_test();
 }
 
-BOOST_AUTO_TEST_CASE(while_not_end_iteration_test)
+TEST_CASE_METHOD(odbc_fixture, "transaction_test", "[odbc][transaction]")
 {
-    test.while_not_end_iteration_test();
+    transaction_test();
 }
 
-BOOST_AUTO_TEST_CASE(while_next_iteration_test)
+TEST_CASE_METHOD(odbc_fixture, "while_not_end_iteration_test", "[odbc][looping]")
 {
-    test.while_next_iteration_test();
+    while_not_end_iteration_test();
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+TEST_CASE_METHOD(odbc_fixture, "while_next_iteration_test", "[odbc][looping]")
+{
+    while_next_iteration_test();
+}

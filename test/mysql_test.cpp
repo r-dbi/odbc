@@ -1,93 +1,88 @@
-#include "test/basic_test.h"
-#include <boost/test/test_case_template.hpp>
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
+
+#include "test/base_test_fixture.h"
 #include <cstdio>
 #include <cstdlib>
 
 namespace
 {
-    struct odbc_fixture
+    struct mysql_fixture : public base_test_fixture
     {
-        odbc_fixture()
+        mysql_fixture()
+        : base_test_fixture(/* connecting string from NANODBC_TEST_CONNSTR environment variable)*/)
         {
         }
 
-        ~odbc_fixture()
+        virtual ~mysql_fixture() NANODBC_NOEXCEPT
         {
         }
     };
-
-    // Reads connection string from default configuration source
-    // (e.g. NANODBC_TEST_CONNSTR environment variable)
-    basic_test test;
 }
 
-BOOST_FIXTURE_TEST_SUITE(odbc, odbc_fixture)
+// FIXME: No catlog_* tests for MySQL. Not supported?
 
-BOOST_AUTO_TEST_CASE(dbms_info_test)
+TEST_CASE_METHOD(mysql_fixture, "dbms_info_test", "[mysql][dmbs][metadata][info]")
 {
-    test.dbms_info_test();
+    dbms_info_test();
 }
 
-BOOST_AUTO_TEST_CASE(decimal_conversion_test)
+TEST_CASE_METHOD(mysql_fixture, "decimal_conversion_test", "[mysql][decimal][conversion]")
 {
-    test.decimal_conversion_test();
+    decimal_conversion_test();
 }
 
-BOOST_AUTO_TEST_CASE(exception_test)
+TEST_CASE_METHOD(mysql_fixture, "exception_test", "[mysql][exception]")
 {
-    test.exception_test();
+    exception_test();
 }
 
-BOOST_AUTO_TEST_CASE(execute_multiple_transaction_test)
+TEST_CASE_METHOD(mysql_fixture, "execute_multiple_transaction_test", "[mysql][execute][transaction]")
 {
-    test.execute_multiple_transaction_test();
+    execute_multiple_transaction_test();
 }
 
-BOOST_AUTO_TEST_CASE(execute_multiple_test)
+TEST_CASE_METHOD(mysql_fixture, "execute_multiple_test", "[mysql][execute]")
 {
-    test.execute_multiple_test();
+    execute_multiple_test();
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(integral_test, T, basic_test::integral_test_types)
+TEST_CASE_METHOD(mysql_fixture, "integral_test", "[mysql][integral]")
 {
-    test.integral_test_template<T>();
+    integral_test<mysql_fixture>();
 }
 
-#ifndef BOOST_NO_RVALUE_REFERENCES
-    BOOST_AUTO_TEST_CASE(move_test)
-    {
-        test.move_test();
-    }
-#endif
-
-BOOST_AUTO_TEST_CASE(null_test)
+TEST_CASE_METHOD(mysql_fixture, "move_test", "[mysql][move]")
 {
-    test.null_test();
+    move_test();
 }
 
-BOOST_AUTO_TEST_CASE(simple_test)
+TEST_CASE_METHOD(mysql_fixture, "null_test", "[mysql][null]")
 {
-    test.simple_test();
+    null_test();
 }
 
-BOOST_AUTO_TEST_CASE(string_test)
+TEST_CASE_METHOD(mysql_fixture, "simple_test", "[mysql]")
 {
-    test.string_test();
+    simple_test();
 }
 
-BOOST_AUTO_TEST_CASE(transaction_test)
+TEST_CASE_METHOD(mysql_fixture, "string_test", "[mysql][string]")
 {
-    test.transaction_test();
+    string_test();
 }
 
-BOOST_AUTO_TEST_CASE(while_not_end_iteration_test)
+TEST_CASE_METHOD(mysql_fixture, "transaction_test", "[mysql][transaction]")
 {
-    test.while_not_end_iteration_test();
+    transaction_test();
 }
 
-BOOST_AUTO_TEST_CASE(while_next_iteration_test)
+TEST_CASE_METHOD(mysql_fixture, "while_not_end_iteration_test", "[mysql][looping]")
 {
-    test.while_next_iteration_test();
+    while_not_end_iteration_test();
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+TEST_CASE_METHOD(mysql_fixture, "while_next_iteration_test", "[mysql][looping]")
+{
+    while_next_iteration_test();
+}
