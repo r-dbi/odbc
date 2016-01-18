@@ -175,13 +175,13 @@ namespace
         {
             switch(rc)
             {
-                case SQL_SUCCESS: return NANODBC_UNICODE("SQL_SUCCESS");
-                case SQL_SUCCESS_WITH_INFO: return NANODBC_UNICODE("SQL_SUCCESS_WITH_INFO");
-                case SQL_ERROR: return NANODBC_UNICODE("SQL_ERROR");
-                case SQL_INVALID_HANDLE: return NANODBC_UNICODE("SQL_INVALID_HANDLE");
-                case SQL_NO_DATA: return NANODBC_UNICODE("SQL_NO_DATA");
-                case SQL_NEED_DATA: return NANODBC_UNICODE("SQL_NEED_DATA");
-                case SQL_STILL_EXECUTING: return NANODBC_UNICODE("SQL_STILL_EXECUTING");
+                case SQL_SUCCESS: return NANODBC_TEXT("SQL_SUCCESS");
+                case SQL_SUCCESS_WITH_INFO: return NANODBC_TEXT("SQL_SUCCESS_WITH_INFO");
+                case SQL_ERROR: return NANODBC_TEXT("SQL_ERROR");
+                case SQL_INVALID_HANDLE: return NANODBC_TEXT("SQL_INVALID_HANDLE");
+                case SQL_NO_DATA: return NANODBC_TEXT("SQL_NO_DATA");
+                case SQL_NEED_DATA: return NANODBC_TEXT("SQL_NEED_DATA");
+                case SQL_STILL_EXECUTING: return NANODBC_TEXT("SQL_STILL_EXECUTING");
             }
             NANODBC_ASSERT(0);
             return "unknown"; // should never make it here
