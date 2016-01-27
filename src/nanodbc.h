@@ -847,6 +847,16 @@ public:
     //! \brief Returns the native ODBC environment handle.
     void* native_env_handle() const;
 
+    //! \brief Returns name of the DBMS product.
+    //! Returns the ODBC information type SQL_DBMS_NAME of the DBMS product
+    //! accesssed by the driver via the current connection.
+    string_type dbms_name() const;
+
+    //! \brief Returns version of the DBMS product.
+    //! Returns the ODBC information type SQL_DBMS_VER of the DBMS product
+    //! accesssed by the driver via the current connection.
+    string_type dbms_version() const;
+
     //! \brief Returns the name of the ODBC driver.
     //! \throws database_error
     string_type driver_name() const;
