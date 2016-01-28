@@ -1,83 +1,78 @@
-#include "test/basic_test.h"
-#include <boost/test/test_case_template.hpp>
-#include <cstdio>
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
 
-#if defined(_MSC_VER) && _MSC_VER <= 1800
-    // These versions of Visual C++ do not yet support noexcept.
-    #define NANODBC_NOEXCEPT
-#else
-    #define NANODBC_NOEXCEPT noexcept
-#endif
+#include "test/base_test_fixture.h"
+#include <cstdio>
 
 namespace
 {
-    struct sqlite_fixture
-    {
-        sqlite_fixture()
-        {
-            cleanup(); // in case prior test exited without proper cleanup
-        }
-
-        ~sqlite_fixture()
-        {
-            cleanup();
-        }
-
-        void cleanup() NANODBC_NOEXCEPT
-        {
-            std::remove("nanodbc.db");
-        }
-    };
-
     // According to the sqliteodbc documentation,
     // driver name is different on Windows and Unix.
-#ifdef _WIN32
-    const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3 ODBC Driver"));
-#else
-    const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3"));
-#endif
+    #ifdef _WIN32
+        const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3 ODBC Driver"));
+    #else
+        const nanodbc::string_type driver_name(NANODBC_TEXT("SQLite3"));
+    #endif
     const nanodbc::string_type connection_string
         = NANODBC_TEXT("Driver=") + driver_name
         + NANODBC_TEXT(";Database=nanodbc.db;");
-    basic_test test(connection_string);
 
-    // SQLite prior to version 3.3 does not support `DROP TABLE IF EXISTS` syntax.
-    void drop_table(nanodbc::connection& connection, const nanodbc::string_type& name)
+    struct sqlite_fixture : public base_test_fixture
     {
-        // NOTE: Define USE_DROP_TABLE_IF_EXISTS_WORKAROUND when testing against SQLite <3.3.
-        #ifdef USE_DROP_TABLE_IF_EXISTS_WORKAROUND
-            nanodbc::result results = execute(connection,
-                NANODBC_TEXT("SELECT COUNT(1) ")
-                NANODBC_TEXT("FROM sqlite_master ")
-                NANODBC_TEXT("WHERE type='table' AND ")
-                NANODBC_TEXT("name='") + name +
-                NANODBC_TEXT("';"));
-            if(results.next() && results.get<int>(0))
-                execute(connection, NANODBC_TEXT("DROP TABLE ") + name + NANODBC_TEXT(";"));
-        #else
-            execute(connection, NANODBC_TEXT("DROP TABLE IF EXISTS ") + name + NANODBC_TEXT(";"));
-        #endif
-    }
+        sqlite_fixture()
+        : base_test_fixture(connection_string)
+        {
+            sqlite_cleanup(); // in case prior test exited without proper cleanup
+        }
+
+        virtual ~sqlite_fixture() NANODBC_NOEXCEPT
+        {
+            sqlite_cleanup();
+        }
+
+        void sqlite_cleanup() NANODBC_NOEXCEPT
+        {
+            std::remove("nanodbc.db");
+        }
+
+        // SQLite prior to version 3.3 does not support `DROP TABLE IF EXISTS` syntax.
+        void drop_table(nanodbc::connection& connection, const nanodbc::string_type& name) const NANODBC_OVERRIDE
+        {
+            // NOTE: Define USE_DROP_TABLE_IF_EXISTS_WORKAROUND when testing against SQLite <3.3.
+            #ifdef USE_DROP_TABLE_IF_EXISTS_WORKAROUND
+                nanodbc::result results = execute(connection,
+                    NANODBC_TEXT("SELECT COUNT(1) ")
+                    NANODBC_TEXT("FROM sqlite_master ")
+                    NANODBC_TEXT("WHERE type='table' AND ")
+                    NANODBC_TEXT("name='") + name +
+                    NANODBC_TEXT("';"));
+                if(results.next() && results.get<int>(0))
+                    execute(connection, NANODBC_TEXT("DROP TABLE ") + name + NANODBC_TEXT(";"));
+            #else
+                execute(connection, NANODBC_TEXT("DROP TABLE IF EXISTS ") + name + NANODBC_TEXT(";"));
+            #endif
+        }
+    };
 }
 
-BOOST_FIXTURE_TEST_SUITE(sqlite, sqlite_fixture)
+// NOTE: No catlog_* tests; not supported by SQLite.
 
-BOOST_AUTO_TEST_CASE(dbms_info_test)
+TEST_CASE_METHOD(sqlite_fixture, "dbms_info_test", "[mysql][dmbs][metadata][info]")
 {
-    test.dbms_info_test();
+    dbms_info_test();
 
     // Additional SQLite-specific checks
-    nanodbc::connection connection = test.connect();
-    BOOST_CHECK(connection.dbms_name() == NANODBC_TEXT("SQLite"));
+    nanodbc::connection connection = connect();
+    REQUIRE(connection.dbms_name() == NANODBC_TEXT("SQLite"));
 }
 
-BOOST_AUTO_TEST_CASE(decimal_conversion_test)
+TEST_CASE_METHOD(sqlite_fixture, "decimal_conversion_test", "[mysql][decimal][conversion]")
 {
     // SQLite ODBC driver requires dedicated test.
     // The driver converts SQL DECIMAL value to C float value
     // without preserving DECIMAL(N,M) dimensions
     // and strips any trailing zeros.
-    nanodbc::connection connection = test.connect();
+    nanodbc::connection connection = connect();
     nanodbc::result results;
 
     drop_table(connection, NANODBC_TEXT("decimal_conversion_test"));
@@ -88,74 +83,70 @@ BOOST_AUTO_TEST_CASE(decimal_conversion_test)
     execute(connection, NANODBC_TEXT("insert into decimal_conversion_test values (-1.333);"));
     results = execute(connection, NANODBC_TEXT("select * from decimal_conversion_test order by 1 desc;"));
 
-    BOOST_CHECK(results.next());
-    BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("12345.987"));
+    REQUIRE(results.next());
+    REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("12345.987"));
 
-    BOOST_CHECK(results.next());
-    BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("5.6"));
+    REQUIRE(results.next());
+    REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("5.6"));
 
-    BOOST_CHECK(results.next());
-    BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("1"));
+    REQUIRE(results.next());
+    REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("1"));
 
-    BOOST_CHECK(results.next());
-    BOOST_CHECK(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("-1.333"));
+    REQUIRE(results.next());
+    REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("-1.333"));
 }
 
-BOOST_AUTO_TEST_CASE(exception_test)
+TEST_CASE_METHOD(sqlite_fixture, "exception_test", "[sqlite][exception]")
 {
-    test.exception_test();
+    exception_test();
 }
 
-BOOST_AUTO_TEST_CASE(execute_multiple_transaction_test)
+TEST_CASE_METHOD(sqlite_fixture, "execute_multiple_transaction_test", "[sqlite][execute][transaction]")
 {
-    test.execute_multiple_transaction_test();
+    execute_multiple_transaction_test();
 }
 
-BOOST_AUTO_TEST_CASE(execute_multiple_test)
+TEST_CASE_METHOD(sqlite_fixture, "execute_multiple_test", "[sqlite][execute]")
 {
-    test.execute_multiple_test();
+    execute_multiple_test();
 }
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(integral_test, T, basic_test::integral_test_types)
+TEST_CASE_METHOD(sqlite_fixture, "integral_test", "[sqlite][integral]")
 {
-    test.integral_test_template<T>();
+    integral_test<sqlite_fixture>();
 }
 
-#ifndef BOOST_NO_RVALUE_REFERENCES
-    BOOST_AUTO_TEST_CASE(move_test)
-    {
-        test.move_test();
-    }
-#endif
-
-BOOST_AUTO_TEST_CASE(null_test)
+TEST_CASE_METHOD(sqlite_fixture, "move_test", "[sqlite][move]")
 {
-    test.null_test();
+    move_test();
 }
 
-BOOST_AUTO_TEST_CASE(simple_test)
+TEST_CASE_METHOD(sqlite_fixture, "null_test", "[sqlite][null]")
 {
-    test.simple_test();
+    null_test();
 }
 
-BOOST_AUTO_TEST_CASE(string_test)
+TEST_CASE_METHOD(sqlite_fixture, "simple_test", "[sqlite]")
 {
-    test.string_test();
+    simple_test();
 }
 
-BOOST_AUTO_TEST_CASE(transaction_test)
+TEST_CASE_METHOD(sqlite_fixture, "string_test", "[sqlite][string]")
 {
-    test.transaction_test();
+    string_test();
 }
 
-BOOST_AUTO_TEST_CASE(while_not_end_iteration_test)
+TEST_CASE_METHOD(sqlite_fixture, "transaction_test", "[sqlite][transaction]")
 {
-    test.while_not_end_iteration_test();
+    transaction_test();
 }
 
-BOOST_AUTO_TEST_CASE(while_next_iteration_test)
+TEST_CASE_METHOD(sqlite_fixture, "while_not_end_iteration_test", "[sqlite][looping]")
 {
-    test.while_next_iteration_test();
+    while_not_end_iteration_test();
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+TEST_CASE_METHOD(sqlite_fixture, "while_next_iteration_test", "[sqlite][looping]")
+{
+    while_next_iteration_test();
+}
