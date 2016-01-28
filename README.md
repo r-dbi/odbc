@@ -4,8 +4,8 @@ A small C++ wrapper for the native C ODBC API. Please see the [online documentat
 
 | Version | Description |
 |:--- |:--- |
-| `release` | [![release](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=release)](https://travis-ci.org/lexicalunit/nanodbc) Most recent release that's been deemed "stable". Always prefer to use this version if you can! |
-| `latest` | [![latest](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=latest)](https://travis-ci.org/lexicalunit/nanodbc) Latest release; still needs testing to be deemed "stable". **[See all available releases.](https://github.com/lexicalunit/nanodbc/releases)** |
+| `release` | [![release](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=release)](https://travis-ci.org/lexicalunit/nanodbc) Most recent release that's deemed "stable". Review the [release notes](CHANGELOG.md) to see if this version is right for you. |
+| `latest` | [![latest](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=latest)](https://travis-ci.org/lexicalunit/nanodbc) Latest release; please use this version if CI tests are all passing. **[See all available releases.](https://github.com/lexicalunit/nanodbc/releases)** |
 | `master`  | [![master](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master)](https://travis-ci.org/lexicalunit/nanodbc) Contains the latest development code, not yet ready for a release. |
 | `v2.x.x`  | Targets C++14+. All future development will build upon this version. |
 | `v1.x.x`  | Supports C++03 and optionally C++11. *There is no longer any support for this version.* |
@@ -14,15 +14,15 @@ A small C++ wrapper for the native C ODBC API. Please see the [online documentat
 
 Nanodbc is intentionally small enough that you can drag and drop the header and implementation files into your project and run with it. For those that want it, I have also provided [CMake](http://www.cmake.org/) files which build a library object, or build and run the included unit tests. The CMake files will also support out of source builds.
 
-Building unit tests requires [Boost.Test](http://www.boost.org/doc/libs/release/libs/test/). To build the tests you will also need to have either unixODBC or iODBC installed and discoverable by CMake. This is easy on OS X where you can use [Homebrew](http://brew.sh/) to install unixODBC with `brew install unixodbc`, or use the system provided iODBC if you have OS X 10.9 or earlier. Also note that you can install Boost via Homebrew as well, which is super convenient!
+Unit tests use the [Catch](https://github.com/philsquared/Catch) test framework, and CMake will automatically fetch the latest version of Catch for you at build time. To build the tests you will also need to have either unixODBC or iODBC installed and discoverable by CMake. This is easy on OS X where you can use [Homebrew](http://brew.sh/) to install unixODBC with `brew install unixodbc`, or use the system provided iODBC if you have OS X 10.9 or earlier.
 
 The unit tests attempt to connect to a [SQLite](https://www.sqlite.org/) database, so you will have to have that and a SQLite ODBC driver installed. At the time of this writing, there happens to be a nice [SQLite ODBC driver](http://www.ch-werner.de/sqliteodbc/) available from Christian Werner's website, also available via Homebrew as `sqliteobdc`! The tests expect to find a data source named `sqlite` on *nix systems and `SQLite3 ODBC Driver` on Windows systems. For example, your `odbcinst.ini` file on OS X must have a section like the following.
 
 ```
 [sqlite]
 Description             = SQLite3 ODBC Driver
-Driver                  = /usr/lib/libsqlite3odbc-0.93.dylib
 Setup                   = /usr/lib/libsqlite3odbc-0.93.dylib
+Driver                  = /usr/lib/libsqlite3odbc-0.93.dylib
 Threading               = 2
 ```
 
@@ -42,6 +42,7 @@ make nanodbc # creates shared library
 make tests # builds the unit tests
 make test # runs the unit tests
 make check # builds and then runs unit tests
+make examples # builds all the example programs
 make install # installs nanodbc.h and shared library
 ```
 
@@ -82,7 +83,7 @@ To do this manually instead, use the following steps &mdash; for example a minor
 
 ### Release Process
 
-Release nanodbc with the `scripts/release.sh` script. All this script does is push out the `master` branch to the `release` branch, indicating that a new "stable" version of nanodbc exists. To do so manually, execute `git push -f origin master:release`. **Only do this for releases that have been deemed "stable" based on suitable criteria.**
+Release nanodbc with the `scripts/release.sh` script. All this script does is push out the `master` branch to the `release` branch, indicating that a new "stable" version of nanodbc exists. To do so manually, execute `git push -f origin master:release`. **Caution: Do this for releases deemed "stable" based on suitable criteria.**
 
 ## Source Level Documentation
 
@@ -98,7 +99,7 @@ Building documentation and gh-pages requires the use of [Doxygen](www.doxygen.or
 
 ## Testing Environments
 
-To get up and running with nanodbc as quickly as possible consider using the provided Dockerfile or Vagrantfile. For example, to spin up a [docker](https://www.docker.com/) container suitable for testing and development of nanodbc:
+To get up and running with nanodbc as fast as possible consider using the provided [Dockerfile](Dockerfile) or [Vagrantfile](Vagrantfile). For example, to spin up a [docker](https://www.docker.com/) container suitable for testing and development of nanodbc:
 
 ```shell
 $ cd /path/to/nanodbc
