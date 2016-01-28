@@ -99,6 +99,16 @@ struct basic_test
 
     // Test Cases
 
+    void dbms_info_test()
+    {
+        // A generic test to exercise the DBMS info API is callable.
+        // DBMS-specific test (MySQL, SQLite, etc.) may perform extended checks.
+
+        nanodbc::connection connection = connect();
+        BOOST_CHECK(!connection.dbms_name().empty());
+        BOOST_CHECK(!connection.dbms_version().empty());
+    }
+
     void catalog_columns_test()
     {
         nanodbc::connection connection = connect();
@@ -262,6 +272,7 @@ struct basic_test
             BOOST_CHECK(!keys.next());
         }
     }
+    
     void catalog_tables_test()
     {
         nanodbc::connection connection = connect();

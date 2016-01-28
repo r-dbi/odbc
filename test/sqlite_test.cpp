@@ -62,6 +62,15 @@ namespace
 
 BOOST_FIXTURE_TEST_SUITE(sqlite, sqlite_fixture)
 
+BOOST_AUTO_TEST_CASE(dbms_info_test)
+{
+    test.dbms_info_test();
+
+    // Additional SQLite-specific checks
+    nanodbc::connection connection = test.connect();
+    BOOST_CHECK(connection.dbms_name() == NANODBC_TEXT("SQLite"));
+}
+
 BOOST_AUTO_TEST_CASE(decimal_conversion_test)
 {
     // SQLite ODBC driver requires dedicated test.

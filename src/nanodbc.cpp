@@ -888,6 +888,42 @@ public:
         return env_;
     }
 
+    string_type dbms_name() const
+    {
+        NANODBC_SQLCHAR name[255] = { 0 };
+        SQLSMALLINT length(0);
+        RETCODE rc;
+        NANODBC_CALL_RC(
+            NANODBC_UNICODE(SQLGetInfo)
+            , rc
+            , conn_
+            , SQL_DBMS_NAME
+            , name
+            , sizeof(name) / sizeof(NANODBC_SQLCHAR)
+            , &length);
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+        return string_type(&name[0], &name[strarrlen(name)]);
+    }
+
+    string_type dbms_version() const
+    {
+        NANODBC_SQLCHAR version[255] = { 0 };
+        SQLSMALLINT length(0);
+        RETCODE rc;
+        NANODBC_CALL_RC(
+            NANODBC_UNICODE(SQLGetInfo)
+            , rc
+            , conn_
+            , SQL_DBMS_VER
+            , version
+            , sizeof(version) / sizeof(NANODBC_SQLCHAR)
+            , &length);
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+        return string_type(&version[0], &version[strarrlen(version)]);
+    }
+
     string_type driver_name() const
     {
         NANODBC_SQLCHAR name[1024];
@@ -2857,6 +2893,16 @@ void* connection::native_dbc_handle() const
 void* connection::native_env_handle() const
 {
     return impl_->native_env_handle();
+}
+
+string_type connection::dbms_name() const
+{
+    return impl_->dbms_name();
+}
+
+string_type connection::dbms_version() const
+{
+    return impl_->dbms_version();
 }
 
 string_type connection::driver_name() const

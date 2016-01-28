@@ -23,6 +23,10 @@ namespace
 
 BOOST_FIXTURE_TEST_SUITE(odbc, odbc_fixture)
 
+BOOST_AUTO_TEST_CASE(dbms_info_test)
+{
+    test.dbms_info_test();
+}
 
 BOOST_AUTO_TEST_CASE(decimal_conversion_test)
 {
