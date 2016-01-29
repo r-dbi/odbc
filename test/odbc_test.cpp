@@ -35,7 +35,7 @@ TEST_CASE_METHOD(odbc_fixture, "catalog_tables_test", "[odbc][catalog][tables]")
     catalog_tables_test();
 }
 
-TEST_CASE_METHOD(odbc_fixture, "dbms_info_test", "[mysql][dmbs][metadata][info]")
+TEST_CASE_METHOD(odbc_fixture, "dbms_info_test", "[odbc][dmbs][metadata][info]")
 {
     dbms_info_test();
 }
