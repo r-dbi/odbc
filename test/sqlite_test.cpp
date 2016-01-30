@@ -57,7 +57,7 @@ namespace
 
 // NOTE: No catlog_* tests; not supported by SQLite.
 
-TEST_CASE_METHOD(sqlite_fixture, "dbms_info_test", "[mysql][dmbs][metadata][info]")
+TEST_CASE_METHOD(sqlite_fixture, "dbms_info_test", "[sqlite][dmbs][metadata][info]")
 {
     dbms_info_test();
 
@@ -66,7 +66,7 @@ TEST_CASE_METHOD(sqlite_fixture, "dbms_info_test", "[mysql][dmbs][metadata][info
     REQUIRE(connection.dbms_name() == NANODBC_TEXT("SQLite"));
 }
 
-TEST_CASE_METHOD(sqlite_fixture, "decimal_conversion_test", "[mysql][decimal][conversion]")
+TEST_CASE_METHOD(sqlite_fixture, "decimal_conversion_test", "[sqlite][decimal][conversion]")
 {
     // SQLite ODBC driver requires dedicated test.
     // The driver converts SQL DECIMAL value to C float value
