@@ -3521,8 +3521,12 @@ long catalog::columns::ordinal_position() const
 
 string_type catalog::columns::is_nullable() const
 {
-    // IS_NULLABLE is never NULL
-    return result_.get<string_type>(17);
+    // IS_NULLABLE might be NULL
+
+    // MSDN: This column returns a zero-length string if nullability is unknown.
+    //       ISO rules are followed to determine nullability.
+    //       An ISO SQL-compliant DBMS cannot return an empty string.
+    return result_.get<string_type>(17, string_type());
 }
 
 catalog::catalog(connection& conn)
