@@ -641,14 +641,14 @@ struct base_test_fixture
         REQUIRE(connection.transactions() == std::size_t(0));
 
         drop_table(connection, NANODBC_TEXT("simple_test"));
-        execute(connection, NANODBC_TEXT("create table simple_test (a int, b varchar(10));"));
-        execute(connection, NANODBC_TEXT("insert into simple_test values (1, 'one');"));
-        execute(connection, NANODBC_TEXT("insert into simple_test values (2, 'two');"));
-        execute(connection, NANODBC_TEXT("insert into simple_test values (3, 'tri');"));
-        execute(connection, NANODBC_TEXT("insert into simple_test (b) values ('z');"));
+        execute(connection, NANODBC_TEXT("create table simple_test (sort_order int, a int, b varchar(10));"));
+        execute(connection, NANODBC_TEXT("insert into simple_test values (2, 1, 'one');"));
+        execute(connection, NANODBC_TEXT("insert into simple_test values (3, 2, 'two');"));
+        execute(connection, NANODBC_TEXT("insert into simple_test values (4, 3, 'tri');"));
+        execute(connection, NANODBC_TEXT("insert into simple_test values (1, NULL, 'z');"));
 
         {
-            nanodbc::result results = execute(connection, NANODBC_TEXT("select a, b from simple_test order by a;"));
+            nanodbc::result results = execute(connection, NANODBC_TEXT("select a, b from simple_test order by sort_order;"));
             REQUIRE((bool)results);
             REQUIRE(results.rows() == 0);
             REQUIRE(results.columns() == 2);
