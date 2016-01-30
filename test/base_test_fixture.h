@@ -212,7 +212,7 @@ struct base_test_fixture
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c4"));
             REQUIRE(columns.sql_data_type() == SQL_DATE);
-            REQUIRE(columns.column_size() == 23); // total number of characters required to display the value when it is converted to characters
+            REQUIRE(columns.column_size() == 10); // total number of characters required to display the value when it is converted to characters
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c5"));
