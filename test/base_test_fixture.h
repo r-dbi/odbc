@@ -203,7 +203,7 @@ struct base_test_fixture
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c3"));
-            REQUIRE(columns.sql_data_type() == SQL_DECIMAL);
+            REQUIRE((columns.sql_data_type() == SQL_DECIMAL || columns.sql_data_type() == SQL_NUMERIC));
             REQUIRE(columns.column_size() == 9);
             REQUIRE(columns.decimal_digits() == 3);
             REQUIRE(columns.nullable() == SQL_NULLABLE);
