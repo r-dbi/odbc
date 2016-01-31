@@ -197,7 +197,10 @@ struct base_test_fixture
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c2"));
             REQUIRE(columns.sql_data_type() == SQL_FLOAT);
-            REQUIRE(columns.column_size() ==  53); // total number of bits allowed
+            if (columns.numeric_precision_radix() == 10)
+                REQUIRE(columns.column_size() ==  17); // total number of digits allowed
+            else
+                REQUIRE(columns.column_size() ==  53); // total number of bits allowed
             REQUIRE(columns.nullable() == SQL_NULLABLE);
             REQUIRE(columns.is_nullable() == NANODBC_TEXT("YES"));
 
