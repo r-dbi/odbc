@@ -97,7 +97,7 @@ Source level documentation provided via [GitHub's gh-pages](https://help.github.
 
 Building documentation and gh-pages requires the use of [Doxygen](www.doxygen.org) and [jekyll](https://jekyllrb.com/). See the `Makefile` on the `gh-pages` branch of nanodbc for more details.
 
-## Testing Environments
+## Quick Setup Testing and Development Environments
 
 To get up and running with nanodbc as fast as possible consider using the provided [Dockerfile](Dockerfile) or [Vagrantfile](Vagrantfile). For example, to spin up a [docker](https://www.docker.com/) container suitable for testing and development of nanodbc:
 
@@ -105,9 +105,21 @@ To get up and running with nanodbc as fast as possible consider using the provid
 $ cd /path/to/nanodbc
 $ docker build -t nanodbc .
 $ docker run -v "$(pwd)":"/opt/$(basename $(pwd))" -it nanodbc /bin/bash
-root@hash:/# mkdir -p /opt/nanodbc/docker_build && cd /opt/nanodbc/docker_build
-root@hash:/opt/nanodbc/docker_build# cmake -DNANODBC_USE_BOOST_CONVERT=YES ..
-root@hash:/opt/nanodbc/docker_build# make nanodbc
+root@hash:/# mkdir -p /opt/nanodbc/build && cd /opt/nanodbc/build
+root@hash:/opt/nanodbc/build# cmake ..
+root@hash:/opt/nanodbc/build# make nanodbc
+```
+
+Or, to build and ssh into a [vagrant](https://www.vagrantup.com/) VM (using VirtualBox for example) use:
+
+```shell
+$ cd /path/to/nanodbc
+$ vagrant up
+$ vagrant ssh
+vagrant@vagrant-ubuntu-precise-64:~$ git clone https://github.com/lexicalunit/nanodbc.git
+vagrant@vagrant-ubuntu-precise-64:~$ mkdir -p nanodbc/build && cd nanodbc/build
+vagrant@vagrant-ubuntu-precise-64:~$ CXX=g++-5 cmake ..
+vagrant@vagrant-ubuntu-precise-64:~$ make nanodbc
 ```
 
 ## Future work
