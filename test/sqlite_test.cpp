@@ -34,24 +34,6 @@ namespace
         {
             std::remove("nanodbc.db");
         }
-
-        // SQLite prior to version 3.3 does not support `DROP TABLE IF EXISTS` syntax.
-        void drop_table(nanodbc::connection& connection, const nanodbc::string_type& name) const NANODBC_OVERRIDE
-        {
-            // NOTE: Define USE_DROP_TABLE_IF_EXISTS_WORKAROUND when testing against SQLite <3.3.
-            #ifdef USE_DROP_TABLE_IF_EXISTS_WORKAROUND
-                nanodbc::result results = execute(connection,
-                    NANODBC_TEXT("SELECT COUNT(1) ")
-                    NANODBC_TEXT("FROM sqlite_master ")
-                    NANODBC_TEXT("WHERE type='table' AND ")
-                    NANODBC_TEXT("name='") + name +
-                    NANODBC_TEXT("';"));
-                if(results.next() && results.get<int>(0))
-                    execute(connection, NANODBC_TEXT("DROP TABLE ") + name + NANODBC_TEXT(";"));
-            #else
-                execute(connection, NANODBC_TEXT("DROP TABLE IF EXISTS ") + name + NANODBC_TEXT(";"));
-            #endif
-        }
     };
 }
 
