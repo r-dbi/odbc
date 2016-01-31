@@ -711,17 +711,25 @@ struct base_test_fixture
             // or -1 if the number of affected rows is not available.
             // For other statements and functions, the driver may define the value returned (...)
             // some data sources may be able to return the number of rows returned by a SELECT statement.
-            // REQUIRE(results.affected_rows() == 4 || results.affected_rows() == 0 || results.affected_rows() == -1);
             const bool affected_four = results.affected_rows() == 4;
             const bool affected_zero = results.affected_rows() == 0;
             const bool affected_negative_one = results.affected_rows() == -1;
             REQUIRE(affected_four + affected_zero + affected_negative_one);
+            if(!(affected_four + affected_zero + affected_negative_one)) {
+                // Provide more verbose output if one of the above terms is false:
+                CHECK(affected_four);
+                CHECK(affected_zero);
+                CHECK(affected_negative_one);
+            }
 
             REQUIRE(results.rowset_size() == 1);
             REQUIRE(results.column_name(0) == NANODBC_TEXT("a"));
             REQUIRE(results.column_name(1) == NANODBC_TEXT("b"));
 
+            // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
             REQUIRE(results.next());
+            // row = (null)|z
+            // .....................................................................................
             REQUIRE(results.rows() == 1);
             REQUIRE(results.is_null(0));
             REQUIRE(results.is_null(NANODBC_TEXT("a")));
@@ -744,7 +752,10 @@ struct base_test_fixture
             results.get_ref<nanodbc::string_type>(NANODBC_TEXT("a"), NANODBC_TEXT("null2"), ref_str);
             REQUIRE(ref_str == NANODBC_TEXT("null2"));
 
+            // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
             REQUIRE(results.next());
+            // row = 1|one
+            // .....................................................................................
             REQUIRE(results.get<int>(0) == 1);
             REQUIRE(results.get<int>(NANODBC_TEXT("a")) == 1);
             REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("one"));
@@ -752,7 +763,10 @@ struct base_test_fixture
 
             nanodbc::result results_copy = results;
 
+            // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
             REQUIRE(results_copy.next());
+            // row = 2|two
+            // .....................................................................................
             REQUIRE(results_copy.get<int>(0, -1) == 2);
             REQUIRE(results_copy.get<int>(NANODBC_TEXT("a"), -1) == 2);
             REQUIRE(results_copy.get<nanodbc::string_type>(1) == NANODBC_TEXT("two"));
@@ -764,7 +778,10 @@ struct base_test_fixture
 
             nanodbc::result().swap(results_copy);
 
+            // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
             REQUIRE(results.next());
+            // row = 3|tri
+            // .....................................................................................
             REQUIRE(results.get<nanodbc::string_type>(0) == NANODBC_TEXT("3"));
             REQUIRE(results.get<nanodbc::string_type>(NANODBC_TEXT("a")) == NANODBC_TEXT("3"));
             REQUIRE(results.get<nanodbc::string_type>(1) == NANODBC_TEXT("tri"));
