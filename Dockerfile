@@ -16,7 +16,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -qqy \
         doxygen \
         g++-5 \
         git \
-        jekyll \
         libmyodbc \
         libsqliteodbc \
         make \
@@ -25,8 +24,13 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -qqy \
         sqlite3 \
         unixodbc \
         unixodbc-dev \
-        vim \
- && DEBIAN_FRONTEND=noninteractive apt-get clean \
+        vim
+
+# Might not be available, but install it if it is.
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install jekyll || true
+
+# Cleanup so image is smaller
+RUN DEBIAN_FRONTEND=noninteractive apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
 RUN odbcinst -i -d -f /usr/share/libmyodbc/odbcinst.ini
