@@ -2660,7 +2660,6 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
             using std::fill;
             fill(buffer.begin(), buffer.end(), '\0');
             const double data = *reinterpret_cast<double*>(col.pdata_ + rowset_position_ * col.clen_);
-            printf("data: %.*lf\n", col.scale_, data);
             const int bytes = std::snprintf(
                 const_cast<char*>(buffer.data())
                 , width
