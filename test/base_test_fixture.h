@@ -115,6 +115,14 @@ struct base_test_fixture
         #endif
     }
 
+    bool contains_string(nanodbc::string_type const& str, nanodbc::string_type const& sub)
+    {
+        if (str.empty() || sub.empty())
+            return false;
+
+        return str.find(sub) != nanodbc::string_type::npos;
+    }
+
     virtual void drop_table(nanodbc::connection& connection, const nanodbc::string_type& name) const
     {
         bool table_exists = true;
@@ -143,9 +151,8 @@ struct base_test_fixture
         REQUIRE(connection.connected());
         nanodbc::catalog catalog(connection);
 
-        // TODO: Tested against SQL Server only and it is failing against PostgreSQL
-        //       We are going to need postgresql_test.cpp, as we do with sqlite_test.cpp.
-        //       It also seems to fail for MySQL as well. -- lexicalunit
+        // Successfully tested against SQL Server and PostgreSQL (9.x) only.
+        // TODO: It needs to be tested against MySQL, Oracle and other DBMS. -- mloskot
 
         // Check we can iterate over any columns
         {
@@ -162,6 +169,28 @@ struct base_test_fixture
 
         // Find a table with known name and verify its known columns
         {
+            // Determine DBMS-specific features, properties and values
+            // NOTE: If handling DBMS-specific features become overly complicated,
+            //       we may decided to remove such features from the tests.
+            nanodbc::string_type binary_type_name;
+            {
+                nanodbc::string_type const dbms = connection.dbms_name();
+                REQUIRE(!dbms.empty());
+                if (contains_string(dbms, NANODBC_TEXT("SQLite")))
+                {
+                    binary_type_name = NANODBC_TEXT("blob");
+                }
+                else if (contains_string(dbms, NANODBC_TEXT("PostgreSQL")))
+                {
+                    binary_type_name = NANODBC_TEXT("bytea");
+                }
+                else
+                {
+                    binary_type_name = NANODBC_TEXT("varbinary"); // Oracle, MySQL, SQL Server,...standard type?
+                }
+            }
+            REQUIRE(!binary_type_name.empty());
+
             nanodbc::string_type const table_name(NANODBC_TEXT("catalog_columns_test"));
             drop_table(connection, table_name);
             execute(connection, NANODBC_TEXT("create table ") + table_name + NANODBC_TEXT("(")
@@ -171,10 +200,9 @@ struct base_test_fixture
                 + NANODBC_TEXT("c3 decimal(9, 3),")
                 + NANODBC_TEXT("c4 date,") // seems more portable than datetime (SQL Server), timestamp (PostgreSQL, MySQL)
                 + NANODBC_TEXT("c5 varchar(60) DEFAULT \'sample value\',")
-                + NANODBC_TEXT("c6 nvarchar(120),")
+                + NANODBC_TEXT("c6 varchar(120),")
                 + NANODBC_TEXT("c7 text,")
-                + NANODBC_TEXT("c8 varbinary,")
-                + NANODBC_TEXT("c9 varbinary(255)")
+                + NANODBC_TEXT("c8 ") + binary_type_name
                 + NANODBC_TEXT(");")
                 );
 
@@ -189,7 +217,8 @@ struct base_test_fixture
             REQUIRE(columns.nullable() == SQL_NO_NULLS);
             REQUIRE(columns.table_name() == table_name); // assume common for the whole result set, check once
             REQUIRE(!columns.type_name().empty()); // data source dependant name, check once
-            REQUIRE(columns.is_nullable() == NANODBC_TEXT("NO"));
+            if (!columns.is_nullable().empty()) // nullability determined
+                REQUIRE(columns.is_nullable() == NANODBC_TEXT("NO"));
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c1"));
@@ -197,7 +226,8 @@ struct base_test_fixture
             REQUIRE(columns.column_size() == 5);
             REQUIRE(columns.decimal_digits() == 0);
             REQUIRE(columns.nullable() == SQL_NO_NULLS);
-            REQUIRE(columns.is_nullable() == NANODBC_TEXT("NO"));
+            if (!columns.is_nullable().empty()) // nullability determined
+                REQUIRE(columns.is_nullable() == NANODBC_TEXT("NO"));
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c2"));
@@ -207,7 +237,8 @@ struct base_test_fixture
             else
                 REQUIRE(columns.column_size() ==  53); // total number of bits allowed
             REQUIRE(columns.nullable() == SQL_NULLABLE);
-            REQUIRE(columns.is_nullable() == NANODBC_TEXT("YES"));
+            if (!columns.is_nullable().empty()) // nullability determined
+                REQUIRE(columns.is_nullable() == NANODBC_TEXT("YES"));
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c3"));
@@ -215,7 +246,8 @@ struct base_test_fixture
             REQUIRE(columns.column_size() == 9);
             REQUIRE(columns.decimal_digits() == 3);
             REQUIRE(columns.nullable() == SQL_NULLABLE);
-            REQUIRE(columns.is_nullable() == NANODBC_TEXT("YES"));
+            if (!columns.is_nullable().empty()) // nullability determined
+                REQUIRE(columns.is_nullable() == NANODBC_TEXT("YES"));
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c4"));
@@ -226,7 +258,7 @@ struct base_test_fixture
             REQUIRE(columns.column_name() == NANODBC_TEXT("c5"));
             REQUIRE((columns.sql_data_type() == SQL_VARCHAR || columns.sql_data_type() == SQL_WVARCHAR));
             REQUIRE(columns.column_size() == 60);
-            REQUIRE(columns.column_default() == NANODBC_TEXT("\'sample value\'"));
+            REQUIRE(columns.column_default().find(NANODBC_TEXT("\'sample value\'")) != nanodbc::string_type::npos);
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c6"));
@@ -236,17 +268,16 @@ struct base_test_fixture
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c7"));
             REQUIRE((columns.sql_data_type() == SQL_LONGVARCHAR || columns.sql_data_type() == SQL_WLONGVARCHAR));
-            REQUIRE(columns.column_size() == 2147483647); // TODO: confirm "text" max length
+            // PostgreSQL uses MaxLongVarcharSize=8190, which is configurable in odbc.ini
+            REQUIRE((columns.column_size() == 2147483647 || columns.column_size() == 8190)); // TODO: confirm "text" max length
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c8"));
             REQUIRE(columns.sql_data_type() == SQL_VARBINARY);
-            REQUIRE(columns.column_size() == 1); // if n is not specified in [var]binary(n), the default length is 1
-
-            REQUIRE(columns.next());
-            REQUIRE(columns.column_name() == NANODBC_TEXT("c9"));
-            REQUIRE(columns.sql_data_type() == SQL_VARBINARY);
-            REQUIRE(columns.column_size() == 255);
+            // SQL Server: if n is not specified in [var]binary(n), the default length is 1
+            // PostgreSQL: bytea default length is reported as 255,
+            // unless ByteaAsLongVarBinary=1 option is specified in connection string.
+            REQUIRE(columns.column_size() > 0); // no need to test exact value
 
             // expect no more records
             REQUIRE(!columns.next());
@@ -259,8 +290,8 @@ struct base_test_fixture
         REQUIRE(connection.connected());
         nanodbc::catalog catalog(connection);
 
-        // TODO: Tested against SQL Server only and it is failing against PostgreSQL
-        //       We are going to need postgresql_test.cpp, as we do with sqlite_test.cpp.
+        // Successfully tested against SQL Server and PostgreSQL (9.x) only.
+        // TODO: It needs to be tested against MySQL, Oracle and other DBMS. -- mloskot
 
         // Find a single-column primary key for table with known name
         {
@@ -310,8 +341,8 @@ struct base_test_fixture
         REQUIRE(connection.connected());
         nanodbc::catalog catalog(connection);
 
-        // TODO: Tested against SQL Server only and it is failing against PostgreSQL
-        //       We are going to need postgresql_test.cpp, as we do with sqlite_test.cpp.
+        // Successfully tested against SQL Server and PostgreSQL (9.x) only.
+        // TODO: It needs to be tested against MySQL, Oracle and other DBMS. -- mloskot
 
         // Check we can iterate over any tables
         {
