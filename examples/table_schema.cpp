@@ -29,7 +29,7 @@ using namespace nanodbc;
 
 void usage(std::ostream& out, std::string const& binary_name)
 {
-    out << "usage: " << binary_name << " connection_string table_name" << std::endl;
+    out << "usage: " << binary_name << " connection_string table_name [schema_name]" << std::endl;
 }
 
 int main(int argc, char* argv[])
