@@ -4,9 +4,9 @@ A small C++ wrapper for the native C ODBC API. Please see the [online documentat
 
 | Version | Description |
 |:--- |:--- |
-| `release` | [![release](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=release)](https://travis-ci.org/lexicalunit/nanodbc) Most recent release that's deemed "stable". Review the [release notes](CHANGELOG.md) to see if this version is right for you. |
-| `latest` | [![latest](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=latest)](https://travis-ci.org/lexicalunit/nanodbc) Latest release; please use this version if CI tests are all passing. **[See all available releases.](https://github.com/lexicalunit/nanodbc/releases)** |
-| `master`  | [![master](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master)](https://travis-ci.org/lexicalunit/nanodbc) Contains the latest development code, not yet ready for a release. |
+| `release` | [![release](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=release)](https://travis-ci.org/lexicalunit/nanodbc) Most recent published version that's deemed "stable". Review the [changelog notes](CHANGELOG.md) to see if this version is right for you. |
+| `latest` | [![latest](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=latest)](https://travis-ci.org/lexicalunit/nanodbc) Latest published version; please use this version if CI tests are all passing. **[See all available versions.](https://github.com/lexicalunit/nanodbc/releases)** |
+| `master`  | [![master](https://travis-ci.org/lexicalunit/nanodbc.svg?branch=master)](https://travis-ci.org/lexicalunit/nanodbc) Contains the latest development code, not yet ready for a published version. |
 | `v2.x.x`  | Targets C++14+. All future development will build upon this version. |
 | `v1.x.x`  | Supports C++03 and optionally C++11. *There is no longer any support for this version.* |
 
@@ -83,7 +83,7 @@ To do this manually instead, use the following steps &mdash; for example a minor
 
 ### Release Process
 
-Release nanodbc with the `scripts/release.sh` script. All this script does is push out the `master` branch to the `release` branch, indicating that a new "stable" version of nanodbc exists. To do so manually, execute `git push -f origin master:release`. **Caution: Do this for releases deemed "stable" based on suitable criteria.**
+Release nanodbc with the `scripts/release.sh` script. All this script does is push out the `master` branch to the `release` branch, indicating that a new "stable" published version of nanodbc exists. To do so manually, execute `git push -f origin master:release`. **Caution: Do this for versions deemed "stable" based on suitable criteria.**
 
 ## Source Level Documentation
 
@@ -95,7 +95,7 @@ Source level documentation provided via [GitHub's gh-pages](https://help.github.
 4. `make commit` Adds and commits any updated documentation.
 5. `git push origin gh-pages` Deploys the changes to github.
 
-Building documentation and gh-pages requires the use of [Doxygen](www.doxygen.org) and [jekyll](https://jekyllrb.com/). See the `Makefile` on the `gh-pages` branch of nanodbc for more details.
+Building documentation and gh-pages requires the use of [Doxygen](www.doxygen.org) and [jekyll](https://jekyllrb.com/). See the [`Makefile` on the `gh-pages` branch](https://github.com/lexicalunit/nanodbc/blob/gh-pages/Makefile) for more details.
 
 ## Quick Setup Testing and Development Environments
 
@@ -123,6 +123,20 @@ vagrant@vagrant-ubuntu-precise-64:~$ make nanodbc
 ```
 
 ## Future work
+
+### Development Roadmap
+
+- [OPTIONAL] PostgreSQL
+    - Try to get a `odbc-postgresql` test working in Docker and travis-ci.
+- iODBC Concerns
+    - Test `u16string` with iODBC.
+    - Add docs about iODBC vs unixODBC and `sizeof(SQLWCHAR)`.
+- Documentation
+    - Add HOWTO Build sections for Windows, OS X, and Linux.
+- Update changelog with new features, fixes, and changes.
+- Re-generate source level doxygen docs following version published.
+
+### Good to Have / Want Someday
 
 - Refactor unit tests to follow BDD pattern.
 - Update codebase to use more C++14 idioms and patterns.
