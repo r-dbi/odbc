@@ -50,13 +50,13 @@
 #endif
 
 template <typename T>
-std::string any_to_string(T const& t)
+inline std::string any_to_string(T const& t)
 {
     return std::to_string(t);
 }
 
 template <>
-std::string any_to_string<nanodbc::string_type>(nanodbc::string_type const& t)
+inline std::string any_to_string<nanodbc::string_type>(nanodbc::string_type const& t)
 {
     return convert(t);
 }
