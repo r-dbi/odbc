@@ -18,7 +18,7 @@
 #endif
 
 #ifdef NANODBC_USE_UNICODE
-    #define NANODBC_TEXT(s) L ## s
+    #define NANODBC_TEXT(s) u ## s
 #else
     #define NANODBC_TEXT(s) s
 #endif
@@ -104,11 +104,11 @@ struct base_test_fixture
         #ifdef NANODBC_USE_UNICODE
             #ifdef NANODBC_USE_BOOST_CONVERT
                 using boost::locale::conv::utf_to_utf;
-                return utf_to_utf<wchar_t>(
-                    connection_string.c_str()
+                return utf_to_utf<char16_t>(connection_string.c_str()
                     , connection_string.c_str() + connection_string.size());
             #else
-                return std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(connection_string);
+                return std::wstring_convert<
+                    std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(connection_string);
             #endif
         #else
                 return connection_string;
