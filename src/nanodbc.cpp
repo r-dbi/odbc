@@ -2525,8 +2525,11 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                         ss << buff;
                     else if(ValueLenOrInd == SQL_NULL_DATA)
                         *col.cbdata_ = (SQLINTEGER) SQL_NULL_DATA;
-                } while(rc > 0);
-                convert(ss.str(), result);
+                    // Sequence of successful calls is:
+                    // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
+                } while(rc == SQL_SUCCESS_WITH_INFO);
+                if (rc == SQL_SUCCESS || rc == SQL_NO_DATA)
+                    convert(ss.str(), result);
             }
             else
             {
@@ -2564,8 +2567,11 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                         ss << buffer;
                     else if(ValueLenOrInd == SQL_NULL_DATA)
                         *col.cbdata_ = (SQLINTEGER) SQL_NULL_DATA;
-                } while(rc > 0);
-                convert(ss.str(), result);
+                    // Sequence of successful calls is:
+                    // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
+                } while(rc == SQL_SUCCESS_WITH_INFO);
+                if (rc == SQL_SUCCESS || rc == SQL_NO_DATA)
+                    convert(ss.str(), result);
             }
             else
             {
