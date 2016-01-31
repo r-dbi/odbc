@@ -342,9 +342,10 @@ struct base_test_fixture
             REQUIRE(count > 0);
         }
 
+        nanodbc::string_type const table_name(NANODBC_TEXT("catalog_tables_test"));
+
         // Find a table with known name
         {
-            nanodbc::string_type const table_name(NANODBC_TEXT("catalog_tables_test"));
             drop_table(connection, table_name);
             execute(connection, NANODBC_TEXT("create table ") + table_name + NANODBC_TEXT("(a int);"));
 
@@ -378,10 +379,17 @@ struct base_test_fixture
 
         // Find a VIEW with known name
         {
-            nanodbc::string_type const view_name(NANODBC_TEXT("TABLE_PRIVILEGES"));
-
             // Use SQLTables pattern search by name only (in any schema)
             {
+                nanodbc::string_type const view_name(NANODBC_TEXT("catalog_tables_test_view"));
+                try
+                {
+                    execute(connection, NANODBC_TEXT("DROP VIEW ") + view_name);
+                }
+                catch (...) {}
+                execute(connection, NANODBC_TEXT("CREATE VIEW ") + view_name
+                    + NANODBC_TEXT(" AS SELECT a FROM ") + table_name);
+
                 nanodbc::catalog::tables tables = catalog.find_tables(view_name, NANODBC_TEXT("VIEW"));
                 // expect single record with the wanted table
                 REQUIRE(tables.next());
@@ -389,10 +397,16 @@ struct base_test_fixture
                 REQUIRE(tables.table_type() == NANODBC_TEXT("VIEW"));
                 // expect no more records
                 REQUIRE(!tables.next());
+
+                // Clean up, otherwise source table can not be dropped and re-created
+                execute(connection, NANODBC_TEXT("DROP VIEW ") + view_name);
             }
 
             // Use SQLTables pattern search by name inside given schema
+            // TODO: Target other databases where INFORMATION_SCHEMA support is available.
+            if (connection.dbms_name().find(NANODBC_TEXT("SQL Server")) != nanodbc::string_type::npos)
             {
+                nanodbc::string_type const view_name(NANODBC_TEXT("TABLE_PRIVILEGES"));
                 nanodbc::string_type const schema_name(NANODBC_TEXT("INFORMATION_SCHEMA"));
                 nanodbc::catalog::tables tables = catalog.find_tables(view_name, NANODBC_TEXT("VIEW"), schema_name);
                 // expect single record with the wanted table
