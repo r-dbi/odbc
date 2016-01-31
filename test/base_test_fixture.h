@@ -107,8 +107,14 @@ struct base_test_fixture
                 return utf_to_utf<char16_t>(connection_string.c_str()
                     , connection_string.c_str() + connection_string.size());
             #else
+                #if defined(_MSC_VER) && (_MSC_VER == 1900)
+            auto s = std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(connection_string);
+            auto p = reinterpret_cast<char16_t const*>(s.data());
+            return nanodbc::string_type(p, p + s.size());
+                #else
                 return std::wstring_convert<
                     std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(connection_string);
+                #endif
             #endif
         #else
                 return connection_string;
