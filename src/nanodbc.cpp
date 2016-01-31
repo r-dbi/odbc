@@ -2458,11 +2458,11 @@ inline void result::result_impl::get_ref_impl<date>(short column, date& result) 
     switch(col.ctype_)
     {
         case SQL_C_DATE:
-            result = *((date*)(col.pdata_ + rowset_position_ * col.clen_));
+            result = *reinterpret_cast<date*>(col.pdata_ + rowset_position_ * col.clen_);
             return;
         case SQL_C_TIMESTAMP:
         {
-            timestamp stamp = *( (timestamp*)( col.pdata_ + rowset_position_ * col.clen_ ) );
+            timestamp stamp = *reinterpret_cast<timestamp*>(col.pdata_ + rowset_position_ * col.clen_ );
             date d = { stamp.year, stamp.month, stamp.day };
             result = d;
             return;
@@ -2479,13 +2479,13 @@ inline void result::result_impl::get_ref_impl<timestamp>(short column, timestamp
     {
         case SQL_C_DATE:
         {
-            date d = *((date*)(col.pdata_ + rowset_position_ * col.clen_));
+            date d = *reinterpret_cast<date*>(col.pdata_ + rowset_position_ * col.clen_);
             timestamp stamp = { d.year, d.month, d.day, 0, 0, 0, 0 };
             result = stamp;
             return;
         }
         case SQL_C_TIMESTAMP:
-            result = *((timestamp*)(col.pdata_ + rowset_position_ * col.clen_));
+            result = *reinterpret_cast<timestamp*>(col.pdata_ + rowset_position_ * col.clen_);
             return;
     }
     throw type_incompatible_error();
