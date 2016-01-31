@@ -216,18 +216,18 @@ struct base_test_fixture
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c5"));
-            REQUIRE(columns.sql_data_type() == SQL_VARCHAR);
+            REQUIRE((columns.sql_data_type() == SQL_VARCHAR || columns.sql_data_type() == SQL_WVARCHAR));
             REQUIRE(columns.column_size() == 60);
             REQUIRE(columns.column_default() == NANODBC_TEXT("\'sample value\'"));
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c6"));
-            REQUIRE(columns.sql_data_type() == SQL_WVARCHAR);
+            REQUIRE((columns.sql_data_type() == SQL_VARCHAR || columns.sql_data_type() == SQL_WVARCHAR));
             REQUIRE(columns.column_size() == 120);
 
             REQUIRE(columns.next());
             REQUIRE(columns.column_name() == NANODBC_TEXT("c7"));
-            REQUIRE(columns.sql_data_type() == SQL_LONGVARCHAR);
+            REQUIRE((columns.sql_data_type() == SQL_LONGVARCHAR || columns.sql_data_type() == SQL_WLONGVARCHAR));
             REQUIRE(columns.column_size() == 2147483647); // TODO: confirm "text" max length
 
             REQUIRE(columns.next());
