@@ -1,5 +1,5 @@
 add_custom_target(examples DEPENDS examples)
-set(examples northwind usage rowset_iteration)
+set(examples northwind usage rowset_iteration table_schema)
 
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src)
 
