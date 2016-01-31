@@ -18,14 +18,14 @@ language: cpp
 compiler:
   - gcc
 env:
-  - DB=mysql USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
-  - DB=mysql USE_UNICODE=OFF USE_BOOST_CONVERT=ON
-  - DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=OFF
-  - DB=mysql USE_UNICODE=ON USE_BOOST_CONVERT=ON
-  - DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF
-  - DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=ON
-  - DB=sqlite USE_UNICODE=ON  USE_BOOST_CONVERT=OFF
-  - DB=sqlite USE_UNICODE=ON  USE_BOOST_CONVERT=ON
+  - DB=mysql USE_UNICODE=OFF  USE_BOOST_CONVERT=OFF USE_NODATA_BUG=OFF
+  - DB=mysql USE_UNICODE=OFF  USE_BOOST_CONVERT=ON  USE_NODATA_BUG=OFF
+  - DB=mysql USE_UNICODE=ON   USE_BOOST_CONVERT=OFF USE_NODATA_BUG=OFF
+  - DB=mysql USE_UNICODE=ON   USE_BOOST_CONVERT=ON  USE_NODATA_BUG=OFF
+  - DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=OFF USE_NODATA_BUG=OFF
+  - DB=sqlite USE_UNICODE=OFF USE_BOOST_CONVERT=ON  USE_NODATA_BUG=OFF
+  - DB=sqlite USE_UNICODE=ON  USE_BOOST_CONVERT=OFF USE_NODATA_BUG=ON
+  - DB=sqlite USE_UNICODE=ON  USE_BOOST_CONVERT=ON  USE_NODATA_BUG=ON
 before_install:
   - if [[ "$DB" == "sqlite" ]]; then sudo odbcinst -i -d -f /usr/share/sqliteodbc/unixodbc.ini; fi
   - if [[ "$DB" == "mysql" ]]; then sudo odbcinst -i -d -f /usr/share/libmyodbc/odbcinst.ini; fi
@@ -39,9 +39,7 @@ before_script:
 script:
   - mkdir build
   - cd build
-  - cmake -D NANODBC_USE_UNICODE=${USE_UNICODE} -D NANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -D NANODBC_ENABLE_LIBCXX=NO ..
+  - cmake -D NANODBC_USE_UNICODE=${USE_UNICODE} -D NANODBC_USE_BOOST_CONVERT=${USE_BOOST_CONVERT} -D NANODBC_HANDLE_NODATA_BUG=${USE_NODATA_BUG} -D NANODBC_ENABLE_LIBCXX=NO ..
   - make
-  # FIXME: Unicode enabled SQLite tests not working on Linux builds.
-  - if [[ "$DB" == "sqlite" && $USE_UNICODE == "OFF" ]]; then make VERBOSE=1 sqlite_check; fi
-  # FIXME: Unicode enabled MySQL tests not working on Linux builds.
-  - if [[ "$DB" == "mysql" && $USE_UNICODE == "OFF" ]]; then make VERBOSE=1 mysql_check; fi
+  - if [[ "$DB" == "sqlite" ]]; then make VERBOSE=1 sqlite_check; fi
+  - if [[ "$DB" == "mysql" ]]; then make VERBOSE=1 mysql_check; fi
