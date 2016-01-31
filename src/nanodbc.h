@@ -130,7 +130,7 @@ namespace nanodbc
 // You must explicitly request Unicode support by defining NANODBC_USE_UNICODE at compile time.
 #ifndef DOXYGEN
     #ifdef NANODBC_USE_UNICODE
-        typedef std::wstring string_type;
+        typedef std::u16string string_type;
     #else
         typedef std::string string_type;
     #endif // NANODBC_USE_UNICODE
@@ -146,7 +146,7 @@ namespace nanodbc
         typedef long null_type;
     #endif
 #else
-    //! string_type will be std::wstring if NANODBC_USE_UNICODE is defined, otherwise std::string.
+    //! string_type will be std::u16string if NANODBC_USE_UNICODE is defined, otherwise std::string.
     typedef unspecified-type string_type;
     //! null_type will be int64_t for 64-bit compilations, otherwise long.
     typedef unspecified-type null_type;

@@ -1,9 +1,13 @@
 #include "nanodbc.h"
-#include <iostream>
-using namespace std;
-#ifndef NANODBC_USE_UNICODE
+
 #include <algorithm>
 #include <cstring>
+#include <iostream>
+
+using namespace std;
+using namespace nanodbc;
+
+#ifndef NANODBC_USE_UNICODE
 
 void show(nanodbc::result& results);
 
@@ -88,7 +92,7 @@ void run_test(const char* connection_string)
         execute(connection, "create table public.batch_test (x varchar(10), y int, z float);");
         prepare(statement, "insert into public.batch_test (x, y, z) values (?, ?, ?);");
 
-        const std::size_t elements = 4;
+        const size_t elements = 4;
 
         char xdata[elements][10] = { "this", "is", "a", "test" };
         statement.bind_strings(0, xdata);
@@ -103,7 +107,7 @@ void run_test(const char* connection_string)
 
         results = execute(connection, "select * from public.batch_test;", 3);
         show(results);
-    
+
         execute(connection, "drop table if exists public.batch_test;");
     }
 
@@ -132,7 +136,7 @@ void run_test(const char* connection_string)
 
         const int elements = 5;
         const int a_null = 0;
-        const char* b_null = ""; 
+        const char* b_null = "";
         int a_data[elements] = {0, 88, 0, 0, 0};
         char b_data[elements][10] = {"", "non-null", "", "", ""};
 
@@ -192,20 +196,20 @@ void show(nanodbc::result& results)
     }
 }
 
-void usage(std::ostream& out, std::string const& binary_name)
+void usage(ostream& out, string const& binary_name)
 {
-    out << "usage: " << binary_name << " connection_string" << std::endl;
+    out << "usage: " << binary_name << " connection_string" << endl;
 }
 
 int main(int argc, char* argv[])
 {
     if(argc != 2)
     {
-        char* app_name = std::strrchr(argv[0], '/');
+        char* app_name = strrchr(argv[0], '/');
         app_name = app_name ? app_name + 1 : argv[0];
-        if(0 == std::strncmp(app_name, "lt-", 3))
+        if(0 == strncmp(app_name, "lt-", 3))
             app_name += 3; // remove libtool prefix
-        usage(std::cerr, app_name);
+        usage(cerr, app_name);
         return 1;
     }
 
@@ -221,10 +225,11 @@ int main(int argc, char* argv[])
 }
 
 #else
+
 int main(int /*argc*/, char* argv[])
 {
-    cout << argv[0] << " does not support use of Unicode." << std::endl;
-    cout << "Compile it without NANODBC_USE_UNICODE preprocessor define." << std::endl;
-
+    cout << argv[0] << " does not support use of Unicode." << endl;
+    cout << "Compile it without NANODBC_USE_UNICODE preprocessor define." << endl;
 }
-#endif
+
+#endif // NANODBC_USE_UNICODE

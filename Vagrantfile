@@ -12,7 +12,6 @@ sudo apt-get -y -q install \
     g++-5 \
     git \
     libboost-locale1.55-dev \
-    libboost-test1.55-dev \
     libmyodbc \
     libsqliteodbc \
     mysql-client \

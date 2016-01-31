@@ -13,7 +13,6 @@
 #include <ctime>
 #include <iomanip>
 #include <map>
-#include <sstream>
 
 #ifndef __clang__
     #include <cstdint>
@@ -21,8 +20,8 @@
 
 // User may redefine NANODBC_ASSERT macro in nanodbc.h
 #ifndef NANODBC_ASSERT
-#include <cassert>
-#define NANODBC_ASSERT(expr) assert(expr)
+    #include <cassert>
+    #define NANODBC_ASSERT(expr) assert(expr)
 #endif
 
 #ifdef NANODBC_USE_BOOST_CONVERT
@@ -73,46 +72,22 @@
 //  "Y88888P"  888  888 888  "Y8888P "Y88P"   "Y88888  "Y8888
 // MARK: Unicode -
 
-#if defined(_MSC_VER)
-    #ifdef NANODBC_USE_UNICODE
-        #define NANODBC_TEXT(s) L ## s
-        #define NANODBC_SNPRINTF std::swprintf
-        #define NANODBC_STRFTIME std::wcsftime
-        #define NANODBC_STRLEN std::wcslen
-        #define NANADBC_STRNCMP std::wcsncmp
-        #define NANODBC_UNICODE(f) f ## W
-        #define NANODBC_SQLCHAR SQLWCHAR
-    #else
-        #define NANODBC_TEXT(s) s
-        #define NANODBC_SNPRINTF(buffer, count, format, ...) _snprintf_s(buffer, count, _TRUNCATE, format, __VA_ARGS__)
-        #define NANODBC_STRFTIME std::strftime
-        #define NANODBC_STRLEN std::strlen
-        #define NANADBC_STRNCMP std::strncmp
-        #define NANODBC_UNICODE(f) f
-        #define NANODBC_SQLCHAR SQLCHAR
+#ifdef NANODBC_USE_UNICODE
+    #define NANODBC_TEXT(s) u ## s
+    #define NANODBC_FUNC(f) f ## W
+    #define NANODBC_SQLCHAR SQLWCHAR
+#else
+    #define NANODBC_TEXT(s) s
+    #define NANODBC_FUNC(f) f
+    #define NANODBC_SQLCHAR SQLCHAR
+#endif
 
+#if defined(_MSC_VER)
+    #ifndef NANODBC_USE_UNICODE
         // Disable unicode in sqlucode.h on Windows when NANODBC_USE_UNICODE
         // is not defined. This is required because unicode is enabled by
         // default on many Windows systems.
         #define SQL_NOUNICODEMAP
-    #endif
-#else
-    #ifdef NANODBC_USE_UNICODE
-        #define NANODBC_TEXT(s) L ## s
-        #define NANODBC_SNPRINTF std::swprintf
-        #define NANODBC_STRFTIME std::wcsftime
-        #define NANODBC_STRLEN std::wcslen
-        #define NANADBC_STRNCMP std::wcsncmp
-        #define NANODBC_UNICODE(f) f ## W
-        #define NANODBC_SQLCHAR SQLWCHAR
-    #else
-        #define NANODBC_TEXT(s) s
-        #define NANODBC_SNPRINTF std::snprintf
-        #define NANODBC_STRFTIME std::strftime
-        #define NANODBC_STRLEN std::strlen
-        #define NANADBC_STRNCMP std::strncmp
-        #define NANODBC_UNICODE(f) f
-        #define NANODBC_SQLCHAR SQLCHAR
     #endif
 #endif
 
@@ -214,28 +189,41 @@ namespace
         return i;
     }
 
-    inline void convert(const std::wstring& in, std::string& out)
+    inline void convert(const std::u16string& in, std::string& out)
     {
         #ifdef NANODBC_USE_BOOST_CONVERT
             using boost::locale::conv::utf_to_utf;
             out = utf_to_utf<char>(in.c_str(), in.c_str() + in.size());
         #else
-            out = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(in);
+            #if defined(_MSC_VER) && (_MSC_VER == 1900)
+                // Workaround for confirmed bug in VS2015.
+                // See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error
+                auto p = reinterpret_cast<int16_t const*>(in.data());
+                out = std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().to_bytes(p, p + in.size());
+            #else
+                out = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().to_bytes(in);
+            #endif
         #endif
     }
 
     #ifdef NANODBC_USE_UNICODE
-        inline void convert(const std::string& in, std::wstring& out)
+        inline void convert(const std::string& in, std::u16string& out)
         {
             #ifdef NANODBC_USE_BOOST_CONVERT
                 using boost::locale::conv::utf_to_utf;
-                out = utf_to_utf<wchar_t>(in.c_str(), in.c_str() + in.size());
+                out = utf_to_utf<char16_t>(in.c_str(), in.c_str() + in.size());
+            #elif defined(_MSC_VER) && (_MSC_VER == 1900)
+                // Workaround for confirmed bug in VS2015.
+                // See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error
+                auto s = std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(in);
+                auto p = reinterpret_cast<char16_t const*>(s.data());
+                out.assign(p, p + s.size());
             #else
-                out = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(in);
+                out = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(in);
             #endif
         }
 
-        inline void convert(const std::wstring& in, std::wstring & out)
+        inline void convert(const std::u16string& in, std::u16string& out)
         {
             out = in;
         }
@@ -268,7 +256,7 @@ namespace
         do
         {
             NANODBC_CALL_RC(
-                NANODBC_UNICODE(SQLGetDiagRec)
+                NANODBC_FUNC(SQLGetDiagRec)
                 , rc
                 , handle_type
                 , handle
@@ -286,7 +274,7 @@ namespace
                 break;
 
             NANODBC_CALL_RC(
-                NANODBC_UNICODE(SQLGetDiagRec)
+                NANODBC_FUNC(SQLGetDiagRec)
                 , rc
                 , handle_type
                 , handle
@@ -786,7 +774,7 @@ public:
         #endif
 
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLConnect)
+            NANODBC_FUNC(SQLConnect)
             , rc
             , conn_
             , (NANODBC_SQLCHAR*)dsn.c_str(), SQL_NTS
@@ -838,7 +826,7 @@ public:
         NANODBC_SQLCHAR dsn[1024];
         SQLSMALLINT dsn_size = 0;
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLDriverConnect)
+            NANODBC_FUNC(SQLDriverConnect)
             , rc
             , conn_
             , 0
@@ -894,7 +882,7 @@ public:
         SQLSMALLINT length(0);
         RETCODE rc;
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLGetInfo)
+            NANODBC_FUNC(SQLGetInfo)
             , rc
             , conn_
             , SQL_DBMS_NAME
@@ -912,7 +900,7 @@ public:
         SQLSMALLINT length(0);
         RETCODE rc;
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLGetInfo)
+            NANODBC_FUNC(SQLGetInfo)
             , rc
             , conn_
             , SQL_DBMS_VER
@@ -930,7 +918,7 @@ public:
         SQLSMALLINT length;
         RETCODE rc;
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLGetInfo)
+            NANODBC_FUNC(SQLGetInfo)
             , rc
             , conn_
             , SQL_DRIVER_NAME
@@ -952,7 +940,7 @@ public:
         SQLSMALLINT length(0);
         RETCODE rc;
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLGetInfo)
+            NANODBC_FUNC(SQLGetInfo)
             , rc
             , conn_
             , SQL_DATABASE_NAME
@@ -970,7 +958,7 @@ public:
         SQLINTEGER length(0);
         RETCODE rc;
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLGetConnectAttr)
+            NANODBC_FUNC(SQLGetConnectAttr)
             , rc
             , conn_
             , SQL_ATTR_CURRENT_CATALOG
@@ -1283,7 +1271,7 @@ public:
 
         RETCODE rc;
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLPrepare)
+            NANODBC_FUNC(SQLPrepare)
             , rc
             , stmt_
             , (NANODBC_SQLCHAR*)query.c_str()
@@ -1428,7 +1416,7 @@ public:
         this->timeout(timeout);
 
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLExecDirect)
+            NANODBC_FUNC(SQLExecDirect)
             , rc
             , stmt_
             , (NANODBC_SQLCHAR*)query.c_str()
@@ -1507,7 +1495,7 @@ public:
 
         RETCODE rc;
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLProcedureColumns)
+            NANODBC_FUNC(SQLProcedureColumns)
             , rc
             , stmt_
             , (NANODBC_SQLCHAR*)(catalog.empty() ? NULL : catalog.c_str())
@@ -1835,12 +1823,23 @@ void statement::statement_impl::bind_strings(
 
     if(null_sentry)
     {
-        const string_type rhs(null_sentry);
         for(std::size_t i = 0; i < elements; ++i)
         {
-            const string_type lhs(values + i * length, values + (i + 1) * length);
-            if(NANADBC_STRNCMP(lhs.c_str(), rhs.c_str(), length))
-                bind_len_or_null_[param][i] = parameter_size;
+            const string_type s_lhs(values + i * length, values + (i + 1) * length);
+            const string_type s_rhs(null_sentry);
+            #if NANODBC_USE_UNICODE
+                std::string narrow_lhs;
+                narrow_lhs.reserve(s_lhs.size());
+                convert(s_lhs, narrow_lhs);
+                std::string narrow_rhs;
+                narrow_rhs.reserve(s_rhs.size());
+                convert(s_rhs, narrow_lhs);
+                if(std::strncmp(narrow_lhs.c_str(), narrow_rhs.c_str(), length))
+                    bind_len_or_null_[param][i] = parameter_size;
+            #else
+                if(std::strncmp(s_lhs.c_str(), s_rhs.c_str(), length))
+                    bind_len_or_null_[param][i] = parameter_size;
+            #endif
         }
     }
     else if(nulls)
@@ -2291,7 +2290,7 @@ private:
         for(SQLSMALLINT i = 0; i < n_columns; ++i)
         {
             NANODBC_CALL_RC(
-                NANODBC_UNICODE(SQLDescribeCol)
+                NANODBC_FUNC(SQLDescribeCol)
                 , rc
                 , stmt_.native_statement_handle()
                 , i + 1
@@ -2458,11 +2457,11 @@ inline void result::result_impl::get_ref_impl<date>(short column, date& result) 
     switch(col.ctype_)
     {
         case SQL_C_DATE:
-            result = *((date*)(col.pdata_ + rowset_position_ * col.clen_));
+            result = *reinterpret_cast<date*>(col.pdata_ + rowset_position_ * col.clen_);
             return;
         case SQL_C_TIMESTAMP:
         {
-            timestamp stamp = *( (timestamp*)( col.pdata_ + rowset_position_ * col.clen_ ) );
+            timestamp stamp = *reinterpret_cast<timestamp*>(col.pdata_ + rowset_position_ * col.clen_ );
             date d = { stamp.year, stamp.month, stamp.day };
             result = d;
             return;
@@ -2479,13 +2478,13 @@ inline void result::result_impl::get_ref_impl<timestamp>(short column, timestamp
     {
         case SQL_C_DATE:
         {
-            date d = *((date*)(col.pdata_ + rowset_position_ * col.clen_));
+            date d = *reinterpret_cast<date*>(col.pdata_ + rowset_position_ * col.clen_);
             timestamp stamp = { d.year, d.month, d.day, 0, 0, 0, 0 };
             result = stamp;
             return;
         }
         case SQL_C_TIMESTAMP:
-            result = *((timestamp*)(col.pdata_ + rowset_position_ * col.clen_));
+            result = *reinterpret_cast<timestamp*>(col.pdata_ + rowset_position_ * col.clen_);
             return;
     }
     throw type_incompatible_error();
@@ -2503,8 +2502,8 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
         {
             if(col.blob_)
             {
-                // Input is always std::string, while output may be std::string or std::wstring
-                std::stringstream ss;
+                // Input is always std::string, while output may be std::string or std::u16string
+                std::string out;
                 char buff[1024] = {0};
                 std::size_t buff_size = sizeof(buff);
                 SQLLEN ValueLenOrInd;
@@ -2522,14 +2521,14 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                         , buff_size         // BufferLength
                         , &ValueLenOrInd);  // StrLen_or_IndPtr
                     if(ValueLenOrInd > 0)
-                        ss << buff;
+                        out.append(buff);
                     else if(ValueLenOrInd == SQL_NULL_DATA)
                         *col.cbdata_ = (SQLINTEGER) SQL_NULL_DATA;
                     // Sequence of successful calls is:
                     // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
                 } while(rc == SQL_SUCCESS_WITH_INFO);
                 if (rc == SQL_SUCCESS || rc == SQL_NO_DATA)
-                    convert(ss.str(), result);
+                    convert(out, result);
             }
             else
             {
@@ -2544,10 +2543,10 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
         {
             if(col.blob_)
             {
-                // Input is always std::wstring, output might be std::string or std::wstring.
+                // Input is always std::u16string, output might be std::string or std::u16string.
                 // Use a string builder to build the output string.
-                std::wstringstream ss;
-                wchar_t buffer[512] = {0};
+                std::u16string out;
+                char16_t buffer[512] = {0};
                 std::size_t buffer_size = sizeof(buffer);
                 SQLLEN ValueLenOrInd;
                 SQLRETURN rc;
@@ -2564,21 +2563,21 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                         , buffer_size       // BufferLength
                         , &ValueLenOrInd);  // StrLen_or_IndPtr
                     if(ValueLenOrInd > 0)
-                        ss << buffer;
+                        out.append(buffer);
                     else if(ValueLenOrInd == SQL_NULL_DATA)
                         *col.cbdata_ = (SQLINTEGER) SQL_NULL_DATA;
                     // Sequence of successful calls is:
                     // SQL_NO_DATA or SQL_SUCCESS_WITH_INFO followed by SQL_SUCCESS.
                 } while(rc == SQL_SUCCESS_WITH_INFO);
                 if (rc == SQL_SUCCESS || rc == SQL_NO_DATA)
-                    convert(ss.str(), result);
+                    convert(out, result);
             }
             else
             {
                 // Type is unicode in the database, convert if necessary
                 const SQLWCHAR* s = reinterpret_cast<SQLWCHAR*>(col.pdata_ + rowset_position_ * col.clen_);
                 const string_type::size_type str_size = *col.cbdata_ / sizeof(SQLWCHAR);
-                std::wstring temp(s, s + str_size);
+                std::u16string temp(s, s + str_size);
                 convert(temp, result);
             }
             return;
@@ -2596,81 +2595,107 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
 
         case SQL_C_LONG:
         {
-           result.resize(column_size);
-           if(NANODBC_SNPRINTF(
-                    const_cast<string_type::value_type*>(result.data())
-                    , column_size
-                    , NANODBC_TEXT("%d")
-                    , *(int32_t*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
-               throw type_incompatible_error();
-           result.resize(NANODBC_STRLEN(result.c_str()));
-           return;
+            std::string buffer;
+            buffer.reserve(column_size + 1); // ensure terminating null
+            buffer.resize(buffer.capacity());
+            using std::fill;
+            fill(buffer.begin(), buffer.end(), '\0');
+            const int32_t data = *reinterpret_cast<int32_t*>(col.pdata_ + rowset_position_ * col.clen_);
+            const int bytes = std::snprintf(const_cast<char*>(buffer.data()), column_size, "%d", data);
+            if(bytes == -1)
+                throw type_incompatible_error();
+            else if((SQLULEN)bytes < column_size)
+                buffer.resize(bytes);
+            buffer.resize(std::strlen(buffer.data())); // drop any trailing nulls
+            result.reserve(buffer.size() * sizeof(string_type::value_type));
+            convert(buffer, result);
+            return;
         }
 
         case SQL_C_SBIGINT:
         {
             using namespace std; // in case intmax_t is in namespace std
-            result.resize(column_size);
-            if(NANODBC_SNPRINTF(
-                    const_cast<string_type::value_type*>(result.data())
-                    , column_size
-                    , NANODBC_TEXT("%jd")
-                    , (intmax_t) *(int64_t*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
+            std::string buffer;
+            buffer.reserve(column_size + 1); // ensure terminating null
+            buffer.resize(buffer.capacity());
+            using std::fill;
+            fill(buffer.begin(), buffer.end(), '\0');
+            const intmax_t data = (intmax_t)*reinterpret_cast<int64_t*>(col.pdata_ + rowset_position_ * col.clen_);
+            const int bytes = std::snprintf(const_cast<char*>(buffer.data()), column_size, "%jd", data);
+            if(bytes == -1)
                 throw type_incompatible_error();
-            result.resize(NANODBC_STRLEN(result.c_str()));
+            else if((SQLULEN)bytes < column_size)
+                buffer.resize(bytes);
+            buffer.resize(std::strlen(buffer.data())); // drop any trailing nulls
+            result.reserve(buffer.size() * sizeof(string_type::value_type));
+            convert(buffer, result);
             return;
         }
 
         case SQL_C_FLOAT:
         {
-            result.resize(column_size);
-            if(NANODBC_SNPRINTF(
-                    const_cast<string_type::value_type*>(result.data())
-                    , column_size
-                    , NANODBC_TEXT("%f")
-                    , *(float*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
+            std::string buffer;
+            buffer.reserve(column_size + 1); // ensure terminating null
+            buffer.resize(buffer.capacity());
+            using std::fill;
+            fill(buffer.begin(), buffer.end(), '\0');
+            const float data = *reinterpret_cast<float*>(col.pdata_ + rowset_position_ * col.clen_);
+            const int bytes = std::snprintf(const_cast<char*>(buffer.data()), column_size, "%f", data);
+            if(bytes == -1)
                 throw type_incompatible_error();
-            result.resize(NANODBC_STRLEN(result.c_str()));
+            else if((SQLULEN)bytes < column_size)
+                buffer.resize(bytes);
+            buffer.resize(std::strlen(buffer.data())); // drop any trailing nulls
+            result.reserve(buffer.size() * sizeof(string_type::value_type));
+            convert(buffer, result);
             return;
         }
 
         case SQL_C_DOUBLE:
         {
-            result.resize(column_size + 2);     // account for decimal mark and sign
-            if(NANODBC_SNPRINTF(
-                const_cast<string_type::value_type*>(result.data())
-                , column_size + 2
-                , NANODBC_TEXT("%.*lf")         // restrict the number of digits
+            std::string buffer;
+            const SQLULEN width = column_size + 2; // account for decimal mark and sign
+            buffer.reserve(width + 1); // ensure terminating null
+            buffer.resize(buffer.capacity());
+            using std::fill;
+            fill(buffer.begin(), buffer.end(), '\0');
+            const double data = *reinterpret_cast<double*>(col.pdata_ + rowset_position_ * col.clen_);
+            printf("data: %.*lf\n", col.scale_, data);
+            const int bytes = std::snprintf(
+                const_cast<char*>(buffer.data())
+                , width
+                , "%.*lf"                       // restrict the number of digits
                 , col.scale_                    // number of digits after the decimal point
-                , *(double*)(col.pdata_ + rowset_position_ * col.clen_)) == -1)
-            throw type_incompatible_error();
-            result.resize(NANODBC_STRLEN(result.c_str()));
+                , data);
+            if(bytes == -1)
+                throw type_incompatible_error();
+            else if((SQLULEN)bytes < column_size)
+                buffer.resize(bytes);
+            buffer.resize(std::strlen(buffer.data())); // drop any trailing nulls
+            result.reserve(buffer.size() * sizeof(string_type::value_type));
+            convert(buffer, result);
             return;
         }
 
         case SQL_C_DATE:
         {
-            date d = *((date*)(col.pdata_ + rowset_position_ * col.clen_));
+            const date d = *reinterpret_cast<date*>(col.pdata_ + rowset_position_ * col.clen_);
             std::tm st = { 0 };
             st.tm_year = d.year - 1900;
             st.tm_mon = d.month - 1;
             st.tm_mday = d.day;
             char* old_lc_time = std::setlocale(LC_TIME, NULL);
             std::setlocale(LC_TIME, "");
-            string_type::value_type date_str[512];
-            NANODBC_STRFTIME(
-                date_str
-                , sizeof(date_str) / sizeof(string_type::value_type)
-                , NANODBC_TEXT("%Y-%m-%d")
-                , &st);
+            char date_str[512];
+            std::strftime(date_str, sizeof(date_str), "%Y-%m-%d", &st);
             std::setlocale(LC_TIME, old_lc_time);
-            result.assign(date_str);
+            convert(date_str, result);
             return;
         }
 
         case SQL_C_TIMESTAMP:
         {
-            timestamp stamp = *((timestamp*)(col.pdata_ + rowset_position_ * col.clen_));
+            const timestamp stamp = *reinterpret_cast<timestamp*>(col.pdata_ + rowset_position_ * col.clen_);
             std::tm st = { 0 };
             st.tm_year = stamp.year - 1900;
             st.tm_mon = stamp.month - 1;
@@ -2680,15 +2705,11 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
             st.tm_sec = stamp.sec;
             char* old_lc_time = std::setlocale(LC_TIME, NULL);
             std::setlocale(LC_TIME, "");
-            string_type::value_type date_str[512];
-            NANODBC_STRFTIME(
-                date_str
-                , sizeof(date_str) / sizeof(string_type::value_type)
-                , NANODBC_TEXT("%Y-%m-%d %H:%M:%S %z")
-                , &st);
+            char date_str[512];
+            std::strftime(date_str, sizeof(date_str), "%Y-%m-%d %H:%M:%S %z", &st);
             std::setlocale(LC_TIME, old_lc_time);
-           result.assign(date_str);
-           return;
+            convert(date_str, result);
+            return;
         }
     }
     throw type_incompatible_error();
@@ -3549,7 +3570,7 @@ catalog::tables catalog::find_tables(
     statement stmt(conn_);
     RETCODE rc;
     NANODBC_CALL_RC(
-        NANODBC_UNICODE(SQLTables)
+        NANODBC_FUNC(SQLTables)
         , rc
         , stmt.native_statement_handle()
         , (NANODBC_SQLCHAR*)(catalog.empty() ? NULL : catalog.c_str())
@@ -3576,7 +3597,7 @@ catalog::columns catalog::find_columns(
     statement stmt(conn_);
     RETCODE rc;
     NANODBC_CALL_RC(
-        NANODBC_UNICODE(SQLColumns)
+        NANODBC_FUNC(SQLColumns)
         , rc
         , stmt.native_statement_handle()
         , (NANODBC_SQLCHAR*)(catalog.empty() ? NULL : catalog.c_str())
@@ -3602,7 +3623,7 @@ catalog::primary_keys catalog::find_primary_keys(
     statement stmt(conn_);
     RETCODE rc;
     NANODBC_CALL_RC(
-        NANODBC_UNICODE(SQLPrimaryKeys)
+        NANODBC_FUNC(SQLPrimaryKeys)
         , rc
         , stmt.native_statement_handle()
         , (NANODBC_SQLCHAR*)(catalog.empty() ? NULL : catalog.c_str())
