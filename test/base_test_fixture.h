@@ -117,16 +117,21 @@ struct base_test_fixture
 
     virtual void drop_table(nanodbc::connection& connection, const nanodbc::string_type& name) const
     {
+        bool table_exists = true;
         try
         {
             // create empty result set as a poor man's portable "IF EXISTS" test
             nanodbc::result results = execute(connection,
                 NANODBC_TEXT("SELECT * FROM ") + name + NANODBC_TEXT(" WHERE 0=1;"));
-            execute(connection, NANODBC_TEXT("DROP TABLE ") + name + NANODBC_TEXT(";"));
         }
         catch (...)
         {
-            ; // assume table does not exist
+            table_exists = false;
+        }
+
+        if (table_exists)
+        {
+            execute(connection, NANODBC_TEXT("DROP TABLE ") + name + NANODBC_TEXT(";"));
         }
     }
 
