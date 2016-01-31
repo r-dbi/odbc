@@ -196,10 +196,12 @@ namespace
             out = utf_to_utf<char>(in.c_str(), in.c_str() + in.size());
         #else
             #if defined(_MSC_VER) && (_MSC_VER == 1900)
-            auto p = reinterpret_cast<int16_t const*>(in.data());
-            out = std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().to_bytes(p, p + in.size());
+                // Workaround for confirmed bug in VS2015.
+                // See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error
+                auto p = reinterpret_cast<int16_t const*>(in.data());
+                out = std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().to_bytes(p, p + in.size());
             #else
-            out = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().to_bytes(in);
+                out = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().to_bytes(in);
             #endif
         #endif
     }
@@ -210,14 +212,14 @@ namespace
             #ifdef NANODBC_USE_BOOST_CONVERT
                 using boost::locale::conv::utf_to_utf;
                 out = utf_to_utf<char16_t>(in.c_str(), in.c_str() + in.size());
-            #else
-            #if defined(_MSC_VER) && (_MSC_VER == 1900)
+            #elif defined(_MSC_VER) && (_MSC_VER == 1900)
+                // Workaround for confirmed bug in VS2015.
+                // See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error
                 auto s = std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(in);
                 auto p = reinterpret_cast<char16_t const*>(s.data());
                 out.assign(p, p + s.size());
             #else
                 out = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(in);
-            #endif
             #endif
         }
 
