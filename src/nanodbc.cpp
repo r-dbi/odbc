@@ -21,8 +21,8 @@
 
 // User may redefine NANODBC_ASSERT macro in nanodbc.h
 #ifndef NANODBC_ASSERT
-#include <cassert>
-#define NANODBC_ASSERT(expr) assert(expr)
+    #include <cassert>
+    #define NANODBC_ASSERT(expr) assert(expr)
 #endif
 
 #ifdef NANODBC_USE_BOOST_CONVERT
@@ -80,7 +80,7 @@
         #define NANODBC_STRFTIME std::wcsftime
         #define NANODBC_STRLEN std::wcslen
         #define NANADBC_STRNCMP std::wcsncmp
-        #define NANODBC_UNICODE(f) f ## W
+        #define NANODBC_FUNC(f) f ## W
         #define NANODBC_SQLCHAR SQLWCHAR
     #else
         #define NANODBC_TEXT(s) s
@@ -88,7 +88,7 @@
         #define NANODBC_STRFTIME std::strftime
         #define NANODBC_STRLEN std::strlen
         #define NANADBC_STRNCMP std::strncmp
-        #define NANODBC_UNICODE(f) f
+        #define NANODBC_FUNC(f) f
         #define NANODBC_SQLCHAR SQLCHAR
 
         // Disable unicode in sqlucode.h on Windows when NANODBC_USE_UNICODE
@@ -103,7 +103,7 @@
         #define NANODBC_STRFTIME std::wcsftime
         #define NANODBC_STRLEN std::wcslen
         #define NANADBC_STRNCMP std::wcsncmp
-        #define NANODBC_UNICODE(f) f ## W
+        #define NANODBC_FUNC(f) f ## W
         #define NANODBC_SQLCHAR SQLWCHAR
     #else
         #define NANODBC_TEXT(s) s
@@ -111,7 +111,7 @@
         #define NANODBC_STRFTIME std::strftime
         #define NANODBC_STRLEN std::strlen
         #define NANADBC_STRNCMP std::strncmp
-        #define NANODBC_UNICODE(f) f
+        #define NANODBC_FUNC(f) f
         #define NANODBC_SQLCHAR SQLCHAR
     #endif
 #endif
@@ -268,7 +268,7 @@ namespace
         do
         {
             NANODBC_CALL_RC(
-                NANODBC_UNICODE(SQLGetDiagRec)
+                NANODBC_FUNC(SQLGetDiagRec)
                 , rc
                 , handle_type
                 , handle
@@ -286,7 +286,7 @@ namespace
                 break;
 
             NANODBC_CALL_RC(
-                NANODBC_UNICODE(SQLGetDiagRec)
+                NANODBC_FUNC(SQLGetDiagRec)
                 , rc
                 , handle_type
                 , handle
@@ -786,7 +786,7 @@ public:
         #endif
 
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLConnect)
+            NANODBC_FUNC(SQLConnect)
             , rc
             , conn_
             , (NANODBC_SQLCHAR*)dsn.c_str(), SQL_NTS
@@ -838,7 +838,7 @@ public:
         NANODBC_SQLCHAR dsn[1024];
         SQLSMALLINT dsn_size = 0;
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLDriverConnect)
+            NANODBC_FUNC(SQLDriverConnect)
             , rc
             , conn_
             , 0
@@ -894,7 +894,7 @@ public:
         SQLSMALLINT length(0);
         RETCODE rc;
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLGetInfo)
+            NANODBC_FUNC(SQLGetInfo)
             , rc
             , conn_
             , SQL_DBMS_NAME
@@ -912,7 +912,7 @@ public:
         SQLSMALLINT length(0);
         RETCODE rc;
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLGetInfo)
+            NANODBC_FUNC(SQLGetInfo)
             , rc
             , conn_
             , SQL_DBMS_VER
@@ -930,7 +930,7 @@ public:
         SQLSMALLINT length;
         RETCODE rc;
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLGetInfo)
+            NANODBC_FUNC(SQLGetInfo)
             , rc
             , conn_
             , SQL_DRIVER_NAME
@@ -952,7 +952,7 @@ public:
         SQLSMALLINT length(0);
         RETCODE rc;
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLGetInfo)
+            NANODBC_FUNC(SQLGetInfo)
             , rc
             , conn_
             , SQL_DATABASE_NAME
@@ -970,7 +970,7 @@ public:
         SQLINTEGER length(0);
         RETCODE rc;
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLGetConnectAttr)
+            NANODBC_FUNC(SQLGetConnectAttr)
             , rc
             , conn_
             , SQL_ATTR_CURRENT_CATALOG
@@ -1283,7 +1283,7 @@ public:
 
         RETCODE rc;
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLPrepare)
+            NANODBC_FUNC(SQLPrepare)
             , rc
             , stmt_
             , (NANODBC_SQLCHAR*)query.c_str()
@@ -1428,7 +1428,7 @@ public:
         this->timeout(timeout);
 
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLExecDirect)
+            NANODBC_FUNC(SQLExecDirect)
             , rc
             , stmt_
             , (NANODBC_SQLCHAR*)query.c_str()
@@ -1507,7 +1507,7 @@ public:
 
         RETCODE rc;
         NANODBC_CALL_RC(
-            NANODBC_UNICODE(SQLProcedureColumns)
+            NANODBC_FUNC(SQLProcedureColumns)
             , rc
             , stmt_
             , (NANODBC_SQLCHAR*)(catalog.empty() ? NULL : catalog.c_str())
@@ -2291,7 +2291,7 @@ private:
         for(SQLSMALLINT i = 0; i < n_columns; ++i)
         {
             NANODBC_CALL_RC(
-                NANODBC_UNICODE(SQLDescribeCol)
+                NANODBC_FUNC(SQLDescribeCol)
                 , rc
                 , stmt_.native_statement_handle()
                 , i + 1
@@ -3549,7 +3549,7 @@ catalog::tables catalog::find_tables(
     statement stmt(conn_);
     RETCODE rc;
     NANODBC_CALL_RC(
-        NANODBC_UNICODE(SQLTables)
+        NANODBC_FUNC(SQLTables)
         , rc
         , stmt.native_statement_handle()
         , (NANODBC_SQLCHAR*)(catalog.empty() ? NULL : catalog.c_str())
@@ -3576,7 +3576,7 @@ catalog::columns catalog::find_columns(
     statement stmt(conn_);
     RETCODE rc;
     NANODBC_CALL_RC(
-        NANODBC_UNICODE(SQLColumns)
+        NANODBC_FUNC(SQLColumns)
         , rc
         , stmt.native_statement_handle()
         , (NANODBC_SQLCHAR*)(catalog.empty() ? NULL : catalog.c_str())
@@ -3602,7 +3602,7 @@ catalog::primary_keys catalog::find_primary_keys(
     statement stmt(conn_);
     RETCODE rc;
     NANODBC_CALL_RC(
-        NANODBC_UNICODE(SQLPrimaryKeys)
+        NANODBC_FUNC(SQLPrimaryKeys)
         , rc
         , stmt.native_statement_handle()
         , (NANODBC_SQLCHAR*)(catalog.empty() ? NULL : catalog.c_str())
