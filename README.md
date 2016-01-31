@@ -147,3 +147,4 @@ vagrant@vagrant-ubuntu-precise-64:~$ make nanodbc
 - Provide more examples in documentation, more details, and point out any gotchas.
 - Refactor code to remove the need for the `NANODBC_HANDLE_NODATA_BUG` option.
 - Versioned generated source level API documentation for `release` and `latest`. Possibly for each major and minor published versions too.
+- Windows CI tests, possibly using [Appveyor](https://www.appveyor.com/).
