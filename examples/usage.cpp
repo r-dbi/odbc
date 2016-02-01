@@ -24,7 +24,6 @@ void run_test(const char* connection_string)
     execute(connection, "drop table if exists public.simple_test;");
     execute(connection, "create table public.simple_test (a int, b varchar(10));");
 
-    nanodbc::result results;
 
     // Direct execution
     {
@@ -32,13 +31,13 @@ void run_test(const char* connection_string)
         execute(connection, "insert into public.simple_test values (2, 'two');");
         execute(connection, "insert into public.simple_test values (3, 'tri');");
         execute(connection, "insert into public.simple_test (b) values ('z');");
-        results = execute(connection, "select * from public.simple_test;");
+        nanodbc::result results = execute(connection, "select * from public.simple_test;");
         show(results);
     }
 
     // Accessing results by name, or column number
     {
-        results = execute(connection, "select a as first, b as second from public.simple_test where a = 1;");
+        nanodbc::result results = execute(connection, "select a as first, b as second from public.simple_test where a = 1;");
         results.next();
         cout << endl << results.get<int>("first") << ", " << results.get<string>(1) << endl;
     }
@@ -68,7 +67,7 @@ void run_test(const char* connection_string)
         execute(statement, 2);
 
         prepare(statement, "select * from public.simple_test;");
-        results = execute(statement);
+        nanodbc::result results = execute(statement);
         show(results);
     }
 
@@ -80,7 +79,7 @@ void run_test(const char* connection_string)
             execute(connection, "delete from public.simple_test;");
             // transaction will be rolled back if we don't call transaction.commit()
         }
-        results = execute(connection, "select count(1) from public.simple_test;");
+        nanodbc::result results = execute(connection, "select count(1) from public.simple_test;");
         results.next();
         cout << "still have " << results.get<int>(0) << " rows!" << endl;
     }
@@ -100,12 +99,12 @@ void run_test(const char* connection_string)
         int ydata[elements] = { 1, 2, 3, 4 };
         statement.bind(1, ydata, elements);
 
-        float zdata[elements] = { 1.1, 2.2, 3.3, 4.4 };
+        float zdata[elements] = { 1.1f, 2.2f, 3.3f, 4.4f };
         statement.bind(2, zdata, elements);
 
         transact(statement, elements);
 
-        results = execute(connection, "select * from public.batch_test;", 3);
+        nanodbc::result results = execute(connection, "select * from public.batch_test;", 3);
         show(results);
 
         execute(connection, "drop table if exists public.batch_test;");
@@ -117,7 +116,7 @@ void run_test(const char* connection_string)
         execute(connection, "create table public.date_test (x datetime);");
         execute(connection, "insert into public.date_test values (current_timestamp);");
 
-        results = execute(connection, "select * from public.date_test;");
+        nanodbc::result results = execute(connection, "select * from public.date_test;");
         results.next();
 
         nanodbc::date date = results.get<nanodbc::date>(0);
