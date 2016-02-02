@@ -73,7 +73,11 @@
 // MARK: Unicode -
 
 #ifdef NANODBC_USE_UNICODE
-    #define NANODBC_TEXT(s) u ## s
+    #ifdef NANODBC_USE_IODBC_WIDE_STRINGS
+        #define NANODBC_TEXT(s) U ## s
+    #else
+        #define NANODBC_TEXT(s) u ## s
+    #endif
     #define NANODBC_FUNC(f) f ## W
     #define NANODBC_SQLCHAR SQLWCHAR
 #else
@@ -81,6 +85,15 @@
     #define NANODBC_FUNC(f) f
     #define NANODBC_SQLCHAR SQLCHAR
 #endif
+
+#ifdef NANODBC_USE_IODBC_WIDE_STRINGS
+    typedef std::u32string wide_string_type;
+    #define NANODBC_CODECVT_TYPE std::codecvt_utf8
+#else
+    typedef std::u16string wide_string_type;
+    #define NANODBC_CODECVT_TYPE std::codecvt_utf8_utf16
+#endif
+typedef wide_string_type::value_type wide_char_t;
 
 #if defined(_MSC_VER)
     #ifndef NANODBC_USE_UNICODE
@@ -189,7 +202,7 @@ namespace
         return i;
     }
 
-    inline void convert(const std::u16string& in, std::string& out)
+    inline void convert(const wide_string_type& in, std::string& out)
     {
         #ifdef NANODBC_USE_BOOST_CONVERT
             using boost::locale::conv::utf_to_utf;
@@ -198,32 +211,32 @@ namespace
             #if defined(_MSC_VER) && (_MSC_VER == 1900)
                 // Workaround for confirmed bug in VS2015.
                 // See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error
-                auto p = reinterpret_cast<int16_t const*>(in.data());
-                out = std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().to_bytes(p, p + in.size());
+                auto p = reinterpret_cast<wide_char_t const*>(in.data());
+                out = std::wstring_convert<NANODBC_CODECVT_TYPE<wide_char_t>, wide_char_t>().to_bytes(p, p + in.size());
             #else
-                out = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().to_bytes(in);
+                out = std::wstring_convert<NANODBC_CODECVT_TYPE<wide_char_t>, wide_char_t>().to_bytes(in);
             #endif
         #endif
     }
 
     #ifdef NANODBC_USE_UNICODE
-        inline void convert(const std::string& in, std::u16string& out)
+        inline void convert(const std::string& in, wide_string_type& out)
         {
             #ifdef NANODBC_USE_BOOST_CONVERT
                 using boost::locale::conv::utf_to_utf;
-                out = utf_to_utf<char16_t>(in.c_str(), in.c_str() + in.size());
+                out = utf_to_utf<wide_char_t>(in.c_str(), in.c_str() + in.size());
             #elif defined(_MSC_VER) && (_MSC_VER == 1900)
                 // Workaround for confirmed bug in VS2015.
                 // See: https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error
-                auto s = std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().from_bytes(in);
-                auto p = reinterpret_cast<char16_t const*>(s.data());
+                auto s = std::wstring_convert<NANODBC_CODECVT_TYPE<wide_char_t>, wide_char_t>().from_bytes(in);
+                auto p = reinterpret_cast<wide_char_t const*>(s.data());
                 out.assign(p, p + s.size());
             #else
-                out = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(in);
+                out = std::wstring_convert<NANODBC_CODECVT_TYPE<wide_char_t>, wide_char_t>().from_bytes(in);
             #endif
         }
 
-        inline void convert(const std::u16string& in, std::u16string& out)
+        inline void convert(const wide_string_type& in, wide_string_type& out)
         {
             out = in;
         }
@@ -2502,7 +2515,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
         {
             if(col.blob_)
             {
-                // Input is always std::string, while output may be std::string or std::u16string
+                // Input is always std::string, while output may be std::string or wide_string_type
                 std::string out;
                 char buff[1024] = {0};
                 std::size_t buff_size = sizeof(buff);
@@ -2543,10 +2556,10 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
         {
             if(col.blob_)
             {
-                // Input is always std::u16string, output might be std::string or std::u16string.
+                // Input is always wide_string_type, output might be std::string or wide_string_type.
                 // Use a string builder to build the output string.
-                std::u16string out;
-                char16_t buffer[512] = {0};
+                wide_string_type out;
+                wide_char_t buffer[512] = {0};
                 std::size_t buffer_size = sizeof(buffer);
                 SQLLEN ValueLenOrInd;
                 SQLRETURN rc;
@@ -2577,7 +2590,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                 // Type is unicode in the database, convert if necessary
                 const SQLWCHAR* s = reinterpret_cast<SQLWCHAR*>(col.pdata_ + rowset_position_ * col.clen_);
                 const string_type::size_type str_size = *col.cbdata_ / sizeof(SQLWCHAR);
-                std::u16string temp(s, s + str_size);
+                wide_string_type temp(s, s + str_size);
                 convert(temp, result);
             }
             return;
@@ -2600,7 +2613,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
             buffer.resize(buffer.capacity());
             using std::fill;
             fill(buffer.begin(), buffer.end(), '\0');
-            const int32_t data = *reinterpret_cast<int32_t*>(col.pdata_ + rowset_position_ * col.clen_);
+            const wide_char_t data = *reinterpret_cast<wide_char_t*>(col.pdata_ + rowset_position_ * col.clen_);
             const int bytes = std::snprintf(const_cast<char*>(buffer.data()), column_size, "%d", data);
             if(bytes == -1)
                 throw type_incompatible_error();

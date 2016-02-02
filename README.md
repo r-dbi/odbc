@@ -52,7 +52,7 @@ The following build options are available via CMake. If you are not using CMake 
 
 | CMake&nbsp;Option                     | Possible&nbsp;Values  | Default       | Details |
 | ------------------------------------- | --------------------- | ------------- | ------- |
-| `-D NANODBC_USE_UNICODE=...`          | `OFF` or `ON`         | `OFF`         | Enables full unicode support. `nanodbc::string` becomes `std::u16string`. |
+| `-D NANODBC_USE_UNICODE=...`          | `OFF` or `ON`         | `OFF`         | Enables full unicode support. `nanodbc::string` becomes `std::u16string` or `std::u32string`. |
 | `-D NANODBC_HANDLE_NODATA_BUG=...`    | `OFF` or `ON`         | `OFF`         | Provided to resolve issue [#33](https://github.com/lexicalunit/nanodbc/issues/33), details [in this commit](https://github.com/lexicalunit/nanodbc/commit/918d73cdf12d5903098381344eecde8e7d5d896e). |
 | `-D NANODBC_USE_BOOST_CONVERT=...`    | `OFF` or `ON`         | `OFF`         | Provided as workaround to issue [#44](https://github.com/lexicalunit/nanodbc/issues/44). |
 | `-D NANODBC_STATIC=...`               | `OFF` or `ON`         | `OFF`         | Enables building a static library, otherwise the build process produces a shared library. |
@@ -61,6 +61,12 @@ The following build options are available via CMake. If you are not using CMake 
 | `-D NANODBC_TEST=...`                 | `OFF` or `ON`         | `ON`          | Enables tests target (alias `check`). |
 | `-D NANODBC_ENABLE_LIBCXX=...`        | `OFF` or `ON`         | `ON`          | Enables usage of libc++ if found on the system. |
 | `-D NANODBC_ODBC_VERSION=...`         | `SQL_OV_ODBC3[...]`   | See Details   | **[Optional]** Sets the ODBC version macro for nanodbc to use. Default is `SQL_OV_ODBC3_80` if available, otherwise `SQL_OV_ODBC3`. |
+
+## Note About iODBC
+
+Under Windows `sizeof(wchar_t) == sizeof(SQLWCHAR) == 2`, yet on Unix systems `sizeof(wchar_t) == 4`. On unixODBC, `sizeof(SQLWCHAR) == 2` while on iODBC, `sizeof(SQLWCHAR) == sizeof(wchar_t) == 4`. This leads to incompatible ABIs between applications and drivers. If building against iODBC and the build option `NANODBC_USE_UNICODE` is `ON`, then `nanodbc::string_type` will be `std::u32string`. In **ALL** other cases it will be `std::u16string`.
+
+Continuous integration tests run on [Travis-CI](https://travis-ci.org/). The build platform does not make available a Unicode-enabled iODBC driver. As such there is no guarantee that tests will pass in entirety on a system using iODBC. My recommendation is to use unixODBC. If you must use iODBC, consider _disabling_ unicode mode to avoid `wchar_t` issues.
 
 ---
 
@@ -126,11 +132,6 @@ vagrant@vagrant-ubuntu-precise-64:~$ make nanodbc
 
 ### Development Roadmap
 
-- [OPTIONAL] PostgreSQL
-    - Try to get a `odbc-postgresql` test working in Docker and travis-ci.
-- iODBC Concerns
-    - Test `u16string` with iODBC.
-    - Add docs about iODBC vs unixODBC and `sizeof(SQLWCHAR)`.
 - Documentation
     - Add HOWTO Build sections for Windows, OS X, and Linux.
 - Update changelog with new features, fixes, and changes.
