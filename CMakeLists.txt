@@ -106,6 +106,9 @@ if(UNIX)
 			set(CMAKE_FLAGS "${CMAKE_FLAGS} ${ODBC_CFLAGS}")
 			execute_process(COMMAND ${ODBC_CONFIG} --libs
 				OUTPUT_VARIABLE ODBC_LINK_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+			if(NANODBC_USE_UNICODE)
+				add_definitions(-DNANODBC_USE_IODBC_WIDE_STRINGS)
+			endif()
 		endif()
 	endif()
 
