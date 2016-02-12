@@ -1,7 +1,8 @@
 add_custom_target(examples DEPENDS examples)
 set(examples northwind usage rowset_iteration table_schema)
 
-include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src ${ODBC_INCLUDE_DIR})
+link_directories(${CMAKE_BINARY_DIR}/lib)
 
 foreach(example ${examples})
 	add_executable(example_${example} ${example}.cpp)
