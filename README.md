@@ -130,13 +130,6 @@ vagrant@vagrant-ubuntu-precise-64:~$ make nanodbc
 
 ## Future work
 
-### Development Roadmap
-
-- Documentation
-    - Add HOWTO Build sections for Windows, OS X, and Linux.
-- Update changelog with new features, fixes, and changes.
-- Re-generate source level doxygen docs following version published.
-
 ### Good to Have / Want Someday
 
 - Refactor unit tests to follow BDD pattern.
@@ -149,3 +142,4 @@ vagrant@vagrant-ubuntu-precise-64:~$ make nanodbc
 - Refactor code to remove the need for the `NANODBC_HANDLE_NODATA_BUG` option.
 - Versioned generated source level API documentation for `release` and `latest`. For each major and minor published versions too?
 - Windows CI tests; use [Appveyor](https://www.appveyor.com/)? Alternatives?
+- Add "HOWTO Build" documentation for Windows, OS X, and Linux.
