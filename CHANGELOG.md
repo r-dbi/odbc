@@ -1,3 +1,7 @@
+# v2.12.1
+
+Resolves a Travis-CI build issue.
+
 # v2.12.0
 
 Major work undertaken by Mateusz Łoskot provides new features and a host of bug fixes throughout.
