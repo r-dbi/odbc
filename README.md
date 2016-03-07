@@ -103,7 +103,7 @@ Source level documentation provided via [GitHub's gh-pages](https://help.github.
 
 Building documentation and gh-pages requires the use of [Doxygen](www.doxygen.org) and [jekyll](https://jekyllrb.com/). See the [`Makefile` on the `gh-pages` branch](https://github.com/lexicalunit/nanodbc/blob/gh-pages/Makefile) for more details.
 
-## Quick Setup Testing and Development Environments
+## Quick Setup for Testing or Development Environments
 
 To get up and running with nanodbc as fast as possible consider using the provided [Dockerfile](Dockerfile) or [Vagrantfile](Vagrantfile). For example, to spin up a [docker](https://www.docker.com/) container suitable for testing and development of nanodbc:
 
