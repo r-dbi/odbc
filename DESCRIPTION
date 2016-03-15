@@ -8,4 +8,8 @@ Authors@R: c(
 Description: Use ODBC drivers to connect to databases.
 License: GPL-3
 LazyData: true
-Imports: DBI
+Imports:
+    DBI,
+    Rcpp
+LinkingTo: Rcpp
+RoxygenNote: 5.0.1
