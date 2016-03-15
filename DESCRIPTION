@@ -1,0 +1,11 @@
+Package: odbconnect
+Title: Connect to ODBC databases (using the DBI interface)
+Version: 0.0.0.9000
+Authors@R: c(
+    person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut", "cre")),
+    person("RStudio", role = "cph")
+  )
+Description: Use ODBC drivers to connect to databases.
+License: GPL-3
+LazyData: true
+Imports: DBI
