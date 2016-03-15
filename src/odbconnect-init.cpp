@@ -26,3 +26,31 @@ extern "C" {
 
 }
 
+// [[Rcpp::export]]
+List listDrivers() {
+
+  SQLCHAR driverDesc[100], driverAttr[100];
+  SQLSMALLINT driverDescLen, driverAttrLen;
+
+  std::vector<std::string> drivers, attr;
+
+  SQLRETURN ret = SQLDrivers(odbcEnv, SQL_FETCH_FIRST,
+    driverDesc, sizeof(driverDesc), &driverDescLen,
+    driverAttr, sizeof(driverAttr), &driverAttrLen
+  );
+
+  while(ret == SQL_SUCCESS) {
+    drivers.push_back(std::string(driverDesc, driverDesc + driverDescLen));
+    attr.push_back(std::string(driverAttr, driverAttr + driverAttrLen));
+
+    ret = SQLDrivers(odbcEnv, SQL_FETCH_NEXT,
+      driverDesc, sizeof(driverDesc), &driverDescLen,
+      driverAttr, sizeof(driverAttr), &driverAttrLen
+    );
+  }
+
+  return List::create(
+    drivers,
+    attr
+  );
+}
