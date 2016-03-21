@@ -1567,6 +1567,7 @@ public:
     {
         RETCODE rc;
         SQLSMALLINT data_type;
+        SQLSMALLINT nullable;
         SQLULEN parameter_size;
         NANODBC_CALL_RC(
             SQLDescribeParam
@@ -1576,7 +1577,7 @@ public:
             , &data_type
             , &parameter_size
             , 0
-            , 0);
+            , &nullable);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         NANODBC_ASSERT(parameter_size <= static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
@@ -1616,6 +1617,7 @@ public:
         , SQLSMALLINT& scale)
     {
         RETCODE rc;
+        SQLSMALLINT nullable;
         NANODBC_CALL_RC(
             SQLDescribeParam
             , rc
@@ -1624,7 +1626,7 @@ public:
             , &data_type
             , &parameter_size
             , &scale
-            , 0);
+            , &nullable);
         if(!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
