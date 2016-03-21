@@ -2520,19 +2520,19 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                 void* handle = native_statement_handle();
                 do
                 {
-                    char buff[1024] = {0};
-                    const std::size_t buff_size = sizeof(buff);
+                    char buffer[1024] = {0};
+                    const std::size_t buffer_size = sizeof(buffer);
                     NANODBC_CALL_RC(
                         SQLGetData
                         , rc
                         , handle            // StatementHandle
                         , column + 1        // Col_or_Param_Num
                         , col.ctype_        // TargetType
-                        , buff              // TargetValuePtr
-                        , buff_size - 1     // BufferLength
+                        , buffer            // TargetValuePtr
+                        , buffer_size - 1   // BufferLength
                         , &ValueLenOrInd);  // StrLen_or_IndPtr
                     if(ValueLenOrInd > 0)
-                        out.append(buff);
+                        out.append(buffer);
                     else if(ValueLenOrInd == SQL_NULL_DATA)
                         *col.cbdata_ = (SQLINTEGER) SQL_NULL_DATA;
                     // Sequence of successful calls is:
@@ -2557,21 +2557,21 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                 // Input is always wide_string_type, output might be std::string or wide_string_type.
                 // Use a string builder to build the output string.
                 wide_string_type out;
-                wide_char_t buffer[512] = {0};
-                std::size_t buffer_size = sizeof(buffer);
                 SQLLEN ValueLenOrInd;
                 SQLRETURN rc;
                 void* handle = native_statement_handle();
                 do
                 {
+                    wide_char_t buffer[512] = {0};
+                    const std::size_t buffer_size = sizeof(buffer);
                     NANODBC_CALL_RC(
                         SQLGetData
                         , rc
                         , handle            // StatementHandle
                         , column + 1        // Col_or_Param_Num
-                        , SQL_C_WCHAR       // TargetType
+                        , col.ctype_        // TargetType
                         , buffer            // TargetValuePtr
-                        , buffer_size       // BufferLength
+                        , buffer_size - 1   // BufferLength
                         , &ValueLenOrInd);  // StrLen_or_IndPtr
                     if(ValueLenOrInd > 0)
                         out.append(buffer);
