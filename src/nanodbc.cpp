@@ -2401,9 +2401,6 @@ private:
                     break;
                 case SQL_BINARY:
                 case SQL_VARBINARY:
-                    col.ctype_ = SQL_C_BINARY;
-                    col.clen_ = col.sqlsize_ + sizeof(NANODBC_SQLCHAR);
-                    break;
                 case SQL_LONGVARBINARY:
                     col.ctype_ = SQL_C_BINARY;
                     col.blob_ = true;
@@ -2512,26 +2509,27 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
     switch(col.ctype_)
     {
         case SQL_C_CHAR:
+        case SQL_C_BINARY:
         {
             if(col.blob_)
             {
                 // Input is always std::string, while output may be std::string or wide_string_type
                 std::string out;
-                char buff[1024] = {0};
-                std::size_t buff_size = sizeof(buff);
                 SQLLEN ValueLenOrInd;
                 SQLRETURN rc;
                 void* handle = native_statement_handle();
                 do
                 {
+                    char buff[1024] = {0};
+                    const std::size_t buff_size = sizeof(buff);
                     NANODBC_CALL_RC(
                         SQLGetData
                         , rc
                         , handle            // StatementHandle
                         , column + 1        // Col_or_Param_Num
-                        , SQL_C_CHAR        // TargetType
+                        , col.ctype_        // TargetType
                         , buff              // TargetValuePtr
-                        , buff_size         // BufferLength
+                        , buff_size - 1     // BufferLength
                         , &ValueLenOrInd);  // StrLen_or_IndPtr
                     if(ValueLenOrInd > 0)
                         out.append(buff);
@@ -2597,10 +2595,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
         }
 
         case SQL_C_GUID:
-        case SQL_C_BINARY:
         {
-            if(col.blob_)
-                throw std::runtime_error("blob not implemented yet");
             const char* s = col.pdata_ + rowset_position_ * col.clen_;
             result.assign(s, s + column_size);
             return;

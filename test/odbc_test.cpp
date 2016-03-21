@@ -20,6 +20,11 @@ namespace
     };
 }
 
+TEST_CASE_METHOD(odbc_fixture, "blob_test", "[odbc][blob]")
+{
+    blob_test();
+}
+
 TEST_CASE_METHOD(odbc_fixture, "catalog_columns_test", "[odbc][catalog][columns]")
 {
     catalog_columns_test();

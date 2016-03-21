@@ -22,6 +22,11 @@ namespace
 
 // FIXME: No catlog_* tests for MySQL. Not supported?
 
+TEST_CASE_METHOD(mysql_fixture, "blob_test", "[mysql][blob]")
+{
+    blob_test();
+}
+
 TEST_CASE_METHOD(mysql_fixture, "dbms_info_test", "[mysql][dmbs][metadata][info]")
 {
     dbms_info_test();

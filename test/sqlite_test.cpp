@@ -39,6 +39,11 @@ namespace
 
 // NOTE: No catlog_* tests; not supported by SQLite.
 
+TEST_CASE_METHOD(sqlite_fixture, "blob_test", "[sqlite][blob]")
+{
+    blob_test();
+}
+
 TEST_CASE_METHOD(sqlite_fixture, "dbms_info_test", "[sqlite][dmbs][metadata][info]")
 {
     dbms_info_test();
