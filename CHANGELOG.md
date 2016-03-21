@@ -1,3 +1,7 @@
+# v2.12.2
+
+Resolves a major issue with BLOB datatype handling for BINARY and TEXT columns.
+
 # v2.12.1
 
 Resolves a Travis-CI build issue.
