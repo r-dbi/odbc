@@ -1,3 +1,10 @@
+# v2.12.4
+
+Resolves a possible crash with `SQLDescribeParam()`. In Progress OpenEdge 11 driver setting the
+nullableptr argument to null causes a crash. This does not affect SQLite or MySQL drivers.
+
+Thanks to [@AndrewJD79](https://github.com/AndrewJD79) for finding and diagnosing the issue!
+
 # v2.12.3
 
 Unicode: Resolves a major issue with BLOB datatype handling for BINARY and TEXT columns.
