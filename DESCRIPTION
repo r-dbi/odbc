@@ -13,3 +13,5 @@ Imports:
     Rcpp
 LinkingTo: Rcpp
 RoxygenNote: 5.0.1
+URL: https://github.com/hadley/odbconnect
+BugReports: https://github.com/hadley/odbconnect/issues
