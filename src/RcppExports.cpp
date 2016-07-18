@@ -15,3 +15,13 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// listDataSources
+List listDataSources();
+RcppExport SEXP odbconnect_listDataSources() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(listDataSources());
+    return __result;
+END_RCPP
+}

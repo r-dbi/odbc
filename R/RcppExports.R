@@ -5,3 +5,7 @@ listDrivers <- function() {
     .Call('odbconnect_listDrivers', PACKAGE = 'odbconnect')
 }
 
+listDataSources <- function() {
+    .Call('odbconnect_listDataSources', PACKAGE = 'odbconnect')
+}
+

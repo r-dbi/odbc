@@ -54,3 +54,32 @@ List listDrivers() {
     attr
   );
 }
+
+// [[Rcpp::export]]
+List listDataSources() {
+
+  SQLCHAR dataSourceDesc[100], dataSourceAttr[100];
+  SQLSMALLINT dataSourceDescLen, dataSourceAttrLen;
+
+  std::vector<std::string> dataSources, attr;
+
+  SQLRETURN ret = SQLDataSources(odbcEnv, SQL_FETCH_FIRST,
+    dataSourceDesc, sizeof(dataSourceDesc), &dataSourceDescLen,
+    dataSourceAttr, sizeof(dataSourceAttr), &dataSourceAttrLen
+  );
+
+  while(ret == SQL_SUCCESS) {
+    dataSources.push_back(std::string(dataSourceDesc, dataSourceDesc + dataSourceDescLen));
+    attr.push_back(std::string(dataSourceAttr, dataSourceAttr + dataSourceAttrLen));
+
+    ret = SQLDataSources(odbcEnv, SQL_FETCH_NEXT,
+      dataSourceDesc, sizeof(dataSourceDesc), &dataSourceDescLen,
+      dataSourceAttr, sizeof(dataSourceAttr), &dataSourceAttrLen
+    );
+  }
+
+  return List::create(
+    dataSources,
+    attr
+  );
+}
