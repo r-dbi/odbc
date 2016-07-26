@@ -36,19 +36,12 @@ List listDrivers() {
 
   std::vector<std::string> drivers, attr;
 
-  SQLRETURN ret = SQLDrivers(odbcEnv, SQL_FETCH_FIRST,
-    driverDesc, sizeof(driverDesc), &driverDescLen,
-    driverAttr, sizeof(driverAttr), &driverAttrLen
-  );
-
-  while(ret == SQL_SUCCESS) {
-    drivers.push_back(std::string(driverDesc, driverDesc + driverDescLen));
-    attr.push_back(std::string(driverAttr, driverAttr + driverAttrLen));
-
-    ret = SQLDrivers(odbcEnv, SQL_FETCH_NEXT,
+  while(SQLDrivers(odbcEnv, SQL_FETCH_NEXT,
       driverDesc, sizeof(driverDesc), &driverDescLen,
       driverAttr, sizeof(driverAttr), &driverAttrLen
-    );
+    ) == SQL_SUCCESS) {
+    drivers.push_back(std::string(driverDesc, driverDesc + driverDescLen));
+    attr.push_back(std::string(driverAttr, driverAttr + driverAttrLen));
   }
 
   return List::create(
@@ -65,19 +58,12 @@ List listDataSources() {
 
   std::vector<std::string> dataSources, attr;
 
-  SQLRETURN ret = SQLDataSources(odbcEnv, SQL_FETCH_FIRST,
-    dataSourceDesc, sizeof(dataSourceDesc), &dataSourceDescLen,
-    dataSourceAttr, sizeof(dataSourceAttr), &dataSourceAttrLen
-  );
-
-  while(ret == SQL_SUCCESS) {
-    dataSources.push_back(std::string(dataSourceDesc, dataSourceDesc + dataSourceDescLen));
-    attr.push_back(std::string(dataSourceAttr, dataSourceAttr + dataSourceAttrLen));
-
-    ret = SQLDataSources(odbcEnv, SQL_FETCH_NEXT,
+  while(SQLDataSources(odbcEnv, SQL_FETCH_NEXT,
       dataSourceDesc, sizeof(dataSourceDesc), &dataSourceDescLen,
       dataSourceAttr, sizeof(dataSourceAttr), &dataSourceAttrLen
-    );
+    ) == SQL_SUCCESS) {
+    dataSources.push_back(std::string(dataSourceDesc, dataSourceDesc + dataSourceDescLen));
+    attr.push_back(std::string(dataSourceAttr, dataSourceAttr + dataSourceAttrLen));
   }
 
   return List::create(
