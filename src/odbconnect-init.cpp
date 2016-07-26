@@ -1,5 +1,7 @@
 #include <sql.h>
 #include <sqlext.h>
+#include "utils.h"
+#include "odbconnect_types.h"
 
 #include <Rcpp.h>
 using namespace Rcpp;
@@ -82,4 +84,26 @@ List listDataSources() {
     dataSources,
     attr
   );
+}
+
+// [[Rcpp::export]]
+XPtrHDBC ODBC_connect(std::string host, std::string user = "", std::string authentication = "") {
+  SQLHDBC hdbc1 = NULL;
+
+  SQLAllocHandle(SQL_HANDLE_DBC, odbcEnv, &hdbc1);
+
+  SQLRETURN ret = SQLConnect(
+       hdbc1,
+       asSqlChar(host),
+       host.size(),
+       asSqlChar(user),
+       user.size(),
+       asSqlChar(authentication.c_str()),
+       authentication.size());
+
+  if (!(ret == SQL_SUCCESS || ret == SQL_SUCCESS_WITH_INFO)) {
+    stop("Failed to initialised odbconnect");
+  }
+
+  return XPtrHDBC(&hdbc1);
 }
