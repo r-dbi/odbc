@@ -1,12 +1,15 @@
 #include <string>
 #include <sql.h>
+#include <Rcpp.h>
 
-inline const SQLCHAR* asSqlCharC(std::string x) {
+using namespace Rcpp;
+
+inline const SQLCHAR* asSqlCharC(const std::string& x) {
   return reinterpret_cast<const SQLCHAR*>(x.c_str());
 }
 
 // This removes the const qualifier, use only when the input will be read only!
-inline SQLCHAR* asSqlChar(std::string x) {
+inline SQLCHAR* asSqlChar(const std::string& x) {
   return const_cast<SQLCHAR*>(asSqlCharC(x));
 }
 
@@ -48,3 +51,9 @@ inline SQLCHAR* asSqlChar(std::string x) {
   //};
 //};
 
+
+void ODBCerror(SQLRETURN retcode, const char * msg = "Error (%i)") {
+  if (!(retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)) {
+    stop(msg, retcode);
+  }
+}

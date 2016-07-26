@@ -26,16 +26,14 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// ODBC_connect
-XPtrHDBC ODBC_connect(std::string host, std::string user, std::string authentication);
-RcppExport SEXP odbconnect_ODBC_connect(SEXP hostSEXP, SEXP userSEXP, SEXP authenticationSEXP) {
+// OdbcConnect
+XPtrHDBC OdbcConnect(std::string x);
+RcppExport SEXP odbconnect_OdbcConnect(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< std::string >::type host(hostSEXP);
-    Rcpp::traits::input_parameter< std::string >::type user(userSEXP);
-    Rcpp::traits::input_parameter< std::string >::type authentication(authenticationSEXP);
-    __result = Rcpp::wrap(ODBC_connect(host, user, authentication));
+    Rcpp::traits::input_parameter< std::string >::type x(xSEXP);
+    __result = Rcpp::wrap(OdbcConnect(x));
     return __result;
 END_RCPP
 }

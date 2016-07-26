@@ -7,6 +7,7 @@
 using namespace Rcpp;
 
 static SQLHANDLE odbcEnv = NULL;
+const size_t BUF_LEN = 1024;
 
 extern "C" {
 
@@ -31,7 +32,7 @@ extern "C" {
 // [[Rcpp::export]]
 List listDrivers() {
 
-  SQLCHAR driverDesc[100], driverAttr[100];
+  SQLCHAR driverDesc[BUF_LEN], driverAttr[BUF_LEN];
   SQLSMALLINT driverDescLen, driverAttrLen;
 
   std::vector<std::string> drivers, attr;
@@ -53,7 +54,7 @@ List listDrivers() {
 // [[Rcpp::export]]
 List listDataSources() {
 
-  SQLCHAR dataSourceDesc[100], dataSourceAttr[100];
+  SQLCHAR dataSourceDesc[BUF_LEN], dataSourceAttr[BUF_LEN];
   SQLSMALLINT dataSourceDescLen, dataSourceAttrLen;
 
   std::vector<std::string> dataSources, attr;
@@ -73,23 +74,27 @@ List listDataSources() {
 }
 
 // [[Rcpp::export]]
-XPtrHDBC ODBC_connect(std::string host, std::string user = "", std::string authentication = "") {
-  SQLHDBC hdbc1 = NULL;
+XPtrHDBC OdbcConnect(std::string x) {
+  SQLHDBC hdbc = NULL;
+  SQLCHAR connectStr[BUF_LEN];
+  SQLSMALLINT connectStrLen;
 
-  SQLAllocHandle(SQL_HANDLE_DBC, odbcEnv, &hdbc1);
+  ODBCerror(
+      SQLAllocHandle(SQL_HANDLE_DBC, odbcEnv, &hdbc),
+      "Failed to allocate handle (%i)");
 
-  SQLRETURN ret = SQLConnect(
-       hdbc1,
-       asSqlChar(host),
-       host.size(),
-       asSqlChar(user),
-       user.size(),
-       asSqlChar(authentication.c_str()),
-       authentication.size());
 
-  if (!(ret == SQL_SUCCESS || ret == SQL_SUCCESS_WITH_INFO)) {
-    stop("Failed to initialised odbconnect");
-  }
+  ODBCerror(SQLDriverConnect(
+       hdbc,
+       NULL,
+       asSqlChar(x),
+       x.size(),
+       connectStr,
+       BUF_LEN,
+       &connectStrLen,
+       SQL_DRIVER_NOPROMPT));
 
-  return XPtrHDBC(&hdbc1);
+  Rcout << hdbc << ':' << connectStrLen << ':' << connectStr << '\n';
+
+  return XPtrHDBC(&hdbc);
 }

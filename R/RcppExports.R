@@ -9,7 +9,7 @@ listDataSources <- function() {
     .Call('odbconnect_listDataSources', PACKAGE = 'odbconnect')
 }
 
-ODBC_connect <- function(host, user = "", authentication = "") {
-    .Call('odbconnect_ODBC_connect', PACKAGE = 'odbconnect', host, user, authentication)
+OdbcConnect <- function(x) {
+    .Call('odbconnect_OdbcConnect', PACKAGE = 'odbconnect', x)
 }
 
