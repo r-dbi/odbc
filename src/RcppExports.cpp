@@ -17,6 +17,17 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// format_connection
+std::string format_connection(XPtr<ODBCConnectionPtr> c);
+RcppExport SEXP odbconnect_format_connection(SEXP cSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< XPtr<ODBCConnectionPtr> >::type c(cSEXP);
+    __result = Rcpp::wrap(format_connection(c));
+    return __result;
+END_RCPP
+}
 // listDrivers
 List listDrivers();
 RcppExport SEXP odbconnect_listDrivers() {

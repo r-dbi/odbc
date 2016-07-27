@@ -12,8 +12,6 @@ class ODBCConnection : boost::noncopyable {
     ODBCerror(
         SQLAllocHandle(SQL_HANDLE_DBC, odbcEnv, &hdbc_),
         "Failed to allocate handle (%i)");
-  }
-  XPtr<ODBCConnection> connect(std::string x) {
     SQLCHAR connectStr[BUF_LEN];
     SQLSMALLINT connectStrLen;
 
@@ -27,9 +25,7 @@ class ODBCConnection : boost::noncopyable {
           &connectStrLen,
           SQL_DRIVER_NOPROMPT));
 
-  Rcout << hdbc_ << ':' << connectStrLen << ':' << connectStr << '\n';
-
-  return XPtr<ODBCConnection>(this);
+    connect_string_ = std::string(reinterpret_cast<char *>(connectStr), connectStrLen);
   }
   ~ODBCConnection() {
     if (hdbc_) {
@@ -39,8 +35,13 @@ class ODBCConnection : boost::noncopyable {
     hdbc_ = NULL;
   }
 
+  std::string format() {
+    return connect_string_;
+  }
+
   private:
     SQLHDBC hdbc_;
+    std::string connect_string_;
 };
 
 typedef boost::shared_ptr<ODBCConnection> ODBCConnectionPtr;

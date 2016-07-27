@@ -5,6 +5,10 @@ connection_create <- function(x) {
     .Call('odbconnect_connection_create', PACKAGE = 'odbconnect', x)
 }
 
+format_connection <- function(c) {
+    .Call('odbconnect_format_connection', PACKAGE = 'odbconnect', c)
+}
+
 listDrivers <- function() {
     .Call('odbconnect_listDrivers', PACKAGE = 'odbconnect')
 }
