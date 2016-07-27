@@ -2,15 +2,14 @@
 #include <sqlext.h>
 #include "utils.h"
 #include "odbconnect_types.h"
+#include "odbconnect-init.h"
 
 #include <Rcpp.h>
 using namespace Rcpp;
 
-static SQLHANDLE odbcEnv = NULL;
-const size_t BUF_LEN = 1024;
-
 extern "C" {
 
+  SQLHANDLE odbcEnv = NULL;
   void R_init_odbconnect(DllInfo *info) {
     SQLRETURN retval = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &odbcEnv);
 
@@ -71,30 +70,4 @@ List listDataSources() {
     dataSources,
     attr
   );
-}
-
-// [[Rcpp::export]]
-XPtrHDBC OdbcConnect(std::string x) {
-  SQLHDBC hdbc = NULL;
-  SQLCHAR connectStr[BUF_LEN];
-  SQLSMALLINT connectStrLen;
-
-  ODBCerror(
-      SQLAllocHandle(SQL_HANDLE_DBC, odbcEnv, &hdbc),
-      "Failed to allocate handle (%i)");
-
-
-  ODBCerror(SQLDriverConnect(
-       hdbc,
-       NULL,
-       asSqlChar(x),
-       x.size(),
-       connectStr,
-       BUF_LEN,
-       &connectStrLen,
-       SQL_DRIVER_NOPROMPT));
-
-  Rcout << hdbc << ':' << connectStrLen << ':' << connectStr << '\n';
-
-  return XPtrHDBC(&hdbc);
 }

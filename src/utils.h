@@ -1,3 +1,6 @@
+#ifndef __UTILS_H__
+#define __UTILS_H__
+
 #include <string>
 #include <sql.h>
 #include <Rcpp.h>
@@ -52,8 +55,6 @@ inline SQLCHAR* asSqlChar(const std::string& x) {
 //};
 
 
-void ODBCerror(SQLRETURN retcode, const char * msg = "Error (%i)") {
-  if (!(retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)) {
-    stop(msg, retcode);
-  }
-}
+void ODBCerror(SQLRETURN retcode, const char * msg = "Error (%i)");
+
+#endif // __UTILS_H__

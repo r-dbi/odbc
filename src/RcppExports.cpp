@@ -6,6 +6,17 @@
 
 using namespace Rcpp;
 
+// connection_create
+XPtr<ODBCConnectionPtr> connection_create(std::string x);
+RcppExport SEXP odbconnect_connection_create(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::string >::type x(xSEXP);
+    __result = Rcpp::wrap(connection_create(x));
+    return __result;
+END_RCPP
+}
 // listDrivers
 List listDrivers();
 RcppExport SEXP odbconnect_listDrivers() {
@@ -23,17 +34,6 @@ BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     __result = Rcpp::wrap(listDataSources());
-    return __result;
-END_RCPP
-}
-// OdbcConnect
-XPtrHDBC OdbcConnect(std::string x);
-RcppExport SEXP odbconnect_OdbcConnect(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< std::string >::type x(xSEXP);
-    __result = Rcpp::wrap(OdbcConnect(x));
     return __result;
 END_RCPP
 }
