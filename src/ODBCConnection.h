@@ -9,7 +9,6 @@
 class ODBCConnection : boost::noncopyable {
   public:
   ODBCConnection(std::string x) : hdbc_(NULL) {
-    Rcpp::Rcout << odbcEnv << '\n';
     ODBCerror(
         SQLAllocHandle(SQL_HANDLE_DBC, odbcEnv, &hdbc_),
         "Failed to allocate handle (%i)");
