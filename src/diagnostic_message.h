@@ -1,11 +1,12 @@
-#ifndef DIAGNOSTIC_MESSAGE_H_
-#define DIAGNOSTIC_MESSAGE_H_
+#ifndef DIAGNOSTIC_RECORD_H_
+#define DIAGNOSTIC_RECORD_H_
 
 #include <vector>
 #include <string>
 #include <sstream>
+#include <Rcpp.h>
 
-class DiagnosticRecords {
+class DiagnosticRecord {
   public:
     void push_back(const std::string& odbc_state, int native_code, const std::string& message) {
       odbc_state_.push_back(odbc_state);
@@ -13,7 +14,7 @@ class DiagnosticRecords {
       message_.push_back(message);
     }
 
-    std::string message() {
+    std::string message() const {
       if (odbc_state_.size() == 0) {
         return "";
       }
@@ -30,4 +31,17 @@ class DiagnosticRecords {
     std::vector<int> native_code_;
     std::vector<std::string> message_;
 };
-#endif // DIAGNOSTIC_MESSAGE_H_
+
+class OdbcError : Rcpp::exception {
+  public:
+
+  OdbcError(const std::string & message) :
+    Rcpp::exception(message.c_str()) { }
+
+  OdbcError(const DiagnosticRecord& record) :
+    Rcpp::exception(record.message().c_str())
+  { }
+
+};
+
+#endif // DIAGNOSTIC_RECORD_H_
