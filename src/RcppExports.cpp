@@ -7,7 +7,7 @@
 using namespace Rcpp;
 
 // connection_create
-XPtr<ODBCConnectionPtr> connection_create(std::string x);
+XPtr<ConnectionPtr> connection_create(std::string x);
 RcppExport SEXP odbconnect_connection_create(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
@@ -18,12 +18,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // format_connection
-std::string format_connection(XPtr<ODBCConnectionPtr> c);
+std::string format_connection(XPtr<ConnectionPtr> c);
 RcppExport SEXP odbconnect_format_connection(SEXP cSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< XPtr<ODBCConnectionPtr> >::type c(cSEXP);
+    Rcpp::traits::input_parameter< XPtr<ConnectionPtr> >::type c(cSEXP);
     __result = Rcpp::wrap(format_connection(c));
     return __result;
 END_RCPP
