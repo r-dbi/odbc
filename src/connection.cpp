@@ -1,13 +1,11 @@
-#include "Handles.h"
-#include "ODBCConnection.h"
+#include "Rcpp.h"
+#include "cpp_odbc/connection.h"
+#include "cpp_odbc/make_environment.h"
+#include "odbconnect_types.h"
 
 // [[Rcpp::export]]
-XPtr<ConnectionPtr> connection_create(std::string x) {
-  ConnectionPtr* p = new ConnectionPtr(new ConnectionHandle(x));
-  return XPtr<ConnectionPtr>(p, true);
-}
-
-// [[Rcpp::export]]
-std::string format_connection(XPtr<ConnectionPtr> c) {
-  return (*c)->format();
+connection_ptr connect(std::string connection_string) {
+  auto environment = cpp_odbc::make_environment();
+  auto p = environment->make_connection(connection_string);
+  return connection_ptr(&p);
 }

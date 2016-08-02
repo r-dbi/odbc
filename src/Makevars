@@ -1,1 +1,11 @@
-PKG_LIBS=-liodbc
+CXX_STD = CXX11
+PKG_CPPFLAGS=-Icpp_odbc
+PKG_LIBS = -Lcpp_odbc -lcpp_odbc -liodbc
+
+$(SHLIB): cpp_odbc/libcpp_odbc.a
+
+cpp_odbc/libcpp_odbc.a:
+	@(cd cpp_odbc && $(MAKE))
+
+clean:
+	@(cd cpp_odbc && $(MAKE) clean)

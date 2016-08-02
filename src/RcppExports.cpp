@@ -6,45 +6,14 @@
 
 using namespace Rcpp;
 
-// connection_create
-XPtr<ConnectionPtr> connection_create(std::string x);
-RcppExport SEXP odbconnect_connection_create(SEXP xSEXP) {
+// connect
+connection_ptr connect(std::string connection_string);
+RcppExport SEXP odbconnect_connect(SEXP connection_stringSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< std::string >::type x(xSEXP);
-    __result = Rcpp::wrap(connection_create(x));
-    return __result;
-END_RCPP
-}
-// format_connection
-std::string format_connection(XPtr<ConnectionPtr> c);
-RcppExport SEXP odbconnect_format_connection(SEXP cSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< XPtr<ConnectionPtr> >::type c(cSEXP);
-    __result = Rcpp::wrap(format_connection(c));
-    return __result;
-END_RCPP
-}
-// listDrivers
-List listDrivers();
-RcppExport SEXP odbconnect_listDrivers() {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    __result = Rcpp::wrap(listDrivers());
-    return __result;
-END_RCPP
-}
-// listDataSources
-List listDataSources();
-RcppExport SEXP odbconnect_listDataSources() {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    __result = Rcpp::wrap(listDataSources());
+    Rcpp::traits::input_parameter< std::string >::type connection_string(connection_stringSEXP);
+    __result = Rcpp::wrap(connect(connection_string));
     return __result;
 END_RCPP
 }
