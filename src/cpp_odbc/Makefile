@@ -8,11 +8,10 @@ LIBRARY=libcpp_odbc.a
 all: $(LIBRARY) $(LIBRARY_SOURCES)
 
 $(LIBRARY): $(LIBRARY_OBJECTS)
-	ar ru $@ $^
-	ranlib $@
+	$(AR) -rc $@ $?
 
 .cpp.o:
 	$(CXX) -c $(CXX_FLAGS) -o $@ $< -I.
 
 clean:
-	rm -f **/*o libcpp_odbc.dylib
+	rm -f **/*o $(LIBRARY)

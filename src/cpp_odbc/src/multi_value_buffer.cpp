@@ -2,7 +2,7 @@
  *  @file multi_value_buffer.cpp
  *  @date 11.04.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -28,14 +28,6 @@ multi_value_buffer::multi_value_buffer(std::size_t element_size, std::size_t num
 	if (number_of_elements == 0) {
 		throw std::logic_error("Number of elements must not be 0");
 	}
-}
-
-multi_value_buffer::multi_value_buffer(multi_value_buffer && other) :
-	element_size_(other.element_size_),
-	data_(std::move(other.data_)),
-	indicators_(std::move(other.indicators_))
-{
-	other.element_size_ = 0;
 }
 
 std::size_t multi_value_buffer::capacity_per_element() const
@@ -65,18 +57,20 @@ long const * multi_value_buffer::indicator_pointer() const
 
 writable_buffer_element multi_value_buffer::operator[](std::size_t element_index)
 {
-	return {
+  writable_buffer_element b = {
 		data_pointer() + (element_index * element_size_),
 		indicators_[element_index]
 	};
+  return b;
 }
 
 buffer_element multi_value_buffer::operator[](std::size_t element_index) const
 {
-	return {
+	buffer_element b = {
 		data_.data() + (element_index * element_size_),
 		indicators_[element_index]
 	};
+  return b;
 }
 
 

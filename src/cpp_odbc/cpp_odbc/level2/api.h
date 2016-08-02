@@ -3,7 +3,7 @@
  *  @file level2_api.h
  *  @date 03.03.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 15:54:55 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -40,9 +40,6 @@ namespace cpp_odbc { namespace level2 {
 class api {
 public:
 	virtual ~api();
-
-	api(api const &) = delete;
-	api & operator=(api const &) = delete;
 
 	/**
 	 * @brief Create a new statement handle.
@@ -307,6 +304,8 @@ protected:
 	api();
 
 private:
+	api & operator=(api const &);
+
 	virtual statement_handle do_allocate_statement_handle(connection_handle const & input_handle) const = 0;
 	virtual connection_handle do_allocate_connection_handle(environment_handle const & input_handle) const = 0;
 	virtual environment_handle do_allocate_environment_handle() const = 0;

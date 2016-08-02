@@ -3,7 +3,7 @@
  *  @file raii_statement.h
  *  @date 23.05.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -16,6 +16,7 @@
 #include "cpp_odbc/level2/handles.h"
 
 #include <memory>
+#include <boost/shared_ptr.hpp>
 
 namespace cpp_odbc { namespace level2 {
 	class api;
@@ -38,7 +39,7 @@ public:
 	 *                   the life time of this object. The connection also contains the level2 API
 	 *                   to which all calls are forwarded.
 	 */
-	raii_statement(std::shared_ptr<raii_connection const> connection);
+	raii_statement(boost::shared_ptr<raii_connection const> connection);
 
 	virtual ~raii_statement();
 private:
@@ -65,8 +66,8 @@ private:
 	column_description do_describe_parameter(SQLUSMALLINT parameter_id) const final;
 	bool do_more_results() const final;
 
-	std::shared_ptr<raii_connection const> connection_;
-	std::shared_ptr<level2::api const> api_;
+	boost::shared_ptr<raii_connection const> connection_;
+	boost::shared_ptr<level2::api const> api_;
 	level2::statement_handle handle_;
 };
 

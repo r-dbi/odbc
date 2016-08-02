@@ -1,7 +1,7 @@
 /** *  @file level1_connector.cpp
  *  @date 07.03.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -87,7 +87,7 @@ namespace impl {
 
 namespace cpp_odbc { namespace level2 {
 
-level1_connector::level1_connector(std::shared_ptr<level1::api const> level1_api) :
+level1_connector::level1_connector(boost::shared_ptr<level1::api const> level1_api) :
 	level1_api_(std::move(level1_api))
 {
 }

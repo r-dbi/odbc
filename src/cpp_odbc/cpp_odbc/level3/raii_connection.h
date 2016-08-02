@@ -3,7 +3,7 @@
  *  @file raii_connection.h
  *  @date 21.03.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-12-05 08:55:14 +0100 (Fr, 05 Dez 2014) $
  *  $LastChangedBy: mkoenig $
@@ -17,6 +17,8 @@
 
 #include <string>
 #include <memory>
+
+#include <boost/shared_ptr.hpp>
 
 namespace cpp_odbc { namespace level2 {
 	class api;
@@ -40,13 +42,13 @@ public:
 	 *                    to which all calls are forwarded.
 	 * @param connection_string The connection is created using this connection string.
 	 */
-	raii_connection(std::shared_ptr<raii_environment const> environment, std::string const & connection_string);
+	raii_connection(boost::shared_ptr<raii_environment const> environment, std::string const & connection_string);
 
 	/**
 	 * @brief Retrieve the API instance associated with this environment.
 	 * @return The associated API instance
 	 */
-	std::shared_ptr<level2::api const> get_api() const;
+	boost::shared_ptr<level2::api const> get_api() const;
 
 	/**
 	 * @brief Retrieve the non-raii connection_handle which you can use in level 2 API calls.
@@ -57,12 +59,12 @@ public:
 	virtual ~raii_connection();
 
 private:
-	std::shared_ptr<statement const> do_make_statement() const final;
-	void do_set_attribute(SQLINTEGER attribute, long value) const final;
-	void do_commit() const final;
-	void do_rollback() const final;
-	std::string do_get_string_info(SQLUSMALLINT info_type) const final;
-	SQLUINTEGER do_get_integer_info(SQLUSMALLINT info_type) const final;
+	boost::shared_ptr<statement const> do_make_statement() const; // final;
+	void do_set_attribute(SQLINTEGER attribute, long value) const; // final;
+	void do_commit() const; // final;
+	void do_rollback() const; // final;
+	std::string do_get_string_info(SQLUSMALLINT info_type) const; // final;
+	SQLUINTEGER do_get_integer_info(SQLUSMALLINT info_type) const; // final;
 
 	struct intern;
 	std::unique_ptr<intern> impl_;

@@ -3,7 +3,7 @@
  *  @file level1_connector.h
  *  @date 07.03.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -13,6 +13,7 @@
 
 #include "cpp_odbc/level2/api.h"
 #include <memory>
+#include <boost/shared_ptr.hpp>
 
 namespace cpp_odbc { namespace level1 {
 
@@ -35,7 +36,7 @@ public:
 	 * @param level1_api Methods of this instance are called in all other methods
 	 *        of this class.
 	 */
-	level1_connector(std::shared_ptr<level1::api const> level1_api);
+	level1_connector(boost::shared_ptr<level1::api const> level1_api);
 
 private:
 	statement_handle do_allocate_statement_handle(connection_handle const & input_handle) const final;
@@ -73,7 +74,7 @@ private:
 	column_description do_describe_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id) const final;
 	bool do_more_results(statement_handle const & handle) const final;
 
-	std::shared_ptr<level1::api const> level1_api_;
+	boost::shared_ptr<level1::api const> level1_api_;
 };
 
 } }

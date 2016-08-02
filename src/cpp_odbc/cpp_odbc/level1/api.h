@@ -3,7 +3,7 @@
  *  @file api.h
  *  @date 03.03.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -23,9 +23,6 @@ namespace cpp_odbc { namespace level1 {
 class api {
 public:
 	virtual ~api();
-
-	api(api const &) = delete;
-	api & operator=(api const &) = delete;
 
 	/**
 	 * @brief see unixodbc's SQLAllocHandle() function.
@@ -157,6 +154,8 @@ protected:
 	api();
 
 private:
+	api(api const &);
+	api & operator=(api const &);
 
 	virtual SQLRETURN do_allocate_handle(SQLSMALLINT handle_type, SQLHANDLE input_handle, SQLHANDLE * output_handle_ptr) const = 0;
 	virtual SQLRETURN do_free_handle(SQLSMALLINT handle_type, SQLHANDLE handle) const = 0;

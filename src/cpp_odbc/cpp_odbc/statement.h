@@ -158,7 +158,6 @@ public:
 protected:
 	statement();
 private:
-	statement(statement const &);
 	statement & operator=(statement const &);
 
 	virtual long do_get_integer_attribute(SQLINTEGER attribute) const = 0;

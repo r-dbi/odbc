@@ -17,20 +17,22 @@
 
 #include <memory>
 #include <string>
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 
 namespace cpp_odbc {
 
 /**
  * @brief This interface represents a connection with an ODBC database
  */
-class connection : public std::enable_shared_from_this<connection> {
+class connection : public boost::enable_shared_from_this<connection> {
 public:
 
 	/**
 	 * @brief Create and return a new statement
 	 * @return A pointer to a new statement
 	 */
-	std::shared_ptr<statement const> make_statement() const;
+	boost::shared_ptr<statement const> make_statement() const;
 
 	/**
 	 * @brief Set the attribute to the given long value
@@ -70,7 +72,7 @@ private:
 	connection(connection const &);
 	connection & operator=(connection const &);
 
-	virtual std::shared_ptr<statement const> do_make_statement() const = 0;
+	virtual boost::shared_ptr<statement const> do_make_statement() const = 0;
 	virtual void do_set_attribute(SQLINTEGER attribute, long value) const = 0;
 	virtual void do_commit() const = 0;
 	virtual void do_rollback() const = 0;

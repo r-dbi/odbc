@@ -2,7 +2,7 @@
  *  @file environment.cpp
  *  @date 16.05.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-05-16 13:39:31 +0200 (Fr, 16 Mai 2014) $
  *  $LastChangedBy: mkoenig $
@@ -17,7 +17,7 @@ namespace cpp_odbc {
 environment::environment() = default;
 environment::~environment() = default;
 
-std::shared_ptr<connection const> environment::make_connection(std::string const & connection_string) const
+boost::shared_ptr<connection const> environment::make_connection(std::string const & connection_string) const
 {
 	return do_make_connection(connection_string);
 }

@@ -2,7 +2,7 @@
  *  @file raii_statement.cpp
  *  @date 23.05.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -17,9 +17,11 @@
 
 #include "sql.h"
 
+#include <boost/shared_ptr.hpp>
+
 namespace cpp_odbc { namespace level3 {
 
-raii_statement::raii_statement(std::shared_ptr<raii_connection const> connection) :
+raii_statement::raii_statement(boost::shared_ptr<raii_connection const> connection) :
 		connection_(connection),
 		api_(connection_->get_api()),
 		handle_(api_->allocate_statement_handle(connection->get_handle()))
