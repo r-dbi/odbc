@@ -5,3 +5,7 @@ connect <- function(connection_string) {
     .Call('odbconnect_connect', PACKAGE = 'odbconnect', connection_string)
 }
 
+connect_info <- function(p) {
+    .Call('odbconnect_connect_info', PACKAGE = 'odbconnect', p)
+}
+

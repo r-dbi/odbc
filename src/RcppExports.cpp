@@ -17,3 +17,14 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// connect_info
+std::string connect_info(connection_ptr p);
+RcppExport SEXP odbconnect_connect_info(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< connection_ptr >::type p(pSEXP);
+    __result = Rcpp::wrap(connect_info(p));
+    return __result;
+END_RCPP
+}
