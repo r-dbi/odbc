@@ -9,3 +9,11 @@ connect_info <- function(p) {
     .Call('odbconnect_connect_info', PACKAGE = 'odbconnect', p)
 }
 
+statement_create <- function(con, sql) {
+    .Call('odbconnect_statement_create', PACKAGE = 'odbconnect', con, sql)
+}
+
+row_count <- function(rs) {
+    .Call('odbconnect_row_count', PACKAGE = 'odbconnect', rs)
+}
+
