@@ -3,7 +3,7 @@
  *  @file environment.h
  *  @date 16.05.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 15:54:55 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -21,9 +21,6 @@ namespace cpp_odbc {
  */
 class environment : public std::enable_shared_from_this<environment> {
 public:
-	environment(environment const &) = delete;
-	environment & operator=(environment const &) = delete;
-
 	/**
 	 * @brief Create a new connection with the given connection string
 	 * @param connection_string THis string is used to acquire the ODBC connection
@@ -42,6 +39,9 @@ public:
 protected:
 	environment();
 private:
+	environment(environment const &);
+	environment & operator=(environment const &);
+
 	virtual std::shared_ptr<connection const> do_make_connection(std::string const & connection_string) const = 0;
 	virtual void do_set_attribute(SQLINTEGER attribute, long value) const = 0;
 };

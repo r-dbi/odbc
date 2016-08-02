@@ -3,7 +3,7 @@
  *  @file connection.h
  *  @date 16.05.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 15:54:55 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -25,8 +25,6 @@ namespace cpp_odbc {
  */
 class connection : public std::enable_shared_from_this<connection> {
 public:
-	connection(connection const &) = delete;
-	connection & operator=(connection const &) = delete;
 
 	/**
 	 * @brief Create and return a new statement
@@ -69,6 +67,9 @@ public:
 protected:
 	connection();
 private:
+	connection(connection const &);
+	connection & operator=(connection const &);
+
 	virtual std::shared_ptr<statement const> do_make_statement() const = 0;
 	virtual void do_set_attribute(SQLINTEGER attribute, long value) const = 0;
 	virtual void do_commit() const = 0;

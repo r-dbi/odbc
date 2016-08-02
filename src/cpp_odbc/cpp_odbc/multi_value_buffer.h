@@ -3,7 +3,7 @@
  *  @file multi_value_buffer.h
  *  @date 11.04.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -40,11 +40,6 @@ public:
 	 *        Must be larger than zero.
 	 */
 	multi_value_buffer(std::size_t element_size, std::size_t number_of_elements);
-
-	/**
-	 * @brief Move constructor. Will leave the old buffer empty.
-	 */
-	multi_value_buffer(multi_value_buffer &&);
 
 	/**
 	 * @brief Retrieve the number of bytes reserved for each element

@@ -3,7 +3,7 @@
  *  @file statement.h
  *  @date 16.05.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 15:54:55 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -25,9 +25,6 @@ namespace cpp_odbc {
  */
 class statement {
 public:
-	statement(statement const &) = delete;
-	statement & operator=(statement const &) = delete;
-
 	/**
 	 * @brief Retrieve the value of statement attribute as an integer
 	 * @param attribute A constant representing the requested attribute
@@ -161,6 +158,9 @@ public:
 protected:
 	statement();
 private:
+	statement(statement const &);
+	statement & operator=(statement const &);
+
 	virtual long do_get_integer_attribute(SQLINTEGER attribute) const = 0;
 	virtual void do_set_attribute(SQLINTEGER attribute, long value) const = 0;
 	virtual void do_set_attribute(SQLINTEGER attribute, SQLULEN * pointer) const = 0;
