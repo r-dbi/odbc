@@ -17,6 +17,7 @@
 #include "cpp_odbc/level2/level1_connector.h"
 #include "cpp_odbc/level3/raii_environment.h"
 #include <boost/make_shared.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace cpp_odbc {
 
@@ -29,8 +30,8 @@ boost::shared_ptr<environment> make_environment()
 
 boost::shared_ptr<environment> make_debug_environment()
 {
-	auto level1_api = boost::make_shared<level1::unixodbc_backend_debug const>();
-	auto level2_api = boost::make_shared<level2::level1_connector const>(level1_api);
+	boost::shared_ptr<level1::unixodbc_backend_debug const> level1_api = boost::make_shared<level1::unixodbc_backend_debug const>();
+	boost::shared_ptr<level2::level1_connector const> level2_api = boost::make_shared<level2::level1_connector const>(level1_api);
 	return boost::make_shared<level3::raii_environment>(level2_api);
 }
 

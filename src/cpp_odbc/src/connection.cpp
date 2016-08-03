@@ -15,8 +15,8 @@
 
 namespace cpp_odbc {
 
-connection::connection() = default;
-connection::~connection() = default;
+	connection::connection() {} // = default;
+	connection::~connection() {} //= default;
 
 boost::shared_ptr<statement const> connection::make_statement() const
 {

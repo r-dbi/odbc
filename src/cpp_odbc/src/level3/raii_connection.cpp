@@ -104,7 +104,7 @@ level2::connection_handle const & raii_connection::get_handle() const
 
 boost::shared_ptr<statement const> raii_connection::do_make_statement() const
 {
-	auto as_raii_connection = boost::dynamic_pointer_cast<raii_connection const>(shared_from_this());
+  boost::shared_ptr<raii_connection const> as_raii_connection = boost::dynamic_pointer_cast<raii_connection const>(shared_from_this());
 	return boost::make_shared<raii_statement const>(as_raii_connection);
 }
 
@@ -133,6 +133,6 @@ SQLUINTEGER raii_connection::do_get_integer_info(SQLUSMALLINT info_type) const
 	return impl_->api->get_integer_connection_info(impl_->handle.handle, info_type);
 }
 
-raii_connection::~raii_connection() = default;
+raii_connection::~raii_connection() {} //= default;
 
 } }

@@ -52,7 +52,7 @@ namespace {
 
 	std::string get_typename(SQLSMALLINT type)
 	{
-		auto const it = known_types.find(type);
+		std::map<SQLSMALLINT, std::string>::const_iterator it = known_types.find(type);
 		if (it != known_types.end()) {
 			return it->second;
 		} else {

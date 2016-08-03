@@ -31,7 +31,7 @@ namespace impl {
 		)
 	{
 		Output_Handle output_handle = {nullptr};
-		auto const return_code = level1.allocate_handle(output_handle.type(), input_handle.handle, &output_handle.handle);
+		SQLRETURN const return_code = level1.allocate_handle(output_handle.type(), input_handle.handle, &output_handle.handle);
 
 		if (return_code == SQL_SUCCESS) {
 			return output_handle;
@@ -47,7 +47,7 @@ namespace impl {
 			Handle & handle
 		)
 	{
-		auto const return_code = level1.free_handle(handle.type(), handle.handle);
+		SQLRETURN const return_code = level1.free_handle(handle.type(), handle.handle);
 
 		if (return_code == SQL_ERROR) {
 			throw cpp_odbc::error(level2.get_diagnostic_record(handle));
@@ -74,10 +74,11 @@ namespace impl {
 		cpp_odbc::level2::string_buffer message(1024);
 		SQLSMALLINT const record_id = 1;
 
-		auto const return_code = api.get_diagnostic_record(type, handle, record_id, status_code.data_pointer(), &native_error, message.data_pointer(), message.capacity(), message.size_pointer());
+		SQLRETURN const return_code = api.get_diagnostic_record(type, handle, record_id, status_code.data_pointer(), &native_error, message.data_pointer(), message.capacity(), message.size_pointer());
 
 		if (return_code == SQL_SUCCESS) {
-			return {status_code, native_error, message};
+			cpp_odbc::level2::diagnostic_record d = {status_code, native_error, message};
+			return d;
 		} else {
 			throw cpp_odbc::error("Obtaining diagnostic record from unixODBC handle failed");
 		}
@@ -106,7 +107,7 @@ environment_handle level1_connector::do_allocate_environment_handle() const
 {
 	// separate treatment here because SQL_NULL_HANDLE does not hold diagnostic_record
 	environment_handle output_handle = {nullptr};
-	auto const return_code = level1_api_->allocate_handle(output_handle.type(), SQL_NULL_HANDLE, &output_handle.handle);
+	SQLRETURN const return_code = level1_api_->allocate_handle(output_handle.type(), SQL_NULL_HANDLE, &output_handle.handle);
 
 	if (return_code == SQL_SUCCESS) {
 		return output_handle;
@@ -148,8 +149,8 @@ diagnostic_record level1_connector::do_get_diagnostic_record(environment_handle 
 void level1_connector::do_set_environment_attribute(environment_handle const & handle, SQLINTEGER attribute, long value) const
 {
 	// ODBC's interface transfers integer values disguised as a pointer.
-	auto const value_ptr = reinterpret_cast<SQLPOINTER>(value);
-	auto const return_code = level1_api_->set_environment_attribute(handle.handle, attribute, value_ptr, 0);
+	SQLPOINTER const value_ptr = reinterpret_cast<SQLPOINTER>(value);
+	SQLRETURN const return_code = level1_api_->set_environment_attribute(handle.handle, attribute, value_ptr, 0);
 
 	impl::throw_on_error(return_code, *this, handle);
 }
@@ -157,8 +158,8 @@ void level1_connector::do_set_environment_attribute(environment_handle const & h
 void level1_connector::do_set_connection_attribute(connection_handle const & handle, SQLINTEGER attribute, long value) const
 {
 	// ODBC's interface transfers integer values disguised as a pointer.
-	auto const value_ptr = reinterpret_cast<SQLPOINTER>(value);
-	auto const return_code = level1_api_->set_connection_attribute(handle.handle, attribute, value_ptr, 0);
+	SQLPOINTER const value_ptr = reinterpret_cast<SQLPOINTER>(value);
+	SQLRETURN const return_code = level1_api_->set_connection_attribute(handle.handle, attribute, value_ptr, 0);
 
 	impl::throw_on_error(return_code, *this, handle);
 }
@@ -168,7 +169,7 @@ void level1_connector::do_establish_connection(connection_handle & handle, std::
 	cpp_odbc::level2::input_string_buffer input_connection_string(connection_string);
 	cpp_odbc::level2::string_buffer output_connection_string(1024);
 
-	auto const return_code = level1_api_->establish_connection(
+	SQLRETURN const return_code = level1_api_->establish_connection(
 			handle.handle,
 			nullptr,
 			input_connection_string.data_pointer(),
@@ -183,20 +184,20 @@ void level1_connector::do_establish_connection(connection_handle & handle, std::
 
 void level1_connector::do_disconnect(connection_handle & handle) const
 {
-	auto const return_code = level1_api_->disconnect(handle.handle);
+	SQLRETURN const return_code = level1_api_->disconnect(handle.handle);
 	impl::throw_on_error(return_code, *this, handle);
 }
 
 void level1_connector::do_end_transaction(connection_handle const & handle, SQLSMALLINT completion_type) const
 {
-	auto const return_code = level1_api_->end_transaction(handle.type(), handle.handle, completion_type);
+	SQLRETURN const return_code = level1_api_->end_transaction(handle.type(), handle.handle, completion_type);
 	impl::throw_on_error(return_code, *this, handle);
 }
 
 std::string level1_connector::do_get_string_connection_info(connection_handle const & handle, SQLUSMALLINT info_type) const
 {
 	cpp_odbc::level2::string_buffer output_connection_string(1024);
-	auto const return_code = level1_api_->get_connection_info(
+	SQLRETURN const return_code = level1_api_->get_connection_info(
 			handle.handle,
 			info_type,
 			output_connection_string.data_pointer(),
@@ -211,7 +212,7 @@ std::string level1_connector::do_get_string_connection_info(connection_handle co
 SQLUINTEGER level1_connector::do_get_integer_connection_info(connection_handle const & handle, SQLUSMALLINT info_type) const
 {
 	SQLUINTEGER destination = 0;
-	auto const return_code = level1_api_->get_connection_info(
+	SQLRETURN const return_code = level1_api_->get_connection_info(
 			handle.handle,
 			info_type,
 			&destination,
@@ -225,7 +226,7 @@ SQLUINTEGER level1_connector::do_get_integer_connection_info(connection_handle c
 
 void level1_connector::do_bind_column(statement_handle const & handle, SQLUSMALLINT column_id, SQLSMALLINT column_type, multi_value_buffer & column_buffer) const
 {
-	auto const return_code = level1_api_->bind_column(
+	SQLRETURN const return_code = level1_api_->bind_column(
 			handle.handle,
 			column_id,
 			column_type,
@@ -239,7 +240,7 @@ void level1_connector::do_bind_column(statement_handle const & handle, SQLUSMALL
 
 void level1_connector::do_bind_input_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, multi_value_buffer & parameter_values) const
 {
-	auto const return_code = level1_api_->bind_parameter(
+	SQLRETURN const return_code = level1_api_->bind_parameter(
 			handle.handle,
 			parameter_id,
 			SQL_PARAM_INPUT,
@@ -257,20 +258,20 @@ void level1_connector::do_bind_input_parameter(statement_handle const & handle, 
 
 void level1_connector::do_execute_prepared_statement(statement_handle const & handle) const
 {
-	auto const return_code = level1_api_->execute_prepared_statement(handle.handle);
+	SQLRETURN const return_code = level1_api_->execute_prepared_statement(handle.handle);
 	impl::throw_on_error(return_code, *this, handle);
 }
 
 void level1_connector::do_execute_statement(statement_handle const & handle, std::string const & sql) const
 {
 	cpp_odbc::level2::input_string_buffer buffered(sql);
-	auto const return_code = level1_api_->execute_statement(handle.handle, buffered.data_pointer(), buffered.size());
+	SQLRETURN const return_code = level1_api_->execute_statement(handle.handle, buffered.data_pointer(), buffered.size());
 	impl::throw_on_error(return_code, *this, handle);
 }
 
 bool level1_connector::do_fetch_scroll(statement_handle const & handle, SQLSMALLINT fetch_orientation, SQLLEN fetch_offset) const
 {
-	auto const return_code = level1_api_->fetch_scroll(handle.handle, fetch_orientation, fetch_offset);
+	SQLRETURN const return_code = level1_api_->fetch_scroll(handle.handle, fetch_orientation, fetch_offset);
 	if (return_code == SQL_NO_DATA) {
 		return false;
 	} else {
@@ -281,14 +282,14 @@ bool level1_connector::do_fetch_scroll(statement_handle const & handle, SQLSMALL
 
 void level1_connector::do_free_statement(statement_handle const & handle, SQLUSMALLINT option) const
 {
-	auto const return_code = level1_api_->free_statement(handle.handle, option);
+	SQLRETURN const return_code = level1_api_->free_statement(handle.handle, option);
 	impl::throw_on_error(return_code, *this, handle);
 }
 
 long level1_connector::do_get_integer_column_attribute(statement_handle const & handle, SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const
 {
 	SQLLEN attribute_value = 0;
-	auto const return_code = level1_api_->column_attribute(
+	SQLRETURN const return_code = level1_api_->column_attribute(
 			handle.handle,
 			column_id,
 			field_identifier,
@@ -306,7 +307,7 @@ long level1_connector::do_get_integer_column_attribute(statement_handle const & 
 long level1_connector::do_get_integer_statement_attribute(statement_handle const & handle, SQLINTEGER attribute) const
 {
 	SQLLEN attribute_value = 0;
-	auto const return_code = level1_api_->get_statement_attribute(
+	SQLRETURN const return_code = level1_api_->get_statement_attribute(
 			handle.handle,
 			attribute,
 			&attribute_value,
@@ -322,7 +323,7 @@ long level1_connector::do_get_integer_statement_attribute(statement_handle const
 std::string level1_connector::do_get_string_column_attribute(statement_handle const & handle, SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const
 {
 	cpp_odbc::level2::string_buffer attribute_value(1024);
-	auto const return_code = level1_api_->column_attribute(
+	SQLRETURN const return_code = level1_api_->column_attribute(
 			handle.handle,
 			column_id,
 			field_identifier,
@@ -340,7 +341,7 @@ std::string level1_connector::do_get_string_column_attribute(statement_handle co
 short int level1_connector::do_number_of_result_columns(statement_handle const & handle) const
 {
 	SQLSMALLINT columns = 0;
-	auto const return_code = level1_api_->number_of_result_columns(handle.handle, &columns);
+	SQLRETURN const return_code = level1_api_->number_of_result_columns(handle.handle, &columns);
 
 	impl::throw_on_error(return_code, *this, handle);
 
@@ -350,7 +351,7 @@ short int level1_connector::do_number_of_result_columns(statement_handle const &
 short int level1_connector::do_number_of_parameters(statement_handle const & handle) const
 {
 	SQLSMALLINT columns = 0;
-	auto const return_code = level1_api_->number_of_parameters(handle.handle, &columns);
+	SQLRETURN const return_code = level1_api_->number_of_parameters(handle.handle, &columns);
 
 	impl::throw_on_error(return_code, *this, handle);
 
@@ -360,27 +361,27 @@ short int level1_connector::do_number_of_parameters(statement_handle const & han
 void level1_connector::do_prepare_statement(statement_handle const & handle, std::string const & sql) const
 {
 	cpp_odbc::level2::input_string_buffer buffered(sql);
-	auto const return_code = level1_api_->prepare_statement(handle.handle, buffered.data_pointer(), buffered.size());
+	SQLRETURN const return_code = level1_api_->prepare_statement(handle.handle, buffered.data_pointer(), buffered.size());
 	impl::throw_on_error(return_code, *this, handle);
 }
 
 void level1_connector::do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, long value) const
 {
-	auto value_as_pointer = reinterpret_cast<void*>(value); // damn C API
-	auto const return_code = level1_api_->set_statement_attribute(handle.handle, attribute, value_as_pointer, SQL_IS_INTEGER);
+	void* value_as_pointer = reinterpret_cast<void*>(value); // damn C API
+	SQLRETURN const return_code = level1_api_->set_statement_attribute(handle.handle, attribute, value_as_pointer, SQL_IS_INTEGER);
 	impl::throw_on_error(return_code, *this, handle);
 }
 
 void level1_connector::do_set_statement_attribute(statement_handle const & handle, SQLINTEGER attribute, SQLULEN * pointer) const
 {
-	auto const return_code = level1_api_->set_statement_attribute(handle.handle, attribute, pointer, SQL_IS_POINTER);
+	SQLRETURN const return_code = level1_api_->set_statement_attribute(handle.handle, attribute, pointer, SQL_IS_POINTER);
 	impl::throw_on_error(return_code, *this, handle);
 }
 
 SQLLEN level1_connector::do_row_count(statement_handle const & handle) const
 {
 	SQLLEN count = 0;
-	auto const return_code = level1_api_->row_count(handle.handle, &count);
+	SQLRETURN const return_code = level1_api_->row_count(handle.handle, &count);
 
 	impl::throw_on_error(return_code, *this, handle);
 
@@ -395,13 +396,14 @@ column_description level1_connector::do_describe_column(statement_handle const &
 	SQLSMALLINT decimal_digits = 0;
 	SQLSMALLINT nullable = 0;
 
-	auto const return_code = level1_api_->describe_column(handle.handle, column_id, name.data_pointer(), name.capacity(), name.size_pointer(), &data_type, &size, &decimal_digits, &nullable);
+	SQLRETURN const return_code = level1_api_->describe_column(handle.handle, column_id, name.data_pointer(), name.capacity(), name.size_pointer(), &data_type, &size, &decimal_digits, &nullable);
 
 	bool const allows_nullable = (nullable == SQL_NO_NULLS) ? false : true;
 
 	impl::throw_on_error(return_code, *this, handle);
 
-	return {static_cast<std::string>(name), data_type, size, decimal_digits, allows_nullable};
+	column_description c = {static_cast<std::string>(name), data_type, size, decimal_digits, allows_nullable};
+	return c;
 }
 
 column_description level1_connector::do_describe_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id) const
@@ -411,7 +413,7 @@ column_description level1_connector::do_describe_parameter(statement_handle cons
 	SQLSMALLINT decimal_digits = 0;
 	SQLSMALLINT nullable = 0;
 
-	auto const return_code = level1_api_->describe_parameter(handle.handle, parameter_id, &data_type, &size, &decimal_digits, &nullable);
+	SQLRETURN const return_code = level1_api_->describe_parameter(handle.handle, parameter_id, &data_type, &size, &decimal_digits, &nullable);
 
 	bool const allows_nullable = (nullable == SQL_NO_NULLS) ? false : true;
 
@@ -419,12 +421,13 @@ column_description level1_connector::do_describe_parameter(statement_handle cons
 
 	std::ostringstream name;
 	name << "parameter_" << parameter_id;
-	return {name.str(), data_type, size, decimal_digits, allows_nullable};
+	column_description d = {name.str(), data_type, size, decimal_digits, allows_nullable};
+	return d;
 }
 
 bool level1_connector::do_more_results(statement_handle const & handle) const
 {
-	auto const return_code = level1_api_->more_results(handle.handle);
+	SQLRETURN const return_code = level1_api_->more_results(handle.handle);
 	impl::throw_on_error(return_code, *this, handle);
 	return return_code != SQL_NO_DATA;
 }

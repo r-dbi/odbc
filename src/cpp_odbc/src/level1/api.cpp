@@ -2,7 +2,7 @@
  *  @file api.cpp
  *  @date 03.03.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -14,8 +14,8 @@
 
 namespace cpp_odbc { namespace level1 {
 
-api::api() = default;
-api::~api() = default;
+api::api() {} //= default;
+api::~api() {} //= default;
 
 SQLRETURN api::allocate_handle(SQLSMALLINT handle_type, SQLHANDLE input_handle, SQLHANDLE * output_handle_ptr) const
 {

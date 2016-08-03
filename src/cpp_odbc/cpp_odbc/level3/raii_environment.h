@@ -23,7 +23,7 @@ namespace cpp_odbc {
 
 namespace cpp_odbc { namespace level2 {
 	class api;
-	class environment_handle;
+	struct environment_handle;
 } }
 
 namespace cpp_odbc { namespace level3 {

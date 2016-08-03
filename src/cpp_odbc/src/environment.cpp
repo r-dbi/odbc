@@ -14,8 +14,8 @@
 
 namespace cpp_odbc {
 
-environment::environment() = default;
-environment::~environment() = default;
+	environment::environment() {}//= default;
+	environment::~environment() {}//= default;
 
 boost::shared_ptr<connection const> environment::make_connection(std::string const & connection_string) const
 {
