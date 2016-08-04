@@ -14,7 +14,7 @@
 
 namespace turbodbc {
 
-cursor::cursor(std::shared_ptr<cpp_odbc::connection const> connection,
+cursor::cursor(boost::shared_ptr<cpp_odbc::connection const> connection,
                std::size_t rows_to_buffer,
                std::size_t parameter_sets_to_buffer,
                bool use_async_io) :
@@ -42,7 +42,7 @@ void cursor::execute()
 	query_->execute();
 	auto raw_result_set = query_->get_results();
 	if (raw_result_set) {
-		results_ = std::make_shared<result_sets::row_based_result_set>(*raw_result_set);
+		results_ = std::make_shared<result_sets::r_result_set>(*raw_result_set);
 	}
 }
 
@@ -61,7 +61,7 @@ long cursor::get_row_count()
 	return query_->get_row_count();
 }
 
-std::shared_ptr<cpp_odbc::connection const> cursor::get_connection() const
+boost::shared_ptr<cpp_odbc::connection const> cursor::get_connection() const
 {
 	return connection_;
 }

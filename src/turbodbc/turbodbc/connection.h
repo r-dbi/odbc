@@ -3,6 +3,7 @@
 #include "turbodbc/cursor.h"
 #include <cpp_odbc/connection.h>
 #include <memory>
+#include <boost/shared_ptr.hpp>
 
 namespace turbodbc {
 
@@ -16,7 +17,7 @@ public:
 	/**
 	 * @brief Construct a new connection based on the given low-level connection
 	 */
-	connection(std::shared_ptr<cpp_odbc::connection const> low_level_connection);
+	connection(boost::shared_ptr<cpp_odbc::connection const> low_level_connection);
 
 	/**
 	 * @brief Commit all operations which have been performed since the last commit
@@ -43,7 +44,7 @@ public:
 	bool use_async_io;
 
 private:
-	std::shared_ptr<cpp_odbc::connection const> connection_;
+	boost::shared_ptr<cpp_odbc::connection const> connection_;
 };
 
 }

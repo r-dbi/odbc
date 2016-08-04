@@ -1,5 +1,6 @@
-PKG_CPPFLAGS=-Icpp_odbc -std=c++03
-PKG_LIBS+=-L./cpp_odbc -lcpp_odbc -liodbc
+CXX_STD = CXX11
+PKG_CPPFLAGS=-Icpp_odbc -std=c++11 -Iturbodbc
+PKG_LIBS+=-L./cpp_odbc -L./turbodbc -lturbodbc -lcpp_odbc -liodbc
 
 $(SHLIB): cpp_odbc/libcpp_odbc.a
 

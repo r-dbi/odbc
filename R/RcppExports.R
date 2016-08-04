@@ -9,6 +9,10 @@ connect_info <- function(p) {
     .Call('odbconnect_connect_info', PACKAGE = 'odbconnect', p)
 }
 
+query <- function(p, sql) {
+    .Call('odbconnect_query', PACKAGE = 'odbconnect', p, sql)
+}
+
 statement_create <- function(con, sql) {
     .Call('odbconnect_statement_create', PACKAGE = 'odbconnect', con, sql)
 }

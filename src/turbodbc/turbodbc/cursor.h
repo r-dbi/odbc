@@ -4,7 +4,8 @@
 #include <turbodbc/query.h>
 #include <turbodbc/column_info.h>
 #include <memory>
-#include "result_sets/row_based_result_set.h"
+#include "result_sets/r_result_set.h"
+#include <boost/shared_ptr.hpp>
 
 
 namespace turbodbc {
@@ -14,7 +15,7 @@ namespace turbodbc {
  */
 class cursor {
 public:
-	cursor(std::shared_ptr<cpp_odbc::connection const> connection,
+	cursor(boost::shared_ptr<cpp_odbc::connection const> connection,
 		   std::size_t rows_to_buffer,
 		   std::size_t parameter_sets_to_buffer,
 		   bool use_async_io);
@@ -27,19 +28,19 @@ public:
 
 	std::shared_ptr<result_sets::result_set> get_result_set() const;
 
-	std::shared_ptr<cpp_odbc::connection const> get_connection() const;
+	boost::shared_ptr<cpp_odbc::connection const> get_connection() const;
 
 	std::shared_ptr<turbodbc::query> get_query();
 
 	~cursor();
 
 private:
-	std::shared_ptr<cpp_odbc::connection const> connection_;
+	boost::shared_ptr<cpp_odbc::connection const> connection_;
 	std::size_t rows_to_buffer_;
 	std::size_t parameter_sets_to_buffer_;
 	bool use_async_io_;
 	std::shared_ptr<turbodbc::query> query_;
-	std::shared_ptr<result_sets::row_based_result_set> results_;
+	std::shared_ptr<result_sets::r_result_set> results_;
 };
 
 }
