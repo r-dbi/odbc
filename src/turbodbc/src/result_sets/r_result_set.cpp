@@ -16,7 +16,8 @@ namespace {
 		//return boost::python::object(boost::python::handle<>(PyDate_FromDate(date.year,
 																																				 //date.month,
 																																				 //date.day)));
-	return List();
+
+	return Rcpp::wrap(Rcpp::Date(date.year, date.month, date.day));
 	}
 
 	RObject make_timestamp(SQL_TIMESTAMP_STRUCT const & ts)
@@ -27,7 +28,18 @@ namespace {
 				//boost::python::handle<>(PyDateTime_FromDateAndTime(ts.year, ts.month, ts.day,
 																													 //ts.hour, ts.minute, ts.second, adjusted_fraction))
 			//);
-	return List();
+		tm t;
+		t.tm_year = ts.year;
+		t.tm_mon = ts.month;
+		t.tm_mday = ts.day;
+		t.tm_hour = ts.hour;
+		t.tm_min = ts.minute;
+		t.tm_sec = ts.second;
+
+		NumericVector out(Rcpp::mktime00(t) + ts.fraction);
+		out.attr("class") = CharacterVector::create("POSIXct", "POSIXt");
+		out.attr("tzone") = "UTC";
+		return out;
 	}
 
 	RObject make_object(turbodbc::type_code code, char const * data_pointer)
@@ -40,7 +52,7 @@ namespace {
 			case type_code::floating_point:
 				return NumericVector(*reinterpret_cast<double const *>(data_pointer));
 			case type_code::string:
-				//return CharaterVector(boost::python::handle<>(PyUnicode_FromString(data_pointer)));
+				return CharacterVector(reinterpret_cast<char const *>(data_pointer));
 			case type_code::date:
 				return make_date(*reinterpret_cast<SQL_DATE_STRUCT const *>(data_pointer));
 			case type_code::timestamp:
@@ -74,7 +86,7 @@ RObject r_result_set::fetch_row()
 		List r_row;
 		for (std::size_t column = 0; column != row.size(); ++column) {
 			if (row[column].indicator == SQL_NULL_DATA) {
-				r_row.push_back(List());
+				r_row.push_back(R_NilValue);
 			} else {
 				r_row.push_back(make_object(types_[column], row[column].data_pointer));
 			}
