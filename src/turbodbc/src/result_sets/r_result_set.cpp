@@ -42,6 +42,37 @@ namespace {
 		return out;
 	}
 
+	RObject fill_column(turbodbc::type_code code, size_t size, cpp_odbc::multi_value_buffer const & buffer) {
+	{
+		switch (code) {
+			case type_code::boolean: {
+				LogicalVector out = LogicalVector(size);
+				for (std::size_t i = 0; i != size; ++i) {
+					out[i] = *reinterpret_cast<bool const*>(buffer.data_pointer());
+				}
+				return(out);
+															 }
+			case type_code::integer:
+				return IntegerVector(size);
+			case type_code::floating_point:
+				return NumericVector(size);
+			case type_code::string: {
+				CharacterVector out = CharacterVector(size);
+				for (std::size_t i = 0; i != size; ++i) {
+					out[i] = reinterpret_cast<char const*>(buffer[i].data_pointer);
+				}
+				return(out);
+		}
+			case type_code::date:
+				//return make_date(size);
+			case type_code::timestamp:
+				//return make_timestamp(size);
+			default:
+				throw std::logic_error("Encountered unsupported type code");
+		}
+	}
+
+}
 	RObject make_object(turbodbc::type_code code, char const * data_pointer)
 	{
 		switch (code) {
@@ -66,37 +97,78 @@ namespace {
 
 
 r_result_set::r_result_set(result_set & base) :
-	row_based_(base)
+	base_result_(base)
 {
-	for (auto const & info : row_based_.get_column_info()) {
+	for (auto const & info : base_result_.get_column_info()) {
 		types_.emplace_back(info.type);
 	}
 }
 
 std::vector<column_info> r_result_set::get_column_info() const
 {
-	return row_based_.get_column_info();
+	return base_result_.get_column_info();
 }
 
 
 RObject r_result_set::fetch_row()
 {
-	auto const row = row_based_.fetch_row();
-	if (not row.empty()) {
-		List r_row;
-		for (std::size_t column = 0; column != row.size(); ++column) {
-			if (row[column].indicator == SQL_NULL_DATA) {
-				r_row.push_back(R_NilValue);
-			} else {
-				r_row.push_back(make_object(types_[column], row[column].data_pointer));
-			}
-		}
-		return r_row;
-	} else {
-		return List();
-	}
+	//auto const row = base_result_.fetch_row();
+	//if (not row.empty()) {
+		//List r_row;
+		//for (std::size_t column = 0; column != row.size(); ++column) {
+			//if (row[column].indicator == SQL_NULL_DATA) {
+				//r_row.push_back(R_NilValue);
+			//} else {
+				//r_row.push_back(make_object(types_[column], row[column].data_pointer));
+			//}
+		//}
+		//return r_row;
+	//} else {
+		//return List();
+	//}
 }
 
+RObject r_result_set::fetch_all()
+{
+	std::size_t rows_in_batch = base_result_.fetch_next_batch();
+	Rcpp::Rcout << rows_in_batch << '\n';
 
+	//do {
+		//Rcpp::Rcout << rows_in_batch << '\n';
+		//rows_in_batch = base_result_.fetch_next_batch();
+	//} while (rows_in_batch != 0);
+	//return Rcpp::List();
 
+	auto const column_info = base_result_.get_column_info();
+	auto const n_columns = column_info.size();
+
+	List columns(n_columns);
+	auto const buffers = base_result_.get_buffers();
+
+	CharacterVector names(n_columns);
+	for (std::size_t i = 0; i != n_columns; ++i) {
+		columns[i] = fill_column(column_info[i].type, rows_in_batch, buffers[i]);
+		names[i] = column_info[i].name;
+	}
+
+  columns.attr("names") = names;
+  columns.attr("class") = CharacterVector::create("tbl_df", "tbl", "data.frame");
+  columns.attr("row.names") = IntegerVector::create(NA_INTEGER, -(rows_in_batch + 1));
+	return columns;
+}
 } }
+
+	//do {
+		//auto const buffers = base_result_.get_buffers();
+
+		//for (std::size_t i = 0; i != n_columns; ++i) {
+			//columns[i] = make_object(column_info[i].type, buffers[i].get());
+		//}
+		//rows_in_batch = base_result_.fetch_next_batch();
+	//} while (rows_in_batch != 0);
+
+	//return as_python_list(columns);
+//}
+
+
+//} }

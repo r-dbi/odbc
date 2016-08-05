@@ -30,5 +30,5 @@ cursor_ptr query(connection_ptr p, std::string sql) {
 
 // [[Rcpp::export]]
 Rcpp::RObject fetch_row(cursor_ptr c) {
-  return (*c)->get_result_set()->fetch_row();
+  return (*c)->get_result_set()->fetch_all();
 }

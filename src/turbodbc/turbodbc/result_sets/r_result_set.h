@@ -29,9 +29,10 @@ public:
 	 * @return Returned object is an empty list in case there is no additional row
 	 */
 	Rcpp::RObject fetch_row();
+	Rcpp::RObject fetch_all();
 
 private:
-	row_based_result_set row_based_;
+	result_set& base_result_;
 	std::vector<type_code> types_;
 };
 
