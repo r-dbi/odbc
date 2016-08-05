@@ -2,10 +2,13 @@ CXX_STD = CXX11
 PKG_CPPFLAGS=-Icpp_odbc -std=c++11 -Iturbodbc
 PKG_LIBS+=-L./cpp_odbc -L./turbodbc -lturbodbc -lcpp_odbc -liodbc
 
-$(SHLIB): cpp_odbc/libcpp_odbc.a turbodbc/libturbodbc.a
+$(SHLIB): turbodbc/libturbodbc.a
 
 cpp_odbc/libcpp_odbc.a:
-	@(cd cpp_odbc && $(MAKE))
+	@(cd cpp_odbc && $(MAKE) CXX="$(CXX)")
+
+turbodbc/libturbodbc.a: cpp_odbc/libcpp_odbc.a
+	@(cd turbodbc && $(MAKE) CXX="$(CXX)")
 
 clean:
 	@(cd cpp_odbc && $(MAKE) clean)
