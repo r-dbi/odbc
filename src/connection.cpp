@@ -32,3 +32,11 @@ cursor_ptr query(connection_ptr p, std::string sql) {
 Rcpp::RObject fetch_row(cursor_ptr c) {
   return (*c)->get_result_set()->fetch_all();
 }
+
+// [[Rcpp::export]]
+void column_info(cursor_ptr c) {
+  auto columns = (*c)->get_result_set()->get_column_info();
+  for (auto info : columns) {
+    Rcpp::Rcout << info.name << ':' << (int) info.type << '\n';
+  }
+}

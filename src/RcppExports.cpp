@@ -51,6 +51,16 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// column_info
+void column_info(cursor_ptr c);
+RcppExport SEXP odbconnect_column_info(SEXP cSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    column_info(c);
+    return R_NilValue;
+END_RCPP
+}
 // statement_create
 statement_ptr statement_create(connection_ptr con, std::string sql);
 RcppExport SEXP odbconnect_statement_create(SEXP conSEXP, SEXP sqlSEXP) {

@@ -17,6 +17,10 @@ fetch_row <- function(c) {
     .Call('odbconnect_fetch_row', PACKAGE = 'odbconnect', c)
 }
 
+column_info <- function(c) {
+    invisible(.Call('odbconnect_column_info', PACKAGE = 'odbconnect', c))
+}
+
 statement_create <- function(con, sql) {
     .Call('odbconnect_statement_create', PACKAGE = 'odbconnect', con, sql)
 }

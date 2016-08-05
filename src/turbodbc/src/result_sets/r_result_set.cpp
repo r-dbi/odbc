@@ -48,14 +48,24 @@ namespace {
 			case type_code::boolean: {
 				LogicalVector out = LogicalVector(size);
 				for (std::size_t i = 0; i != size; ++i) {
-					out[i] = *reinterpret_cast<bool const*>(buffer.data_pointer());
+					out[i] = *reinterpret_cast<bool const*>(buffer[i].data_pointer);
 				}
 				return(out);
 															 }
-			case type_code::integer:
-				return IntegerVector(size);
-			case type_code::floating_point:
-				return NumericVector(size);
+			case type_code::integer: {
+				IntegerVector out = IntegerVector(size);
+				for (std::size_t i = 0; i != size; ++i) {
+					out[i] = *reinterpret_cast<long const*>(buffer[i].data_pointer);
+				}
+				return(out);
+															 }
+			case type_code::floating_point: {
+				NumericVector out = NumericVector(size);
+				for (std::size_t i = 0; i != size; ++i) {
+					out[i] = *reinterpret_cast<double const*>(buffer[i].data_pointer);
+				}
+				return(out);
+																			}
 			case type_code::string: {
 				CharacterVector out = CharacterVector(size);
 				for (std::size_t i = 0; i != size; ++i) {
@@ -153,7 +163,7 @@ RObject r_result_set::fetch_all()
 
   columns.attr("names") = names;
   columns.attr("class") = CharacterVector::create("tbl_df", "tbl", "data.frame");
-  columns.attr("row.names") = IntegerVector::create(NA_INTEGER, -(rows_in_batch + 1));
+  columns.attr("row.names") = IntegerVector::create(NA_INTEGER, -(rows_in_batch));
 	return columns;
 }
 } }
