@@ -29,7 +29,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // query
-Rcpp::RObject query(connection_ptr p, std::string sql);
+cursor_ptr query(connection_ptr p, std::string sql);
 RcppExport SEXP odbconnect_query(SEXP pSEXP, SEXP sqlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
@@ -37,6 +37,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< connection_ptr >::type p(pSEXP);
     Rcpp::traits::input_parameter< std::string >::type sql(sqlSEXP);
     __result = Rcpp::wrap(query(p, sql));
+    return __result;
+END_RCPP
+}
+// fetch_row
+Rcpp::RObject fetch_row(cursor_ptr c);
+RcppExport SEXP odbconnect_fetch_row(SEXP cSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    __result = Rcpp::wrap(fetch_row(c));
     return __result;
 END_RCPP
 }

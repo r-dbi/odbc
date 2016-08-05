@@ -13,13 +13,14 @@
 #include <cstring>
 #include <sstream>
 #include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 
 
 namespace turbodbc {
 
 namespace {
 
-	std::shared_ptr<parameter> make_parameter(cpp_odbc::statement const & statement, std::size_t one_based_index, std::size_t buffered_sets)
+	boost::shared_ptr<parameter> make_parameter(cpp_odbc::statement const & statement, std::size_t one_based_index, std::size_t buffered_sets)
 	{
 		auto description = make_description(statement.describe_parameter(one_based_index));
 		if ((description->get_type_code() == type_code::string) and (description->element_size() > 51)) {
@@ -27,7 +28,7 @@ namespace {
 			modified_description.size = 50;
 			description = make_description(modified_description);
 		}
-		return std::make_shared<parameter>(statement, one_based_index, buffered_sets, std::move(description));
+		return boost::make_shared<parameter>(statement, one_based_index, buffered_sets, std::move(description));
 	}
 
 }
@@ -60,14 +61,14 @@ void query::execute()
 	std::size_t const columns = statement_->number_of_columns();
 	if (columns != 0) {
 		if (use_double_buffering_) {
-			results_ = std::make_shared<result_sets::double_buffered_result_set>(statement_, rows_to_buffer_);
+			results_ = boost::make_shared<result_sets::double_buffered_result_set>(statement_, rows_to_buffer_);
 		} else {
-			results_ = std::make_shared<result_sets::bound_result_set>(statement_, rows_to_buffer_);
+			results_ = boost::make_shared<result_sets::bound_result_set>(statement_, rows_to_buffer_);
 		}
 	}
 }
 
-std::shared_ptr<turbodbc::result_sets::result_set> query::get_results()
+boost::shared_ptr<turbodbc::result_sets::result_set> query::get_results()
 {
 	return results_;
 }
@@ -154,7 +155,7 @@ void query::recover_unwritten_parameters_below(std::size_t parameter_index, std:
 void query::rebind_parameter_to_hold_value(std::size_t index, field const & value)
 {
 	auto description = make_description(value);
-	parameters_[index] = std::make_shared<parameter>(*statement_, index + 1, parameter_sets_to_buffer_, std::move(description));
+	parameters_[index] = boost::make_shared<parameter>(*statement_, index + 1, parameter_sets_to_buffer_, std::move(description));
 }
 
 void query::update_row_count()

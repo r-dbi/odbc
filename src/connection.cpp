@@ -4,8 +4,7 @@
 #include "odbconnect_types.h"
 #include <sqlext.h>
 #include <boost/shared_ptr.hpp>
-#include "turbodbc/cursor.h"
-#include "turbodbc/result_sets/r_result_set.h"
+#include <boost/make_shared.hpp>
 
 // [[Rcpp::export]]
 connection_ptr connect(std::string connection_string) {
@@ -20,11 +19,16 @@ std::string connect_info(connection_ptr p) {
 }
 
 // [[Rcpp::export]]
-Rcpp::RObject query(connection_ptr p, std::string sql) {
+cursor_ptr query(connection_ptr p, std::string sql) {
 
-  auto c = turbodbc::cursor((*p), 1000, 1000, false);
-  c.prepare(sql);
-  c.execute();
-  auto r = turbodbc::result_sets::r_result_set(*c.get_result_set());
-  return r.fetch_row();
+  auto c = boost::make_shared<turbodbc::cursor>(turbodbc::cursor((*p), 1000, 1000, false));
+  c->prepare(sql);
+  c->execute();
+
+  return cursor_ptr(new boost::shared_ptr<turbodbc::cursor const>(c));
+}
+
+// [[Rcpp::export]]
+Rcpp::RObject fetch_row(cursor_ptr c) {
+  return (*c)->get_result_set()->fetch_row();
 }

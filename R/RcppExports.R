@@ -13,6 +13,10 @@ query <- function(p, sql) {
     .Call('odbconnect_query', PACKAGE = 'odbconnect', p, sql)
 }
 
+fetch_row <- function(c) {
+    .Call('odbconnect_fetch_row', PACKAGE = 'odbconnect', c)
+}
+
 statement_create <- function(con, sql) {
     .Call('odbconnect_statement_create', PACKAGE = 'odbconnect', con, sql)
 }

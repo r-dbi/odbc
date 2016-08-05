@@ -20,7 +20,7 @@ public:
 		  bool use_double_buffering);
 
 	void execute();
-	std::shared_ptr<turbodbc::result_sets::result_set> get_results();
+	boost::shared_ptr<turbodbc::result_sets::result_set> get_results();
 	void add_parameter_set(std::vector<nullable_field> const & parameter_set);
 
 	long get_row_count();
@@ -40,8 +40,8 @@ private:
 	std::size_t rows_to_buffer_;
 	std::size_t parameter_sets_to_buffer_;
 	bool use_double_buffering_;
-	std::vector<std::shared_ptr<turbodbc::parameter>> parameters_;
-	std::shared_ptr<result_sets::result_set> results_;
+	std::vector<boost::shared_ptr<turbodbc::parameter>> parameters_;
+	boost::shared_ptr<result_sets::result_set> results_;
 	std::size_t current_parameter_set_;
 	std::size_t row_count_;
 	SQLULEN rows_processed_;
