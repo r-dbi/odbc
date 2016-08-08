@@ -3,5 +3,5 @@
 NULL
 
 print.externalptr <- function(x) {
-  cat(format_connection(x), "\n")
+  cat(format_connection())
 }

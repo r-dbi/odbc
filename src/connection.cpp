@@ -21,7 +21,7 @@ std::string connect_info(connection_ptr p) {
 // [[Rcpp::export]]
 cursor_ptr query(connection_ptr p, std::string sql) {
 
-  auto c = boost::make_shared<turbodbc::cursor>(turbodbc::cursor((*p), 1000, 1000, false));
+  auto c = boost::make_shared<turbodbc::cursor>(turbodbc::cursor((*p), 1024, 1024, false));
   c->prepare(sql);
   c->execute();
 

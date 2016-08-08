@@ -28,7 +28,6 @@ public:
 	 * @brief Retrieve a RObject which belongs to the next row.
 	 * @return Returned object is an empty list in case there is no additional row
 	 */
-	Rcpp::RObject fetch_row();
 	Rcpp::RObject fetch_all();
 
 private:
