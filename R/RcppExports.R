@@ -9,12 +9,12 @@ connect_info <- function(p) {
     .Call('odbconnect_connect_info', PACKAGE = 'odbconnect', p)
 }
 
-query <- function(p, sql) {
-    .Call('odbconnect_query', PACKAGE = 'odbconnect', p, sql)
+query <- function(p, sql, size = 4096L) {
+    .Call('odbconnect_query', PACKAGE = 'odbconnect', p, sql, size)
 }
 
-fetch_row <- function(c) {
-    .Call('odbconnect_fetch_row', PACKAGE = 'odbconnect', c)
+fetch <- function(c) {
+    .Call('odbconnect_fetch', PACKAGE = 'odbconnect', c)
 }
 
 column_info <- function(c) {

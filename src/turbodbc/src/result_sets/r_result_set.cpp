@@ -11,35 +11,28 @@ namespace turbodbc { namespace result_sets {
 
 namespace {
 
-	RObject make_date(SQL_DATE_STRUCT const & date)
+	double make_date(SQL_DATE_STRUCT const & date)
 	{
 		//return boost::python::object(boost::python::handle<>(PyDate_FromDate(date.year,
 																																				 //date.month,
 																																				 //date.day)));
 
-	return Rcpp::wrap(Rcpp::Date(date.year, date.month, date.day));
+	return Rcpp::Date(date.year, date.month, date.day).getDate();
 	}
 
-	RObject make_timestamp(SQL_TIMESTAMP_STRUCT const & ts)
+	double make_timestamp(SQL_TIMESTAMP_STRUCT const & ts)
 	{
-		// map SQL nanosecond precision to microsecond precision
-		//long const adjusted_fraction = ts.fraction / 1000;
-		//return boost::python::object(
-				//boost::python::handle<>(PyDateTime_FromDateAndTime(ts.year, ts.month, ts.day,
-																													 //ts.hour, ts.minute, ts.second, adjusted_fraction))
-			//);
 		tm t;
-		t.tm_year = ts.year;
+		t.tm_sec = t.tm_min = t.tm_hour = t.tm_isdst = 0;
+
+		t.tm_year = ts.year - 1900;
 		t.tm_mon = ts.month;
 		t.tm_mday = ts.day;
 		t.tm_hour = ts.hour;
 		t.tm_min = ts.minute;
 		t.tm_sec = ts.second;
 
-		NumericVector out(Rcpp::mktime00(t) + ts.fraction);
-		out.attr("class") = CharacterVector::create("POSIXct", "POSIXt");
-		out.attr("tzone") = "UTC";
-		return out;
+		return Rcpp::mktime00(t) + ts.fraction;
 	}
 
 	SEXP fill_column(SEXP out, turbodbc::type_code code, size_t size_so_far, size_t result_size, cpp_odbc::multi_value_buffer const & buffer)
@@ -64,9 +57,11 @@ namespace {
 																	break;
 																}
 				case type_code::date:
-																//return make_date(size);
+																REAL(out)[size_so_far + i] = make_date(*reinterpret_cast<SQL_DATE_STRUCT const *>(buffer[i].data_pointer));
+																break;
 				case type_code::timestamp:
-																//return make_timestamp(size);
+																REAL(out)[size_so_far + i] = make_timestamp(*reinterpret_cast<SQL_TIMESTAMP_STRUCT const *>(buffer[i].data_pointer));
+																break;
 				default:
 																throw std::logic_error("Encountered unsupported type code");
 			}
@@ -89,10 +84,17 @@ namespace {
 			case type_code::string: {
 																return CharacterVector(size);
 															}
-			case type_code::date:
-				//return make_date(size);
-			case type_code::timestamp:
-				//return make_timestamp(size);
+			case type_code::date: {
+															NumericVector out = NumericVector(size);
+															out.attr("class") = "date";
+															return out;
+														}
+			case type_code::timestamp: {
+															NumericVector out = NumericVector(size);
+															out.attr("class") = Rcpp::CharacterVector::create("POSIXct", "POSIXt");
+															out.attr("tzone") = "UTC";
+															return out;
+																 }
 			default:
 				throw std::logic_error("Encountered unsupported type code");
 		}
@@ -134,7 +136,6 @@ RObject r_result_set::fetch_all()
 	}
 
 	while (rows_in_batch != 0) {
-		Rcpp::Rcout << rows_in_batch << '\n';
 		for (std::size_t i = 0; i != n_columns; ++i) {
 			columns[i] = fill_column(columns[i], column_info[i].type, rows_so_far, rows_in_batch, buffers[i]);
 			names[i] = column_info[i].name;

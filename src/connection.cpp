@@ -19,9 +19,9 @@ std::string connect_info(connection_ptr p) {
 }
 
 // [[Rcpp::export]]
-cursor_ptr query(connection_ptr p, std::string sql) {
+cursor_ptr query(connection_ptr p, std::string sql, std::size_t size = 4096) {
 
-  auto c = boost::make_shared<turbodbc::cursor>(turbodbc::cursor((*p), 1024, 1024, false));
+  auto c = boost::make_shared<turbodbc::cursor>(turbodbc::cursor((*p), size, 1024, false));
   c->prepare(sql);
   c->execute();
 
@@ -29,7 +29,7 @@ cursor_ptr query(connection_ptr p, std::string sql) {
 }
 
 // [[Rcpp::export]]
-Rcpp::RObject fetch_row(cursor_ptr c) {
+Rcpp::RObject fetch(cursor_ptr c) {
   return (*c)->get_result_set()->fetch_all();
 }
 
@@ -37,6 +37,6 @@ Rcpp::RObject fetch_row(cursor_ptr c) {
 void column_info(cursor_ptr c) {
   auto columns = (*c)->get_result_set()->get_column_info();
   for (auto info : columns) {
-    Rcpp::Rcout << info.name << ':' << (int) info.type << '\n';
+    Rcpp::Rcout << info.name << ':' << (int) info.type << ':' << info.supports_null_values << '\n';
   }
 }
