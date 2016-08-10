@@ -31,6 +31,7 @@ public:
 
 	boost::shared_ptr<turbodbc::query> get_query();
 
+	boost::shared_ptr<result_sets::r_result_set> get_tables() const;
 	~cursor();
 
 private:

@@ -149,6 +149,11 @@ public:
 	 */
 	SQLRETURN more_results(SQLHSTMT statement_handle) const;
 
+	/**
+	 * @brief see unixodbc's SQLTables() function
+	 */
+	SQLRETURN get_tables(SQLHSTMT statement_handle, SQLCHAR * input_catalog_name, SQLSMALLINT input_catalog_name_length, SQLCHAR * input_schema_name, SQLSMALLINT input_schema_name_length, SQLCHAR * input_table_name, SQLSMALLINT input_table_name_length, SQLCHAR * input_table_type, SQLSMALLINT input_table_type_length) const;
+
 protected:
 
 	api();
@@ -183,6 +188,7 @@ private:
 	virtual SQLRETURN do_describe_column(SQLHSTMT statement_handle, SQLUSMALLINT column_number, SQLCHAR * column_name, SQLSMALLINT buffer_length, SQLSMALLINT * name_length, SQLSMALLINT * data_type, SQLULEN * column_size, SQLSMALLINT * decimal_digits, SQLSMALLINT * nullable) const = 0;
 	virtual SQLRETURN do_describe_parameter(SQLHSTMT statement_handle, SQLUSMALLINT parameter_number, SQLSMALLINT * data_type, SQLULEN * column_size, SQLSMALLINT * decimal_digits, SQLSMALLINT * nullable) const = 0;
 	virtual SQLRETURN do_more_results(SQLHSTMT statement_handle) const = 0;
+	virtual SQLRETURN do_get_tables(SQLHSTMT statement_handle, SQLCHAR * input_catalog_name, SQLSMALLINT input_catalog_name_length, SQLCHAR * input_schema_name, SQLSMALLINT input_schema_name_length, SQLCHAR * input_table_name, SQLSMALLINT input_table_name_length, SQLCHAR * input_table_type, SQLSMALLINT input_table_type_length) const = 0;
 };
 
 

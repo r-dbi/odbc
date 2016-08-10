@@ -72,5 +72,17 @@ boost::shared_ptr<turbodbc::query> cursor::get_query()
 	return query_;
 }
 
+boost::shared_ptr<result_sets::r_result_set> cursor::get_tables() const
+{
+	auto statement = connection_->make_statement();
+	statement->get_tables("", "", "", "");
+	auto q = boost::make_shared<query>(statement, rows_to_buffer_, parameter_sets_to_buffer_, use_async_io_);
+	auto raw_result_set = q->get_results();
+	boost::shared_ptr<result_sets::r_result_set> results;
+	if (raw_result_set) {
+		results = boost::make_shared<result_sets::r_result_set>(*raw_result_set);
+	}
+	return results;
+}
 
 }

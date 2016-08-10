@@ -73,6 +73,17 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// get_tables
+Rcpp::RObject get_tables(connection_ptr p);
+RcppExport SEXP odbconnect_get_tables(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< connection_ptr >::type p(pSEXP);
+    __result = Rcpp::wrap(get_tables(p));
+    return __result;
+END_RCPP
+}
 // statement_create
 statement_ptr statement_create(connection_ptr con, std::string sql);
 RcppExport SEXP odbconnect_statement_create(SEXP conSEXP, SEXP sqlSEXP) {

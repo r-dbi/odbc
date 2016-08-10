@@ -25,6 +25,10 @@ has_completed <- function(c) {
     .Call('odbconnect_has_completed', PACKAGE = 'odbconnect', c)
 }
 
+get_tables <- function(p) {
+    .Call('odbconnect_get_tables', PACKAGE = 'odbconnect', p)
+}
+
 statement_create <- function(con, sql) {
     .Call('odbconnect_statement_create', PACKAGE = 'odbconnect', con, sql)
 }

@@ -432,4 +432,16 @@ bool level1_connector::do_more_results(statement_handle const & handle) const
 	return return_code != SQL_NO_DATA;
 }
 
+void level1_connector::do_get_tables(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const
+{
+
+	cpp_odbc::level2::input_string_buffer input_catalog(catalog);
+	cpp_odbc::level2::input_string_buffer input_schema(schema);
+	cpp_odbc::level2::input_string_buffer input_table(table);
+	cpp_odbc::level2::input_string_buffer input_table_type(table_type);
+
+	SQLRETURN const return_code = level1_api_->get_tables(handle.handle, input_catalog.data_pointer(), catalog.size(), input_schema.data_pointer(), input_schema.size(), input_table.data_pointer(), input_table.size(), input_table_type.data_pointer(), input_table_type.size());
+	impl::throw_on_error(return_code, *this, handle);
+}
+
 } }

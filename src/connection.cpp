@@ -45,3 +45,9 @@ void column_info(cursor_ptr c) {
 bool has_completed(cursor_ptr c) {
   return true;
 }
+
+// [[Rcpp::export]]
+Rcpp::RObject get_tables(connection_ptr p) {
+  auto c = boost::make_shared<turbodbc::cursor>(turbodbc::cursor((*p), 1024, 0, false));
+  return c->get_tables()->fetch_all();
+}
