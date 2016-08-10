@@ -4,29 +4,27 @@
 #' @export
 #' @import DBI
 #' @import methods
-setClass("ODBCDriver", contains = "DBIDriver")
+setClass("ODBConnectDriver", contains = "DBIDriver")
 
 #' @export
 #' @rdname ODBC-class
-setMethod("dbUnloadDriver", "ODBCDriver", function(drv, ...) {
+setMethod("dbUnloadDriver", "ODBConnectDriver", function(drv, ...) {
   TRUE
 })
 
 #' @export
 #' @rdname ODBC-class
-setMethod("show", "ODBCDriver", function(object) {
+setMethod("show", "ODBConnectDriver", function(object) {
   cat("<ODBCDriver>\n")
 })
 
 #' @export
 #' @rdname ODBC-class
-setMethod("dbGetInfo", "ODBCDriver", function(dbObj, what = "", ...) {
-  cat("<ODBCDriver>\n")
+setMethod("dbGetInfo", "ODBConnectDriver", function(dbObj, what = "", ...) {
+  cat("<ODBConnectDriver>\n")
 })
 
 #' @export
 odbconnect <- function() {
-  new("ODBCDriver")
+  new("ODBConnectDriver")
 }
-
-#odbconnect()

@@ -25,10 +25,15 @@ public:
 	std::vector<column_info> get_column_info() const;
 
 	/**
-	 * @brief Retrieve a RObject which belongs to the next row.
-	 * @return Returned object is an empty list in case there is no additional row
+	 * @brief Retrieve a RObject which contains the next batch results.
+	 * @return Returned object is an empty list in case there are no results.
 	 */
-	Rcpp::RObject fetch_all();
+	Rcpp::RObject fetch_next_batch() const;
+	/**
+	 * @brief Retrieve a RObject with the full results.
+	 * @return Returned object is an empty list in case there are no results.
+	 */
+	Rcpp::RObject fetch_all() const;
 
 private:
 	result_set& base_result_;

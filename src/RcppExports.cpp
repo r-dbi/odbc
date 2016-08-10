@@ -62,6 +62,17 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// has_completed
+bool has_completed(cursor_ptr c);
+RcppExport SEXP odbconnect_has_completed(SEXP cSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    __result = Rcpp::wrap(has_completed(c));
+    return __result;
+END_RCPP
+}
 // statement_create
 statement_ptr statement_create(connection_ptr con, std::string sql);
 RcppExport SEXP odbconnect_statement_create(SEXP conSEXP, SEXP sqlSEXP) {

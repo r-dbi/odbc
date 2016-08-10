@@ -1,13 +1,11 @@
 #' ODBC connection class.
 #' 
 #' @export
+#' @include Connection.R
 #' @keywords internal
-setClass("ODBCConnection",
+setClass("ODBConnectConnection",
   contains = "DBIConnection",
   slots = list(
-    host = "character",
-    username = "character",
-    # and so on
     ptr = "externalptr"
   )
 )
@@ -15,13 +13,15 @@ setClass("ODBCConnection",
 #' @param drv An object created by \code{ODBC()}
 #' @rdname ODBC
 #' @export
+#' @include driver.R
 #' @examples
 #' \dontrun{
-#' db <- dbConnect(RODBC::ODBC())
+#' db <- dbConnect(odbconnect::odbconnect(), "DSN=database1")
 #' dbWriteTable(db, "mtcars", mtcars)
 #' dbGetQuery(db, "SELECT * FROM mtcars WHERE cyl == 4")
 #' }
-setMethod("dbConnect", "ODBCDriver", function(drv, ...) {
+setMethod("dbConnect", "ODBConnectDriver", function(drv, connection_string, ...) {
 
-  new("ODBCConnection", host = host, ...)
+  ptr <- connect(connection_string)
+  new("ODBConnectConnection", ptr = ptr)
 })

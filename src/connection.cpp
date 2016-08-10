@@ -40,3 +40,8 @@ void column_info(cursor_ptr c) {
     Rcpp::Rcout << info.name << ':' << (int) info.type << ':' << info.supports_null_values << '\n';
   }
 }
+
+// [[Rcpp::export]]
+bool has_completed(cursor_ptr c) {
+  return true;
+}
