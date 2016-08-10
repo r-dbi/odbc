@@ -1,5 +1,6 @@
 #include <turbodbc/cursor.h>
 #include <turbodbc/make_description.h>
+#include <turbodbc/result_sets/bound_result_set.h>
 
 #include <cpp_odbc/statement.h>
 #include <cpp_odbc/error.h>
@@ -76,12 +77,9 @@ boost::shared_ptr<result_sets::r_result_set> cursor::get_tables() const
 {
 	auto statement = connection_->make_statement();
 	statement->get_tables("", "", "", "");
-	auto q = boost::make_shared<query>(statement, rows_to_buffer_, parameter_sets_to_buffer_, use_async_io_);
-	auto raw_result_set = q->get_results();
-	boost::shared_ptr<result_sets::r_result_set> results;
-	if (raw_result_set) {
-		results = boost::make_shared<result_sets::r_result_set>(*raw_result_set);
-	}
+	auto rs = result_sets::bound_result_set(statement, rows_to_buffer_);
+
+	auto results = boost::make_shared<result_sets::r_result_set>(rs);
 	return results;
 }
 
