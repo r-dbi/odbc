@@ -17,6 +17,10 @@ knitr::opts_chunk$set(
 
 The goal of odbconnect is to provide a DBI-compliant interface to ODBC drivers.
 
+The current implementation uses a modified version of the cpp_odbc and turbodbc
+libraries from the [turbodbc](https://github.com/blue-yonder/turbodbc) python
+package.
+
 ## Benchmarks vs RODBC / RODBCDBI
 
 Simply reading a postgres table with the nytflights13 'flights' database.
