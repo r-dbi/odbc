@@ -11,7 +11,7 @@ setClass("ODBConnectConnection",
 )
 
 #' @param drv An object created by \code{ODBC()}
-#' @rdname ODBC
+#' @rdname ODBConnectDriver-class
 #' @export
 #' @include driver.R
 #' @examples

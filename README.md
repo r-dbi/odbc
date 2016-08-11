@@ -17,8 +17,9 @@ library(RODBCDBI)
 rodbc <- dbConnect(RODBCDBI::ODBC(), dsn="database1")
 rodbc_query <- dbSendQuery(rodbc, "SELECT * from flights")
 system.time(rodbc_result <- dbFetch(rodbc_query))
+#> Warning: closing unused RODBC handle 4
 #>    user  system elapsed 
-#>  10.753   2.096  13.001
+#>  11.138   2.076  13.395
 
 # Now using odbconnect
 library(odbconnect)
@@ -26,13 +27,26 @@ odbconnect <- dbConnect(odbconnect::odbconnect(), "DSN=database1")
 odbconnect_query <- dbSendQuery(odbconnect, "SELECT * from flights")
 system.time(odbconnect_result <- dbFetch(odbconnect_query))
 #>    user  system elapsed 
-#>   2.436   0.531   2.968
+#>   1.316   0.108   1.429
 
-# Using a larger buffer size can reduce the time further (default is 2^12)
-odbconnect_query <- dbSendQuery(odbconnect, "SELECT * from flights", buffer_size = 2^14)
-system.time(odbconnect_result <- dbFetch(odbconnect_query))
-#>    user  system elapsed 
-#>   1.600   0.164   1.766
+odbconnect_result
+#> # A tibble: 336,776 x 19
+#>     year month   day dep_time sched_dep_time dep_delay arr_time
+#>    <int> <int> <int>    <int>          <int>     <dbl>    <int>
+#> 1   2013     1     2      659            700        -1      959
+#> 2   2013     1     2      700            630        30      917
+#> 3   2013     1     2      700            700         0      851
+#> 4   2013     1     2      700            700         0     1017
+#> 5   2013     1     2      701            705        -4     1001
+#> 6   2013     1     2      702            700         2     1054
+#> 7   2013     1     2      704            655         9      947
+#> 8   2013     1     2      704            705        -1      908
+#> 9   2013     1     2      704            700         4     1142
+#> 10  2013     1     2      705            630        35     1209
+#> # ... with 336,766 more rows, and 12 more variables: sched_arr_time <int>,
+#> #   arr_delay <dbl>, carrier <chr>, flight <int>, tailnum <chr>,
+#> #   origin <chr>, dest <chr>, air_time <dbl>, distance <dbl>, hour <dbl>,
+#> #   minute <dbl>, time_hour <dttm>
 
 identical(dim(rodbc_result), dim(odbconnect_result))
 #> [1] TRUE
