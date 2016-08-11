@@ -5,6 +5,8 @@ odbconnect
 
 The goal of odbconnect is to provide a DBI-compliant interface to ODBC drivers.
 
+The current implementation uses a modified version of the cpp\_odbc and turbodbc libraries from the [turbodbc](https://github.com/blue-yonder/turbodbc) python package.
+
 Benchmarks vs RODBC / RODBCDBI
 ------------------------------
 
@@ -17,9 +19,9 @@ library(RODBCDBI)
 rodbc <- dbConnect(RODBCDBI::ODBC(), dsn="database1")
 rodbc_query <- dbSendQuery(rodbc, "SELECT * from flights")
 system.time(rodbc_result <- dbFetch(rodbc_query))
-#> Warning: closing unused RODBC handle 4
+#> Warning: closing unused RODBC handle 2
 #>    user  system elapsed 
-#>  11.138   2.076  13.395
+#>  11.190   2.126  13.500
 
 # Now using odbconnect
 library(odbconnect)
@@ -27,7 +29,7 @@ odbconnect <- dbConnect(odbconnect::odbconnect(), "DSN=database1")
 odbconnect_query <- dbSendQuery(odbconnect, "SELECT * from flights")
 system.time(odbconnect_result <- dbFetch(odbconnect_query))
 #>    user  system elapsed 
-#>   1.316   0.108   1.429
+#>   1.261   0.030   1.304
 
 odbconnect_result
 #> # A tibble: 336,776 x 19

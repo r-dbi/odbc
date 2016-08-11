@@ -19,7 +19,7 @@ std::string connect_info(connection_ptr p) {
 }
 
 // [[Rcpp::export]]
-cursor_ptr query(connection_ptr p, std::string sql, std::size_t size = 4096) {
+cursor_ptr query(connection_ptr p, std::string sql, std::size_t size = 1024) {
 
   auto c = boost::make_shared<turbodbc::cursor>(turbodbc::cursor((*p), size, 1024, false));
   c->prepare(sql);
