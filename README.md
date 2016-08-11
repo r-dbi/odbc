@@ -19,9 +19,8 @@ library(RODBCDBI)
 rodbc <- dbConnect(RODBCDBI::ODBC(), dsn="database1")
 rodbc_query <- dbSendQuery(rodbc, "SELECT * from flights")
 system.time(rodbc_result <- dbFetch(rodbc_query))
-#> Warning: closing unused RODBC handle 2
 #>    user  system elapsed 
-#>  11.190   2.126  13.500
+#>  11.390   2.175  13.730
 
 # Now using odbconnect
 library(odbconnect)
@@ -29,8 +28,9 @@ odbconnect <- dbConnect(odbconnect::odbconnect(), "DSN=database1")
 odbconnect_query <- dbSendQuery(odbconnect, "SELECT * from flights")
 system.time(odbconnect_result <- dbFetch(odbconnect_query))
 #>    user  system elapsed 
-#>   1.261   0.030   1.304
+#>   1.177   0.030   1.206
 
+library(tibble)
 odbconnect_result
 #> # A tibble: 336,776 x 19
 #>     year month   day dep_time sched_dep_time dep_delay arr_time

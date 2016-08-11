@@ -38,6 +38,7 @@ odbconnect <- dbConnect(odbconnect::odbconnect(), "DSN=database1")
 odbconnect_query <- dbSendQuery(odbconnect, "SELECT * from flights")
 system.time(odbconnect_result <- dbFetch(odbconnect_query))
 
+library(tibble)
 odbconnect_result
 
 identical(dim(rodbc_result), dim(odbconnect_result))
