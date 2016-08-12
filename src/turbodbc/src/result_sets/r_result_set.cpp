@@ -176,7 +176,7 @@ RObject r_result_set::fetch_all() const
 	}
 	List result = convert_to_r(columns, column_info);
 	result.attr("names") = names;
-	result.attr("class") = CharacterVector::create("tbl_df", "tbl", "data.frame");
+	result.attr("class") = CharacterVector::create("data.frame");
 	result.attr("row.names") = IntegerVector::create(NA_INTEGER, -(total_rows));
 	return result;
 }

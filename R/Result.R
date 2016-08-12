@@ -34,7 +34,12 @@ setMethod(
 setMethod(
   "dbClearResult", "OdbconnectResult",
   function(res, ...) {
-    testthat::skip("Not yet implemented: dbClearResult(Result)")
+    if (!dbIsValid(res)) {
+      warning("Result already cleared")
+    } else {
+      result_release(res@ptr)
+    }
+    TRUE
   })
 
 #' @rdname DBI
@@ -43,7 +48,7 @@ setMethod(
 setMethod(
   "dbFetch", "OdbconnectResult",
   function(res, n = -1, ...) {
-    testthat::skip("Not yet implemented: dbFetch(Result)")
+    # TODO: need to implement n argument
     fetch(res@ptr)
   })
 
@@ -72,7 +77,7 @@ setMethod(
 setMethod(
   "dbIsValid", "OdbconnectResult",
   function(dbObj) {
-    testthat::skip("Not yet implemented: dbIsValid(Result)")
+    result_active(dbObj@ptr)
   })
 
 #' @rdname DBI

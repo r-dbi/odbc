@@ -12,5 +12,6 @@ DBItest::test_all(c(
   "bind.*named_colon",
   "bind_.*named_dollar",
   "rows_affected", # this won't work until writeTable is working
+  "fetch_premature_close", # these won't work until fetch() can handle the n argument.
   NULL
 ))
