@@ -1,5 +1,7 @@
 language: r
 cache: packages
+env:
+  - MAKEFLAGS = -j2
 
 addons:
   apt:
