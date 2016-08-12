@@ -1,2 +1,16 @@
 language: r
 cache: packages
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-4.9
+      - g++-4.9
+
+before_install: |
+  mkdir ~/.R
+  cat <<EOF > ~/.R/Makevars
+  CXX1X=g++-4.9
+  CXX1XSTD=-std=c++11
