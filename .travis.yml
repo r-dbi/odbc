@@ -20,7 +20,7 @@ before_install: |
   CXX1X=g++-4.9
   CXX1XSTD=-std=c++11
 
-before_script: |
-  sudo -u postgres psql -U postgres -c 'CREATE DATABASE test_db;'
-  sudo -u postgres psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'password';"
-  export ODBCSYSINI=${PWD}/travis/odbc
+before_script:
+  - sudo -u postgres psql -U postgres -c 'CREATE DATABASE test_db;'
+  - sudo -u postgres psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'password';"
+  - export ODBCSYSINI=${PWD}/travis/odbc
