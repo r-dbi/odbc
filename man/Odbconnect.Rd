@@ -12,7 +12,7 @@ Driver for an ODBC database.
 \examples{
 \dontrun{
 #' library(DBI)
-ROdbconnect::Odbconnect()
+Odbconnect::Odbconnect()
 }
 }
 

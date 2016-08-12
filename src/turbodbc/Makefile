@@ -13,4 +13,4 @@ $(LIBRARY): $(LIBRARY_OBJECTS)
 	$(CXX) -c $(CXXFLAGS) -o $@ $< -I.
 
 clean:
-	rm -f **/*o $(LIBRARY)
+	rm $(LIBRARY) $(LIBRARY_OBJECTS)

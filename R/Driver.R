@@ -16,7 +16,7 @@ NULL
 #' @examples
 #' \dontrun{
 #' #' library(DBI)
-#' ROdbconnect::Odbconnect()
+#' Odbconnect::Odbconnect()
 #' }
 odbconnect <- function() {
   new("OdbconnectDriver")
@@ -38,11 +38,14 @@ setMethod(
 
 #' @rdname DBI
 #' @inheritParams DBI::dbConnect
+#' @param dsn The ODBC dsn to connect to.
+#' @param ... Additional ODBC named arguments to use in the connection, these
+#' will be joined together to form the connection string.
 #' @export
 setMethod(
   "dbConnect", "OdbconnectDriver",
-  function(drv, connection_string, ...) {
-    OdbconnectConnection(connection_string)
+  function(drv, dsn = NULL, ...) {
+    OdbconnectConnection(dsn = dsn, ...)
   }
 )
 

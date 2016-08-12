@@ -1,7 +1,14 @@
 #' @include Driver.R
 NULL
 
-OdbconnectConnection <- function(connection_string) {
+OdbconnectConnection <- function(dsn = NULL, ...) {
+  args <- list(...)
+  stopifnot(all(has_names(args)))
+
+  if (!is.null(dsn)) {
+    args[["dsn"]] <- dsn
+  }
+  connection_string <- paste(collapse = ";", sep = "=", names(args), args)
   ptr <- connect(connection_string)
   new("OdbconnectConnection", ptr = ptr)
 }

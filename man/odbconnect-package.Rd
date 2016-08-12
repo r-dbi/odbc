@@ -2,8 +2,6 @@
 % Please edit documentation in R/odbconnect.R
 \docType{package}
 \name{odbconnect-package}
-\alias{odbconnect}
-\alias{odbconnect-package}
 \title{Connect to ODBC databases (using the DBI interface)}
 \description{
 Use ODBC drivers to connect to databases.

@@ -3,4 +3,6 @@
 ^README\.Rmd$
 ^README-.*\.png$
 ^\.travis\.yml$
-^travis/
+^travis$
+^src/.*o$
+^src/.*a$

@@ -45,7 +45,7 @@
 \usage{
 \S4method{show}{OdbconnectDriver}(object)
 
-\S4method{dbConnect}{OdbconnectDriver}(drv, connection_string, ...)
+\S4method{dbConnect}{OdbconnectDriver}(drv, dsn = NULL, ...)
 
 \S4method{dbDataType}{OdbconnectDriver,ANY}(dbObj, obj, ...)
 
@@ -121,9 +121,10 @@
 or an existing \code{\linkS4class{DBIConnection}}
 object (in order to clone an existing connection).}
 
-\item{...}{authorization arguments needed by the DBMS instance; these
-typically include \code{user}, \code{password}, \code{dbname}, \code{host},
-\code{port}, etc.  For details see the appropriate \code{DBIDriver}.}
+\item{dsn}{The ODBC dsn to connect to.}
+
+\item{...}{Additional ODBC named arguments to use in the connection, these
+will be joined together to form the connection string.}
 
 \item{dbObj}{A object inheriting from \code{\linkS4class{DBIDriver}}
 or \code{\linkS4class{DBIConnection}}}

@@ -29,4 +29,5 @@ Collate:
     'Connection.R'
     'RcppExports.R'
     'Result.R'
+    'utils.R'
     'zzz.R'
