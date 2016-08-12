@@ -1,7 +1,4 @@
-#' @useDynLib odbconnect
+#' @details TBD.
 #' @importFrom Rcpp sourceCpp
-NULL
-
-print.externalptr <- function(x) {
-  cat(format_connection())
-}
+#' @useDynLib odbconnect
+"_PACKAGE"
