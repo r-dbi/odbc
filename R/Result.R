@@ -44,7 +44,7 @@ setMethod(
   "dbFetch", "OdbconnectResult",
   function(res, n = -1, ...) {
     testthat::skip("Not yet implemented: dbFetch(Result)")
-    #fetch(res@ptr)
+    fetch(res@ptr)
   })
 
 #' @rdname DBI

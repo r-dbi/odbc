@@ -55,7 +55,6 @@ setMethod(
 setMethod(
   "dbSendQuery", c("OdbconnectConnection", "character"),
   function(conn, statement, ...) {
-    testthat::skip("Not yet implemented: dbSendQuery(Result)")
     OdbconnectResult(connection = conn, statement = statement)
   })
 
