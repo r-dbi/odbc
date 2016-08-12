@@ -1,4 +1,4 @@
-DBItest::make_context(odbconnect(), list(), tweaks = DBItest::tweaks(), name = "odbconnect")
+DBItest::make_context(odbconnect(), list("DSN=database1"), tweaks = DBItest::tweaks(), name = "odbconnect")
 DBItest::test_all(c(
   "package_name",
   ".*stress.*", # TODO: Enable

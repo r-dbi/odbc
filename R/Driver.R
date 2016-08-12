@@ -1,34 +1,3 @@
-#' Driver for an ODBC database.
-#'
-#' @keywords internal
-#' @export
-#' @import DBI
-#' @import methods
-setClass("ODBConnectDriver", contains = "DBIDriver")
-
-#' @export
-#' @rdname ODBConnectDriver-class
-setMethod("dbUnloadDriver", "ODBConnectDriver", function(drv, ...) {
-  TRUE
-})
-
-#' @export
-#' @rdname ODBConnectDriver-class
-setMethod("show", "ODBConnectDriver", function(object) {
-  cat("<ODBCDriver>\n")
-})
-
-#' @export
-#' @rdname ODBConnectDriver-class
-setMethod("dbGetInfo", "ODBConnectDriver", function(dbObj, what = "", ...) {
-  cat("<ODBConnectDriver>\n")
-})
-
-#' @export
-odbconnect <- function() {
-  new("ODBConnectDriver")
-}
-
 #' @include odbconnect.R
 NULL
 
@@ -40,7 +9,7 @@ NULL
 
 #' Odbconnect driver
 #'
-#' TBD.
+#' Driver for an ODBC database.
 #'
 #' @export
 #' @import methods DBI
@@ -49,7 +18,7 @@ NULL
 #' #' library(DBI)
 #' ROdbconnect::Odbconnect()
 #' }
-Odbconnect <- function() {
+odbconnect <- function() {
   new("OdbconnectDriver")
 }
 
@@ -72,8 +41,8 @@ setMethod(
 #' @export
 setMethod(
   "dbConnect", "OdbconnectDriver",
-  function(drv, ...) {
-    OdbconnectConnection()
+  function(drv, connection_string, ...) {
+    OdbconnectConnection(connection_string)
   }
 )
 
@@ -95,7 +64,6 @@ setMethod(
 setMethod(
   "dbDataType", c("OdbconnectDriver", "list"),
   function(dbObj, obj, ...) {
-    # rstats-db/DBI#70
     testthat::skip("Not yet implemented: dbDataType(Driver, list)")
   })
 

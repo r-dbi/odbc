@@ -3,7 +3,7 @@ NULL
 
 OdbconnectConnection <- function(connection_string) {
   ptr <- connect(connection_string)
-  new("ODBConnectConnection", ptr = ptr)
+  new("OdbconnectConnection", ptr = ptr)
 }
 
 #' @rdname DBI
@@ -190,4 +190,4 @@ setMethod(
   "dbRollback", "OdbconnectConnection",
   function(conn) {
     testthat::skip("Not yet implemented: dbRollback(Connection)")
-  }))
+  })
