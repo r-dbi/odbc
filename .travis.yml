@@ -6,6 +6,7 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
+      - libiodbc2
       - iodbc
       - libiodbc2-dev
       - gcc-4.9
