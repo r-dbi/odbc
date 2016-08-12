@@ -14,6 +14,8 @@ knitr::opts_chunk$set(
 
 
 # odbconnect
+[![Travis-CI Build Status](https://travis-ci.org/hadley/odbconnect.svg?branch=master)](https://travis-ci.org/hadley/odbconnect)
+[![Coverage Status](https://img.shields.io/codecov/c/github/hadley/odbconnect/master.svg)](https://codecov.io/github/hadley/odbconnect?branch=master)
 
 The goal of odbconnect is to provide a DBI-compliant interface to ODBC drivers.
 
@@ -28,18 +30,18 @@ Simply reading a postgres table with the nytflights13 'flights' database.
 # First using RODBC / RODBCDBI
 library(DBI)
 library(RODBCDBI)
-rodbc <- dbConnect(RODBCDBI::ODBC(), dsn="database1")
+rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "PostgreSQL")
 rodbc_query <- dbSendQuery(rodbc, "SELECT * from flights")
 system.time(rodbc_result <- dbFetch(rodbc_query))
 
 # Now using odbconnect
 library(odbconnect)
-odbconnect <- dbConnect(odbconnect::odbconnect(), "DSN=database1")
+odbconnect <- dbConnect(odbconnect::odbconnect(), dsn = "PostgreSQL")
 odbconnect_query <- dbSendQuery(odbconnect, "SELECT * from flights")
 system.time(odbconnect_result <- dbFetch(odbconnect_query))
 
 library(tibble)
-odbconnect_result
+as_tibble(odbconnect_result)
 
 identical(dim(rodbc_result), dim(odbconnect_result))
 ```
