@@ -11,7 +11,7 @@ addons:
       - gcc-4.9
       - g++-4.9
       - unixodbc unixodbc-dev
-      - postgresql odbc-postgresql
+      - odbc-postgresql
 
 before_install: |
   mkdir ~/.R
