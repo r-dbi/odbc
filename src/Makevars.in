@@ -1,6 +1,6 @@
 CXX_STD = CXX11
-PKG_CXXFLAGS=-Icpp_odbc -I../cpp_odbc -Iturbodbc -std=c++11
-PKG_LIBS=-L./cpp_odbc -L./turbodbc -lturbodbc -lcpp_odbc -liodbc
+PKG_CXXFLAGS=-Icpp_odbc -I../cpp_odbc -Iturbodbc -std=c++11 @PKG_CXXFLAGS@
+PKG_LIBS=-L./cpp_odbc -L./turbodbc -lturbodbc -lcpp_odbc @PKG_LIBS@
 
 $(SHLIB): turbodbc
 
