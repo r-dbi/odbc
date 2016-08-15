@@ -24,4 +24,4 @@ before_script:
   - sudo -u postgres psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'password';"
 
 after_success:
-  - R -e 'covr::codecov()'
+  - R -e 'options(covr.gcov = "/usr/bin/gcov-4.9");covr::codecov()'
