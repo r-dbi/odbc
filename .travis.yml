@@ -22,3 +22,6 @@ before_install: |
 before_script:
   - sudo -u postgres psql -U postgres -c 'CREATE DATABASE test_db;'
   - sudo -u postgres psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'password';"
+
+after_success:
+  - R -e 'covr::codecov()'
