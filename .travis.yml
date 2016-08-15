@@ -1,7 +1,7 @@
 language: r
 cache: packages
 env:
-  - MAKEFLAGS = -j2 ODBCINI=${TRAVIS_BUILD_DIR}/travis/odbc/odbc.ini ODBCINSTINI=${TRAVIS_BUILD_DIR}/travis/odbc/odbcinst.ini INCLUDE_DIR=/usr/include LIB_DIR=/usr/lib/x86_64-linux-gnu/
+  - MAKEFLAGS = -j2 ODBCSYSINI=${TRAVIS_BUILD_DIR}/travis/odbc INCLUDE_DIR=/usr/include LIB_DIR=/usr/lib/x86_64-linux-gnu/
 
 addons:
   apt:
