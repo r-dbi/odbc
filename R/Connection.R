@@ -39,7 +39,7 @@ setMethod(
 setMethod(
   "dbIsValid", "OdbconnectConnection",
   function(dbObj) {
-    testthat::skip("Not yet implemented: dbIsValid(Connection)")
+    connection_valid(dbObj@ptr)
   })
 
 #' @rdname DBI
@@ -52,7 +52,7 @@ setMethod(
       warning("Connection already closed.", call. = FALSE)
     }
 
-    # TODO: Free resources
+    connection_release(conn@ptr)
     TRUE
   })
 

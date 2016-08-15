@@ -29,6 +29,14 @@ get_tables <- function(p) {
     .Call('odbconnect_get_tables', PACKAGE = 'odbconnect', p)
 }
 
+connection_release <- function(p) {
+    invisible(.Call('odbconnect_connection_release', PACKAGE = 'odbconnect', p))
+}
+
+connection_valid <- function(p) {
+    .Call('odbconnect_connection_valid', PACKAGE = 'odbconnect', p)
+}
+
 result_release <- function(c) {
     invisible(.Call('odbconnect_result_release', PACKAGE = 'odbconnect', c))
 }

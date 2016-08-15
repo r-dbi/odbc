@@ -13,5 +13,8 @@ DBItest::test_all(c(
   "bind_.*named_dollar",
   "rows_affected", # this won't work until writeTable is working
   "fetch_premature_close", # these won't work until fetch() can handle the n argument.
+  "stale_result_warning", # Warnings for more than one result, not sure why we
+  # want this actually, there is no technical reason to have only one active result per
+  # connection.
   NULL
 ))

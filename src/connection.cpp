@@ -51,3 +51,13 @@ Rcpp::RObject get_tables(connection_ptr p) {
   auto c = boost::make_shared<turbodbc::cursor>(turbodbc::cursor((*p), 1024, 0, false));
   return c->get_tables()->fetch_all();
 }
+
+// [[Rcpp::export]]
+void connection_release(connection_ptr p) {
+  return p.release();
+}
+
+// [[Rcpp::export]]
+bool connection_valid(connection_ptr p) {
+  return p.get() != NULL;
+}
