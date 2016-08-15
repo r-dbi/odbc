@@ -13,6 +13,7 @@ addons:
       - libiodbc2-dev
       - gcc-4.9
       - g++-4.9
+      - odbcinst1debian2
       - odbc-postgresql
 
 before_install: |
