@@ -2,6 +2,8 @@ language: r
 cache: packages
 env:
   - MAKEFLAGS = -j2
+  - ODBCINI=${TRAVIS_BUILD_DIR}/travis/odbc/odbc.ini
+  - ODBCINSTINI=${TRAVIS_BUILD_DIR}/travis/odbc/odbcinst.ini
 
 addons:
   apt:
@@ -23,4 +25,3 @@ before_install: |
 before_script:
   - sudo -u postgres psql -U postgres -c 'CREATE DATABASE test_db;'
   - sudo -u postgres psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'password';"
-  - export ODBCSYSINI=${PWD}/travis/odbc
