@@ -9,22 +9,6 @@ connect_info <- function(p) {
     .Call('odbconnect_connect_info', PACKAGE = 'odbconnect', p)
 }
 
-query <- function(p, sql, size = 1024L) {
-    .Call('odbconnect_query', PACKAGE = 'odbconnect', p, sql, size)
-}
-
-fetch <- function(c) {
-    .Call('odbconnect_fetch', PACKAGE = 'odbconnect', c)
-}
-
-column_info <- function(c) {
-    invisible(.Call('odbconnect_column_info', PACKAGE = 'odbconnect', c))
-}
-
-has_completed <- function(c) {
-    .Call('odbconnect_has_completed', PACKAGE = 'odbconnect', c)
-}
-
 get_tables <- function(p) {
     .Call('odbconnect_get_tables', PACKAGE = 'odbconnect', p)
 }
@@ -43,6 +27,18 @@ result_release <- function(c) {
 
 result_active <- function(c) {
     .Call('odbconnect_result_active', PACKAGE = 'odbconnect', c)
+}
+
+query <- function(p, sql, size = 1024L) {
+    .Call('odbconnect_query', PACKAGE = 'odbconnect', p, sql, size)
+}
+
+fetch <- function(c, n = -1L) {
+    .Call('odbconnect_fetch', PACKAGE = 'odbconnect', c, n)
+}
+
+column_info <- function(c) {
+    invisible(.Call('odbconnect_column_info', PACKAGE = 'odbconnect', c))
 }
 
 statement_create <- function(con, sql) {

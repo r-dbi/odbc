@@ -33,31 +33,31 @@ namespace {
 		return Rcpp::mktime00(t) + ts.fraction;
 	}
 
-void append_buffer(boost::any& out, turbodbc::type_code code, size_t result_size, cpp_odbc::multi_value_buffer const & buffer)
+void append_buffer(boost::any& out, turbodbc::type_code code, size_t result_size, cpp_odbc::multi_value_buffer const & buffer, size_t start = 0)
 {
 		for (std::size_t i = 0; i < result_size; ++i) {
 			switch (code) {
 				case type_code::boolean: {
-					boost::any_cast<std::deque<bool>>(&out)->push_back(*reinterpret_cast<bool const*>(buffer[i].data_pointer));
+					boost::any_cast<std::deque<bool>>(&out)->push_back(*reinterpret_cast<bool const*>(buffer[i + start].data_pointer));
 					break;
 				}
 				case type_code::integer: {
-					boost::any_cast<std::deque<long>>(&out)->push_back(*reinterpret_cast<long const*>(buffer[i].data_pointer));
+					boost::any_cast<std::deque<long>>(&out)->push_back(*reinterpret_cast<long const*>(buffer[i + start].data_pointer));
 					break;
 				}
 				case type_code::floating_point: {
-					boost::any_cast<std::deque<double>>(&out)->push_back(*reinterpret_cast<double const*>(buffer[i].data_pointer));
+					boost::any_cast<std::deque<double>>(&out)->push_back(*reinterpret_cast<double const*>(buffer[i + start].data_pointer));
 					break;
 				}
 				case type_code::string: {
-					boost::any_cast<std::deque<std::string>>(&out)->push_back(reinterpret_cast<char const*>(buffer[i].data_pointer));
+					boost::any_cast<std::deque<std::string>>(&out)->push_back(reinterpret_cast<char const*>(buffer[i + start].data_pointer));
 					break;
 				}
 				case type_code::date:
-					boost::any_cast<std::deque<double>>(&out)->push_back(make_date(*reinterpret_cast<SQL_DATE_STRUCT const *>(buffer[i].data_pointer)));
+					boost::any_cast<std::deque<double>>(&out)->push_back(make_date(*reinterpret_cast<SQL_DATE_STRUCT const *>(buffer[i + start].data_pointer)));
 					break;
 				case type_code::timestamp:
-					boost::any_cast<std::deque<double>>(&out)->push_back(make_timestamp(*reinterpret_cast<SQL_TIMESTAMP_STRUCT const *>(buffer[i].data_pointer)));
+					boost::any_cast<std::deque<double>>(&out)->push_back(make_timestamp(*reinterpret_cast<SQL_TIMESTAMP_STRUCT const *>(buffer[i + start].data_pointer)));
 					break;
 				default:
 					throw std::logic_error("Encountered unsupported type code");
@@ -135,7 +135,10 @@ List convert_to_r(std::deque<boost::any> const & out, std::vector<column_info> i
 }
 
 r_result_set::r_result_set(result_set & base) :
-	base_result_(base)
+	base_result_(base),
+	has_completed_(false),
+	rows_in_batch_(0),
+	row_offset_(0)
 {
 	for (auto const & info : base_result_.get_column_info()) {
 		types_.emplace_back(info.type);
@@ -149,6 +152,10 @@ std::vector<column_info> r_result_set::get_column_info() const
 
 RObject r_result_set::fetch_all() const
 {
+
+	if (has_completed_) {
+	return List();
+	}
 
 	auto const column_info = base_result_.get_column_info();
 	auto const n_columns = column_info.size();
@@ -178,7 +185,72 @@ RObject r_result_set::fetch_all() const
 	result.attr("names") = names;
 	result.attr("class") = CharacterVector::create("data.frame");
 	result.attr("row.names") = IntegerVector::create(NA_INTEGER, -(total_rows));
+
+	has_completed_ = true;
 	return result;
 }
 
+RObject r_result_set::fetch(size_t n) const
+{
+	if (has_completed_) {
+	return List();
+	}
+	auto const column_info = base_result_.get_column_info();
+	auto const n_columns = column_info.size();
+
+	std::deque<boost::any> columns(n_columns);
+
+	if (row_offset_ == 0) {
+		buffers_ = base_result_.get_buffers();
+		rows_in_batch_ = base_result_.fetch_next_batch();
+		row_offset_ = 0;
+	}
+
+	size_t rows = 0;
+	size_t batch_size = n - rows < (rows_in_batch_ - row_offset_) ? n - rows : (rows_in_batch_ - row_offset_);
+
+	CharacterVector names(n_columns);
+	for (std::size_t i = 0; i != n_columns; ++i) {
+		names[i] = column_info[i].name;
+		columns[i] = declare_column(column_info[i].type, batch_size);
+	}
+
+	while (rows_in_batch_ != 0) {
+		for (std::size_t i = 0; i != n_columns; ++i) {
+			append_buffer(columns[i], column_info[i].type, batch_size, buffers_[i], row_offset_);
+			names[i] = column_info[i].name;
+		}
+		rows += batch_size;
+
+		// break if we have read enough rows to reach n and we have not reached the
+		// end of the batch
+		if (rows >= n && (row_offset_ + batch_size != rows_in_batch_)) {
+			row_offset_ = batch_size;
+			break;
+		}
+
+		rows_in_batch_ = base_result_.fetch_next_batch();
+		row_offset_ = 0;
+		batch_size = n - rows < (rows_in_batch_ - row_offset_) ? n - rows : (rows_in_batch_ - row_offset_);
+	}
+
+	if (rows_in_batch_ == 0) {
+		has_completed_ = true;
+	}
+	Rcout << "batch: " << rows_in_batch_ << " rows fetched: " << row_offset_ << " rows result: " << rows << '\n';
+
+	List result = convert_to_r(columns, column_info);
+	result.attr("names") = names;
+	result.attr("class") = CharacterVector::create("data.frame");
+	result.attr("row.names") = IntegerVector::create(NA_INTEGER, -(rows));
+
+	return result;
+}
+
+bool r_result_set::has_completed() const
+{
+	return has_completed_;
+}
+
 } }
+
