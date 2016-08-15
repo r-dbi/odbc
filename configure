@@ -11,6 +11,7 @@ PKG_DEB_NAME="unixodbc-dev"
 PKG_RPM_NAME="unixodbc-devel"
 PKG_CSW_NAME="unixodbc_dev"
 PKG_TEST_HEADER="<sql.h>"
+PKG_LIBS=-lodbc
 
 # Use odbc-config, iodbc-config if available
 if [ $(command -v odbc-config) ]; then
