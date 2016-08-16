@@ -81,6 +81,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// result_completed
+bool result_completed(cursor_ptr c);
+RcppExport SEXP odbconnect_result_completed(SEXP cSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    rcpp_result_gen = Rcpp::wrap(result_completed(c));
+    return rcpp_result_gen;
+END_RCPP
+}
 // query
 cursor_ptr query(connection_ptr p, std::string sql, std::size_t size);
 RcppExport SEXP odbconnect_query(SEXP pSEXP, SEXP sqlSEXP, SEXP sizeSEXP) {
@@ -94,15 +105,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// fetch
-RObject fetch(cursor_ptr c, int n);
-RcppExport SEXP odbconnect_fetch(SEXP cSEXP, SEXP nSEXP) {
+// result_fetch
+List result_fetch(cursor_ptr c, int n);
+RcppExport SEXP odbconnect_result_fetch(SEXP cSEXP, SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(fetch(c, n));
+    rcpp_result_gen = Rcpp::wrap(result_fetch(c, n));
     return rcpp_result_gen;
 END_RCPP
 }

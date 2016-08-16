@@ -48,8 +48,7 @@ setMethod(
 setMethod(
   "dbFetch", "OdbconnectResult",
   function(res, n = -1, ...) {
-    # TODO: need to implement n argument
-    fetch(res@ptr)
+    result_fetch(res@ptr, n, ...)
   })
 
 #' @rdname DBI
@@ -58,7 +57,7 @@ setMethod(
 setMethod(
   "dbHasCompleted", "OdbconnectResult",
   function(res, ...) {
-    testthat::skip("Not yet implemented: dbHasCompleted(Result)")
+    result_completed(res@ptr)
   })
 
 #' @rdname DBI

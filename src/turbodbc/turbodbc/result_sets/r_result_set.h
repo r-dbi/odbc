@@ -25,16 +25,16 @@ public:
 	std::vector<column_info> get_column_info() const;
 
 	/**
-	 * @brief Retrieve a RObject which contains the next batch results.
+	 * @brief Retrieve a List which contains the next batch results.
 	 * @return Returned object is an empty list in case there are no results.
 	 */
-	Rcpp::RObject fetch_next_batch() const;
+	Rcpp::List fetch_next_batch() const;
 	/**
-	 * @brief Retrieve a RObject with the full results.
+	 * @brief Retrieve a List with the full results.
 	 * @return Returned object is an empty list in case there are no results.
 	 */
-	Rcpp::RObject fetch_all() const;
-	Rcpp::RObject fetch(size_t n) const;
+	Rcpp::List fetch_all() const;
+	Rcpp::List fetch(size_t n) const;
 
 	bool has_completed() const;
 

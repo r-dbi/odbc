@@ -150,7 +150,7 @@ std::vector<column_info> r_result_set::get_column_info() const
 	return base_result_.get_column_info();
 }
 
-RObject r_result_set::fetch_all() const
+List r_result_set::fetch_all() const
 {
 
 	if (has_completed_) {
@@ -190,7 +190,7 @@ RObject r_result_set::fetch_all() const
 	return result;
 }
 
-RObject r_result_set::fetch(size_t n) const
+List r_result_set::fetch(size_t n) const
 {
 	if (has_completed_) {
 	return List();
@@ -225,7 +225,7 @@ RObject r_result_set::fetch(size_t n) const
 		// break if we have read enough rows to reach n and we have not reached the
 		// end of the batch
 		if (rows >= n && (row_offset_ + batch_size != rows_in_batch_)) {
-			row_offset_ = batch_size;
+			row_offset_ += batch_size;
 			break;
 		}
 
@@ -237,7 +237,7 @@ RObject r_result_set::fetch(size_t n) const
 	if (rows_in_batch_ == 0) {
 		has_completed_ = true;
 	}
-	Rcout << "batch: " << rows_in_batch_ << " rows fetched: " << row_offset_ << " rows result: " << rows << '\n';
+	Rcout << "batch: " << rows_in_batch_ << " offset: " << row_offset_ << " rows result: " << rows << '\n';
 
 	List result = convert_to_r(columns, column_info);
 	result.attr("names") = names;

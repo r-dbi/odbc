@@ -29,12 +29,16 @@ result_active <- function(c) {
     .Call('odbconnect_result_active', PACKAGE = 'odbconnect', c)
 }
 
+result_completed <- function(c) {
+    .Call('odbconnect_result_completed', PACKAGE = 'odbconnect', c)
+}
+
 query <- function(p, sql, size = 1024L) {
     .Call('odbconnect_query', PACKAGE = 'odbconnect', p, sql, size)
 }
 
-fetch <- function(c, n = -1L) {
-    .Call('odbconnect_fetch', PACKAGE = 'odbconnect', c, n)
+result_fetch <- function(c, n = -1L) {
+    .Call('odbconnect_result_fetch', PACKAGE = 'odbconnect', c, n)
 }
 
 column_info <- function(c) {

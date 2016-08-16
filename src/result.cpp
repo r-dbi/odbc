@@ -15,6 +15,11 @@ bool result_active(cursor_ptr c) {
 }
 
 // [[Rcpp::export]]
+bool result_completed(cursor_ptr c) {
+  return (*c)->get_result_set()->has_completed();
+}
+
+// [[Rcpp::export]]
 cursor_ptr query(connection_ptr p, std::string sql, std::size_t size = 1024) {
 
   auto c = boost::make_shared<turbodbc::cursor>(turbodbc::cursor((*p), size, 1024, false));
@@ -25,8 +30,8 @@ cursor_ptr query(connection_ptr p, std::string sql, std::size_t size = 1024) {
 }
 
 // [[Rcpp::export]]
-RObject fetch(cursor_ptr c, int n = -1) {
-  RObject out;
+List result_fetch(cursor_ptr c, int n = -1) {
+  List out;
   if (n == -1) {
     out = (*c)->get_result_set()->fetch_all();
   } else {
