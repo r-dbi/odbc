@@ -38,27 +38,53 @@ void append_buffer(boost::any& out, turbodbc::type_code code, size_t result_size
 		for (std::size_t i = 0; i < result_size; ++i) {
 			switch (code) {
 				case type_code::boolean: {
-					boost::any_cast<std::deque<bool>>(&out)->push_back(*reinterpret_cast<bool const*>(buffer[i + start].data_pointer));
+					if (buffer[i + start].indicator == SQL_NULL_DATA) {
+						boost::any_cast<std::deque<int>>(&out)->push_back(NA_LOGICAL);
+					} else {
+						boost::any_cast<std::deque<int>>(&out)->push_back(*reinterpret_cast<int const*>(buffer[i + start].data_pointer));
+					}
 					break;
 				}
 				case type_code::integer: {
-					boost::any_cast<std::deque<long>>(&out)->push_back(*reinterpret_cast<long const*>(buffer[i + start].data_pointer));
+					if (buffer[i + start].indicator == SQL_NULL_DATA) {
+						boost::any_cast<std::deque<long>>(&out)->push_back(NA_INTEGER);
+					} else {
+						boost::any_cast<std::deque<long>>(&out)->push_back(*reinterpret_cast<long const*>(buffer[i + start].data_pointer));
+					}
 					break;
 				}
 				case type_code::floating_point: {
-					boost::any_cast<std::deque<double>>(&out)->push_back(*reinterpret_cast<double const*>(buffer[i + start].data_pointer));
+					if (buffer[i + start].indicator == SQL_NULL_DATA) {
+						boost::any_cast<std::deque<double>>(&out)->push_back(NA_REAL);
+					} else {
+						boost::any_cast<std::deque<double>>(&out)->push_back(*reinterpret_cast<double const*>(buffer[i + start].data_pointer));
+					}
 					break;
 				}
 				case type_code::string: {
-					boost::any_cast<std::deque<std::string>>(&out)->push_back(reinterpret_cast<char const*>(buffer[i + start].data_pointer));
+					if (buffer[i + start].indicator == SQL_NULL_DATA) {
+						boost::any_cast<std::deque<String>>(&out)->push_back(NA_STRING);
+					} else {
+						boost::any_cast<std::deque<String>>(&out)->push_back(reinterpret_cast<char const*>(buffer[i + start].data_pointer));
+					}
 					break;
 				}
-				case type_code::date:
-					boost::any_cast<std::deque<double>>(&out)->push_back(make_date(*reinterpret_cast<SQL_DATE_STRUCT const *>(buffer[i + start].data_pointer)));
+				case type_code::date: {
+					if (buffer[i + start].indicator == SQL_NULL_DATA) {
+						boost::any_cast<std::deque<double>>(&out)->push_back(NA_REAL);
+					} else {
+						boost::any_cast<std::deque<double>>(&out)->push_back(make_date(*reinterpret_cast<SQL_DATE_STRUCT const *>(buffer[i + start].data_pointer)));
+					}
 					break;
-				case type_code::timestamp:
-					boost::any_cast<std::deque<double>>(&out)->push_back(make_timestamp(*reinterpret_cast<SQL_TIMESTAMP_STRUCT const *>(buffer[i + start].data_pointer)));
+				}
+				case type_code::timestamp: {
+					if (buffer[i + start].indicator == SQL_NULL_DATA) {
+						boost::any_cast<std::deque<double>>(&out)->push_back(NA_REAL);
+					} else {
+						boost::any_cast<std::deque<double>>(&out)->push_back(make_timestamp(*reinterpret_cast<SQL_TIMESTAMP_STRUCT const *>(buffer[i + start].data_pointer)));
+					}
 					break;
+				}
 				default:
 					throw std::logic_error("Encountered unsupported type code");
 			}
@@ -72,7 +98,7 @@ List convert_to_r(std::deque<boost::any> const & out, std::vector<column_info> i
 	for (std::size_t i = 0; i != info.size(); ++i) {
 			switch (info[i].type) {
 				case type_code::boolean: {
-					result[i] = LogicalVector(boost::any_cast<std::deque<bool>>(&out[i])->begin(), boost::any_cast<std::deque<bool>>(&out[i])->end());
+					result[i] = LogicalVector(boost::any_cast<std::deque<int>>(&out[i])->begin(), boost::any_cast<std::deque<int>>(&out[i])->end());
 					break;
 				}
 				case type_code::integer: {
@@ -84,7 +110,7 @@ List convert_to_r(std::deque<boost::any> const & out, std::vector<column_info> i
 					break;
 				}
 				case type_code::string: {
-					result[i] = CharacterVector(boost::any_cast<std::deque<std::string>>(&out[i])->begin(), boost::any_cast<std::deque<std::string>>(&out[i])->end());
+					result[i] = CharacterVector(boost::any_cast<std::deque<String>>(&out[i])->begin(), boost::any_cast<std::deque<String>>(&out[i])->end());
 					break;
 				}
 				case type_code::date: {
@@ -111,7 +137,7 @@ List convert_to_r(std::deque<boost::any> const & out, std::vector<column_info> i
 	{
 		switch (code) {
 			case type_code::boolean: {
-				return std::deque<bool>();
+				return std::deque<int>();
 			}
 			case type_code::integer: {
 				return std::deque<long>();
@@ -120,7 +146,7 @@ List convert_to_r(std::deque<boost::any> const & out, std::vector<column_info> i
 				return std::deque<double>();
 			}
 			case type_code::string: {
-				return std::deque<std::string>();
+				return std::deque<String>();
 			}
 			case type_code::date: {
 				return std::deque<double>();
@@ -237,7 +263,6 @@ List r_result_set::fetch(size_t n) const
 	if (rows_in_batch_ == 0) {
 		has_completed_ = true;
 	}
-	Rcout << "batch: " << rows_in_batch_ << " offset: " << row_offset_ << " rows result: " << rows << '\n';
 
 	List result = convert_to_r(columns, column_info);
 	result.attr("names") = names;

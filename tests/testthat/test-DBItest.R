@@ -6,8 +6,12 @@ DBItest::test_all(c(
   "command_query",
   "fetch_no_return_value", # dbClearResult not supported yet
   #"data_type_connection", # dbDataType not supported yet
+  "data_logical_int.*", # logicals are R logicals, not ints
+  "data_numeric.*", # Numeric types with high precision are converted to strings
+  "data_64_bit.*", # Numeric types with high precision are converted to strings
   "data_timestamp_.*",
   "data_time.*", # time data not supported currently
+  "data_date.*", # date data has class in entire row rather than for each item.
   "bind_raw.*",
   "bind.*named_colon",
   "bind_.*named_dollar",
