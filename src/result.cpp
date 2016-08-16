@@ -11,7 +11,7 @@ void result_release(cursor_ptr c) {
 
 // [[Rcpp::export]]
 bool result_active(cursor_ptr c) {
-  return c.get() != NULL && !(*c)->get_result_set()->has_completed();
+  return c.get() != NULL && !(*c)->is_active();
 }
 
 // [[Rcpp::export]]

@@ -41,11 +41,3 @@ column_info <- function(c) {
     invisible(.Call('odbconnect_column_info', PACKAGE = 'odbconnect', c))
 }
 
-statement_create <- function(con, sql) {
-    .Call('odbconnect_statement_create', PACKAGE = 'odbconnect', con, sql)
-}
-
-row_count <- function(rs) {
-    .Call('odbconnect_row_count', PACKAGE = 'odbconnect', rs)
-}
-

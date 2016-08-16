@@ -16,7 +16,7 @@
 
 namespace turbodbc {
 
-cursor::cursor(boost::shared_ptr<cpp_odbc::connection const> connection,
+cursor::cursor(boost::shared_ptr<turbodbc::connection const> connection,
                std::size_t rows_to_buffer,
                std::size_t parameter_sets_to_buffer,
                bool use_async_io) :
@@ -34,7 +34,7 @@ void cursor::prepare(std::string const & sql)
 {
 	results_.reset();
 	query_.reset();
-	auto statement = connection_->make_statement();
+	auto statement = connection_->get_connection()->make_statement();
 	statement->prepare(sql);
 	query_ = boost::make_shared<query>(statement, rows_to_buffer_, parameter_sets_to_buffer_, use_async_io_);
 }
@@ -63,7 +63,7 @@ long cursor::get_row_count()
 	return query_->get_row_count();
 }
 
-boost::shared_ptr<cpp_odbc::connection const> cursor::get_connection() const
+boost::shared_ptr<turbodbc::connection const> cursor::get_connection() const
 {
 	return connection_;
 }
@@ -75,12 +75,17 @@ boost::shared_ptr<turbodbc::query> cursor::get_query()
 
 boost::shared_ptr<result_sets::r_result_set> cursor::get_tables() const
 {
-	auto statement = connection_->make_statement();
+	auto statement = connection_->get_connection()->make_statement();
 	statement->get_tables("", "", "", "");
 	auto rs = result_sets::bound_result_set(statement, rows_to_buffer_);
 
 	auto results = boost::make_shared<result_sets::r_result_set>(rs);
 	return results;
+}
+
+bool cursor::is_active() const
+{
+	return connection_->is_current_result(this);
 }
 
 }

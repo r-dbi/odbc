@@ -116,26 +116,3 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// statement_create
-statement_ptr statement_create(connection_ptr con, std::string sql);
-RcppExport SEXP odbconnect_statement_create(SEXP conSEXP, SEXP sqlSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< connection_ptr >::type con(conSEXP);
-    Rcpp::traits::input_parameter< std::string >::type sql(sqlSEXP);
-    rcpp_result_gen = Rcpp::wrap(statement_create(con, sql));
-    return rcpp_result_gen;
-END_RCPP
-}
-// row_count
-int row_count(statement_ptr rs);
-RcppExport SEXP odbconnect_row_count(SEXP rsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< statement_ptr >::type rs(rsSEXP);
-    rcpp_result_gen = Rcpp::wrap(row_count(rs));
-    return rcpp_result_gen;
-END_RCPP
-}
