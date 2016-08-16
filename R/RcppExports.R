@@ -45,3 +45,7 @@ column_info <- function(c) {
     invisible(.Call('odbconnect_column_info', PACKAGE = 'odbconnect', c))
 }
 
+result_bind <- function(c, params) {
+    invisible(.Call('odbconnect_result_bind', PACKAGE = 'odbconnect', c, params))
+}
+

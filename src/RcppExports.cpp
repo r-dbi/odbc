@@ -127,3 +127,14 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// result_bind
+void result_bind(cursor_ptr c, List params);
+RcppExport SEXP odbconnect_result_bind(SEXP cSEXP, SEXP paramsSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    Rcpp::traits::input_parameter< List >::type params(paramsSEXP);
+    result_bind(c, params);
+    return R_NilValue;
+END_RCPP
+}

@@ -53,6 +53,23 @@ boost::shared_ptr<result_sets::r_result_set> cursor::get_result_set() const
 	return results_;
 }
 
+// Need to convert the R type to standard types
+void cursor::add_parameter_set(Rcpp::RObject const & parameter_set) {
+	std::vector<nullable_field> out;
+	out.reserve(Rf_length(parameter_set));
+	for (int i = 0; i < Rf_length(parameter_set); ++i) {
+		switch(TYPEOF(parameter_set)) {
+			case LGLSXP:
+				if (ISNA(LOGICAL(parameter_set)[i])) {
+					out.push_back({});
+				} else{
+					out.push_back(turbodbc::field(static_cast<bool>(LOGICAL(parameter_set)[i])));
+				}
+		}
+	}
+	add_parameter_set(out);
+}
+
 void cursor::add_parameter_set(std::vector<nullable_field> const & parameter_set)
 {
 	query_->add_parameter_set(parameter_set);
