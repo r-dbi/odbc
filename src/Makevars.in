@@ -12,4 +12,6 @@ turbodbc: cpp_odbc
 	@(cd turbodbc && $(MAKE) CXX="$(CXX)" CXXFLAGS="$(ALL_CPPFLAGS) $(ALL_CXXFLAGS)")
 
 clean:
+	rm -rf *o
 	@(cd cpp_odbc && $(MAKE) clean)
+	@(cd turbodbc && $(MAKE) clean)
