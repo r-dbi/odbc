@@ -121,6 +121,6 @@ setMethod(
 setMethod(
   "dbBind", "OdbconnectResult",
   function(res, params, ...) {
-    testthat::skip("Not yet implemented: dbBind(Result)")
     result_bind(res@ptr, params)
+    TRUE
   })

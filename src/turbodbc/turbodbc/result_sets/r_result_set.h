@@ -39,7 +39,7 @@ public:
 	bool has_completed() const;
 
 private:
-	result_set& base_result_;
+	result_set & base_result_;
 	std::vector<type_code> types_;
 	mutable bool has_completed_;
 	mutable size_t rows_in_batch_;

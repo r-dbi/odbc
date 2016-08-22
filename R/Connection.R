@@ -161,6 +161,9 @@ setMethod(
   "dbRemoveTable", c("OdbconnectConnection", "character"),
   function(conn, name) {
     testthat::skip("Not yet implemented: dbRemoveTable(Connection, character)")
+    name <- dbQuoteIdentifier(conn, name)
+    dbGetQuery(conn, paste("DROP TABLE ", name))
+    invisible(TRUE)
   })
 
 #' @rdname DBI
@@ -178,7 +181,8 @@ setMethod(
 setMethod(
   "dbBegin", "OdbconnectConnection",
   function(conn) {
-    testthat::skip("Not yet implemented: dbBegin(Connection)")
+    dbGetQuery(conn, "BEGIN")
+    TRUE
   })
 
 #' @rdname DBI
@@ -187,7 +191,8 @@ setMethod(
 setMethod(
   "dbCommit", "OdbconnectConnection",
   function(conn) {
-    testthat::skip("Not yet implemented: dbCommit(Connection)")
+    dbGetQuery(conn, "COMMIT")
+    TRUE
   })
 
 #' @rdname DBI

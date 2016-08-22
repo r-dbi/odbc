@@ -54,17 +54,47 @@ boost::shared_ptr<result_sets::r_result_set> cursor::get_result_set() const
 }
 
 // Need to convert the R type to standard types
-void cursor::add_parameter_set(Rcpp::RObject const & parameter_set) {
+void cursor::add_parameter_set(Rcpp::List const & parameter_set) {
 	std::vector<nullable_field> out;
 	out.reserve(Rf_length(parameter_set));
 	for (int i = 0; i < Rf_length(parameter_set); ++i) {
-		switch(TYPEOF(parameter_set)) {
-			case LGLSXP:
-				if (ISNA(LOGICAL(parameter_set)[i])) {
+		Rcpp::RObject x = parameter_set[i];
+		switch(TYPEOF(x)) {
+			case LGLSXP: {
+				if (ISNA(LOGICAL(x)[1])) {
 					out.push_back({});
 				} else{
-					out.push_back(turbodbc::field(static_cast<bool>(LOGICAL(parameter_set)[i])));
+					out.push_back(turbodbc::field(Rcpp::as<bool>(x)));
 				}
+				break;
+			}
+			case INTSXP: {
+				if (ISNA(INTEGER(x)[1])) {
+					out.push_back({});
+				} else{
+					out.push_back(turbodbc::field(Rcpp::as<long>(x)));
+				}
+				break;
+			}
+			case REALSXP: {
+				if (ISNA(REAL(x)[1])) {
+					out.push_back({});
+				} else{
+					out.push_back(turbodbc::field(Rcpp::as<double>(x)));
+				}
+				break;
+			}
+			case STRSXP: {
+				if (STRING_ELT(x, 1) == NA_STRING) {
+					out.push_back({});
+				} else{
+					out.push_back(turbodbc::field(Rcpp::as<std::string>(x)));
+				}
+				break;
+			}
+			default:
+				Rcpp::stop("Don't know how to handle vector of type %s.",
+						Rf_type2char(TYPEOF(parameter_set)));
 		}
 	}
 	add_parameter_set(out);

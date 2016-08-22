@@ -16,7 +16,8 @@ bool result_active(cursor_ptr c) {
 
 // [[Rcpp::export]]
 bool result_completed(cursor_ptr c) {
-  return (*c)->get_result_set()->has_completed();
+  auto rs = (*c)->get_result_set();
+  return !rs || rs->has_completed();
 }
 
 // [[Rcpp::export]]
@@ -32,10 +33,15 @@ cursor_ptr query(connection_ptr p, std::string sql, std::size_t size = 1024) {
 // [[Rcpp::export]]
 List result_fetch(cursor_ptr c, int n = -1) {
   List out;
+  auto rs = (*c)->get_result_set();
+  if (!rs) {
+    out.attr("class") = "data.frame";
+    return out;
+  }
   if (n == -1) {
-    out = (*c)->get_result_set()->fetch_all();
+    out = rs->fetch_all();
   } else {
-    out = (*c)->get_result_set()->fetch(n);
+    out = rs->fetch(n);
   }
   if (as<List>(out).length() == 0) {
     stop("Result set is inactive");
@@ -53,8 +59,6 @@ void column_info(cursor_ptr c) {
 
 // [[Rcpp::export]]
 void result_bind(cursor_ptr c, List params) {
-  for (int i = 0;i < params.size();++i) {
-    RObject p = as<RObject>(params[i]);
-    (*c)->add_parameter_set(p);
-  }
+  (*c)->add_parameter_set(params);
+  (*c)->execute();
 }

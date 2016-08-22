@@ -23,7 +23,7 @@ public:
 
 	void prepare(std::string const & sql);
 	void execute();
-	void add_parameter_set(Rcpp::RObject const & parameter_set);
+	void add_parameter_set(Rcpp::List const & parameter_set);
 	void add_parameter_set(std::vector<nullable_field> const & parameter_set);
 
 	long get_row_count();

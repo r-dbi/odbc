@@ -178,12 +178,12 @@ std::vector<column_info> r_result_set::get_column_info() const
 List r_result_set::fetch_all() const
 {
 
-	if (has_completed_) {
-	return List();
-	}
-
 	auto const column_info = base_result_.get_column_info();
 	auto const n_columns = column_info.size();
+
+	if (has_completed_) {
+		return List();
+	}
 
 	std::vector<boost::any> columns(n_columns);
 	auto const buffers = base_result_.get_buffers();
