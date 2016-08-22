@@ -67,43 +67,7 @@ void cursor::add_parameter_set(Rcpp::DataFrame const & df) {
 		for (int j = 0; j < df.size(); ++j) {
 			Rcpp::Rcout << "row: " << i << " col: " << j << '\n';
 			Rcpp::RObject col = df[j];
-			switch(types[j]) {
-				case logical_t: {
-					if (ISNA(LOGICAL(col)[i])) {
-						out.push_back({});
-					} else{
-						out.push_back(turbodbc::field(static_cast<bool>(LOGICAL(col)[i])));
-					}
-					break;
-				}
-				case integer_t: {
-					if (ISNA(INTEGER(col)[i])) {
-						out.push_back({});
-					} else{
-						out.push_back(turbodbc::field(static_cast<long>(INTEGER(col)[i])));
-					}
-					break;
-				}
-				case double_t: {
-					if (ISNA(REAL(col)[i])) {
-						out.push_back({});
-					} else{
-						out.push_back(turbodbc::field(REAL(col)[i]));
-					}
-					break;
-				}
-				case string_t: {
-					if (STRING_ELT(col, i) == NA_STRING) {
-						out.push_back({});
-					} else{
-						out.push_back(turbodbc::field(CHAR(STRING_ELT(col, i))));
-					}
-					break;
-				}
-				default:
-					Rcpp::stop("Don't know how to handle vector of type %s.",
-							Rf_type2char(TYPEOF(col)));
-			}
+			out.push_back(nullable_field_from_R_object(col, types[j], i));
 		}
 		add_parameter_set(out);
 	}
@@ -115,43 +79,7 @@ void cursor::add_parameter_set(Rcpp::List const & parameter_set) {
 	out.reserve(Rf_length(parameter_set));
 	for (int i = 0; i < Rf_length(parameter_set); ++i) {
 		Rcpp::RObject x = parameter_set[i];
-		switch(TYPEOF(x)) {
-			case LGLSXP: {
-				if (ISNA(LOGICAL(x)[1])) {
-					out.push_back({});
-				} else{
-					out.push_back(turbodbc::field(Rcpp::as<bool>(x)));
-				}
-				break;
-			}
-			case INTSXP: {
-				if (ISNA(INTEGER(x)[1])) {
-					out.push_back({});
-				} else{
-					out.push_back(turbodbc::field(Rcpp::as<long>(x)));
-				}
-				break;
-			}
-			case REALSXP: {
-				if (ISNA(REAL(x)[1])) {
-					out.push_back({});
-				} else{
-					out.push_back(turbodbc::field(Rcpp::as<double>(x)));
-				}
-				break;
-			}
-			case STRSXP: {
-				if (STRING_ELT(x, 1) == NA_STRING) {
-					out.push_back({});
-				} else{
-					out.push_back(turbodbc::field(Rcpp::as<std::string>(x)));
-				}
-				break;
-			}
-			default:
-				Rcpp::stop("Don't know how to handle vector of type %s.",
-						Rf_type2char(TYPEOF(parameter_set)));
-		}
+		out.push_back(nullable_field_from_R_object(x));
 	}
 	add_parameter_set(out);
 }

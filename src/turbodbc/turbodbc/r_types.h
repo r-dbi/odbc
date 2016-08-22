@@ -1,5 +1,6 @@
 #pragma once
 #include <Rcpp.h>
+#include <turbodbc/field.h>
 
 namespace turbodbc {
   typedef enum {
@@ -38,5 +39,53 @@ namespace turbodbc {
 
     // We should never actually get here
     return string_t;
+  }
+
+  nullable_field nullable_field_from_R_object(Rcpp::RObject const & x, r_type type, size_t i) {
+    switch(type) {
+      case logical_t: {
+        if (ISNA(LOGICAL(x)[i])) {
+          return {};
+
+        } else{
+          return field(static_cast<bool>(LOGICAL(x)[i]));
+
+        }
+      }
+      case integer_t: {
+        if (ISNA(INTEGER(x)[i])) {
+          return {};
+
+        } else{
+          return field(static_cast<long>(INTEGER(x)[i]));
+
+        }
+      }
+      case double_t: {
+        if (ISNA(REAL(x)[i])) {
+          return {};
+
+        } else{
+          return field(REAL(x)[i]);
+
+        }
+      }
+      case string_t: {
+        if (STRING_ELT(x, i) == NA_STRING) {
+          return {};
+        } else{
+          return field(CHAR(STRING_ELT(x, i)));
+        }
+
+      }
+      default:
+        Rcpp::stop("Don't know how to handle vector of type %s.",
+            Rf_type2char(TYPEOF(x)));
+    }
+    return {};
+  }
+
+  nullable_field nullable_field_from_R_object(Rcpp::RObject x, size_t i = 0) {
+    return nullable_field_from_R_object(x, get_r_type(x), i);
   }
 }
