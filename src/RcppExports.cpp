@@ -138,3 +138,14 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// result_insert_dataframe
+void result_insert_dataframe(cursor_ptr c, DataFrame df);
+RcppExport SEXP odbconnect_result_insert_dataframe(SEXP cSEXP, SEXP dfSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type df(dfSEXP);
+    result_insert_dataframe(c, df);
+    return R_NilValue;
+END_RCPP
+}

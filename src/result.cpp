@@ -62,3 +62,9 @@ void result_bind(cursor_ptr c, List params) {
   (*c)->add_parameter_set(params);
   (*c)->execute();
 }
+
+// [[Rcpp::export]]
+void result_insert_dataframe(cursor_ptr c, DataFrame df) {
+  (*c)->add_parameter_set(df);
+  (*c)->execute();
+}

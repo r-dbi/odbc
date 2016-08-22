@@ -1,6 +1,7 @@
 #include <turbodbc/cursor.h>
 #include <turbodbc/make_description.h>
 #include <turbodbc/result_sets/bound_result_set.h>
+#include <turbodbc/r_types.h>
 
 #include <cpp_odbc/statement.h>
 #include <cpp_odbc/error.h>
@@ -51,6 +52,61 @@ void cursor::execute()
 boost::shared_ptr<result_sets::r_result_set> cursor::get_result_set() const
 {
 	return results_;
+}
+
+void cursor::add_parameter_set(Rcpp::DataFrame const & df) {
+  // determine types for each column
+	std::vector<r_type> types;
+	for (int j = 0; j < df.size(); ++j) {
+		types.push_back(get_r_type(df[j]));
+	}
+
+	for (int i = 0; i < df.nrows(); ++i) {
+		std::vector<nullable_field> out;
+		out.reserve(Rf_length(df[0]));
+		for (int j = 0; j < df.size(); ++j) {
+			Rcpp::Rcout << "row: " << i << " col: " << j << '\n';
+			Rcpp::RObject col = df[j];
+			switch(types[j]) {
+				case logical_t: {
+					if (ISNA(LOGICAL(col)[i])) {
+						out.push_back({});
+					} else{
+						out.push_back(turbodbc::field(static_cast<bool>(LOGICAL(col)[i])));
+					}
+					break;
+				}
+				case integer_t: {
+					if (ISNA(INTEGER(col)[i])) {
+						out.push_back({});
+					} else{
+						out.push_back(turbodbc::field(static_cast<long>(INTEGER(col)[i])));
+					}
+					break;
+				}
+				case double_t: {
+					if (ISNA(REAL(col)[i])) {
+						out.push_back({});
+					} else{
+						out.push_back(turbodbc::field(REAL(col)[i]));
+					}
+					break;
+				}
+				case string_t: {
+					if (STRING_ELT(col, i) == NA_STRING) {
+						out.push_back({});
+					} else{
+						out.push_back(turbodbc::field(CHAR(STRING_ELT(col, i))));
+					}
+					break;
+				}
+				default:
+					Rcpp::stop("Don't know how to handle vector of type %s.",
+							Rf_type2char(TYPEOF(col)));
+			}
+		}
+		add_parameter_set(out);
+	}
 }
 
 // Need to convert the R type to standard types
