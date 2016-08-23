@@ -55,10 +55,7 @@ setMethod(
 setMethod(
   "dbDataType", "OdbconnectDriver",
   function(dbObj, obj, ...) {
-    # Optional: Can remove this if all data types conform to SQL-92
-    tryCatch(
-      getMethod("dbDataType", "DBIObject", asNamespace("DBI"))(dbObj, obj, ...),
-      error = function(e) testthat::skip("Not yet implemented: dbDataType(Driver)"))
+    get_data_type(obj)
   })
 
 #' @rdname DBI

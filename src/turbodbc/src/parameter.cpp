@@ -1,6 +1,7 @@
 #include <turbodbc/parameter.h>
 
 #include <cstring>
+#include <Rcpp.h>
 
 namespace turbodbc {
 
@@ -27,6 +28,7 @@ void parameter::copy_to_first_row(std::size_t row_index)
 {
 	auto destination = buffer_[0];
 	auto const & source = buffer_[row_index];
+	//std::copy(source.data_pointer, source.data_pointer + buffer_.capacity_per_element(), destination.data_pointer);
 	std::memcpy(destination.data_pointer, source.data_pointer, buffer_.capacity_per_element());
 	destination.indicator = source.indicator;
 }

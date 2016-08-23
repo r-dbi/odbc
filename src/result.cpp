@@ -11,7 +11,7 @@ void result_release(cursor_ptr c) {
 
 // [[Rcpp::export]]
 bool result_active(cursor_ptr c) {
-  return c.get() != NULL && !(*c)->is_active();
+  return c.get() != NULL && (*c)->is_active();
 }
 
 // [[Rcpp::export]]
@@ -64,7 +64,20 @@ void result_bind(cursor_ptr c, List params) {
 }
 
 // [[Rcpp::export]]
+void result_execute(cursor_ptr c) {
+  (*c)->execute();
+}
+
+// [[Rcpp::export]]
 void result_insert_dataframe(cursor_ptr c, DataFrame df) {
   (*c)->add_parameter_set(df);
   (*c)->execute();
+  c.release();
+}
+
+// [[Rcpp::export]]
+void column_types(DataFrame df) {
+  for (int j = 0;j < df.size(); ++j) {
+    Rcpp::Rcout << "type: " << Rf_type2char(TYPEOF(df[j])) << std::endl;
+  }
 }

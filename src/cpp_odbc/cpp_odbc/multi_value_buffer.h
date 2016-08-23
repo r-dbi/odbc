@@ -42,6 +42,11 @@ public:
 	multi_value_buffer(std::size_t element_size, std::size_t number_of_elements);
 
 	/**
+	 * @brief Move constructor. Will leave the old buffer empty.
+	 */
+	multi_value_buffer(multi_value_buffer &&);
+
+	/**
 	 * @brief Retrieve the number of bytes reserved for each element
 	 * @return The number of bytes
 	 */

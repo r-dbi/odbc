@@ -12,9 +12,6 @@
 \alias{dbColumnInfo,OdbconnectResult-method}
 \alias{dbCommit,OdbconnectConnection-method}
 \alias{dbConnect,OdbconnectDriver-method}
-\alias{dbDataType,OdbconnectConnection,ANY-method}
-\alias{dbDataType,OdbconnectDriver,ANY-method}
-\alias{dbDataType,OdbconnectDriver,list-method}
 \alias{dbDisconnect,OdbconnectConnection-method}
 \alias{dbExistsTable,OdbconnectConnection,character-method}
 \alias{dbFetch,OdbconnectResult-method}
@@ -47,10 +44,6 @@
 
 \S4method{dbConnect}{OdbconnectDriver}(drv, dsn = NULL, ...)
 
-\S4method{dbDataType}{OdbconnectDriver,ANY}(dbObj, obj, ...)
-
-\S4method{dbDataType}{OdbconnectDriver,list}(dbObj, obj, ...)
-
 \S4method{dbIsValid}{OdbconnectDriver}(dbObj)
 
 \S4method{dbGetInfo}{OdbconnectDriver}(dbObj, ...)
@@ -65,14 +58,13 @@
 
 \S4method{dbSendStatement}{OdbconnectConnection,character}(conn, statement, ...)
 
-\S4method{dbDataType}{OdbconnectConnection,ANY}(dbObj, obj, ...)
-
 \S4method{dbQuoteString}{OdbconnectConnection,character}(conn, x, ...)
 
 \S4method{dbQuoteIdentifier}{OdbconnectConnection,character}(conn, x, ...)
 
 \S4method{dbWriteTable}{OdbconnectConnection,character,data.frame}(conn, name,
-  value, overwrite = FALSE, append = FALSE, ...)
+  value, row.names = NA, overwrite = FALSE, append = FALSE,
+  field.types = NULL, temporary = FALSE, copy = TRUE)
 
 \S4method{dbReadTable}{OdbconnectConnection,character}(conn, name)
 
@@ -128,8 +120,6 @@ will be joined together to form the connection string.}
 
 \item{dbObj}{A object inheriting from \code{\linkS4class{DBIDriver}}
 or \code{\linkS4class{DBIConnection}}}
-
-\item{obj}{An R object whose SQL type we want to determine.}
 
 \item{conn}{A \code{\linkS4class{DBIConnection}} object, as produced by
 \code{\link{dbConnect}}.}

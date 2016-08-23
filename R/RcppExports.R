@@ -49,7 +49,15 @@ result_bind <- function(c, params) {
     invisible(.Call('odbconnect_result_bind', PACKAGE = 'odbconnect', c, params))
 }
 
+result_execute <- function(c) {
+    invisible(.Call('odbconnect_result_execute', PACKAGE = 'odbconnect', c))
+}
+
 result_insert_dataframe <- function(c, df) {
     invisible(.Call('odbconnect_result_insert_dataframe', PACKAGE = 'odbconnect', c, df))
+}
+
+column_types <- function(df) {
+    invisible(.Call('odbconnect_column_types', PACKAGE = 'odbconnect', df))
 }
 

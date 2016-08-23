@@ -74,7 +74,8 @@ namespace turbodbc {
         if (STRING_ELT(x, i) == NA_STRING) {
           return {};
         } else{
-          return field(CHAR(STRING_ELT(x, i)));
+          std::string str = CHAR(STRING_ELT(x, i));
+          return field(str);
         }
 
       }

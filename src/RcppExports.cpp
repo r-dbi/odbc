@@ -138,6 +138,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// result_execute
+void result_execute(cursor_ptr c);
+RcppExport SEXP odbconnect_result_execute(SEXP cSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    result_execute(c);
+    return R_NilValue;
+END_RCPP
+}
 // result_insert_dataframe
 void result_insert_dataframe(cursor_ptr c, DataFrame df);
 RcppExport SEXP odbconnect_result_insert_dataframe(SEXP cSEXP, SEXP dfSEXP) {
@@ -146,6 +156,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
     Rcpp::traits::input_parameter< DataFrame >::type df(dfSEXP);
     result_insert_dataframe(c, df);
+    return R_NilValue;
+END_RCPP
+}
+// column_types
+void column_types(DataFrame df);
+RcppExport SEXP odbconnect_column_types(SEXP dfSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< DataFrame >::type df(dfSEXP);
+    column_types(df);
     return R_NilValue;
 END_RCPP
 }

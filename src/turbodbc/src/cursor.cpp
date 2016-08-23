@@ -65,11 +65,12 @@ void cursor::add_parameter_set(Rcpp::DataFrame const & df) {
 		std::vector<nullable_field> out;
 		out.reserve(Rf_length(df[0]));
 		for (int j = 0; j < df.size(); ++j) {
-			Rcpp::Rcout << "row: " << i << " col: " << j << '\n';
-			Rcpp::RObject col = df[j];
-			out.push_back(nullable_field_from_R_object(col, types[j], i));
+			//Rcpp::Rcout << "row: " << i << " col: " << j << " type: " << Rf_type2char(TYPEOF(df[j])) << '\n';
+			nullable_field res = nullable_field_from_R_object(df[j], types[j], i);
+			out.push_back(res);
 		}
 		add_parameter_set(out);
+		//execute();
 	}
 }
 

@@ -30,6 +30,14 @@ multi_value_buffer::multi_value_buffer(std::size_t element_size, std::size_t num
 	}
 }
 
+multi_value_buffer::multi_value_buffer(multi_value_buffer && other) :
+	element_size_(other.element_size_),
+	data_(std::move(other.data_)),
+	indicators_(std::move(other.indicators_))
+{
+	other.element_size_ = 0;
+}
+
 std::size_t multi_value_buffer::capacity_per_element() const
 {
 	return element_size_;
@@ -57,20 +65,18 @@ long const * multi_value_buffer::indicator_pointer() const
 
 writable_buffer_element multi_value_buffer::operator[](std::size_t element_index)
 {
-  writable_buffer_element b = {
+	return {
 		data_pointer() + (element_index * element_size_),
 		indicators_[element_index]
 	};
-  return b;
 }
 
 buffer_element multi_value_buffer::operator[](std::size_t element_index) const
 {
-	buffer_element b = {
+	return {
 		data_.data() + (element_index * element_size_),
 		indicators_[element_index]
 	};
-  return b;
 }
 
 

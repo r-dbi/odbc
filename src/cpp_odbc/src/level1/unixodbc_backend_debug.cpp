@@ -101,7 +101,7 @@ SQLRETURN unixodbc_backend_debug::do_bind_parameter(SQLHSTMT statement_handle, S
 {
 	std::cout << " *DEBUG* bind_parameter";
 	SQLRETURN const return_code = SQLBindParameter(statement_handle, parameter_id, input_output_type, value_type, parameter_type, column_size, decimal_digits, parameter_value_ptr, buffer_length, length_indicator_buffer);
-	std::cout << " (return code " << return_code << ")" << std::endl;
+	std::cout << "{" << (const char *) parameter_value_ptr << "}" << "(" << *length_indicator_buffer << ")" << " (return code " << return_code << ")" << std::endl;
 	return return_code;
 }
 

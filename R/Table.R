@@ -90,7 +90,7 @@ setMethod("dbWriteTable", c("OdbconnectConnection", "character", "data.frame"),
       }
     }
 
-    TRUE
+    invisible(TRUE)
   }
 )
 

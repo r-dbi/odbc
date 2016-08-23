@@ -80,9 +80,7 @@ setMethod(
 setMethod(
   "dbDataType", "OdbconnectConnection",
   function(dbObj, obj, ...) {
-    tryCatch(
-      getMethod("dbDataType", "DBIObject", asNamespace("DBI"))(dbObj, obj, ...),
-      error = function(e) testthat::skip("Not yet implemented: dbDataType(Connection)"))
+    get_data_type(obj)
   })
 
 #' @rdname DBI
@@ -124,7 +122,8 @@ setMethod(
 setMethod(
   "dbReadTable", c("OdbconnectConnection", "character"),
   function(conn, name) {
-    testthat::skip("Not yet implemented: dbReadTable(Connection, character)")
+    name <- dbQuoteIdentifier(conn, name)
+    dbGetQuery(conn, paste("SELECT * FROM ", name))
   })
 
 #' @rdname DBI
@@ -142,7 +141,8 @@ setMethod(
 setMethod(
   "dbExistsTable", c("OdbconnectConnection", "character"),
   function(conn, name) {
-    testthat::skip("Not yet implemented: dbExistsTable(Connection)")
+    FALSE
+    #testthat::skip("Not yet implemented: dbExistsTable(Connection)")
   })
 
 #' @rdname DBI
@@ -160,7 +160,6 @@ setMethod(
 setMethod(
   "dbRemoveTable", c("OdbconnectConnection", "character"),
   function(conn, name) {
-    testthat::skip("Not yet implemented: dbRemoveTable(Connection, character)")
     name <- dbQuoteIdentifier(conn, name)
     dbGetQuery(conn, paste("DROP TABLE ", name))
     invisible(TRUE)
@@ -191,7 +190,7 @@ setMethod(
 setMethod(
   "dbCommit", "OdbconnectConnection",
   function(conn) {
-    dbGetQuery(conn, "COMMIT")
+    connection_commit(conn@ptr)
     TRUE
   })
 
@@ -203,3 +202,16 @@ setMethod(
   function(conn) {
     testthat::skip("Not yet implemented: dbRollback(Connection)")
   })
+
+get_data_type <- function(obj) {
+  if (is.factor(obj)) return("TEXT")
+
+  switch(typeof(obj),
+    integer = "INTEGER",
+    double = "DOUBLE PRECISION",
+    character = "VARCHAR(20)",
+    logical = "INTEGER",
+    #list = "BLOB",
+    stop("Unsupported type", call. = FALSE)
+  )
+}

@@ -8,7 +8,7 @@
 
 // [[Rcpp::export]]
 connection_ptr connect(std::string connection_string) {
-  boost::shared_ptr<cpp_odbc::environment const> environment = cpp_odbc::make_environment();
+  boost::shared_ptr<cpp_odbc::environment const> environment = cpp_odbc::make_debug_environment();
   boost::shared_ptr<turbodbc::connection const> p = boost::make_shared<turbodbc::connection const>(environment->make_connection(connection_string));
   return connection_ptr(new boost::shared_ptr<turbodbc::connection const>(p));
 }
