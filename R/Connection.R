@@ -206,6 +206,7 @@ setMethod(
 get_data_type <- function(obj) {
   if (is.factor(obj)) return("TEXT")
   if (is(obj, "POSIXct")) return("TIMESTAMP")
+  if (is(obj, "Date")) return("DATE")
 
   switch(typeof(obj),
     integer = "INTEGER",

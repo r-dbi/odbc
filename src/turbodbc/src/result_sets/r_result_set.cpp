@@ -16,7 +16,7 @@ namespace {
 
 	double make_date(SQL_DATE_STRUCT const & date)
 	{
-	return Rcpp::Date(date.year, date.month, date.day).getDate();
+	return Rcpp::Date(date.year - 1900, date.month, date.day).getDate();
 	}
 
 	double make_timestamp(SQL_TIMESTAMP_STRUCT const & ts)
@@ -125,7 +125,7 @@ List convert_to_r(std::vector<boost::any> const & out, std::vector<column_info> 
 				}
 				case type_code::date: {
 					NumericVector vector = NumericVector(boost::any_cast<std::vector<double>>(&out[i])->begin(), boost::any_cast<std::vector<double>>(&out[i])->end());
-					vector.attr("class") = "date";
+					vector.attr("class") = "Date";
 					result[i] = vector;
 					break;
 				}
