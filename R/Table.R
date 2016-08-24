@@ -37,7 +37,7 @@
 #' dbReadTable(con, "mtcars2")
 #'
 #' dbDisconnect(con)
-#' @name postgres-tables
+#' @name odbconnect-tables
 NULL
 
 #' @export
@@ -96,12 +96,12 @@ setMethod("dbWriteTable", c("OdbconnectConnection", "character", "data.frame"),
 
 #' @export
 #' @inheritParams DBI::sqlRownamesToColumn
-#' @rdname postgres-tables
+#' @rdname odbconnect-tables
 setMethod("sqlData", "OdbconnectConnection", function(con, value, row.names = NA, copy = TRUE) {
   value <- sqlRownamesToColumn(value, row.names)
 
-  # C code takes care of atomic vectors, just need to coerce objects
-  is_object <- vapply(value, is.object, logical(1))
+  # C code takes care of atomic vectors, dates and date times, just need to coerce other objects
+  is_object <- vapply(value, function(x) is.object(x) && !(is(x, "POSIXct") || is(x, "Date")), logical(1))
   value[is_object] <- lapply(value[is_object], as.character)
 
   value

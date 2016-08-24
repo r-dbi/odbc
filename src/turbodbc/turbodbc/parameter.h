@@ -33,6 +33,7 @@ public:
 	 * @param row_index Index of the row whose value is copied
 	 */
 	void copy_to_first_row(std::size_t row_index);
+  cpp_odbc::multi_value_buffer * get_buffer() { return &buffer_; }
 
 	~parameter();
 private:

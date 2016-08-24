@@ -3,7 +3,7 @@
  *  @file raii_statement.h
  *  @date 23.05.2014
  *  @author mkoenig
- *  @brief
+ *  @brief 
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -16,7 +16,6 @@
 #include "cpp_odbc/level2/handles.h"
 
 #include <memory>
-#include <boost/shared_ptr.hpp>
 
 namespace cpp_odbc { namespace level2 {
 	class api;
@@ -39,36 +38,35 @@ public:
 	 *                   the life time of this object. The connection also contains the level2 API
 	 *                   to which all calls are forwarded.
 	 */
-	raii_statement(boost::shared_ptr<raii_connection const> connection);
+	raii_statement(std::shared_ptr<raii_connection const> connection);
 
 	virtual ~raii_statement();
 private:
-	long do_get_integer_attribute(SQLINTEGER attribute) const; // final;
-	void do_set_attribute(SQLINTEGER attribute, long value) const; // final;
-	void do_set_attribute(SQLINTEGER attribute, SQLULEN * pointer) const; // final;
-	void do_execute(std::string const & sql) const; // final;
-	void do_prepare(std::string const & sql) const; // final;
-	void do_bind_input_parameter(SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, cpp_odbc::multi_value_buffer & parameter_values) const; // final;
-	void do_unbind_all_parameters() const; // final;
-	void do_execute_prepared() const; // final;
+	long do_get_integer_attribute(SQLINTEGER attribute) const final;
+	void do_set_attribute(SQLINTEGER attribute, long value) const final;
+	void do_set_attribute(SQLINTEGER attribute, SQLULEN * pointer) const final;
+	void do_execute(std::string const & sql) const final;
+	void do_prepare(std::string const & sql) const final;
+	void do_bind_input_parameter(SQLUSMALLINT parameter_id, SQLSMALLINT value_type, SQLSMALLINT parameter_type, cpp_odbc::multi_value_buffer & parameter_values) const final;
+	void do_unbind_all_parameters() const final;
+	void do_execute_prepared() const final;
 
-	short int do_number_of_columns() const; // final;
-	short int do_number_of_parameters() const; // final;
-	void do_bind_column(SQLUSMALLINT column_id, SQLSMALLINT column_type, cpp_odbc::multi_value_buffer & column_buffer) const; // final;
-	void do_unbind_all_columns() const; // final;
-	bool do_fetch_next() const; // final;
-	void do_close_cursor() const; // final;
+	short int do_number_of_columns() const final;
+	short int do_number_of_parameters() const final;
+	void do_bind_column(SQLUSMALLINT column_id, SQLSMALLINT column_type, cpp_odbc::multi_value_buffer & column_buffer) const final;
+	void do_unbind_all_columns() const final;
+	bool do_fetch_next() const final;
+	void do_close_cursor() const final;
 
-	long do_get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const; // final;
-	std::string do_get_string_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const; // final;
-	SQLLEN do_row_count() const; // final;
-	column_description do_describe_column(SQLUSMALLINT column_id) const; // final;
-	column_description do_describe_parameter(SQLUSMALLINT parameter_id) const; // final;
-	bool do_more_results() const; // final;
-	void do_get_tables(std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const; // final;
+	long do_get_integer_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const final;
+	std::string do_get_string_column_attribute(SQLUSMALLINT column_id, SQLUSMALLINT field_identifier) const final;
+	SQLLEN do_row_count() const final;
+	column_description do_describe_column(SQLUSMALLINT column_id) const final;
+	column_description do_describe_parameter(SQLUSMALLINT parameter_id) const final;
+	bool do_more_results() const final;
 
-	boost::shared_ptr<raii_connection const> connection_;
-	boost::shared_ptr<level2::api const> api_;
+	std::shared_ptr<raii_connection const> connection_;
+	std::shared_ptr<level2::api const> api_;
 	level2::statement_handle handle_;
 };
 

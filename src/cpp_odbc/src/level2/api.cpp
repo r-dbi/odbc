@@ -2,7 +2,7 @@
  *  @file api.cpp
  *  @date 03.03.2014
  *  @author mkoenig
- *  @brief
+ *  @brief 
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -14,8 +14,8 @@
 
 namespace cpp_odbc { namespace level2 {
 
-api::~api() {} //= default;
-api::api() {} //= default;
+api::~api() = default;
+api::api() = default;
 
 statement_handle api::allocate_statement_handle(connection_handle const & input_handle) const
 {
@@ -185,11 +185,6 @@ column_description api::describe_parameter(statement_handle const & handle, SQLU
 bool api::more_results(statement_handle const & handle) const
 {
 	return do_more_results(handle);
-}
-
-void api::get_tables(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const
-{
-	do_get_tables(handle, catalog, schema, table, table_type);
 }
 
 

@@ -3,7 +3,7 @@
  *  @file statement.h
  *  @date 16.05.2014
  *  @author mkoenig
- *  @brief
+ *  @brief 
  *
  *  $LastChangedDate: 2014-11-28 15:54:55 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -25,6 +25,9 @@ namespace cpp_odbc {
  */
 class statement {
 public:
+	statement(statement const &) = delete;
+	statement & operator=(statement const &) = delete;
+
 	/**
 	 * @brief Retrieve the value of statement attribute as an integer
 	 * @param attribute A constant representing the requested attribute
@@ -154,21 +157,10 @@ public:
 	 */
 	bool more_results() const;
 
-  /**
-	 * @brief Get the list of table, catalog, or schema names, and table types, stored in a specific data source. Returned as a result set.
-	 * @param catalog The catalog name to search for. See unixODBC's SQLTables() documentation.
-	 * @param schema The schema name to search for. See unixODBC's SQLTables() documentation.
-	 * @param table The table name to search for. See unixODBC's SQLTables() documentation.
-	 * @param table_type The table type to search for. See unixODBC's SQLTables() documentation.
-	 */
-	void get_tables(std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const;
-
 	virtual ~statement();
 protected:
 	statement();
 private:
-	statement & operator=(statement const &);
-
 	virtual long do_get_integer_attribute(SQLINTEGER attribute) const = 0;
 	virtual void do_set_attribute(SQLINTEGER attribute, long value) const = 0;
 	virtual void do_set_attribute(SQLINTEGER attribute, SQLULEN * pointer) const = 0;
@@ -191,7 +183,6 @@ private:
 	virtual column_description do_describe_column(SQLUSMALLINT column_id) const = 0;
 	virtual column_description do_describe_parameter(SQLUSMALLINT parameter_id) const = 0;
 	virtual bool do_more_results() const = 0;
-	virtual void do_get_tables(std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const = 0;
 };
 
 }

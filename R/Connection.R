@@ -205,11 +205,12 @@ setMethod(
 
 get_data_type <- function(obj) {
   if (is.factor(obj)) return("TEXT")
+  if (is(obj, "POSIXct")) return("TIMESTAMP")
 
   switch(typeof(obj),
     integer = "INTEGER",
     double = "DOUBLE PRECISION",
-    character = "VARCHAR(20)",
+    character = "TEXT",
     logical = "INTEGER",
     #list = "BLOB",
     stop("Unsupported type", call. = FALSE)

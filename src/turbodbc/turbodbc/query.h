@@ -19,6 +19,11 @@ public:
 		  std::size_t parameter_sets_to_buffer,
 		  bool use_double_buffering);
 
+	query(std::shared_ptr<cpp_odbc::statement const> statement,
+		  std::size_t rows_to_buffer,
+		  std::size_t parameter_sets_to_buffer,
+		  bool use_double_buffering);
+
 	void execute();
 	boost::shared_ptr<turbodbc::result_sets::result_set> get_results();
 	void add_parameter_set(std::vector<nullable_field> const & parameter_set);

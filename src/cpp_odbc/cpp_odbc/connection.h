@@ -3,7 +3,7 @@
  *  @file connection.h
  *  @date 16.05.2014
  *  @author mkoenig
- *  @brief
+ *  @brief 
  *
  *  $LastChangedDate: 2014-11-28 15:54:55 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -17,22 +17,22 @@
 
 #include <memory>
 #include <string>
-#include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
 
 namespace cpp_odbc {
 
 /**
  * @brief This interface represents a connection with an ODBC database
  */
-class connection : public boost::enable_shared_from_this<connection> {
+class connection : public std::enable_shared_from_this<connection> {
 public:
+	connection(connection const &) = delete;
+	connection & operator=(connection const &) = delete;
 
 	/**
 	 * @brief Create and return a new statement
 	 * @return A pointer to a new statement
 	 */
-	boost::shared_ptr<statement const> make_statement() const;
+	std::shared_ptr<statement const> make_statement() const;
 
 	/**
 	 * @brief Set the attribute to the given long value
@@ -69,10 +69,7 @@ public:
 protected:
 	connection();
 private:
-	connection(connection const &);
-	connection & operator=(connection const &);
-
-	virtual boost::shared_ptr<statement const> do_make_statement() const = 0;
+	virtual std::shared_ptr<statement const> do_make_statement() const = 0;
 	virtual void do_set_attribute(SQLINTEGER attribute, long value) const = 0;
 	virtual void do_commit() const = 0;
 	virtual void do_rollback() const = 0;

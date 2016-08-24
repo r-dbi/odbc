@@ -22,11 +22,10 @@ namespace turbodbc {
         if (klass_o == R_NilValue) {
           return double_t;
         }
-        std::string klass = Rcpp::as<std::string>(klass_o);
-        if (klass == "Date") {
+        if (x.inherits("Date")) {
           return date_t;
         }
-        if (klass == "POSIXct") {
+        if (x.inherits("POSIXct")) {
           return date_time_t;
         }
         return double_t;
@@ -46,17 +45,14 @@ namespace turbodbc {
       case logical_t: {
         if (ISNA(LOGICAL(x)[i])) {
           return {};
-
-        } else{
+        } else {
           return field(static_cast<bool>(LOGICAL(x)[i]));
-
         }
       }
       case integer_t: {
         if (ISNA(INTEGER(x)[i])) {
           return {};
-
-        } else{
+        } else {
           return field(static_cast<long>(INTEGER(x)[i]));
 
         }
@@ -64,8 +60,7 @@ namespace turbodbc {
       case double_t: {
         if (ISNA(REAL(x)[i])) {
           return {};
-
-        } else{
+        } else {
           return field(REAL(x)[i]);
 
         }
@@ -73,11 +68,16 @@ namespace turbodbc {
       case string_t: {
         if (STRING_ELT(x, i) == NA_STRING) {
           return {};
-        } else{
-          std::string str = CHAR(STRING_ELT(x, i));
-          return field(str);
+        } else {
+          return field(std::string(CHAR(STRING_ELT(x, i))));
         }
-
+      }
+      case date_time_t: {
+        if (ISNA(REAL(x)[i])) {
+          return {};
+        } else {
+          return field(boost::posix_time::from_time_t(static_cast<time_t>(std::floor(REAL(x)[i]))));
+        }
       }
       default:
         Rcpp::stop("Don't know how to handle vector of type %s.",

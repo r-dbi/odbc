@@ -2,7 +2,7 @@
  *  @file raii_connection.cpp
  *  @date 21.03.2014
  *  @author mkoenig
- *  @brief
+ *  @brief 
  *
  *  $LastChangedDate: 2014-12-05 08:55:14 +0100 (Fr, 05 Dez 2014) $
  *  $LastChangedBy: mkoenig $
@@ -19,9 +19,6 @@
 #include "cpp_odbc/level2/handles.h"
 
 #include <boost/format.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/pointer_cast.hpp>
 
 #include <mutex>
 
@@ -31,10 +28,10 @@ namespace {
 
 	// raii just for connection handle
 	struct raii_handle {
-		boost::shared_ptr<cpp_odbc::level2::api const> api;
+		std::shared_ptr<cpp_odbc::level2::api const> api;
 		cpp_odbc::level2::connection_handle handle;
 
-		raii_handle(boost::shared_ptr<cpp_odbc::level2::api const> api,
+		raii_handle(std::shared_ptr<cpp_odbc::level2::api const> api,
 				cpp_odbc::level2::environment_handle const & environment) :
 			api(api),
 			handle(api->allocate_connection_handle(environment))
@@ -51,12 +48,12 @@ namespace {
 namespace cpp_odbc { namespace level3 {
 
 struct raii_connection::intern {
-	boost::shared_ptr<raii_environment const> environment;
-	boost::shared_ptr<cpp_odbc::level2::api const> api;
+	std::shared_ptr<raii_environment const> environment;
+	std::shared_ptr<cpp_odbc::level2::api const> api;
 	raii_handle handle;
 
 	intern(
-			boost::shared_ptr<raii_environment const> environment,
+			std::shared_ptr<raii_environment const> environment,
 			std::string const & connection_string
 		) :
 		environment(environment),
@@ -87,12 +84,12 @@ private:
 };
 
 
-raii_connection::raii_connection(boost::shared_ptr<raii_environment const> environment, std::string const & connection_string) :
+raii_connection::raii_connection(std::shared_ptr<raii_environment const> environment, std::string const & connection_string) :
 	impl_(new raii_connection::intern(environment, connection_string))
 {
 }
 
-boost::shared_ptr<level2::api const> raii_connection::get_api() const
+std::shared_ptr<level2::api const> raii_connection::get_api() const
 {
 	return impl_->api;
 }
@@ -102,10 +99,10 @@ level2::connection_handle const & raii_connection::get_handle() const
 	return impl_->handle.handle;
 }
 
-boost::shared_ptr<statement const> raii_connection::do_make_statement() const
+std::shared_ptr<statement const> raii_connection::do_make_statement() const
 {
-  boost::shared_ptr<raii_connection const> as_raii_connection = boost::dynamic_pointer_cast<raii_connection const>(shared_from_this());
-	return boost::make_shared<raii_statement const>(as_raii_connection);
+	auto as_raii_connection = std::dynamic_pointer_cast<raii_connection const>(shared_from_this());
+	return std::make_shared<raii_statement const>(as_raii_connection);
 }
 
 void raii_connection::do_set_attribute(SQLINTEGER attribute, long value) const
@@ -133,6 +130,6 @@ SQLUINTEGER raii_connection::do_get_integer_info(SQLUSMALLINT info_type) const
 	return impl_->api->get_integer_connection_info(impl_->handle.handle, info_type);
 }
 
-raii_connection::~raii_connection() {} //= default;
+raii_connection::~raii_connection() = default;
 
 } }

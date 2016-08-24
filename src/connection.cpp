@@ -8,8 +8,8 @@
 
 // [[Rcpp::export]]
 connection_ptr connect(std::string connection_string) {
-  boost::shared_ptr<cpp_odbc::environment const> environment = cpp_odbc::make_debug_environment();
-  boost::shared_ptr<turbodbc::connection const> p = boost::make_shared<turbodbc::connection const>(environment->make_connection(connection_string));
+  auto environment = cpp_odbc::make_environment();
+  auto p = boost::make_shared<turbodbc::connection>(environment->make_connection(connection_string));
   return connection_ptr(new boost::shared_ptr<turbodbc::connection const>(p));
 }
 
@@ -20,7 +20,7 @@ std::string connect_info(connection_ptr p) {
 
 // [[Rcpp::export]]
 Rcpp::RObject get_tables(connection_ptr p) {
-  auto c = boost::make_shared<turbodbc::cursor>(turbodbc::cursor((*p), 1024, 0, false));
+  auto c = std::make_shared<turbodbc::cursor>(turbodbc::cursor((*p), 1024, 0, false));
   return c->get_tables()->fetch_all();
 }
 

@@ -12,6 +12,8 @@ namespace turbodbc { namespace result_sets {
 
 namespace {
 
+	using nullable_string = boost::optional<std::string>;
+
 	double make_date(SQL_DATE_STRUCT const & date)
 	{
 	return Rcpp::Date(date.year, date.month, date.day).getDate();
@@ -23,7 +25,7 @@ namespace {
 		t.tm_sec = t.tm_min = t.tm_hour = t.tm_isdst = 0;
 
 		t.tm_year = ts.year - 1900;
-		t.tm_mon = ts.month;
+		t.tm_mon = ts.month - 1;
 		t.tm_mday = ts.day;
 		t.tm_hour = ts.hour;
 		t.tm_min = ts.minute;
@@ -62,9 +64,9 @@ void append_buffer(boost::any& out, turbodbc::type_code code, size_t result_size
 				}
 				case type_code::string: {
 					if (buffer[i + start].indicator == SQL_NULL_DATA) {
-						boost::any_cast<std::vector<String>>(&out)->push_back(NA_STRING);
+						boost::any_cast<std::vector<nullable_string>>(&out)->push_back({});
 					} else {
-						boost::any_cast<std::vector<String>>(&out)->push_back(reinterpret_cast<char const*>(buffer[i + start].data_pointer));
+						boost::any_cast<std::vector<nullable_string>>(&out)->push_back(std::string(reinterpret_cast<char const*>(buffer[i + start].data_pointer)));
 					}
 					break;
 				}
@@ -109,7 +111,16 @@ List convert_to_r(std::vector<boost::any> const & out, std::vector<column_info> 
 					break;
 				}
 				case type_code::string: {
-					result[i] = CharacterVector(boost::any_cast<std::vector<String>>(&out[i])->begin(), boost::any_cast<std::vector<String>>(&out[i])->end());
+					auto data = boost::any_cast<std::vector<nullable_string>>(&out[i]);
+					auto out = CharacterVector(data->size());
+					for (int j = 0; j < data->size(); ++j) {
+						if ((*data)[j] == boost::none) {
+							out[j] = NA_STRING;
+						} else {
+							out[j] = boost::get<std::string>((*data)[j]);
+						}
+					}
+					result[i] = out;
 					break;
 				}
 				case type_code::date: {
@@ -145,7 +156,7 @@ List convert_to_r(std::vector<boost::any> const & out, std::vector<column_info> 
 				return std::vector<double>();
 			}
 			case type_code::string: {
-				return std::vector<String>();
+				return std::vector<nullable_string>();
 			}
 			case type_code::date: {
 				return std::vector<double>();

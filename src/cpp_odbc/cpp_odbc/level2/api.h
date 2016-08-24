@@ -3,7 +3,7 @@
  *  @file level2_api.h
  *  @date 03.03.2014
  *  @author mkoenig
- *  @brief
+ *  @brief 
  *
  *  $LastChangedDate: 2014-11-28 15:54:55 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -40,6 +40,9 @@ namespace cpp_odbc { namespace level2 {
 class api {
 public:
 	virtual ~api();
+
+	api(api const &) = delete;
+	api & operator=(api const &) = delete;
 
 	/**
 	 * @brief Create a new statement handle.
@@ -299,22 +302,11 @@ public:
 	 */
 	bool more_results(statement_handle const & handle) const;
 
-	/**
-	 * @brief Get the list of table, catalog, or schema names, and table types, stored in a specific data source. Returned as a result set.
-	 * @param catalog The catalog name to search for. See unixODBC's SQLTables() documentation.
-	 * @param schema The schema name to search for. See unixODBC's SQLTables() documentation.
-	 * @param table The table name to search for. See unixODBC's SQLTables() documentation.
-	 * @param table_type The table type to search for. See unixODBC's SQLTables() documentation.
-	 */
-	void get_tables(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const;
-
 protected:
 
 	api();
 
 private:
-	api & operator=(api const &);
-
 	virtual statement_handle do_allocate_statement_handle(connection_handle const & input_handle) const = 0;
 	virtual connection_handle do_allocate_connection_handle(environment_handle const & input_handle) const = 0;
 	virtual environment_handle do_allocate_environment_handle() const = 0;
@@ -353,7 +345,6 @@ private:
 	virtual column_description do_describe_column(statement_handle const & handle, SQLUSMALLINT column_id) const = 0;
 	virtual column_description do_describe_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id) const = 0;
 	virtual bool do_more_results(statement_handle const & handle) const = 0;
-	virtual void do_get_tables(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const = 0;
 };
 
 } }

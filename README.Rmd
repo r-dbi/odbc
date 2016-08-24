@@ -26,25 +26,37 @@ package.
 
 ## Benchmarks vs RODBC / RODBCDBI
 
+### Reading
 Simply reading a postgres table with the nytflights13 'flights' database.
 ```{r}
 # First using RODBC / RODBCDBI
 library(DBI)
 library(RODBCDBI)
 rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "PostgreSQL")
-rodbc_query <- dbSendQuery(rodbc, "SELECT * from flights")
-system.time(rodbc_result <- dbFetch(rodbc_query))
+system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
 
 # Now using odbconnect
 library(odbconnect)
 odbconnect <- dbConnect(odbconnect::odbconnect(), dsn = "PostgreSQL")
-odbconnect_query <- dbSendQuery(odbconnect, "SELECT * from flights")
-system.time(odbconnect_result <- dbFetch(odbconnect_query))
+system.time(odbconnect_result <- dbReadTable(odbconnect, "flights"))
 
 library(tibble)
 as_tibble(odbconnect_result)
 
 identical(dim(rodbc_result), dim(odbconnect_result))
+rm(rodbc_result, odbconnect_result)
+gc()
+```
+### Writing
+Writing the flights database works as well.
+```{r}
+library(nycflights13)
+# rodbc does not support writing timestamps natively.
+system.time(dbWriteTable(rodbc, "flights2", as.data.frame(flights[, names(flights) != "time_hour"])))
+
+# Now using odbconnect
+odbconnect <- dbConnect(odbconnect::odbconnect(), dsn = "PostgreSQL")
+system.time(dbWriteTable(odbconnect, "flights3", as.data.frame(flights)))
 ```
 
 ## ODBC Documentation

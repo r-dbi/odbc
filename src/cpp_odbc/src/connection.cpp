@@ -2,7 +2,7 @@
  *  @file connection.cpp
  *  @date 16.05.2014
  *  @author mkoenig
- *  @brief
+ *  @brief 
  *
  *  $LastChangedDate: 2014-05-16 13:39:31 +0200 (Fr, 16 Mai 2014) $
  *  $LastChangedBy: mkoenig $
@@ -11,14 +11,13 @@
  */
 
 #include "cpp_odbc/connection.h"
-#include <boost/shared_ptr.hpp>
 
 namespace cpp_odbc {
 
-	connection::connection() {} // = default;
-	connection::~connection() {} //= default;
+connection::connection() = default;
+connection::~connection() = default;
 
-boost::shared_ptr<statement const> connection::make_statement() const
+std::shared_ptr<statement const> connection::make_statement() const
 {
 	return do_make_statement();
 }

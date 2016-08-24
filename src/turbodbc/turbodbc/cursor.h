@@ -16,6 +16,11 @@ class connection;
  */
 class cursor {
 public:
+	cursor(std::shared_ptr<turbodbc::connection const> connection,
+		   std::size_t rows_to_buffer,
+		   std::size_t parameter_sets_to_buffer,
+		   bool use_async_io);
+
 	cursor(boost::shared_ptr<turbodbc::connection const> connection,
 		   std::size_t rows_to_buffer,
 		   std::size_t parameter_sets_to_buffer,

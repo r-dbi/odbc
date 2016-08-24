@@ -2,6 +2,7 @@
 #include <turbodbc/make_description.h>
 #include <turbodbc/result_sets/bound_result_set.h>
 #include <turbodbc/r_types.h>
+#include <turbodbc/shared_ptr.h>
 
 #include <cpp_odbc/statement.h>
 #include <cpp_odbc/error.h>
@@ -17,6 +18,17 @@
 
 namespace turbodbc {
 
+cursor::cursor(std::shared_ptr<turbodbc::connection const> connection,
+               std::size_t rows_to_buffer,
+               std::size_t parameter_sets_to_buffer,
+               bool use_async_io) :
+	rows_to_buffer_(rows_to_buffer),
+	parameter_sets_to_buffer_(parameter_sets_to_buffer),
+	use_async_io_(use_async_io),
+	query_()
+{
+	connection_ = make_shared_ptr<turbodbc::connection const>(connection);
+}
 cursor::cursor(boost::shared_ptr<turbodbc::connection const> connection,
                std::size_t rows_to_buffer,
                std::size_t parameter_sets_to_buffer,
@@ -107,12 +119,12 @@ boost::shared_ptr<turbodbc::query> cursor::get_query()
 
 boost::shared_ptr<result_sets::r_result_set> cursor::get_tables() const
 {
-	auto statement = connection_->get_connection()->make_statement();
-	statement->get_tables("", "", "", "");
-	auto rs = result_sets::bound_result_set(statement, rows_to_buffer_);
+	//auto statement = connection_->get_connection()->make_statement();
+	//statement->get_tables("", "", "", "");
+	//auto rs = result_sets::bound_result_set(statement, rows_to_buffer_);
 
-	auto results = boost::make_shared<result_sets::r_result_set>(rs);
-	return results;
+	//auto results = boost::make_shared<result_sets::r_result_set>(rs);
+	//return results;
 }
 
 bool cursor::is_active() const
