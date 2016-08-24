@@ -75,9 +75,16 @@ namespace turbodbc {
       case date_time_t: {
         if (ISNA(REAL(x)[i])) {
           return {};
-        } else {
-          return field(boost::posix_time::from_time_t(static_cast<time_t>(std::floor(REAL(x)[i]))));
         }
+        return field(boost::posix_time::from_time_t(static_cast<time_t>(std::floor(REAL(x)[i]))));
+      }
+      case date_t: {
+        if (ISNA(REAL(x)[i])) {
+          return {};
+        }
+        time_t t = 24*60*60 * std::floor(REAL(x)[i]);      // (fractional) days since epoch to seconds since epoch
+        tm d_tm = *Rcpp::gmtime_(&t);
+        return field(boost::gregorian::date_from_tm(d_tm));
       }
       default:
         Rcpp::stop("Don't know how to handle vector of type %s.",
