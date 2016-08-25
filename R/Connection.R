@@ -1,7 +1,7 @@
 #' @include Driver.R
 NULL
 
-OdbconnectConnection <- function(dsn = NULL, ...) {
+OdbconnectConnection <- function(dsn = NULL, quote = "\"", ...) {
   args <- list(...)
   stopifnot(all(has_names(args)))
 
@@ -10,7 +10,7 @@ OdbconnectConnection <- function(dsn = NULL, ...) {
   }
   connection_string <- paste(collapse = ";", sep = "=", names(args), args)
   ptr <- connect(connection_string)
-  new("OdbconnectConnection", ptr = ptr)
+  new("OdbconnectConnection", ptr = ptr, quote = quote)
 }
 
 #' @rdname DBI
@@ -19,7 +19,8 @@ setClass(
   "OdbconnectConnection",
   contains = "DBIConnection",
   slots = list(
-    ptr = "externalptr"
+    ptr = "externalptr",
+    quote = "character"
   )
 )
 
@@ -99,8 +100,8 @@ setMethod(
 setMethod(
   "dbQuoteIdentifier", c("OdbconnectConnection", "character"),
   function(conn, x, ...) {
-    # Optional
-    getMethod("dbQuoteIdentifier", c("DBIConnection", "character"), asNamespace("DBI"))(conn, x, ...)
+    x <- gsub(conn@quote, paste0(conn@quote, conn@quote), x, fixed = TRUE)
+    DBI::SQL(paste(conn@quote, x, conn@quote, sep = ""))
   })
 
 #' @rdname DBI
