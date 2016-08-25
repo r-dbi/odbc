@@ -69,20 +69,19 @@ boost::shared_ptr<result_sets::r_result_set> cursor::get_result_set() const
 void cursor::add_parameter_set(Rcpp::DataFrame const & df) {
   // determine types for each column
 	std::vector<r_type> types;
-	for (int j = 0; j < df.size(); ++j) {
-		types.push_back(get_r_type(df[j]));
+	auto ncols = df.size();
+	auto nrows = df.nrows();
+	for (int col = 0; col < ncols; ++col) {
+		types.push_back(get_r_type(df[col]));
 	}
 
-	for (int i = 0; i < df.nrows(); ++i) {
-		std::vector<nullable_field> out;
-		out.reserve(Rf_length(df[0]));
-		for (int j = 0; j < df.size(); ++j) {
+	std::vector<nullable_field> out(ncols);
+	for (int row = 0; row < nrows; ++row) {
+		for (int col = 0; col < df.size(); ++col) {
 			//Rcpp::Rcout << "row: " << i << " col: " << j << " type: " << Rf_type2char(TYPEOF(df[j])) << '\n';
-			nullable_field res = nullable_field_from_R_object(df[j], types[j], i);
-			out.push_back(res);
+			out[col] = nullable_field_from_R_object(df[col], types[col], row);
 		}
 		add_parameter_set(out);
-		//execute();
 	}
 }
 
