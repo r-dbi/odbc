@@ -132,4 +132,9 @@ bool raii_statement::do_more_results() const
 	return api_->more_results(handle_);
 }
 
+void raii_statement::do_get_tables(std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const
+{
+	api_->get_tables(handle_, catalog, schema, table, table_type);
+}
+
 } }

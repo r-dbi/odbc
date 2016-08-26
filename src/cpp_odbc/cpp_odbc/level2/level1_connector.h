@@ -3,7 +3,7 @@
  *  @file level1_connector.h
  *  @date 07.03.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -72,6 +72,7 @@ private:
 	column_description do_describe_column(statement_handle const & handle, SQLUSMALLINT column_id) const final;
 	column_description do_describe_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id) const final;
 	bool do_more_results(statement_handle const & handle) const final;
+	void do_get_tables(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const final;
 
 	std::shared_ptr<level1::api const> level1_api_;
 };

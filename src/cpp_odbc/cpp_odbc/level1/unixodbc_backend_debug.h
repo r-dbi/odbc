@@ -3,7 +3,7 @@
  *  @file unixodbc_backend_debug.h
  *  @date 13.03.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -45,6 +45,7 @@ private:
 	SQLRETURN do_describe_column(SQLHSTMT statement_handle, SQLUSMALLINT column_number, SQLCHAR * column_name, SQLSMALLINT buffer_length, SQLSMALLINT * name_length, SQLSMALLINT * data_type, SQLULEN * column_size, SQLSMALLINT * decimal_digits, SQLSMALLINT * nullable) const final;
 	SQLRETURN do_describe_parameter(SQLHSTMT statement_handle, SQLUSMALLINT parameter_number, SQLSMALLINT * data_type, SQLULEN * column_size, SQLSMALLINT * decimal_digits, SQLSMALLINT * nullable) const final;
 	SQLRETURN do_more_results(SQLHSTMT statement_handle) const final;
+	SQLRETURN do_get_tables(SQLHSTMT statement_handle, SQLCHAR * input_catalog_name, SQLSMALLINT input_catalog_name_length, SQLCHAR * input_schema_name, SQLSMALLINT input_schema_name_length, SQLCHAR * input_table_name, SQLSMALLINT input_table_name_length, SQLCHAR * input_table_type, SQLSMALLINT input_table_type_length) const final;
 };
 
 } }
