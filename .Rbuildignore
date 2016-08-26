@@ -6,4 +6,5 @@
 ^travis$
 ^src/.*o$
 ^src/.*a$
+^src/.*d$
 ^codecov\.yml$
