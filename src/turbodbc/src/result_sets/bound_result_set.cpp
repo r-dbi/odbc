@@ -5,6 +5,8 @@
 #include <sqlext.h>
 #include <boost/shared_ptr.hpp>
 
+#include <Rcpp.h>
+
 namespace turbodbc { namespace result_sets {
 
 bound_result_set::bound_result_set(boost::shared_ptr<cpp_odbc::statement const> statement, std::size_t buffered_rows) :

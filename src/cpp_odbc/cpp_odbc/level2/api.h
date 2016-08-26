@@ -309,7 +309,7 @@ public:
 	 * @param table The table name to search for. See unixODBC's SQLTables() documentation.
 	 * @param table_type The table type to search for. See unixODBC's SQLTables() documentation.
 	 */
-	void get_tables(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const;
+	void sql_tables(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const;
 
 protected:
 
@@ -354,7 +354,7 @@ private:
 	virtual column_description do_describe_column(statement_handle const & handle, SQLUSMALLINT column_id) const = 0;
 	virtual column_description do_describe_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id) const = 0;
 	virtual bool do_more_results(statement_handle const & handle) const = 0;
-	virtual void do_get_tables(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const = 0;
+	virtual void do_sql_tables(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const = 0;
 };
 
 } }

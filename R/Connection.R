@@ -133,7 +133,7 @@ setMethod(
 setMethod(
   "dbListTables", "OdbconnectConnection",
   function(conn) {
-    testthat::skip("Not yet implemented: dbListTables(Connection)")
+    connection_sql_tables(conn@ptr)[["TABLE_NAME"]]
   })
 
 #' @rdname DBI
@@ -142,8 +142,7 @@ setMethod(
 setMethod(
   "dbExistsTable", c("OdbconnectConnection", "character"),
   function(conn, name) {
-    FALSE
-    #testthat::skip("Not yet implemented: dbExistsTable(Connection)")
+    name %in% dbListTables(conn)
   })
 
 #' @rdname DBI

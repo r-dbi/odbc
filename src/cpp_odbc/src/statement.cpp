@@ -118,9 +118,9 @@ bool statement::more_results() const
 	return do_more_results();
 }
 
-void statement::get_tables(std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const
+void statement::sql_tables(std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const
 {
-  do_get_tables(catalog, schema, table, table_type);
+  do_sql_tables(catalog, schema, table, table_type);
 }
 
 }

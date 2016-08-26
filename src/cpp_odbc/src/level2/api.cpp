@@ -187,9 +187,9 @@ bool api::more_results(statement_handle const & handle) const
 	return do_more_results(handle);
 }
 
-void api::get_tables(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const
+void api::sql_tables(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const
 {
-	do_get_tables(handle, catalog, schema, table, table_type);
+	do_sql_tables(handle, catalog, schema, table, table_type);
 }
 
 

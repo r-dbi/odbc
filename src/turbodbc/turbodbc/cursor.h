@@ -40,7 +40,7 @@ public:
 
 	boost::shared_ptr<turbodbc::query> get_query();
 
-	boost::shared_ptr<result_sets::r_result_set> get_tables() const;
+	Rcpp::List sql_tables(std::string const & catalog_name, std::string const & schema_name, std::string const & table_name, std::string const & table_type);
 
 	bool is_active() const;
 	~cursor();

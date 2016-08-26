@@ -28,8 +28,13 @@ bool connection_valid(connection_ptr p) {
   return p.get() != NULL;
 }
 
+// "%" is a wildcard for all possible values
 // [[Rcpp::export]]
-Rcpp::RObject get_tables(connection_ptr p) {
+Rcpp::RObject connection_sql_tables(connection_ptr p,
+    std::string catalog_name = "%",
+    std::string schema_name = "%",
+    std::string table_name = "%",
+    std::string table_type = "%") {
   auto c = boost::make_shared<turbodbc::cursor>(turbodbc::cursor((*p), 1024, 0, false));
-  return c->get_tables()->fetch_all();
+  return c->sql_tables(catalog_name, schema_name, table_name, table_type);
 }

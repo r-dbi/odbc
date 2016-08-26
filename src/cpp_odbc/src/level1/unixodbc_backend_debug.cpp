@@ -216,9 +216,9 @@ SQLRETURN unixodbc_backend_debug::do_more_results(SQLHSTMT statement_handle) con
 	std::cout << " (return code " << return_code << ")" << std::endl;
 	return return_code;
 }
-SQLRETURN unixodbc_backend_debug::do_get_tables(SQLHSTMT statement_handle, SQLCHAR * input_catalog_name, SQLSMALLINT input_catalog_name_length, SQLCHAR * input_schema_name, SQLSMALLINT input_schema_name_length, SQLCHAR * input_table_name, SQLSMALLINT input_table_name_length, SQLCHAR * input_table_type, SQLSMALLINT input_table_type_length) const
+SQLRETURN unixodbc_backend_debug::do_sql_tables(SQLHSTMT statement_handle, SQLCHAR * input_catalog_name, SQLSMALLINT input_catalog_name_length, SQLCHAR * input_schema_name, SQLSMALLINT input_schema_name_length, SQLCHAR * input_table_name, SQLSMALLINT input_table_name_length, SQLCHAR * input_table_type, SQLSMALLINT input_table_type_length) const
 {
-	std::cout << " *DEBUG* get_tables";
+	std::cout << " *DEBUG* sql_tables";
 	SQLRETURN const return_code = SQLTables(statement_handle, input_catalog_name, input_catalog_name_length, input_schema_name, input_schema_name_length, input_table_name, input_table_name_length, input_table_type, input_table_type_length);
 	std::cout << " (return code " << return_code << ")" << std::endl;
 	return return_code;

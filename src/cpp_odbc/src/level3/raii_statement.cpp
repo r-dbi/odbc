@@ -2,7 +2,7 @@
  *  @file raii_statement.cpp
  *  @date 23.05.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -132,9 +132,9 @@ bool raii_statement::do_more_results() const
 	return api_->more_results(handle_);
 }
 
-void raii_statement::do_get_tables(std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const
+void raii_statement::do_sql_tables(std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const
 {
-	api_->get_tables(handle_, catalog, schema, table, table_type);
+	api_->sql_tables(handle_, catalog, schema, table, table_type);
 }
 
 } }

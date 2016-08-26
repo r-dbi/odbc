@@ -64,7 +64,7 @@ private:
 	column_description do_describe_column(SQLUSMALLINT column_id) const final;
 	column_description do_describe_parameter(SQLUSMALLINT parameter_id) const final;
 	bool do_more_results() const final;
-	void do_get_tables(std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const final;
+	void do_sql_tables(std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const final;
 
 	std::shared_ptr<raii_connection const> connection_;
 	std::shared_ptr<level2::api const> api_;

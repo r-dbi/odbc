@@ -141,7 +141,7 @@ SQLRETURN unixodbc_backend::do_more_results(SQLHSTMT statement_handle) const
 	return SQLMoreResults(statement_handle);
 }
 
-SQLRETURN unixodbc_backend::do_get_tables(SQLHSTMT statement_handle, SQLCHAR * input_catalog_name, SQLSMALLINT input_catalog_name_length, SQLCHAR * input_schema_name, SQLSMALLINT input_schema_name_length, SQLCHAR * input_table_name, SQLSMALLINT input_table_name_length, SQLCHAR * input_table_type, SQLSMALLINT input_table_type_length) const
+SQLRETURN unixodbc_backend::do_sql_tables(SQLHSTMT statement_handle, SQLCHAR * input_catalog_name, SQLSMALLINT input_catalog_name_length, SQLCHAR * input_schema_name, SQLSMALLINT input_schema_name_length, SQLCHAR * input_table_name, SQLSMALLINT input_table_name_length, SQLCHAR * input_table_type, SQLSMALLINT input_table_type_length) const
 {
 	 return SQLTables(statement_handle, input_catalog_name, input_catalog_name_length, input_schema_name, input_schema_name_length, input_table_name, input_table_name_length, input_table_type, input_table_type_length);
 }

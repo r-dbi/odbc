@@ -1,7 +1,7 @@
 /** *  @file level1_connector.cpp
  *  @date 07.03.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -429,7 +429,7 @@ bool level1_connector::do_more_results(statement_handle const & handle) const
 	return return_code != SQL_NO_DATA;
 }
 
-void level1_connector::do_get_tables(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const
+void level1_connector::do_sql_tables(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const
 {
 
 	cpp_odbc::level2::input_string_buffer input_catalog(catalog);
@@ -437,7 +437,16 @@ void level1_connector::do_get_tables(statement_handle const & handle, std::strin
 	cpp_odbc::level2::input_string_buffer input_table(table);
 	cpp_odbc::level2::input_string_buffer input_table_type(table_type);
 
-	SQLRETURN const return_code = level1_api_->get_tables(handle.handle, input_catalog.data_pointer(), catalog.size(), input_schema.data_pointer(), input_schema.size(), input_table.data_pointer(), input_table.size(), input_table_type.data_pointer(), input_table_type.size());
+	SQLRETURN const return_code = level1_api_->sql_tables(handle.handle,
+			input_catalog.data_pointer(),
+			input_catalog.size(),
+			input_schema.data_pointer(),
+			input_schema.size(),
+			input_table.data_pointer(),
+			input_table.size(),
+			input_table_type.data_pointer(),
+			input_table_type.size());
+
 	impl::throw_on_error(return_code, *this, handle);
 }
 
