@@ -1,16 +1,24 @@
-LDFLAGS=-liodbc
+TARGET ?= libcpp_odbc.a
+SRC_DIRS ?= ./src ./
 
-LIBRARY_SOURCES=src/column_description.cpp src/connection.cpp src/cpp_odbc.cpp src/environment.cpp src/error.cpp src/statement.cpp src/level1/api.cpp src/level1/level1.cpp src/level1/unixodbc_backend.cpp src/level1/unixodbc_backend_debug.cpp src/level2/api.cpp src/level2/handles.cpp src/level2/input_string_buffer.cpp src/level2/level1_connector.cpp src/level2/level2.cpp src/level2/string_buffer.cpp src/level3/level3.cpp src/level3/raii_connection.cpp src/level3/raii_environment.cpp src/level3/raii_statement.cpp src/make_environment.cpp src/multi_value_buffer.cpp
-LIBRARY_OBJECTS=$(LIBRARY_SOURCES:.cpp=.o)
-LIBRARY=libcpp_odbc.a
+SRCS := $(shell find $(SRC_DIRS) -name *.cpp -or -name *.c)
+OBJS := $(addsuffix .o,$(basename $(SRCS)))
+DEPS := $(OBJS:.o=.d)
 
-all: $(LIBRARY) $(LIBRARY_SOURCES)
+INC_DIRS := $(shell find $(SRC_DIRS) -type d)
+INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-$(LIBRARY): $(LIBRARY_OBJECTS)
+CPPFLAGS ?= $(INC_FLAGS) -MMD -MP
+
+$(TARGET): $(OBJS)
 	$(AR) -rc $@ $?
 
-.cpp.o:
-	$(CXX) -c $(CXXFLAGS) -o $@ $< -I.
+%.cpp.o: %.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c %< -o %@
 
+.PHONY: clean
 clean:
-	rm $(LIBRARY) $(LIBRARY_OBJECTS)
+	$(RM) $(TARGET) $(OBJS) $(DEPS)
+
+-include $(DEPS)
+
