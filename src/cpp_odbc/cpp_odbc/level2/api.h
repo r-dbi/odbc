@@ -304,6 +304,7 @@ public:
 
 	/**
 	 * @brief Get the list of table, catalog, or schema names, and table types, stored in a specific data source. Returned as a result set.
+	 * @param handle The statement which holds the prepared statement with the parameter
 	 * @param catalog The catalog name to search for. See unixODBC's SQLTables() documentation.
 	 * @param schema The schema name to search for. See unixODBC's SQLTables() documentation.
 	 * @param table The table name to search for. See unixODBC's SQLTables() documentation.
