@@ -2,7 +2,7 @@
  *  @file api.cpp
  *  @date 03.03.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -192,5 +192,10 @@ void api::sql_tables(statement_handle const & handle, std::string const & catalo
 	do_sql_tables(handle, catalog, schema, table, table_type);
 }
 
+
+void api::sql_columns(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const
+{
+	do_sql_columns(handle, catalog, schema, table, table_type);
+}
 
 } }

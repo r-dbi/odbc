@@ -2,7 +2,7 @@
  *  @file api.cpp
  *  @date 03.03.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -145,6 +145,11 @@ SQLRETURN api::more_results(SQLHSTMT statement_handle) const
 SQLRETURN api::sql_tables(SQLHSTMT statement_handle, SQLCHAR * input_catalog_name, SQLSMALLINT input_catalog_name_length, SQLCHAR * input_schema_name, SQLSMALLINT input_schema_name_length, SQLCHAR * input_table_name, SQLSMALLINT input_table_name_length, SQLCHAR * input_table_type, SQLSMALLINT input_table_type_length) const
 {
 	return do_sql_tables(statement_handle, input_catalog_name, input_catalog_name_length, input_schema_name, input_schema_name_length, input_table_name, input_table_name_length, input_table_type, input_table_type_length);
+}
+
+SQLRETURN api::sql_columns(SQLHSTMT statement_handle, SQLCHAR * input_catalog_name, SQLSMALLINT input_catalog_name_length, SQLCHAR * input_schema_name, SQLSMALLINT input_schema_name_length, SQLCHAR * input_table_name, SQLSMALLINT input_table_name_length, SQLCHAR * input_table_type, SQLSMALLINT input_table_type_length) const
+{
+	return do_sql_columns(statement_handle, input_catalog_name, input_catalog_name_length, input_schema_name, input_schema_name_length, input_table_name, input_table_name_length, input_table_type, input_table_type_length);
 }
 
 } }

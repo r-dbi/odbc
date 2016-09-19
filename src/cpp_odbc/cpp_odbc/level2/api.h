@@ -3,7 +3,7 @@
  *  @file level2_api.h
  *  @date 03.03.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 15:54:55 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -312,6 +312,16 @@ public:
 	 */
 	void sql_tables(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const;
 
+	/**
+	 * @brief Get the list of column names in specified tables. Returned as a result set.
+	 * @param handle The statement which holds the prepared statement with the parameter
+	 * @param catalog The catalog name to search for. See unixODBC's SQLColumns() documentation.
+	 * @param schema The schema name to search for. See unixODBC's SQLColumns() documentation.
+	 * @param table The table name to search for. See unixODBC's SQLColumns() documentation.
+	 * @param table_type The table type to search for. See unixODBC's SQLColumns() documentation.
+	 */
+	void sql_columns(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const;
+
 protected:
 
 	api();
@@ -356,6 +366,7 @@ private:
 	virtual column_description do_describe_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id) const = 0;
 	virtual bool do_more_results(statement_handle const & handle) const = 0;
 	virtual void do_sql_tables(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const = 0;
+	virtual void do_sql_columns(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const = 0;
 };
 
 } }

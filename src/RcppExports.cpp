@@ -64,6 +64,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// connection_sql_columns
+Rcpp::RObject connection_sql_columns(connection_ptr p, std::string catalog_name, std::string schema_name, std::string table_name, std::string table_type);
+RcppExport SEXP odbconnect_connection_sql_columns(SEXP pSEXP, SEXP catalog_nameSEXP, SEXP schema_nameSEXP, SEXP table_nameSEXP, SEXP table_typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< connection_ptr >::type p(pSEXP);
+    Rcpp::traits::input_parameter< std::string >::type catalog_name(catalog_nameSEXP);
+    Rcpp::traits::input_parameter< std::string >::type schema_name(schema_nameSEXP);
+    Rcpp::traits::input_parameter< std::string >::type table_name(table_nameSEXP);
+    Rcpp::traits::input_parameter< std::string >::type table_type(table_typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(connection_sql_columns(p, catalog_name, schema_name, table_name, table_type));
+    return rcpp_result_gen;
+END_RCPP
+}
 // result_release
 void result_release(cursor_ptr c);
 RcppExport SEXP odbconnect_result_release(SEXP cSEXP) {

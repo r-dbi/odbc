@@ -450,4 +450,24 @@ void level1_connector::do_sql_tables(statement_handle const & handle, std::strin
 	impl::throw_on_error(return_code, *this, handle);
 }
 
+void level1_connector::do_sql_columns(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const
+{
+
+	cpp_odbc::level2::input_string_buffer input_catalog(catalog);
+	cpp_odbc::level2::input_string_buffer input_schema(schema);
+	cpp_odbc::level2::input_string_buffer input_table(table);
+	cpp_odbc::level2::input_string_buffer input_table_type(table_type);
+
+	SQLRETURN const return_code = level1_api_->sql_columns(handle.handle,
+			input_catalog.data_pointer(),
+			input_catalog.size(),
+			input_schema.data_pointer(),
+			input_schema.size(),
+			input_table.data_pointer(),
+			input_table.size(),
+			input_table_type.data_pointer(),
+			input_table_type.size());
+
+	impl::throw_on_error(return_code, *this, handle);
+}
 } }

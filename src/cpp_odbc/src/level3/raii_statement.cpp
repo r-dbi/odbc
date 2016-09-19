@@ -137,4 +137,9 @@ void raii_statement::do_sql_tables(std::string const & catalog, std::string cons
 	api_->sql_tables(handle_, catalog, schema, table, table_type);
 }
 
+void raii_statement::do_sql_columns(std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const
+{
+	api_->sql_columns(handle_, catalog, schema, table, table_type);
+}
+
 } }

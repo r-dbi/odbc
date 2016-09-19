@@ -151,7 +151,7 @@ setMethod(
 setMethod(
   "dbListFields", c("OdbconnectConnection", "character"),
   function(conn, name) {
-    testthat::skip("Not yet implemented: dbListFields(Connection, character)")
+    connection_sql_columns(conn@ptr, table_name = name)$COLUMN_NAME
   })
 
 #' @rdname DBI

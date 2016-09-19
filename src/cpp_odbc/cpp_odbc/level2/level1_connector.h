@@ -73,6 +73,7 @@ private:
 	column_description do_describe_parameter(statement_handle const & handle, SQLUSMALLINT parameter_id) const final;
 	bool do_more_results(statement_handle const & handle) const final;
 	void do_sql_tables(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const final;
+	void do_sql_columns(statement_handle const & handle, std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const final;
 
 	std::shared_ptr<level1::api const> level1_api_;
 };

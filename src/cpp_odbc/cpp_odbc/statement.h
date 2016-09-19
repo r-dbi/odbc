@@ -3,7 +3,7 @@
  *  @file statement.h
  *  @date 16.05.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 15:54:55 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -166,6 +166,15 @@ public:
 	 */
 	void sql_tables(std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const;
 
+	/**
+	 * @brief Get the list of column names in specified tables. Returned as a result set.
+	 * @param catalog The catalog name to search for. See unixODBC's SQLColumns() documentation.
+	 * @param schema The schema name to search for. See unixODBC's SQLColumns() documentation.
+	 * @param table The table name to search for. See unixODBC's SQLColumns() documentation.
+	 * @param table_type The table type to search for. See unixODBC's SQLColumns() documentation.
+	 */
+	void sql_columns(std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const;
+
 	virtual ~statement();
 protected:
 	statement();
@@ -193,6 +202,7 @@ private:
 	virtual column_description do_describe_parameter(SQLUSMALLINT parameter_id) const = 0;
 	virtual bool do_more_results() const = 0;
 	virtual void do_sql_tables(std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const = 0;
+	virtual void do_sql_columns(std::string const & catalog, std::string const & schema, std::string const & table, std::string const & table_type) const = 0;
 };
 
 }

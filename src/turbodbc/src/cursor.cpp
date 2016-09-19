@@ -122,6 +122,19 @@ Rcpp::List cursor::sql_tables(std::string const & catalog_name, std::string cons
 	auto statement = make_shared_ptr<cpp_odbc::statement const>(st);
 	statement->sql_tables(catalog_name, schema_name, table_name, table_type);
 
+	auto raw_result_set = boost::make_shared<result_sets::bound_result_set>(statement, rows_to_buffer_);
+	if (raw_result_set) {
+		auto result = boost::make_shared<result_sets::r_result_set>(*raw_result_set);
+		return result->fetch_all();
+	}
+	return Rcpp::List();
+}
+
+Rcpp::List cursor::sql_columns(std::string const & catalog_name, std::string const & schema_name, std::string const & table_name, std::string const & table_type)
+{
+	auto st = connection_->get_connection()->make_statement();
+	auto statement = make_shared_ptr<cpp_odbc::statement const>(st);
+	statement->sql_columns(catalog_name, schema_name, table_name, table_type);
 
 	auto raw_result_set = boost::make_shared<result_sets::bound_result_set>(statement, rows_to_buffer_);
 	if (raw_result_set) {
