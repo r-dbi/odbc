@@ -94,7 +94,7 @@ setMethod(
 setMethod(
   "dbColumnInfo", "OdbconnectResult",
   function(res, ...) {
-    testthat::skip("Not yet implemented: dbColumnInfo(Result)")
+    connection_sql_columns(res@connection@ptr, ...)
   })
 
 #' @rdname DBI

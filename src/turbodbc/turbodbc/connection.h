@@ -36,9 +36,11 @@ public:
 	/**
 	 * @brief Create a new cursor object associated with this connection
 	 */
-	turbodbc::cursor make_cursor();
+	//turbodbc::cursor make_cursor();
 
-	bool is_current_result(const cursor* c) const;
+	void set_active_cursor(const cursor* c) const;
+
+	bool is_active_cursor(const cursor* c) const;
 
 	boost::shared_ptr<cpp_odbc::connection const> get_connection() const;
 
@@ -51,7 +53,7 @@ public:
 
 private:
 	boost::shared_ptr<cpp_odbc::connection const> connection_;
-	turbodbc::cursor* active_cursor_;
+	mutable const turbodbc::cursor* active_cursor_;
 };
 
 }

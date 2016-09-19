@@ -7,6 +7,6 @@
 #include "turbodbc/cursor.h"
 
 typedef Rcpp::XPtr<boost::shared_ptr<turbodbc::connection const> > connection_ptr;
-typedef Rcpp::XPtr<boost::shared_ptr<turbodbc::cursor> > cursor_ptr;
+typedef Rcpp::XPtr<turbodbc::cursor> cursor_ptr;
 
 #endif //__ODBCONNECT_TYPES__

@@ -11,29 +11,28 @@ void result_release(cursor_ptr c) {
 
 // [[Rcpp::export]]
 bool result_active(cursor_ptr c) {
-  return c.get() != NULL && (*c)->is_active();
+  return c.get() != NULL && c->is_active();
 }
 
 // [[Rcpp::export]]
 bool result_completed(cursor_ptr c) {
-  auto rs = (*c)->get_result_set();
+  auto rs = c->get_result_set();
   return !rs || rs->has_completed();
 }
 
 // [[Rcpp::export]]
 cursor_ptr query(connection_ptr p, std::string sql, std::size_t size = 1024) {
 
-  auto c = boost::make_shared<turbodbc::cursor>(turbodbc::cursor((*p), size, 1024, false));
+  auto c = new turbodbc::cursor((*p), size, 1024, false);
   c->prepare(sql);
   c->execute();
-
-  return cursor_ptr(new boost::shared_ptr<turbodbc::cursor>(c));
+  return cursor_ptr(c, true);
 }
 
 // [[Rcpp::export]]
 List result_fetch(cursor_ptr c, int n = -1) {
   List out;
-  auto rs = (*c)->get_result_set();
+  auto rs = c->get_result_set();
   if (!rs) {
     out.attr("class") = "data.frame";
     return out;
@@ -51,7 +50,7 @@ List result_fetch(cursor_ptr c, int n = -1) {
 
 // [[Rcpp::export]]
 void column_info(cursor_ptr c) {
-  auto columns = (*c)->get_result_set()->get_column_info();
+  auto columns = c->get_result_set()->get_column_info();
   for (auto info : columns) {
     Rcpp::Rcout << info.name << ':' << (int) info.type << ':' << info.supports_null_values << '\n';
   }
@@ -59,19 +58,19 @@ void column_info(cursor_ptr c) {
 
 // [[Rcpp::export]]
 void result_bind(cursor_ptr c, List params) {
-  (*c)->add_parameter_set(params);
-  (*c)->execute();
+  c->add_parameter_set(params);
+  c->execute();
 }
 
 // [[Rcpp::export]]
 void result_execute(cursor_ptr c) {
-  (*c)->execute();
+  c->execute();
 }
 
 // [[Rcpp::export]]
 void result_insert_dataframe(cursor_ptr c, DataFrame df) {
-  (*c)->add_parameter_set(df);
-  (*c)->execute();
+  c->add_parameter_set(df);
+  c->execute();
   c.release();
 }
 

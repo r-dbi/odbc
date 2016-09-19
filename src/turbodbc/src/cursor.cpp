@@ -28,6 +28,7 @@ cursor::cursor(std::shared_ptr<turbodbc::connection const> connection,
 	query_()
 {
 	connection_ = make_shared_ptr<turbodbc::connection const>(connection);
+	connection_->set_active_cursor(this);
 }
 cursor::cursor(boost::shared_ptr<turbodbc::connection const> connection,
                std::size_t rows_to_buffer,
@@ -39,6 +40,7 @@ cursor::cursor(boost::shared_ptr<turbodbc::connection const> connection,
 	use_async_io_(use_async_io),
 	query_()
 {
+	connection_->set_active_cursor(this);
 }
 
 cursor::~cursor() = default;
@@ -146,7 +148,7 @@ Rcpp::List cursor::sql_columns(std::string const & catalog_name, std::string con
 
 bool cursor::is_active() const
 {
-	return connection_->is_current_result(this);
+	return connection_->is_active_cursor(this);
 }
 
 }
