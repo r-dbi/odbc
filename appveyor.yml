@@ -20,7 +20,7 @@ services:
 
 build_script:
   - travis-tool.sh install_deps
-  - c:\Windows\SysWOW64\odbcconf.exe /a {CONFIGSYSDSN "SQL Server" "DSN=PostgreSQL|Dabtabase=test_db|Trusted_Connection=no|Server=(local)\SQL2014"}
+  - c:\Windows\SysWOW64\odbcconf.exe /a {CONFIGSYSDSN "SQL Server" "DSN=test|Description=test|Trusted_Connection=no|SERVER=(local)\SQL2014"}
 
 test_script:
   - travis-tool.sh run_tests
