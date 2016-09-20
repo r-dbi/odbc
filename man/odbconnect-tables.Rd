@@ -8,14 +8,13 @@
 \title{Convenience functions for reading/writing DBMS tables}
 \usage{
 \S4method{dbWriteTable}{OdbconnectConnection,character,data.frame}(conn, name,
-  value, row.names = NA, overwrite = FALSE, append = FALSE,
-  field.types = NULL, temporary = FALSE, copy = TRUE)
+  value, overwrite = FALSE, append = FALSE, ...)
 
 \S4method{sqlData}{OdbconnectConnection}(con, value, row.names = NA,
   copy = TRUE)
 }
 \arguments{
-\item{conn}{a \code{\linkS4class{PqConnection}} object, produced by
+\item{conn}{a \code{\linkS4class{OdbconnectConnection}} object, produced by
 \code{\link[DBI]{dbConnect}}}
 
 \item{name}{a character string specifying a table name. Names will be
@@ -23,6 +22,16 @@ automatically quoted so you can use any sequence of characaters, not
 just any valid bare table name.}
 
 \item{value}{A data.frame to write to the database.}
+
+\item{overwrite}{Allow overwriting the destination table. Cannot be
+\code{TRUE} if \code{append} is also \code{TRUE}.}
+
+\item{append}{Allow appending to the destination table. Cannot be
+\code{TRUE} if \code{overwrite} is also \code{TRUE}.}
+
+\item{...}{Other arguments used by individual methods.}
+
+\item{con}{A database connection.}
 
 \item{row.names}{Either \code{TRUE}, \code{FALSE}, \code{NA} or a string.
 
@@ -35,35 +44,18 @@ just any valid bare table name.}
 
   For backward compatibility, \code{NULL} is equivalent to \code{FALSE}.}
 
-\item{overwrite}{a logical specifying whether to overwrite an existing table
-or not. Its default is \code{FALSE}.}
-
-\item{append}{a logical specifying whether to append to an existing table
-in the DBMS. Its default is \code{FALSE}.}
-
-\item{field.types}{character vector of named SQL field types where
-the names are the names of new table's columns. If missing, types inferred
-with \code{\link[DBI]{dbDataType}}).}
-
-\item{temporary}{If \code{TRUE}, will generate a temporary table statement.}
-
 \item{copy}{If \code{TRUE}, serializes the data frame to a single string
-  and uses \code{COPY name FROM stdin}. This is fast, but not supported by
-  all postgres servers (e.g. Amazon's redshift). If \code{FALSE}, generates
-  a single SQL string. This is slower, but always supported.
-
-  RPostgres does not use parameterised queries to insert rows because
-  benchmarks revealed that this was considerably slower than using a single
-  SQL string.}
-
-\item{con}{A database connection.}
+and uses \code{COPY name FROM stdin}. This is fast, but not supported by
+all postgres servers (e.g. Amazon's redshift). If \code{FALSE}, generates
+a single SQL string. This is slower, but always supported.}
 }
 \description{
 Convenience functions for reading/writing DBMS tables
 }
 \examples{
+\dontrun{
 library(DBI)
-con <- dbConnect(RPostgres::Postgres())
+con <- dbConnect(odbconnect::odbconnect())
 dbListTables(con)
 dbWriteTable(con, "mtcars", mtcars, temporary = TRUE)
 dbReadTable(con, "mtcars")
@@ -76,5 +68,6 @@ dbWriteTable(con, "mtcars2", mtcars[0, ], temporary = TRUE)
 dbReadTable(con, "mtcars2")
 
 dbDisconnect(con)
+}
 }
 

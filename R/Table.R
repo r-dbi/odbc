@@ -1,30 +1,21 @@
 #' Convenience functions for reading/writing DBMS tables
 #'
-#' @param conn a \code{\linkS4class{PqConnection}} object, produced by
+#' @param conn a \code{\linkS4class{OdbconnectConnection}} object, produced by
 #'   \code{\link[DBI]{dbConnect}}
 #' @param name a character string specifying a table name. Names will be
 #'   automatically quoted so you can use any sequence of characaters, not
 #'   just any valid bare table name.
 #' @param value A data.frame to write to the database.
 #' @inheritParams DBI::sqlCreateTable
-#' @param overwrite a logical specifying whether to overwrite an existing table
-#'   or not. Its default is \code{FALSE}.
-#' @param append a logical specifying whether to append to an existing table
-#'   in the DBMS. Its default is \code{FALSE}.
-#' @param field.types character vector of named SQL field types where
-#'   the names are the names of new table's columns. If missing, types inferred
-#'   with \code{\link[DBI]{dbDataType}}).
 #' @param copy If \code{TRUE}, serializes the data frame to a single string
 #'   and uses \code{COPY name FROM stdin}. This is fast, but not supported by
 #'   all postgres servers (e.g. Amazon's redshift). If \code{FALSE}, generates
 #'   a single SQL string. This is slower, but always supported.
 #'
-#'   RPostgres does not use parameterised queries to insert rows because
-#'   benchmarks revealed that this was considerably slower than using a single
-#'   SQL string.
 #' @examples
+#' \dontrun{
 #' library(DBI)
-#' con <- dbConnect(RPostgres::Postgres())
+#' con <- dbConnect(odbconnect::odbconnect())
 #' dbListTables(con)
 #' dbWriteTable(con, "mtcars", mtcars, temporary = TRUE)
 #' dbReadTable(con, "mtcars")
@@ -37,14 +28,20 @@
 #' dbReadTable(con, "mtcars2")
 #'
 #' dbDisconnect(con)
+#' }
 #' @name odbconnect-tables
 NULL
 
-#' @export
 #' @rdname odbconnect-tables
-setMethod("dbWriteTable", c("OdbconnectConnection", "character", "data.frame"),
-  function(conn, name, value, row.names = NA, overwrite = FALSE, append = FALSE,
-    field.types = NULL, temporary = FALSE, copy = TRUE) {
+#' @inheritParams DBI::dbWriteTable
+#' @param overwrite Allow overwriting the destination table. Cannot be
+#'   \code{TRUE} if \code{append} is also \code{TRUE}.
+#' @param append Allow appending to the destination table. Cannot be
+#'   \code{TRUE} if \code{overwrite} is also \code{TRUE}.
+#' @export
+setMethod(
+  "dbWriteTable", c("OdbconnectConnection", "character", "data.frame"),
+  function(conn, name, value, overwrite=FALSE, append=FALSE, ...) {
 
     if (overwrite && append)
       stop("overwrite and append cannot both be TRUE", call. = FALSE)
@@ -59,19 +56,18 @@ setMethod("dbWriteTable", c("OdbconnectConnection", "character", "data.frame"),
     }
 
     if (!found || overwrite) {
-      sql <- sqlCreateTable(conn, name, value, row.names = row.names,
-        temporary = temporary)
+      sql <- sqlCreateTable(conn, name, value)
       dbGetQuery(conn, sql)
     }
 
     if (nrow(value) > 0) {
-      value <- sqlData(conn, value, row.names = row.names, copy = copy)
-      if (!copy) {
-        sql <- sqlAppendTable(conn, name, value)
-        rs <- dbSendQuery(conn, sql)
-      } else {
+      value <- sqlData(conn, value)
+      #if (!copy) {
+        #sql <- sqlAppendTable(conn, name, value)
+        #rs <- dbSendQuery(conn, sql)
+      #} else {
 
-        values <- sqlData(conn, value[, , drop = FALSE], row.names)
+        values <- sqlData(conn, value[, , drop = FALSE])
 
         name <- dbQuoteIdentifier(conn, name)
         fields <- dbQuoteIdentifier(conn, names(values))
@@ -87,16 +83,16 @@ setMethod("dbWriteTable", c("OdbconnectConnection", "character", "data.frame"),
           result_insert_dataframe(rs@ptr, values),
           finally = dbClearResult(rs)
           )
-      }
+      #}
     }
 
     invisible(TRUE)
   }
 )
 
-#' @export
-#' @inheritParams DBI::sqlRownamesToColumn
-#' @rdname odbconnect-tables
+##' @rdname odbconnect-tables
+##' @inheritParams DBI::dbReadTable
+##' @export
 setMethod("sqlData", "OdbconnectConnection", function(con, value, row.names = NA, copy = TRUE) {
   value <- sqlRownamesToColumn(value, row.names)
 
@@ -106,3 +102,14 @@ setMethod("sqlData", "OdbconnectConnection", function(con, value, row.names = NA
 
   value
 })
+
+
+#' @rdname DBI
+#' @inheritParams DBI::dbReadTable
+#' @export
+setMethod(
+  "dbReadTable", c("OdbconnectConnection", "character"),
+  function(conn, name) {
+    name <- dbQuoteIdentifier(conn, name)
+    dbGetQuery(conn, paste("SELECT * FROM ", name))
+  })

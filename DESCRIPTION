@@ -20,6 +20,7 @@ LinkingTo: Rcpp, BH
 RoxygenNote: 5.0.1
 URL: https://github.com/hadley/odbconnect
 BugReports: https://github.com/hadley/odbconnect/issues
+SystemRequirements: GNU make
 Suggests:
     DBItest,
     testthat,
