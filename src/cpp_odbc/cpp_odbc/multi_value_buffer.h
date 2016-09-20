@@ -17,12 +17,12 @@ namespace cpp_odbc {
 
 struct writable_buffer_element {
 	char * data_pointer;
-	long long & indicator;
+	long & indicator;
 };
 
 struct buffer_element {
 	char const * data_pointer;
-	long long const & indicator;
+	long const & indicator;
 };
 
 /**
@@ -72,7 +72,7 @@ public:
 	 *        StrLen_or_IndPtrs appear in ODBC calls
 	 * @return A pointer to the length/indicator array
 	 */
-	long long * indicator_pointer();
+	long * indicator_pointer();
 
 	/**
 	 * @brief Provides read-only raw access to a contiguous strip of memory which
@@ -80,7 +80,7 @@ public:
 	 *        is NULL).
 	 * @return A pointer to the length/indicator array
 	 */
-	long long const * indicator_pointer() const;
+	long const * indicator_pointer() const;
 
 	/**
 	 * @brief Read/write access to the element with index element_index
@@ -99,7 +99,7 @@ public:
 private:
 	std::size_t element_size_;
 	std::vector<char> data_;
-	std::vector<long long> indicators_;
+	std::vector<long> indicators_;
 };
 
 

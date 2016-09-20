@@ -53,12 +53,12 @@ char const * multi_value_buffer::data_pointer() const
 	return data_.data();
 }
 
-long long * multi_value_buffer::indicator_pointer()
+long * multi_value_buffer::indicator_pointer()
 {
 	return indicators_.data();
 }
 
-long long const * multi_value_buffer::indicator_pointer() const
+long const * multi_value_buffer::indicator_pointer() const
 {
 	return indicators_.data();
 }
