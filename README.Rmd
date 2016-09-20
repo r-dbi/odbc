@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 [![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![Travis-CI Build Status](https://travis-ci.org/hadley/odbconnect.svg?branch=master)](https://travis-ci.org/hadley/odbconnect)
 [![Coverage Status](https://img.shields.io/codecov/c/github/hadley/odbconnect/master.svg)](https://codecov.io/github/hadley/odbconnect?branch=master)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/hadley/odbconnect?branch=master&svg=true)](https://ci.appveyor.com/project/hadley/odbconnect)
 
 The goal of odbconnect is to provide a DBI-compliant interface to ODBC drivers.
 
@@ -58,7 +59,6 @@ system.time(dbWriteTable(rodbc, "flights2", as.data.frame(flights[, names(flight
 odbconnect <- dbConnect(odbconnect::odbconnect(), dsn = "PostgreSQL")
 system.time(dbWriteTable(odbconnect, "flights3", as.data.frame(flights)))
 ```
-
 ## ODBC Documentation
 
 https://msdn.microsoft.com/en-us/library/ms712628(v=vs.85).aspx

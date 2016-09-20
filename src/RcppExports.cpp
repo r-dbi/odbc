@@ -178,6 +178,17 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// result_row_count
+long result_row_count(cursor_ptr c);
+RcppExport SEXP odbconnect_result_row_count(SEXP cSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    rcpp_result_gen = Rcpp::wrap(result_row_count(c));
+    return rcpp_result_gen;
+END_RCPP
+}
 // column_types
 void column_types(DataFrame df);
 RcppExport SEXP odbconnect_column_types(SEXP dfSEXP) {

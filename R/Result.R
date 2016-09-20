@@ -103,7 +103,7 @@ setMethod(
 setMethod(
   "dbGetRowCount", "OdbconnectResult",
   function(res, ...) {
-    testthat::skip("Not yet implemented: dbGetRowCount(Result)")
+    result_row_count(res@ptr)
   })
 
 #' @rdname DBI

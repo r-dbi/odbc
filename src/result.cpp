@@ -75,6 +75,11 @@ void result_insert_dataframe(cursor_ptr c, DataFrame df) {
 }
 
 // [[Rcpp::export]]
+long result_row_count(cursor_ptr c) {
+  return c->get_row_count();
+}
+
+// [[Rcpp::export]]
 void column_types(DataFrame df) {
   for (int j = 0;j < df.size(); ++j) {
     Rcpp::Rcout << "type: " << Rf_type2char(TYPEOF(df[j])) << std::endl;
