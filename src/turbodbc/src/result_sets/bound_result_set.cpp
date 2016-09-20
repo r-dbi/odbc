@@ -40,7 +40,7 @@ void bound_result_set::rebind()
 	for (auto & column : columns_) {
 		column.bind();
 	}
-	statement_->set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, &rows_fetched_);
+	statement_->set_attribute(SQL_ATTR_ROWS_FETCHED_PTR, static_cast<SQLULEN *>(&rows_fetched_));
 }
 
 
