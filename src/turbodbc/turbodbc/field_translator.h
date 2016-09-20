@@ -3,6 +3,11 @@
 #include <turbodbc/field.h>
 #include <turbodbc/type_code.h>
 #include <cpp_odbc/multi_value_buffer.h>
+#ifdef _WIN32
+#undef Realloc
+#undef Free
+#include <windows.h>
+#endif
 #include <sqltypes.h>
 
 namespace turbodbc {

@@ -15,6 +15,11 @@
 #include "cpp_odbc/level3/raii_connection.h"
 #include "cpp_odbc/level2/api.h"
 
+#ifdef _WIN32
+#undef Realloc
+#undef Free
+#include <windows.h>
+#endif
 #include "sql.h"
 
 namespace cpp_odbc { namespace level3 {

@@ -1,5 +1,11 @@
 #pragma once
 
+#ifdef _WIN32
+#undef Realloc
+#undef Free
+#include <windows.h>
+#endif
+
 #include "sqltypes.h"
 
 #include <string>

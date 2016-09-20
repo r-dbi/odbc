@@ -14,6 +14,11 @@
 #include "cpp_odbc/multi_value_buffer.h"
 #include "cpp_odbc/column_description.h"
 
+#ifdef _WIN32
+#undef Realloc
+#undef Free
+#include <windows.h>
+#endif
 #include "sql.h"
 
 #include <string>

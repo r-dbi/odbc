@@ -10,6 +10,11 @@
  *  $LastChangedRevision: 21211 $
  *
  */
+#ifdef _WIN32
+#undef Realloc
+#undef Free
+#include <windows.h>
+#endif
 
 #include "sql.h"
 #include "cpp_odbc/level2/diagnostic_record.h"

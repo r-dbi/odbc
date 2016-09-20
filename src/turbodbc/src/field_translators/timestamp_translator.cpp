@@ -2,6 +2,11 @@
 
 #include <boost/variant/get.hpp>
 
+#ifdef _WIN32
+#undef Realloc
+#undef Free
+#include <windows.h>
+#endif
 #include <sql.h>
 
 

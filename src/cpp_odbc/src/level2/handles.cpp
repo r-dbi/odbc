@@ -2,7 +2,7 @@
  *  @file handles.cpp
  *  @date 13.03.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -11,6 +11,11 @@
  */
 
 #include "cpp_odbc/level2/handles.h"
+#ifdef _WIN32
+#undef Realloc
+#undef Free
+#include <windows.h>
+#endif
 #include "sql.h"
 
 namespace cpp_odbc { namespace level2 {

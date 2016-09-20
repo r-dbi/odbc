@@ -1,5 +1,10 @@
 #include <turbodbc/field_translator.h>
 
+#ifdef _WIN32
+#undef Realloc
+#undef Free
+#include <windows.h>
+#endif
 #include <sql.h>
 
 namespace turbodbc {

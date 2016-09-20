@@ -3,7 +3,7 @@
  *  @file connection.h
  *  @date 16.05.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 15:54:55 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -13,6 +13,11 @@
 
 #include "cpp_odbc/statement.h"
 
+#ifdef _WIN32
+#undef Realloc
+#undef Free
+#include <windows.h>
+#endif
 #include "sql.h"
 
 #include <memory>

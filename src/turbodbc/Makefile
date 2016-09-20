@@ -1,5 +1,5 @@
 TARGET ?= libturbodbc.a
-SRC_DIRS ?= ./src ./ ../cpp_odbc
+SRC_DIRS ?= ./src . ../cpp_odbc
 
 SRCS := $(shell find $(SRC_DIRS) -name *.cpp -or -name *.c)
 OBJS := $(addsuffix .o,$(basename $(SRCS)))

@@ -2,6 +2,11 @@
 
 #include <turbodbc/make_field_translator.h>
 
+#ifdef _WIN32
+#undef Realloc
+#undef Free
+#include <windows.h>
+#endif
 #include <sql.h>
 #include <Rcpp.h>
 #include <boost/any.hpp>

@@ -10,7 +10,11 @@
  *  $LastChangedRevision: 21206 $
  *
  */
-
+#ifdef _WIN32
+#undef Realloc
+#undef Free
+#include <windows.h>
+#endif
 #include "sql.h"
 
 namespace cpp_odbc { namespace level1 {

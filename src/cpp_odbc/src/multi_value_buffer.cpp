@@ -2,7 +2,7 @@
  *  @file multi_value_buffer.cpp
  *  @date 11.04.2014
  *  @author mkoenig
- *  @brief 
+ *  @brief
  *
  *  $LastChangedDate: 2014-11-28 11:59:59 +0100 (Fr, 28 Nov 2014) $
  *  $LastChangedBy: mkoenig $
@@ -53,12 +53,12 @@ char const * multi_value_buffer::data_pointer() const
 	return data_.data();
 }
 
-long * multi_value_buffer::indicator_pointer()
+long long * multi_value_buffer::indicator_pointer()
 {
 	return indicators_.data();
 }
 
-long const * multi_value_buffer::indicator_pointer() const
+long long const * multi_value_buffer::indicator_pointer() const
 {
 	return indicators_.data();
 }
