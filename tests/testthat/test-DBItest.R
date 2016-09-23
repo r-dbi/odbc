@@ -1,5 +1,5 @@
 if (.Platform$OS.type == "windows") {
-  DBItest::make_context(odbconnect(), list(Driver = "{SQL Server}", "Server" = "(local)\\SQL2014", "Database" = "master", "User ID" = "sa", "Password" = "Password12"), tweaks = DBItest::tweaks(), name = "odbconnect")
+  #DBItest::make_context(odbconnect(), list(Driver = "{SQL Server}", "Server" = "(local)\\SQL2014", "Database" = "master", "User ID" = "sa", "Password" = "Password12"), tweaks = DBItest::tweaks(), name = "odbconnect")
 } else {
   DBItest::make_context(odbconnect(), list(dsn = "PostgreSQL"), tweaks = DBItest::tweaks(), name = "odbconnect")
 }
