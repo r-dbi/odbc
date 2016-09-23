@@ -1,4 +1,8 @@
-DBItest::make_context(odbconnect(), list(dsn = "PostgreSQL"), tweaks = DBItest::tweaks(), name = "odbconnect")
+if (.Platform$OS.type == "windows") {
+  DBItest::make_context(odbconnect(), list(dsn = "test"), tweaks = DBItest::tweaks(), name = "odbconnect")
+} else {
+  DBItest::make_context(odbconnect(), list(dsn = "PostgreSQL"), tweaks = DBItest::tweaks(), name = "odbconnect")
+}
 
 DBItest::test_getting_started("package_name")
 DBItest::test_driver()

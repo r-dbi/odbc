@@ -20,7 +20,7 @@ services:
 
 build_script:
   - travis-tool.sh install_deps
-  - c:\Windows\SysWOW64\odbcconf.exe /a {CONFIGSYSDSN "SQL Server" "DSN=PostgreSQL|Server=(local)\SQL2014|Database=master|User ID=sa|Password=Password12!|Trusted_Connection=no"}
+  - c:\Windows\SysWOW64\odbcconf.exe /a {SETFILEDSNDIR "$APPVEYOR_BUILD_FOLDER\travis\odbc"}
 
 test_script:
   - travis-tool.sh run_tests
