@@ -20,7 +20,6 @@ services:
 
 build_script:
   - travis-tool.sh install_deps
-  - c:\Windows\SysWOW64\odbcconf.exe /a {SETFILEDSNDIR "$APPVEYOR_BUILD_FOLDER\travis\odbc"}
 
 test_script:
   - travis-tool.sh run_tests
