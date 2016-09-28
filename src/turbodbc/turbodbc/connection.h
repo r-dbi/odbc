@@ -44,13 +44,6 @@ public:
 
 	std::shared_ptr<cpp_odbc::connection const> get_connection() const;
 
-	/// Indicate number of rows which shall be buffered by result sets
-	std::size_t rows_to_buffer;
-	///< Indicate number of parameter sets which shall be buffered by queries
-	std::size_t parameter_sets_to_buffer;
-	///< Indicate whether asynchronous i/o should be used
-	bool use_async_io;
-
 private:
 	std::shared_ptr<cpp_odbc::connection const> connection_;
 	//mutable const turbodbc::cursor* active_cursor_;

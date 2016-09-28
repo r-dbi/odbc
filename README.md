@@ -24,14 +24,14 @@ rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "PostgreSQL")
 system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
 #> Warning: closing unused RODBC handle 1
 #>    user  system elapsed 
-#>  12.367   2.412  15.905
+#>  12.845   2.830  17.761
 
 # Now using odbconnect
 library(odbconnect)
 odbconnect <- dbConnect(odbconnect::odbconnect(), dsn = "PostgreSQL")
 system.time(odbconnect_result <- dbReadTable(odbconnect, "flights"))
 #>    user  system elapsed 
-#>   3.887   0.177   4.341
+#>   2.671   0.195   3.521
 
 library(tibble)
 as_tibble(odbconnect_result)
@@ -58,8 +58,8 @@ identical(dim(rodbc_result), dim(odbconnect_result))
 rm(rodbc_result, odbconnect_result)
 gc()
 #>           used (Mb) gc trigger  (Mb) max used  (Mb)
-#> Ncells  620545 33.2    1168576  62.5  1119403  59.8
-#> Vcells 7821896 59.7   25961721 198.1 25872354 197.4
+#> Ncells  622731 33.3    1168576  62.5  1152584  61.6
+#> Vcells 7831236 59.8   25976547 198.2 25881694 197.5
 ```
 
 ### Writing
@@ -71,14 +71,14 @@ library(nycflights13)
 # rodbc does not support writing timestamps natively.
 system.time(dbWriteTable(rodbc, "flights2", as.data.frame(flights[, names(flights) != "time_hour"])))
 #>    user  system elapsed 
-#>   6.159   3.724  44.229
+#>   7.371   4.409  52.770
 
 # Now using odbconnect
 odbconnect <- dbConnect(odbconnect::odbconnect(), dsn = "PostgreSQL")
 system.time(dbWriteTable(odbconnect, "flights3", as.data.frame(flights)))
 #> Warning in dbClearResult(rs): Result already cleared
 #>    user  system elapsed 
-#>  11.139   3.741  29.308
+#>   7.912   3.971  26.706
 ```
 
 ODBC Documentation

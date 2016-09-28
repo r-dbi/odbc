@@ -18,6 +18,8 @@ DBItest::test_result(
     "data_timestamp_.*",
     "data_character.*",
     "data_raw.*",
+    "command_query",
+    "data_type_connection",
     "data_time.*", # time data not supported currently
     "data_date.*")) # date data has class in entire row rather than for each item.
 DBItest::test_sql(c(
