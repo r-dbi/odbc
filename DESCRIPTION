@@ -34,3 +34,5 @@ Collate:
     'Table.R'
     'utils.R'
     'zzz.R'
+Remotes:
+  jimhester/covr@compiled_subdir
