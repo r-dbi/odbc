@@ -20,7 +20,13 @@ DBItest::test_result(
     "data_raw.*",
     "data_time.*", # time data not supported currently
     "data_date.*")) # date data has class in entire row rather than for each item.
-#DBItest::test_sql()
+DBItest::test_sql(c(
+    "quote_identifier_not_vectorized",
+    "append_table_error",
+    "temporary_table",
+    "table_visible_in_other_connection",
+    "roundtrip_.*",
+    NULL))
 DBItest::test_meta(c("column_info", "row_count", "bind_empty"))
 DBItest::test_compliance("read_only")
 

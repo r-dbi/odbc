@@ -118,7 +118,7 @@ List convert_to_r(std::vector<boost::any> const & out, std::vector<column_info> 
 				case type_code::string: {
 					auto data = boost::any_cast<std::vector<nullable_string>>(&out[i]);
 					auto out = CharacterVector(data->size());
-					for (int j = 0; j < data->size(); ++j) {
+					for (size_t j = 0; j < data->size(); ++j) {
 						if ((*data)[j] == boost::none) {
 							out[j] = NA_STRING;
 						} else {

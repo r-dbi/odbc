@@ -22,25 +22,26 @@ cursor::cursor(std::shared_ptr<turbodbc::connection const> connection,
                std::size_t rows_to_buffer,
                std::size_t parameter_sets_to_buffer,
                bool use_async_io) :
+  connection_(connection),
+	rows_to_buffer_(rows_to_buffer),
+	parameter_sets_to_buffer_(parameter_sets_to_buffer),
+	use_async_io_(use_async_io),
+	query_()
+{
+	//connection_ = make_shared_ptr<turbodbc::connection const>(connection);
+	//connection_->set_active_cursor(this);
+}
+cursor::cursor(boost::shared_ptr<turbodbc::connection const> connection,
+               std::size_t rows_to_buffer,
+               std::size_t parameter_sets_to_buffer,
+               bool use_async_io) :
 	rows_to_buffer_(rows_to_buffer),
 	parameter_sets_to_buffer_(parameter_sets_to_buffer),
 	use_async_io_(use_async_io),
 	query_()
 {
 	connection_ = make_shared_ptr<turbodbc::connection const>(connection);
-	connection_->set_active_cursor(this);
-}
-cursor::cursor(boost::shared_ptr<turbodbc::connection const> connection,
-               std::size_t rows_to_buffer,
-               std::size_t parameter_sets_to_buffer,
-               bool use_async_io) :
-	connection_(connection),
-	rows_to_buffer_(rows_to_buffer),
-	parameter_sets_to_buffer_(parameter_sets_to_buffer),
-	use_async_io_(use_async_io),
-	query_()
-{
-	connection_->set_active_cursor(this);
+	//connection_->set_active_cursor(this);
 }
 
 cursor::~cursor() = default;
@@ -108,7 +109,7 @@ long cursor::get_row_count()
 	return query_->get_row_count();
 }
 
-boost::shared_ptr<turbodbc::connection const> cursor::get_connection() const
+std::shared_ptr<turbodbc::connection const> cursor::get_connection() const
 {
 	return connection_;
 }
@@ -148,7 +149,7 @@ Rcpp::List cursor::sql_columns(std::string const & catalog_name, std::string con
 
 bool cursor::is_active() const
 {
-	return connection_->is_active_cursor(this);
+	return true;//connection_->is_active_cursor(this);
 }
 
 }

@@ -14,7 +14,7 @@ class cursor;
  *        connection class as specified by the database API version 2.
  *        Additional wrapping may be required.
  */
-class connection : public boost::enable_shared_from_this<connection> {
+class connection : public std::enable_shared_from_this<connection> {
 public:
 	/**
 	 * @brief Construct a new connection based on the given low-level connection
@@ -38,11 +38,11 @@ public:
 	 */
 	//turbodbc::cursor make_cursor();
 
-	void set_active_cursor(const cursor* c) const;
+	//void set_active_cursor(const cursor* c) const;
 
-	bool is_active_cursor(const cursor* c) const;
+	//bool is_active_cursor(const cursor* c) const;
 
-	boost::shared_ptr<cpp_odbc::connection const> get_connection() const;
+	std::shared_ptr<cpp_odbc::connection const> get_connection() const;
 
 	/// Indicate number of rows which shall be buffered by result sets
 	std::size_t rows_to_buffer;
@@ -52,8 +52,8 @@ public:
 	bool use_async_io;
 
 private:
-	boost::shared_ptr<cpp_odbc::connection const> connection_;
-	mutable const turbodbc::cursor* active_cursor_;
+	std::shared_ptr<cpp_odbc::connection const> connection_;
+	//mutable const turbodbc::cursor* active_cursor_;
 };
 
 }

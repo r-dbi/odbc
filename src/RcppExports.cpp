@@ -6,14 +6,14 @@
 
 using namespace Rcpp;
 
-// connect
-connection_ptr connect(std::string connection_string);
-RcppExport SEXP odbconnect_connect(SEXP connection_stringSEXP) {
+// odbconnect_connect
+connection_ptr odbconnect_connect(std::string connection_string);
+RcppExport SEXP odbconnect_odbconnect_connect(SEXP connection_stringSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type connection_string(connection_stringSEXP);
-    rcpp_result_gen = Rcpp::wrap(connect(connection_string));
+    rcpp_result_gen = Rcpp::wrap(odbconnect_connect(connection_string));
     return rcpp_result_gen;
 END_RCPP
 }

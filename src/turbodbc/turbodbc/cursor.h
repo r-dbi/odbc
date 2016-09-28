@@ -36,7 +36,7 @@ public:
 
 	boost::shared_ptr<result_sets::r_result_set> get_result_set() const;
 
-	boost::shared_ptr<turbodbc::connection const> get_connection() const;
+	std::shared_ptr<turbodbc::connection const> get_connection() const;
 
 	boost::shared_ptr<turbodbc::query> get_query();
 
@@ -47,7 +47,7 @@ public:
 	~cursor();
 
 private:
-	boost::shared_ptr<turbodbc::connection const> connection_;
+	std::shared_ptr<turbodbc::connection const> connection_;
 	std::size_t rows_to_buffer_;
 	std::size_t parameter_sets_to_buffer_;
 	bool use_async_io_;

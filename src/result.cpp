@@ -23,7 +23,7 @@ bool result_completed(cursor_ptr c) {
 // [[Rcpp::export]]
 cursor_ptr query(connection_ptr p, std::string sql, std::size_t size = 1024) {
 
-  auto c = new turbodbc::cursor((*p), size, 1024, false);
+  auto c = new turbodbc::cursor(*p, 1024, 1024, false);
   c->prepare(sql);
   c->execute();
   return cursor_ptr(c, true);

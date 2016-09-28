@@ -9,7 +9,7 @@ OdbconnectConnection <- function(dsn = NULL, quote = "\"", ...) {
     args[["dsn"]] <- dsn
   }
   connection_string <- paste(collapse = ";", sep = "=", names(args), args)
-  ptr <- connect(connection_string)
+  ptr <- odbconnect_connect(connection_string)
   new("OdbconnectConnection", ptr = ptr, quote = quote)
 }
 
