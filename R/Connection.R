@@ -167,8 +167,7 @@ setMethod(
 setMethod(
   "dbCommit", "OdbconnectConnection",
   function(conn) {
-    testthat::skip("Not yet implemented: dbCommit(Connection)")
-    #connection_commit(conn@ptr)
+    connection_commit(conn@ptr)
     TRUE
   })
 
@@ -178,7 +177,8 @@ setMethod(
 setMethod(
   "dbRollback", "OdbconnectConnection",
   function(conn) {
-    testthat::skip("Not yet implemented: dbRollback(Connection)")
+    connection_rollback(conn@ptr)
+    TRUE
   })
 
 get_data_type <- function(obj) {

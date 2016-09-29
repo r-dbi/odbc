@@ -13,6 +13,14 @@ connection_release <- function(p) {
     invisible(.Call('odbconnect_connection_release', PACKAGE = 'odbconnect', p))
 }
 
+connection_commit <- function(p) {
+    invisible(.Call('odbconnect_connection_commit', PACKAGE = 'odbconnect', p))
+}
+
+connection_rollback <- function(p) {
+    invisible(.Call('odbconnect_connection_rollback', PACKAGE = 'odbconnect', p))
+}
+
 connection_valid <- function(p) {
     .Call('odbconnect_connection_valid', PACKAGE = 'odbconnect', p)
 }

@@ -36,6 +36,18 @@ void connection_release(connection_ptr p) {
 }
 
 // [[Rcpp::export]]
+void connection_commit(connection_ptr p) {
+  (*p)->commit();
+  return;
+}
+
+// [[Rcpp::export]]
+void connection_rollback(connection_ptr p) {
+  (*p)->rollback();
+  return;
+}
+
+// [[Rcpp::export]]
 bool connection_valid(connection_ptr p) {
   return p.get() != NULL;
 }

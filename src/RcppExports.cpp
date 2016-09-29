@@ -38,6 +38,26 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// connection_commit
+void connection_commit(connection_ptr p);
+RcppExport SEXP odbconnect_connection_commit(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< connection_ptr >::type p(pSEXP);
+    connection_commit(p);
+    return R_NilValue;
+END_RCPP
+}
+// connection_rollback
+void connection_rollback(connection_ptr p);
+RcppExport SEXP odbconnect_connection_rollback(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< connection_ptr >::type p(pSEXP);
+    connection_rollback(p);
+    return R_NilValue;
+END_RCPP
+}
 // connection_valid
 bool connection_valid(connection_ptr p);
 RcppExport SEXP odbconnect_connection_valid(SEXP pSEXP) {
