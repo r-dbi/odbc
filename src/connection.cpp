@@ -13,8 +13,20 @@ connection_ptr odbconnect_connect(std::string connection_string) {
 }
 
 // [[Rcpp::export]]
-std::string connect_info(connection_ptr p) {
-  return (*p)->get_connection()->get_string_info(SQL_SERVER_NAME);
+Rcpp::List connection_info(connection_ptr p) {
+    return Rcpp::List::create(
+      Rcpp::_["dbname"] = (*p)->get_connection()->get_string_info(SQL_DBMS_NAME),
+      Rcpp::_["db.version"]     = (*p)->get_connection()->get_string_info(SQL_DBMS_VER),
+      Rcpp::_["username"] = "",
+      Rcpp::_["host"] = "",
+      Rcpp::_["port"] = "",
+      Rcpp::_["sourcename"]   = (*p)->get_connection()->get_string_info(SQL_DATA_SOURCE_NAME),
+      Rcpp::_["servername"]   = (*p)->get_connection()->get_string_info(SQL_SERVER_NAME),
+      Rcpp::_["drivername"]   = (*p)->get_connection()->get_string_info(SQL_DRIVER_NAME),
+      Rcpp::_["odbc.version"]   = (*p)->get_connection()->get_string_info(SQL_ODBC_VER),
+      Rcpp::_["driver.version"]   = (*p)->get_connection()->get_string_info(SQL_DRIVER_VER),
+      Rcpp::_["odbcdriver.version"]   = (*p)->get_connection()->get_string_info(SQL_DRIVER_ODBC_VER)
+    );
 }
 
 // [[Rcpp::export]]

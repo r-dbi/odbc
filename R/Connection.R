@@ -148,7 +148,7 @@ setMethod(
 setMethod(
   "dbGetInfo", "OdbconnectConnection",
   function(dbObj, ...) {
-    testthat::skip("Not yet implemented: dbGetInfo(Connection)")
+    connection_info(dbObj@ptr)
   })
 
 #' @rdname DBI
