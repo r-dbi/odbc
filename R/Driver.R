@@ -73,7 +73,7 @@ setMethod(
 setMethod(
   "dbIsValid", "OdbconnectDriver",
   function(dbObj) {
-    testthat::skip("Not yet implemented: dbIsValid(Driver)")
+    TRUE
   })
 
 #' @rdname DBI
