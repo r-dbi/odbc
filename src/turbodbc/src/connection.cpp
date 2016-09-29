@@ -22,15 +22,15 @@ void connection::rollback() const
 	connection_->rollback();
 }
 
-//void connection::set_active_cursor(const cursor* c) const
-//{
-	//active_cursor_ = c;
-//}
+void connection::set_active_cursor(const cursor* c) const
+{
+  active_cursor_ = c;
+}
 
-//bool connection::is_active_cursor(const cursor* c) const
-//{
-	//return active_cursor_ == c;
-//}
+bool connection::is_active_cursor(const cursor* c) const
+{
+  return active_cursor_ == c;
+}
 
 std::shared_ptr<cpp_odbc::connection const> connection::get_connection() const
 {

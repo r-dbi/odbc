@@ -53,6 +53,7 @@ private:
 	bool use_async_io_;
 	boost::shared_ptr<turbodbc::query> query_;
 	boost::shared_ptr<result_sets::r_result_set> results_;
+  mutable cursor* active_cursor_;
 };
 
 }

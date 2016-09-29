@@ -38,15 +38,15 @@ public:
 	 */
 	//turbodbc::cursor make_cursor();
 
-	//void set_active_cursor(const cursor* c) const;
+	void set_active_cursor(const cursor* c) const;
 
-	//bool is_active_cursor(const cursor* c) const;
+	bool is_active_cursor(const cursor* c) const;
 
 	std::shared_ptr<cpp_odbc::connection const> get_connection() const;
 
 private:
 	std::shared_ptr<cpp_odbc::connection const> connection_;
-	//mutable const turbodbc::cursor* active_cursor_;
+	mutable const turbodbc::cursor* active_cursor_;
 };
 
 }
