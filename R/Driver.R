@@ -82,5 +82,5 @@ setMethod(
 setMethod(
   "dbGetInfo", "OdbconnectDriver",
   function(dbObj, ...) {
-    testthat::skip("Not yet implemented: dbGetInfo(Driver)")
+    list(max.connections = NULL, driver.version = NULL, client.version = NULL)
   })
