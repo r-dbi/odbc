@@ -85,7 +85,7 @@ setMethod(
 setMethod(
   "dbGetStatement", "OdbconnectResult",
   function(res, ...) {
-    testthat::skip("Not yet implemented: dbGetStatement(Result)")
+    res@statement
   })
 
 #' @rdname DBI
