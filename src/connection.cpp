@@ -32,9 +32,6 @@ Rcpp::List connection_info(connection_ptr p) {
 // [[Rcpp::export]]
 void connection_release(connection_ptr p) {
   p.release();
-  //if (p.get() != NULL) {
-    //p.release();
-  //}
   return;
 }
 
