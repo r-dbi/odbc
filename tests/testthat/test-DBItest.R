@@ -29,7 +29,7 @@ DBItest::test_sql(c(
     "table_visible_in_other_connection",
     "roundtrip_.*",
     NULL))
-DBItest::test_meta(c("column_info", "row_count", "bind_empty"))
+DBItest::test_meta(c("column_info", "bind_empty"))
 DBItest::test_compliance("read_only")
 
 #DBItest::test_all(c(

@@ -127,7 +127,7 @@ Rcpp::List cursor::sql_tables(std::string const & catalog_name, std::string cons
 	auto raw_result_set = boost::make_shared<result_sets::bound_result_set>(statement, rows_to_buffer_);
 	if (raw_result_set) {
 		auto result = boost::make_shared<result_sets::r_result_set>(*raw_result_set);
-		return result->fetch_all();
+		return result->fetch();
 	}
 	return Rcpp::List();
 }
@@ -141,7 +141,7 @@ Rcpp::List cursor::sql_columns(std::string const & catalog_name, std::string con
 	auto raw_result_set = boost::make_shared<result_sets::bound_result_set>(statement, rows_to_buffer_);
 	if (raw_result_set) {
 		auto result = boost::make_shared<result_sets::r_result_set>(*raw_result_set);
-		return result->fetch_all();
+		return result->fetch();
 	}
 	return Rcpp::List();
 }

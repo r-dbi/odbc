@@ -69,6 +69,10 @@ result_insert_dataframe <- function(c, df) {
     invisible(.Call('odbconnect_result_insert_dataframe', PACKAGE = 'odbconnect', c, df))
 }
 
+result_rows_affected <- function(c) {
+    .Call('odbconnect_result_rows_affected', PACKAGE = 'odbconnect', c)
+}
+
 result_row_count <- function(c) {
     .Call('odbconnect_result_row_count', PACKAGE = 'odbconnect', c)
 }

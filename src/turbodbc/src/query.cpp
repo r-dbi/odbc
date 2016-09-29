@@ -178,7 +178,7 @@ void query::rebind_parameter_to_hold_value(std::size_t index, field const & valu
 void query::update_row_count()
 {
 	bool const has_result_set = (statement_->number_of_columns() != 0);
-	if (has_result_set) {
+	if (!has_result_set) {
 		row_count_ = statement_->row_count();
 	} else {
 		row_count_ += rows_processed_;

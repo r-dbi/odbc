@@ -61,28 +61,22 @@ setMethod(
     }
 
     if (nrow(value) > 0) {
-      value <- sqlData(conn, value)
-      #if (!copy) {
-        #sql <- sqlAppendTable(conn, name, value)
-        #rs <- dbSendQuery(conn, sql)
-      #} else {
+      values <- sqlData(conn, value[, , drop = FALSE])
 
-        values <- sqlData(conn, value[, , drop = FALSE])
+      name <- dbQuoteIdentifier(conn, name)
+      fields <- dbQuoteIdentifier(conn, names(values))
+      params <- rep("?", length(fields))
 
-        name <- dbQuoteIdentifier(conn, name)
-        fields <- dbQuoteIdentifier(conn, names(values))
-        params <- rep("?", length(fields))
+      sql <- paste0(
+        "INSERT INTO ", name, " (", paste0(fields, collapse = ", "), ")\n",
+        "VALUES (", paste0(params, collapse = ", "), ")"
+        )
+      rs <- dbSendQuery(conn, sql)
 
-        sql <- paste0(
-          "INSERT INTO ", name, " (", paste0(fields, collapse = ", "), ")\n",
-          "VALUES (", paste0(params, collapse = ", "), ")"
-          )
-        rs <- dbSendQuery(conn, sql)
-
-        tryCatch(
-          result_insert_dataframe(rs@ptr, values),
-          finally = dbClearResult(rs)
-          )
+      tryCatch(
+        result_insert_dataframe(rs@ptr, values),
+        finally = dbClearResult(rs)
+        )
       #}
     }
 

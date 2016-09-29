@@ -179,7 +179,8 @@ r_result_set::r_result_set(result_set & base) :
 	base_result_(base),
 	has_completed_(false),
 	rows_in_batch_(0),
-	row_offset_(0)
+	row_offset_(0),
+	total_rows_(0)
 {
 	for (auto const & info : base_result_.get_column_info()) {
 		types_.emplace_back(info.type);
@@ -189,46 +190,6 @@ r_result_set::r_result_set(result_set & base) :
 std::vector<column_info> r_result_set::get_column_info() const
 {
 	return base_result_.get_column_info();
-}
-
-List r_result_set::fetch_all() const
-{
-
-	auto const column_info = base_result_.get_column_info();
-	auto const n_columns = column_info.size();
-
-	if (has_completed_) {
-		return List();
-	}
-
-	std::vector<boost::any> columns(n_columns);
-	auto const buffers = base_result_.get_buffers();
-
-	size_t rows_in_batch, total_rows;
-	total_rows = 0;
-	rows_in_batch = base_result_.fetch_next_batch();
-
-	CharacterVector names(n_columns);
-	for (std::size_t i = 0; i != n_columns; ++i) {
-		names[i] = column_info[i].name;
-		columns[i] = declare_column(column_info[i].type, rows_in_batch);
-	}
-
-	while (rows_in_batch != 0) {
-		for (std::size_t i = 0; i != n_columns; ++i) {
-			append_buffer(columns[i], column_info[i].type, rows_in_batch, buffers[i]);
-			names[i] = column_info[i].name;
-		}
-		total_rows += rows_in_batch;
-		rows_in_batch = base_result_.fetch_next_batch();
-	}
-	List result = convert_to_r(columns, column_info);
-	result.attr("names") = names;
-	result.attr("class") = CharacterVector::create("data.frame");
-	result.attr("row.names") = IntegerVector::create(NA_INTEGER, -(total_rows));
-
-	has_completed_ = true;
-	return result;
 }
 
 List r_result_set::fetch(size_t n) const
@@ -279,12 +240,18 @@ List r_result_set::fetch(size_t n) const
 		has_completed_ = true;
 	}
 
+	total_rows_ += rows;
 	List result = convert_to_r(columns, column_info);
 	result.attr("names") = names;
 	result.attr("class") = CharacterVector::create("data.frame");
 	result.attr("row.names") = IntegerVector::create(NA_INTEGER, -(rows));
 
 	return result;
+}
+
+size_t r_result_set::get_rows_returned() const
+{
+	return total_rows_;
 }
 
 bool r_result_set::has_completed() const

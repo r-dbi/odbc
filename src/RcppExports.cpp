@@ -198,8 +198,19 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// result_rows_affected
+int result_rows_affected(cursor_ptr c);
+RcppExport SEXP odbconnect_result_rows_affected(SEXP cSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    rcpp_result_gen = Rcpp::wrap(result_rows_affected(c));
+    return rcpp_result_gen;
+END_RCPP
+}
 // result_row_count
-long result_row_count(cursor_ptr c);
+int result_row_count(cursor_ptr c);
 RcppExport SEXP odbconnect_result_row_count(SEXP cSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

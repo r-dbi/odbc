@@ -26,7 +26,6 @@ cursor_ptr query(connection_ptr p, std::string sql, std::size_t size = 1024) {
   auto c = new turbodbc::cursor(*p, 1024, 1024, false);
   c->prepare(sql);
   c->execute();
-  c->get_connection()->commit();
   return cursor_ptr(c, true);
 }
 
@@ -39,7 +38,7 @@ List result_fetch(cursor_ptr c, int n = -1) {
     return out;
   }
   if (n == -1) {
-    out = rs->fetch_all();
+    out = rs->fetch();
   } else {
     out = rs->fetch(n);
   }
@@ -76,8 +75,17 @@ void result_insert_dataframe(cursor_ptr c, DataFrame df) {
 }
 
 // [[Rcpp::export]]
-long result_row_count(cursor_ptr c) {
+int result_rows_affected(cursor_ptr c) {
   return c->get_row_count();
+}
+
+// [[Rcpp::export]]
+int result_row_count(cursor_ptr c) {
+  auto rs = c->get_result_set();
+  if (!rs) {
+    return 0;
+  }
+  return rs->get_rows_returned();
 }
 
 // [[Rcpp::export]]

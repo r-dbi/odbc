@@ -112,7 +112,7 @@ setMethod(
 setMethod(
   "dbGetRowsAffected", "OdbconnectResult",
   function(res, ...) {
-    testthat::skip("Not yet implemented: dbGetRowsAffected(Result)")
+    result_rows_affected(res@ptr)
   })
 
 #' @rdname DBI

@@ -4,6 +4,7 @@
 #include <turbodbc/field.h>
 #include <turbodbc/field_translator.h>
 #include "Rcpp.h"
+#include <limits>
 
 namespace turbodbc { namespace result_sets {
 
@@ -33,8 +34,9 @@ public:
 	 * @brief Retrieve a List with the full results.
 	 * @return Returned object is an empty list in case there are no results.
 	 */
-	Rcpp::List fetch_all() const;
-	Rcpp::List fetch(size_t n) const;
+	Rcpp::List fetch(size_t n = std::numeric_limits<size_t>::max()) const;
+
+	size_t get_rows_returned() const;
 
 	bool has_completed() const;
 
@@ -44,6 +46,7 @@ private:
 	mutable bool has_completed_;
 	mutable size_t rows_in_batch_;
 	mutable size_t row_offset_;
+  mutable size_t total_rows_;
 	mutable std::vector<std::reference_wrapper<cpp_odbc::multi_value_buffer const>> buffers_;
 };
 
