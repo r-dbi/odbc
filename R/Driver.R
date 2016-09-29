@@ -64,7 +64,7 @@ setMethod(
 setMethod(
   "dbDataType", c("OdbconnectDriver", "list"),
   function(dbObj, obj, ...) {
-    testthat::skip("Not yet implemented: dbDataType(Driver, list)")
+    get_data_type(obj)
   })
 
 #' @rdname DBI

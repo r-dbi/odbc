@@ -191,7 +191,7 @@ get_data_type <- function(obj) {
     double = "DOUBLE PRECISION",
     character = "TEXT",
     logical = "INTEGER",
-    #list = "BLOB",
+    list = "BLOB",
     stop("Unsupported type", call. = FALSE)
   )
 }
