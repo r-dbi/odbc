@@ -1,7 +1,7 @@
 if (.Platform$OS.type == "windows") {
-	DBItest::make_context(odbconnect(), list(Driver = "{SQL Server}", "Server" = "(local)\\SQL2014", "Database" = "master", "User ID" = "sa", "Password" = "Password12"), tweaks = DBItest::tweaks(), name = "odbconnect")
+  quit()
 } else {
-  DBItest::make_context(odbconnect(), list(dsn = "PostgreSQL"), tweaks = DBItest::tweaks(), name = "odbconnect")
+  DBItest::make_context(odbconnect(), list(dsn = "MySQL"), tweaks = DBItest::tweaks(), name = "MySQL")
 }
 
 DBItest::test_getting_started(c(
@@ -14,6 +14,8 @@ DBItest::test_result(
   c("stale_result_warning",
     "fetch_no_return_value",
     "data_numeric.*",
+    "data_logical",
+    "data_logical_null_.*",
     "data_logical_int.*",
     "data_numeric.*", # Numeric types with high precision are converted to strings
     "data_64_bit.*", # Numeric types with high precision are converted to strings
@@ -33,6 +35,7 @@ DBItest::test_sql(c(
     "roundtrip_64_bit",
     "roundtrip_character",
     "roundtrip_factor",
+    "roundtrip_numeric_special",
     "roundtrip_raw",
     "roundtrip_date",
     "roundtrip_timestamp",
