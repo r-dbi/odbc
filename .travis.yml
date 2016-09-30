@@ -12,9 +12,6 @@ addons:
       - g++-4.9
       - unixodbc unixodbc-dev
       - odbc-postgresql
-      - mysql-server-5.6
-      - mysql-client-core-5.6
-      - mysql-client-5.6
       - libmyodbc
       - libsqliteodbc
 
