@@ -14,50 +14,17 @@ DBItest::test_result(
     "data_logical_int.*",
     "data_numeric.*", # Numeric types with high precision are converted to strings
     "data_64_bit.*", # Numeric types with high precision are converted to strings
-    "data_timestamp_.*",
-    "data_character.*",
+    "data_character.*", # Character encodings are not preserved (on R side)
     "data_raw.*",
-    "command_query",
     "data_type_connection",
-    "data_time.*", # time data not supported currently
-    "data_date.*")) # date data has class in entire row rather than for each item.
+    "data_time.*", # timezones not quite working right yet
+    "data_date.*",
+    NULL)) # date data has class in entire row rather than for each item.
 DBItest::test_sql(c(
-    "quote_identifier_not_vectorized",
+    "quote_identifier_not_vectorized", # https://github.com/rstats-db/DBI/issues/71
     "append_table_error",
     "temporary_table",
-    "table_visible_in_other_connection",
     "roundtrip_.*",
     NULL))
-DBItest::test_meta(c("column_info", "bind_empty"))
+#DBItest::test_meta(c("column_info", "bind_empty"))
 DBItest::test_compliance("read_only")
-
-#DBItest::test_all(c(
-  #"package_name",
-  #"quote_identifier_not_vectorized",
-  #"invalid_query",
-  #"command_query",
-  #"fetch_no_return_value", # dbClearResult not supported yet
-  #"data_type_connection", # raw values not supported dbDataType not supported yet
-  #"data_logical_int.*", # logicals are R logicals, not ints
-  #"data_numeric.*", # Numeric types with high precision are converted to strings
-  #"data_64_bit.*", # Numeric types with high precision are converted to strings
-  #"data_timestamp_.*",
-  #"data_time.*", # time data not supported currently
-  #"data_date.*", # date data has class in entire row rather than for each item.
-  #"bind_raw.*",
-  #"bind.*named_colon",
-  #"bind_.*named_dollar",
-  #"rows_affected", # this won't work until writeTable is working
-  #"fetch_premature_close", # these won't work until fetch() can handle the n argument.
-  #"stale_result_warning", # Warnings for more than one result, not sure why we
-  ## want this actually, there is no technical reason to have only one active result per
-  ## connection.
-  #"is_valid_result", # turning this off temporarily
-  ##"overwrite_table", # hanging at the moment
-  ##"read_table",  hanging at the moment
-  ##"append_table",  hanging at the moment
-  ##"append_table_error",  hanging at the moment
-  ##"roundtrip_quotes",  hanging at the moment
-  ##"roundtrip_keywords",  hanging at the moment
-  #NULL
-#))
