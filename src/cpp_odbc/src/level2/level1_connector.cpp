@@ -438,14 +438,14 @@ void level1_connector::do_sql_tables(statement_handle const & handle, std::strin
 	cpp_odbc::level2::input_string_buffer input_table_type(table_type);
 
 	SQLRETURN const return_code = level1_api_->sql_tables(handle.handle,
-			input_catalog.data_pointer(),
-			input_catalog.size(),
-			input_schema.data_pointer(),
-			input_schema.size(),
-			input_table.data_pointer(),
-			input_table.size(),
-			input_table_type.data_pointer(),
-			input_table_type.size());
+			catalog == "%" ? nullptr : input_catalog.data_pointer(),
+			catalog == "%" ? 0 : input_catalog.size(),
+			schema == "%" ? nullptr : input_schema.data_pointer(),
+			schema == "%" ? 0 : input_schema.size(),
+			table == "%" ? nullptr : input_table.data_pointer(),
+			table == "%" ? 0 : input_table.size(),
+			table_type == "%" ? nullptr : input_table_type.data_pointer(),
+			table_type == "%" ? 0 : input_table_type.size());
 
 	impl::throw_on_error(return_code, *this, handle);
 }
@@ -459,14 +459,15 @@ void level1_connector::do_sql_columns(statement_handle const & handle, std::stri
 	cpp_odbc::level2::input_string_buffer input_table_type(table_type);
 
 	SQLRETURN const return_code = level1_api_->sql_columns(handle.handle,
-			input_catalog.data_pointer(),
-			input_catalog.size(),
-			input_schema.data_pointer(),
-			input_schema.size(),
-			input_table.data_pointer(),
-			input_table.size(),
-			input_table_type.data_pointer(),
-			input_table_type.size());
+			catalog == "%" ? nullptr : input_catalog.data_pointer(),
+			catalog == "%" ? 0 : input_catalog.size(),
+			schema == "%" ? nullptr : input_schema.data_pointer(),
+			schema == "%" ? 0 : input_schema.size(),
+			table == "%" ? nullptr : input_table.data_pointer(),
+			table == "%" ? 0 : input_table.size(),
+			table_type == "%" ? nullptr : input_table_type.data_pointer(),
+			table_type == "%" ? 0 : input_table_type.size());
+
 
 	impl::throw_on_error(return_code, *this, handle);
 }
