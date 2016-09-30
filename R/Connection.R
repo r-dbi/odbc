@@ -1,7 +1,7 @@
 #' @include Driver.R
 NULL
 
-OdbconnectConnection <- function(dsn = NULL, quote = "\"", ...) {
+OdbconnectConnection <- function(dsn = NULL, ...) {
   args <- list(...)
   stopifnot(all(has_names(args)))
 
@@ -10,6 +10,7 @@ OdbconnectConnection <- function(dsn = NULL, quote = "\"", ...) {
   }
   connection_string <- paste(collapse = ";", sep = "=", names(args), args)
   ptr <- odbconnect_connect(connection_string)
+  quote <- connection_quote(ptr)
   new("OdbconnectConnection", ptr = ptr, quote = quote)
 }
 

@@ -30,6 +30,11 @@ Rcpp::List connection_info(connection_ptr p) {
 }
 
 // [[Rcpp::export]]
+std::string connection_quote(connection_ptr p) {
+  return (*p)->get_connection()->get_string_info(SQL_IDENTIFIER_QUOTE_CHAR);
+}
+
+// [[Rcpp::export]]
 void connection_release(connection_ptr p) {
   p.release();
   return;
