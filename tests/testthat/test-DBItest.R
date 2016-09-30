@@ -4,9 +4,12 @@ if (.Platform$OS.type == "windows") {
   DBItest::make_context(odbconnect(), list(dsn = "PostgreSQL"), tweaks = DBItest::tweaks(), name = "odbconnect")
 }
 
-DBItest::test_getting_started("package_name")
+DBItest::test_getting_started(c(
+    "package_name",
+    NULL))
 DBItest::test_driver()
-DBItest::test_connection(c(".*stress.*", "data_type_connection"))
+DBItest::test_connection(c(
+    NULL))
 DBItest::test_result(
   c("stale_result_warning",
     "fetch_no_return_value",
@@ -24,7 +27,21 @@ DBItest::test_sql(c(
     "quote_identifier_not_vectorized", # https://github.com/rstats-db/DBI/issues/71
     "append_table_error",
     "temporary_table",
-    "roundtrip_.*",
+    "roundtrip_logical",
+    "roundtrip_logical_int",
+    "roundtrip_null",
+    "roundtrip_64_bit",
+    "roundtrip_character",
+    "roundtrip_factor",
+    "roundtrip_raw",
+    "roundtrip_date",
+    "roundtrip_timestamp",
+    "roundtrip_rownames",
     NULL))
-#DBItest::test_meta(c("column_info", "bind_empty"))
-DBItest::test_compliance("read_only")
+DBItest::test_meta(c(
+    "column_info",
+    "bind_empty",
+    NULL))
+DBItest::test_compliance(c(
+    "read_only",
+    NULL))
