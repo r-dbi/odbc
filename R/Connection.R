@@ -101,7 +101,7 @@ setMethod(
   "dbQuoteIdentifier", c("OdbconnectConnection", "character"),
   function(conn, x, ...) {
     x <- gsub(conn@quote, paste0(conn@quote, conn@quote), x, fixed = TRUE)
-    DBI::SQL(paste(conn@quote, x, conn@quote, sep = ""))
+    DBI::SQL(paste(conn@quote, encodeString(x), conn@quote, sep = ""))
   })
 
 #' @rdname DBI
