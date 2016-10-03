@@ -12,17 +12,24 @@
  */
 
 #include <vector>
+#include "cpp_odbc/level1/unixodbc_backend.h"
+#ifdef _WIN32
+#undef Realloc
+#undef Free
+#include <windows.h>
+#endif
+#include "sqlext.h"
 
 namespace cpp_odbc {
 
 struct writable_buffer_element {
 	char * data_pointer;
-	long & indicator;
+	SQLLEN & indicator;
 };
 
 struct buffer_element {
 	char const * data_pointer;
-	long const & indicator;
+	SQLLEN const & indicator;
 };
 
 /**
@@ -72,7 +79,7 @@ public:
 	 *        StrLen_or_IndPtrs appear in ODBC calls
 	 * @return A pointer to the length/indicator array
 	 */
-	long * indicator_pointer();
+	SQLLEN * indicator_pointer();
 
 	/**
 	 * @brief Provides read-only raw access to a contiguous strip of memory which
@@ -80,7 +87,7 @@ public:
 	 *        is NULL).
 	 * @return A pointer to the length/indicator array
 	 */
-	long const * indicator_pointer() const;
+	SQLLEN const * indicator_pointer() const;
 
 	/**
 	 * @brief Read/write access to the element with index element_index
@@ -99,7 +106,7 @@ public:
 private:
 	std::size_t element_size_;
 	std::vector<char> data_;
-	std::vector<long> indicators_;
+	std::vector<SQLLEN> indicators_;
 };
 
 
