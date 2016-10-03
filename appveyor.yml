@@ -10,10 +10,6 @@ init:
 install:
   ps: Bootstrap
 
-environment:
-  global:
-    R_ARCH: x64
-
 cache:
   - C:\RLibrary
 
