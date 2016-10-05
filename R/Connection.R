@@ -11,7 +11,12 @@ OdbconnectConnection <- function(dsn = NULL, ...) {
   connection_string <- paste(collapse = ";", sep = "=", names(args), args)
   ptr <- odbconnect_connect(connection_string)
   quote <- connection_quote(ptr)
-  new("OdbconnectConnection", ptr = ptr, quote = quote)
+
+  # a-z A-Z, 0-9 and _ are always valid, other characters than can be are
+  # connection specific and returned by connection_special
+  valid_characters <- c(letters, LETTERS, 0:9, "_", connection_special(ptr))
+
+  new("OdbconnectConnection", ptr = ptr, quote = quote, valid_characters = valid_characters)
 }
 
 #' @rdname DBI
@@ -21,7 +26,8 @@ setClass(
   contains = "DBIConnection",
   slots = list(
     ptr = "externalptr",
-    quote = "character"
+    quote = "character",
+    valid_characters = "character"
   )
 )
 

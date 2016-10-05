@@ -13,6 +13,10 @@ connection_quote <- function(p) {
     .Call('odbconnect_connection_quote', PACKAGE = 'odbconnect', p)
 }
 
+connection_special <- function(p) {
+    .Call('odbconnect_connection_special', PACKAGE = 'odbconnect', p)
+}
+
 connection_release <- function(p) {
     invisible(.Call('odbconnect_connection_release', PACKAGE = 'odbconnect', p))
 }

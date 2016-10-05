@@ -37,7 +37,7 @@ namespace {
 
 query::query(boost::shared_ptr<cpp_odbc::statement const> statement,
              std::size_t rows_to_buffer,
-             std::size_t parameter_sets_to_buffer,
+             SQLINTEGER parameter_sets_to_buffer,
              bool use_double_buffering) :
 	statement_(statement),
 	rows_to_buffer_(rows_to_buffer),
@@ -52,7 +52,7 @@ query::query(boost::shared_ptr<cpp_odbc::statement const> statement,
 
 query::query(std::shared_ptr<cpp_odbc::statement const> statement,
              std::size_t rows_to_buffer,
-             std::size_t parameter_sets_to_buffer,
+             SQLINTEGER parameter_sets_to_buffer,
              bool use_double_buffering) :
 	rows_to_buffer_(rows_to_buffer),
 	parameter_sets_to_buffer_(parameter_sets_to_buffer),
@@ -114,7 +114,7 @@ std::size_t query::execute_batch()
 {
 	std::size_t result = 0;
 
-	if (not parameters_.empty()) {
+	if (not parameters_.empty() && current_parameter_set_ > 0) {
 		statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
 	}
 
@@ -135,7 +135,9 @@ void query::bind_parameters()
 		for (std::size_t one_based_index = 1; one_based_index <= n_parameters; ++one_based_index) {
 			parameters_.push_back(make_parameter(*statement_, one_based_index, parameter_sets_to_buffer_));
 		}
-		statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
+		if (current_parameter_set_ > 0) {
+			statement_->set_attribute(SQL_ATTR_PARAMSET_SIZE, current_parameter_set_);
+		}
 		statement_->set_attribute(SQL_ATTR_PARAMS_PROCESSED_PTR, &rows_processed_);
 	}
 }

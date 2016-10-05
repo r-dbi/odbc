@@ -55,8 +55,12 @@ setMethod(
       dbRemoveTable(conn, name)
     }
 
+    # Remove invalid characters from the column names
+    names(value) <- remove_invalid(con, names(value))
+
     if (!found || overwrite) {
       sql <- sqlCreateTable(conn, name, value)
+      str(sql)
       dbGetQuery(conn, sql)
     }
 
@@ -71,6 +75,7 @@ setMethod(
         "INSERT INTO ", name, " (", paste0(fields, collapse = ", "), ")\n",
         "VALUES (", paste0(params, collapse = ", "), ")"
         )
+      str(sql)
       rs <- dbSendQuery(conn, sql)
 
       tryCatch(
@@ -107,3 +112,7 @@ setMethod(
     name <- dbQuoteIdentifier(conn, name)
     dbGetQuery(conn, paste("SELECT * FROM ", name))
   })
+
+remove_invalid <- function(con, x) {
+  gsub(paste0("[^", paste0(con@valid_characters, collapse = ""), "]"), "", x)
+}

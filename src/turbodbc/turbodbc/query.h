@@ -16,12 +16,12 @@ class query {
 public:
 	query(boost::shared_ptr<cpp_odbc::statement const> statement,
 		  std::size_t rows_to_buffer,
-		  std::size_t parameter_sets_to_buffer,
+		  SQLINTEGER parameter_sets_to_buffer,
 		  bool use_double_buffering);
 
 	query(std::shared_ptr<cpp_odbc::statement const> statement,
 		  std::size_t rows_to_buffer,
-		  std::size_t parameter_sets_to_buffer,
+		  SQLINTEGER  parameter_sets_to_buffer,
 		  bool use_double_buffering);
 
 	void execute();
@@ -43,11 +43,11 @@ private:
 
 	boost::shared_ptr<cpp_odbc::statement const> statement_;
 	std::size_t rows_to_buffer_;
-	std::size_t parameter_sets_to_buffer_;
+	SQLINTEGER parameter_sets_to_buffer_;
 	bool use_double_buffering_;
 	std::vector<boost::shared_ptr<turbodbc::parameter>> parameters_;
 	boost::shared_ptr<result_sets::result_set> results_;
-	std::size_t current_parameter_set_;
+	SQLINTEGER current_parameter_set_;
 	std::size_t row_count_;
 	SQLULEN rows_processed_;
 };

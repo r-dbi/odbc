@@ -35,6 +35,11 @@ std::string connection_quote(connection_ptr p) {
 }
 
 // [[Rcpp::export]]
+std::string connection_special(connection_ptr p) {
+  return (*p)->get_connection()->get_string_info(SQL_SPECIAL_CHARACTERS);
+}
+
+// [[Rcpp::export]]
 void connection_release(connection_ptr p) {
   p.release();
   return;

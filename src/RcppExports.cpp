@@ -39,6 +39,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// connection_special
+std::string connection_special(connection_ptr p);
+RcppExport SEXP odbconnect_connection_special(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< connection_ptr >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(connection_special(p));
+    return rcpp_result_gen;
+END_RCPP
+}
 // connection_release
 void connection_release(connection_ptr p);
 RcppExport SEXP odbconnect_connection_release(SEXP pSEXP) {
