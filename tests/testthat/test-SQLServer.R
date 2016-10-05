@@ -1,4 +1,4 @@
-if (.Platform$OS.type != "windows") {
+if (.Platform$OS.type == "windows") {
   DBItest::make_context(odbconnect(), list(Driver = "{SQL Server}", "Server" = "(local)\\SQL2014", "Database" = "master", "User ID" = "sa", "Password" = "Password12"), tweaks = DBItest::tweaks(), name = "SQLServer")
 
 DBItest::test_getting_started(c(
