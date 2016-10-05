@@ -1,8 +1,5 @@
-if (.Platform$OS.type == "windows") {
-  quit()
-} else {
+if (.Platform$OS.type != "windows") {
   DBItest::make_context(odbconnect(), list(dsn = "PostgreSQL"), tweaks = DBItest::tweaks(), name = "PostgreSQL")
-}
 
 DBItest::test_getting_started(c(
     "package_name",
@@ -45,3 +42,4 @@ DBItest::test_meta(c(
 DBItest::test_compliance(c(
     "read_only",
     NULL))
+}
