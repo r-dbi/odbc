@@ -30,8 +30,6 @@ DBItest::test_sql(c(
     "roundtrip_logical_int",
     "roundtrip_null",
     "roundtrip_64_bit",
-    "roundtrip_character",
-    "roundtrip_factor",
     "roundtrip_numeric_special",
     "roundtrip_raw",
     "roundtrip_date",

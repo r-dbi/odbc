@@ -69,7 +69,7 @@ namespace turbodbc {
         if (STRING_ELT(x, i) == NA_STRING) {
           return {};
         } else {
-          return field(std::string(CHAR(STRING_ELT(x, i))));
+          return field(std::string(Rf_translateCharUTF8(STRING_ELT(x, i))));
         }
       }
       case date_time_t: {

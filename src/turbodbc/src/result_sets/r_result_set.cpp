@@ -122,7 +122,7 @@ List convert_to_r(std::vector<boost::any> const & out, std::vector<column_info> 
 						if ((*data)[j] == boost::none) {
 							out[j] = NA_STRING;
 						} else {
-							out[j] = boost::get<std::string>((*data)[j]);
+							SET_STRING_ELT(out, j, Rf_mkCharCE(boost::get<std::string>((*data)[j]).c_str(), CE_UTF8));
 						}
 					}
 					result[i] = out;

@@ -17,7 +17,6 @@ DBItest::test_result(
     "data_logical_null_.*",
     "data_numeric.*", # Numeric types with high precision are converted to strings
     "data_64_bit.*", # Numeric types with high precision are converted to strings
-    "data_character.*", # Character encodings are not preserved (on R side)
     "data_raw.*",
     "data_type_connection",
     "data_time.*", # timezones not quite working right yet
@@ -33,8 +32,6 @@ DBItest::test_sql(c(
     "roundtrip_logical_int",
     "roundtrip_null",
     "roundtrip_64_bit",
-    "roundtrip_character",
-    "roundtrip_factor",
     "roundtrip_raw",
     "roundtrip_date",
     "roundtrip_timestamp",
