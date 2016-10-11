@@ -1,0 +1,55 @@
+#include <turbodbc/buffer_size.h>
+
+namespace turbodbc {
+
+rows::rows(std::size_t rows_to_buffer_):
+    rows_to_buffer(rows_to_buffer_)
+{
+}
+
+megabytes::megabytes(std::size_t megabytes_to_buffer) :
+    megabytes_to_buffer(megabytes_to_buffer)
+{
+}
+
+determine_rows_to_buffer::determine_rows_to_buffer(std::vector<std::unique_ptr<description const>> const& descriptions) :
+    descriptions_(descriptions)
+{
+}
+
+std::size_t determine_rows_to_buffer::operator()(rows const& r) const
+{
+    if (r.rows_to_buffer > 0) {
+        return r.rows_to_buffer;
+    } else {
+        return 1;
+    }
+}
+
+std::size_t determine_rows_to_buffer::operator()(megabytes const& m) const
+{
+    std::size_t bytes_per_row = 0;
+    for (auto & d : descriptions_) {
+        bytes_per_row += d->element_size();
+    }
+    auto const bytes_to_buffer = m.megabytes_to_buffer * 1024 * 1024;
+    auto const rows_to_buffer = bytes_to_buffer / bytes_per_row;
+
+    if (rows_to_buffer > 0) {
+        return rows_to_buffer;
+    } else {
+        return 1;
+    }
+}
+
+buffer_size halve_buffer_size::operator()(rows const& r) const
+{
+    return {rows((r.rows_to_buffer + 1) / 2)};
+}
+
+buffer_size halve_buffer_size::operator()(megabytes const& m) const
+{
+    return {megabytes((m.megabytes_to_buffer + 1) / 2)};
+}
+
+}

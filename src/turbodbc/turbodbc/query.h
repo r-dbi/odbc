@@ -1,5 +1,7 @@
 #pragma once
 
+#include <turbodbc/buffer_size.h>
+
 #include <cpp_odbc/statement.h>
 #include <turbodbc/result_sets/result_set.h>
 #include <turbodbc/parameter.h>
@@ -15,12 +17,12 @@ namespace turbodbc {
 class query {
 public:
 	query(boost::shared_ptr<cpp_odbc::statement const> statement,
-		  std::size_t rows_to_buffer,
+			turbodbc::buffer_size buffer_size,
 		  SQLINTEGER parameter_sets_to_buffer,
 		  bool use_double_buffering);
 
 	query(std::shared_ptr<cpp_odbc::statement const> statement,
-		  std::size_t rows_to_buffer,
+			turbodbc::buffer_size buffer_size,
 		  SQLINTEGER  parameter_sets_to_buffer,
 		  bool use_double_buffering);
 
@@ -42,7 +44,7 @@ private:
 	void update_row_count();
 
 	boost::shared_ptr<cpp_odbc::statement const> statement_;
-	std::size_t rows_to_buffer_;
+	turbodbc::buffer_size buffer_size_;
 	SQLINTEGER parameter_sets_to_buffer_;
 	bool use_double_buffering_;
 	std::vector<boost::shared_ptr<turbodbc::parameter>> parameters_;

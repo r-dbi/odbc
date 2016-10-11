@@ -4,6 +4,8 @@
 #include <turbodbc/result_sets/bound_result_set.h>
 #include <turbodbc/result_sets/double_buffered_result_set.h>
 
+#include <turbodbc/buffer_size.h>
+
 #include <cpp_odbc/error.h>
 
 #include <boost/variant/get.hpp>
@@ -36,11 +38,11 @@ namespace {
 }
 
 query::query(boost::shared_ptr<cpp_odbc::statement const> statement,
-             std::size_t rows_to_buffer,
+             turbodbc::buffer_size buffer_size,
              SQLINTEGER parameter_sets_to_buffer,
              bool use_double_buffering) :
 	statement_(statement),
-	rows_to_buffer_(rows_to_buffer),
+	buffer_size_(buffer_size),
 	parameter_sets_to_buffer_(parameter_sets_to_buffer),
 	use_double_buffering_(use_double_buffering),
 	current_parameter_set_(0),
@@ -51,10 +53,10 @@ query::query(boost::shared_ptr<cpp_odbc::statement const> statement,
 }
 
 query::query(std::shared_ptr<cpp_odbc::statement const> statement,
-             std::size_t rows_to_buffer,
+             turbodbc::buffer_size buffer_size,
              SQLINTEGER parameter_sets_to_buffer,
              bool use_double_buffering) :
-	rows_to_buffer_(rows_to_buffer),
+	buffer_size_(buffer_size),
 	parameter_sets_to_buffer_(parameter_sets_to_buffer),
 	use_double_buffering_(use_double_buffering),
 	current_parameter_set_(0),
@@ -78,9 +80,9 @@ void query::execute()
 	std::size_t const columns = statement_->number_of_columns();
 	if (columns != 0) {
 		if (use_double_buffering_) {
-			results_ = boost::make_shared<result_sets::double_buffered_result_set>(statement_, rows_to_buffer_);
+			results_ = boost::make_shared<result_sets::double_buffered_result_set>(statement_, buffer_size_);
 		} else {
-			results_ = boost::make_shared<result_sets::bound_result_set>(statement_, rows_to_buffer_);
+			results_ = boost::make_shared<result_sets::bound_result_set>(statement_, buffer_size_);
 		}
 	}
 }

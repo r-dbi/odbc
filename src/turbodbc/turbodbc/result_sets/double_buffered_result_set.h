@@ -3,6 +3,8 @@
 #include <turbodbc/result_sets/bound_result_set.h>
 #include <turbodbc/column.h>
 
+#include <turbodbc/buffer_size.h>
+
 #include <cpp_odbc/statement.h>
 #include <memory>
 #include <array>
@@ -60,7 +62,7 @@ public:
 	 * @brief Prepare and bind buffers suitable of holding buffered_rows to
 	 *        the given statement.
 	 */
-	double_buffered_result_set(boost::shared_ptr<cpp_odbc::statement const> statement, std::size_t buffered_rows);
+	double_buffered_result_set(boost::shared_ptr<cpp_odbc::statement const> statement, turbodbc::buffer_size buffer_size);
 	virtual ~double_buffered_result_set();
 
 private:

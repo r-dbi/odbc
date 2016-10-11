@@ -1,5 +1,7 @@
 #pragma once
 
+#include <turbodbc/buffer_size.h>
+
 #include <turbodbc/connection.h>
 #include <turbodbc/query.h>
 #include <turbodbc/column_info.h>
@@ -17,12 +19,12 @@ class connection;
 class cursor {
 public:
 	cursor(std::shared_ptr<turbodbc::connection const> connection,
-		   std::size_t rows_to_buffer,
+			 turbodbc::buffer_size buffer_size,
 		   std::size_t parameter_sets_to_buffer,
 		   bool use_async_io);
 
 	cursor(boost::shared_ptr<turbodbc::connection const> connection,
-		   std::size_t rows_to_buffer,
+			 turbodbc::buffer_size buffer_size,
 		   std::size_t parameter_sets_to_buffer,
 		   bool use_async_io);
 
@@ -48,7 +50,7 @@ public:
 
 private:
 	std::shared_ptr<turbodbc::connection const> connection_;
-	std::size_t rows_to_buffer_;
+	turbodbc::buffer_size buffer_size_;
 	std::size_t parameter_sets_to_buffer_;
 	bool use_async_io_;
 	boost::shared_ptr<turbodbc::query> query_;

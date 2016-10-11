@@ -69,7 +69,7 @@ Rcpp::RObject connection_sql_tables(connection_ptr p,
     std::string schema_name = "%",
     std::string table_name = "%",
     std::string table_type = "%") {
-  auto c = turbodbc::cursor(*p, 1024, 0, false);
+  auto c = turbodbc::cursor(*p, turbodbc::megabytes(10), 0, false);
   return c.sql_tables(catalog_name, schema_name, table_name, table_type);
 }
 
@@ -80,6 +80,6 @@ Rcpp::RObject connection_sql_columns(connection_ptr p,
     std::string schema_name = "%",
     std::string table_name = "%",
     std::string table_type = "%") {
-  auto c = turbodbc::cursor(*p, 1024, 0, false);
+  auto c = turbodbc::cursor(*p, turbodbc::megabytes(10), 0, false);
   return c.sql_columns(catalog_name, schema_name, table_name, table_type);
 }

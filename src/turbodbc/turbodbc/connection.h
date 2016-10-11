@@ -1,5 +1,5 @@
 #pragma once
-
+#include <turbodbc/buffer_size.h>
 #include "turbodbc/cursor.h"
 #include <cpp_odbc/connection.h>
 #include <memory>
