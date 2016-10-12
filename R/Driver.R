@@ -55,7 +55,7 @@ setMethod(
 setMethod(
   "dbDataType", "OdbconnectDriver",
   function(dbObj, obj, ...) {
-    get_data_type(obj)
+    get_data_type(dbObj, obj, ...)
   })
 
 #' @rdname DBI
@@ -64,7 +64,7 @@ setMethod(
 setMethod(
   "dbDataType", c("OdbconnectDriver", "list"),
   function(dbObj, obj, ...) {
-    get_data_type(obj)
+    get_data_type(dbObj, obj, ...)
   })
 
 #' @rdname DBI

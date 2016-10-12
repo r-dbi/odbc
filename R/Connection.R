@@ -16,7 +16,10 @@ OdbconnectConnection <- function(dsn = NULL, ...) {
   # connection specific and returned by connection_special
   valid_characters <- c(letters, LETTERS, 0:9, "_", connection_special(ptr))
 
-  new("OdbconnectConnection", ptr = ptr, quote = quote, valid_characters = valid_characters)
+  info <- connection_info(ptr)
+  class(info) <- c(info$dbname, "list")
+
+  new("OdbconnectConnection", ptr = ptr, quote = quote, valid_characters = valid_characters, info = info)
 }
 
 #' @rdname DBI
@@ -27,7 +30,8 @@ setClass(
   slots = list(
     ptr = "externalptr",
     quote = "character",
-    valid_characters = "character"
+    valid_characters = "character",
+    info = "ANY"
   )
 )
 
@@ -88,7 +92,7 @@ setMethod(
 setMethod(
   "dbDataType", "OdbconnectConnection",
   function(dbObj, obj, ...) {
-    get_data_type(obj)
+    get_data_type(dbObj@info, obj)
   })
 
 #' @rdname DBI
@@ -188,7 +192,45 @@ setMethod(
     TRUE
   })
 
-get_data_type <- function(obj) {
+get_data_type <- function(info, obj, ...) UseMethod("get_data_type")
+
+varchar_data_type <- function(x) {
+  #size <- 2L^(floor(log2(max(nchar(as.character(x))))) + 1L)
+  #paste0("VARCHAR(", size, ")")
+  paste0("VARCHAR(255)")
+}
+
+get_data_type.default <- function(info, obj, ...) {
+  if (is.factor(obj)) return(varchar_data_type(obj))
+  if (is(obj, "POSIXct")) return("TIMESTAMP")
+  if (is(obj, "Date")) return("DATE")
+
+  switch(typeof(obj),
+    integer = "INTEGER",
+    double = "DOUBLE PRECISION",
+    character = varchar_data_type(obj),
+    logical = "SMALLINT",
+    list = "BLOB",
+    stop("Unsupported type", call. = FALSE)
+  )
+}
+
+get_data_type.MySQL <- function(info, obj, ...) {
+  if (is.factor(obj)) return("TEXT")
+  if (is(obj, "POSIXct")) return("DATETIME")
+  if (is(obj, "Date")) return("DATE")
+
+  switch(typeof(obj),
+    integer = "INTEGER",
+    double = "DOUBLE",
+    character = "TEXT",
+    logical = "TINYINT",
+    list = "BLOB",
+    stop("Unsupported type", call. = FALSE)
+  )
+}
+
+get_data_type.PostgreSQL <- function(info, obj, ...) {
   if (is.factor(obj)) return("TEXT")
   if (is(obj, "POSIXct")) return("TIMESTAMP")
   if (is(obj, "Date")) return("DATE")
@@ -197,7 +239,37 @@ get_data_type <- function(obj) {
     integer = "INTEGER",
     double = "DOUBLE PRECISION",
     character = "TEXT",
-    logical = "INTEGER",
+    logical = "BOOLEAN",
+    list = "BLOB",
+    stop("Unsupported type", call. = FALSE)
+  )
+}
+
+`get_data_type.Microsoft SQL Server` <- function(info, obj, ...) {
+  if (is.factor(obj)) return("varchar(max)")
+  if (is(obj, "POSIXct")) return("datetime")
+  if (is(obj, "Date")) return("date")
+
+  switch(typeof(obj),
+    integer = "int",
+    double = "float",
+    character = "varchar(max)",
+    logical = "tinyint",
+    list = "varbinary(max)",
+    stop("Unsupported type", call. = FALSE)
+  )
+}
+
+`get_data_type.SQLite` <- function(info, obj, ...) {
+  if (is.factor(obj)) return("TEXT")
+  if (is(obj, "POSIXct")) return("NUMERIC")
+  if (is(obj, "Date")) return("NUMERIC")
+
+  switch(typeof(obj),
+    integer = "INTEGER",
+    double = "REAL",
+    character = "TEXT",
+    logical = "NUMERIC",
     list = "BLOB",
     stop("Unsupported type", call. = FALSE)
   )
