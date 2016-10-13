@@ -1,22 +1,24 @@
 if (.Platform$OS.type == "windows") {
-  DBItest::make_context(odbconnect(), list(Driver = "{SQL Server}", "Server" = "(local)\\SQL2014", "Database" = "master", "User ID" = "sa", "Password" = "Password12"), tweaks = DBItest::tweaks(), name = "SQLServer")
+  DBItest::make_context(odbconnect(), list(Driver ="{SQL Server}", "Server" = "(local)\\SQL2014", "Database" = "master", "User ID" = "sa", "Password" = "Password12"), tweaks = DBItest::tweaks(), name = "SQLServer")
+  #DBItest::make_context(odbconnect(), list(dsn = "test"), tweaks = DBItest::tweaks(), name = "SQLServer")
 
 DBItest::test_getting_started(c(
     "package_name",
     NULL))
-DBItest::test_driver()
+DBItest::test_driver(c(
+  NULL
+))
 DBItest::test_connection(c(
+    "stress.*",
     NULL))
 DBItest::test_result(
   c("stale_result_warning",
     "fetch_no_return_value",
-    "data_numeric.*",
     "data_logical",
     "data_logical_null_.*",
     "data_logical_int.*",
     "data_numeric.*", # Numeric types with high precision are converted to strings
     "data_64_bit.*", # Numeric types with high precision are converted to strings
-    "data_character.*", # Character encodings are not preserved (on R side)
     "data_raw.*",
     "data_type_connection",
     "data_time.*", # timezones not quite working right yet
@@ -44,5 +46,6 @@ DBItest::test_meta(c(
     NULL))
 DBItest::test_compliance(c(
     "read_only",
+    "ellipsis",
     NULL))
 }
