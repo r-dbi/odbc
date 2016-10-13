@@ -53,7 +53,7 @@ namespace turbodbc {
         if (ISNA(INTEGER(x)[i])) {
           return {};
         } else {
-          return field(static_cast<long>(INTEGER(x)[i]));
+          return field(static_cast<int64_t>(INTEGER(x)[i]));
 
         }
       }

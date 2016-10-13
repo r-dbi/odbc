@@ -53,9 +53,9 @@ void append_buffer(boost::any& out, turbodbc::type_code code, size_t result_size
 				}
 				case type_code::integer: {
 					if (buffer[i + start].indicator == SQL_NULL_DATA) {
-						boost::any_cast<std::vector<long>>(&out)->push_back(NA_INTEGER);
+						boost::any_cast<std::vector<std::int64_t>>(&out)->push_back(NA_INTEGER);
 					} else {
-						boost::any_cast<std::vector<long>>(&out)->push_back(*reinterpret_cast<long const*>(buffer[i + start].data_pointer));
+						boost::any_cast<std::vector<std::int64_t>>(&out)->push_back(*reinterpret_cast<std::int64_t const*>(buffer[i + start].data_pointer));
 					}
 					break;
 				}
@@ -108,7 +108,7 @@ List convert_to_r(std::vector<boost::any> const & out, std::vector<column_info> 
 					break;
 				}
 				case type_code::integer: {
-					result[i] = IntegerVector(boost::any_cast<std::vector<long>>(&out[i])->begin(), boost::any_cast<std::vector<long>>(&out[i])->end());
+					result[i] = IntegerVector(boost::any_cast<std::vector<std::int64_t>>(&out[i])->begin(), boost::any_cast<std::vector<std::int64_t>>(&out[i])->end());
 					break;
 				}
 				case type_code::floating_point: {
@@ -155,7 +155,7 @@ List convert_to_r(std::vector<boost::any> const & out, std::vector<column_info> 
 				return std::vector<int>();
 			}
 			case type_code::integer: {
-				return std::vector<long>();
+				return std::vector<std::int64_t>();
 			}
 			case type_code::floating_point: {
 				return std::vector<double>();

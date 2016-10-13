@@ -18,7 +18,7 @@ integer_description::~integer_description() = default;
 
 std::size_t integer_description::do_element_size() const
 {
-	return sizeof(long);
+	return sizeof(std::int64_t);
 }
 
 SQLSMALLINT integer_description::do_column_c_type() const
@@ -33,7 +33,7 @@ SQLSMALLINT integer_description::do_column_sql_type() const
 
 void integer_description::do_set_field(cpp_odbc::writable_buffer_element & element, field const & value) const
 {
-	auto const as_long = boost::get<long>(value);
+	auto const as_long = boost::get<std::int64_t>(value);
 	memcpy(element.data_pointer, &as_long, element_size());
 	element.indicator = element_size();
 }

@@ -32,7 +32,7 @@ namespace {
 	using description_ptr = description const *;
 
 	struct description_by_value : public boost::static_visitor<description_ptr> {
-		description_ptr operator()(long const &) const
+		description_ptr operator()(std::int64_t const &) const
 		{
 			return new integer_description;
 		}
