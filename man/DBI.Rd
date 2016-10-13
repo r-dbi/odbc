@@ -50,15 +50,15 @@
 
 \S4method{dbDataType}{OdbconnectDriver,list}(dbObj, obj, ...)
 
-\S4method{dbIsValid}{OdbconnectDriver}(dbObj)
+\S4method{dbIsValid}{OdbconnectDriver}(dbObj, ...)
 
 \S4method{dbGetInfo}{OdbconnectDriver}(dbObj, ...)
 
 \S4method{show}{OdbconnectConnection}(object)
 
-\S4method{dbIsValid}{OdbconnectConnection}(dbObj)
+\S4method{dbIsValid}{OdbconnectConnection}(dbObj, ...)
 
-\S4method{dbDisconnect}{OdbconnectConnection}(conn)
+\S4method{dbDisconnect}{OdbconnectConnection}(conn, ...)
 
 \S4method{dbSendQuery}{OdbconnectConnection,character}(conn, statement, ...)
 
@@ -70,21 +70,21 @@
 
 \S4method{dbQuoteIdentifier}{OdbconnectConnection,character}(conn, x, ...)
 
-\S4method{dbListTables}{OdbconnectConnection}(conn)
+\S4method{dbListTables}{OdbconnectConnection}(conn, ...)
 
-\S4method{dbExistsTable}{OdbconnectConnection,character}(conn, name)
+\S4method{dbExistsTable}{OdbconnectConnection,character}(conn, name, ...)
 
-\S4method{dbListFields}{OdbconnectConnection,character}(conn, name)
+\S4method{dbListFields}{OdbconnectConnection,character}(conn, name, ...)
 
-\S4method{dbRemoveTable}{OdbconnectConnection,character}(conn, name)
+\S4method{dbRemoveTable}{OdbconnectConnection,character}(conn, name, ...)
 
 \S4method{dbGetInfo}{OdbconnectConnection}(dbObj, ...)
 
-\S4method{dbBegin}{OdbconnectConnection}(conn)
+\S4method{dbBegin}{OdbconnectConnection}(conn, ...)
 
-\S4method{dbCommit}{OdbconnectConnection}(conn)
+\S4method{dbCommit}{OdbconnectConnection}(conn, ...)
 
-\S4method{dbRollback}{OdbconnectConnection}(conn)
+\S4method{dbRollback}{OdbconnectConnection}(conn, ...)
 
 \S4method{show}{OdbconnectResult}(object)
 
@@ -96,7 +96,7 @@
 
 \S4method{dbGetInfo}{OdbconnectResult}(dbObj, ...)
 
-\S4method{dbIsValid}{OdbconnectResult}(dbObj)
+\S4method{dbIsValid}{OdbconnectResult}(dbObj, ...)
 
 \S4method{dbGetStatement}{OdbconnectResult}(res, ...)
 
@@ -108,7 +108,7 @@
 
 \S4method{dbBind}{OdbconnectResult}(res, params, ...)
 
-\S4method{dbReadTable}{OdbconnectConnection,character}(conn, name)
+\S4method{dbReadTable}{OdbconnectConnection,character}(conn, name, ...)
 }
 \arguments{
 \item{object}{Any R object}
@@ -128,7 +128,7 @@ or \code{\linkS4class{DBIConnection}}}
 \item{obj}{An R object whose SQL type we want to determine.}
 
 \item{conn}{A \code{\linkS4class{DBIConnection}} object, as produced by
-\code{\link{dbConnect}}.}
+\code{\link[=dbConnect]{dbConnect()}}.}
 
 \item{statement}{a character vector of length 1 containing SQL.}
 

@@ -11,7 +11,7 @@
   value, overwrite = FALSE, append = FALSE, ...)
 
 \S4method{sqlData}{OdbconnectConnection}(con, value, row.names = NA,
-  copy = TRUE)
+  copy = TRUE, ...)
 }
 \arguments{
 \item{conn}{a \code{\linkS4class{OdbconnectConnection}} object, produced by
@@ -35,14 +35,14 @@ just any valid bare table name.}
 
 \item{row.names}{Either \code{TRUE}, \code{FALSE}, \code{NA} or a string.
 
-  If \code{TRUE}, always translate row names to a column called "row_names".
-  If \code{FALSE}, never translate row names. If \code{NA}, translate
-  rownames only if they're a character vector.
+If \code{TRUE}, always translate row names to a column called "row_names".
+If \code{FALSE}, never translate row names. If \code{NA}, translate
+rownames only if they're a character vector.
 
-  A string is equivalent to \code{TRUE}, but allows you to override the
-  default name.
+A string is equivalent to \code{TRUE}, but allows you to override the
+default name.
 
-  For backward compatibility, \code{NULL} is equivalent to \code{FALSE}.}
+For backward compatibility, \code{NULL} is equivalent to \code{FALSE}.}
 
 \item{copy}{If \code{TRUE}, serializes the data frame to a single string
 and uses \code{COPY name FROM stdin}. This is fast, but not supported by
