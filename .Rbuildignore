@@ -9,3 +9,4 @@
 ^src/.*d$
 ^codecov\.yml$
 ^appveyor\.yml$
+^src/\.ycmextra_conf\.pyc?$
