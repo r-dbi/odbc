@@ -72,7 +72,7 @@ setMethod(
 #' @export
 setMethod(
   "dbIsValid", "OdbconnectDriver",
-  function(dbObj) {
+  function(dbObj, ...) {
     TRUE
   })
 

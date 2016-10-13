@@ -50,7 +50,7 @@ setMethod(
 #' @export
 setMethod(
   "dbIsValid", "OdbconnectConnection",
-  function(dbObj) {
+  function(dbObj, ...) {
     connection_valid(dbObj@ptr)
   })
 
@@ -59,7 +59,7 @@ setMethod(
 #' @export
 setMethod(
   "dbDisconnect", "OdbconnectConnection",
-  function(conn) {
+  function(conn, ...) {
     if (!dbIsValid(conn)) {
       warning("Connection already closed.", call. = FALSE)
     }
@@ -120,7 +120,7 @@ setMethod(
 #' @export
 setMethod(
   "dbListTables", "OdbconnectConnection",
-  function(conn) {
+  function(conn, ...) {
     connection_sql_tables(conn@ptr)[["TABLE_NAME"]]
   })
 
@@ -129,7 +129,7 @@ setMethod(
 #' @export
 setMethod(
   "dbExistsTable", c("OdbconnectConnection", "character"),
-  function(conn, name) {
+  function(conn, name, ...) {
     name %in% dbListTables(conn)
   })
 
@@ -138,7 +138,7 @@ setMethod(
 #' @export
 setMethod(
   "dbListFields", c("OdbconnectConnection", "character"),
-  function(conn, name) {
+  function(conn, name, ...) {
     connection_sql_columns(conn@ptr, table_name = name)[["COLUMN_NAME"]]
   })
 
@@ -147,7 +147,7 @@ setMethod(
 #' @export
 setMethod(
   "dbRemoveTable", c("OdbconnectConnection", "character"),
-  function(conn, name) {
+  function(conn, name, ...) {
     name <- dbQuoteIdentifier(conn, name)
     dbGetQuery(conn, paste("DROP TABLE ", name))
     invisible(TRUE)
@@ -167,7 +167,7 @@ setMethod(
 #' @export
 setMethod(
   "dbBegin", "OdbconnectConnection",
-  function(conn) {
+  function(conn, ...) {
     dbGetQuery(conn, "BEGIN")
     TRUE
   })
@@ -177,7 +177,7 @@ setMethod(
 #' @export
 setMethod(
   "dbCommit", "OdbconnectConnection",
-  function(conn) {
+  function(conn, ...) {
     connection_commit(conn@ptr)
     TRUE
   })
@@ -187,7 +187,7 @@ setMethod(
 #' @export
 setMethod(
   "dbRollback", "OdbconnectConnection",
-  function(conn) {
+  function(conn, ...) {
     connection_rollback(conn@ptr)
     TRUE
   })

@@ -87,7 +87,7 @@ setMethod(
 ##' @rdname odbconnect-tables
 ##' @inheritParams DBI::dbReadTable
 ##' @export
-setMethod("sqlData", "OdbconnectConnection", function(con, value, row.names = NA, copy = TRUE) {
+setMethod("sqlData", "OdbconnectConnection", function(con, value, row.names = NA, copy = TRUE, ...) {
   value <- sqlRownamesToColumn(value, row.names)
 
   # C code takes care of atomic vectors, dates and date times, just need to coerce other objects
@@ -103,7 +103,7 @@ setMethod("sqlData", "OdbconnectConnection", function(con, value, row.names = NA
 #' @export
 setMethod(
   "dbReadTable", c("OdbconnectConnection", "character"),
-  function(conn, name) {
+  function(conn, name, ...) {
     name <- dbQuoteIdentifier(conn, name)
     dbGetQuery(conn, paste("SELECT * FROM ", name))
   })
