@@ -2,8 +2,8 @@ Package: odbconnect
 Title: Connect to ODBC databases (using the DBI interface)
 Version: 0.0.0.9000
 Authors@R: c(
-    person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut", "cre")),
-    person("Jim", "Hester", , "james.hester@rstudio.com", role = c("aut")),
+    person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut")),
+    person("Jim", "Hester", , "james.hester@rstudio.com", role = c("aut", "cre")),
     person(family = "Blue Yonder GmbH", role = c("cph"), comment = "cpp_odbc and turbodbc libraries"),
     person("RStudio", role = "cph")
   )
