@@ -246,14 +246,14 @@ get_data_type.PostgreSQL <- function(info, obj, ...) {
 }
 
 `get_data_type.Microsoft SQL Server` <- function(info, obj, ...) {
-  if (is.factor(obj)) return("varchar(max)")
+  if (is.factor(obj)) return("varchar(255)")
   if (is(obj, "POSIXct")) return("datetime")
   if (is(obj, "Date")) return("date")
 
   switch(typeof(obj),
     integer = "int",
     double = "float",
-    character = "varchar(max)",
+    character = "varchar(255)",
     logical = "tinyint",
     list = "varbinary(max)",
     stop("Unsupported type", call. = FALSE)
