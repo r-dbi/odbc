@@ -42,6 +42,7 @@ DBItest::test_sql(c(
     "roundtrip_date",
     "roundtrip_timestamp",
     "roundtrip_rownames",
+    "roundtrip_quotes",
     NULL))
 DBItest::test_meta(c(
     "column_info",
@@ -49,6 +50,5 @@ DBItest::test_meta(c(
     NULL))
 DBItest::test_compliance(c(
     "read_only",
-    "ellipsis",
     NULL))
 }
