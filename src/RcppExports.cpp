@@ -122,39 +122,39 @@ BEGIN_RCPP
 END_RCPP
 }
 // result_release
-void result_release(cursor_ptr c);
+void result_release(result_ptr c);
 RcppExport SEXP odbconnect_result_release(SEXP cSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    Rcpp::traits::input_parameter< result_ptr >::type c(cSEXP);
     result_release(c);
     return R_NilValue;
 END_RCPP
 }
 // result_active
-bool result_active(cursor_ptr c);
+bool result_active(result_ptr c);
 RcppExport SEXP odbconnect_result_active(SEXP cSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    Rcpp::traits::input_parameter< result_ptr >::type c(cSEXP);
     rcpp_result_gen = Rcpp::wrap(result_active(c));
     return rcpp_result_gen;
 END_RCPP
 }
 // result_completed
-bool result_completed(cursor_ptr c);
+bool result_completed(result_ptr c);
 RcppExport SEXP odbconnect_result_completed(SEXP cSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    Rcpp::traits::input_parameter< result_ptr >::type c(cSEXP);
     rcpp_result_gen = Rcpp::wrap(result_completed(c));
     return rcpp_result_gen;
 END_RCPP
 }
 // query
-cursor_ptr query(connection_ptr p, std::string sql, std::size_t size);
+result_ptr query(connection_ptr p, std::string sql, std::size_t size);
 RcppExport SEXP odbconnect_query(SEXP pSEXP, SEXP sqlSEXP, SEXP sizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -167,77 +167,77 @@ BEGIN_RCPP
 END_RCPP
 }
 // result_fetch
-List result_fetch(cursor_ptr c, int n);
-RcppExport SEXP odbconnect_result_fetch(SEXP cSEXP, SEXP nSEXP) {
+List result_fetch(result_ptr r, int n_max);
+RcppExport SEXP odbconnect_result_fetch(SEXP rSEXP, SEXP n_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(result_fetch(c, n));
+    Rcpp::traits::input_parameter< result_ptr >::type r(rSEXP);
+    Rcpp::traits::input_parameter< int >::type n_max(n_maxSEXP);
+    rcpp_result_gen = Rcpp::wrap(result_fetch(r, n_max));
     return rcpp_result_gen;
 END_RCPP
 }
 // column_info
-void column_info(cursor_ptr c);
+void column_info(result_ptr c);
 RcppExport SEXP odbconnect_column_info(SEXP cSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    Rcpp::traits::input_parameter< result_ptr >::type c(cSEXP);
     column_info(c);
     return R_NilValue;
 END_RCPP
 }
 // result_bind
-void result_bind(cursor_ptr c, List params);
+void result_bind(result_ptr c, List params);
 RcppExport SEXP odbconnect_result_bind(SEXP cSEXP, SEXP paramsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    Rcpp::traits::input_parameter< result_ptr >::type c(cSEXP);
     Rcpp::traits::input_parameter< List >::type params(paramsSEXP);
     result_bind(c, params);
     return R_NilValue;
 END_RCPP
 }
 // result_execute
-void result_execute(cursor_ptr c);
+void result_execute(result_ptr c);
 RcppExport SEXP odbconnect_result_execute(SEXP cSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    Rcpp::traits::input_parameter< result_ptr >::type c(cSEXP);
     result_execute(c);
     return R_NilValue;
 END_RCPP
 }
 // result_insert_dataframe
-void result_insert_dataframe(cursor_ptr c, DataFrame df);
+void result_insert_dataframe(result_ptr c, DataFrame df);
 RcppExport SEXP odbconnect_result_insert_dataframe(SEXP cSEXP, SEXP dfSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    Rcpp::traits::input_parameter< result_ptr >::type c(cSEXP);
     Rcpp::traits::input_parameter< DataFrame >::type df(dfSEXP);
     result_insert_dataframe(c, df);
     return R_NilValue;
 END_RCPP
 }
 // result_rows_affected
-int result_rows_affected(cursor_ptr c);
+int result_rows_affected(result_ptr c);
 RcppExport SEXP odbconnect_result_rows_affected(SEXP cSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    Rcpp::traits::input_parameter< result_ptr >::type c(cSEXP);
     rcpp_result_gen = Rcpp::wrap(result_rows_affected(c));
     return rcpp_result_gen;
 END_RCPP
 }
 // result_row_count
-int result_row_count(cursor_ptr c);
+int result_row_count(result_ptr c);
 RcppExport SEXP odbconnect_result_row_count(SEXP cSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< cursor_ptr >::type c(cSEXP);
+    Rcpp::traits::input_parameter< result_ptr >::type c(cSEXP);
     rcpp_result_gen = Rcpp::wrap(result_row_count(c));
     return rcpp_result_gen;
 END_RCPP

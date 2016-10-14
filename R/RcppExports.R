@@ -57,8 +57,8 @@ query <- function(p, sql, size = 1024L) {
     .Call('odbconnect_query', PACKAGE = 'odbconnect', p, sql, size)
 }
 
-result_fetch <- function(c, n = -1L) {
-    .Call('odbconnect_result_fetch', PACKAGE = 'odbconnect', c, n)
+result_fetch <- function(r, n_max = -1L) {
+    .Call('odbconnect_result_fetch', PACKAGE = 'odbconnect', r, n_max)
 }
 
 column_info <- function(c) {
