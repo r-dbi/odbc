@@ -92,7 +92,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // connection_sql_tables
-Rcpp::RObject connection_sql_tables(connection_ptr p, std::string catalog_name, std::string schema_name, std::string table_name, std::string table_type);
+std::vector<std::string> connection_sql_tables(connection_ptr p, std::string catalog_name, std::string schema_name, std::string table_name, std::string table_type);
 RcppExport SEXP odbconnect_connection_sql_tables(SEXP pSEXP, SEXP catalog_nameSEXP, SEXP schema_nameSEXP, SEXP table_nameSEXP, SEXP table_typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

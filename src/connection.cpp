@@ -2,6 +2,7 @@
 #include "nanodbc.h"
 #include "odbconnect_types.h"
 #include <sqlext.h>
+#include "utils.h"
 
 using namespace nanodbc;
 
@@ -62,14 +63,18 @@ bool connection_valid(connection_ptr p) {
 
 // "%" is a wildcard for all possible values
 // [[Rcpp::export]]
-Rcpp::RObject connection_sql_tables(connection_ptr p,
+std::vector<std::string> connection_sql_tables(connection_ptr p,
     std::string catalog_name = "%",
     std::string schema_name = "%",
     std::string table_name = "%",
     std::string table_type = "%") {
   auto c = catalog(*p);
-  auto r = c.find_tables(table_name, table_type, schema_name, catalog_name);
-  return Rcpp::List();
+  auto tables = c.find_tables(table_name, table_type, schema_name, catalog_name);
+  std::vector<std::string> out;
+  while(tables.next()) {
+    out.push_back(tables.table_name());
+  }
+  return out;
 }
 
 // "%" is a wildcard for all possible values

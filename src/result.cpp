@@ -12,15 +12,13 @@ void result_release(result_ptr r) {
 
 // [[Rcpp::export]]
 bool result_active(result_ptr r) {
-  //return c.get() != NULL;
-  return TRUE;
+  return r;
 }
 
 // [[Rcpp::export]]
 bool result_completed(result_ptr r) {
-  //auto rs = c->get_result_set();
-  //return !rs || rs->has_completed();
-  return TRUE;
+  auto res = r->result();
+  return !res || res.at_end();
 }
 
 // [[Rcpp::export]]
@@ -54,9 +52,7 @@ void result_execute(result_ptr r) {
 
 // [[Rcpp::export]]
 void result_insert_dataframe(result_ptr r, DataFrame df) {
-  //c->add_parameter_set(df);
-  //c->execute();
-  //c.release();
+  r->insert_dataframe(df);
 }
 
 // [[Rcpp::export]]

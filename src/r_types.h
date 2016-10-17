@@ -7,7 +7,7 @@ namespace odbconnect {
   typedef enum {
     logical_t,
     integer_t,
-    double_t,   // output only
+    double_t,
     date_t,
     date_time_t,
     string_t,
