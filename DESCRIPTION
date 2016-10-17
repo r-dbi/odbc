@@ -32,7 +32,6 @@ Collate:
     'Table.R'
     'utils.R'
     'zzz.R'
-Remotes:
-  jimhester/covr@compiled_subdir,
-  rstats-db/DBI,
-  rstats-db/DBItest@production
+Remotes: jimhester/covr@compiled_subdir,
+    rstats-db/DBI,
+    rstats-db/DBItest@production

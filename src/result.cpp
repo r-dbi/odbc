@@ -1,23 +1,23 @@
 #include "odbconnect_types.h"
 #include "sqlext.h"
-#include "utils.h"
+#include "odbc_result.h"
 
 using namespace Rcpp;
 using namespace nanodbc;
 
 // [[Rcpp::export]]
-void result_release(result_ptr c) {
-  c.release();
+void result_release(result_ptr r) {
+  r.release();
 }
 
 // [[Rcpp::export]]
-bool result_active(result_ptr c) {
+bool result_active(result_ptr r) {
   //return c.get() != NULL;
   return TRUE;
 }
 
 // [[Rcpp::export]]
-bool result_completed(result_ptr c) {
+bool result_completed(result_ptr r) {
   //auto rs = c->get_result_set();
   //return !rs || rs->has_completed();
   return TRUE;
@@ -25,97 +25,16 @@ bool result_completed(result_ptr c) {
 
 // [[Rcpp::export]]
 result_ptr query(connection_ptr p, std::string sql, std::size_t size = 1024) {
-
-  nanodbc::result* r = new nanodbc::result(nanodbc::execute(*p, sql));
-  return result_ptr(r);
-}
-
-std::vector<std::string> column_names(nanodbc::result const & r) {
-  std::vector<std::string> names;
-  names.reserve(r.columns());
-  for (short i = 0;i < r.columns();++i) {
-    names.push_back(r.column_name(i));
-  }
-  return names;
-}
-
-double make_timestamp(nanodbc::timestamp const & ts)
-{
-  tm t;
-  t.tm_sec = t.tm_min = t.tm_hour = t.tm_isdst = 0;
-
-  t.tm_year = ts.year - 1900;
-  t.tm_mon = ts.month - 1;
-  t.tm_mday = ts.day;
-  t.tm_hour = ts.hour;
-  t.tm_min = ts.min;
-  t.tm_sec = ts.sec;
-
-  return Rcpp::mktime00(t) + ts.fract;
-}
-
-List result_set_to_data_frame(nanodbc::result & results, int n_max = -1) {
-  auto types = column_types(results);
-
-  int n = (n_max < 0) ? 100: n_max;
-
-  List out = create_dataframe(types, column_names(results), n);
-  int row = 0;
-  for (auto &vals : results) {
-    if (row >= n) {
-      if (n_max < 0) {
-        n *= 2;
-        out = resize_dataframe(out, n);
-      } else {
-        break;
-      }
-    }
-    for (short col = 0;col < results.columns(); ++col) {
-      switch(types[col]) {
-        case integer_t: INTEGER(out[col])[row] = vals.get<int>(col, NA_INTEGER); break;
-        case date_t:
-        case date_time_t: {
-                        double val;
-                         if (vals.is_null(col)) {
-                           val = NA_REAL;
-                         } else {
-                        val = make_timestamp(vals.get<timestamp>(col));
-                         }
-
-                         REAL(out[col])[row] = val;
-                         break;
-                          }
-        case odbconnect::double_t:
-                        REAL(out[col])[row] = vals.get<double>(col, NA_REAL); break;
-        case string_t: {
-                         SEXP val;
-                         if (vals.is_null(col)) {
-                           val = NA_STRING;
-                         } else {
-                         val = Rf_mkCharCE(vals.get<string_type>(col).c_str(), CE_UTF8);
-                         }
-                         SET_STRING_ELT(out[col], row, val); break;
-                       }
-        //case raw_t: out[j] = Rf_allocVector(VECSXP, n); break;
-        //case logical_t: out[j] = Rf_allocVector(LGLSXP, n); break;
-      }
-    }
-
-    ++row;
-  }
-  if (row < n) {
-    out = resize_dataframe(out, row);
-  }
-  return out;
+  return result_ptr(new odbconnect::odbc_result(*p, sql));
 }
 
 // [[Rcpp::export]]
 List result_fetch(result_ptr r, int n_max = -1) {
-  return result_set_to_data_frame(*r, n_max);
+  return r->fetch(n_max);
 }
 
 // [[Rcpp::export]]
-void column_info(result_ptr c) {
+void column_info(result_ptr r) {
   //auto columns = c->get_result_set()->get_column_info();
   //for (auto info : columns) {
     //Rcpp::Rcout << info.name << ':' << (int) info.type << ':' << info.supports_null_values << '\n';
@@ -123,31 +42,31 @@ void column_info(result_ptr c) {
 }
 
 // [[Rcpp::export]]
-void result_bind(result_ptr c, List params) {
+void result_bind(result_ptr r, List params) {
   //c->add_parameter_set(params);
   //c->execute();
 }
 
 // [[Rcpp::export]]
-void result_execute(result_ptr c) {
-  //c->execute();
+void result_execute(result_ptr r) {
+  r->execute();
 }
 
 // [[Rcpp::export]]
-void result_insert_dataframe(result_ptr c, DataFrame df) {
+void result_insert_dataframe(result_ptr r, DataFrame df) {
   //c->add_parameter_set(df);
   //c->execute();
   //c.release();
 }
 
 // [[Rcpp::export]]
-int result_rows_affected(result_ptr c) {
-  return c->rows();
-  //return c->get_row_count();
+int result_rows_affected(result_ptr r) {
+  auto res = r->result();
+  return res ? res.affected_rows() : 0;
 }
 
 // [[Rcpp::export]]
-int result_row_count(result_ptr c) {
+int result_row_count(result_ptr r) {
   //auto rs = c->get_result_set();
   //if (!rs) {
     //return 0;
