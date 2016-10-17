@@ -7,11 +7,13 @@
 #include "utils.h"
 
 namespace odbconnect {
+typedef std::array<const char, 255> string_buf;
 
 class odbc_result {
   public:
     odbc_result(nanodbc::connection & c, std::string sql) :
-      c_(c) {
+      c_(c),
+      sql_(sql) {
         s_ = nanodbc::statement(c, sql);
       };
     nanodbc::connection connection() const {
@@ -32,17 +34,19 @@ class odbc_result {
       auto types = column_types(df);
       auto ncols = df.size();
       auto nrows = df.nrows();
-      for (short col = 0; col < ncols; ++col) {
-        Rcpp::Rcout << col << ':' << types[col] << '\n';
-        switch(types[col]) {
-          case integer_t: s_.bind(col, INTEGER(df[col]), nrows, &NA_INTEGER); break;
-          case double_t: {
-            s_.bind<double>(col, REAL(df[col]), nrows, &NA_REAL); break;
+      for (size_t row = 0; row < nrows; ++row) {
+        s_ = nanodbc::statement(c_, sql_);
+        for (short col = 0; col < ncols; ++col) {
+          switch(types[col]) {
+          case integer_t: s_.bind(col, INTEGER(df[col])); break;
+          case double_t: s_.bind(col, REAL(df[col])); break;
+          case string_t: {
+            s_.bind(col, Rf_translateCharUTF8(STRING_ELT(df[col], row))); break;
           }
-//                          string_t: s_.bind_strings(col, )
+          }
         }
+      nanodbc::execute(s_);
       }
-      nanodbc::transact(s_, nrows);
     }
     Rcpp::List fetch(int n_max = -1) {
       execute();
@@ -53,7 +57,6 @@ class odbc_result {
     nanodbc::connection c_;
     nanodbc::statement s_;
     nanodbc::result r_;
-
-
+    std::string sql_;
 };
 }
