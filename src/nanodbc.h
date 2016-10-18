@@ -780,9 +780,11 @@ public:
         std::size_t elements,
         param_direction direction = PARAM_IN);
 
+    /// \brief Binds multiple string values.
+    /// \see bind_strings
     void bind_strings(
         short param,
-        std::vector<string_type> & values,
+        const std::vector<string_type> & values,
         std::size_t elements,
         param_direction direction = PARAM_IN);
 

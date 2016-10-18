@@ -1638,12 +1638,19 @@ public:
     void bind_strings(
         short param,
         const string_type::value_type* values,
-        std::size_t, //length,
+        std::size_t, // length
         std::size_t elements,
         param_direction direction)
     {
         bind(param, values, elements, direction);
     }
+
+    // handles multiple string values
+    void bind_strings(
+        short param,
+        const std::vector<string_type> & values,
+        std::size_t elements,
+        param_direction direction);
 
     // handles multiple null values
     void bind_null(short param, std::size_t elements)
@@ -1687,13 +1694,6 @@ public:
         std::size_t elements,
         const bool* nulls,
         const T* null_sentry,
-        param_direction direction);
-
-
-    void bind_strings(
-        short param,
-        std::vector<string_type> & values,
-        std::size_t elements,
         param_direction direction);
 
     // handles multiple string values
@@ -1796,7 +1796,7 @@ void statement::statement_impl::bind(
 
 void statement::statement_impl::bind_strings(
     short param,
-    std::vector<string_type> & values,
+    const std::vector<string_type> & values,
     std::size_t elements,
     param_direction direction) {
 
@@ -1819,6 +1819,7 @@ void statement::statement_impl::bind_strings(
   }
   bind_parameter(param, data_[param].data(), elements, data_type, param_type, max_len, scale);
 }
+
 void statement::statement_impl::bind_strings(
     short param,
     const string_type::value_type* values,
@@ -3624,7 +3625,7 @@ void statement::bind(
 
 void statement::bind_strings(
     short param,
-    std::vector<string_type> & values,
+    const std::vector<string_type> & values,
     std::size_t elements,
     param_direction direction) {
 
