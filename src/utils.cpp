@@ -38,16 +38,14 @@ Rcpp::List create_dataframe(std::vector<r_type> types, std::vector<std::string> 
       case odbconnect::double_t: out[j] = Rf_allocVector(REALSXP, n); break;
       case date_t: {
         out[j] = Rf_allocVector(REALSXP, n);
-        //Rf_setAttrib(out[j], rClassSymbol, Rf_mkString("Date"));
+        Rcpp::as<Rcpp::RObject>(out[j]).attr("class") = "Date";
         break;
       }
       case date_time_t: {
         out[j] = Rf_allocVector(REALSXP, n);
-        //Rf_setAttrib(out[j], Rf_mkString("tzone"), Rf_mkString("UTC"));
-        //Rf_setAttrib(out[j], rClassSymbol, Rcpp::CharacterVector::create("POSIXct", "POSIXt"));
+        Rcpp::as<Rcpp::RObject>(out[j]).attr("class") = Rcpp::CharacterVector::create("POSIXct", "POSIXt");
+        Rcpp::as<Rcpp::RObject>(out[j]).attr("tzone") = "UTC";
         break;
-        //out[j].attr("class") = Rcpp::CharacterVector::create("POSIXct", "POSIXt");
-        //out[j].attr("tzone") = "UTC";
       }
       case string_t: out[j] = Rf_allocVector(STRSXP, n); break;
       case raw_t: out[j] = Rf_allocVector(VECSXP, n); break;
@@ -62,10 +60,16 @@ Rcpp::List resize_dataframe(Rcpp::List df, int n) {
 
   Rcpp::List out(p);
   for (int j = 0; j < p; ++j) {
-    //SEXP attr;
-    //DUPLICATE_ATTRIB(out[j], attr);
+
+    SEXP attr;
+    bool has_attributes = ATTRIB(out[j]) != R_NilValue;
+    if (has_attributes) {
+      SHALLOW_DUPLICATE_ATTRIB(attr, out[j]);
+    }
     out[j] = Rf_lengthgets(df[j], n);
-    //SET_ATTRIB(out[j], attr);
+    if (has_attributes) {
+      SET_ATTRIB(out[j], attr);
+    }
   }
 
   out.attr("names") = df.attr("names");

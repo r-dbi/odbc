@@ -71,13 +71,12 @@ setMethod(
         "INSERT INTO ", name, " (", paste0(fields, collapse = ", "), ")\n",
         "VALUES (", paste0(params, collapse = ", "), ")"
         )
-      rs <- dbSendQuery(conn, sql)
+      rs <- OdbconnectResult(conn, sql)
 
       tryCatch(
         result_insert_dataframe(rs@ptr, values),
         finally = dbClearResult(rs)
         )
-      #}
     }
 
     invisible(TRUE)

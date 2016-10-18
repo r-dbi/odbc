@@ -22,7 +22,7 @@ bool result_completed(result_ptr r) {
 }
 
 // [[Rcpp::export]]
-result_ptr query(connection_ptr p, std::string sql, std::size_t size = 1024) {
+result_ptr new_result(connection_ptr p, std::string sql, std::size_t size = 1024) {
   return result_ptr(new odbconnect::odbc_result(*p, sql));
 }
 
@@ -41,7 +41,7 @@ void column_info(result_ptr r) {
 
 // [[Rcpp::export]]
 void result_bind(result_ptr r, List params) {
-  //c->add_parameter_set(params);
+  r->insert_dataframe(params);
   //c->execute();
 }
 

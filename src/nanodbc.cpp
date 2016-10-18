@@ -1812,7 +1812,7 @@ void statement::statement_impl::bind_strings(
       max_len = values[i].length();
     }
   }
-  data_[param] = std::vector<char>(max_len * elements, 0);
+  data_[param] = std::vector<string_type::value_type>(max_len * elements, 0);
   for (std::size_t i = 0; i < elements; ++i) {
     bind_len_or_null_[param][i] = values[i].length();
     std::copy(values[i].begin(), values[i].end(), data_[param].data() + (i * max_len));
@@ -3207,6 +3207,11 @@ std::size_t connection::transactions() const
     return impl_->transactions();
 }
 
+string_type connection::get_string_info(short info_type) const
+{
+    return impl_->get_string_info(info_type);
+}
+
 void* connection::native_dbc_handle() const
 {
     return impl_->native_dbc_handle();
@@ -3215,11 +3220,6 @@ void* connection::native_dbc_handle() const
 void* connection::native_env_handle() const
 {
     return impl_->native_env_handle();
-}
-
-string_type connection::get_string_info(short info_type) const
-{
-    return impl_->get_string_info(info_type);
 }
 
 string_type connection::dbms_name() const

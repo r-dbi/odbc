@@ -153,16 +153,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// query
-result_ptr query(connection_ptr p, std::string sql, std::size_t size);
-RcppExport SEXP odbconnect_query(SEXP pSEXP, SEXP sqlSEXP, SEXP sizeSEXP) {
+// new_result
+result_ptr new_result(connection_ptr p, std::string sql, std::size_t size);
+RcppExport SEXP odbconnect_new_result(SEXP pSEXP, SEXP sqlSEXP, SEXP sizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< connection_ptr >::type p(pSEXP);
     Rcpp::traits::input_parameter< std::string >::type sql(sqlSEXP);
     Rcpp::traits::input_parameter< std::size_t >::type size(sizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(query(p, sql, size));
+    rcpp_result_gen = Rcpp::wrap(new_result(p, sql, size));
     return rcpp_result_gen;
 END_RCPP
 }

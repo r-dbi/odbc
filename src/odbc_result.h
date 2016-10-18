@@ -44,6 +44,25 @@ class odbc_result {
             }
             s_.bind_strings(col, str, nrows); break;
           }
+          case date_time_t: {
+            std::vector<nanodbc::timestamp> times;
+            for (size_t row = 0; row < nrows; ++row) {
+              auto d = REAL(df[col])[row];
+              auto frac = modf(d, &d);
+              time_t t = static_cast<time_t>(d);
+              auto tm = localtime(&t);
+              nanodbc::timestamp ts;
+              ts.fract = frac;
+              ts.sec = tm->tm_sec;
+              ts.min = tm->tm_min;
+              ts.hour = tm->tm_hour;
+              ts.day = tm->tm_mday;
+              ts.month = tm->tm_mon + 1;
+              ts.year = tm->tm_year + 1900;
+              times.push_back(ts);
+            }
+            s_.bind(col, times.data(), nrows); break;
+          }
         }
       }
       nanodbc::transact(s_, nrows);

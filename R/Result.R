@@ -2,7 +2,7 @@
 NULL
 
 OdbconnectResult <- function(connection, statement) {
-  ptr <- query(connection@ptr, statement)
+  ptr <- new_result(connection@ptr, statement)
   new("OdbconnectResult", connection = connection, statement = statement, ptr = ptr)
 }
 
@@ -75,7 +75,7 @@ setMethod(
 #' @export
 setMethod(
   "dbIsValid", "OdbconnectResult",
-  function(dbObj, ...) {
+  function(dbObj) {
     result_active(dbObj@ptr)
   })
 

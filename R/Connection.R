@@ -74,7 +74,9 @@ setMethod(
 setMethod(
   "dbSendQuery", c("OdbconnectConnection", "character"),
   function(conn, statement, ...) {
-    OdbconnectResult(connection = conn, statement = statement)
+    res <- OdbconnectResult(connection = conn, statement = statement)
+    result_execute(res@ptr)
+    res
   })
 
 #' @rdname DBI
@@ -83,7 +85,9 @@ setMethod(
 setMethod(
   "dbSendStatement", c("OdbconnectConnection", "character"),
   function(conn, statement, ...) {
-    OdbconnectResult(connection = conn, statement = statement)
+    res <- OdbconnectResult(connection = conn, statement = statement)
+    result_execute(res@ptr)
+    res
   })
 
 #' @rdname DBI
