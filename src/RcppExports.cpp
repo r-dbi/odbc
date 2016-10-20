@@ -189,13 +189,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // result_bind
-void result_bind(result_ptr r, List params);
-RcppExport SEXP odbconnect_result_bind(SEXP rSEXP, SEXP paramsSEXP) {
+void result_bind(result_ptr r, std::string sql, List params);
+RcppExport SEXP odbconnect_result_bind(SEXP rSEXP, SEXP sqlSEXP, SEXP paramsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< result_ptr >::type r(rSEXP);
+    Rcpp::traits::input_parameter< std::string >::type sql(sqlSEXP);
     Rcpp::traits::input_parameter< List >::type params(paramsSEXP);
-    result_bind(r, params);
+    result_bind(r, sql, params);
     return R_NilValue;
 END_RCPP
 }

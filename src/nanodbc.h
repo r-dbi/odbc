@@ -812,6 +812,15 @@ public:
 
     /// \brief Binds multiple string values.
     /// \see bind_strings
+    void bind_strings(
+        short param,
+        const std::vector<string_type> & values,
+        std::size_t elements,
+        const string_type::value_type* null_sentry,
+        param_direction direction = PARAM_IN);
+
+    /// \brief Binds multiple string values.
+    /// \see bind_strings
     template <std::size_t N, std::size_t M>
     void bind_strings(
         short param,
@@ -834,6 +843,15 @@ public:
         short param,
         const string_type::value_type* values,
         std::size_t length,
+        std::size_t elements,
+        const bool* nulls,
+        param_direction direction = PARAM_IN);
+
+    /// \brief Binds multiple string values.
+    /// \see bind_strings
+    void bind_strings(
+        short param,
+        const std::vector<string_type> & values,
         std::size_t elements,
         const bool* nulls,
         param_direction direction = PARAM_IN);

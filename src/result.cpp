@@ -12,7 +12,7 @@ void result_release(result_ptr r) {
 
 // [[Rcpp::export]]
 bool result_active(result_ptr r) {
-  return r;
+  return r.get() != nullptr && static_cast<bool>(r->result()) && r->result().at_end();
 }
 
 // [[Rcpp::export]]
@@ -40,7 +40,7 @@ void column_info(result_ptr r) {
 }
 
 // [[Rcpp::export]]
-void result_bind(result_ptr r, List params) {
+void result_bind(result_ptr r, std::string sql, List params) {
   r->insert_dataframe(params);
   //c->execute();
 }
