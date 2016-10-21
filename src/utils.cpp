@@ -35,18 +35,9 @@ Rcpp::List create_dataframe(std::vector<r_type> types, std::vector<std::string> 
   for (int j = 0; j < num_cols; ++j) {
     switch (types[j]) {
       case integer_t: out[j] = Rf_allocVector(INTSXP, n); break;
+      case date_t:
+      case date_time_t:
       case odbconnect::double_t: out[j] = Rf_allocVector(REALSXP, n); break;
-      case date_t: {
-        out[j] = Rf_allocVector(REALSXP, n);
-        Rcpp::as<Rcpp::RObject>(out[j]).attr("class") = "Date";
-        break;
-      }
-      case date_time_t: {
-        out[j] = Rf_allocVector(REALSXP, n);
-        Rcpp::as<Rcpp::RObject>(out[j]).attr("class") = Rcpp::CharacterVector::create("POSIXct", "POSIXt");
-        Rcpp::as<Rcpp::RObject>(out[j]).attr("tzone") = "UTC";
-        break;
-      }
       case string_t: out[j] = Rf_allocVector(STRSXP, n); break;
       case raw_t: out[j] = Rf_allocVector(VECSXP, n); break;
       case logical_t: out[j] = Rf_allocVector(LGLSXP, n); break;
@@ -60,16 +51,7 @@ Rcpp::List resize_dataframe(Rcpp::List df, int n) {
 
   Rcpp::List out(p);
   for (int j = 0; j < p; ++j) {
-
-    SEXP attr;
-    bool has_attributes = ATTRIB(out[j]) != R_NilValue;
-    if (has_attributes) {
-      SHALLOW_DUPLICATE_ATTRIB(attr, out[j]);
-    }
     out[j] = Rf_lengthgets(df[j], n);
-    if (has_attributes) {
-      SET_ATTRIB(out[j], attr);
-    }
   }
 
   out.attr("names") = df.attr("names");
@@ -77,6 +59,22 @@ Rcpp::List resize_dataframe(Rcpp::List df, int n) {
   out.attr("row.names") = Rcpp::IntegerVector::create(NA_INTEGER, -n);
 
   return out;
+}
+
+void add_classes(Rcpp::List& df, const std::vector<r_type> & types) {
+  for (int col = 0; col < df.size(); ++col) {
+    Rcpp::RObject x = df[col];
+    switch (types[col]) {
+      case date_t:
+        x.attr("class") = Rcpp::CharacterVector::create("Date");
+        break;
+      case date_time_t:
+        x.attr("class") = Rcpp::CharacterVector::create("POSIXct", "POSIXt");
+        break;
+      default:
+        break;
+    }
+  }
 }
 
 std::vector<r_type> column_types(Rcpp::DataFrame const & df) {
@@ -92,8 +90,9 @@ std::vector<r_type> column_types(Rcpp::DataFrame const & df) {
           types.push_back(date_t);
         } else if (x.inherits("POSIXct")) {
           types.push_back(date_time_t);
+        } else {
+          types.push_back(double_t);
         }
-        types.push_back(double_t);
         break;
       }
       case STRSXP: types.push_back(string_t); break;
@@ -185,10 +184,12 @@ Rcpp::List result_to_dataframe(nanodbc::result & r, int n_max) {
         case date_t:
         case date_time_t: {
           double val;
+
           if (vals.is_null(col)) {
             val = NA_REAL;
           } else {
-            val = make_timestamp(vals.get<nanodbc::timestamp>(col));
+            auto ts = vals.get<nanodbc::timestamp>(col);
+            val = make_timestamp(ts);
           }
 
           REAL(out[col])[row] = val;
@@ -198,10 +199,17 @@ Rcpp::List result_to_dataframe(nanodbc::result & r, int n_max) {
                         REAL(out[col])[row] = vals.get<double>(col, NA_REAL); break;
         case string_t: {
           SEXP val;
+
+          // There is a bug/limitation in ODBC drivers for SQL Server (and possibly others)
+          // which causes SQLBindCol() to never write SQL_NOT_NULL to the length/indicator
+          // buffer unless you also bind the data column. nanodbc's is_null() will return
+          // correct values for (n)varchar(max) columns when you ensure that SQLGetData()
+          // has been called for that column (i.e. after get() or get_ref() is called).
+          auto str = vals.get<std::string>(col);
           if (vals.is_null(col)) {
             val = NA_STRING;
           } else {
-            val = Rf_mkCharCE(vals.get<nanodbc::string_type>(col).c_str(), CE_UTF8);
+            val = Rf_mkCharCE(str.c_str(), CE_UTF8);
           }
           SET_STRING_ELT(out[col], row, val); break;
         }
@@ -212,9 +220,13 @@ Rcpp::List result_to_dataframe(nanodbc::result & r, int n_max) {
 
     ++row;
   }
+
+  // Resize if needed
   if (row < n) {
     out = resize_dataframe(out, row);
   }
+
+  add_classes(out, types);
   return out;
 }
 }
