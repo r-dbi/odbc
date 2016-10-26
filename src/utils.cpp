@@ -141,8 +141,8 @@ std::vector<r_type> column_types(nanodbc::result const & r) {
         types.push_back(datetime_t);
         break;
       case SQL_CHAR:
-      case SQL_VARCHAR:
       case SQL_WCHAR:
+      case SQL_VARCHAR:
       case SQL_WVARCHAR:
       case SQL_LONGVARCHAR:
       case SQL_WLONGVARCHAR:
@@ -193,7 +193,7 @@ Rcpp::List result_to_dataframe(nanodbc::result & r, int n_max) {
             val = make_timestamp(ts);
           }
 
-          REAL(out[col])[row] = types[col] == date_t ? val / 24 * 60 * 60 : val;
+          REAL(out[col])[row] = types[col] == date_t ? val / (24 * 60 * 60) : val;
           break;
         }
         case odbconnect::double_t:

@@ -50,6 +50,7 @@ class odbc_result {
             case double_t: bind_double(s, df, col, start, size); break;
             case string_t: bind_string(s, df, col, start, size); break;
             case datetime_t: bind_datetime(s, df, col, start, size); break;
+            case date_t: bind_date(s, df, col, start, size); break;
             default: Rcpp::stop("Not yet implemented!"); break;
           }
         }
@@ -68,7 +69,7 @@ class odbc_result {
     nanodbc::statement s_;
     nanodbc::result r_;
     std::string sql_;
-    static const int seconds_in_day = 24 * 60 * 60;
+    static const int seconds_in_day_ = 24 * 60 * 60;
 
     std::map<short, std::vector<std::string>> strings_;
     std::map<short, std::vector<nanodbc::timestamp>> times_;
@@ -112,6 +113,21 @@ class odbc_result {
       statement.bind_strings(column, strings_[column], reinterpret_cast<bool *>(nulls_[column].data()));
     }
 
+    nanodbc::timestamp as_timestamp(double value) {
+      nanodbc::timestamp ts;
+      auto frac = modf(value, &value);
+      time_t t = static_cast<time_t>(value);
+      auto tm = localtime(&t);
+      ts.fract = frac;
+      ts.sec = tm->tm_sec;
+      ts.min = tm->tm_min;
+      ts.hour = tm->tm_hour;
+      ts.day = tm->tm_mday;
+      ts.month = tm->tm_mon + 1;
+      ts.year = tm->tm_year + 1900;
+      return ts;
+    }
+
     void bind_datetime(nanodbc::statement & statement, Rcpp::DataFrame const & data, short column, size_t start, size_t size) {
 
       nulls_[column] = std::vector<uint8_t>(size, false);
@@ -122,16 +138,23 @@ class odbc_result {
         if (ISNA(value)) {
           nulls_[column][i] = true;
         } else {
-          auto frac = modf(value, &value);
-          time_t t = static_cast<time_t>(value);
-          auto tm = localtime(&t);
-          ts.fract = frac;
-          ts.sec = tm->tm_sec;
-          ts.min = tm->tm_min;
-          ts.hour = tm->tm_hour;
-          ts.day = tm->tm_mday;
-          ts.month = tm->tm_mon + 1;
-          ts.year = tm->tm_year + 1900;
+          ts = as_timestamp(value);
+        }
+        times_[column].push_back(ts);
+      }
+      statement.bind(column, times_[column].data(), size, reinterpret_cast<bool *>(nulls_[column].data()));
+    }
+    void bind_date(nanodbc::statement & statement, Rcpp::DataFrame const & data, short column, size_t start, size_t size) {
+
+      nulls_[column] = std::vector<uint8_t>(size, false);
+
+      for (size_t i = 0;i < size;++i) {
+        nanodbc::timestamp ts;
+        auto value = REAL(data[column])[start + i] * seconds_in_day_;
+        if (ISNA(value)) {
+          nulls_[column][i] = true;
+        } else {
+          ts = as_timestamp(value);
         }
         times_[column].push_back(ts);
       }
