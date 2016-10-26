@@ -2,7 +2,6 @@
 #include "nanodbc.h"
 #include "odbconnect_types.h"
 #include <sqlext.h>
-#include "utils.h"
 
 using namespace nanodbc;
 
