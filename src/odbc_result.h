@@ -45,12 +45,14 @@ class odbc_result {
 
         for (short col = 0; col < ncols; ++col) {
           switch(types[col]) {
-            case integer_t: bind_integer(s, df, col, start, size); break;
-            case double_t: bind_double(s, df, col, start, size); break;
-            case string_t: bind_string(s, df, col, start, size); break;
-            case datetime_t: bind_datetime(s, df, col, start, size); break;
+            case logical_t: bind_logical(s, df, col, start, size); break;
             case date_t: bind_date(s, df, col, start, size); break;
-            default: Rcpp::stop("Not yet implemented!"); break;
+            case datetime_t: bind_datetime(s, df, col, start, size); break;
+            case double_t: bind_double(s, df, col, start, size); break;
+            case integer_t: bind_integer(s, df, col, start, size); break;
+            case string_t: bind_string(s, df, col, start, size); break;
+            default: Rcpp::stop("Not yet implemented (%s)!", types[col]); break;
+
           }
         }
         nanodbc::execute(s, size);
@@ -78,6 +80,18 @@ class odbc_result {
       strings_.clear();
       times_.clear();
       nulls_.clear();
+    }
+
+    void bind_logical(nanodbc::statement & statement, Rcpp::DataFrame const & data, short column, size_t start, size_t size) {
+      nulls_[column] = std::vector<uint8_t>(size, false);
+      auto vector = LOGICAL(data[column]);
+      for (size_t i = 0;i < size;++i) {
+        if (vector[start + i] == NA_LOGICAL) {
+          nulls_[column][i] = true;
+        }
+      }
+      auto t = reinterpret_cast<const int *>(&LOGICAL(data[column])[start]);
+      statement.bind<int>(column, t, size, reinterpret_cast<bool *>(nulls_[column].data()));
     }
 
     void bind_integer(nanodbc::statement & statement, Rcpp::DataFrame const & data, short column, size_t start, size_t size) {
@@ -273,6 +287,8 @@ class odbc_result {
         switch (type)
         {
           case SQL_BIT:
+            types.push_back(logical_t);
+            break;
           case SQL_TINYINT:
           case SQL_SMALLINT:
           case SQL_INTEGER:
@@ -346,7 +362,7 @@ class odbc_result {
             case integer_t: assign_integer(out, row, col, vals); break;
             case string_t: assign_string(out, row, col, vals); break;
                            //case raw_t: out[j] = Rf_allocVector(VECSXP, n); break;
-                            //case logical_t: out[j] = Rf_allocVector(LGLSXP, n); break;
+            case logical_t: assign_logical(out, row, col, vals); break;
             default:
                             Rcpp::warning("Unknown field type (%s) in column %s", types[col], r.column_name(col));
           }
@@ -416,5 +432,8 @@ class odbc_result {
       REAL(out[column])[row] = res / seconds_in_day_;
     }
 
+    void assign_logical(Rcpp::List & out, size_t row, short column, nanodbc::result & value) {
+      LOGICAL(out[column])[row] = value.get<int>(column, NA_LOGICAL);
+    }
 };
 }
