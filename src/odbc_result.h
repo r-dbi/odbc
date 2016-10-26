@@ -42,67 +42,14 @@ class odbc_result {
         auto s = nanodbc::statement(c_, sql_);
         size_t end = start + batch_size > nrows ? nrows : start + batch_size;
         size_t size = end - start;
-        std::map<short, std::vector<std::string>> str;
-        std::map<short, std::vector<nanodbc::timestamp>> times;
-        std::map<short, std::vector<uint8_t>> nulls;
+        clear_buffers();
 
         for (short col = 0; col < ncols; ++col) {
           switch(types[col]) {
-            case integer_t: s.bind(col, &INTEGER(df[col])[start], size, &NA_INTEGER); break;
-            case double_t: {
-              // We cannot use a sentinel becuase NaN != NaN for
-              // all values of NaN, even if the bits are the
-              // same.
-              nulls[col] = std::vector<uint8_t>(size, false);
-              auto column = REAL(df[col]);
-
-              size_t i = 0;
-              for (size_t row = start; row < end; ++row, ++i) {
-                if (ISNA(column[row])) {
-                  nulls[col][i] = true;
-                }
-              }
-
-              s.bind(col, &REAL(df[col])[start], size, reinterpret_cast<bool *>(nulls[col].data())); break;
-            }
-            case string_t: {
-              nulls[col] = std::vector<uint8_t>(size, false);
-              size_t i = 0;
-              for (size_t row = start; row < end; ++row) {
-                auto a = STRING_ELT(df[col], row);
-                if (a == NA_STRING) {
-                  nulls[col][i] = true;
-                }
-                str[col].push_back(Rf_translateCharUTF8(a));
-                ++i;
-              }
-              s.bind_strings(col, str[col], reinterpret_cast<bool *>(nulls[col].data())); break;
-            }
-            case date_time_t: {
-              nulls[col] = std::vector<uint8_t>(size, false);
-
-              size_t i = 0;
-              for (size_t row = start; row < end; ++row, ++i) {
-                nanodbc::timestamp ts;
-                auto d = REAL(df[col])[row];
-                if (ISNA(d)) {
-                  nulls[col][i] = true;
-                } else {
-                  auto frac = modf(d, &d);
-                  time_t t = static_cast<time_t>(d);
-                  auto tm = localtime(&t);
-                  ts.fract = frac;
-                  ts.sec = tm->tm_sec;
-                  ts.min = tm->tm_min;
-                  ts.hour = tm->tm_hour;
-                  ts.day = tm->tm_mday;
-                  ts.month = tm->tm_mon + 1;
-                  ts.year = tm->tm_year + 1900;
-                }
-                times[col].push_back(ts);
-              }
-              s.bind(col, times[col].data(), size, reinterpret_cast<bool *>(nulls[col].data())); break;
-            }
+            case integer_t: bind_integer(s, df, col, start, size); break;
+            case double_t: bind_double(s, df, col, start, size); break;
+            case string_t: bind_string(s, df, col, start, size); break;
+            case datetime_t: bind_datetime(s, df, col, start, size); break;
             default: Rcpp::stop("Not yet implemented!"); break;
           }
         }
@@ -121,5 +68,74 @@ class odbc_result {
     nanodbc::statement s_;
     nanodbc::result r_;
     std::string sql_;
+    static const int seconds_in_day = 24 * 60 * 60;
+
+    std::map<short, std::vector<std::string>> strings_;
+    std::map<short, std::vector<nanodbc::timestamp>> times_;
+    std::map<short, std::vector<uint8_t>> nulls_;
+
+    void clear_buffers() {
+      strings_.clear();
+      times_.clear();
+      nulls_.clear();
+    }
+
+    void bind_integer(nanodbc::statement & statement, Rcpp::DataFrame const & data, short column, size_t start, size_t size) {
+      statement.bind(column, &INTEGER(data[column])[start], size, &NA_INTEGER);
+    }
+
+    // We cannot use a sentinel for doubles becuase NaN != NaN for all values
+    // of NaN, even if the bits are the same.
+    void bind_double(nanodbc::statement & statement, Rcpp::DataFrame const & data, short column, size_t start, size_t size) {
+      nulls_[column] = std::vector<uint8_t>(size, false);
+
+      auto vector = REAL(data[column]);
+      for (size_t i = 0;i < size;++i) {
+        if (ISNA(vector[start + i])) {
+          nulls_[column][i] = true;
+        }
+      }
+
+      statement.bind(column, &vector[start], size, reinterpret_cast<bool *>(nulls_[column].data()));
+    }
+
+    void bind_string(nanodbc::statement & statement, Rcpp::DataFrame const & data, short column, size_t start, size_t size) {
+      nulls_[column] = std::vector<uint8_t>(size, false);
+      for (size_t i = 0;i < size;++i) {
+        auto value = STRING_ELT(data[column], start + i);
+        if (value == NA_STRING) {
+          nulls_[column][i] = true;
+        }
+        strings_[column].push_back(Rf_translateCharUTF8(value));
+      }
+
+      statement.bind_strings(column, strings_[column], reinterpret_cast<bool *>(nulls_[column].data()));
+    }
+
+    void bind_datetime(nanodbc::statement & statement, Rcpp::DataFrame const & data, short column, size_t start, size_t size) {
+
+      nulls_[column] = std::vector<uint8_t>(size, false);
+
+      for (size_t i = 0;i < size;++i) {
+        nanodbc::timestamp ts;
+        auto value = REAL(data[column])[start + i];
+        if (ISNA(value)) {
+          nulls_[column][i] = true;
+        } else {
+          auto frac = modf(value, &value);
+          time_t t = static_cast<time_t>(value);
+          auto tm = localtime(&t);
+          ts.fract = frac;
+          ts.sec = tm->tm_sec;
+          ts.min = tm->tm_min;
+          ts.hour = tm->tm_hour;
+          ts.day = tm->tm_mday;
+          ts.month = tm->tm_mon + 1;
+          ts.year = tm->tm_year + 1900;
+        }
+        times_[column].push_back(ts);
+      }
+      statement.bind(column, times_[column].data(), size, reinterpret_cast<bool *>(nulls_[column].data()));
+    }
 };
 }

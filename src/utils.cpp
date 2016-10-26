@@ -36,7 +36,7 @@ Rcpp::List create_dataframe(std::vector<r_type> types, std::vector<std::string> 
     switch (types[j]) {
       case integer_t: out[j] = Rf_allocVector(INTSXP, n); break;
       case date_t:
-      case date_time_t:
+      case datetime_t:
       case odbconnect::double_t: out[j] = Rf_allocVector(REALSXP, n); break;
       case string_t: out[j] = Rf_allocVector(STRSXP, n); break;
       case raw_t: out[j] = Rf_allocVector(VECSXP, n); break;
@@ -68,7 +68,7 @@ void add_classes(Rcpp::List& df, const std::vector<r_type> & types) {
       case date_t:
         x.attr("class") = Rcpp::CharacterVector::create("Date");
         break;
-      case date_time_t:
+      case datetime_t:
         x.attr("class") = Rcpp::CharacterVector::create("POSIXct", "POSIXt");
         break;
       default:
@@ -89,7 +89,7 @@ std::vector<r_type> column_types(Rcpp::DataFrame const & df) {
         if (x.inherits("Date")) {
           types.push_back(date_t);
         } else if (x.inherits("POSIXct")) {
-          types.push_back(date_time_t);
+          types.push_back(datetime_t);
         } else {
           types.push_back(double_t);
         }
@@ -138,7 +138,7 @@ std::vector<r_type> column_types(nanodbc::result const & r) {
       case SQL_TIMESTAMP:
       case SQL_TYPE_TIMESTAMP:
       case SQL_TYPE_TIME:
-        types.push_back(date_time_t);
+        types.push_back(datetime_t);
         break;
       case SQL_CHAR:
       case SQL_VARCHAR:
@@ -182,7 +182,7 @@ Rcpp::List result_to_dataframe(nanodbc::result & r, int n_max) {
       switch(types[col]) {
         case integer_t: INTEGER(out[col])[row] = vals.get<int>(col, NA_INTEGER); break;
         case date_t:
-        case date_time_t: {
+        case datetime_t: {
           double val;
 
           if (vals.is_null(col)) {
@@ -192,7 +192,7 @@ Rcpp::List result_to_dataframe(nanodbc::result & r, int n_max) {
             val = make_timestamp(ts);
           }
 
-          REAL(out[col])[row] = val;
+          REAL(out[col])[row] = types[col] == date_t ? val / 24 * 60 * 60 : val;
           break;
         }
         case odbconnect::double_t:

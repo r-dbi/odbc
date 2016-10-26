@@ -9,7 +9,7 @@ namespace odbconnect {
     integer_t,
     double_t,
     date_t,
-    date_time_t,
+    datetime_t,
     string_t,
     raw_t,
   } r_type;
