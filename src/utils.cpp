@@ -145,6 +145,7 @@ std::vector<r_type> column_types(nanodbc::result const & r) {
       case SQL_WCHAR:
       case SQL_WVARCHAR:
       case SQL_LONGVARCHAR:
+      case SQL_WLONGVARCHAR:
         types.push_back(string_t);
         break;
       case SQL_BINARY:
@@ -219,6 +220,8 @@ Rcpp::List result_to_dataframe(nanodbc::result & r, int n_max) {
         }
                         //case raw_t: out[j] = Rf_allocVector(VECSXP, n); break;
                         //case logical_t: out[j] = Rf_allocVector(LGLSXP, n); break;
+      default:
+        Rcpp::warning("Unknown field type (%s) in column %s", types[col], r.column_name(col));
       }
     }
 
