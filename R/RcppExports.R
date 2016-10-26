@@ -33,7 +33,7 @@ connection_valid <- function(p) {
     .Call('odbconnect_connection_valid', PACKAGE = 'odbconnect', p)
 }
 
-connection_sql_tables <- function(p, catalog_name = "%", schema_name = "%", table_name = "%", table_type = "%") {
+connection_sql_tables <- function(p, catalog_name = "", schema_name = "", table_name = "", table_type = "") {
     .Call('odbconnect_connection_sql_tables', PACKAGE = 'odbconnect', p, catalog_name, schema_name, table_name, table_type)
 }
 

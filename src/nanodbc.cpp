@@ -4,6 +4,15 @@
 // ASCII art banners are helpful for code editors with a minimap display.
 // Generated with http://patorjk.com/software/taag/#p=display&v=0&f=Colossal
 
+#if defined(_MSC_VER)
+# if _MSC_VER <= 1800
+// silence spurious Visual C++ warnings
+#pragma warning(disable : 4244) // warning about integer conversion issues.
+#pragma warning(disable : 4312) // warning about 64-bit portability issues.
+#endif
+#pragma warning(disable : 4996) // warning about deprecated declaration
+#endif
+
 #include "nanodbc.h"
 
 #include <algorithm>
@@ -28,13 +37,6 @@
 #include <boost/locale/encoding_utf.hpp>
 #else
 #include <codecvt>
-#endif
-
-#if defined(_MSC_VER) && _MSC_VER <= 1800
-// silence spurious Visual C++ warnings
-#pragma warning(disable : 4244) // warning about integer conversion issues.
-#pragma warning(disable : 4312) // warning about 64-bit portability issues.
-#pragma warning(disable : 4996) // warning about snprintf() deprecated.
 #endif
 
 #ifdef __APPLE__
@@ -881,43 +883,18 @@ public:
 
     void* native_env_handle() const { return env_; }
 
-    string_type get_string_info(short info_type) const
+    template <class T>
+    T get_info(short info_type) const
     {
-        NANODBC_SQLCHAR value[255] = {0};
-        SQLSMALLINT length(0);
-        RETCODE rc;
-        NANODBC_CALL_RC(
-            NANODBC_FUNC(SQLGetInfo),
-            rc,
-            conn_,
-            info_type,
-            value,
-            sizeof(value) / sizeof(NANODBC_SQLCHAR),
-            &length);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
-        return string_type(&value[0], &value[strarrlen(value)]);
+        return get_info_impl<T>(info_type);
     }
+    string_type dbms_name() const;
 
-    string_type dbms_name() const
-    {
-      return get_string_info(SQL_DBMS_NAME);
-    }
+    string_type dbms_version() const;
 
-    string_type dbms_version() const
-    {
-      return get_string_info(SQL_DBMS_VER);
-    }
+    string_type driver_name() const;
 
-    string_type driver_name() const
-    {
-      return get_string_info(SQL_DRIVER_NAME);
-    }
-
-    string_type database_name() const
-    {
-      return get_string_info(SQL_DATABASE_NAME);
-    }
+    string_type database_name() const;
 
     string_type catalog_name() const
     {
@@ -951,12 +928,70 @@ public:
     void rollback(bool onoff) { rollback_ = onoff; }
 
 private:
+    template <class T>
+    T get_info_impl(short info_type) const;
+
     HENV env_;
     HDBC conn_;
     bool connected_;
     std::size_t transactions_;
     bool rollback_; // if true, this connection is marked for eventual transaction rollback
 };
+
+template <class T>
+T connection::connection_impl::get_info_impl(short info_type) const
+{
+    T value;
+    RETCODE rc;
+    NANODBC_CALL_RC(NANODBC_FUNC(SQLGetInfo), rc, conn_, info_type, &value, 0, nullptr);
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+    return value;
+}
+
+template <>
+string_type connection::connection_impl::get_info_impl<string_type>(short info_type) const
+{
+    NANODBC_SQLCHAR value[1024] = {0};
+    SQLSMALLINT length(0);
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLGetInfo),
+        rc,
+        conn_,
+        info_type,
+        value,
+        sizeof(value) / sizeof(NANODBC_SQLCHAR),
+        &length);
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+    return string_type(&value[0], &value[strarrlen(value)]);
+}
+
+string_type connection::connection_impl::dbms_name() const
+{
+    return get_info<string_type>(SQL_DBMS_NAME);
+}
+
+string_type connection::connection_impl::dbms_version() const
+{
+    return get_info<string_type>(SQL_DBMS_VER);
+}
+
+string_type connection::connection_impl::driver_name() const
+{
+    return get_info<string_type>(SQL_DRIVER_NAME);
+}
+
+string_type connection::connection_impl::database_name() const
+{
+    return get_info<string_type>(SQL_DATABASE_NAME);
+}
+
+template string_type connection::get_info(short info_type) const;
+template unsigned short connection::get_info(short info_type) const;
+template uint32_t connection::get_info(short info_type) const;
+template uint64_t connection::get_info(short info_type) const;
 
 } // namespace nanodbc
 
@@ -1648,8 +1683,7 @@ public:
     // handles multiple string values
     void bind_strings(
         short param,
-        const std::vector<string_type> & values,
-        std::size_t elements,
+        const std::vector<string_type>& values,
         const bool* nulls,
         const string_type::value_type* null_sentry,
         param_direction direction);
@@ -1795,35 +1829,38 @@ void statement::statement_impl::bind(
     bind_parameter(param, values, elements, data_type, param_type, parameter_size, scale);
 }
 
-
 void statement::statement_impl::bind_strings(
     short param,
-    const std::vector<string_type> & values,
-    std::size_t elements,
+    const std::vector<string_type>& values,
     const bool* nulls,
     const string_type::value_type* null_sentry,
-    param_direction direction) {
+    param_direction direction)
+{
 
-  SQLSMALLINT data_type;
-  SQLSMALLINT param_type;
-  SQLULEN parameter_size;
-  SQLSMALLINT scale;
-  prepare_bind(param, elements, direction, data_type, param_type, parameter_size, scale);
+    SQLSMALLINT data_type;
+    SQLSMALLINT param_type;
+    SQLULEN parameter_size;
+    SQLSMALLINT scale;
+    const size_t elements = values.size();
+    prepare_bind(param, elements, direction, data_type, param_type, parameter_size, scale);
 
-  size_t max_len = 0;
-  for (std::size_t i = 0; i < elements; ++i) {
-    if (values[i].length() > max_len) {
-      max_len = values[i].length();
+    size_t max_len = 0;
+    for (std::size_t i = 0; i < elements; ++i)
+    {
+        if (values[i].length() > max_len)
+        {
+            max_len = values[i].length();
+        }
     }
-  }
-  // add space for null terminator
-  ++max_len;
+    // add space for null terminator
+    ++max_len;
 
-  data_[param] = std::vector<string_type::value_type>(max_len * elements, 0);
-  for (std::size_t i = 0; i < elements; ++i) {
-    std::copy(values[i].begin(), values[i].end(), data_[param].data() + (i * max_len));
-  }
-  bind_strings(param, data_[param].data(), max_len, elements, nulls, null_sentry, direction);
+    data_[param] = std::vector<string_type::value_type>(elements * max_len, 0);
+    for (std::size_t i = 0; i < elements; ++i)
+    {
+        std::copy(values[i].begin(), values[i].end(), data_[param].data() + (i * max_len));
+    }
+    bind_strings(param, data_[param].data(), max_len * sizeof(string_type::value_type), elements, nulls, null_sentry, direction);
 }
 
 void statement::statement_impl::bind_strings(
@@ -1854,12 +1891,9 @@ void statement::statement_impl::bind_strings(
             std::string narrow_rhs;
             narrow_rhs.reserve(s_rhs.size());
             convert(s_rhs, narrow_lhs);
-            if (!std::strncmp(narrow_lhs.c_str(), narrow_rhs.c_str(), length))
-                bind_len_or_null_[param][i] = SQL_NTS;
-#else
-            if (!std::strncmp(s_lhs.c_str(), s_rhs.c_str(), length))
-                bind_len_or_null_[param][i] = SQL_NTS;
 #endif
+            if (std::strncmp(s_lhs.c_str(), s_rhs.c_str(), length) != 0)
+              bind_len_or_null_[param][i] = SQL_NTS;
         }
     }
     else if (nulls)
@@ -1872,10 +1906,10 @@ void statement::statement_impl::bind_strings(
     }
     else
     {
-      for (std::size_t i = 0; i < elements; ++i)
-      {
-        bind_len_or_null_[param][i] = SQL_NTS;
-      }
+        for (std::size_t i = 0; i < elements; ++i)
+        {
+            bind_len_or_null_[param][i] = SQL_NTS;
+        }
     }
 
     bind_parameter(param, values, elements, data_type, param_type, length, scale);
@@ -3220,9 +3254,10 @@ std::size_t connection::transactions() const
     return impl_->transactions();
 }
 
-string_type connection::get_string_info(short info_type) const
+template <class T>
+T connection::get_info(short info_type) const
 {
-    return impl_->get_string_info(info_type);
+    return impl_->get_info<T>(info_type);
 }
 
 void* connection::native_dbc_handle() const
@@ -3638,11 +3673,11 @@ void statement::bind(
 
 void statement::bind_strings(
     short param,
-    const std::vector<string_type> & values,
-    std::size_t elements,
-    param_direction direction) {
+    const std::vector<string_type>& values,
+    param_direction direction)
+{
 
-  impl_->bind_strings(param, values, elements, nullptr, nullptr, direction);
+    impl_->bind_strings(param, values, nullptr, nullptr, direction);
 }
 
 void statement::bind_strings(
@@ -3680,23 +3715,20 @@ void statement::bind_strings(
 
 void statement::bind_strings(
     short param,
-    const std::vector<string_type> & values,
-    std::size_t elements,
+    const std::vector<string_type>& values,
     const string_type::value_type* null_sentry,
     param_direction direction)
 {
-    impl_->bind_strings(param, values, elements, (bool*)0, null_sentry, direction);
+    impl_->bind_strings(param, values, (bool*)0, null_sentry, direction);
 }
 
 void statement::bind_strings(
     short param,
-    const std::vector<string_type> & values,
-    std::size_t elements,
+    const std::vector<string_type>& values,
     const bool* nulls,
     param_direction direction)
 {
-    impl_->bind_strings(
-        param, values, elements, nulls, (string_type::value_type*)0, direction);
+    impl_->bind_strings(param, values, nulls, (string_type::value_type*)0, direction);
 }
 
 void statement::bind_null(short param, std::size_t elements)

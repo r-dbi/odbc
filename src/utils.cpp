@@ -196,20 +196,24 @@ Rcpp::List result_to_dataframe(nanodbc::result & r, int n_max) {
           break;
         }
         case odbconnect::double_t:
-                        REAL(out[col])[row] = vals.get<double>(col, NA_REAL); break;
+            REAL(out[col])[row] = vals.get<double>(col, NA_REAL); break;
         case string_t: {
           SEXP val;
 
-          // There is a bug/limitation in ODBC drivers for SQL Server (and possibly others)
-          // which causes SQLBindCol() to never write SQL_NOT_NULL to the length/indicator
-          // buffer unless you also bind the data column. nanodbc's is_null() will return
-          // correct values for (n)varchar(max) columns when you ensure that SQLGetData()
-          // has been called for that column (i.e. after get() or get_ref() is called).
-          auto str = vals.get<std::string>(col);
           if (vals.is_null(col)) {
             val = NA_STRING;
           } else {
-            val = Rf_mkCharCE(str.c_str(), CE_UTF8);
+            // There is a bug/limitation in ODBC drivers for SQL Server (and possibly others)
+            // which causes SQLBindCol() to never write SQL_NOT_NULL to the length/indicator
+            // buffer unless you also bind the data column. nanodbc's is_null() will return
+            // correct values for (n)varchar(max) columns when you ensure that SQLGetData()
+            // has been called for that column (i.e. after get() or get_ref() is called).
+            auto str = vals.get<std::string>(col);
+            if (vals.is_null(col)) {
+              val = NA_STRING;
+            } else {
+              val = Rf_mkCharCE(str.c_str(), CE_UTF8);
+            }
           }
           SET_STRING_ELT(out[col], row, val); break;
         }

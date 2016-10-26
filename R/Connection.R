@@ -125,7 +125,7 @@ setMethod(
 setMethod(
   "dbListTables", "OdbconnectConnection",
   function(conn, ...) {
-    connection_sql_tables(conn@ptr)
+    connection_sql_tables(conn@ptr, ...)
   })
 
 #' @rdname DBI

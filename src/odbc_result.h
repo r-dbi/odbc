@@ -48,8 +48,23 @@ class odbc_result {
 
         for (short col = 0; col < ncols; ++col) {
           switch(types[col]) {
-            case integer_t: s.bind<int>(col, &INTEGER(df[col])[start], size, &NA_INTEGER); break;
-            case double_t: s.bind<double>(col, &REAL(df[col])[start], size, &NA_REAL); break;
+            case integer_t: s.bind(col, &INTEGER(df[col])[start], size, &NA_INTEGER); break;
+            case double_t: {
+              // We cannot use a sentinel becuase NaN != NaN for
+              // all values of NaN, even if the bits are the
+              // same.
+              nulls[col] = std::vector<uint8_t>(size, false);
+              auto column = REAL(df[col]);
+
+              size_t i = 0;
+              for (size_t row = start; row < end; ++row, ++i) {
+                if (ISNA(column[row])) {
+                  nulls[col][i] = true;
+                }
+              }
+
+              s.bind(col, &REAL(df[col])[start], size, reinterpret_cast<bool *>(nulls[col].data())); break;
+            }
             case string_t: {
               nulls[col] = std::vector<uint8_t>(size, false);
               size_t i = 0;
@@ -61,22 +76,13 @@ class odbc_result {
                 str[col].push_back(Rf_translateCharUTF8(a));
                 ++i;
               }
-              s.bind_strings(col, str[col], size, reinterpret_cast<bool *>(nulls[col].data())); break;
+              s.bind_strings(col, str[col], reinterpret_cast<bool *>(nulls[col].data())); break;
             }
             case date_time_t: {
               nulls[col] = std::vector<uint8_t>(size, false);
 
               size_t i = 0;
-              for (size_t row = start; row < end; ++row) {
-                //double d;
-                //if (integer_col) {
-                  //auto i = INTEGER(df[col])[row];
-                  //if (i == NA_INTEGER) {
-                    //nulls[col][i] = true;
-                    //continue;
-                  //}
-                  //d = static_cast<double>(i);
-                //} else {
+              for (size_t row = start; row < end; ++row, ++i) {
                 nanodbc::timestamp ts;
                 auto d = REAL(df[col])[row];
                 if (ISNA(d)) {
@@ -94,7 +100,6 @@ class odbc_result {
                   ts.year = tm->tm_year + 1900;
                 }
                 times[col].push_back(ts);
-                ++i;
               }
               s.bind(col, times[col].data(), size, reinterpret_cast<bool *>(nulls[col].data())); break;
             }
