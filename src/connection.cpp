@@ -64,10 +64,10 @@ bool connection_valid(connection_ptr p) {
 // "%" is a wildcard for all possible values
 // [[Rcpp::export]]
 std::vector<std::string> connection_sql_tables(connection_ptr p,
-    std::string catalog_name = "%",
-    std::string schema_name = "%",
-    std::string table_name = "%",
-    std::string table_type = "%") {
+    std::string catalog_name = "",
+    std::string schema_name = "",
+    std::string table_name = "",
+    std::string table_type = "") {
   auto c = catalog(*p);
   auto tables = c.find_tables(table_name, table_type, schema_name, catalog_name);
   std::vector<std::string> out;
