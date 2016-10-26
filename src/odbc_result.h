@@ -340,44 +340,12 @@ class odbc_result {
         }
         for (short col = 0;col < r.columns(); ++col) {
           switch(types[col]) {
-            case integer_t: INTEGER(out[col])[row] = vals.get<int>(col, NA_INTEGER); break;
-            case date_t:
-            case datetime_t: {
-              double val;
-
-              if (vals.is_null(col)) {
-                val = NA_REAL;
-              } else {
-                auto ts = vals.get<nanodbc::timestamp>(col);
-                val = as_double(ts);
-              }
-
-              REAL(out[col])[row] = types[col] == date_t ? val / (24 * 60 * 60) : val;
-              break;
-            }
-            case odbconnect::double_t:
-                            REAL(out[col])[row] = vals.get<double>(col, NA_REAL); break;
-            case string_t: {
-              SEXP val;
-
-              if (vals.is_null(col)) {
-                val = NA_STRING;
-              } else {
-                // There is a bug/limitation in ODBC drivers for SQL Server (and possibly others)
-                // which causes SQLBindCol() to never write SQL_NOT_NULL to the length/indicator
-                // buffer unless you also bind the data column. nanodbc's is_null() will return
-                // correct values for (n)varchar(max) columns when you ensure that SQLGetData()
-                // has been called for that column (i.e. after get() or get_ref() is called).
-                auto str = vals.get<std::string>(col);
-                if (vals.is_null(col)) {
-                  val = NA_STRING;
-                } else {
-                  val = Rf_mkCharCE(str.c_str(), CE_UTF8);
-                }
-              }
-              SET_STRING_ELT(out[col], row, val); break;
-            }
-                            //case raw_t: out[j] = Rf_allocVector(VECSXP, n); break;
+            case date_t: assign_date(out, row, col, vals); break;
+            case datetime_t: assign_datetime(out, row, col, vals); break;
+            case odbconnect::double_t: assign_double(out, row, col, vals); break;
+            case integer_t: assign_integer(out, row, col, vals); break;
+            case string_t: assign_string(out, row, col, vals); break;
+                           //case raw_t: out[j] = Rf_allocVector(VECSXP, n); break;
                             //case logical_t: out[j] = Rf_allocVector(LGLSXP, n); break;
             default:
                             Rcpp::warning("Unknown field type (%s) in column %s", types[col], r.column_name(col));
@@ -394,6 +362,58 @@ class odbc_result {
 
       add_classes(out, types);
       return out;
+    }
+
+    void assign_integer(Rcpp::List & out, size_t row, short column, nanodbc::result & value) {
+      INTEGER(out[column])[row] = value.get<int>(column, NA_INTEGER);
+    }
+    void assign_double(Rcpp::List & out, size_t row, short column, nanodbc::result & value) {
+      REAL(out[column])[row] = value.get<double>(column, NA_REAL);
+    }
+    void assign_string(Rcpp::List & out, size_t row, short column, nanodbc::result & value) {
+      SEXP res;
+
+      if (value.is_null(column)) {
+        res = NA_STRING;
+      } else {
+        // There is a bug/limitation in ODBC drivers for SQL Server (and possibly others)
+        // which causes SQLBindCol() to never write SQL_NOT_NULL to the length/indicator
+        // buffer unless you also bind the data column. nanodbc's is_null() will return
+        // correct values for (n)varchar(max) columns when you ensure that SQLGetData()
+        // has been called for that column (i.e. after get() or get_ref() is called).
+        auto str = value.get<std::string>(column);
+        if (value.is_null(column)) {
+          res = NA_STRING;
+        } else {
+          res = Rf_mkCharCE(str.c_str(), CE_UTF8);
+        }
+      }
+      SET_STRING_ELT(out[column], row, res);
+    }
+
+    void assign_datetime(Rcpp::List & out, size_t row, short column, nanodbc::result & value) {
+      double res;
+
+      if (value.is_null(column)) {
+        res = NA_REAL;
+      } else {
+        auto ts = value.get<nanodbc::timestamp>(column);
+        res = as_double(ts);
+      }
+
+      REAL(out[column])[row] = res;
+    }
+    void assign_date(Rcpp::List & out, size_t row, short column, nanodbc::result & value) {
+      double res;
+
+      if (value.is_null(column)) {
+        res = NA_REAL;
+      } else {
+        auto ts = value.get<nanodbc::timestamp>(column);
+        res = as_double(ts);
+      }
+
+      REAL(out[column])[row] = res / seconds_in_day_;
     }
 
 };
