@@ -1,17 +1,3 @@
 CXX_STD = CXX11
-PKG_CXXFLAGS=-Icpp_odbc -I../cpp_odbc -Iturbodbc -std=c++11
-PKG_LIBS=-L./cpp_odbc -L./turbodbc -lturbodbc -lcpp_odbc -lodbc32
-
-$(SHLIB): turbodbc
-
-.PHONY: turbodbc cpp_odbc
-cpp_odbc:
-	@(cd cpp_odbc && $(MAKE) CXX="$(CXX)" CXXFLAGS="$(ALL_CPPFLAGS) $(ALL_CXXFLAGS)" AR="$(AR)")
-
-turbodbc: cpp_odbc
-	@(cd turbodbc && $(MAKE) CXX="$(CXX)" CXXFLAGS="$(ALL_CPPFLAGS) $(ALL_CXXFLAGS)" AR="$(AR)")
-
-clean:
-	rm -rf *o
-	@(cd cpp_odbc && $(MAKE) clean)
-	@(cd turbodbc && $(MAKE) clean)
+PKG_CXXFLAGS=-I. -std=c++14 @PKG_CXXFLAGS@
+PKG_LIBS=@PKG_LIBS@
