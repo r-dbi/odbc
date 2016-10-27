@@ -75,7 +75,7 @@ setMethod(
 #' @export
 setMethod(
   "dbIsValid", "OdbconnectResult",
-  function(dbObj) {
+  function(dbObj, ...) {
     result_active(dbObj@ptr)
   })
 
