@@ -96,7 +96,7 @@
 
 \S4method{dbGetInfo}{OdbconnectResult}(dbObj, ...)
 
-\S4method{dbIsValid}{OdbconnectResult}(dbObj, ...)
+\S4method{dbIsValid}{OdbconnectResult}(dbObj)
 
 \S4method{dbGetStatement}{OdbconnectResult}(res, ...)
 
