@@ -83,12 +83,27 @@ std::vector<std::string> connection_sql_tables(connection_ptr p,
 
 // "%" is a wildcard for all possible values
 // [[Rcpp::export]]
-Rcpp::RObject connection_sql_columns(connection_ptr p,
-    std::string catalog_name = "%",
-    std::string schema_name = "%",
-    std::string table_name = "%",
-    std::string table_type = "%") {
-  //auto c = turbodbc::cursor(*p, turbodbc::megabytes(10), 0, false);
-  //return c.sql_columns(catalog_name, schema_name, table_name, table_type);
-  return Rcpp::List();
+Rcpp::DataFrame connection_sql_columns(connection_ptr p,
+    std::string column_name = "",
+    std::string catalog_name = "",
+    std::string schema_name = "",
+    std::string table_name = "") {
+  auto c = nanodbc::catalog(*p->connection());
+  auto tables = c.find_columns(column_name, table_name, schema_name, catalog_name);
+  std::vector<std::string> names;
+  std::vector<std::string> field_type;
+  //std::vector<std::string> data_type; // TODO expose sql type to r type mapping
+  std::vector<bool> nullable;
+  while(tables.next()) {
+    names.push_back(tables.column_name());
+    field_type.push_back(tables.type_name());
+    //data_type.push_back(tables.data_type());
+    nullable.push_back(tables.nullable());
+  }
+  return Rcpp::DataFrame::create(
+      Rcpp::_["name"] = names,
+      Rcpp::_["field.type"] = field_type,
+      Rcpp::_["nullable"] = nullable,
+      Rcpp::_["stringsAsFactors"] = false
+      );
 }

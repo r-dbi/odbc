@@ -41,8 +41,8 @@ connection_sql_tables <- function(p, catalog_name = "", schema_name = "", table_
     .Call('odbconnect_connection_sql_tables', PACKAGE = 'odbconnect', p, catalog_name, schema_name, table_name, table_type)
 }
 
-connection_sql_columns <- function(p, catalog_name = "%", schema_name = "%", table_name = "%", table_type = "%") {
-    .Call('odbconnect_connection_sql_columns', PACKAGE = 'odbconnect', p, catalog_name, schema_name, table_name, table_type)
+connection_sql_columns <- function(p, column_name = "", catalog_name = "", schema_name = "", table_name = "") {
+    .Call('odbconnect_connection_sql_columns', PACKAGE = 'odbconnect', p, column_name, catalog_name, schema_name, table_name)
 }
 
 result_release <- function(r) {

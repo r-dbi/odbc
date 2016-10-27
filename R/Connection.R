@@ -143,7 +143,7 @@ setMethod(
 setMethod(
   "dbListFields", c("OdbconnectConnection", "character"),
   function(conn, name, ...) {
-    connection_sql_columns(conn@ptr, table_name = name)
+    connection_sql_columns(conn@ptr, table_name = name)[["name"]]
   })
 
 #' @rdname DBI
