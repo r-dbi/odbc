@@ -60,6 +60,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// connection_begin
+void connection_begin(connection_ptr p);
+RcppExport SEXP odbconnect_connection_begin(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< connection_ptr >::type p(pSEXP);
+    connection_begin(p);
+    return R_NilValue;
+END_RCPP
+}
 // connection_commit
 void connection_commit(connection_ptr p);
 RcppExport SEXP odbconnect_connection_commit(SEXP pSEXP) {

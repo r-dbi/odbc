@@ -1891,9 +1891,12 @@ void statement::statement_impl::bind_strings(
             std::string narrow_rhs;
             narrow_rhs.reserve(s_rhs.size());
             convert(s_rhs, narrow_lhs);
-#endif
+            if (std::strncmp(narrow_lhs.c_str(), narrow_rhs.c_str(), length) != 0)
+              bind_len_or_null_[param][i] = SQL_NTS;
+#else
             if (std::strncmp(s_lhs.c_str(), s_rhs.c_str(), length) != 0)
               bind_len_or_null_[param][i] = SQL_NTS;
+#endif
         }
     }
     else if (nulls)

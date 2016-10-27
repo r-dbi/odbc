@@ -172,7 +172,7 @@ setMethod(
 setMethod(
   "dbBegin", "OdbconnectConnection",
   function(conn, ...) {
-    dbGetQuery(conn, "BEGIN")
+    connection_begin(conn@ptr)
     TRUE
   })
 

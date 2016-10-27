@@ -21,6 +21,10 @@ connection_release <- function(p) {
     invisible(.Call('odbconnect_connection_release', PACKAGE = 'odbconnect', p))
 }
 
+connection_begin <- function(p) {
+    invisible(.Call('odbconnect_connection_begin', PACKAGE = 'odbconnect', p))
+}
+
 connection_commit <- function(p) {
     invisible(.Call('odbconnect_connection_commit', PACKAGE = 'odbconnect', p))
 }

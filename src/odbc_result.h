@@ -4,29 +4,30 @@
 #include <memory>
 #include <Rcpp.h>
 #include "r_types.h"
+#include "odbc_connection.h"
 
 namespace odbconnect {
 typedef std::array<const char, 255> string_buf;
 
 class odbc_result {
   public:
-    odbc_result(nanodbc::connection & c, std::string sql) :
-      c_(c),
+    odbc_result(odbc_connection & c, std::string sql) :
       sql_(sql) {
-        s_ = nanodbc::statement(c, sql);
+        c_ = c.connection();
+        s_ = std::make_shared<nanodbc::statement>(*c.connection(), sql);
       };
-    nanodbc::connection connection() const {
-      return c_;
+    std::shared_ptr<nanodbc::connection> connection() const {
+      return std::shared_ptr<nanodbc::connection>(c_);
     }
-    nanodbc::statement statement() const {
-      return s_;
+    std::shared_ptr<nanodbc::statement> statement() const {
+      return std::shared_ptr<nanodbc::statement>(s_);
     }
-    nanodbc::result result() const {
-      return r_;
+    std::shared_ptr<nanodbc::result> result() const {
+      return std::shared_ptr<nanodbc::result>(r_);
     }
     void execute() {
       if (!r_) {
-        r_ = s_.execute();
+        r_ = std::make_shared<nanodbc::result>(s_->execute());
       }
     }
     void insert_dataframe(Rcpp::DataFrame const & df) {
@@ -35,10 +36,10 @@ class odbc_result {
       auto nrows = df.nrows();
       size_t start = 0;
       size_t batch_size = 1024;
-      nanodbc::transaction transaction(c_);
+      nanodbc::transaction transaction(*c_);
 
       while(start < nrows) {
-        auto s = nanodbc::statement(c_, sql_);
+        auto s = nanodbc::statement(*c_, sql_);
         size_t end = start + batch_size > nrows ? nrows : start + batch_size;
         size_t size = end - start;
         clear_buffers();
@@ -62,13 +63,13 @@ class odbc_result {
     }
     Rcpp::List fetch(int n_max = -1) {
       execute();
-      return result_to_dataframe(r_, n_max);
+      return result_to_dataframe(*r_, n_max);
     }
 
   private:
-    nanodbc::connection c_;
-    nanodbc::statement s_;
-    nanodbc::result r_;
+    std::shared_ptr<nanodbc::connection> c_;
+    std::shared_ptr<nanodbc::statement> s_;
+    std::shared_ptr<nanodbc::result> r_;
     std::string sql_;
     static const int seconds_in_day_ = 24 * 60 * 60;
 

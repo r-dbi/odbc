@@ -12,13 +12,13 @@ void result_release(result_ptr r) {
 
 // [[Rcpp::export]]
 bool result_active(result_ptr r) {
-  return r.get() != nullptr && static_cast<bool>(r->result()) && r->result().at_end();
+  return r.get() != nullptr && static_cast<bool>(r->result()) && r->result()->at_end();
 }
 
 // [[Rcpp::export]]
 bool result_completed(result_ptr r) {
   auto res = r->result();
-  return !res || res.at_end();
+  return !res || res->at_end();
 }
 
 // [[Rcpp::export]]
@@ -42,7 +42,6 @@ void column_info(result_ptr r) {
 // [[Rcpp::export]]
 void result_bind(result_ptr r, std::string sql, List params) {
   r->insert_dataframe(params);
-  //c->execute();
 }
 
 // [[Rcpp::export]]
@@ -58,7 +57,7 @@ void result_insert_dataframe(result_ptr r, DataFrame df) {
 // [[Rcpp::export]]
 int result_rows_affected(result_ptr r) {
   auto res = r->result();
-  return res ? res.affected_rows() : 0;
+  return res ? res->affected_rows() : 0;
 }
 
 // [[Rcpp::export]]
