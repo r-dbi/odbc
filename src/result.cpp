@@ -17,8 +17,7 @@ bool result_active(result_ptr r) {
 
 // [[Rcpp::export]]
 bool result_completed(result_ptr r) {
-  auto res = r->result();
-  return !res || res->at_end();
+  return r->complete();
 }
 
 // [[Rcpp::export]]
@@ -62,11 +61,7 @@ int result_rows_affected(result_ptr r) {
 
 // [[Rcpp::export]]
 int result_row_count(result_ptr r) {
-  //auto rs = c->get_result_set();
-  //if (!rs) {
-    //return 0;
-  //}
-  //return rs->get_rows_returned();
+  r->rows_fetched();
 }
 
 // [[Rcpp::export]]

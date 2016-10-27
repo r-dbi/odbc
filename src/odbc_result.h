@@ -12,7 +12,9 @@ typedef std::array<const char, 255> string_buf;
 class odbc_result {
   public:
     odbc_result(odbc_connection & c, std::string sql) :
-      sql_(sql) {
+      sql_(sql),
+      rows_fetched_(0),
+      complete_(0) {
         c_ = c.connection();
         s_ = std::make_shared<nanodbc::statement>(*c.connection(), sql);
       };
@@ -66,12 +68,24 @@ class odbc_result {
       return result_to_dataframe(*r_, n_max);
     }
 
+    int rows_fetched() {
+      return rows_fetched_ == 0 ? 0 : rows_fetched_ - 1;
+    }
+
+    bool complete() {
+      return
+        !(*r_) || // query had no result
+        complete_; // result is completed
+    }
+
   private:
     std::shared_ptr<nanodbc::connection> c_;
     std::shared_ptr<nanodbc::statement> s_;
     std::shared_ptr<nanodbc::result> r_;
     std::string sql_;
     static const int seconds_in_day_ = 24 * 60 * 60;
+    size_t rows_fetched_;
+    bool complete_;
 
     std::map<short, std::vector<std::string>> strings_;
     std::map<short, std::vector<nanodbc::timestamp>> times_;
@@ -338,7 +352,7 @@ class odbc_result {
       return types;
     }
 
-    Rcpp::List result_to_dataframe(nanodbc::result & r, int n_max) {
+    Rcpp::List result_to_dataframe(nanodbc::result & r, int n_max = -1) {
 
       auto types = column_types(r);
 
@@ -346,7 +360,8 @@ class odbc_result {
 
       Rcpp::List out = create_dataframe(types, column_names(r), n);
       int row = 0;
-      for (auto &vals : r) {
+      bool more_data = false;
+      while((more_data = r.next())) {
         if (row >= n) {
           if (n_max < 0) {
             n *= 2;
@@ -357,20 +372,22 @@ class odbc_result {
         }
         for (short col = 0;col < r.columns(); ++col) {
           switch(types[col]) {
-            case date_t: assign_date(out, row, col, vals); break;
-            case datetime_t: assign_datetime(out, row, col, vals); break;
-            case odbconnect::double_t: assign_double(out, row, col, vals); break;
-            case integer_t: assign_integer(out, row, col, vals); break;
-            case string_t: assign_string(out, row, col, vals); break;
+            case date_t: assign_date(out, row, col, r); break;
+            case datetime_t: assign_datetime(out, row, col, r); break;
+            case odbconnect::double_t: assign_double(out, row, col, r); break;
+            case integer_t: assign_integer(out, row, col, r); break;
+            case string_t: assign_string(out, row, col, r); break;
                            //case raw_t: out[j] = Rf_allocVector(VECSXP, n); break;
-            case logical_t: assign_logical(out, row, col, vals); break;
+            case logical_t: assign_logical(out, row, col, r); break;
             default:
                             Rcpp::warning("Unknown field type (%s) in column %s", types[col], r.column_name(col));
           }
         }
 
         ++row;
+        ++rows_fetched_;
       }
+      complete_ = !more_data;
 
       // Resize if needed
       if (row < n) {
