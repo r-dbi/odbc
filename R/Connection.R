@@ -244,7 +244,7 @@ get_data_type.PostgreSQL <- function(info, obj, ...) {
     double = "DOUBLE PRECISION",
     character = "TEXT",
     logical = "BOOLEAN",
-    list = "BLOB",
+    list = "bytea",
     stop("Unsupported type", call. = FALSE)
   )
 }

@@ -54,6 +54,7 @@ class odbc_result {
             case double_t: bind_double(s, df, col, start, size); break;
             case integer_t: bind_integer(s, df, col, start, size); break;
             case string_t: bind_string(s, df, col, start, size); break;
+            case raw_t: bind_raw(s, df, col, start, size); break;
             default: Rcpp::stop("Not yet implemented (%s)!", types[col]); break;
 
           }
@@ -88,11 +89,13 @@ class odbc_result {
     bool complete_;
 
     std::map<short, std::vector<std::string>> strings_;
+    std::map<short, std::vector<std::vector<uint8_t>>> raws_;
     std::map<short, std::vector<nanodbc::timestamp>> times_;
     std::map<short, std::vector<uint8_t>> nulls_;
 
     void clear_buffers() {
       strings_.clear();
+      raws_.clear();
       times_.clear();
       nulls_.clear();
     }
@@ -139,6 +142,14 @@ class odbc_result {
       }
 
       statement.bind_strings(column, strings_[column], reinterpret_cast<bool *>(nulls_[column].data()));
+    }
+    void bind_raw(nanodbc::statement & statement, Rcpp::DataFrame const & data, short column, size_t start, size_t size) {
+      for (size_t i = 0;i < size;++i) {
+        SEXP value = VECTOR_ELT(data[column], start + i);
+        raws_[column].push_back(std::vector<uint8_t>(RAW(value), RAW(value) + Rf_length(value)));
+      }
+
+      statement.bind(column, raws_[column]);
     }
 
     nanodbc::timestamp as_timestamp(double value) {
@@ -284,9 +295,9 @@ class odbc_result {
             break;
           }
           case STRSXP: types.push_back(string_t); break;
+          case VECSXP:
           case RAWSXP: types.push_back(raw_t); break;
-          default:
-                       Rcpp::stop("Unsupported column type %s", Rf_type2char(TYPEOF(df[i])));
+          default: Rcpp::stop("Unsupported column type %s", Rf_type2char(TYPEOF(df[i])));
         }
       }
 
@@ -377,8 +388,8 @@ class odbc_result {
             case odbconnect::double_t: assign_double(out, row, col, r); break;
             case integer_t: assign_integer(out, row, col, r); break;
             case string_t: assign_string(out, row, col, r); break;
-                           //case raw_t: out[j] = Rf_allocVector(VECSXP, n); break;
             case logical_t: assign_logical(out, row, col, r); break;
+            case raw_t: assign_raw(out, row, col, r); break;
             default:
                             Rcpp::warning("Unknown field type (%s) in column %s", types[col], r.column_name(col));
           }
@@ -452,6 +463,17 @@ class odbc_result {
 
     void assign_logical(Rcpp::List & out, size_t row, short column, nanodbc::result & value) {
       LOGICAL(out[column])[row] = value.get<int>(column, NA_LOGICAL);
+    }
+
+    void assign_raw(Rcpp::List & out, size_t row, short column, nanodbc::result & value) {
+      if (value.is_null(column)) {
+        SET_VECTOR_ELT(out[column], row, Rf_allocVector(RAWSXP, 0));
+        return;
+      }
+      std::vector<std::uint8_t> data = value.get<std::vector<std::uint8_t>>(column);
+      SEXP bytes = Rf_allocVector(RAWSXP, data.size());
+      std::copy(data.begin(), data.end(), RAW(bytes));
+      SET_VECTOR_ELT(out[column], row, bytes);
     }
 };
 }

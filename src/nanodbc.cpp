@@ -478,6 +478,12 @@ struct sql_ctype<nanodbc::string_type::value_type>
 };
 
 template <>
+struct sql_ctype<uint8_t>
+{
+    static const SQLSMALLINT value = SQL_C_BINARY;
+};
+
+template <>
 struct sql_ctype<short>
 {
     static const SQLSMALLINT value = SQL_C_SSHORT;
@@ -1138,7 +1144,8 @@ public:
         , open_(false)
         , conn_()
         , bind_len_or_null_()
-        , data_()
+        , string_data_()
+        , binary_data_()
 #if defined(NANODBC_DO_ASYNC_IMPL)
         , async_(false)
         , async_enabled_(false)
@@ -1153,7 +1160,8 @@ public:
         , open_(false)
         , conn_()
         , bind_len_or_null_()
-        , data_()
+        , string_data_()
+        , binary_data_()
 #if defined(NANODBC_DO_ASYNC_IMPL)
         , async_(false)
         , async_enabled_(false)
@@ -1688,6 +1696,56 @@ public:
         const string_type::value_type* null_sentry,
         param_direction direction);
 
+    // handles multiple binary values
+    void bind(short param, const std::vector<std::vector<uint8_t>> & values, const bool* nulls, const uint8_t* null_sentry, param_direction direction)
+    {
+      SQLSMALLINT data_type;
+      SQLSMALLINT param_type;
+      SQLULEN parameter_size;
+      SQLSMALLINT scale;
+      const size_t elements = values.size();
+      prepare_bind(param, elements, direction, data_type, param_type, parameter_size, scale);
+
+      size_t max_len = 0;
+      for (std::size_t i = 0; i < elements; ++i)
+      {
+        if (values[i].size() > max_len)
+        {
+          max_len = values[i].size();
+        }
+      }
+      binary_data_[param] = std::vector<uint8_t>(elements * max_len, 0);
+      for (std::size_t i = 0; i < elements; ++i)
+      {
+        std::copy(values[i].begin(), values[i].end(), binary_data_[param].data() + (i * max_len));
+      }
+
+      if (null_sentry)
+      {
+        for (std::size_t i = 0; i < elements; ++i)
+          if (!std::equal(values[i].begin(), values[i].end(), null_sentry))
+          {
+            bind_len_or_null_[param][i] = values[i].size();
+          }
+      }
+      else if (nulls)
+      {
+        for (std::size_t i = 0; i < elements; ++i)
+        {
+          if (!nulls[i])
+            bind_len_or_null_[param][i] = values[i].size(); // null terminated
+        }
+      }
+      else {
+        for (std::size_t i = 0; i < elements; ++i)
+        {
+          bind_len_or_null_[param][i] = values[i].size();
+        }
+      }
+      bind_parameter(param, binary_data_[param].data(), elements, data_type, param_type, max_len, scale);
+    }
+
+
     // handles multiple null values
     void bind_null(short param, std::size_t elements)
     {
@@ -1747,7 +1805,8 @@ private:
     bool open_;
     class connection conn_;
     std::map<short, std::vector<null_type>> bind_len_or_null_;
-    std::map<short, std::vector<string_type::value_type>> data_;
+    std::map<short, std::vector<string_type::value_type>> string_data_;
+    std::map<short, std::vector<uint8_t>> binary_data_;
 
 #if defined(NANODBC_DO_ASYNC_IMPL)
     bool async_;                 // true if statement is currently in SQL_STILL_EXECUTING mode
@@ -1855,12 +1914,12 @@ void statement::statement_impl::bind_strings(
     // add space for null terminator
     ++max_len;
 
-    data_[param] = std::vector<string_type::value_type>(elements * max_len, 0);
+    string_data_[param] = std::vector<string_type::value_type>(elements * max_len, 0);
     for (std::size_t i = 0; i < elements; ++i)
     {
-        std::copy(values[i].begin(), values[i].end(), data_[param].data() + (i * max_len));
+        std::copy(values[i].begin(), values[i].end(), string_data_[param].data() + (i * max_len));
     }
-    bind_strings(param, data_[param].data(), max_len * sizeof(string_type::value_type), elements, nulls, null_sentry, direction);
+    bind_strings(param, string_data_[param].data(), max_len * sizeof(string_type::value_type), elements, nulls, null_sentry, direction);
 }
 
 void statement::statement_impl::bind_strings(
@@ -3672,6 +3731,32 @@ void statement::bind(
     param_direction direction)
 {
     impl_->bind(param, values, elements, nulls, (T*)0, direction);
+}
+
+void statement::bind(
+    short param,
+    const std::vector<std::vector<uint8_t>> & values,
+    param_direction direction)
+{
+    impl_->bind(param, values, (bool*)0, (uint8_t*)0, direction);
+}
+
+void statement::bind(
+    short param,
+    const std::vector<std::vector<uint8_t>> & values,
+    const bool* nulls,
+    param_direction direction)
+{
+    impl_->bind(param, values, nulls, (uint8_t*)0, direction);
+}
+
+void statement::bind(
+    short param,
+    const std::vector<std::vector<uint8_t>> & values,
+    const uint8_t* null_sentry,
+    param_direction direction)
+{
+    impl_->bind(param, values, (bool*)0, null_sentry, direction);
 }
 
 void statement::bind_strings(
