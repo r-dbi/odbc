@@ -75,7 +75,7 @@ class odbc_result {
 
     bool complete() {
       return
-        !(*r_) || // query had no result
+        r_->columns() == 0 || // query had no result
         complete_; // result is completed
     }
 
@@ -261,6 +261,7 @@ class odbc_result {
     }
 
     void add_classes(Rcpp::List& df, const std::vector<r_type> & types) {
+      df.attr("class") = Rcpp::CharacterVector::create("data.frame");
       for (int col = 0; col < df.size(); ++col) {
         Rcpp::RObject x = df[col];
         switch (types[col]) {
@@ -269,6 +270,9 @@ class odbc_result {
             break;
           case datetime_t:
             x.attr("class") = Rcpp::CharacterVector::create("POSIXct", "POSIXt");
+            break;
+          case raw_t:
+            x.attr("class") = Rcpp::CharacterVector::create("blob");
             break;
           default:
             break;
