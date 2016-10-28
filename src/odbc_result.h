@@ -382,7 +382,7 @@ class odbc_result {
       int row = 0;
 
       if (rows_fetched_ == 0) {
-        r.next();
+        complete_ = !r.next();
       }
 
       while(!complete_) {
