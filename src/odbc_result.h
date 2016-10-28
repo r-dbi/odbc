@@ -71,7 +71,7 @@ class odbc_result {
     }
 
     int rows_fetched() {
-      return rows_fetched_ == 0 ? 0 : rows_fetched_ - 1;
+      return rows_fetched_ == 0 ? 0 : rows_fetched_;
     }
 
     bool complete() {
