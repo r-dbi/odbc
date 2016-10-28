@@ -2,10 +2,14 @@
 
 #include <nanodbc.h>
 
+
 namespace odbconnect {
+class odbc_result;
+
 class odbc_connection {
   public:
-    odbc_connection(std::string connection_string)
+    odbc_connection(std::string connection_string) :
+      r_(nullptr)
       {
         c_ = std::make_shared<nanodbc::connection>(connection_string);
       }
@@ -22,9 +26,21 @@ class odbc_connection {
     void rollback() const {
       t_->rollback();
     }
+    void current_result(odbc_result *r) {
+      r_ = r;
+    }
+    odbc_result* current_result() {
+      return r_;
+    }
+    ~odbc_connection() {
+      c_.reset();
+      t_.release();
+      // delete r_ Do not delete odbc_result
+    }
 
   private:
       std::shared_ptr<nanodbc::connection> c_;
       std::unique_ptr<nanodbc::transaction> t_;
+      odbc_result* r_;
 };
 }

@@ -12,14 +12,15 @@ typedef std::array<const char, 255> string_buf;
 class odbc_result {
   public:
     odbc_result(odbc_connection & c, std::string sql) :
+      c_(&c) ,
       sql_(sql),
       rows_fetched_(0),
       complete_(0) {
-        c_ = c.connection();
+        c_->current_result(this);
         s_ = std::make_shared<nanodbc::statement>(*c.connection(), sql);
       };
-    std::shared_ptr<nanodbc::connection> connection() const {
-      return std::shared_ptr<nanodbc::connection>(c_);
+    std::shared_ptr<odbc_connection> connection() const {
+      return std::shared_ptr<odbc_connection>(c_);
     }
     std::shared_ptr<nanodbc::statement> statement() const {
       return std::shared_ptr<nanodbc::statement>(s_);
@@ -38,10 +39,10 @@ class odbc_result {
       auto nrows = df.nrows();
       size_t start = 0;
       size_t batch_size = 1024;
-      nanodbc::transaction transaction(*c_);
+      nanodbc::transaction transaction(*c_->connection());
 
       while(start < nrows) {
-        auto s = nanodbc::statement(*c_, sql_);
+        auto s = nanodbc::statement(*c_->connection(), sql_);
         size_t end = start + batch_size > nrows ? nrows : start + batch_size;
         size_t size = end - start;
         clear_buffers();
@@ -79,8 +80,12 @@ class odbc_result {
         complete_; // result is completed
     }
 
+    bool active() {
+      return c_->current_result() == this;
+    }
+
   private:
-    std::shared_ptr<nanodbc::connection> c_;
+    odbc_connection *c_;
     std::shared_ptr<nanodbc::statement> s_;
     std::shared_ptr<nanodbc::result> r_;
     std::string sql_;
@@ -375,8 +380,12 @@ class odbc_result {
 
       Rcpp::List out = create_dataframe(types, column_names(r), n);
       int row = 0;
-      bool more_data = false;
-      while((more_data = r.next())) {
+
+      if (rows_fetched_ == 0) {
+        r.next();
+      }
+
+      while(!complete_) {
         if (row >= n) {
           if (n_max < 0) {
             n *= 2;
@@ -399,10 +408,10 @@ class odbc_result {
           }
         }
 
+        complete_ = !r.next();
         ++row;
         ++rows_fetched_;
       }
-      complete_ = !more_data;
 
       // Resize if needed
       if (row < n) {

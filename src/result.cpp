@@ -12,7 +12,7 @@ void result_release(result_ptr r) {
 
 // [[Rcpp::export]]
 bool result_active(result_ptr r) {
-  return r.get() != nullptr && static_cast<bool>(r->result()) && r->result()->at_end();
+  return r.get() != nullptr && r->active();
 }
 
 // [[Rcpp::export]]
@@ -61,7 +61,7 @@ int result_rows_affected(result_ptr r) {
 
 // [[Rcpp::export]]
 int result_row_count(result_ptr r) {
-  r->rows_fetched();
+  return r->rows_fetched();
 }
 
 // [[Rcpp::export]]
