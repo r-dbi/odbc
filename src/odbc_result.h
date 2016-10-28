@@ -161,7 +161,7 @@ class odbc_result {
       nanodbc::timestamp ts;
       auto frac = modf(value, &value);
       time_t t = static_cast<time_t>(value);
-      auto tm = localtime(&t);
+      auto tm = gmtime(&t);
       ts.fract = frac;
       ts.sec = tm->tm_sec;
       ts.min = tm->tm_min;
