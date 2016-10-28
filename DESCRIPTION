@@ -4,7 +4,7 @@ Version: 0.0.0.9000
 Authors@R: c(
     person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut")),
     person("Jim", "Hester", , "james.hester@rstudio.com", role = c("aut", "cre")),
-    person(family = "Blue Yonder GmbH", role = c("cph"), comment = "cpp_odbc and turbodbc libraries"),
+    person(family = "lexicalunit", role = c("cph"), comment = "nanodbc library"),
     person("RStudio", role = "cph")
   )
 Description: Use ODBC drivers to connect to databases.
@@ -13,7 +13,9 @@ LazyData: true
 Imports:
     DBI (>= 0.3.0),
     methods,
-    Rcpp
+    Rcpp,
+    tibble,
+    blob
 LinkingTo: Rcpp, BH
 RoxygenNote: 5.0.1
 URL: https://github.com/hadley/odbconnect
@@ -32,6 +34,7 @@ Collate:
     'Table.R'
     'utils.R'
     'zzz.R'
-Remotes: jimhester/covr@compiled_subdir,
+Remotes:
     rstats-db/DBI,
-    rstats-db/DBItest@production
+    rstats-db/DBItest@production,
+    hadley/blob
