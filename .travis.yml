@@ -8,8 +8,8 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - gcc-5
-      - g++-5
+      - gcc-4.9
+      - g++-4.9
       - unixodbc unixodbc-dev
       - odbc-postgresql
       - libmyodbc
@@ -18,7 +18,7 @@ addons:
 before_install: |
   mkdir ~/.R
   cat <<EOF > ~/.R/Makevars
-  CXX1X=g++-5
+  CXX1X=g++-4.9
   CXX1XSTD=-std=c++11
 
 before_script:
