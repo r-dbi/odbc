@@ -37,8 +37,8 @@ class odbc_result {
       auto types = column_types(df);
       auto ncols = df.size();
       auto nrows = df.nrows();
-      size_t start = 0;
-      size_t batch_size = 1024;
+      int start = 0;
+      int batch_size = 1024;
       nanodbc::transaction transaction(*c_->connection());
 
       while(start < nrows) {
