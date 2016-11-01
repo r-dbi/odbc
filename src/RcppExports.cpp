@@ -6,6 +6,16 @@
 
 using namespace Rcpp;
 
+// list_drivers
+Rcpp::DataFrame list_drivers();
+RcppExport SEXP odbconnect_list_drivers() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(list_drivers());
+    return rcpp_result_gen;
+END_RCPP
+}
 // odbconnect_connect
 connection_ptr odbconnect_connect(std::string connection_string);
 RcppExport SEXP odbconnect_odbconnect_connect(SEXP connection_stringSEXP) {

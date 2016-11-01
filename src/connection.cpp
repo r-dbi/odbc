@@ -6,6 +6,29 @@
 using namespace odbconnect;
 
 // [[Rcpp::export]]
+Rcpp::DataFrame list_drivers() {
+  std::vector<std::string> names;
+  std::vector<std::string> attributes;
+  std::vector<std::string> values;
+  for (auto &driver : nanodbc::list_drivers()) {
+    names.push_back(driver.name);
+  }
+    //Rcpp::Rcout << driver.name << driver.attributes.size();
+    //for (auto &attr : driver.attributes) {
+      //names.push_back(driver.name);
+      //attributes.push_back(attr.keyword);
+      //values.push_back(attr.value);
+    //}
+  //}
+  return Rcpp::DataFrame::create(
+      Rcpp::_["name"] = names,
+      //Rcpp::_["attribute"] = attributes,
+      //Rcpp::_["value"] = values,
+      Rcpp::_["stringsAsFactors"] = false
+    );
+}
+
+// [[Rcpp::export]]
 connection_ptr odbconnect_connect(std::string connection_string) {
   return connection_ptr(new odbc_connection(connection_string));
 }
