@@ -18,7 +18,7 @@ test_roundtrip <- function() {
     add_na <- function(proportion) function(x) { is.na(x) <- sample(c(TRUE, FALSE), size = length(x), prob = c(proportion, 1 - proportion), replace = TRUE); x}
     it[] <- lapply(it, add_na(.1))
 
-    dbWriteTable(con, "it", it, overwrite = TRUE)
+    DBI::dbWriteTable(con, "it", it, overwrite = TRUE)
     res <- dbReadTable(con, "it")
     expect_equal(it, res)
   })
