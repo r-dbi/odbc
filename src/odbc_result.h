@@ -149,12 +149,18 @@ class odbc_result {
       statement.bind_strings(column, strings_[column], reinterpret_cast<bool *>(nulls_[column].data()));
     }
     void bind_raw(nanodbc::statement & statement, Rcpp::DataFrame const & data, short column, size_t start, size_t size) {
+      nulls_[column] = std::vector<uint8_t>(size, false);
       for (size_t i = 0;i < size;++i) {
         SEXP value = VECTOR_ELT(data[column], start + i);
-        raws_[column].push_back(std::vector<uint8_t>(RAW(value), RAW(value) + Rf_length(value)));
+        if (TYPEOF(value) == NILSXP) {
+          nulls_[column][i] = true;
+          raws_[column].push_back(std::vector<uint8_t>());
+        } else {
+          raws_[column].push_back(std::vector<uint8_t>(RAW(value), RAW(value) + Rf_length(value)));
+        }
       }
 
-      statement.bind(column, raws_[column]);
+      statement.bind(column, raws_[column], reinterpret_cast<bool *>(nulls_[column].data()));
     }
 
     nanodbc::timestamp as_timestamp(double value) {
@@ -479,11 +485,13 @@ class odbc_result {
     }
 
     void assign_raw(Rcpp::List & out, size_t row, short column, nanodbc::result & value) {
+
+      // Same issue as assign_string, null is never true unless the column has been bound
+      std::vector<std::uint8_t> data = value.get<std::vector<std::uint8_t>>(column);
       if (value.is_null(column)) {
-        SET_VECTOR_ELT(out[column], row, Rf_allocVector(RAWSXP, 0));
+        SET_VECTOR_ELT(Rf_allocVector(VECSXP, 1), 0, NILSXP);
         return;
       }
-      std::vector<std::uint8_t> data = value.get<std::vector<std::uint8_t>>(column);
       SEXP bytes = Rf_allocVector(RAWSXP, data.size());
       std::copy(data.begin(), data.end(), RAW(bytes));
       SET_VECTOR_ELT(out[column], row, bytes);

@@ -3,7 +3,7 @@ test_roundtrip <- function() {
   context(paste0("roundtrip[", ctx$name, "]"))
   test_that("round tripping data.frames works", {
     library(DBI)
-    on.exit(dbRemoveTable(con, "it"))
+    on.exit(DBI::dbRemoveTable(con, "it"))
     con <- DBItest:::connect(ctx)
     it <- iris
     set.seed(42)
