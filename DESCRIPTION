@@ -37,4 +37,4 @@ Collate:
 Remotes:
     rstats-db/DBI,
     rstats-db/DBItest@production,
-    hadley/blob
+    hadley/blob#1
