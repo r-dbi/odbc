@@ -20,10 +20,8 @@ knitr::opts_chunk$set(
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/hadley/odbconnect?branch=master&svg=true)](https://ci.appveyor.com/project/hadley/odbconnect)
 
 The goal of odbconnect is to provide a DBI-compliant interface to ODBC drivers.
-
-The current implementation uses a modified version of the cpp_odbc and turbodbc
-libraries from the [turbodbc](https://github.com/blue-yonder/turbodbc) python
-package.
+The current implementation uses the [nanodbc](http://nanodbc.lexicalunit.com/)
+C++ library.
 
 ## Benchmarks vs RODBC / RODBCDBI
 
