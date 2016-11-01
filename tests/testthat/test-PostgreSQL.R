@@ -39,6 +39,7 @@ DBItest::test_meta(c(
 DBItest::test_compliance(c(
     "read_only",
     NULL))
+
+  test_roundtrip()
 }
 
-test_roundtrip()
