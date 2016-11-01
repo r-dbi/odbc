@@ -1,5 +1,4 @@
-if (FALSE) {
-  #.Platform$OS.type != "windows") {
+if (.Platform$OS.type != "windows") {
   DBItest::make_context(odbconnect(), list(dsn = "MySQL"), tweaks = DBItest::tweaks(), name = "MySQL")
 
 DBItest::test_getting_started(c(

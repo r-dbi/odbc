@@ -1,4 +1,5 @@
-if (.Platform$OS.type != "windows") {
+if (FALSE) {
+  # }.Platform$OS.type != "windows") {
   DBItest::make_context(odbconnect(), list(dsn = "SQLite"), tweaks = DBItest::tweaks(), name = "SQLite")
 
 DBItest::test_getting_started(c(
