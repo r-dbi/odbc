@@ -40,3 +40,5 @@ DBItest::test_compliance(c(
     "read_only",
     NULL))
 }
+
+test_roundtrip()
