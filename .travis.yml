@@ -29,4 +29,4 @@ before_script:
   - mysql -u root -e 'CREATE DATABASE test_db;'
 
 after_success:
-  - R -e 'options(covr.gcov = "/usr/bin/gcov-4.9");covr::codecov()'
+  - R -e 'options(covr.gcov = "/usr/bin/gcov-4.9");covr::codecov(line_exclusions = c("src/nanodbc.h", "src/nanodbc.cpp"))'
