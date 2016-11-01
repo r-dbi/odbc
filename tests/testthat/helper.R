@@ -12,9 +12,11 @@ test_roundtrip <- function() {
     it$Sepal.Width <- as.Date(iris$Sepal.Width * 100, origin = Sys.time())
     it$Logical <- sample(c(TRUE, FALSE), size = nrow(it), replace = T)
     it$Species <- as.character(it$Species)
-    add_na <- function(x) { x[sample(length(x))[1:15]] <- NA; x }
-    it[] <- lapply(it, add_na)
     it$Raw <- blob::as.blob(lapply(seq_len(NROW(it)), function(x) as.raw(sample(0:100, size = sample(0:25, 1)))))
+
+    # Add a proportion of NA values to a data frame
+    add_na <- function(proportion) function(x) { is.na(x) <- sample(c(TRUE, FALSE), size = length(x), prob = c(proportion, 1 - proportion), replace = TRUE); x}
+    it[] <- lapply(it, add_na(.1))
 
     dbWriteTable(con, "it", it, overwrite = TRUE)
     res <- dbReadTable(con, "it")
