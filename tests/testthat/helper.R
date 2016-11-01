@@ -14,11 +14,10 @@ test_roundtrip <- function() {
     it$Species <- as.character(it$Species)
     add_na <- function(x) { x[sample(length(x))[1:15]] <- NA; x }
     it[] <- lapply(it, add_na)
-    it$Raw <- lapply(seq_len(NROW(it)), function(x) as.raw(sample(0:100, size = sample(0:25, 1))))
+    it$Raw <- blob::as.blob(lapply(seq_len(NROW(it)), function(x) as.raw(sample(0:100, size = sample(0:25, 1)))))
 
     dbWriteTable(con, "it", it, overwrite = TRUE)
     res <- dbReadTable(con, "it")
-    res$Raw = unclass(res$Raw)
     expect_equal(it, res)
   })
 }

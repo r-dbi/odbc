@@ -89,8 +89,8 @@ setMethod(
 setMethod("sqlData", "OdbconnectConnection", function(con, value, row.names = NA, copy = TRUE, ...) {
   value <- sqlRownamesToColumn(value, row.names)
 
-  # C code takes care of atomic vectors, dates and date times, just need to coerce other objects
-  is_object <- vapply(value, function(x) is.object(x) && !(is(x, "POSIXct") || is(x, "Date")), logical(1))
+  # C code takes care of atomic vectors, dates, date times, and blobs just need to coerce other objects
+  is_object <- vapply(value, function(x) is.object(x) && !(is(x, "POSIXct") || is(x, "Date") || is(x, "blob")), logical(1))
   value[is_object] <- lapply(value[is_object], as.character)
 
   value
