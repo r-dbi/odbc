@@ -12,7 +12,9 @@ DBItest::test_result(
     "data_logical_int.*", # Not an error, PostgreSQL has a logical data type
     "data_64_bit.*", # Numeric types with high precision are converted to strings
     "data_raw.*",
-    "data_time.*", # timezones not quite working right yet
+    "^data_time$", "^data_time_.*", # time objects not supported
+    "^data_timestamp_utc.*", # syntax not supported
+    "^data_timestamp_parens.*", # syntax not supported
     NULL))
 DBItest::test_sql(c(
     "quote_identifier_not_vectorized", # https://github.com/rstats-db/DBI/issues/71
