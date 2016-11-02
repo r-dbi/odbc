@@ -36,5 +36,5 @@ Collate:
     'zzz.R'
 Remotes:
     rstats-db/DBI,
-    rstats-db/DBItest@production,
+    rstats-db/DBItest#99,
     hadley/blob#2

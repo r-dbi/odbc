@@ -2,7 +2,6 @@ test_roundtrip <- function() {
   ctx <- DBItest:::get_default_context()
   context(paste0("roundtrip[", ctx$name, "]"))
   test_that("round tripping data.frames works", {
-    library(DBI)
     on.exit(DBI::dbRemoveTable(con, "it"))
     con <- DBItest:::connect(ctx)
     it <- iris
@@ -19,7 +18,7 @@ test_roundtrip <- function() {
     it[] <- lapply(it, add_na(.1))
 
     DBI::dbWriteTable(con, "it", it, overwrite = TRUE)
-    res <- dbReadTable(con, "it")
+    res <- DBI::dbReadTable(con, "it")
     expect_equal(it, res)
   })
 }

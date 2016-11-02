@@ -14,7 +14,6 @@ DBItest::test_result(
     "data_64_bit.*", # Numeric types with high precision are converted to strings
     "data_raw.*",
     "data_time.*", # timezones not quite working right yet
-    "data_date.*", # Objects equal but not identical - # date data has class in entire row rather than for each item.
     NULL))
 DBItest::test_sql(c(
     "quote_identifier_not_vectorized", # https://github.com/rstats-db/DBI/issues/71
@@ -23,7 +22,6 @@ DBItest::test_sql(c(
     "roundtrip_logical_int",
     "roundtrip_64_bit",
     "roundtrip_raw",
-    "roundtrip_date",
     "roundtrip_timestamp",
     "roundtrip_rownames",
     NULL))
