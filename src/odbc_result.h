@@ -236,7 +236,9 @@ class odbc_result {
       t.tm_min = ts.min;
       t.tm_sec = ts.sec;
 
-      return Rcpp::mktime00(t) + ts.fract;
+      // Fractional part is in billionths of a second
+      // https://msdn.microsoft.com/en-us/library/ms714556.aspx
+      return Rcpp::mktime00(t) + (ts.fract / 1000000000.0);
     }
 
     Rcpp::List create_dataframe(std::vector<r_type> types, std::vector<std::string> names, int n) {
