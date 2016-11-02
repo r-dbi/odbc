@@ -16,7 +16,6 @@ DBItest::test_result(
     NULL))
 DBItest::test_sql(c(
     "quote_identifier_not_vectorized", # https://github.com/rstats-db/DBI/issues/71
-    "append_table_error",
     "temporary_table",
     "roundtrip_logical_int", # Not an error, PostgreSQL has a logical data type
     "roundtrip_64_bit",

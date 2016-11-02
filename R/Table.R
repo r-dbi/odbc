@@ -55,6 +55,11 @@ setMethod(
       dbRemoveTable(conn, name)
     }
 
+    if (!found && append) {
+      stop("Cannot append to table ", name, ", which does not exist",
+        call. = FALSE)
+    }
+
     values <- sqlData(conn, value[, , drop = FALSE])
 
     if (!found || overwrite) {
