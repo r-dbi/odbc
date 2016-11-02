@@ -1,6 +1,7 @@
 #pragma once
 
 #include <nanodbc.h>
+#include <Rcpp.h>
 
 
 namespace odbconnect {
@@ -27,6 +28,12 @@ class odbc_connection {
       t_->rollback();
     }
     void current_result(odbc_result *r) {
+      if (r != nullptr && r_ != NULL) {
+        Rcpp::warning("Cancelling previous query");
+
+        // TODO do we want to try and close the result here as well?
+      }
+
       r_ = r;
     }
     odbc_result* current_result() {

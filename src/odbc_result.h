@@ -16,7 +16,6 @@ class odbc_result {
       sql_(sql),
       rows_fetched_(0),
       complete_(0) {
-        c_->current_result(this);
         s_ = std::make_shared<nanodbc::statement>(*c.connection(), sql);
       };
     std::shared_ptr<odbc_connection> connection() const {
@@ -31,6 +30,7 @@ class odbc_result {
     void execute() {
       if (!r_) {
         r_ = std::make_shared<nanodbc::result>(s_->execute());
+        c_->current_result(this);
       }
     }
     void insert_dataframe(Rcpp::DataFrame const & df) {
@@ -82,6 +82,10 @@ class odbc_result {
 
     bool active() {
       return c_->current_result() == this;
+    }
+
+    ~odbc_result() {
+      c_->current_result(nullptr);
     }
 
   private:

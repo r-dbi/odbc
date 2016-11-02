@@ -2,15 +2,14 @@ if (.Platform$OS.type != "windows") {
   ctx <- DBItest::make_context(odbconnect(), list(dsn = "PostgreSQL"), tweaks = DBItest::tweaks(), name = "PostgreSQL")
 
 DBItest::test_getting_started(c(
-    "package_name",
+    "package_name", # Not an error
     NULL))
 DBItest::test_driver()
 DBItest::test_connection(c(
     NULL))
 DBItest::test_result(
   c(
-  "stale_result_warning",
-    "data_logical_int.*",
+    "data_logical_int.*", # Not an error, PostgreSQL has a logical data type
     "data_64_bit.*", # Numeric types with high precision are converted to strings
     "data_raw.*",
     "data_time.*", # timezones not quite working right yet
@@ -19,7 +18,7 @@ DBItest::test_sql(c(
     "quote_identifier_not_vectorized", # https://github.com/rstats-db/DBI/issues/71
     "append_table_error",
     "temporary_table",
-    "roundtrip_logical_int",
+    "roundtrip_logical_int", # Not an error, PostgreSQL has a logical data type
     "roundtrip_64_bit",
     "roundtrip_raw",
     NULL))
@@ -33,4 +32,3 @@ DBItest::test_compliance(c(
 
   test_roundtrip()
 }
-
