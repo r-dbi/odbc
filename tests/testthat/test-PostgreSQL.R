@@ -23,7 +23,6 @@ DBItest::test_sql(c(
     "roundtrip_64_bit",
     "roundtrip_raw",
     "roundtrip_timestamp",
-    "roundtrip_rownames",
     NULL))
 DBItest::test_meta(c(
     "column_info",

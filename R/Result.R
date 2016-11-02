@@ -47,8 +47,8 @@ setMethod(
 #' @export
 setMethod(
   "dbFetch", "OdbconnectResult",
-  function(res, n = -1, ...) {
-    result_fetch(res@ptr, n, ...)
+  function(res, n = -1, ..., row.names = NA) {
+    sqlColumnToRownames(result_fetch(res@ptr, n, ...), row.names)
   })
 
 #' @rdname DBI
