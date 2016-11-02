@@ -55,13 +55,14 @@ setMethod(
       dbRemoveTable(conn, name)
     }
 
+    values <- sqlData(conn, value[, , drop = FALSE])
+
     if (!found || overwrite) {
-      sql <- sqlCreateTable(conn, name, value)
+      sql <- sqlCreateTable(conn, name, values)
       dbGetQuery(conn, sql)
     }
 
     if (nrow(value) > 0) {
-      values <- sqlData(conn, value[, , drop = FALSE])
 
       name <- dbQuoteIdentifier(conn, name)
       fields <- dbQuoteIdentifier(conn, names(values))
@@ -88,6 +89,10 @@ setMethod(
 ##' @export
 setMethod("sqlData", "OdbconnectConnection", function(con, value, row.names = NA, copy = TRUE, ...) {
   value <- sqlRownamesToColumn(value, row.names)
+
+  # Convert POSIXlt to POSIXct
+  is_POSIXlt <- vapply(value, function(x) is.object(x) && (is(x, "POSIXlt")), logical(1))
+  value[is_POSIXlt] <- lapply(value[is_POSIXlt], as.POSIXct)
 
   # C code takes care of atomic vectors, dates, date times, and blobs just need to coerce other objects
   is_object <- vapply(value, function(x) is.object(x) && !(is(x, "POSIXct") || is(x, "Date") || is(x, "blob")), logical(1))

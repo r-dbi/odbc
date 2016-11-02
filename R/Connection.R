@@ -208,13 +208,14 @@ get_data_type.default <- function(info, obj, ...) {
   if (is.factor(obj)) return(varchar_data_type(obj))
   if (is(obj, "POSIXct")) return("TIMESTAMP")
   if (is(obj, "Date")) return("DATE")
+  if (is(obj, "blob")) return("BLOB")
 
   switch(typeof(obj),
     integer = "INTEGER",
     double = "DOUBLE PRECISION",
     character = varchar_data_type(obj),
     logical = "SMALLINT",
-    list = "BLOB",
+    list = varchar_data_type(odj),
     stop("Unsupported type", call. = FALSE)
   )
 }
@@ -223,13 +224,14 @@ get_data_type.MySQL <- function(info, obj, ...) {
   if (is.factor(obj)) return("TEXT")
   if (is(obj, "POSIXct")) return("DATETIME")
   if (is(obj, "Date")) return("DATE")
+  if (is(obj, "blob")) return("BLOB")
 
   switch(typeof(obj),
     integer = "INTEGER",
     double = "DOUBLE",
     character = "TEXT",
     logical = "TINYINT",
-    list = "BLOB",
+    list = "TEXT",
     stop("Unsupported type", call. = FALSE)
   )
 }
@@ -238,28 +240,30 @@ get_data_type.PostgreSQL <- function(info, obj, ...) {
   if (is.factor(obj)) return("TEXT")
   if (is(obj, "POSIXct")) return("TIMESTAMP")
   if (is(obj, "Date")) return("DATE")
+  if (is(obj, "blob")) return("bytea")
 
   switch(typeof(obj),
     integer = "INTEGER",
     double = "DOUBLE PRECISION",
     character = "TEXT",
     logical = "BOOLEAN",
-    list = "bytea",
+    list = "TEXT",
     stop("Unsupported type", call. = FALSE)
   )
 }
 
 `get_data_type.Microsoft SQL Server` <- function(info, obj, ...) {
-  if (is.factor(obj)) return("varchar(255)")
+  if (is.factor(obj)) return("varchar(max)")
   if (is(obj, "POSIXct")) return("datetime")
   if (is(obj, "Date")) return("date")
+  if (is(obj, "blob")) return("varbinary(max)")
 
   switch(typeof(obj),
     integer = "int",
     double = "float",
-    character = "varchar(255)",
+    character = "varchar(max)",
     logical = "tinyint",
-    list = "varbinary(max)",
+    list = "TEXT",
     stop("Unsupported type", call. = FALSE)
   )
 }
@@ -268,13 +272,14 @@ get_data_type.PostgreSQL <- function(info, obj, ...) {
   if (is.factor(obj)) return("TEXT")
   if (is(obj, "POSIXct")) return("NUMERIC")
   if (is(obj, "Date")) return("NUMERIC")
+  if (is(obj, "blob")) return("BLOB")
 
   switch(typeof(obj),
     integer = "INTEGER",
     double = "REAL",
     character = "TEXT",
     logical = "NUMERIC",
-    list = "BLOB",
+    list = "TEXT",
     stop("Unsupported type", call. = FALSE)
   )
 }
