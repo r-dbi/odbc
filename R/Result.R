@@ -44,6 +44,7 @@ setMethod(
 
 #' @rdname DBI
 #' @inheritParams DBI::dbFetch
+#' @inheritParams DBI::sqlRownamesToColumn
 #' @export
 setMethod(
   "dbFetch", "OdbconnectResult",

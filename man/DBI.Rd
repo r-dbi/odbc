@@ -90,7 +90,7 @@
 
 \S4method{dbClearResult}{OdbconnectResult}(res, ...)
 
-\S4method{dbFetch}{OdbconnectResult}(res, n = -1, ...)
+\S4method{dbFetch}{OdbconnectResult}(res, n = -1, ..., row.names = NA)
 
 \S4method{dbHasCompleted}{OdbconnectResult}(res, ...)
 
@@ -141,6 +141,17 @@ or \code{\linkS4class{DBIConnection}}}
 \item{n}{maximum number of records to retrieve per fetch. Use \code{n = -1}
 to retrieve all pending records.  Some implementations may recognize other
 special values.}
+
+\item{row.names}{Either \code{TRUE}, \code{FALSE}, \code{NA} or a string.
+
+If \code{TRUE}, always translate row names to a column called "row_names".
+If \code{FALSE}, never translate row names. If \code{NA}, translate
+rownames only if they're a character vector.
+
+A string is equivalent to \code{TRUE}, but allows you to override the
+default name.
+
+For backward compatibility, \code{NULL} is equivalent to \code{FALSE}.}
 
 \item{params}{A list of bindings}
 }
