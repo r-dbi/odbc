@@ -41,7 +41,8 @@ NULL
 #' @export
 setMethod(
   "dbWriteTable", c("OdbconnectConnection", "character", "data.frame"),
-  function(conn, name, value, overwrite=FALSE, append=FALSE, ...) {
+  function(conn, name, value, overwrite=FALSE, append=FALSE, temporary = FALSE,
+    ...) {
 
     if (overwrite && append)
       stop("overwrite and append cannot both be TRUE", call. = FALSE)
@@ -62,7 +63,7 @@ setMethod(
     values <- sqlData(conn, value[, , drop = FALSE])
 
     if (!found || overwrite) {
-      sql <- sqlCreateTable(conn, name, values)
+      sql <- sqlCreateTable(conn, name, values, temporary = temporary)
       dbGetQuery(conn, sql)
     }
 

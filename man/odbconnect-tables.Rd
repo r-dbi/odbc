@@ -8,7 +8,7 @@
 \title{Convenience functions for reading/writing DBMS tables}
 \usage{
 \S4method{dbWriteTable}{OdbconnectConnection,character,data.frame}(conn, name,
-  value, overwrite = FALSE, append = FALSE, ...)
+  value, overwrite = FALSE, append = FALSE, temporary = FALSE, ...)
 
 \S4method{sqlData}{OdbconnectConnection}(con, value, row.names = NA,
   copy = TRUE, ...)
@@ -28,6 +28,8 @@ just any valid bare table name.}
 
 \item{append}{Allow appending to the destination table. Cannot be
 \code{TRUE} if \code{overwrite} is also \code{TRUE}.}
+
+\item{temporary}{If \code{TRUE}, will generate a temporary table statement.}
 
 \item{...}{Other arguments used by individual methods.}
 
