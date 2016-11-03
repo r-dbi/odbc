@@ -1,6 +1,6 @@
 if (.Platform$OS.type != "windows") {
   ctx <- DBItest::make_context(odbconnect(), list(dsn = "PostgreSQL"), tweaks = DBItest::tweaks(), name = "PostgreSQL")
-DBItest:::spec_result_roundtrip$data_64_bit(ctx)
+
 DBItest::test_getting_started(c(
     "package_name", # Not an error
     NULL))
