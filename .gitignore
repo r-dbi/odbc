@@ -3,3 +3,6 @@
 .RData
 *.d
 src/Makevars
+README.R
+README.html
+TODO.md

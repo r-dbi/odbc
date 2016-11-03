@@ -9,4 +9,9 @@
 ^src/.*d$
 ^codecov\.yml$
 ^appveyor\.yml$
-^src/\.ycmextra_conf\.pyc?$
+^src/\.ycm_extra_conf\.pyc?$
+^README.R$
+^README.html$
+^TODO.md$
+^script.R$
+^docker$
