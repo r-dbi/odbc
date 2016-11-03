@@ -49,7 +49,7 @@ Rcpp::DataFrame result_column_info(result_ptr r) {
 }
 
 // [[Rcpp::export]]
-void result_bind(result_ptr r, std::string sql, List params) {
+void result_bind(result_ptr r, List params) {
   r->insert_dataframe(params);
 }
 

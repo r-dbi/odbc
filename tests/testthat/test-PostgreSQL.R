@@ -23,7 +23,6 @@ DBItest::test_sql(c(
     "roundtrip_raw",
     NULL))
 DBItest::test_meta(c(
-    "bind_empty",
     NULL))
 DBItest::test_compliance(c(
     "read_only",

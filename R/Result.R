@@ -123,5 +123,5 @@ setMethod(
   "dbBind", "OdbconnectResult",
   function(res, params, ...) {
     result_bind(res@ptr, params)
-    TRUE
+    invisible(res)
   })
