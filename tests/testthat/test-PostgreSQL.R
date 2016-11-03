@@ -10,8 +10,8 @@ DBItest::test_connection(c(
 DBItest::test_result(
   c(
     "data_logical_int.*", # Not an error, PostgreSQL has a logical data type
-    "data_64_bit.*", # Numeric types with high precision are converted to strings
-    "data_raw.*",
+    "data_64_bit.*", # TODO
+    "data_raw.*", # cast(1 bytea) is not valid `cannot cast type integer to bytea`
     "^data_time$", "^data_time_.*", # time objects not supported
     "^data_timestamp_utc.*", # syntax not supported
     "^data_timestamp_parens.*", # syntax not supported
@@ -19,7 +19,7 @@ DBItest::test_result(
 DBItest::test_sql(c(
     "quote_identifier_not_vectorized", # Can't implement until https://github.com/rstats-db/DBI/issues/71 is closed
     "roundtrip_logical_int", # Not an error, PostgreSQL has a logical data type
-    "roundtrip_64_bit",
+    "roundtrip_64_bit", # TODO
     NULL))
 DBItest::test_meta(c(
     NULL))
