@@ -20,12 +20,11 @@ DBItest::test_sql(c(
     "quote_identifier_not_vectorized", # Can't implement until https://github.com/rstats-db/DBI/issues/71 is closed
     "roundtrip_logical_int", # Not an error, PostgreSQL has a logical data type
     "roundtrip_64_bit",
-    "roundtrip_raw",
     NULL))
 DBItest::test_meta(c(
     NULL))
 DBItest::test_compliance(c(
-    "read_only",
+    "read_only", # Setting SQL_MODE_READ_ONLY is not supported in most DBs, so ignoring.
     NULL))
 
   test_roundtrip()
