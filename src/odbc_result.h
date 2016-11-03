@@ -62,6 +62,8 @@ class odbc_result {
         }
         nanodbc::execute(s, size);
         start += batch_size;
+
+        Rcpp::checkUserInterrupt();
       }
       transaction.commit();
     }
@@ -423,6 +425,9 @@ class odbc_result {
         complete_ = !r.next();
         ++row;
         ++rows_fetched_;
+        if (rows_fetched_ % 10000 == 0) {
+          Rcpp::checkUserInterrupt();
+        }
       }
 
       // Resize if needed
