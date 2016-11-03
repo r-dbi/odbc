@@ -1,7 +1,7 @@
-test_roundtrip <- function(columns = NA, invert = TRUE) {
+test_roundtrip <- function(columns = "", invert = TRUE) {
   ctx <- DBItest:::get_default_context()
   context(paste0("roundtrip[", ctx$name, "]"))
-  test_that("round tripping data.frames works", {
+  test_that(paste0("[", ctx$name, "] round tripping data.frames works"), {
     on.exit(DBI::dbRemoveTable(con, "it"))
     con <- DBItest:::connect(ctx)
     it <- iris
