@@ -215,7 +215,7 @@ get_data_type.default <- function(info, obj, ...) {
     double = "DOUBLE PRECISION",
     character = varchar_data_type(obj),
     logical = "SMALLINT",
-    list = varchar_data_type(odj),
+    list = varchar_data_type(obj),
     stop("Unsupported type", call. = FALSE)
   )
 }
