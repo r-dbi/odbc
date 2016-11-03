@@ -18,7 +18,7 @@ DBItest::test_result(
 DBItest::test_sql(c(
     "quote_identifier_not_vectorized", # Can't implement until https://github.com/rstats-db/DBI/issues/71 is closed
     "roundtrip_logical_int", # Not an error, PostgreSQL has a logical data type
-    "roundtrip_64_bit", # TODO
+    "roundtrip_64_bit", # Checks against truncated value, regular value roundtrips correctly
     NULL))
 DBItest::test_meta(c(
     NULL))
