@@ -1,4 +1,4 @@
-test_roundtrip <- function() {
+test_roundtrip <- function(columns = NA, invert = TRUE) {
   ctx <- DBItest:::get_default_context()
   context(paste0("roundtrip[", ctx$name, "]"))
   test_that("round tripping data.frames works", {
@@ -16,6 +16,11 @@ test_roundtrip <- function() {
     # Add a proportion of NA values to a data frame
     add_na <- function(proportion) function(x) { is.na(x) <- sample(c(TRUE, FALSE), size = length(x), prob = c(proportion, 1 - proportion), replace = TRUE); x}
     it[] <- lapply(it, add_na(.1))
+    if (isTRUE(invert)) {
+      it <- it[, names(it) != columns]
+    } else {
+      it <- it[, names(it) == columns]
+    }
 
     DBI::dbWriteTable(con, "it", it, overwrite = TRUE)
     res <- DBI::dbReadTable(con, "it")
