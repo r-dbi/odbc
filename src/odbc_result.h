@@ -498,6 +498,10 @@ class odbc_result {
     void assign_raw(Rcpp::List & out, size_t row, short column, nanodbc::result & value) {
 
       // Same issue as assign_string, null is never true unless the column has been bound
+      if (value.is_null(column)) {
+        SET_VECTOR_ELT(Rf_allocVector(VECSXP, 1), 0, NILSXP);
+        return;
+      }
       std::vector<std::uint8_t> data = value.get<std::vector<std::uint8_t>>(column);
       if (value.is_null(column)) {
         SET_VECTOR_ELT(Rf_allocVector(VECSXP, 1), 0, NILSXP);
