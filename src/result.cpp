@@ -31,11 +31,21 @@ List result_fetch(result_ptr r, int n_max = -1) {
 }
 
 // [[Rcpp::export]]
-void column_info(result_ptr r) {
-  //auto columns = c->get_result_set()->get_column_info();
-  //for (auto info : columns) {
-    //Rcpp::Rcout << info.name << ':' << (int) info.type << ':' << info.supports_null_values << '\n';
-  //}
+Rcpp::DataFrame result_column_info(result_ptr r) {
+  auto result = r->result();
+
+  std::vector<std::string> names;
+  std::vector<std::string> field_type;
+  for (short i = 0;i < result->columns();++i) {
+    names.push_back(result->column_name(i));
+    field_type.push_back(std::to_string(result->column_datatype(i)));
+  }
+
+  return Rcpp::DataFrame::create(
+      Rcpp::_["name"] = names,
+      Rcpp::_["type"] = field_type,
+      Rcpp::_["stringsAsFactors"] = false
+      );
 }
 
 // [[Rcpp::export]]

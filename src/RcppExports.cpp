@@ -198,14 +198,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// column_info
-void column_info(result_ptr r);
-RcppExport SEXP odbconnect_column_info(SEXP rSEXP) {
+// result_column_info
+Rcpp::DataFrame result_column_info(result_ptr r);
+RcppExport SEXP odbconnect_result_column_info(SEXP rSEXP) {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< result_ptr >::type r(rSEXP);
-    column_info(r);
-    return R_NilValue;
+    rcpp_result_gen = Rcpp::wrap(result_column_info(r));
+    return rcpp_result_gen;
 END_RCPP
 }
 // result_bind

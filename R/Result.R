@@ -95,7 +95,7 @@ setMethod(
 setMethod(
   "dbColumnInfo", "OdbconnectResult",
   function(res, ...) {
-    connection_sql_columns(res@connection@ptr, ...)
+    result_column_info(res@ptr, ...)
   })
 
 #' @rdname DBI

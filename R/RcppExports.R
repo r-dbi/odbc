@@ -69,8 +69,8 @@ result_fetch <- function(r, n_max = -1L) {
     .Call('odbconnect_result_fetch', PACKAGE = 'odbconnect', r, n_max)
 }
 
-column_info <- function(r) {
-    invisible(.Call('odbconnect_column_info', PACKAGE = 'odbconnect', r))
+result_column_info <- function(r) {
+    .Call('odbconnect_result_column_info', PACKAGE = 'odbconnect', r)
 }
 
 result_bind <- function(r, sql, params) {

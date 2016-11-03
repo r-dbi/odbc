@@ -17,14 +17,12 @@ DBItest::test_result(
     "^data_timestamp_parens.*", # syntax not supported
     NULL))
 DBItest::test_sql(c(
-    "quote_identifier_not_vectorized", # https://github.com/rstats-db/DBI/issues/71
-    "temporary_table",
+    "quote_identifier_not_vectorized", # Can't implement until https://github.com/rstats-db/DBI/issues/71 is closed
     "roundtrip_logical_int", # Not an error, PostgreSQL has a logical data type
     "roundtrip_64_bit",
     "roundtrip_raw",
     NULL))
 DBItest::test_meta(c(
-    "column_info",
     "bind_empty",
     NULL))
 DBItest::test_compliance(c(
