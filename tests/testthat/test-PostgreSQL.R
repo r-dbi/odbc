@@ -7,8 +7,7 @@ DBItest::test_getting_started(c(
 DBItest::test_driver()
 DBItest::test_connection(c(
     NULL))
-DBItest::test_result(
-  c(
+DBItest::test_result(c(
     "data_logical_int.*", # Not an error, PostgreSQL has a logical data type
     "data_64_bit.*", # TODO
     "data_raw.*", # cast(1 bytea) is not valid `cannot cast type integer to bytea`
