@@ -67,8 +67,11 @@ class odbc_result {
       }
       transaction.commit();
     }
-    Rcpp::List fetch(int n_max = -1) {
+    Rcpp::DataFrame fetch(int n_max = -1) {
       execute();
+      if (r_->columns() == 0) {
+        return Rcpp::DataFrame();
+      }
       return result_to_dataframe(*r_, n_max);
     }
 
