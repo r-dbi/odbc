@@ -339,7 +339,6 @@ class odbc_result {
           case SQL_TINYINT:
           case SQL_SMALLINT:
           case SQL_INTEGER:
-          case SQL_BIGINT:
             types.push_back(integer_t);
             break;
             // Double
@@ -348,6 +347,7 @@ class odbc_result {
           case SQL_DECIMAL:
           case SQL_REAL:
           case SQL_NUMERIC:
+          case SQL_BIGINT:
             types.push_back(double_t);
             break;
             // Date
