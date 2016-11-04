@@ -23,6 +23,55 @@ The goal of odbconnect is to provide a DBI-compliant interface to ODBC drivers.
 The current implementation uses the [nanodbc](http://nanodbc.lexicalunit.com/)
 C++ library.
 
+## Installation
+
+ODBC drivers should be compiled against unixodbc on linux and MacOS. Drivers
+compiled against iODBC may work, but are not supported.
+
+### MacOS
+[homebrew](http://brew.sh/) can be used to easily install database drivers.
+
+```shell
+# Install the unixodbc library
+brew install unixodbc
+
+# PostgreSQL ODBC ODBC Drivers
+brew install psqlodbc
+
+# MySQL ODBC Drivers
+brew install mysql-ODBC Drivers-c
+
+# SQLite ODBC Drivers
+brew install sqliteodbc
+
+# SQL Server ODBC Drivers (Free TDS)
+brew install freetds --with-unixodbc
+```
+
+### Linux - Ubuntu / Debian
+```shell
+# Install the unixodbc library
+apt-get install unixodbc unixodbc-dev
+
+# PostgreSQL ODBC ODBC Drivers
+apt-get install odbc-postgresql
+
+# MySQL ODBC Drivers
+apt-get install libmyodbc
+
+# SQLite ODBC Drivers
+apt-get install libsqliteodbc
+
+# SQL Server ODBC Drivers (Free TDS)
+apt-get install tdsodbc
+```
+
+### R
+```R
+# install.packages(devtools)
+devtools::install_github("rstats-db/odbconnect")
+```
+
 ## Benchmarks vs RODBC / RODBCDBI
 
 ### Reading
