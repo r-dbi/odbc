@@ -62,7 +62,7 @@ std::string connection_special(connection_ptr p) {
 
 // [[Rcpp::export]]
 void connection_release(connection_ptr p) {
-  if (p.get() != nullptr && p->current_result() != nullptr) {
+  if (p->has_active_result()) {
     Rcpp::warning("%s\n%s",
         "There is a result object still in use.",
         "The connection will be automatically released when it is closed"

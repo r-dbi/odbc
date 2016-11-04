@@ -10,7 +10,7 @@ class odbc_result;
 class odbc_connection {
   public:
     odbc_connection(std::string connection_string) :
-      r_(nullptr)
+      current_result_(nullptr)
       {
         c_ = std::make_shared<nanodbc::connection>(connection_string);
       }
@@ -27,27 +27,18 @@ class odbc_connection {
     void rollback() const {
       t_->rollback();
     }
-    void current_result(odbc_result *r) {
-      if (r != nullptr && r_ != NULL) {
-        Rcpp::warning("Cancelling previous query");
-
-        // TODO do we want to try and close the result here as well?
-      }
-
-      r_ = r;
+    bool has_active_result() {
+      return current_result_ != nullptr;
     }
-    odbc_result* current_result() {
-      return r_;
+    bool is_current_result(odbc_result* result) {
+      return current_result_ == result;
     }
-    ~odbc_connection() {
-      c_.reset();
-      t_.release();
-      // delete r_ Do not delete odbc_result
-    }
+    void set_current_result(odbc_result *r);
 
   private:
       std::shared_ptr<nanodbc::connection> c_;
       std::unique_ptr<nanodbc::transaction> t_;
-      odbc_result* r_;
+      odbc_result* current_result_;
 };
+
 }
