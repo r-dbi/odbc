@@ -30,39 +30,39 @@ Rcpp::DataFrame list_drivers() {
 
 // [[Rcpp::export]]
 connection_ptr odbconnect_connect(std::string connection_string) {
-  return connection_ptr(new odbc_connection(connection_string));
+  return connection_ptr(new std::shared_ptr<odbc_connection>(new odbc_connection(connection_string)));
 }
 
 // [[Rcpp::export]]
 Rcpp::List connection_info(connection_ptr p) {
     return Rcpp::List::create(
-      Rcpp::_["dbname"] = p->connection()->dbms_name(),
-      Rcpp::_["db.version"]     = p->connection()->dbms_version(),
+      Rcpp::_["dbname"] = (*p)->connection()->dbms_name(),
+      Rcpp::_["db.version"]     = (*p)->connection()->dbms_version(),
       Rcpp::_["username"] = "",
       Rcpp::_["host"] = "",
       Rcpp::_["port"] = "",
-      Rcpp::_["sourcename"]   = p->connection()->get_info<std::string>(SQL_DATA_SOURCE_NAME),
-      Rcpp::_["servername"]   = p->connection()->get_info<std::string>(SQL_SERVER_NAME),
-      Rcpp::_["drivername"]   = p->connection()->driver_name(),
-      Rcpp::_["odbc.version"]   = p->connection()->get_info<std::string>(SQL_ODBC_VER),
-      Rcpp::_["driver.version"]   = p->connection()->get_info<std::string>(SQL_DRIVER_VER),
-      Rcpp::_["odbcdriver.version"]   = p->connection()->get_info<std::string>(SQL_DRIVER_ODBC_VER)
+      Rcpp::_["sourcename"]   = (*p)->connection()->get_info<std::string>(SQL_DATA_SOURCE_NAME),
+      Rcpp::_["servername"]   = (*p)->connection()->get_info<std::string>(SQL_SERVER_NAME),
+      Rcpp::_["drivername"]   = (*p)->connection()->driver_name(),
+      Rcpp::_["odbc.version"]   = (*p)->connection()->get_info<std::string>(SQL_ODBC_VER),
+      Rcpp::_["driver.version"]   = (*p)->connection()->get_info<std::string>(SQL_DRIVER_VER),
+      Rcpp::_["odbcdriver.version"]   = (*p)->connection()->get_info<std::string>(SQL_DRIVER_ODBC_VER)
     );
 }
 
 // [[Rcpp::export]]
 std::string connection_quote(connection_ptr p) {
-  return p->connection()->get_info<std::string>(SQL_IDENTIFIER_QUOTE_CHAR);
+  return (*p)->connection()->get_info<std::string>(SQL_IDENTIFIER_QUOTE_CHAR);
 }
 
 // [[Rcpp::export]]
 std::string connection_special(connection_ptr p) {
-  return p->connection()->get_info<std::string>(SQL_SPECIAL_CHARACTERS);
+  return (*p)->connection()->get_info<std::string>(SQL_SPECIAL_CHARACTERS);
 }
 
 // [[Rcpp::export]]
 void connection_release(connection_ptr p) {
-  if (p->has_active_result()) {
+  if (p.get() != nullptr && (*p)->has_active_result()) {
     Rcpp::warning("%s\n%s",
         "There is a result object still in use.",
         "The connection will be automatically released when it is closed"
@@ -74,19 +74,19 @@ void connection_release(connection_ptr p) {
 
 // [[Rcpp::export]]
 void connection_begin(connection_ptr p) {
-  p->begin();
+  (*p)->begin();
   return;
 }
 
 // [[Rcpp::export]]
 void connection_commit(connection_ptr p) {
-  p->commit();
+  (*p)->commit();
   return;
 }
 
 // [[Rcpp::export]]
 void connection_rollback(connection_ptr p) {
-  p->rollback();
+  (*p)->rollback();
   return;
 }
 
@@ -101,7 +101,7 @@ std::vector<std::string> connection_sql_tables(connection_ptr p,
     std::string schema_name = "",
     std::string table_name = "",
     std::string table_type = "") {
-  auto c = nanodbc::catalog(*p->connection());
+  auto c = nanodbc::catalog(*(*p)->connection());
   auto tables = c.find_tables(table_name, table_type, schema_name, catalog_name);
   std::vector<std::string> out;
   while(tables.next()) {
@@ -117,7 +117,7 @@ Rcpp::DataFrame connection_sql_columns(connection_ptr p,
     std::string catalog_name = "",
     std::string schema_name = "",
     std::string table_name = "") {
-  auto c = nanodbc::catalog(*p->connection());
+  auto c = nanodbc::catalog(*(*p)->connection());
   auto tables = c.find_columns(column_name, table_name, schema_name, catalog_name);
   std::vector<std::string> names;
   std::vector<std::string> field_type;

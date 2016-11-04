@@ -11,12 +11,12 @@ typedef std::array<const char, 255> string_buf;
 
 class odbc_result {
   public:
-    odbc_result(odbc_connection & c, std::string sql) :
-      c_(&c) ,
+    odbc_result(std::shared_ptr<odbc_connection> c, std::string sql) :
+      c_(c) ,
       sql_(sql),
       rows_fetched_(0),
       complete_(0) {
-        s_ = std::make_shared<nanodbc::statement>(*c.connection(), sql);
+        s_ = std::make_shared<nanodbc::statement>(*c->connection(), sql);
         c_->set_current_result(this);
       };
     std::shared_ptr<odbc_connection> connection() const {
@@ -30,8 +30,12 @@ class odbc_result {
     }
     void execute() {
       if (!r_) {
-        r_ = std::make_shared<nanodbc::result>(s_->execute());
-      }
+        try {
+          r_ = std::make_shared<nanodbc::result>(s_->execute());
+        } catch (...) {
+          c_->set_current_result(nullptr);
+          throw;
+        }
     }
     void insert_dataframe(Rcpp::DataFrame const & df) {
       auto types = column_types(df);
@@ -89,10 +93,6 @@ class odbc_result {
       return c_->is_current_result(this);
     }
 
-    void connection(odbc_connection* c) {
-      c_ = c;
-    }
-
     ~odbc_result() {
       if (c_ != nullptr) {
         try {
@@ -102,7 +102,7 @@ class odbc_result {
     }
 
   private:
-    odbc_connection *c_;
+    std::shared_ptr<odbc_connection> c_;
     std::shared_ptr<nanodbc::statement> s_;
     std::shared_ptr<nanodbc::result> r_;
     std::string sql_;

@@ -18,6 +18,7 @@ class odbc_connection {
     std::shared_ptr<nanodbc::connection> connection() const {
       return std::shared_ptr<nanodbc::connection>(c_);
     }
+
     void begin() {
       t_ = std::unique_ptr<nanodbc::transaction>(new nanodbc::transaction(*c_));
     }
@@ -27,10 +28,10 @@ class odbc_connection {
     void rollback() const {
       t_->rollback();
     }
-    bool has_active_result() {
+    bool has_active_result() const {
       return current_result_ != nullptr;
     }
-    bool is_current_result(odbc_result* result) {
+    bool is_current_result(odbc_result* result) const {
       return current_result_ == result;
     }
     void set_current_result(odbc_result *r);
