@@ -36,6 +36,7 @@ class odbc_result {
           c_->set_current_result(nullptr);
           throw;
         }
+      }
     }
     void insert_dataframe(Rcpp::DataFrame const & df) {
       auto types = column_types(df);
