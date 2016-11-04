@@ -757,24 +757,24 @@ public:
     /// \brief Binds multiple values.
     /// \see bind_multi
     void bind(
-        short param,
-        const std::vector<std::vector<uint8_t>>& values,
+        short param_index,
+        std::vector<std::vector<uint8_t>> const& values,
         param_direction direction = PARAM_IN);
 
     /// \brief Binds multiple values.
     /// \see bind_multi
     void bind(
-        short param,
-        const std::vector<std::vector<uint8_t>>& values,
-        const bool* nulls,
+        short param_index,
+        std::vector<std::vector<uint8_t>> const& values,
+        bool const* nulls,
         param_direction direction = PARAM_IN);
 
     /// \brief Binds multiple values.
     /// \see bind_multi
     void bind(
-        short param,
-        const std::vector<std::vector<uint8_t>>& values,
-        const uint8_t* null_sentry,
+        short param_index,
+        std::vector<std::vector<uint8_t>> const& values,
+        uint8_t const* null_sentry,
         param_direction direction = PARAM_IN);
 
     /// @}
