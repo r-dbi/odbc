@@ -11,20 +11,18 @@ that generates the error.
 
 Example:
 ```r
+library(odbconnect)
 library(DBI)
-con <- dbConnect(Odbconnect::Odbconnect(), dsn = "PostgreSQL")
+con <- dbConnect(odbconnect::odbconnect(), dsn = "PostgreSQL")
 dbWriteTable(con, "iris", iris)
 dbReadTable(con, "iris")
 ```
 -->
 
-```r
-
-```
-
 ### Session Info
 <details>
-Output of `devtools::session_info()`
 ```r
+devtools::session_info()
+#> output
 ```
 </details>
