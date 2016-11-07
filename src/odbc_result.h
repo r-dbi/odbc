@@ -77,7 +77,12 @@ class odbc_result {
       if (r_->columns() == 0) {
         return Rcpp::DataFrame();
       }
-      return result_to_dataframe(*r_, n_max);
+      try {
+        return result_to_dataframe(*r_, n_max);
+      } catch(...) {
+        c_->set_current_result(nullptr);
+        throw;
+      }
     }
 
     int rows_fetched() {
