@@ -167,6 +167,24 @@ setMethod(
   })
 
 #' @rdname DBI
+#' @inheritParams DBI::dbGetQuery
+#' @export
+setMethod("dbGetQuery", signature("OdbconnectConnection", "character"),
+  function(conn, statement, ...) {
+    rs <- dbSendQuery(conn, statement, ...)
+    on.exit(dbClearResult(rs))
+
+    df <- dbFetch(rs, n = -1, ...)
+
+    if (!dbHasCompleted(rs)) {
+      warning("Pending rows", call. = FALSE)
+    }
+
+    df
+  }
+)
+
+#' @rdname DBI
 #' @inheritParams DBI::dbBegin
 #' @export
 setMethod(
@@ -262,7 +280,7 @@ get_data_type.PostgreSQL <- function(info, obj, ...) {
     integer = "int",
     double = "float",
     character = "varchar(max)",
-    logical = "tinyint",
+    logical = "BIT",
     list = "TEXT",
     stop("Unsupported type", call. = FALSE)
   )
