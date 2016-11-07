@@ -15,6 +15,7 @@ void odbconnect::odbc_connection::set_current_result(odbc_result *r) {
   if (current_result_ != nullptr) {
     if (r != nullptr) {
       Rcpp::warning("Cancelling previous query");
+      current_result_->statement()->cancel();
     }
     // TODO do we want to try and close the result here as well?
   }
