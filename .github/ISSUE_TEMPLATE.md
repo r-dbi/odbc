@@ -21,6 +21,7 @@ dbReadTable(con, "iris")
 
 <details>
 <summary>Session Info</summary>
+
 ```r
 devtools::session_info()
 #> output
