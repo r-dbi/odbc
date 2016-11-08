@@ -41,9 +41,18 @@ setClass(
 setMethod(
   "show", "OdbconnectConnection",
   function(object) {
-    cat("<OdbconnectConnection>\n")
-    # TODO: Print more details
-  })
+    info <- dbGetInfo(object)
+
+    cat(sep = "", "<OdbconnectConnection>", if (nzchar(info$servername)) paste0(" ", info$servername), "\n",
+      if (!dbIsValid(object)) {
+        "  DISCONNECTED\n"
+      } else {
+        paste0(collapse = "",
+          if (nzchar(info$dbname)) paste0("  Database: ", info$dbname, "\n"),
+          if (nzchar(info$dbms.name) && nzchar(info$db.version)) paste0("  ", info$dbms.name, " ", "Version: ", info$db.version, "\n"),
+          NULL)
+      })
+})
 
 #' @rdname DBI
 #' @inheritParams DBI::dbIsValid

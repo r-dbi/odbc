@@ -36,7 +36,8 @@ connection_ptr odbconnect_connect(std::string connection_string) {
 // [[Rcpp::export]]
 Rcpp::List connection_info(connection_ptr p) {
     return Rcpp::List::create(
-      Rcpp::_["dbname"] = (*p)->connection()->dbms_name(),
+      Rcpp::_["dbname"] = (*p)->connection()->get_info<std::string>(SQL_DATABASE_NAME),
+      Rcpp::_["dbms.name"] = (*p)->connection()->get_info<std::string>(SQL_DBMS_NAME),
       Rcpp::_["db.version"]     = (*p)->connection()->dbms_version(),
       Rcpp::_["username"] = "",
       Rcpp::_["host"] = "",
