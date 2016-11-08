@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 [![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![Travis-CI Build Status](https://travis-ci.org/rstats-db/odbconnect.svg?branch=master)](https://travis-ci.org/rstats-db/odbconnect)
 [![Coverage Status](https://img.shields.io/codecov/c/github/rstats-db/odbconnect/master.svg)](https://codecov.io/github/rstats-db/odbconnect?branch=master)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/rstats-db/odbconnect?branch=master&svg=true)](https://ci.appveyor.com/project/rstats-db/odbconnect)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/hadley/odbconnect-cqvmd?branch=master&svg=true)](https://ci.appveyor.com/project/hadley/odbconnect-cqvmd)
 
 The goal of odbconnect is to provide a DBI-compliant interface to ODBC drivers.
 The current implementation uses the [nanodbc](http://nanodbc.lexicalunit.com/)
