@@ -12,7 +12,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-
 # odbconnect
 [![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![Travis-CI Build Status](https://travis-ci.org/rstats-db/odbconnect.svg?branch=master)](https://travis-ci.org/rstats-db/odbconnect)
@@ -20,8 +19,12 @@ knitr::opts_chunk$set(
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/hadley/odbconnect-cqvmd?branch=master&svg=true)](https://ci.appveyor.com/project/hadley/odbconnect-cqvmd)
 
 The goal of odbconnect is to provide a DBI-compliant interface to ODBC drivers.
-The current implementation uses the [nanodbc](http://nanodbc.lexicalunit.com/)
-C++ library.
+This gives a performant, easy to setup connection to any database with ODBC
+drivers available, including SQL Server, Oracle, MySQL, PostgreSQL, SQLite and
+others.
+
+The implementation uses the [nanodbc](http://nanodbc.lexicalunit.com/) C++
+library.
 
 ## Installation
 
@@ -38,8 +41,8 @@ brew install unixodbc
 # PostgreSQL ODBC ODBC Drivers
 brew install psqlodbc
 
-# MySQL ODBC Drivers
-brew install mysql-ODBC Drivers-c
+# MySQL ODBC Drivers (and database)
+brew install mysql
 
 # SQLite ODBC Drivers
 brew install sqliteodbc
@@ -72,7 +75,7 @@ apt-get install tdsodbc
 devtools::install_github("rstats-db/odbconnect")
 ```
 
-## Benchmarks vs RODBC / RODBCDBI
+## Benchmarks
 
 ### Reading
 Simply reading a postgres table with the nytflights13 'flights' database.
