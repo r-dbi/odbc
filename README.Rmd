@@ -1,5 +1,7 @@
 ---
-output: github_document
+output:
+  github_document:
+    html_preview: false
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -18,25 +20,41 @@ knitr::opts_chunk$set(
 [![Coverage Status](https://img.shields.io/codecov/c/github/rstats-db/odbconnect/master.svg)](https://codecov.io/github/rstats-db/odbconnect?branch=master)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/hadley/odbconnect-cqvmd?branch=master&svg=true)](https://ci.appveyor.com/project/hadley/odbconnect-cqvmd)
 
-The goal of odbconnect is to provide a DBI-compliant interface to ODBC drivers.
-This gives a performant, easy to setup connection to any database with ODBC
-drivers available, including SQL Server, Oracle, MySQL, PostgreSQL, SQLite and
-others.
-
-The implementation uses the [nanodbc](http://nanodbc.lexicalunit.com/) C++
-library.
+The goal of odbconnect is to provide a DBI-compliant interface to [Open
+Database
+Connectivity](https://msdn.microsoft.com/en-us/library/ms710252(v=vs.85).aspx)
+(ODBC) drivers. This gives a efficient, easy to setup connection to any
+database with ODBC drivers available, including [SQL
+Server](https://www.microsoft.com/en-us/sql-server/),
+[Oracle](https://www.oracle.com/database), [MySQL](https://www.mysql.com/),
+[PostgreSQL](https://www.postgresql.org/), [SQLite](https://sqlite.org/) and
+others. The implementation builds on the
+[nanodbc](http://nanodbc.lexicalunit.com/) C++ library.
 
 ## Installation
+For Unix and MacOS ODBC drivers should be compiled against
+[unixODBC](http://www.unixodbc.org/). Drivers compiled against [iODBC](http://www.iodbc.org/) _may_ also
+work, but are not fully supported.
 
-ODBC drivers should be compiled against unixodbc on linux and MacOS. Drivers
-compiled against iODBC may work, but are not supported.
+### Windows
+Windows is bundled with ODBC libraries however drivers for each database
+need to be installed separately. Windows ODBC drivers typically include a
+installer that needs to be run and will install the driver to the proper
+locations.
 
 ### MacOS
-[homebrew](http://brew.sh/) can be used to easily install database drivers.
+[homebrew](http://brew.sh/) can be used to easily install database drivers on MacOS.
 
+#### UnixODBC - Required for all databases
 ```shell
-# Install the unixodbc library
+# Install the unixODBC library
 brew install unixodbc
+```
+
+#### Common DB drivers
+```shell
+# SQL Server ODBC Drivers (Free TDS)
+brew install freetds --with-unixodbc
 
 # PostgreSQL ODBC ODBC Drivers
 brew install psqlodbc
@@ -46,15 +64,22 @@ brew install mysql
 
 # SQLite ODBC Drivers
 brew install sqliteodbc
-
-# SQL Server ODBC Drivers (Free TDS)
-brew install freetds --with-unixodbc
 ```
 
-### Linux - Ubuntu / Debian
+### Linux - Debian / Ubuntu
+[apt-get](https://wiki.debian.org/Apt) can be used to easily install database
+drivers on Linux distributions which support it, such as Debian and Ubuntu.
+
+#### UnixODBC - Required for all databases
 ```shell
-# Install the unixodbc library
+# Install the unixODBC library
 apt-get install unixodbc unixodbc-dev
+```
+
+#### Common DB drivers
+```shell
+# SQL Server ODBC Drivers (Free TDS)
+apt-get install tdsodbc
 
 # PostgreSQL ODBC ODBC Drivers
 apt-get install odbc-postgresql
@@ -64,22 +89,158 @@ apt-get install libmyodbc
 
 # SQLite ODBC Drivers
 apt-get install libsqliteodbc
-
-# SQL Server ODBC Drivers (Free TDS)
-apt-get install tdsodbc
 ```
 
 ### R
+odbconnect is not yet available on CRAN, however
+[devtools](https://cran.r-project.org/package=devtools) can be used to install
+the latest version.
 ```R
 # install.packages(devtools)
 devtools::install_github("rstats-db/odbconnect")
 ```
 
-## Benchmarks
+## Connecting to a Database
+Databases can be connect by specifying a connection string directly, or with
+DSN Configuration files.
+
+### Connection Strings
+
+Specify a connection string as named arguments directly in the `dbConnect()` method.
+```r
+con <- dbConnect(odbconnect::odbconnect(),
+  Driver = "PostgreSQL Driver",
+  Database = "test_db",
+  uid = "postgres",
+  pwd = "password",
+  host = "localhost",
+  port = 5432)
+```
+
+Alternatively you can pass a complete connection string as the
+`.connection_string` argument. [The Connection Strings Reference](www.connectionstrings.com) is a useful resource
+that has example connection strings for a large variety of databases.
+```r
+con <- dbConnect(odbconnect::odbconnect(),
+  .connection_string = "Driver={PostgreSQL Driver};Uid=postgres;Pwd=password;Host=localhost;Port=5432;Database=test_db;")
+```
+
+### DSN Configuration files
+
+ODBC configuration files are another option to specify connection parameters
+and allow one to use a Data Source Name (DSN) to make it easier to connect to a database.
+
+```r
+con <- dbConnect(odbconnect::odbconnect(), "PostgreSQL")
+```
+
+#### Windows
+The [ODBC Data Source
+Administrator](https://msdn.microsoft.com/en-us/library/ms714024(v=vs.85).aspx)
+application is used to manage ODBC data sources on Windows.
+
+#### MacOS / Linux
+On MacOS and Linux there are two separate text files that need to be edited.
+UnixODBC includes an command line executable `odbcinst` which can be used to
+query and modify the DSN files. However these are plain text files you
+can also edit by hand if desired.
+
+There are two different files used to setup the DSN information.
+- `odbcinst.ini` - which defines driver options
+- `odbc.ini` - which defines connection options
+
+The DSN configuration files can be defined globally for all users of the
+system, often at
+`/etc/odbc.ini` or `/opt/local/etc/odbc.ini`, the exact location depends on
+what option was used when compiling unixODBC. `odbcinst -j` can be used to find
+the exact location. Alternatively the `ODBCSYSINI` environment variable can be
+used to specify the location of the configuration files. Ex. `ODBCSYSINI=~/ODBC`
+
+A local DSN file can also be used with the files `~/.odbc.ini` and `~/.odbcinst.ini`.
+
+##### odbcinst.ini
+Contains driver information, particularly the name of the driver library.
+Multiple drivers can be specified in the same file.
+```ini
+[PostgreSQL]
+Driver          = /usr/local/lib/psqlodbcw.so
+
+[SQLite Driver]
+Driver          = /usr/local/lib/libsqlite3odbc.dylib
+```
+
+##### odbc.ini
+Contains connection information, particularly the username, password, database
+and host information. The Driver line corresponds to the driver defined in
+`odbcinst.ini`.
+```ini
+[PostgreSQL]
+Driver              = PostgreSQL Driver
+Database            = test_db
+Servername          = localhost
+UserName            = postgres
+Password            = password
+Port                = 5432
+
+[SQLite]
+Driver          = SQLite Driver
+Database=/tmp/testing
+```
+
+See also: [unixODBC without the GUI](http://www.unixodbc.org/odbcinst.html) for more information and examples.
+
+## Usage
+All of the following examples assume you have already created a query `con`.
+See [Connecting to a database](#connecting-to-a-database) for more information on establishing a
+connection.
+
+### Table and Field information
+`dbListTables()` is used for listing tables in a database.
+```r
+dbListTables(con)
+
+# List tables beginning with f
+dbListTables(con, table_name = "f%")
+
+# List all fields in the 'flights' database
+dbListFields(con, "flights")
+```
 
 ### Reading
-Simply reading a postgres table with the nytflights13 'flights' database.
-```{r}
+`dbReadTable()` will read a full table into an R `data.frame()`.
+```r
+data <- dbReadTable(con, "flights")
+```
+
+### Writing
+`dbWriteTable()` will write an R `data.frame()` to an SQL table.
+```r
+data <- dbWriteTable(con, "iris", iris)
+```
+
+### Querying
+`dbGetQuery()` will submit a query and fetch the results. It is also possible
+to submit the query and fetch separately with `dbSendQuery()` and `dbFetch()`.
+If the `n=` argument to `dbFetch()` can be used to fetch only part of a query.
+```r
+result <- dbSendQuery(con, "SELECT flight, tailnum, origin FROM flights ORDER BY origin")
+
+# Retrieve the first 100 results
+first_100 <- dbFetch(result, n = 100)
+
+# Retrieve the rest of the results
+rest <- dbFetch(result)
+```
+
+## Benchmarks
+
+Odbconnect is often much faster than the existing
+[RODBC](https://cran.r-project.org/package=RODBC) and DBI compatible
+[RODBCDBI](https://cran.r-project.org/package=RODBCDBI) packages.
+
+### Reading
+Reading a from a PostgreSQL database with the nytflights13 'flights' database (336,776 rows, 19 columns).
+```{r, cache = TRUE}
 # First using RODBC / RODBCDBI
 library(DBI)
 library(RODBCDBI)
@@ -95,21 +256,26 @@ library(tibble)
 as_tibble(odbconnect_result)
 
 identical(dim(rodbc_result), dim(odbconnect_result))
-rm(rodbc_result, odbconnect_result)
-gc()
+rm(rodbc_result, odbconnect_result, odbconnect, rodbc)
+gc(verbose = FALSE)
 ```
 ### Writing
-Writing the flights database works as well.
-```{r}
+Writing the same dataset to the database.
+```{r, echo = FALSE, cache = TRUE}
+odbconnect <- dbConnect(odbconnect::odbconnect(), dsn = "PostgreSQL")
+if (dbExistsTable(odbconnect, "flights2")) { dbRemoveTable(odbconnect, "flights2") }
+if (dbExistsTable(odbconnect, "flights3")) { dbRemoveTable(odbconnect, "flights3") }
+rm(odbconnect)
+gc()
+```
+
+```{r, cache = TRUE}
 library(nycflights13)
 # rodbc does not support writing timestamps natively.
+rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "PostgreSQL")
 system.time(dbWriteTable(rodbc, "flights2", as.data.frame(flights[, names(flights) != "time_hour"])))
 
 # Now using odbconnect
 odbconnect <- dbConnect(odbconnect::odbconnect(), dsn = "PostgreSQL")
 system.time(dbWriteTable(odbconnect, "flights3", as.data.frame(flights)))
 ```
-## ODBC Documentation
-
-https://msdn.microsoft.com/en-us/library/ms712628(v=vs.85).aspx
-https://msdn.microsoft.com/en-us/library/ms714086(v=vs.85).aspx
