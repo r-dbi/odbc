@@ -6,7 +6,8 @@
 \title{Connect to a ODBC compatible database}
 \usage{
 \S4method{dbConnect}{OdbconnectDriver}(drv, dsn = NULL, ..., driver = NULL,
-  server = NULL, database = NULL, uid = NULL, pwd = NULL)
+  server = NULL, database = NULL, uid = NULL, pwd = NULL,
+  .connection_string = NULL)
 }
 \arguments{
 \item{drv}{an object that inherits from \code{\linkS4class{DBIDriver}},

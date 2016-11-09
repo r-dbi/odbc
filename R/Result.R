@@ -6,6 +6,7 @@ NULL
 #' Implementations of pure virtual functions defined in the \code{DBI} package
 #' for OdbconnectResult objects.
 #' @name OdbconnectResult
+#' @docType methods
 NULL
 
 OdbconnectResult <- function(connection, statement) {

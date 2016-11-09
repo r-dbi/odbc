@@ -61,8 +61,18 @@ setMethod(
 #' @export
 setMethod(
   "dbConnect", "OdbconnectDriver",
-  function(drv, dsn = NULL, ..., driver = NULL, server = NULL, database = NULL, uid = NULL, pwd = NULL) {
-    OdbconnectConnection(dsn = dsn, ..., driver = driver, server = server, database = database, uid = uid, pwd = pwd)
+  function(drv, dsn = NULL, ..., driver = NULL, server = NULL, database = NULL,
+    uid = NULL, pwd = NULL, .connection_string = NULL) {
+
+    OdbconnectConnection(
+      dsn = dsn,
+      ...,
+      driver = driver,
+      server = server,
+      database = database,
+      uid = uid,
+      pwd = pwd,
+      .connection_string = .connection_string)
   }
 )
 
