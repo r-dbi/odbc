@@ -3,7 +3,7 @@
 odbc
 ====
 
-[![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip) [![Travis-CI Build Status](https://travis-ci.org/rstats-db/odbc.svg?branch=master)](https://travis-ci.org/rstats-db/odbc) [![Coverage Status](https://img.shields.io/codecov/c/github/rstats-db/odbc/master.svg)](https://codecov.io/github/rstats-db/odbc?branch=master) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/2bnahh7qg5iu7197?svg=true)](https://ci.appveyor.com/project/hadley/odbconnect-cqvmd)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/odbc)](https://cran.r-project.org/package=odbc) [![Travis-CI Build Status](https://travis-ci.org/rstats-db/odbc.svg?branch=master)](https://travis-ci.org/rstats-db/odbc) [![Coverage Status](https://img.shields.io/codecov/c/github/rstats-db/odbc/master.svg)](https://codecov.io/github/rstats-db/odbc?branch=master) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/2bnahh7qg5iu7197?svg=true)](https://ci.appveyor.com/project/hadley/odbconnect-cqvmd)
 
 The goal of the odbc package is to provide a DBI-compliant interface to [Open Database Connectivity](https://msdn.microsoft.com/en-us/library/ms710252(v=vs.85).aspx) (ODBC) drivers. This gives a efficient, easy to setup connection to any database with ODBC drivers available, including [SQL Server](https://www.microsoft.com/en-us/sql-server/), [Oracle](https://www.oracle.com/database), [MySQL](https://www.mysql.com/), [PostgreSQL](https://www.postgresql.org/), [SQLite](https://sqlite.org/) and others. The implementation builds on the [nanodbc](http://nanodbc.lexicalunit.com/) C++ library.
 
@@ -106,18 +106,20 @@ Databases can be connect by specifying a connection string directly, or with DSN
 Specify a connection string as named arguments directly in the `dbConnect()` method.
 
 ``` r
+librayr(DBI)
 con <- dbConnect(odbc::odbc(),
-  Driver = "PostgreSQL Driver",
-  Database = "test_db",
+  driver = "PostgreSQL Driver",
+  database = "test_db",
   uid = "postgres",
   pwd = "password",
   host = "localhost",
   port = 5432)
 ```
 
-Alternatively you can pass a complete connection string as the `.connection_string` argument. [The Connection Strings Reference](www.connectionstrings.com) is a useful resource that has example connection strings for a large variety of databases.
+Alternatively you can pass a complete connection string as the `.connection_string` argument. [The Connection Strings Reference](https://www.connectionstrings.com) is a useful resource that has example connection strings for a large variety of databases.
 
 ``` r
+library(DBI)
 con <- dbConnect(odbc::odbc(),
   .connection_string = "Driver={PostgreSQL Driver};Uid=postgres;Pwd=password;Host=localhost;Port=5432;Database=test_db;")
 ```
