@@ -1,13 +1,10 @@
 #' @include Driver.R
 NULL
 
-OdbconnectConnection <- function(dsn = NULL, ...) {
-  args <- list(...)
+OdbconnectConnection <- function(dsn = NULL, ..., driver = NULL, server = NULL, database = NULL, uid = NULL, pwd = NULL) {
+  args <- c(dsn = dsn, driver = driver, server = server, database = database, uid = uid, pwd = pwd, list(...))
   stopifnot(all(has_names(args)))
 
-  if (!is.null(dsn)) {
-    args[["dsn"]] <- dsn
-  }
   connection_string <- paste(collapse = ";", sep = "=", names(args), args)
   ptr <- odbconnect_connect(connection_string)
   quote <- connection_quote(ptr)
@@ -43,13 +40,22 @@ setMethod(
   function(object) {
     info <- dbGetInfo(object)
 
-    cat(sep = "", "<OdbconnectConnection>", if (nzchar(info$servername)) paste0(" ", info$servername), "\n",
+    cat(sep = "", "<OdbconnectConnection>",
+      if (nzchar(info[["servername"]])) {
+        paste0(" ",
+          if (nzchar(info[["username"]])) paste0(info[["username"]], "@"),
+          info[["servername"]], "\n")
+      },
       if (!dbIsValid(object)) {
         "  DISCONNECTED\n"
       } else {
         paste0(collapse = "",
-          if (nzchar(info$dbname)) paste0("  Database: ", info$dbname, "\n"),
-          if (nzchar(info$dbms.name) && nzchar(info$db.version)) paste0("  ", info$dbms.name, " ", "Version: ", info$db.version, "\n"),
+          if (nzchar(info[["dbname"]])) {
+            paste0("  Database: ", info[["dbname"]], "\n")
+          },
+          if (nzchar(info[["dbms.name"]]) && nzchar(info[["db.version"]])) {
+            paste0("  ", info[["dbms.name"]], " ", "Version: ", info[["db.version"]], "\n")
+          },
           NULL)
       })
 })
