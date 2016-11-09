@@ -11,7 +11,6 @@
 \alias{dbClearResult,OdbconnectResult-method}
 \alias{dbColumnInfo,OdbconnectResult-method}
 \alias{dbCommit,OdbconnectConnection-method}
-\alias{dbConnect,OdbconnectDriver-method}
 \alias{dbDataType,OdbconnectConnection,ANY-method}
 \alias{dbDataType,OdbconnectDriver,ANY-method}
 \alias{dbDataType,OdbconnectDriver,list-method}
@@ -21,6 +20,7 @@
 \alias{dbGetInfo,OdbconnectConnection-method}
 \alias{dbGetInfo,OdbconnectDriver-method}
 \alias{dbGetInfo,OdbconnectResult-method}
+\alias{dbGetQuery,OdbconnectConnection,character-method}
 \alias{dbGetRowCount,OdbconnectResult-method}
 \alias{dbGetRowsAffected,OdbconnectResult-method}
 \alias{dbGetStatement,OdbconnectResult-method}
@@ -39,12 +39,9 @@
 \alias{dbSendStatement,OdbconnectConnection,character-method}
 \alias{show,OdbconnectConnection-method}
 \alias{show,OdbconnectDriver-method}
-\alias{show,OdbconnectResult-method}
 \title{DBI methods}
 \usage{
 \S4method{show}{OdbconnectDriver}(object)
-
-\S4method{dbConnect}{OdbconnectDriver}(drv, dsn = NULL, ...)
 
 \S4method{dbDataType}{OdbconnectDriver,ANY}(dbObj, obj, ...)
 
@@ -80,13 +77,13 @@
 
 \S4method{dbGetInfo}{OdbconnectConnection}(dbObj, ...)
 
+\S4method{dbGetQuery}{OdbconnectConnection,character}(conn, statement, ...)
+
 \S4method{dbBegin}{OdbconnectConnection}(conn, ...)
 
 \S4method{dbCommit}{OdbconnectConnection}(conn, ...)
 
 \S4method{dbRollback}{OdbconnectConnection}(conn, ...)
-
-\S4method{show}{OdbconnectResult}(object)
 
 \S4method{dbClearResult}{OdbconnectResult}(res, ...)
 
@@ -113,19 +110,12 @@
 \arguments{
 \item{object}{Any R object}
 
-\item{drv}{an object that inherits from \code{\linkS4class{DBIDriver}},
-or an existing \code{\linkS4class{DBIConnection}}
-object (in order to clone an existing connection).}
-
-\item{dsn}{The ODBC dsn to connect to.}
-
-\item{...}{Additional ODBC named arguments to use in the connection, these
-will be joined together to form the connection string.}
-
 \item{dbObj}{A object inheriting from \code{\linkS4class{DBIDriver}}
 or \code{\linkS4class{DBIConnection}}}
 
 \item{obj}{An R object whose SQL type we want to determine.}
+
+\item{...}{Other arguments passed on to methods.}
 
 \item{conn}{A \code{\linkS4class{DBIConnection}} object, as produced by
 \code{\link[=dbConnect]{dbConnect()}}.}

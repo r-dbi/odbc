@@ -36,16 +36,29 @@ setMethod(
     # TODO: Print more details
   })
 
-#' @rdname DBI
+#' Connect to a ODBC compatible database
+#'
 #' @inheritParams DBI::dbConnect
-#' @param dsn The ODBC dsn to connect to.
-#' @param ... Additional ODBC named arguments to use in the connection, these
-#' will be joined together to form the connection string.
+#' @param dsn The Data Source Name.
+#' @param driver The ODBC driver name.
+#' @param server The server hostname.
+#' @param database The database on the server.
+#' @param uid The user identifer.
+#' @param pwd The password to use.
+#' @param ... Additional ODBC keywords, these will be joined with the other
+#' arguments to form the final connection string.
+#'
+#' @details
+#' The connection string keywords are driver dependant. The parameters
+#' documented here are common, but some drivers may not accept them. Please see
+#' the specific driver documentation for allowed parameters,
+#' \url{https://www.connectionstrings.com} is also a useful resource of example
+#' connection strings for a variety of databases.
 #' @export
 setMethod(
   "dbConnect", "OdbconnectDriver",
-  function(drv, dsn = NULL, ...) {
-    OdbconnectConnection(dsn = dsn, ...)
+  function(drv, dsn = NULL, ..., driver = NULL, server = NULL, database = NULL, uid = NULL, pwd = NULL) {
+    OdbconnectConnection(dsn = dsn, ..., driver = driver, server = server, database = database, uid = uid, pwd = pwd)
   }
 )
 
