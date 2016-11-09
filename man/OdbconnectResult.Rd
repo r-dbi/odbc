@@ -7,7 +7,7 @@
 \alias{dbBind,OdbconnectResult-method}
 \alias{dbClearResult,OdbconnectResult-method}
 \alias{dbColumnInfo,OdbconnectResult-method}
-\alias{dbFetch,OdbconnectResult-method}
+\alias{dbFetch,OdbconnectResult,ANY-method}
 \alias{dbGetInfo,OdbconnectResult-method}
 \alias{dbGetRowCount,OdbconnectResult-method}
 \alias{dbGetRowsAffected,OdbconnectResult-method}
@@ -18,7 +18,7 @@
 \usage{
 \S4method{dbClearResult}{OdbconnectResult}(res, ...)
 
-\S4method{dbFetch}{OdbconnectResult}(res, n = -1, ..., row.names = NA)
+\S4method{dbFetch}{OdbconnectResult,ANY}(res, n = -1, ..., row.names = NA)
 
 \S4method{dbHasCompleted}{OdbconnectResult}(res, ...)
 

@@ -27,6 +27,10 @@ arguments to form the final connection string.}
 \item{uid}{The user identifer.}
 
 \item{pwd}{The password to use.}
+
+\item{.connection_string}{A complete connection string, useful if you are
+copy pasting it from another source. If this argument is used any additional
+arguments will be appended to this string.}
 }
 \description{
 Connect to a ODBC compatible database

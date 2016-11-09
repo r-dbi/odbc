@@ -48,6 +48,9 @@ setMethod(
 #' @param pwd The password to use.
 #' @param ... Additional ODBC keywords, these will be joined with the other
 #' arguments to form the final connection string.
+#' @param .connection_string A complete connection string, useful if you are
+#' copy pasting it from another source. If this argument is used any additional
+#' arguments will be appended to this string.
 #'
 #' @details
 #' The connection string keywords are driver dependant. The parameters
