@@ -16,3 +16,4 @@
 ^script.R$
 ^docker$
 ^\.github$
+^README_cache$
