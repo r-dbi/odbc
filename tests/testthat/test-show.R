@@ -1,6 +1,7 @@
 context("show")
 
 test_that("show method works as expected with real connection", {
+  skip_on_os("windows")
   con <- dbConnect(odbconnect(), "PostgreSQL")
 
   expect_output(show(con), "postgres@localhost")
