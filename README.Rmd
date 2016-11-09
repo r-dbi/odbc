@@ -2,7 +2,6 @@
 output:
   github_document:
     html_preview: false
-    toc: true
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -31,6 +30,23 @@ Server](https://www.microsoft.com/en-us/sql-server/),
 [PostgreSQL](https://www.postgresql.org/), [SQLite](https://sqlite.org/) and
 others. The implementation builds on the
 [nanodbc](http://nanodbc.lexicalunit.com/) C++ library.
+
+-   [Installation](#installation)
+    -   [Windows](#windows)
+    -   [MacOS](#macos)
+    -   [Linux - Debian / Ubuntu](#linux---debian-ubuntu)
+    -   [R](#r)
+-   [Connecting to a Database](#connecting-to-a-database)
+    -   [Connection Strings](#connection-strings)
+    -   [DSN Configuration files](#dsn-configuration-files)
+-   [Usage](#usage)
+    -   [Table and Field information](#table-and-field-information)
+    -   [Reading](#reading)
+    -   [Writing](#writing)
+    -   [Querying](#querying)
+-   [Benchmarks](#benchmarks)
+    -   [Reading](#reading-1)
+    -   [Writing](#writing-1)
 
 ## Installation
 For Unix and MacOS ODBC drivers should be compiled against

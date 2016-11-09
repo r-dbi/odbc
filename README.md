@@ -1,22 +1,4 @@
 
--   [odbconnect](#odbconnect)
-    -   [Installation](#installation)
-        -   [Windows](#windows)
-        -   [MacOS](#macos)
-        -   [Linux - Debian / Ubuntu](#linux---debian-ubuntu)
-        -   [R](#r)
-    -   [Connecting to a Database](#connecting-to-a-database)
-        -   [Connection Strings](#connection-strings)
-        -   [DSN Configuration files](#dsn-configuration-files)
-    -   [Usage](#usage)
-        -   [Table and Field information](#table-and-field-information)
-        -   [Reading](#reading)
-        -   [Writing](#writing)
-        -   [Querying](#querying)
-    -   [Benchmarks](#benchmarks)
-        -   [Reading](#reading-1)
-        -   [Writing](#writing-1)
-
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 odbconnect
 ==========
@@ -24,6 +6,23 @@ odbconnect
 [![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip) [![Travis-CI Build Status](https://travis-ci.org/rstats-db/odbconnect.svg?branch=master)](https://travis-ci.org/rstats-db/odbconnect) [![Coverage Status](https://img.shields.io/codecov/c/github/rstats-db/odbconnect/master.svg)](https://codecov.io/github/rstats-db/odbconnect?branch=master) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/2bnahh7qg5iu7197?svg=true)](https://ci.appveyor.com/project/hadley/odbconnect-cqvmd)
 
 The goal of odbconnect is to provide a DBI-compliant interface to [Open Database Connectivity](https://msdn.microsoft.com/en-us/library/ms710252(v=vs.85).aspx) (ODBC) drivers. This gives a efficient, easy to setup connection to any database with ODBC drivers available, including [SQL Server](https://www.microsoft.com/en-us/sql-server/), [Oracle](https://www.oracle.com/database), [MySQL](https://www.mysql.com/), [PostgreSQL](https://www.postgresql.org/), [SQLite](https://sqlite.org/) and others. The implementation builds on the [nanodbc](http://nanodbc.lexicalunit.com/) C++ library.
+
+-   [Installation](#installation)
+    -   [Windows](#windows)
+    -   [MacOS](#macos)
+    -   [Linux - Debian / Ubuntu](#linux---debian-ubuntu)
+    -   [R](#r)
+-   [Connecting to a Database](#connecting-to-a-database)
+    -   [Connection Strings](#connection-strings)
+    -   [DSN Configuration files](#dsn-configuration-files)
+-   [Usage](#usage)
+    -   [Table and Field information](#table-and-field-information)
+    -   [Reading](#reading)
+    -   [Writing](#writing)
+    -   [Querying](#querying)
+-   [Benchmarks](#benchmarks)
+    -   [Reading](#reading-1)
+    -   [Writing](#writing-1)
 
 Installation
 ------------
