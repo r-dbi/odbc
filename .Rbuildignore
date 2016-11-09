@@ -17,3 +17,4 @@
 ^docker$
 ^\.github$
 ^README_cache$
+^docs$
