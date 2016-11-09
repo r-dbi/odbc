@@ -61,8 +61,8 @@ result_completed <- function(r) {
     .Call('odbconnect_result_completed', PACKAGE = 'odbconnect', r)
 }
 
-new_result <- function(p, sql, size = 1024L) {
-    .Call('odbconnect_new_result', PACKAGE = 'odbconnect', p, sql, size)
+new_result <- function(p, sql) {
+    .Call('odbconnect_new_result', PACKAGE = 'odbconnect', p, sql)
 }
 
 result_fetch <- function(r, n_max = -1L) {

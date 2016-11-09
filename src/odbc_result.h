@@ -1,6 +1,6 @@
 #pragma once
 
-#include <nanodbc.h>
+#include "nanodbc.h"
 #include <memory>
 #include <Rcpp.h>
 #include "r_types.h"

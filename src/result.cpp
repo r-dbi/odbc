@@ -1,6 +1,6 @@
+#include "odbc_result.h"
 #include "odbconnect_types.h"
 #include "sqlext.h"
-#include "odbc_result.h"
 
 using namespace Rcpp;
 using namespace nanodbc;
@@ -11,27 +11,27 @@ void result_release(result_ptr r) {
 }
 
 // [[Rcpp::export]]
-bool result_active(result_ptr r) {
+bool result_active(result_ptr const & r) {
   return r.get() != nullptr && r->active();
 }
 
 // [[Rcpp::export]]
-bool result_completed(result_ptr r) {
+bool result_completed(result_ptr const & r) {
   return r->complete();
 }
 
 // [[Rcpp::export]]
-result_ptr new_result(connection_ptr p, std::string sql, std::size_t size = 1024) {
+result_ptr new_result(connection_ptr const & p, std::string const & sql) {
   return result_ptr(new odbconnect::odbc_result(*p, sql));
 }
 
 // [[Rcpp::export]]
-List result_fetch(result_ptr r, int n_max = -1) {
+List result_fetch(result_ptr const & r, const int n_max = -1) {
   return r->fetch(n_max);
 }
 
 // [[Rcpp::export]]
-Rcpp::DataFrame result_column_info(result_ptr r) {
+Rcpp::DataFrame result_column_info(result_ptr const & r) {
   auto result = r->result();
 
   std::vector<std::string> names;
@@ -49,22 +49,22 @@ Rcpp::DataFrame result_column_info(result_ptr r) {
 }
 
 // [[Rcpp::export]]
-void result_bind(result_ptr r, List params) {
+void result_bind(result_ptr const & r, List const & params) {
   r->insert_dataframe(params);
 }
 
 // [[Rcpp::export]]
-void result_execute(result_ptr r) {
+void result_execute(result_ptr const & r) {
   r->execute();
 }
 
 // [[Rcpp::export]]
-void result_insert_dataframe(result_ptr r, DataFrame df) {
+void result_insert_dataframe(result_ptr const & r, DataFrame const & df) {
   r->insert_dataframe(df);
 }
 
 // [[Rcpp::export]]
-int result_rows_affected(result_ptr r) {
+int result_rows_affected(result_ptr const & r) {
   auto res = r->result();
   if (!res) {
     return 0;
@@ -73,12 +73,12 @@ int result_rows_affected(result_ptr r) {
 }
 
 // [[Rcpp::export]]
-int result_row_count(result_ptr r) {
+int result_row_count(result_ptr const & r) {
   return r->rows_fetched();
 }
 
 // [[Rcpp::export]]
-void column_types(DataFrame df) {
+void column_types(DataFrame const & df) {
   for (int j = 0;j < df.size(); ++j) {
     Rcpp::Rcout << "type: " << Rf_type2char(TYPEOF(df[j])) << std::endl;
   }

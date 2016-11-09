@@ -29,12 +29,12 @@ Rcpp::DataFrame list_drivers() {
 }
 
 // [[Rcpp::export]]
-connection_ptr odbconnect_connect(std::string connection_string) {
+connection_ptr odbconnect_connect(std::string const & connection_string) {
   return connection_ptr(new std::shared_ptr<odbc_connection>(new odbc_connection(connection_string)));
 }
 
 // [[Rcpp::export]]
-Rcpp::List connection_info(connection_ptr p) {
+Rcpp::List connection_info(connection_ptr const & p) {
     return Rcpp::List::create(
       Rcpp::_["dbname"] = (*p)->connection()->get_info<std::string>(SQL_DATABASE_NAME),
       Rcpp::_["dbms.name"] = (*p)->connection()->dbms_name(),
@@ -52,12 +52,12 @@ Rcpp::List connection_info(connection_ptr p) {
 }
 
 // [[Rcpp::export]]
-std::string connection_quote(connection_ptr p) {
+std::string connection_quote(connection_ptr const & p) {
   return (*p)->connection()->get_info<std::string>(SQL_IDENTIFIER_QUOTE_CHAR);
 }
 
 // [[Rcpp::export]]
-std::string connection_special(connection_ptr p) {
+std::string connection_special(connection_ptr const & p) {
   return (*p)->connection()->get_info<std::string>(SQL_SPECIAL_CHARACTERS);
 }
 
@@ -70,38 +70,34 @@ void connection_release(connection_ptr p) {
         );
   }
   p.release();
-  return;
 }
 
 // [[Rcpp::export]]
-void connection_begin(connection_ptr p) {
+void connection_begin(connection_ptr const & p) {
   (*p)->begin();
-  return;
 }
 
 // [[Rcpp::export]]
-void connection_commit(connection_ptr p) {
+void connection_commit(connection_ptr const & p) {
   (*p)->commit();
-  return;
 }
 
 // [[Rcpp::export]]
-void connection_rollback(connection_ptr p) {
+void connection_rollback(connection_ptr const & p) {
   (*p)->rollback();
-  return;
 }
 
 // [[Rcpp::export]]
-bool connection_valid(connection_ptr p) {
-  return p.get() != NULL;
+bool connection_valid(connection_ptr const & p) {
+  return p.get() != nullptr;
 }
 
 // [[Rcpp::export]]
-std::vector<std::string> connection_sql_tables(connection_ptr p,
-    std::string catalog_name = "",
-    std::string schema_name = "",
-    std::string table_name = "",
-    std::string table_type = "") {
+std::vector<std::string> connection_sql_tables(connection_ptr const & p,
+    std::string const & catalog_name = "",
+    std::string const & schema_name = "",
+    std::string const & table_name = "",
+    std::string const & table_type = "") {
   auto c = nanodbc::catalog(*(*p)->connection());
   auto tables = c.find_tables(table_name, table_type, schema_name, catalog_name);
   std::vector<std::string> out;
@@ -113,11 +109,11 @@ std::vector<std::string> connection_sql_tables(connection_ptr p,
 
 // "%" is a wildcard for all possible values
 // [[Rcpp::export]]
-Rcpp::DataFrame connection_sql_columns(connection_ptr p,
-    std::string column_name = "",
-    std::string catalog_name = "",
-    std::string schema_name = "",
-    std::string table_name = "") {
+Rcpp::DataFrame connection_sql_columns(connection_ptr const & p,
+    std::string const & column_name = "",
+    std::string const & catalog_name = "",
+    std::string const & schema_name = "",
+    std::string const & table_name = "") {
   auto c = nanodbc::catalog(*(*p)->connection());
   auto tables = c.find_columns(column_name, table_name, schema_name, catalog_name);
   std::vector<std::string> names;
@@ -128,7 +124,7 @@ Rcpp::DataFrame connection_sql_columns(connection_ptr p,
     names.push_back(tables.column_name());
     field_type.push_back(tables.type_name());
     //data_type.push_back(tables.data_type());
-    nullable.push_back(tables.nullable());
+    nullable.push_back(static_cast<bool>(tables.nullable()));
   }
   return Rcpp::DataFrame::create(
       Rcpp::_["name"] = names,
