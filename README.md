@@ -1,4 +1,22 @@
 
+-   [odbconnect](#odbconnect)
+    -   [Installation](#installation)
+        -   [Windows](#windows)
+        -   [MacOS](#macos)
+        -   [Linux - Debian / Ubuntu](#linux---debian-ubuntu)
+        -   [R](#r)
+    -   [Connecting to a Database](#connecting-to-a-database)
+        -   [Connection Strings](#connection-strings)
+        -   [DSN Configuration files](#dsn-configuration-files)
+    -   [Usage](#usage)
+        -   [Table and Field information](#table-and-field-information)
+        -   [Reading](#reading)
+        -   [Writing](#writing)
+        -   [Querying](#querying)
+    -   [Benchmarks](#benchmarks)
+        -   [Reading](#reading-1)
+        -   [Writing](#writing-1)
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 odbconnect
 ==========
