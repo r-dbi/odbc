@@ -66,7 +66,10 @@ void result_insert_dataframe(result_ptr r, DataFrame df) {
 // [[Rcpp::export]]
 int result_rows_affected(result_ptr r) {
   auto res = r->result();
-  return res ? res->affected_rows() : 0;
+  if (!res) {
+    return 0;
+  }
+  return res->affected_rows() > 0 ? res->affected_rows() : 0;
 }
 
 // [[Rcpp::export]]
