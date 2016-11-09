@@ -37,4 +37,4 @@ Collate:
 Remotes:
     rstats-db/DBI,
     jimhester/DBItest@mine,
-    hadley/blob#2
+    hadley/blob
