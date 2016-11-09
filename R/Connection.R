@@ -1,19 +1,19 @@
 #' @include Driver.R
 NULL
 
-#' Odbconnect Connection Methods
+#' Odbc Connection Methods
 #'
 #' Implementations of pure virtual functions defined in the \code{DBI} package
-#' for OdbconnectConnection objects.
-#' @name OdbconnectConnection
+#' for OdbcConnection objects.
+#' @name OdbcConnection
 NULL
 
-OdbconnectConnection <- function(dsn = NULL, ..., driver = NULL, server = NULL, database = NULL, uid = NULL, pwd = NULL, .connection_string = NULL) {
+OdbcConnection <- function(dsn = NULL, ..., driver = NULL, server = NULL, database = NULL, uid = NULL, pwd = NULL, .connection_string = NULL) {
   args <- c(dsn = dsn, driver = driver, server = server, database = database, uid = uid, pwd = pwd, list(...))
   stopifnot(all(has_names(args)))
 
   connection_string <- paste0(.connection_string, paste(collapse = ";", sep = "=", names(args), args))
-  ptr <- odbconnect_connect(connection_string)
+  ptr <- odbc_connect(connection_string)
   quote <- connection_quote(ptr)
 
   # a-z A-Z, 0-9 and _ are always valid, other characters than can be are
@@ -23,13 +23,13 @@ OdbconnectConnection <- function(dsn = NULL, ..., driver = NULL, server = NULL, 
   info <- connection_info(ptr)
   class(info) <- c(info$dbms.name, "list")
 
-  new("OdbconnectConnection", ptr = ptr, quote = quote, valid_characters = valid_characters, info = info)
+  new("OdbcConnection", ptr = ptr, quote = quote, valid_characters = valid_characters, info = info)
 }
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @export
 setClass(
-  "OdbconnectConnection",
+  "OdbcConnection",
   contains = "DBIConnection",
   slots = list(
     ptr = "externalptr",
@@ -39,15 +39,15 @@ setClass(
   )
 )
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @inheritParams methods::show
 #' @export
 setMethod(
-  "show", "OdbconnectConnection",
+  "show", "OdbcConnection",
   function(object) {
     info <- dbGetInfo(object)
 
-    cat(sep = "", "<OdbconnectConnection>",
+    cat(sep = "", "<OdbcConnection>",
       if (nzchar(info[["servername"]])) {
         paste0(" ",
           if (nzchar(info[["username"]])) paste0(info[["username"]], "@"),
@@ -67,20 +67,20 @@ setMethod(
       })
 })
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbIsValid
 #' @export
 setMethod(
-  "dbIsValid", "OdbconnectConnection",
+  "dbIsValid", "OdbcConnection",
   function(dbObj, ...) {
     connection_valid(dbObj@ptr)
   })
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbDisconnect
 #' @export
 setMethod(
-  "dbDisconnect", "OdbconnectConnection",
+  "dbDisconnect", "OdbcConnection",
   function(conn, ...) {
     if (!dbIsValid(conn)) {
       warning("Connection already closed.", call. = FALSE)
@@ -90,108 +90,108 @@ setMethod(
     TRUE
   })
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbSendQuery
 #' @export
 setMethod(
-  "dbSendQuery", c("OdbconnectConnection", "character"),
+  "dbSendQuery", c("OdbcConnection", "character"),
   function(conn, statement, ...) {
-    res <- OdbconnectResult(connection = conn, statement = statement)
+    res <- OdbcResult(connection = conn, statement = statement)
     result_execute(res@ptr)
     res
   })
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbSendStatement
 #' @export
 setMethod(
-  "dbSendStatement", c("OdbconnectConnection", "character"),
+  "dbSendStatement", c("OdbcConnection", "character"),
   function(conn, statement, ...) {
-    res <- OdbconnectResult(connection = conn, statement = statement)
+    res <- OdbcResult(connection = conn, statement = statement)
     result_execute(res@ptr)
     res
   })
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbDataType
 #' @export
 setMethod(
-  "dbDataType", "OdbconnectConnection",
+  "dbDataType", "OdbcConnection",
   function(dbObj, obj, ...) {
     get_data_type(dbObj@info, obj)
   })
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbQuoteString
 #' @export
 setMethod(
-  "dbQuoteString", c("OdbconnectConnection", "character"),
+  "dbQuoteString", c("OdbcConnection", "character"),
   function(conn, x, ...) {
     # Optional
     getMethod("dbQuoteString", c("DBIConnection", "character"), asNamespace("DBI"))(conn, x, ...)
   })
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbQuoteIdentifier
 #' @export
 setMethod(
-  "dbQuoteIdentifier", c("OdbconnectConnection", "character"),
+  "dbQuoteIdentifier", c("OdbcConnection", "character"),
   function(conn, x, ...) {
     x <- gsub(conn@quote, paste0(conn@quote, conn@quote), x, fixed = TRUE)
     DBI::SQL(paste(conn@quote, encodeString(x), conn@quote, sep = ""))
   })
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbListTables
 #' @export
 setMethod(
-  "dbListTables", "OdbconnectConnection",
+  "dbListTables", "OdbcConnection",
   function(conn, ...) {
     connection_sql_tables(conn@ptr, ...)
   })
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbExistsTable
 #' @export
 setMethod(
-  "dbExistsTable", c("OdbconnectConnection", "character"),
+  "dbExistsTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     name %in% dbListTables(conn)
   })
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbListFields
 #' @export
 setMethod(
-  "dbListFields", c("OdbconnectConnection", "character"),
+  "dbListFields", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     connection_sql_columns(conn@ptr, table_name = name)[["name"]]
   })
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbRemoveTable
 #' @export
 setMethod(
-  "dbRemoveTable", c("OdbconnectConnection", "character"),
+  "dbRemoveTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     name <- dbQuoteIdentifier(conn, name)
     dbGetQuery(conn, paste("DROP TABLE ", name))
     invisible(TRUE)
   })
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbGetInfo
 #' @export
 setMethod(
-  "dbGetInfo", "OdbconnectConnection",
+  "dbGetInfo", "OdbcConnection",
   function(dbObj, ...) {
     connection_info(dbObj@ptr)
   })
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbGetQuery
 #' @export
-setMethod("dbGetQuery", signature("OdbconnectConnection", "character"),
+setMethod("dbGetQuery", signature("OdbcConnection", "character"),
   function(conn, statement, ...) {
     rs <- dbSendQuery(conn, statement, ...)
     on.exit(dbClearResult(rs))
@@ -206,31 +206,31 @@ setMethod("dbGetQuery", signature("OdbconnectConnection", "character"),
   }
 )
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbBegin
 #' @export
 setMethod(
-  "dbBegin", "OdbconnectConnection",
+  "dbBegin", "OdbcConnection",
   function(conn, ...) {
     connection_begin(conn@ptr)
     TRUE
   })
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbCommit
 #' @export
 setMethod(
-  "dbCommit", "OdbconnectConnection",
+  "dbCommit", "OdbcConnection",
   function(conn, ...) {
     connection_commit(conn@ptr)
     TRUE
   })
 
-#' @rdname OdbconnectConnection
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbRollback
 #' @export
 setMethod(
-  "dbRollback", "OdbconnectConnection",
+  "dbRollback", "OdbcConnection",
   function(conn, ...) {
     connection_rollback(conn@ptr)
     TRUE

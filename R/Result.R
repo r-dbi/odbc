@@ -1,36 +1,36 @@
 #' @include Connection.R
 NULL
 
-#' Odbconnect Result Methods
+#' Odbc Result Methods
 #'
 #' Implementations of pure virtual functions defined in the \code{DBI} package
-#' for OdbconnectResult objects.
-#' @name OdbconnectResult
+#' for OdbcResult objects.
+#' @name OdbcResult
 #' @docType methods
 NULL
 
-OdbconnectResult <- function(connection, statement) {
+OdbcResult <- function(connection, statement) {
   ptr <- new_result(connection@ptr, statement)
-  new("OdbconnectResult", connection = connection, statement = statement, ptr = ptr)
+  new("OdbcResult", connection = connection, statement = statement, ptr = ptr)
 }
 
-#' @rdname OdbconnectResult
+#' @rdname OdbcResult
 #' @export
 setClass(
-  "OdbconnectResult",
+  "OdbcResult",
   contains = "DBIResult",
   slots = list(
-    connection = "OdbconnectConnection",
+    connection = "OdbcConnection",
     statement = "character",
     ptr = "externalptr"
   )
 )
 
-#' @rdname OdbconnectResult
+#' @rdname OdbcResult
 #' @inheritParams DBI::dbClearResult
 #' @export
 setMethod(
-  "dbClearResult", "OdbconnectResult",
+  "dbClearResult", "OdbcResult",
   function(res, ...) {
     if (!dbIsValid(res)) {
       warning("Result already cleared")
@@ -40,85 +40,85 @@ setMethod(
     TRUE
   })
 
-#' @rdname OdbconnectResult
+#' @rdname OdbcResult
 #' @inheritParams DBI::dbFetch
 #' @inheritParams DBI::sqlRownamesToColumn
 #' @export
 setMethod(
-  "dbFetch", "OdbconnectResult",
+  "dbFetch", "OdbcResult",
   function(res, n = -1, ..., row.names = NA) {
     sqlColumnToRownames(result_fetch(res@ptr, n, ...), row.names)
   })
 
-#' @rdname OdbconnectResult
+#' @rdname OdbcResult
 #' @inheritParams DBI::dbHasCompleted
 #' @export
 setMethod(
-  "dbHasCompleted", "OdbconnectResult",
+  "dbHasCompleted", "OdbcResult",
   function(res, ...) {
     result_completed(res@ptr)
   })
 
-#' @rdname OdbconnectResult
+#' @rdname OdbcResult
 #' @inheritParams DBI::dbGetInfo
 #' @export
 setMethod(
-  "dbGetInfo", "OdbconnectResult",
+  "dbGetInfo", "OdbcResult",
   function(dbObj, ...) {
     # Optional
     getMethod("dbGetInfo", "DBIResult", asNamespace("DBI"))(dbObj, ...)
   })
 
-#' @rdname OdbconnectResult
+#' @rdname OdbcResult
 #' @inheritParams DBI::dbIsValid
 #' @export
 setMethod(
-  "dbIsValid", "OdbconnectResult",
+  "dbIsValid", "OdbcResult",
   function(dbObj, ...) {
     result_active(dbObj@ptr)
   })
 
-#' @rdname OdbconnectResult
+#' @rdname OdbcResult
 #' @inheritParams DBI::dbGetStatement
 #' @export
 setMethod(
-  "dbGetStatement", "OdbconnectResult",
+  "dbGetStatement", "OdbcResult",
   function(res, ...) {
     res@statement
   })
 
-#' @rdname OdbconnectResult
+#' @rdname OdbcResult
 #' @inheritParams DBI::dbColumnInfo
 #' @export
 setMethod(
-  "dbColumnInfo", "OdbconnectResult",
+  "dbColumnInfo", "OdbcResult",
   function(res, ...) {
     result_column_info(res@ptr, ...)
   })
 
-#' @rdname OdbconnectResult
+#' @rdname OdbcResult
 #' @inheritParams DBI::dbGetRowCount
 #' @export
 setMethod(
-  "dbGetRowCount", "OdbconnectResult",
+  "dbGetRowCount", "OdbcResult",
   function(res, ...) {
     result_row_count(res@ptr)
   })
 
-#' @rdname OdbconnectResult
+#' @rdname OdbcResult
 #' @inheritParams DBI::getRowsAffected
 #' @export
 setMethod(
-  "dbGetRowsAffected", "OdbconnectResult",
+  "dbGetRowsAffected", "OdbcResult",
   function(res, ...) {
     result_rows_affected(res@ptr)
   })
 
-#' @rdname OdbconnectResult
+#' @rdname OdbcResult
 #' @inheritParams DBI::dbBind
 #' @export
 setMethod(
-  "dbBind", "OdbconnectResult",
+  "dbBind", "OdbcResult",
   function(res, params, ...) {
     result_bind(res@ptr, params)
     invisible(res)

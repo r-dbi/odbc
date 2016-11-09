@@ -1,4 +1,4 @@
-Package: odbconnect
+Package: odbc
 Title: Connect to ODBC databases (using the DBI interface)
 Version: 0.0.0.9000
 Authors@R: c(
@@ -17,8 +17,8 @@ Imports:
     blob
 LinkingTo: Rcpp, BH
 RoxygenNote: 5.0.1
-URL: https://github.com/hadley/odbconnect
-BugReports: https://github.com/hadley/odbconnect/issues
+URL: https://github.com/hadley/odbc
+BugReports: https://github.com/hadley/odbc/issues
 SystemRequirements: GNU make
 Suggests:
     tibble,
@@ -26,7 +26,7 @@ Suggests:
     testthat,
     covr
 Collate:
-    'odbconnect.R'
+    'odbc.R'
     'Driver.R'
     'Connection.R'
     'RcppExports.R'

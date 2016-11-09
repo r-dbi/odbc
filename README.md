@@ -1,11 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-odbconnect
+odbc
 ==========
 
-[![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip) [![Travis-CI Build Status](https://travis-ci.org/rstats-db/odbconnect.svg?branch=master)](https://travis-ci.org/rstats-db/odbconnect) [![Coverage Status](https://img.shields.io/codecov/c/github/rstats-db/odbconnect/master.svg)](https://codecov.io/github/rstats-db/odbconnect?branch=master) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/2bnahh7qg5iu7197?svg=true)](https://ci.appveyor.com/project/hadley/odbconnect-cqvmd)
+[![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip) [![Travis-CI Build Status](https://travis-ci.org/rstats-db/odbc.svg?branch=master)](https://travis-ci.org/rstats-db/odbc) [![Coverage Status](https://img.shields.io/codecov/c/github/rstats-db/odbc/master.svg)](https://codecov.io/github/rstats-db/odbc?branch=master) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/2bnahh7qg5iu7197?svg=true)](https://ci.appveyor.com/project/hadley/odbc-cqvmd)
 
-The goal of odbconnect is to provide a DBI-compliant interface to [Open Database Connectivity](https://msdn.microsoft.com/en-us/library/ms710252(v=vs.85).aspx) (ODBC) drivers. This gives a efficient, easy to setup connection to any database with ODBC drivers available, including [SQL Server](https://www.microsoft.com/en-us/sql-server/), [Oracle](https://www.oracle.com/database), [MySQL](https://www.mysql.com/), [PostgreSQL](https://www.postgresql.org/), [SQLite](https://sqlite.org/) and others. The implementation builds on the [nanodbc](http://nanodbc.lexicalunit.com/) C++ library.
+The goal of odbc is to provide a DBI-compliant interface to [Open Database Connectivity](https://msdn.microsoft.com/en-us/library/ms710252(v=vs.85).aspx) (ODBC) drivers. This gives a efficient, easy to setup connection to any database with ODBC drivers available, including [SQL Server](https://www.microsoft.com/en-us/sql-server/), [Oracle](https://www.oracle.com/database), [MySQL](https://www.mysql.com/), [PostgreSQL](https://www.postgresql.org/), [SQLite](https://sqlite.org/) and others. The implementation builds on the [nanodbc](http://nanodbc.lexicalunit.com/) C++ library.
 
 -   [Installation](#installation)
     -   [Windows](#windows)
@@ -89,11 +89,11 @@ apt-get install libsqliteodbc
 
 ### R
 
-odbconnect is not yet available on CRAN, however [devtools](https://cran.r-project.org/package=devtools) can be used to install the latest version.
+odbc is not yet available on CRAN, however [devtools](https://cran.r-project.org/package=devtools) can be used to install the latest version.
 
 ``` r
 # install.packages(devtools)
-devtools::install_github("rstats-db/odbconnect")
+devtools::install_github("rstats-db/odbc")
 ```
 
 Connecting to a Database
@@ -106,7 +106,7 @@ Databases can be connect by specifying a connection string directly, or with DSN
 Specify a connection string as named arguments directly in the `dbConnect()` method.
 
 ``` r
-con <- dbConnect(odbconnect::odbconnect(),
+con <- dbConnect(odbc::odbc(),
   Driver = "PostgreSQL Driver",
   Database = "test_db",
   uid = "postgres",
@@ -118,7 +118,7 @@ con <- dbConnect(odbconnect::odbconnect(),
 Alternatively you can pass a complete connection string as the `.connection_string` argument. [The Connection Strings Reference](www.connectionstrings.com) is a useful resource that has example connection strings for a large variety of databases.
 
 ``` r
-con <- dbConnect(odbconnect::odbconnect(),
+con <- dbConnect(odbc::odbc(),
   .connection_string = "Driver={PostgreSQL Driver};Uid=postgres;Pwd=password;Host=localhost;Port=5432;Database=test_db;")
 ```
 
@@ -127,7 +127,7 @@ con <- dbConnect(odbconnect::odbconnect(),
 ODBC configuration files are another option to specify connection parameters and allow one to use a Data Source Name (DSN) to make it easier to connect to a database.
 
 ``` r
-con <- dbConnect(odbconnect::odbconnect(), "PostgreSQL")
+con <- dbConnect(odbc::odbc(), "PostgreSQL")
 ```
 
 #### Windows
@@ -228,7 +228,7 @@ rest <- dbFetch(result)
 Benchmarks
 ----------
 
-Odbconnect is often much faster than the existing [RODBC](https://cran.r-project.org/package=RODBC) and DBI compatible [RODBCDBI](https://cran.r-project.org/package=RODBCDBI) packages.
+Odbc is often much faster than the existing [RODBC](https://cran.r-project.org/package=RODBC) and DBI compatible [RODBCDBI](https://cran.r-project.org/package=RODBCDBI) packages.
 
 ### Reading
 
@@ -244,15 +244,15 @@ system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
 #>    user  system elapsed 
 #>  20.249   1.870  23.816
 
-# Now using odbconnect
-library(odbconnect)
-odbconnect <- dbConnect(odbconnect::odbconnect(), dsn = "PostgreSQL")
-system.time(odbconnect_result <- dbReadTable(odbconnect, "flights"))
+# Now using odbc
+library(odbc)
+odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
+system.time(odbc_result <- dbReadTable(odbc, "flights"))
 #>    user  system elapsed 
 #>   4.827   0.341   6.570
 
 library(tibble)
-as_tibble(odbconnect_result)
+as_tibble(odbc_result)
 #> # A tibble: 336,776 × 20
 #>    row.names  year month   day dep_time sched_dep_time dep_delay arr_time
 #>        <chr> <int> <int> <int>    <int>          <int>     <dbl>    <int>
@@ -271,9 +271,9 @@ as_tibble(odbconnect_result)
 #> #   origin <chr>, dest <chr>, air_time <dbl>, distance <dbl>, hour <dbl>,
 #> #   minute <dbl>, time_hour <dttm>
 
-identical(dim(rodbc_result), dim(odbconnect_result))
+identical(dim(rodbc_result), dim(odbc_result))
 #> [1] TRUE
-rm(rodbc_result, odbconnect_result, odbconnect, rodbc)
+rm(rodbc_result, odbc_result, odbc, rodbc)
 gc(verbose = FALSE)
 #> Warning: closing unused RODBC handle 8
 #>           used (Mb) gc trigger  (Mb) max used  (Mb)
@@ -299,9 +299,9 @@ system.time(dbWriteTable(rodbc, "flights2", as.data.frame(flights[, names(flight
 #>    user  system elapsed 
 #>   7.349   4.212  58.233
 
-# Now using odbconnect
-odbconnect <- dbConnect(odbconnect::odbconnect(), dsn = "PostgreSQL")
-system.time(dbWriteTable(odbconnect, "flights3", as.data.frame(flights)))
+# Now using odbc
+odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
+system.time(dbWriteTable(odbc, "flights3", as.data.frame(flights)))
 #>    user  system elapsed 
 #>   7.166   3.888  26.079
 ```

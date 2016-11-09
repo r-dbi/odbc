@@ -1,14 +1,14 @@
-#' @include odbconnect.R
+#' @include odbc.R
 NULL
 
-#' Odbconnect Driver Methods
+#' Odbc Driver Methods
 #'
 #' Implementations of pure virtual functions defined in the \code{DBI} package
-#' for OdbconnectDriver objects.
-#' @name OdbconnectDriver
+#' for OdbcDriver objects.
+#' @name OdbcDriver
 NULL
 
-#' Odbconnect driver
+#' Odbc driver
 #'
 #' Driver for an ODBC database.
 #'
@@ -17,23 +17,23 @@ NULL
 #' @examples
 #' \dontrun{
 #' #' library(DBI)
-#' Odbconnect::Odbconnect()
+#' Odbc::Odbc()
 #' }
-odbconnect <- function() {
-  new("OdbconnectDriver")
+odbc <- function() {
+  new("OdbcDriver")
 }
 
-#' @rdname OdbconnectDriver
+#' @rdname OdbcDriver
 #' @export
-setClass("OdbconnectDriver", contains = "DBIDriver")
+setClass("OdbcDriver", contains = "DBIDriver")
 
-#' @rdname OdbconnectDriver
+#' @rdname OdbcDriver
 #' @inheritParams methods::show
 #' @export
 setMethod(
-  "show", "OdbconnectDriver",
+  "show", "OdbcDriver",
   function(object) {
-    cat("<OdbconnectDriver>\n")
+    cat("<OdbcDriver>\n")
     # TODO: Print more details
   })
 
@@ -60,11 +60,11 @@ setMethod(
 #' connection strings for a variety of databases.
 #' @export
 setMethod(
-  "dbConnect", "OdbconnectDriver",
+  "dbConnect", "OdbcDriver",
   function(drv, dsn = NULL, ..., driver = NULL, server = NULL, database = NULL,
     uid = NULL, pwd = NULL, .connection_string = NULL) {
 
-    OdbconnectConnection(
+    OdbcConnection(
       dsn = dsn,
       ...,
       driver = driver,
@@ -76,38 +76,38 @@ setMethod(
   }
 )
 
-#' @rdname OdbconnectDriver
+#' @rdname OdbcDriver
 #' @inheritParams DBI::dbDataType
 #' @export
 setMethod(
-  "dbDataType", "OdbconnectDriver",
+  "dbDataType", "OdbcDriver",
   function(dbObj, obj, ...) {
     get_data_type(dbObj, obj, ...)
   })
 
-#' @rdname OdbconnectDriver
+#' @rdname OdbcDriver
 #' @inheritParams DBI::dbDataType
 #' @export
 setMethod(
-  "dbDataType", c("OdbconnectDriver", "list"),
+  "dbDataType", c("OdbcDriver", "list"),
   function(dbObj, obj, ...) {
     get_data_type(dbObj, obj, ...)
   })
 
-#' @rdname OdbconnectDriver
+#' @rdname OdbcDriver
 #' @inheritParams DBI::dbIsValid
 #' @export
 setMethod(
-  "dbIsValid", "OdbconnectDriver",
+  "dbIsValid", "OdbcDriver",
   function(dbObj, ...) {
     TRUE
   })
 
-#' @rdname OdbconnectDriver
+#' @rdname OdbcDriver
 #' @inheritParams DBI::dbGetInfo
 #' @export
 setMethod(
-  "dbGetInfo", "OdbconnectDriver",
+  "dbGetInfo", "OdbcDriver",
   function(dbObj, ...) {
     list(max.connections = NULL, driver.version = NULL, client.version = NULL)
   })

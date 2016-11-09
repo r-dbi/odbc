@@ -11,9 +11,9 @@ that generates the error.
 
 Example:
 ```r
-library(odbconnect)
+library(odbc)
 library(DBI)
-con <- dbConnect(odbconnect::odbconnect(), dsn = "PostgreSQL")
+con <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
 dbWriteTable(con, "iris", iris)
 dbReadTable(con, "iris")
 ```

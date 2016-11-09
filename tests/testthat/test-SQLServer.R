@@ -1,8 +1,8 @@
 if (.Platform$OS.type == "windows") {
   if (identical(Sys.getenv("APPVEYOR"), "True")) {
-    DBItest::make_context(odbconnect(), list(Driver ="{SQL Server}", "Server" = "(local)\\SQL2014", "Database" = "master", "User ID" = "sa", "Password" = "Password12"), tweaks = DBItest::tweaks(), name = "SQLServer")
+    DBItest::make_context(odbc(), list(Driver ="{SQL Server}", "Server" = "(local)\\SQL2014", "Database" = "master", "User ID" = "sa", "Password" = "Password12"), tweaks = DBItest::tweaks(), name = "SQLServer")
   } else {
-    ctx <- DBItest::make_context(odbconnect(), list(dsn = "test"), tweaks = DBItest::tweaks(), name = "SQLServer")
+    ctx <- DBItest::make_context(odbc(), list(dsn = "test"), tweaks = DBItest::tweaks(), name = "SQLServer")
   }
 
 DBItest::test_getting_started(c(

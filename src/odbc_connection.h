@@ -4,7 +4,7 @@
 #include <Rcpp.h>
 
 
-namespace odbconnect {
+namespace odbc {
 class odbc_result;
 
 class odbc_connection {

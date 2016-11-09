@@ -8,7 +8,7 @@
 #endif
 #include "sqlext.h"
 
-namespace odbconnect {
+namespace odbc {
   typedef enum {
     logical_t,
     integer_t,

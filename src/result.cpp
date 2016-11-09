@@ -1,5 +1,5 @@
 #include "odbc_result.h"
-#include "odbconnect_types.h"
+#include "odbc_types.h"
 #include "sqlext.h"
 
 using namespace Rcpp;
@@ -18,7 +18,7 @@ bool result_completed(result_ptr const &r) { return r->complete(); }
 
 // [[Rcpp::export]]
 result_ptr new_result(connection_ptr const &p, std::string const &sql) {
-  return result_ptr(new odbconnect::odbc_result(*p, sql));
+  return result_ptr(new odbc::odbc_result(*p, sql));
 }
 
 // [[Rcpp::export]]

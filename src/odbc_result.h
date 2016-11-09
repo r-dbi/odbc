@@ -6,7 +6,7 @@
 #include "r_types.h"
 #include "odbc_connection.h"
 
-namespace odbconnect {
+namespace odbc {
 typedef std::array<const char, 255> string_buf;
 
 class odbc_result {
@@ -272,7 +272,7 @@ class odbc_result {
           case integer_t: out[j] = Rf_allocVector(INTSXP, n); break;
           case date_t:
           case datetime_t:
-          case odbconnect::double_t: out[j] = Rf_allocVector(REALSXP, n); break;
+          case odbc::double_t: out[j] = Rf_allocVector(REALSXP, n); break;
           case string_t: out[j] = Rf_allocVector(STRSXP, n); break;
           case raw_t: out[j] = Rf_allocVector(VECSXP, n); break;
           case logical_t: out[j] = Rf_allocVector(LGLSXP, n); break;
@@ -429,7 +429,7 @@ class odbc_result {
           switch(types[col]) {
             case date_t: assign_date(out, row, col, r); break;
             case datetime_t: assign_datetime(out, row, col, r); break;
-            case odbconnect::double_t: assign_double(out, row, col, r); break;
+            case odbc::double_t: assign_double(out, row, col, r); break;
             case integer_t: assign_integer(out, row, col, r); break;
             case string_t: assign_string(out, row, col, r); break;
             case logical_t: assign_logical(out, row, col, r); break;

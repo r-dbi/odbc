@@ -1,5 +1,5 @@
 if (.Platform$OS.type != "windows") {
-  ctx <- DBItest::make_context(odbconnect(), list(dsn = "MySQL"), tweaks = DBItest::tweaks(), name = "MySQL")
+  ctx <- DBItest::make_context(odbc(), list(dsn = "MySQL"), tweaks = DBItest::tweaks(), name = "MySQL")
 
 DBItest::test_getting_started(c(
     "package_name", # Not an error

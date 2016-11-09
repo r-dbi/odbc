@@ -1,6 +1,6 @@
 #' Convenience functions for reading/writing DBMS tables
 #'
-#' @param conn a \code{\linkS4class{OdbconnectConnection}} object, produced by
+#' @param conn a \code{\linkS4class{OdbcConnection}} object, produced by
 #'   \code{\link[DBI]{dbConnect}}
 #' @param name a character string specifying a table name. Names will be
 #'   automatically quoted so you can use any sequence of characters, not
@@ -10,7 +10,7 @@
 #' @examples
 #' \dontrun{
 #' library(DBI)
-#' con <- dbConnect(odbconnect::odbconnect())
+#' con <- dbConnect(odbc::odbc())
 #' dbListTables(con)
 #' dbWriteTable(con, "mtcars", mtcars, temporary = TRUE)
 #' dbReadTable(con, "mtcars")
@@ -24,10 +24,10 @@
 #'
 #' dbDisconnect(con)
 #' }
-#' @name odbconnect-tables
+#' @name odbc-tables
 NULL
 
-#' @rdname odbconnect-tables
+#' @rdname odbc-tables
 #' @inheritParams DBI::dbWriteTable
 #' @param overwrite Allow overwriting the destination table. Cannot be
 #'   \code{TRUE} if \code{append} is also \code{TRUE}.
@@ -35,7 +35,7 @@ NULL
 #'   \code{TRUE} if \code{overwrite} is also \code{TRUE}.
 #' @export
 setMethod(
-  "dbWriteTable", c("OdbconnectConnection", "character", "data.frame"),
+  "dbWriteTable", c("OdbcConnection", "character", "data.frame"),
   function(conn, name, value, overwrite=FALSE, append=FALSE, temporary = FALSE,
     ...) {
 
@@ -72,7 +72,7 @@ setMethod(
         "INSERT INTO ", name, " (", paste0(fields, collapse = ", "), ")\n",
         "VALUES (", paste0(params, collapse = ", "), ")"
         )
-      rs <- OdbconnectResult(conn, sql)
+      rs <- OdbcResult(conn, sql)
 
       tryCatch(
         result_insert_dataframe(rs@ptr, values),
@@ -84,10 +84,10 @@ setMethod(
   }
 )
 
-##' @rdname odbconnect-tables
+##' @rdname odbc-tables
 ##' @inheritParams DBI::dbReadTable
 ##' @export
-setMethod("sqlData", "OdbconnectConnection", function(con, value, row.names = NA, ...) {
+setMethod("sqlData", "OdbcConnection", function(con, value, row.names = NA, ...) {
   value <- sqlRownamesToColumn(value, row.names)
 
   # Convert POSIXlt to POSIXct
@@ -102,11 +102,11 @@ setMethod("sqlData", "OdbconnectConnection", function(con, value, row.names = NA
 })
 
 
-#' @rdname odbconnect-tables
+#' @rdname odbc-tables
 #' @inheritParams DBI::dbReadTable
 #' @export
 setMethod(
-  "dbReadTable", c("OdbconnectConnection", "character"),
+  "dbReadTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     name <- dbQuoteIdentifier(conn, name)
     dbGetQuery(conn, paste("SELECT * FROM ", name))

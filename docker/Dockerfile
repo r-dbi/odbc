@@ -23,7 +23,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -qqy \
         vim
 
 RUN RD -e 'install.packages(c("devtools", "roxygen2", "testthat"), quiet = T)'
-RUN RD -e 'devtools::install_github("hadley/odbconnect@nanodbc", dep = TRUE)'
+RUN RD -e 'devtools::install_github("hadley/odbc@nanodbc", dep = TRUE)'
 
 ENV CXX g++-5
-ENV ODBCSYSINI=/opt/odbconnect/travis/odbc
+ENV ODBCSYSINI=/opt/odbc/travis/odbc

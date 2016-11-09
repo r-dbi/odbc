@@ -1,5 +1,5 @@
 #' @details TBD.
 #' @aliases NULL
 #' @importFrom Rcpp sourceCpp
-#' @useDynLib odbconnect
+#' @useDynLib odbc
 "_PACKAGE"

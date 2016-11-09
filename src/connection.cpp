@@ -1,9 +1,9 @@
 #include "Rcpp.h"
 #include "nanodbc.h"
-#include "odbconnect_types.h"
+#include "odbc_types.h"
 #include <sqlext.h>
 
-using namespace odbconnect;
+using namespace odbc;
 
 // [[Rcpp::export]]
 Rcpp::DataFrame list_drivers() {
@@ -27,7 +27,7 @@ Rcpp::DataFrame list_drivers() {
 }
 
 // [[Rcpp::export]]
-connection_ptr odbconnect_connect(std::string const &connection_string) {
+connection_ptr odbc_connect(std::string const &connection_string) {
   return connection_ptr(new std::shared_ptr<odbc_connection>(
       new odbc_connection(connection_string)));
 }

@@ -1,4 +1,4 @@
 library(testthat)
-library(odbconnect)
+library(odbc)
 
-test_check("odbconnect")
+test_check("odbc")

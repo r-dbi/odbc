@@ -1,5 +1,5 @@
 if (.Platform$OS.type != "windows") {
-  ctx <- DBItest::make_context(odbconnect(), list(dsn = "SQLite"), tweaks = DBItest::tweaks(), name = "SQLite")
+  ctx <- DBItest::make_context(odbc(), list(dsn = "SQLite"), tweaks = DBItest::tweaks(), name = "SQLite")
 
 DBItest::test_getting_started(c(
     "package_name", # Not an error

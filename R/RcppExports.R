@@ -2,98 +2,98 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 list_drivers <- function() {
-    .Call('odbconnect_list_drivers', PACKAGE = 'odbconnect')
+    .Call('odbc_list_drivers', PACKAGE = 'odbc')
 }
 
-odbconnect_connect <- function(connection_string) {
-    .Call('odbconnect_odbconnect_connect', PACKAGE = 'odbconnect', connection_string)
+odbc_connect <- function(connection_string) {
+    .Call('odbc_odbconnect_connect', PACKAGE = 'odbc', connection_string)
 }
 
 connection_info <- function(p) {
-    .Call('odbconnect_connection_info', PACKAGE = 'odbconnect', p)
+    .Call('odbc_connection_info', PACKAGE = 'odbc', p)
 }
 
 connection_quote <- function(p) {
-    .Call('odbconnect_connection_quote', PACKAGE = 'odbconnect', p)
+    .Call('odbc_connection_quote', PACKAGE = 'odbc', p)
 }
 
 connection_special <- function(p) {
-    .Call('odbconnect_connection_special', PACKAGE = 'odbconnect', p)
+    .Call('odbc_connection_special', PACKAGE = 'odbc', p)
 }
 
 connection_release <- function(p) {
-    invisible(.Call('odbconnect_connection_release', PACKAGE = 'odbconnect', p))
+    invisible(.Call('odbc_connection_release', PACKAGE = 'odbc', p))
 }
 
 connection_begin <- function(p) {
-    invisible(.Call('odbconnect_connection_begin', PACKAGE = 'odbconnect', p))
+    invisible(.Call('odbc_connection_begin', PACKAGE = 'odbc', p))
 }
 
 connection_commit <- function(p) {
-    invisible(.Call('odbconnect_connection_commit', PACKAGE = 'odbconnect', p))
+    invisible(.Call('odbc_connection_commit', PACKAGE = 'odbc', p))
 }
 
 connection_rollback <- function(p) {
-    invisible(.Call('odbconnect_connection_rollback', PACKAGE = 'odbconnect', p))
+    invisible(.Call('odbc_connection_rollback', PACKAGE = 'odbc', p))
 }
 
 connection_valid <- function(p) {
-    .Call('odbconnect_connection_valid', PACKAGE = 'odbconnect', p)
+    .Call('odbc_connection_valid', PACKAGE = 'odbc', p)
 }
 
 connection_sql_tables <- function(p, catalog_name = "", schema_name = "", table_name = "", table_type = "") {
-    .Call('odbconnect_connection_sql_tables', PACKAGE = 'odbconnect', p, catalog_name, schema_name, table_name, table_type)
+    .Call('odbc_connection_sql_tables', PACKAGE = 'odbc', p, catalog_name, schema_name, table_name, table_type)
 }
 
 connection_sql_columns <- function(p, column_name = "", catalog_name = "", schema_name = "", table_name = "") {
-    .Call('odbconnect_connection_sql_columns', PACKAGE = 'odbconnect', p, column_name, catalog_name, schema_name, table_name)
+    .Call('odbc_connection_sql_columns', PACKAGE = 'odbc', p, column_name, catalog_name, schema_name, table_name)
 }
 
 result_release <- function(r) {
-    invisible(.Call('odbconnect_result_release', PACKAGE = 'odbconnect', r))
+    invisible(.Call('odbc_result_release', PACKAGE = 'odbc', r))
 }
 
 result_active <- function(r) {
-    .Call('odbconnect_result_active', PACKAGE = 'odbconnect', r)
+    .Call('odbc_result_active', PACKAGE = 'odbc', r)
 }
 
 result_completed <- function(r) {
-    .Call('odbconnect_result_completed', PACKAGE = 'odbconnect', r)
+    .Call('odbc_result_completed', PACKAGE = 'odbc', r)
 }
 
 new_result <- function(p, sql) {
-    .Call('odbconnect_new_result', PACKAGE = 'odbconnect', p, sql)
+    .Call('odbc_new_result', PACKAGE = 'odbc', p, sql)
 }
 
 result_fetch <- function(r, n_max = -1L) {
-    .Call('odbconnect_result_fetch', PACKAGE = 'odbconnect', r, n_max)
+    .Call('odbc_result_fetch', PACKAGE = 'odbc', r, n_max)
 }
 
 result_column_info <- function(r) {
-    .Call('odbconnect_result_column_info', PACKAGE = 'odbconnect', r)
+    .Call('odbc_result_column_info', PACKAGE = 'odbc', r)
 }
 
 result_bind <- function(r, params) {
-    invisible(.Call('odbconnect_result_bind', PACKAGE = 'odbconnect', r, params))
+    invisible(.Call('odbc_result_bind', PACKAGE = 'odbc', r, params))
 }
 
 result_execute <- function(r) {
-    invisible(.Call('odbconnect_result_execute', PACKAGE = 'odbconnect', r))
+    invisible(.Call('odbc_result_execute', PACKAGE = 'odbc', r))
 }
 
 result_insert_dataframe <- function(r, df) {
-    invisible(.Call('odbconnect_result_insert_dataframe', PACKAGE = 'odbconnect', r, df))
+    invisible(.Call('odbc_result_insert_dataframe', PACKAGE = 'odbc', r, df))
 }
 
 result_rows_affected <- function(r) {
-    .Call('odbconnect_result_rows_affected', PACKAGE = 'odbconnect', r)
+    .Call('odbc_result_rows_affected', PACKAGE = 'odbc', r)
 }
 
 result_row_count <- function(r) {
-    .Call('odbconnect_result_row_count', PACKAGE = 'odbconnect', r)
+    .Call('odbc_result_row_count', PACKAGE = 'odbc', r)
 }
 
 column_types <- function(df) {
-    invisible(.Call('odbconnect_column_types', PACKAGE = 'odbconnect', df))
+    invisible(.Call('odbc_column_types', PACKAGE = 'odbc', df))
 }
 
