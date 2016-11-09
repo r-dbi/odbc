@@ -1,6 +1,13 @@
 #' @include Driver.R
 NULL
 
+#' Odbconnect Connection Methods
+#'
+#' Implementations of pure virtual functions defined in the \code{DBI} package
+#' for OdbconnectConnection objects.
+#' @name OdbconnectConnection
+NULL
+
 OdbconnectConnection <- function(dsn = NULL, ..., driver = NULL, server = NULL, database = NULL, uid = NULL, pwd = NULL) {
   args <- c(dsn = dsn, driver = driver, server = server, database = database, uid = uid, pwd = pwd, list(...))
   stopifnot(all(has_names(args)))
@@ -19,7 +26,7 @@ OdbconnectConnection <- function(dsn = NULL, ..., driver = NULL, server = NULL, 
   new("OdbconnectConnection", ptr = ptr, quote = quote, valid_characters = valid_characters, info = info)
 }
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @export
 setClass(
   "OdbconnectConnection",
@@ -32,7 +39,7 @@ setClass(
   )
 )
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @inheritParams methods::show
 #' @export
 setMethod(
@@ -60,7 +67,7 @@ setMethod(
       })
 })
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @inheritParams DBI::dbIsValid
 #' @export
 setMethod(
@@ -69,7 +76,7 @@ setMethod(
     connection_valid(dbObj@ptr)
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @inheritParams DBI::dbDisconnect
 #' @export
 setMethod(
@@ -83,7 +90,7 @@ setMethod(
     TRUE
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @inheritParams DBI::dbSendQuery
 #' @export
 setMethod(
@@ -94,7 +101,7 @@ setMethod(
     res
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @inheritParams DBI::dbSendStatement
 #' @export
 setMethod(
@@ -105,7 +112,7 @@ setMethod(
     res
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @inheritParams DBI::dbDataType
 #' @export
 setMethod(
@@ -114,7 +121,7 @@ setMethod(
     get_data_type(dbObj@info, obj)
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @inheritParams DBI::dbQuoteString
 #' @export
 setMethod(
@@ -124,7 +131,7 @@ setMethod(
     getMethod("dbQuoteString", c("DBIConnection", "character"), asNamespace("DBI"))(conn, x, ...)
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @inheritParams DBI::dbQuoteIdentifier
 #' @export
 setMethod(
@@ -134,7 +141,7 @@ setMethod(
     DBI::SQL(paste(conn@quote, encodeString(x), conn@quote, sep = ""))
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @inheritParams DBI::dbListTables
 #' @export
 setMethod(
@@ -143,7 +150,7 @@ setMethod(
     connection_sql_tables(conn@ptr, ...)
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @inheritParams DBI::dbExistsTable
 #' @export
 setMethod(
@@ -152,7 +159,7 @@ setMethod(
     name %in% dbListTables(conn)
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @inheritParams DBI::dbListFields
 #' @export
 setMethod(
@@ -161,7 +168,7 @@ setMethod(
     connection_sql_columns(conn@ptr, table_name = name)[["name"]]
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @inheritParams DBI::dbRemoveTable
 #' @export
 setMethod(
@@ -172,7 +179,7 @@ setMethod(
     invisible(TRUE)
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @inheritParams DBI::dbGetInfo
 #' @export
 setMethod(
@@ -181,7 +188,7 @@ setMethod(
     connection_info(dbObj@ptr)
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @inheritParams DBI::dbGetQuery
 #' @export
 setMethod("dbGetQuery", signature("OdbconnectConnection", "character"),
@@ -199,7 +206,7 @@ setMethod("dbGetQuery", signature("OdbconnectConnection", "character"),
   }
 )
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @inheritParams DBI::dbBegin
 #' @export
 setMethod(
@@ -209,7 +216,7 @@ setMethod(
     TRUE
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @inheritParams DBI::dbCommit
 #' @export
 setMethod(
@@ -219,7 +226,7 @@ setMethod(
     TRUE
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectConnection
 #' @inheritParams DBI::dbRollback
 #' @export
 setMethod(

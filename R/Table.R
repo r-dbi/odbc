@@ -107,7 +107,7 @@ setMethod("sqlData", "OdbconnectConnection", function(con, value, row.names = NA
 })
 
 
-#' @rdname DBI
+#' @rdname odbconnect-tables
 #' @inheritParams DBI::dbReadTable
 #' @export
 setMethod(

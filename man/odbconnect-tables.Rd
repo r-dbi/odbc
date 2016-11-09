@@ -2,6 +2,7 @@
 % Please edit documentation in R/Table.R
 \docType{methods}
 \name{odbconnect-tables}
+\alias{dbReadTable,OdbconnectConnection,character-method}
 \alias{dbWriteTable,OdbconnectConnection,character,data.frame-method}
 \alias{odbconnect-tables}
 \alias{sqlData,OdbconnectConnection-method}
@@ -12,6 +13,8 @@
 
 \S4method{sqlData}{OdbconnectConnection}(con, value, row.names = NA,
   copy = TRUE, ...)
+
+\S4method{dbReadTable}{OdbconnectConnection,character}(conn, name, ...)
 }
 \arguments{
 \item{conn}{a \code{\linkS4class{OdbconnectConnection}} object, produced by

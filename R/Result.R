@@ -1,12 +1,19 @@
 #' @include Connection.R
 NULL
 
+#' Odbconnect Result Methods
+#'
+#' Implementations of pure virtual functions defined in the \code{DBI} package
+#' for OdbconnectResult objects.
+#' @name OdbconnectResult
+NULL
+
 OdbconnectResult <- function(connection, statement) {
   ptr <- new_result(connection@ptr, statement)
   new("OdbconnectResult", connection = connection, statement = statement, ptr = ptr)
 }
 
-#' @rdname DBI
+#' @rdname OdbconnectResult
 #' @export
 setClass(
   "OdbconnectResult",
@@ -18,7 +25,7 @@ setClass(
   )
 )
 
-#' @rdname DBI
+#' @rdname OdbconnectResult
 #' @inheritParams DBI::dbClearResult
 #' @export
 setMethod(
@@ -32,7 +39,7 @@ setMethod(
     TRUE
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectResult
 #' @inheritParams DBI::dbFetch
 #' @inheritParams DBI::sqlRownamesToColumn
 #' @export
@@ -42,7 +49,7 @@ setMethod(
     sqlColumnToRownames(result_fetch(res@ptr, n, ...), row.names)
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectResult
 #' @inheritParams DBI::dbHasCompleted
 #' @export
 setMethod(
@@ -51,7 +58,7 @@ setMethod(
     result_completed(res@ptr)
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectResult
 #' @inheritParams DBI::dbGetInfo
 #' @export
 setMethod(
@@ -61,7 +68,7 @@ setMethod(
     getMethod("dbGetInfo", "DBIResult", asNamespace("DBI"))(dbObj, ...)
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectResult
 #' @inheritParams DBI::dbIsValid
 #' @export
 setMethod(
@@ -70,7 +77,7 @@ setMethod(
     result_active(dbObj@ptr)
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectResult
 #' @inheritParams DBI::dbGetStatement
 #' @export
 setMethod(
@@ -79,7 +86,7 @@ setMethod(
     res@statement
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectResult
 #' @inheritParams DBI::dbColumnInfo
 #' @export
 setMethod(
@@ -88,7 +95,7 @@ setMethod(
     result_column_info(res@ptr, ...)
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectResult
 #' @inheritParams DBI::dbGetRowCount
 #' @export
 setMethod(
@@ -97,7 +104,7 @@ setMethod(
     result_row_count(res@ptr)
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectResult
 #' @inheritParams DBI::getRowsAffected
 #' @export
 setMethod(
@@ -106,7 +113,7 @@ setMethod(
     result_rows_affected(res@ptr)
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectResult
 #' @inheritParams DBI::dbBind
 #' @export
 setMethod(

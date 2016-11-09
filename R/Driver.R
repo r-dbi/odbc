@@ -1,10 +1,11 @@
 #' @include odbconnect.R
 NULL
 
-#' DBI methods
+#' Odbconnect Driver Methods
 #'
-#' Implementations of pure virtual functions defined in the \code{DBI} package.
-#' @name DBI
+#' Implementations of pure virtual functions defined in the \code{DBI} package
+#' for OdbconnectDriver objects.
+#' @name OdbconnectDriver
 NULL
 
 #' Odbconnect driver
@@ -22,11 +23,11 @@ odbconnect <- function() {
   new("OdbconnectDriver")
 }
 
-#' @rdname DBI
+#' @rdname OdbconnectDriver
 #' @export
 setClass("OdbconnectDriver", contains = "DBIDriver")
 
-#' @rdname DBI
+#' @rdname OdbconnectDriver
 #' @inheritParams methods::show
 #' @export
 setMethod(
@@ -62,7 +63,7 @@ setMethod(
   }
 )
 
-#' @rdname DBI
+#' @rdname OdbconnectDriver
 #' @inheritParams DBI::dbDataType
 #' @export
 setMethod(
@@ -71,7 +72,7 @@ setMethod(
     get_data_type(dbObj, obj, ...)
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectDriver
 #' @inheritParams DBI::dbDataType
 #' @export
 setMethod(
@@ -80,7 +81,7 @@ setMethod(
     get_data_type(dbObj, obj, ...)
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectDriver
 #' @inheritParams DBI::dbIsValid
 #' @export
 setMethod(
@@ -89,7 +90,7 @@ setMethod(
     TRUE
   })
 
-#' @rdname DBI
+#' @rdname OdbconnectDriver
 #' @inheritParams DBI::dbGetInfo
 #' @export
 setMethod(
