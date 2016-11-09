@@ -14,7 +14,7 @@ OdbconnectConnection <- function(dsn = NULL, ..., driver = NULL, server = NULL, 
   valid_characters <- c(letters, LETTERS, 0:9, "_", connection_special(ptr))
 
   info <- connection_info(ptr)
-  class(info) <- c(info$dbname, "list")
+  class(info) <- c(info$dbms.name, "list")
 
   new("OdbconnectConnection", ptr = ptr, quote = quote, valid_characters = valid_characters, info = info)
 }
