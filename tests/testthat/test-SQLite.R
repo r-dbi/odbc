@@ -32,6 +32,7 @@ DBItest::test_sql(c(
     "roundtrip_integer",
     "roundtrip_numeric.*",
     "roundtrip_character",
+    "roundtrip_factor",
     "roundtrip_raw",
     "roundtrip_rownames",
     NULL))
