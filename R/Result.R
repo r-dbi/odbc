@@ -19,16 +19,6 @@ setClass(
 )
 
 #' @rdname DBI
-#' @inheritParams methods::show
-#' @export
-setMethod(
-  "show", "OdbconnectResult",
-  function(object) {
-    cat("<OdbconnectResult>\n")
-    # TODO: Print more details
-  })
-
-#' @rdname DBI
 #' @inheritParams DBI::dbClearResult
 #' @export
 setMethod(
