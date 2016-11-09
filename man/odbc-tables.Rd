@@ -8,8 +8,8 @@
 \alias{sqlData,OdbcConnection-method}
 \title{Convenience functions for reading/writing DBMS tables}
 \usage{
-\S4method{dbWriteTable}{OdbcConnection,character,data.frame}(conn, name,
-  value, overwrite = FALSE, append = FALSE, temporary = FALSE, ...)
+\S4method{dbWriteTable}{OdbcConnection,character,data.frame}(conn, name, value,
+  overwrite = FALSE, append = FALSE, temporary = FALSE, ...)
 
 \S4method{sqlData}{OdbcConnection}(con, value, row.names = NA, ...)
 

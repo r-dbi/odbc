@@ -6,7 +6,7 @@ list_drivers <- function() {
 }
 
 odbc_connect <- function(connection_string) {
-    .Call('odbc_odbconnect_connect', PACKAGE = 'odbc', connection_string)
+    .Call('odbc_odbc_connect', PACKAGE = 'odbc', connection_string)
 }
 
 connection_info <- function(p) {

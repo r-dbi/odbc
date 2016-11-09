@@ -34,7 +34,6 @@ Collate:
     'Table.R'
     'utils.R'
     'zzz.R'
-Remotes:
-    rstats-db/DBI,
+Remotes: rstats-db/DBI,
     jimhester/DBItest@mine,
     hadley/blob

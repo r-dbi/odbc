@@ -18,7 +18,7 @@ END_RCPP
 }
 // odbc_connect
 connection_ptr odbc_connect(std::string const& connection_string);
-RcppExport SEXP odbc_odbconnect_connect(SEXP connection_stringSEXP) {
+RcppExport SEXP odbc_odbc_connect(SEXP connection_stringSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
