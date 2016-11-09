@@ -1,11 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 odbc
-==========
+====
 
-[![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip) [![Travis-CI Build Status](https://travis-ci.org/rstats-db/odbc.svg?branch=master)](https://travis-ci.org/rstats-db/odbc) [![Coverage Status](https://img.shields.io/codecov/c/github/rstats-db/odbc/master.svg)](https://codecov.io/github/rstats-db/odbc?branch=master) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/2bnahh7qg5iu7197?svg=true)](https://ci.appveyor.com/project/hadley/odbc-cqvmd)
+[![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip) [![Travis-CI Build Status](https://travis-ci.org/rstats-db/odbc.svg?branch=master)](https://travis-ci.org/rstats-db/odbc) [![Coverage Status](https://img.shields.io/codecov/c/github/rstats-db/odbc/master.svg)](https://codecov.io/github/rstats-db/odbc?branch=master) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/2bnahh7qg5iu7197?svg=true)](https://ci.appveyor.com/project/hadley/odbconnect-cqvmd)
 
-The goal of odbc is to provide a DBI-compliant interface to [Open Database Connectivity](https://msdn.microsoft.com/en-us/library/ms710252(v=vs.85).aspx) (ODBC) drivers. This gives a efficient, easy to setup connection to any database with ODBC drivers available, including [SQL Server](https://www.microsoft.com/en-us/sql-server/), [Oracle](https://www.oracle.com/database), [MySQL](https://www.mysql.com/), [PostgreSQL](https://www.postgresql.org/), [SQLite](https://sqlite.org/) and others. The implementation builds on the [nanodbc](http://nanodbc.lexicalunit.com/) C++ library.
+The goal of the odbc package is to provide a DBI-compliant interface to [Open Database Connectivity](https://msdn.microsoft.com/en-us/library/ms710252(v=vs.85).aspx) (ODBC) drivers. This gives a efficient, easy to setup connection to any database with ODBC drivers available, including [SQL Server](https://www.microsoft.com/en-us/sql-server/), [Oracle](https://www.oracle.com/database), [MySQL](https://www.mysql.com/), [PostgreSQL](https://www.postgresql.org/), [SQLite](https://sqlite.org/) and others. The implementation builds on the [nanodbc](http://nanodbc.lexicalunit.com/) C++ library.
 
 -   [Installation](#installation)
     -   [Windows](#windows)
@@ -240,16 +240,15 @@ library(DBI)
 library(RODBCDBI)
 rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "PostgreSQL")
 system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
-#> Warning: closing unused RODBC handle 7
 #>    user  system elapsed 
-#>  20.249   1.870  23.816
+#>  20.795   1.405  23.536
 
 # Now using odbc
 library(odbc)
 odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
 system.time(odbc_result <- dbReadTable(odbc, "flights"))
 #>    user  system elapsed 
-#>   4.827   0.341   6.570
+#>   4.698   0.298   6.289
 
 library(tibble)
 as_tibble(odbc_result)
@@ -275,10 +274,10 @@ identical(dim(rodbc_result), dim(odbc_result))
 #> [1] TRUE
 rm(rodbc_result, odbc_result, odbc, rodbc)
 gc(verbose = FALSE)
-#> Warning: closing unused RODBC handle 8
+#> Warning: closing unused RODBC handle 1
 #>           used (Mb) gc trigger  (Mb) max used  (Mb)
-#> Ncells  715333 38.3    1770749  94.6  1770749  94.6
-#> Vcells 9456680 72.2   30797729 235.0 34239325 261.3
+#> Ncells  819329 43.8    1770749  94.6  1266947  67.7
+#> Vcells 4580886 35.0   21020152 160.4 26161793 199.6
 ```
 
 ### Writing
@@ -288,8 +287,8 @@ Writing the same dataset to the database.
     #> [1] TRUE
     #> [1] TRUE
     #>           used (Mb) gc trigger  (Mb) max used  (Mb)
-    #> Ncells  715233 38.2    1770749  94.6  1770749  94.6
-    #> Vcells 9456417 72.2   30797729 235.0 34239325 261.3
+    #> Ncells  825927 44.2    1770749  94.6  1266947  67.7
+    #> Vcells 4793888 36.6   16816121 128.3 26161793 199.6
 
 ``` r
 library(nycflights13)
@@ -297,11 +296,11 @@ library(nycflights13)
 rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "PostgreSQL")
 system.time(dbWriteTable(rodbc, "flights2", as.data.frame(flights[, names(flights) != "time_hour"])))
 #>    user  system elapsed 
-#>   7.349   4.212  58.233
+#>   7.628   4.131  51.432
 
 # Now using odbc
 odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
 system.time(dbWriteTable(odbc, "flights3", as.data.frame(flights)))
 #>    user  system elapsed 
-#>   7.166   3.888  26.079
+#>   7.853   3.963  27.065
 ```

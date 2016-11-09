@@ -17,9 +17,8 @@ Imports:
     blob
 LinkingTo: Rcpp, BH
 RoxygenNote: 5.0.1
-URL: https://github.com/hadley/odbc
-BugReports: https://github.com/hadley/odbc/issues
-SystemRequirements: GNU make
+URL: https://github.com/rstats-db/odbc
+BugReports: https://github.com/rstats-db/odbc/issues
 Suggests:
     tibble,
     DBItest,
