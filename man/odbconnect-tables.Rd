@@ -11,8 +11,7 @@
 \S4method{dbWriteTable}{OdbconnectConnection,character,data.frame}(conn, name,
   value, overwrite = FALSE, append = FALSE, temporary = FALSE, ...)
 
-\S4method{sqlData}{OdbconnectConnection}(con, value, row.names = NA,
-  copy = TRUE, ...)
+\S4method{sqlData}{OdbconnectConnection}(con, value, row.names = NA, ...)
 
 \S4method{dbReadTable}{OdbconnectConnection,character}(conn, name, ...)
 }
@@ -21,7 +20,7 @@
 \code{\link[DBI]{dbConnect}}}
 
 \item{name}{a character string specifying a table name. Names will be
-automatically quoted so you can use any sequence of characaters, not
+automatically quoted so you can use any sequence of characters, not
 just any valid bare table name.}
 
 \item{value}{A data.frame to write to the database.}
@@ -48,11 +47,6 @@ A string is equivalent to \code{TRUE}, but allows you to override the
 default name.
 
 For backward compatibility, \code{NULL} is equivalent to \code{FALSE}.}
-
-\item{copy}{If \code{TRUE}, serializes the data frame to a single string
-and uses \code{COPY name FROM stdin}. This is fast, but not supported by
-all postgres servers (e.g. Amazon's redshift). If \code{FALSE}, generates
-a single SQL string. This is slower, but always supported.}
 }
 \description{
 Convenience functions for reading/writing DBMS tables

@@ -3,15 +3,10 @@
 #' @param conn a \code{\linkS4class{OdbconnectConnection}} object, produced by
 #'   \code{\link[DBI]{dbConnect}}
 #' @param name a character string specifying a table name. Names will be
-#'   automatically quoted so you can use any sequence of characaters, not
+#'   automatically quoted so you can use any sequence of characters, not
 #'   just any valid bare table name.
 #' @param value A data.frame to write to the database.
 #' @inheritParams DBI::sqlCreateTable
-#' @param copy If \code{TRUE}, serializes the data frame to a single string
-#'   and uses \code{COPY name FROM stdin}. This is fast, but not supported by
-#'   all postgres servers (e.g. Amazon's redshift). If \code{FALSE}, generates
-#'   a single SQL string. This is slower, but always supported.
-#'
 #' @examples
 #' \dontrun{
 #' library(DBI)
@@ -92,7 +87,7 @@ setMethod(
 ##' @rdname odbconnect-tables
 ##' @inheritParams DBI::dbReadTable
 ##' @export
-setMethod("sqlData", "OdbconnectConnection", function(con, value, row.names = NA, copy = TRUE, ...) {
+setMethod("sqlData", "OdbconnectConnection", function(con, value, row.names = NA, ...) {
   value <- sqlRownamesToColumn(value, row.names)
 
   # Convert POSIXlt to POSIXct
