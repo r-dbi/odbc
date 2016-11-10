@@ -1449,7 +1449,7 @@ private:
 };
 
 /// \brief Returns an iterator to the beginning of the given result set.
-inline auto begin(result& r)
+inline result_iterator begin(result& r)
 {
     return result_iterator(r);
 }
@@ -1460,7 +1460,7 @@ inline auto begin(result& r)
 /// When a valid `nanodbc::result_iterator` reaches the end of the underlying result set,
 /// it becomes equal to the end-of-result iterator.
 /// Dereferencing or incrementing it further is undefined.
-inline auto end(result& /*r*/)
+inline result_iterator end(result& /*r*/)
 {
     return result_iterator();
 }
