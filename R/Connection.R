@@ -238,14 +238,17 @@ setMethod(
 
 get_data_type <- function(info, obj, ...) UseMethod("get_data_type")
 
-varchar_data_type <- function(x) {
-  #size <- 2L^(floor(log2(max(nchar(as.character(x))))) + 1L)
-  #paste0("VARCHAR(", size, ")")
-  paste0("VARCHAR(255)")
+varchar <- function(x, type = "varchar") {
+  max_length <- max(nchar(as.character(x)), na.rm = TRUE)
+  paste0(type, "(", max(255, max_length), ")")
+}
+varbinary <- function(x, type = "varbinary") {
+  max_length <- max(lengths(x), na.rm = TRUE)
+  paste0(type, "(", max(255, max_length), ")")
 }
 
 get_data_type.default <- function(info, obj, ...) {
-  if (is.factor(obj)) return(varchar_data_type(obj))
+  if (is.factor(obj)) return(varchar(obj))
   if (is(obj, "POSIXct")) return("TIMESTAMP")
   if (is(obj, "Date")) return("DATE")
   if (is(obj, "blob")) return("BLOB")
@@ -253,9 +256,9 @@ get_data_type.default <- function(info, obj, ...) {
   switch(typeof(obj),
     integer = "INTEGER",
     double = "DOUBLE PRECISION",
-    character = varchar_data_type(obj),
+    character = varchar(obj),
     logical = "SMALLINT",
-    list = varchar_data_type(obj),
+    list = varchar(obj),
     stop("Unsupported type", call. = FALSE)
   )
 }
@@ -293,17 +296,17 @@ get_data_type.PostgreSQL <- function(info, obj, ...) {
 }
 
 `get_data_type.Microsoft SQL Server` <- function(info, obj, ...) {
-  if (is.factor(obj)) return("varchar(max)")
+  if (is.factor(obj)) return(varchar(obj))
   if (is(obj, "POSIXct")) return("datetime")
   if (is(obj, "Date")) return("date")
-  if (is(obj, "blob")) return("varbinary(max)")
+  if (is(obj, "blob")) return(varbinary(obj))
 
   switch(typeof(obj),
     integer = "int",
     double = "float",
-    character = "varchar(max)",
+    character = varchar(obj),
     logical = "BIT",
-    list = "TEXT",
+    list = varchar(obj),
     stop("Unsupported type", call. = FALSE)
   )
 }
