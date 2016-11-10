@@ -106,7 +106,7 @@ Databases can be connect by specifying a connection string directly, or with DSN
 Specify a connection string as named arguments directly in the `dbConnect()` method.
 
 ``` r
-librayr(DBI)
+library(DBI)
 con <- dbConnect(odbc::odbc(),
   driver = "PostgreSQL Driver",
   database = "test_db",

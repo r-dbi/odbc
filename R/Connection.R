@@ -242,6 +242,7 @@ varchar <- function(x, type = "varchar") {
   max_length <- max(nchar(as.character(x)), na.rm = TRUE)
   paste0(type, "(", max(255, max_length), ")")
 }
+
 varbinary <- function(x, type = "varbinary") {
   max_length <- max(lengths(x), na.rm = TRUE)
   paste0(type, "(", max(255, max_length), ")")

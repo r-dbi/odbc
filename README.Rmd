@@ -126,7 +126,7 @@ DSN Configuration files.
 
 Specify a connection string as named arguments directly in the `dbConnect()` method.
 ```r
-librayr(DBI)
+library(DBI)
 con <- dbConnect(odbc::odbc(),
   driver = "PostgreSQL Driver",
   database = "test_db",
