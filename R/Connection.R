@@ -14,16 +14,12 @@ OdbcConnection <- function(dsn = NULL, ..., driver = NULL, server = NULL, databa
 
   connection_string <- paste0(.connection_string, paste(collapse = ";", sep = "=", names(args), args))
   ptr <- odbc_connect(connection_string)
-  quote <- connection_quote(ptr)
-
-  # a-z A-Z, 0-9 and _ are always valid, other characters than can be are
-  # connection specific and returned by connection_special
-  valid_characters <- c(letters, LETTERS, 0:9, "_", connection_special(ptr))
+  quote <- tryCatch(connection_quote(ptr), error = function(e) NULL)
 
   info <- connection_info(ptr)
   class(info) <- c(info$dbms.name, "list")
 
-  new("OdbcConnection", ptr = ptr, quote = quote, valid_characters = valid_characters, info = info)
+  new("OdbcConnection", ptr = ptr, quote = quote, info = info)
 }
 
 #' @rdname OdbcConnection
@@ -34,7 +30,6 @@ setClass(
   slots = list(
     ptr = "externalptr",
     quote = "character",
-    valid_characters = "character",
     info = "ANY"
   )
 )
@@ -137,7 +132,9 @@ setMethod(
 setMethod(
   "dbQuoteIdentifier", c("OdbcConnection", "character"),
   function(conn, x, ...) {
-    x <- gsub(conn@quote, paste0(conn@quote, conn@quote), x, fixed = TRUE)
+    if (nzchar(conn@quote)) {
+      x <- gsub(conn@quote, paste0(conn@quote, conn@quote), x, fixed = TRUE)
+    }
     DBI::SQL(paste(conn@quote, encodeString(x), conn@quote, sep = ""))
   })
 

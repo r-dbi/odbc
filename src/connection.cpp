@@ -61,11 +61,6 @@ std::string connection_quote(connection_ptr const &p) {
 }
 
 // [[Rcpp::export]]
-std::string connection_special(connection_ptr const &p) {
-  return (*p)->connection()->get_info<std::string>(SQL_SPECIAL_CHARACTERS);
-}
-
-// [[Rcpp::export]]
 void connection_release(connection_ptr p) {
   if (p.get() != nullptr && (*p)->has_active_result()) {
     Rcpp::warning(
