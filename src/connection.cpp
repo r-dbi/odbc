@@ -32,32 +32,33 @@ connection_ptr odbc_connect(std::string const &connection_string) {
       new odbc_connection(connection_string)));
 }
 
+std::string get_info_or_empty(connection_ptr const &p, short type) {
+  try {
+    return (*p)->connection()->get_info<std::string>(type);
+  } catch(nanodbc::database_error c) {
+    return "";
+  }
+}
+
 // [[Rcpp::export]]
 Rcpp::List connection_info(connection_ptr const &p) {
   return Rcpp::List::create(
-      Rcpp::_["dbname"] =
-          (*p)->connection()->get_info<std::string>(SQL_DATABASE_NAME),
-      Rcpp::_["dbms.name"] = (*p)->connection()->dbms_name(),
-      Rcpp::_["db.version"] = (*p)->connection()->dbms_version(),
-      Rcpp::_["username"] =
-          (*p)->connection()->get_info<std::string>(SQL_USER_NAME),
+      Rcpp::_["dbname"] = get_info_or_empty(p, SQL_DATABASE_NAME),
+      Rcpp::_["dbms.name"] = get_info_or_empty(p, SQL_DBMS_NAME),
+      Rcpp::_["db.version"] = get_info_or_empty(p, SQL_DBMS_VER),
+      Rcpp::_["username"] = get_info_or_empty(p, SQL_USER_NAME),
       Rcpp::_["host"] = "", Rcpp::_["port"] = "",
-      Rcpp::_["sourcename"] =
-          (*p)->connection()->get_info<std::string>(SQL_DATA_SOURCE_NAME),
-      Rcpp::_["servername"] =
-          (*p)->connection()->get_info<std::string>(SQL_SERVER_NAME),
-      Rcpp::_["drivername"] = (*p)->connection()->driver_name(),
-      Rcpp::_["odbc.version"] =
-          (*p)->connection()->get_info<std::string>(SQL_ODBC_VER),
-      Rcpp::_["driver.version"] =
-          (*p)->connection()->get_info<std::string>(SQL_DRIVER_VER),
-      Rcpp::_["odbcdriver.version"] =
-          (*p)->connection()->get_info<std::string>(SQL_DRIVER_ODBC_VER));
+      Rcpp::_["sourcename"] = get_info_or_empty(p, SQL_DATA_SOURCE_NAME),
+      Rcpp::_["servername"] = get_info_or_empty(p, SQL_SERVER_NAME),
+      Rcpp::_["drivername"] = get_info_or_empty(p, SQL_DRIVER_NAME),
+      Rcpp::_["odbc.version"] = get_info_or_empty(p, SQL_ODBC_VER),
+      Rcpp::_["driver.version"] = get_info_or_empty(p, SQL_DRIVER_VER),
+      Rcpp::_["odbcdriver.version"] = get_info_or_empty(p, SQL_DRIVER_ODBC_VER));
 }
 
 // [[Rcpp::export]]
 std::string connection_quote(connection_ptr const &p) {
-  return (*p)->connection()->get_info<std::string>(SQL_IDENTIFIER_QUOTE_CHAR);
+  return get_info_or_empty(p, SQL_IDENTIFIER_QUOTE_CHAR);
 }
 
 // [[Rcpp::export]]

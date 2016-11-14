@@ -14,7 +14,7 @@ OdbcConnection <- function(dsn = NULL, ..., driver = NULL, server = NULL, databa
 
   connection_string <- paste0(.connection_string, paste(collapse = ";", sep = "=", names(args), args))
   ptr <- odbc_connect(connection_string)
-  quote <- tryCatch(connection_quote(ptr), error = function(e) "")
+  quote <- connection_quote(ptr)
 
   info <- connection_info(ptr)
   class(info) <- c(info$dbms.name, "list")
