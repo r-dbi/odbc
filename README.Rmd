@@ -269,7 +269,6 @@ rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "PostgreSQL")
 system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
 
 # Now using odbc
-library(odbc)
 odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
 system.time(odbc_result <- dbReadTable(odbc, "flights"))
 

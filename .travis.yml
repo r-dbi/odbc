@@ -3,6 +3,11 @@ cache: packages
 env:
   - MAKEFLAGS = -j2 ODBCSYSINI=${TRAVIS_BUILD_DIR}/travis/odbc INCLUDE_DIR=/usr/include LIB_DIR=/usr/lib/x86_64-linux-gnu/
 
+r:
+  - oldrel
+  - release
+  - devel
+
 warnings_are_errors: false
 
 addons:

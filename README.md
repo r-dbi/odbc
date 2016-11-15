@@ -242,15 +242,15 @@ library(DBI)
 library(RODBCDBI)
 rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "PostgreSQL")
 system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
+#> Warning: closing unused RODBC handle 2
 #>    user  system elapsed 
-#>  20.795   1.405  23.536
+#>  19.203   1.356  21.724
 
 # Now using odbc
-library(odbc)
 odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
 system.time(odbc_result <- dbReadTable(odbc, "flights"))
 #>    user  system elapsed 
-#>   4.698   0.298   6.289
+#>   5.119   0.290   6.771
 
 library(tibble)
 as_tibble(odbc_result)
@@ -276,10 +276,10 @@ identical(dim(rodbc_result), dim(odbc_result))
 #> [1] TRUE
 rm(rodbc_result, odbc_result, odbc, rodbc)
 gc(verbose = FALSE)
-#> Warning: closing unused RODBC handle 1
+#> Warning: closing unused RODBC handle 3
 #>           used (Mb) gc trigger  (Mb) max used  (Mb)
-#> Ncells  819329 43.8    1770749  94.6  1266947  67.7
-#> Vcells 4580886 35.0   21020152 160.4 26161793 199.6
+#> Ncells  712236 38.1    1770749  94.6  1770749  94.6
+#> Vcells 8991012 68.6   27225095 207.8 33776265 257.7
 ```
 
 ### Writing
@@ -289,8 +289,8 @@ Writing the same dataset to the database.
     #> [1] TRUE
     #> [1] TRUE
     #>           used (Mb) gc trigger  (Mb) max used  (Mb)
-    #> Ncells  825927 44.2    1770749  94.6  1266947  67.7
-    #> Vcells 4793888 36.6   16816121 128.3 26161793 199.6
+    #> Ncells  712146 38.1    1770749  94.6  1770749  94.6
+    #> Vcells 8990784 68.6   27225095 207.8 33776265 257.7
 
 ``` r
 library(nycflights13)
@@ -298,11 +298,11 @@ library(nycflights13)
 rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "PostgreSQL")
 system.time(dbWriteTable(rodbc, "flights2", as.data.frame(flights[, names(flights) != "time_hour"])))
 #>    user  system elapsed 
-#>   7.628   4.131  51.432
+#>   6.693   3.786  48.423
 
 # Now using odbc
 odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
 system.time(dbWriteTable(odbc, "flights3", as.data.frame(flights)))
 #>    user  system elapsed 
-#>   7.853   3.963  27.065
+#>   7.802   3.703  26.016
 ```
