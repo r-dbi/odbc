@@ -14,8 +14,8 @@ test_roundtrip <- function(columns = "", invert = TRUE) {
     it$Raw <- blob::as.blob(lapply(seq_len(NROW(it)), function(x) as.raw(sample(0:100, size = sample(0:25, 1)))))
 
     # Add a proportion of NA values to a data frame
-    add_na <- function(proportion) function(x) { is.na(x) <- sample(c(TRUE, FALSE), size = length(x), prob = c(proportion, 1 - proportion), replace = TRUE); x}
-    it[] <- lapply(it, add_na(.1))
+    add_na <- function(x, p = .1) { is.na(x) <- runif(length(x)) < p; x}
+    it[] <- lapply(it, add_na, p = .1)
     if (isTRUE(invert)) {
       it <- it[, names(it) != columns]
     } else {
