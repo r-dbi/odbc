@@ -359,7 +359,7 @@ class odbc_result {
           case SQL_SMALLINT:
           case SQL_INTEGER:
           case SQL_BIGINT:
-            types.push_back(integer_t);
+            types.push_back(double_t);
             break;
             // Double
           case SQL_DOUBLE:
