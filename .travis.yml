@@ -26,6 +26,7 @@ before_install: |
   mkdir ~/.R
   cat <<EOF > ~/.R/Makevars
   CXX1X=g++-4.9
+  CXX1XSTD=-std=c++11
 
 before_script:
   - sudo -u postgres psql -U postgres -c 'CREATE DATABASE test_db;'
