@@ -144,7 +144,7 @@ setMethod(
 setMethod(
   "dbListTables", "OdbcConnection",
   function(conn, ...) {
-    connection_sql_tables(conn@ptr, ...)
+    connection_sql_tables(conn@ptr, ...)$table_name
   })
 
 #' @rdname OdbcConnection

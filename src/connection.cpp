@@ -84,18 +84,33 @@ void connection_rollback(connection_ptr const &p) { (*p)->rollback(); }
 bool connection_valid(connection_ptr const &p) { return p.get() != nullptr; }
 
 // [[Rcpp::export]]
-std::vector<std::string> connection_sql_tables(
+Rcpp::DataFrame connection_sql_tables(
     connection_ptr const &p, std::string const &catalog_name = "",
     std::string const &schema_name = "", std::string const &table_name = "",
     std::string const &table_type = "") {
   auto c = nanodbc::catalog(*(*p)->connection());
   auto tables =
       c.find_tables(table_name, table_type, schema_name, catalog_name);
-  std::vector<std::string> out;
+  std::vector<std::string> names;
+  std::vector<std::string> types;
+  std::vector<std::string> schemas;
+  std::vector<std::string> remarks;
+  std::vector<std::string> catalog;
+
   while (tables.next()) {
-    out.push_back(tables.table_name());
+    names.push_back(tables.table_name());
+    types.push_back(tables.table_type());
+    schemas.push_back(tables.table_schema());
+    remarks.push_back(tables.table_catalog());
+    catalog.push_back(tables.table_remarks());
   }
-  return out;
+  return Rcpp::DataFrame::create(
+      Rcpp::_["table_catalog"] = catalog,
+      Rcpp::_["table_name"] = names,
+      Rcpp::_["table_type"] = types,
+      Rcpp::_["table_schema"] = schemas,
+      Rcpp::_["table_remarks"] = remarks,
+      Rcpp::_["stringsAsFactors"] = false);
 }
 
 // "%" is a wildcard for all possible values
