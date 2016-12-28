@@ -38,6 +38,8 @@ DBItest::test_sql(c(
 DBItest::test_meta(c(
   "bind_empty",
     NULL))
+DBItest::test_transaction(c(
+    NULL))
 DBItest::test_compliance(c(
     "read_only", # Setting SQL_MODE_READ_ONLY is not supported in most DBs, so ignoring.
     NULL))

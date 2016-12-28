@@ -20,12 +20,21 @@ class odbc_connection {
     }
 
     void begin() {
+      if (t_) {
+        Rcpp::stop("Double begin");
+      }
       t_ = std::unique_ptr<nanodbc::transaction>(new nanodbc::transaction(*c_));
     }
     void commit() const {
+      if (!t_) {
+        Rcpp::stop("Commit without beginning transaction");
+      }
       t_->commit();
     }
     void rollback() const {
+      if (!t_) {
+        Rcpp::stop("Rollback without beginning transaction");
+      }
       t_->rollback();
     }
     bool has_active_result() const {
