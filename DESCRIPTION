@@ -23,7 +23,8 @@ Suggests:
     tibble,
     DBItest,
     testthat,
-    covr
+    covr,
+    magrittr
 Collate:
     'odbc.R'
     'Driver.R'
