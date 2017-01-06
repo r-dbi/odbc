@@ -15,9 +15,15 @@ class odbc_result {
       c_(c) ,
       sql_(sql),
       rows_fetched_(0),
-      complete_(0) {
-        s_ = std::make_shared<nanodbc::statement>(*c->connection(), sql);
+      complete_(0),
+      bound_(false) {
         c_->set_current_result(this);
+
+        prepare();
+        if (s_->parameters() == 0) {
+          bound_ = true;
+          execute();
+        }
       };
     std::shared_ptr<odbc_connection> connection() const {
       return std::shared_ptr<odbc_connection>(c_);
@@ -27,6 +33,9 @@ class odbc_result {
     }
     std::shared_ptr<nanodbc::result> result() const {
       return std::shared_ptr<nanodbc::result>(r_);
+    }
+    void prepare() {
+      s_ = std::make_shared<nanodbc::statement>(*c_->connection(), sql_);
     }
     void execute() {
       if (!r_) {
@@ -38,10 +47,17 @@ class odbc_result {
         }
       }
     }
-    void insert_dataframe(Rcpp::DataFrame const & df) {
-      auto types = column_types(df);
-      auto ncols = df.size();
-      auto nrows = df.nrows();
+    void insert_dataframe(Rcpp::List const & x) {
+      complete_ = false;
+      rows_fetched_ = 0;
+      auto types = column_types(x);
+      auto ncols = x.size();
+
+      if (ncols != s_->parameters()) {
+        Rcpp::stop("Query requires %i params; %i supplied.",
+            s_->parameters(), ncols);
+      }
+      auto nrows = Rf_length(x[0]);
       int start = 0;
       int batch_size = 1024;
       nanodbc::transaction transaction(*c_->connection());
@@ -54,26 +70,29 @@ class odbc_result {
 
         for (short col = 0; col < ncols; ++col) {
           switch(types[col]) {
-            case logical_t: bind_logical(s, df, col, start, size); break;
-            case date_t: bind_date(s, df, col, start, size); break;
-            case datetime_t: bind_datetime(s, df, col, start, size); break;
-            case double_t: bind_double(s, df, col, start, size); break;
-            case integer_t: bind_integer(s, df, col, start, size); break;
-            case string_t: bind_string(s, df, col, start, size); break;
-            case raw_t: bind_raw(s, df, col, start, size); break;
+            case logical_t: bind_logical(s, x, col, start, size); break;
+            case date_t: bind_date(s, x, col, start, size); break;
+            case datetime_t: bind_datetime(s, x, col, start, size); break;
+            case double_t: bind_double(s, x, col, start, size); break;
+            case integer_t: bind_integer(s, x, col, start, size); break;
+            case string_t: bind_string(s, x, col, start, size); break;
+            case raw_t: bind_raw(s, x, col, start, size); break;
             default: Rcpp::stop("Not yet implemented (%s)!", types[col]); break;
 
           }
         }
-        nanodbc::execute(s, size);
+        r_ = std::make_shared<nanodbc::result>(nanodbc::execute(s, size));
         start += batch_size;
 
         Rcpp::checkUserInterrupt();
       }
       transaction.commit();
+      bound_ = true;
     }
     Rcpp::DataFrame fetch(int n_max = -1) {
-      execute();
+      if (!bound_) {
+        Rcpp::stop("Query needs to be bound before fetching");
+      }
       if (r_->columns() == 0) {
         return Rcpp::DataFrame();
       }
@@ -115,6 +134,7 @@ class odbc_result {
     static const int seconds_in_day_ = 24 * 60 * 60;
     size_t rows_fetched_;
     bool complete_;
+    bool bound_;
 
     std::map<short, std::vector<std::string>> strings_;
     std::map<short, std::vector<std::vector<uint8_t>>> raws_;
@@ -128,7 +148,7 @@ class odbc_result {
       nulls_.clear();
     }
 
-    void bind_logical(nanodbc::statement & statement, Rcpp::DataFrame const & data, short column, size_t start, size_t size) {
+    void bind_logical(nanodbc::statement & statement, Rcpp::List const & data, short column, size_t start, size_t size) {
       nulls_[column] = std::vector<uint8_t>(size, false);
       auto vector = LOGICAL(data[column]);
       for (size_t i = 0;i < size;++i) {
@@ -140,13 +160,13 @@ class odbc_result {
       statement.bind<int>(column, t, size, reinterpret_cast<bool *>(nulls_[column].data()));
     }
 
-    void bind_integer(nanodbc::statement & statement, Rcpp::DataFrame const & data, short column, size_t start, size_t size) {
+    void bind_integer(nanodbc::statement & statement, Rcpp::List const & data, short column, size_t start, size_t size) {
       statement.bind(column, &INTEGER(data[column])[start], size, &NA_INTEGER);
     }
 
     // We cannot use a sentinel for doubles becuase NaN != NaN for all values
     // of NaN, even if the bits are the same.
-    void bind_double(nanodbc::statement & statement, Rcpp::DataFrame const & data, short column, size_t start, size_t size) {
+    void bind_double(nanodbc::statement & statement, Rcpp::List const & data, short column, size_t start, size_t size) {
       nulls_[column] = std::vector<uint8_t>(size, false);
 
       auto vector = REAL(data[column]);
@@ -159,7 +179,7 @@ class odbc_result {
       statement.bind(column, &vector[start], size, reinterpret_cast<bool *>(nulls_[column].data()));
     }
 
-    void bind_string(nanodbc::statement & statement, Rcpp::DataFrame const & data, short column, size_t start, size_t size) {
+    void bind_string(nanodbc::statement & statement, Rcpp::List const & data, short column, size_t start, size_t size) {
       nulls_[column] = std::vector<uint8_t>(size, false);
       for (size_t i = 0;i < size;++i) {
         auto value = STRING_ELT(data[column], start + i);
@@ -171,7 +191,7 @@ class odbc_result {
 
       statement.bind_strings(column, strings_[column], reinterpret_cast<bool *>(nulls_[column].data()));
     }
-    void bind_raw(nanodbc::statement & statement, Rcpp::DataFrame const & data, short column, size_t start, size_t size) {
+    void bind_raw(nanodbc::statement & statement, Rcpp::List const & data, short column, size_t start, size_t size) {
       nulls_[column] = std::vector<uint8_t>(size, false);
       for (size_t i = 0;i < size;++i) {
         SEXP value = VECTOR_ELT(data[column], start + i);
@@ -201,7 +221,7 @@ class odbc_result {
       return ts;
     }
 
-    void bind_datetime(nanodbc::statement & statement, Rcpp::DataFrame const & data, short column, size_t start, size_t size) {
+    void bind_datetime(nanodbc::statement & statement, Rcpp::List const & data, short column, size_t start, size_t size) {
 
       nulls_[column] = std::vector<uint8_t>(size, false);
 
@@ -217,7 +237,7 @@ class odbc_result {
       }
       statement.bind(column, times_[column].data(), size, reinterpret_cast<bool *>(nulls_[column].data()));
     }
-    void bind_date(nanodbc::statement & statement, Rcpp::DataFrame const & data, short column, size_t start, size_t size) {
+    void bind_date(nanodbc::statement & statement, Rcpp::List const & data, short column, size_t start, size_t size) {
 
       nulls_[column] = std::vector<uint8_t>(size, false);
 
@@ -316,15 +336,15 @@ class odbc_result {
       }
     }
 
-    std::vector<r_type> column_types(Rcpp::DataFrame const & df) {
+    std::vector<r_type> column_types(Rcpp::List const & list) {
       std::vector<r_type> types;
-      types.reserve(df.size());
-      for (short i = 0;i < df.size();++i) {
-        switch(TYPEOF(df[i])) {
+      types.reserve(list.size());
+      for (short i = 0;i < list.size();++i) {
+        switch(TYPEOF(list[i])) {
           case LGLSXP: types.push_back(logical_t); break;
           case INTSXP: types.push_back(integer_t); break;
           case REALSXP: {
-            Rcpp::RObject x = df[i];
+            Rcpp::RObject x = list[i];
             if (x.inherits("Date")) {
               types.push_back(date_t);
             } else if (x.inherits("POSIXct")) {
@@ -337,7 +357,7 @@ class odbc_result {
           case STRSXP: types.push_back(string_t); break;
           case VECSXP:
           case RAWSXP: types.push_back(raw_t); break;
-          default: Rcpp::stop("Unsupported column type %s", Rf_type2char(TYPEOF(df[i])));
+          default: Rcpp::stop("Unsupported column type %s", Rf_type2char(TYPEOF(list[i])));
         }
       }
 

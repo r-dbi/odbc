@@ -683,6 +683,10 @@ public:
     /// \brief Resets all currently bound parameters.
     void reset_parameters() NANODBC_NOEXCEPT;
 
+    /// \brief Returns the number of parameters in the statement.
+    /// \throws database_error
+    short parameters() const;
+
     /// \brief Returns parameter size for indicated parameter placeholder in a prepared statement.
     unsigned long parameter_size(short param_index) const;
 

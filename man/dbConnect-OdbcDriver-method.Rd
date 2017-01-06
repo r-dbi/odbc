@@ -43,4 +43,3 @@ the specific driver documentation for allowed parameters,
 \url{https://www.connectionstrings.com} is also a useful resource of example
 connection strings for a variety of databases.
 }
-

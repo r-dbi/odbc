@@ -4,16 +4,16 @@
 \name{OdbcResult}
 \alias{OdbcResult}
 \alias{OdbcResult-class}
-\alias{dbBind,OdbcResult-method}
 \alias{dbClearResult,OdbcResult-method}
-\alias{dbColumnInfo,OdbcResult-method}
 \alias{dbFetch,OdbcResult-method}
+\alias{dbHasCompleted,OdbcResult-method}
 \alias{dbGetInfo,OdbcResult-method}
+\alias{dbIsValid,OdbcResult-method}
+\alias{dbGetStatement,OdbcResult-method}
+\alias{dbColumnInfo,OdbcResult-method}
 \alias{dbGetRowCount,OdbcResult-method}
 \alias{dbGetRowsAffected,OdbcResult-method}
-\alias{dbGetStatement,OdbcResult-method}
-\alias{dbHasCompleted,OdbcResult-method}
-\alias{dbIsValid,OdbcResult-method}
+\alias{dbBind,OdbcResult-method}
 \title{Odbc Result Methods}
 \usage{
 \S4method{dbClearResult}{OdbcResult}(res, ...)
@@ -66,4 +66,3 @@ or a \code{\linkS4class{DBIResult}}}
 Implementations of pure virtual functions defined in the \code{DBI} package
 for OdbcResult objects.
 }
-

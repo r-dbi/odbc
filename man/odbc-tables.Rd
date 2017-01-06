@@ -2,10 +2,10 @@
 % Please edit documentation in R/Table.R
 \docType{methods}
 \name{odbc-tables}
-\alias{dbReadTable,OdbcConnection,character-method}
-\alias{dbWriteTable,OdbcConnection,character,data.frame-method}
 \alias{odbc-tables}
+\alias{dbWriteTable,OdbcConnection,character,data.frame-method}
 \alias{sqlData,OdbcConnection-method}
+\alias{dbReadTable,OdbcConnection,character-method}
 \title{Convenience functions for reading/writing DBMS tables}
 \usage{
 \S4method{dbWriteTable}{OdbcConnection,character,data.frame}(conn, name, value,
@@ -69,4 +69,3 @@ dbReadTable(con, "mtcars2")
 dbDisconnect(con)
 }
 }
-

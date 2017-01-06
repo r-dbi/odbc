@@ -1,5 +1,5 @@
 if (.Platform$OS.type != "windows") {
-  ctx <- DBItest::make_context(odbc(), list(dsn = "PostgreSQL"), tweaks = DBItest::tweaks(), name = "PostgreSQL")
+  ctx <- DBItest::make_context(odbc(), list(dsn = "PostgreSQL"), tweaks = DBItest::tweaks(placeholder_pattern = "?"), name = "PostgreSQL")
 
 DBItest::test_getting_started(c(
     "package_name", # Not an error
@@ -21,6 +21,10 @@ DBItest::test_sql(c(
     "roundtrip_64_bit", # TODO
     NULL))
 DBItest::test_meta(c(
+    "bind_logical", # DBItest coerces this to character
+    "bind_multi_row.*", # We do not current support multi row binding
+    "bind_timestamp_lt", # We do not support POSIXlt objects
+    "bind_raw", # This test seems to be not quite working as expected
     NULL))
 DBItest::test_transaction(c(
     NULL))

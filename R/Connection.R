@@ -92,7 +92,6 @@ setMethod(
   "dbSendQuery", c("OdbcConnection", "character"),
   function(conn, statement, ...) {
     res <- OdbcResult(connection = conn, statement = statement)
-    result_execute(res@ptr)
     res
   })
 
@@ -103,7 +102,6 @@ setMethod(
   "dbSendStatement", c("OdbcConnection", "character"),
   function(conn, statement, ...) {
     res <- OdbcResult(connection = conn, statement = statement)
-    result_execute(res@ptr)
     res
   })
 

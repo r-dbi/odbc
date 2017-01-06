@@ -2,11 +2,33 @@
 % Please edit documentation in R/odbc.R
 \docType{package}
 \name{odbc-package}
-\title{Connect to ODBC databases (using the DBI interface)}
+\title{odbc: Connect to ODBC databases (using the DBI interface)}
 \description{
 Use ODBC drivers to connect to databases.
 }
 \details{
 TBD.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/rstats-db/odbc}
+  \item Report bugs at \url{https://github.com/rstats-db/odbc/issues}
+}
 
+}
+\author{
+\strong{Maintainer}: Jim Hester \email{james.hester@rstudio.com}
+
+Authors:
+\itemize{
+  \item Hadley Wickham \email{hadley@rstudio.com}
+}
+
+Other contributors:
+\itemize{
+  \item  lexicalunit (nanodbc library) [copyright holder]
+  \item RStudio [copyright holder, funder]
+}
+
+}

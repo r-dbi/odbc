@@ -120,6 +120,12 @@ setMethod(
 setMethod(
   "dbBind", "OdbcResult",
   function(res, params, ...) {
+
+    params <- as.list(params)
+
+    if (any(lengths(params) != 1)) {
+      stop("`params` elements can only be of length 1", call. = FALSE)
+    }
     result_bind(res@ptr, params)
     invisible(res)
   })

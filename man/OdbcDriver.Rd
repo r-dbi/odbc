@@ -4,11 +4,11 @@
 \name{OdbcDriver}
 \alias{OdbcDriver}
 \alias{OdbcDriver-class}
+\alias{show,OdbcDriver-method}
 \alias{dbDataType,OdbcDriver,ANY-method}
 \alias{dbDataType,OdbcDriver,list-method}
-\alias{dbGetInfo,OdbcDriver-method}
 \alias{dbIsValid,OdbcDriver-method}
-\alias{show,OdbcDriver-method}
+\alias{dbGetInfo,OdbcDriver-method}
 \title{Odbc Driver Methods}
 \usage{
 \S4method{show}{OdbcDriver}(object)
@@ -35,4 +35,3 @@ or \code{\linkS4class{DBIConnection}}}
 Implementations of pure virtual functions defined in the \code{DBI} package
 for OdbcDriver objects.
 }
-
