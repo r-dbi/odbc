@@ -37,7 +37,7 @@ setMethod(
     } else {
       result_release(res@ptr)
     }
-    TRUE
+    invisible(TRUE)
   })
 
 #' @rdname OdbcResult

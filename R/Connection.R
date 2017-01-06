@@ -82,7 +82,7 @@ setMethod(
     }
 
     connection_release(conn@ptr)
-    TRUE
+    invisible(TRUE)
   })
 
 #' @rdname OdbcConnection
@@ -208,7 +208,7 @@ setMethod(
   "dbBegin", "OdbcConnection",
   function(conn, ...) {
     connection_begin(conn@ptr)
-    TRUE
+    invisible(TRUE)
   })
 
 #' @rdname OdbcConnection
@@ -218,7 +218,7 @@ setMethod(
   "dbCommit", "OdbcConnection",
   function(conn, ...) {
     connection_commit(conn@ptr)
-    TRUE
+    invisible(TRUE)
   })
 
 #' @rdname OdbcConnection
@@ -228,7 +228,7 @@ setMethod(
   "dbRollback", "OdbcConnection",
   function(conn, ...) {
     connection_rollback(conn@ptr)
-    TRUE
+    invisible(TRUE)
   })
 
 get_data_type <- function(info, obj, ...) UseMethod("get_data_type")
