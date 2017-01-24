@@ -183,7 +183,7 @@ A local DSN file can also be used with the files `~/.odbc.ini` and `~/.odbcinst.
 Contains driver information, particularly the name of the driver library.
 Multiple drivers can be specified in the same file.
 ```ini
-[PostgreSQL]
+[PostgreSQL Driver]
 Driver          = /usr/local/lib/psqlodbcw.so
 
 [SQLite Driver]
