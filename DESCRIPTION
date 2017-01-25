@@ -5,7 +5,7 @@ Authors@R: c(
     person("Jim", "Hester", , "james.hester@rstudio.com", role = c("aut", "cre")),
     person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut")),
     person(family = "lexicalunit", role = c("cph"), comment = "nanodbc library"),
-    person("RStudio", role = c("cph", "fnd"))
+    person(family = "RStudio", role = c("cph", "fnd"))
   )
 Description: Use ODBC drivers to connect to databases.
 License: MIT + file LICENSE
@@ -34,5 +34,4 @@ Collate:
     'utils.R'
     'zzz.R'
 Remotes: rstats-db/DBI,
-    jimhester/DBItest@mine,
-    hadley/blob
+    jimhester/DBItest@mine
