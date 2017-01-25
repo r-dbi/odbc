@@ -1,14 +1,5 @@
 context("show")
 
-test_that("show method works as expected with real connection", {
-  skip_on_os("windows")
-  con <- dbConnect(odbc(), "PostgreSQL")
-
-  expect_output(show(con), "postgres@localhost")
-  expect_output(show(con), "Database: test_db")
-  expect_output(show(con), "PostgreSQL Version: ")
-})
-
 test_that("show method prints only host if no user is defined", {
   con <- new("OdbcConnection")
   with_mock(

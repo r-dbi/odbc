@@ -1,3 +1,12 @@
+skip_unless_has_test_db <- function(expr) {
+  tryCatch({
+    DBItest:::connect(expr)
+    TRUE
+  }, error = function(...) {
+    skip("Test database not available")
+  })
+}
+
 test_roundtrip <- function(columns = "", invert = TRUE) {
   ctx <- DBItest:::get_default_context()
   context(paste0("roundtrip[", ctx$name, "]"))
