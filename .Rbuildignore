@@ -18,3 +18,4 @@
 ^\.github$
 ^README_cache$
 ^docs$
+^.*pl$
