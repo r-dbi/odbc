@@ -7,6 +7,23 @@
 #include "odbc_connection.h"
 
 namespace odbc {
+
+
+class odbc_error : public std::runtime_error {
+  public:
+    odbc_error(const nanodbc::database_error e, const std::string& sql) :
+      std::runtime_error(sql)
+    {
+      message = std::string("<SQL> '" + sql + "'\n  " + e.what());
+    }
+    const char* what() const NANODBC_NOEXCEPT
+    {
+      return message.c_str();
+    }
+  private:
+    std::string message;
+};
+
 typedef std::array<const char, 255> string_buf;
 
 class odbc_result {
@@ -41,7 +58,10 @@ class odbc_result {
       if (!r_) {
         try {
           r_ = std::make_shared<nanodbc::result>(s_->execute());
-        } catch (...) {
+        } catch (const nanodbc::database_error& e) {
+          c_->set_current_result(nullptr);
+          throw odbc_error(e, sql_);
+        }catch (...) {
           c_->set_current_result(nullptr);
           throw;
         }
