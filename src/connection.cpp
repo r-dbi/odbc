@@ -6,24 +6,42 @@
 using namespace odbc;
 
 // [[Rcpp::export]]
-Rcpp::DataFrame list_drivers() {
+Rcpp::DataFrame list_drivers_() {
   std::vector<std::string> names;
   std::vector<std::string> attributes;
   std::vector<std::string> values;
   for (auto &driver : nanodbc::list_drivers()) {
-    names.push_back(driver.name);
+    if (driver.attributes.size() == 0) {
+      names.push_back(driver.name);
+      attributes.push_back("");
+      values.push_back("");
+    } else {
+      for (auto &attr : driver.attributes) {
+        names.push_back(driver.name);
+        attributes.push_back(attr.keyword);
+        values.push_back(attr.value);
+      }
+    }
   }
-  // Rcpp::Rcout << driver.name << driver.attributes.size();
-  // for (auto &attr : driver.attributes) {
-  // names.push_back(driver.name);
-  // attributes.push_back(attr.keyword);
-  // values.push_back(attr.value);
-  //}
-  //}
-  return Rcpp::DataFrame::create(Rcpp::_["name"] = names,
-                                 // Rcpp::_["attribute"] = attributes,
-                                 // Rcpp::_["value"] = values,
-                                 Rcpp::_["stringsAsFactors"] = false);
+  return Rcpp::DataFrame::create(
+      Rcpp::_["name"] = names,
+      Rcpp::_["attribute"] = attributes,
+      Rcpp::_["value"] = values,
+      Rcpp::_["stringsAsFactors"] = false);
+}
+
+// [[Rcpp::export]]
+Rcpp::DataFrame list_data_sources_() {
+  std::vector<std::string> names;
+  std::vector<std::string> descriptions;
+  for (auto &data_source : nanodbc::list_data_sources()) {
+    names.push_back(data_source.name);
+    descriptions.push_back(data_source.description);
+  }
+  return Rcpp::DataFrame::create(
+      Rcpp::_["name"] = names,
+      Rcpp::_["description"] = descriptions,
+      Rcpp::_["stringsAsFactors"] = false);
 }
 
 // [[Rcpp::export]]

@@ -6,13 +6,23 @@
 
 using namespace Rcpp;
 
-// list_drivers
-Rcpp::DataFrame list_drivers();
-RcppExport SEXP odbc_list_drivers() {
+// list_drivers_
+Rcpp::DataFrame list_drivers_();
+RcppExport SEXP odbc_list_drivers_() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(list_drivers());
+    rcpp_result_gen = Rcpp::wrap(list_drivers_());
+    return rcpp_result_gen;
+END_RCPP
+}
+// list_data_sources_
+Rcpp::DataFrame list_data_sources_();
+RcppExport SEXP odbc_list_data_sources_() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(list_data_sources_());
     return rcpp_result_gen;
 END_RCPP
 }

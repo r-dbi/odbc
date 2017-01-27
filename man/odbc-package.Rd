@@ -28,7 +28,7 @@ Authors:
 Other contributors:
 \itemize{
   \item  lexicalunit (nanodbc library) [copyright holder]
-  \item RStudio [copyright holder, funder]
+  \item  RStudio [copyright holder, funder]
 }
 
 }

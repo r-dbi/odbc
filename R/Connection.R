@@ -322,3 +322,32 @@ get_data_type.PostgreSQL <- function(info, obj, ...) {
     stop("Unsupported type", call. = FALSE)
   )
 }
+
+#' List Available ODBC Drivers
+#'
+#' @return A data frame with three columns.
+#' If a given driver does not have any attributes the last two columns will be
+#' \code{NA}.
+#' \describe{
+#'   \item{name}{Name of the driver}
+#'   \item{attribute}{Driver attribute name}
+#'   \item{value}{Driver attribute value}
+#' }
+#' @export
+list_drivers <- function() {
+  res <- list_drivers_()
+  res[res == ""] <- NA_character_
+  res
+}
+
+#' List Available Data Source Names
+#'
+#' @return A data frame with two columns.
+#' \describe{
+#'   \item{name}{Name of the data source}
+#'   \item{description}{Data Source description}
+#' }
+#' @export
+list_data_sources <- function() {
+  list_data_sources_()
+}

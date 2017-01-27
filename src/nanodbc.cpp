@@ -1762,8 +1762,6 @@ public:
     template <class T>
     void bind_parameter(bound_parameter const& param, bound_buffer<T>& buffer)
     {
-        NANODBC_ASSERT(param.index_ >= 0);
-
         auto const buffer_size = buffer.value_size_ > 0 ? buffer.value_size_ : param.size_;
 
         RETCODE rc;
@@ -3239,6 +3237,59 @@ std::list<driver> list_drivers()
     } while (success(rc));
 
     return drivers;
+}
+
+std::list<data_source> list_data_sources()
+{
+    NANODBC_SQLCHAR name[1024] = {0};
+    NANODBC_SQLCHAR descr[1024] = {0};
+    SQLSMALLINT name_len_ret{0};
+    SQLSMALLINT descr_len_ret{0};
+    SQLUSMALLINT direction{SQL_FETCH_FIRST};
+
+    HENV env{0};
+    allocate_environment_handle(env);
+
+    std::list<data_source> data_sources;
+    RETCODE rc{SQL_SUCCESS};
+    do
+    {
+        NANODBC_ASSERT(env);
+        NANODBC_CALL_RC(
+            NANODBC_FUNC(SQLDataSources),
+            rc,
+            env,                                     // EnvironmentHandle
+            direction,                               // Direction
+            name,                                   // ServerName
+            sizeof(name) / sizeof(NANODBC_SQLCHAR), // BufferLength1
+            &name_len_ret,                          // NameLength1Ptr
+            descr,                                   // Description
+            sizeof(descr) / sizeof(NANODBC_SQLCHAR), // BufferLength2
+            &descr_len_ret);                         // NameLength2Ptr
+
+        if (rc == SQL_SUCCESS)
+        {
+            using char_type = string_type::value_type;
+            static_assert(
+                sizeof(NANODBC_SQLCHAR) == sizeof(char_type),
+                "incompatible SQLCHAR and string_type::value_type");
+
+            data_source src;
+            src.name = string_type(&name[0], &name[strarrlen(name)]);
+            src.description = string_type(&descr[0], &descr[strarrlen(descr)]);
+
+            data_sources.push_back(std::move(src));
+
+            direction = SQL_FETCH_NEXT;
+        }
+        else
+        {
+            if (rc != SQL_NO_DATA)
+                NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
+        }
+    } while (success(rc));
+
+    return data_sources;
 }
 
 result execute(connection& conn, const string_type& query, long batch_operations, long timeout)
