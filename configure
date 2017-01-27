@@ -13,10 +13,10 @@ PKG_CSW_NAME="unixodbc_dev"
 PKG_TEST_HEADER="<sql.h>"
 PKG_LIBS=-lodbc
 
-# Use odbc-config, iodbc-config if available
-if [ $(command -v odbc-config) ]; then
-  PKGCONFIG_CFLAGS=$(odbc-config --cflags)
-  PKGCONFIG_LIBS=$(odbc-config --libs)
+# Use odbc_config, iodbc-config if available
+if [ $(command -v odbc_config) ]; then
+  PKGCONFIG_CFLAGS=$(odbc_config --cflags)
+  PKGCONFIG_LIBS=$(odbc_config --libs)
 elif [ $(command -v iodbc-config) ]; then
   PKGCONFIG_CFLAGS=$(iodbc-config --cflags)
   PKGCONFIG_LIBS=$(iodbc-config --libs)
