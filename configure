@@ -10,19 +10,20 @@ PKG_CONFIG_NAME="odbc"
 PKG_DEB_NAME="unixodbc-dev"
 PKG_RPM_NAME="unixodbc-devel"
 PKG_CSW_NAME="unixodbc_dev"
+PKG_BREW_NAME="unixodbc"
 PKG_TEST_HEADER="<sql.h>"
 PKG_LIBS=-lodbc
 
 # Use odbc_config, iodbc-config if available
-if [ $(command -v odbc_config) ]; then
+if [ "$(command -v odbc_config)" ]; then
   PKGCONFIG_CFLAGS=$(odbc_config --cflags)
   PKGCONFIG_LIBS=$(odbc_config --libs)
-elif [ $(command -v iodbc-config) ]; then
+elif [ "$(command -v iodbc-config)" ]; then
   PKGCONFIG_CFLAGS=$(iodbc-config --cflags)
   PKGCONFIG_LIBS=$(iodbc-config --libs)
-elif [ $(command -v pkg-config) ]; then
-  PKGCONFIG_CFLAGS=$(pkg-config --cflags $PKG_CONFIG_NAME)
-  PKGCONFIG_LIBS=$(pkg-config --libs $PKG_CONFIG_NAME)
+elif [ "$(command -v pkg-config)" ]; then
+  PKGCONFIG_CFLAGS=$(pkg-config --cflags $PKG_CONFIG_NAME 2>/dev/null)
+  PKGCONFIG_LIBS=$(pkg-config --libs $PKG_CONFIG_NAME 2>/dev/null)
 fi
 
 # Note that cflags may be empty in case of success
@@ -34,37 +35,49 @@ elif [ "$PKGCONFIG_CFLAGS" ] || [ "$PKGCONFIG_LIBS" ]; then
   echo "Found pkg-config cflags and libs!"
   PKG_CFLAGS=${PKGCONFIG_CFLAGS}
   PKG_LIBS=${PKGCONFIG_LIBS}
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+  if [ "$(command -v brew)" ]; then
+    BREWDIR=$(brew --prefix)
+  else
+    echo "Auto-brewing $PKG_BREW_NAME..."
+    BREWDIR="/tmp/homebrew"
+    rm -Rf $BREWDIR
+    mkdir -p $BREWDIR
+    echo "Auto-brewing $PKG_BREW_NAME in $BREWDIR..."
+    curl -fsSL https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C $BREWDIR
+    HOMEBREW_CACHE="/tmp" $BREWDIR/bin/brew install $PKG_BREW_NAME 2>&1 | perl -pe 's/Warning/Note/gi'
+    rm -f $BREWDIR/opt/$PKG_BREW_NAME/lib/*.dylib
+  fi
+  PKG_CFLAGS="-I$BREWDIR/opt/$PKG_BREW_NAME/include"
+  PKG_LIBS="-L$BREWDIR/opt/$PKG_BREW_NAME/lib $PKG_LIBS"
 fi
-
-# Find compiler
-CXX=$(${R_HOME}/bin/R CMD config CXX)
-CXXFLAGS=$(${R_HOME}/bin/R CMD config CXXFLAGS)
-CPPFLAGS=$(${R_HOME}/bin/R CMD config CPPFLAGS)
 
 # For debugging
 echo "Using PKG_CFLAGS=$PKG_CFLAGS"
 echo "Using PKG_LIBS=$PKG_LIBS"
 
-# Test configuration
-echo "#include $PKG_TEST_HEADER" | ${CXX} ${CPPFLAGS} ${PKG_CFLAGS} ${CXXFLAGS} -E -xc - >/dev/null 2>&1 || R_CONFIG_ERROR=1;
+# Find compiler
+CXXCPP=$("${R_HOME}"/bin/R CMD config CXXCPP)
+CXXFLAGS=$("${R_HOME}"/bin/R CMD config CXXFLAGS)
+CPPFLAGS=$("${R_HOME}"/bin/R CMD config CPPFLAGS)
 
-# Customize the error
-if [ $R_CONFIG_ERROR ]; then
+# Test for odbc
+echo "#include $PKG_TEST_HEADER" | ${CXXCPP} ${CPPFLAGS} ${PKG_CFLAGS} ${CXXFLAGS} -xc++ - >/dev/null 2>&1
+if [ $? -ne 0 ]; then
   echo "------------------------- ANTICONF ERROR ---------------------------"
   echo "Configuration failed because $PKG_CONFIG_NAME was not found. Try installing:"
   echo " * deb: $PKG_DEB_NAME (Debian, Ubuntu, etc)"
   echo " * rpm: $PKG_RPM_NAME (Fedora, CentOS, RHEL)"
   echo " * csw: $PKG_CSW_NAME (Solaris)"
-  echo "If $PKG_CONFIG_NAME is already installed, check that 'pkg-config' is in your"
-  echo "PATH and PKG_CONFIG_PATH contains a $PKG_CONFIG_NAME.pc file. If pkg-config"
-  echo "is unavailable you can set INCLUDE_DIR and LIB_DIR manually via:"
+  echo " * brew: $PKG_BREW_NAME (Mac OSX)"
+  echo "To use a custom $PKG_CONFIG_NAME set INCLUDE_DIR and LIB_DIR manually via:"
   echo "R CMD INSTALL --configure-vars='INCLUDE_DIR=... LIB_DIR=...'"
   echo "--------------------------------------------------------------------"
   exit 1;
 fi
 
 # Write to Makevars
-sed -e "s|@PKG_CXXFLAGS@|$PKG_CXXFLAGS|" -e "s|@PKG_LIBS@|$PKG_LIBS|" src/Makevars.in > src/Makevars
+sed -e "s|@PKG_CXXFLAGS@|$PKG_CFLAGS|" -e "s|@PKG_LIBS@|$PKG_LIBS|" src/Makevars.in > src/Makevars
 
 # Success
 exit 0
