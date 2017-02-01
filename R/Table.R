@@ -80,6 +80,8 @@ setMethod(
         )
     }
 
+    on_connection_updated(conn, name)
+
     invisible(TRUE)
   }
 )

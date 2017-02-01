@@ -33,6 +33,7 @@ Collate:
     'Result.R'
     'Table.R'
     'utils.R'
+    'Viewer.R'
     'zzz.R'
 Remotes: rstats-db/DBI,
     jimhester/DBItest@mine
