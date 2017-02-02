@@ -19,3 +19,4 @@
 ^README_cache$
 ^docs$
 ^.*pl$
+^cran-comments\.md$

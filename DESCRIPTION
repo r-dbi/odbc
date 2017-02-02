@@ -1,13 +1,13 @@
 Package: odbc
-Title: Connect to ODBC databases (using the DBI interface)
-Version: 0.0.0.9000
+Title: Connect to ODBC Compatible Databases (using the DBI Interface)
+Version: 1.0.0
 Authors@R: c(
     person("Jim", "Hester", , "james.hester@rstudio.com", role = c("aut", "cre")),
     person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut")),
     person(family = "lexicalunit", role = c("cph"), comment = "nanodbc library"),
     person(family = "RStudio", role = c("cph", "fnd"))
   )
-Description: Use ODBC drivers to connect to databases.
+Description: A DBI-compatible interface to ODBC databases.
 License: MIT + file LICENSE
 LazyData: true
 Imports:

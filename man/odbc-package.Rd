@@ -2,9 +2,9 @@
 % Please edit documentation in R/odbc.R
 \docType{package}
 \name{odbc-package}
-\title{odbc: Connect to ODBC databases (using the DBI interface)}
+\title{odbc: Connect to ODBC Databases (using the DBI Interface)}
 \description{
-Use ODBC drivers to connect to databases.
+DBI-compatible Interface to databases with ODBC drivers.
 }
 \details{
 TBD.
