@@ -54,17 +54,17 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
   PKG_LIBS="-L$BREWDIR/opt/$PKG_BREW_NAME/lib $PKG_LIBS"
 fi
 
-# For debugging
-echo "Using PKG_CFLAGS=$PKG_CFLAGS"
-echo "Using PKG_LIBS=$PKG_LIBS"
-
 # Find compiler
 CXXCPP=$("${R_HOME}"/bin/R CMD config CXXCPP)
 CXXFLAGS=$("${R_HOME}"/bin/R CMD config CXXFLAGS)
 CPPFLAGS=$("${R_HOME}"/bin/R CMD config CPPFLAGS)
 
+# For debugging
+echo "PKG_CFLAGS=$PKG_CFLAGS"
+echo "PKG_LIBS=$PKG_LIBS"
+
 # Test for odbc
-echo "#include $PKG_TEST_HEADER" | ${CXXCPP} ${CPPFLAGS} ${PKG_CFLAGS} ${CXXFLAGS} -xc++ - >/dev/null 2>&1
+echo "#include $PKG_TEST_HEADER" | ${CXXCPP} ${CPPFLAGS} ${PKG_CFLAGS} ${CXXFLAGS} -xc++ - > /dev/null
 if [ $? -ne 0 ]; then
   echo "------------------------- ANTICONF ERROR ---------------------------"
   echo "Configuration failed because $PKG_CONFIG_NAME was not found. Try installing:"
