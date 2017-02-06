@@ -8,26 +8,24 @@
   * Fedora Linux, R-devel, clang, gfortran
   * Ubuntu Linux 16.04 LTS, R-release, GCC
 
-While this package does rely on an ODBC driver manager (such as unixODBC) to be
-installed I believe this package should build on the CRAN machines without
-additional configuration.
+
+This release fixes check errors with odbc 1.0.0 on the fedora and windows CRAN build machines.
+
+The failure on MacOS looks to be because the build machine has the homebrew
+package manager installed, but does _not_ have the `unixodbc` homebrew package
+installed. Either `brew install unixodbc` can be run on the build machine, or
+the unixODBC package can be compiled manually and installed elsewhere. If the
+`odbc_config` program is available on the `PATH` it will be queried for the
+appropriate include and library directories appropriately. Otherwise the
+locations can be specified manually with `R CMD INSTALL --configure-vars='INCLUDE_DIR=... LIB_DIR=...'`.
 
 ## R CMD check results
 
 0 errors | 0 warnings | 1 note
 
-* This is a new submission.
-
 * Possibly mis-spelled words in DESCRIPTION:
   ODBC (2:19, 10:57)
 ODBC is a standard acronym.
-
-* Found the following (possibly) invalid URLs:
-  URL: https://cran.r-project.org/package=odbc
-    From: README.md
-    Status: 404
-    Message: Not Found
-This URL will become valid once the package is accepted on CRAN.
 
 ## Reverse dependencies
 
