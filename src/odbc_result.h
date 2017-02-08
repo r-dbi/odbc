@@ -34,9 +34,8 @@ class odbc_result {
       rows_fetched_(0),
       complete_(0),
       bound_(false) {
-        c_->set_current_result(this);
-
         prepare();
+        c_->set_current_result(this);
         if (s_->parameters() == 0) {
           bound_ = true;
           execute();
