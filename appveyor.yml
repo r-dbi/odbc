@@ -33,6 +33,9 @@ on_failure:
   - 7z a failure.zip *.Rcheck\*
   - appveyor PushArtifact failure.zip
 
+on_success:
+  - R -e "covr::codecov(line_exclusions = c('src/nanodbc.h', 'src/nanodbc.cpp'))"
+
 artifacts:
   - path: '*.Rcheck\**\*.log'
     name: Logs

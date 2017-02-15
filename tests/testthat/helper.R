@@ -1,3 +1,15 @@
+skip_unless_has_test_db <- function(expr) {
+  if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
+    return(skip("On CRAN"))
+  }
+  tryCatch({
+    DBItest:::connect(expr)
+    TRUE
+  }, error = function(...) {
+    skip("Test database not available")
+  })
+}
+
 test_roundtrip <- function(columns = "", invert = TRUE) {
   ctx <- DBItest:::get_default_context()
   context(paste0("roundtrip[", ctx$name, "]"))

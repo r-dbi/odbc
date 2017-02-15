@@ -22,6 +22,7 @@
 #include <ctime>
 #include <iomanip>
 #include <map>
+#include <type_traits>
 
 #ifndef __clang__
 #include <cstdint>
@@ -55,6 +56,26 @@
 #include <sql.h>
 #include <sqlext.h>
 
+// Driver specific SQL data type defines.
+// Microsoft has -150 thru -199 reserved for Microsoft SQL Server Native Client driver usage.
+// Originally, defined in sqlncli.h (old SQL Server Native Client driver)
+// and msodbcsql.h (new Microsoft ODBC Driver for SQL Server)
+// See https://github.com/lexicalunit/nanodbc/issues/226
+#ifndef SQL_SS_VARIANT
+#define SQL_SS_VARIANT (-150)
+#endif
+#ifndef SQL_SS_XML
+#define SQL_SS_XML (-152)
+#endif
+#ifndef SQL_SS_TABLE
+#define SQL_SS_TABLE (-153)
+#endif
+#ifndef SQL_SS_TIME2
+#define SQL_SS_TIME2 (-154)
+#endif
+#ifndef SQL_SS_TIMESTAMPOFFSET
+#define SQL_SS_TIMESTAMPOFFSET (-155)
+#endif
 // Large CLR User-Defined Types (ODBC)
 // https://msdn.microsoft.com/en-us/library/bb677316.aspx
 // Essentially, UDT is a varbinary type with additional metadata.
@@ -63,6 +84,10 @@
 // Value:         SQL_BINARY (-2)
 #ifndef SQL_SS_UDT
 #define SQL_SS_UDT (-151) // from sqlncli.h
+#endif
+
+#ifndef SQL_NVARCHAR
+#define SQL_NVARCHAR (-10)
 #endif
 
 // Default to ODBC version defined by NANODBC_ODBC_VERSION if provided.
@@ -459,22 +484,30 @@ namespace
 
 using namespace std; // if int64_t is in std namespace (in c++11)
 
+template <typename T>
+using is_integral8 = std::integral_constant<
+    bool,
+    std::is_integral<T>::value && sizeof(T) == 1 && !std::is_same<T, char>::value>;
+
+template <typename T>
+using is_integral16 = std::integral_constant<
+    bool,
+    std::is_integral<T>::value && sizeof(T) == 2 && !std::is_same<T, wchar_t>::value>;
+
+template <typename T>
+using is_integral32 = std::integral_constant<
+    bool,
+    std::is_integral<T>::value && sizeof(T) == 4 && !std::is_same<T, wchar_t>::value>;
+
+template <typename T>
+using is_integral64 = std::integral_constant<bool, std::is_integral<T>::value && sizeof(T) == 8>;
+
 // A utility for calculating the ctype from the given type T.
 // I essentially create a lookup table based on the MSDN ODBC documentation.
 // See http://msdn.microsoft.com/en-us/library/windows/desktop/ms714556(v=vs.85).aspx
-template <class T>
+template <class T, typename Enable = void>
 struct sql_ctype
 {
-};
-
-template <>
-struct sql_ctype<nanodbc::string_type::value_type>
-{
-#ifdef NANODBC_USE_UNICODE
-    static const SQLSMALLINT value = SQL_C_WCHAR;
-#else
-    static const SQLSMALLINT value = SQL_C_CHAR;
-#endif
 };
 
 template <>
@@ -483,38 +516,50 @@ struct sql_ctype<uint8_t>
     static const SQLSMALLINT value = SQL_C_BINARY;
 };
 
-template <>
-struct sql_ctype<short>
+template <typename T>
+struct sql_ctype<
+    T,
+    typename std::enable_if<is_integral16<T>::value && std::is_signed<T>::value>::type>
 {
     static const SQLSMALLINT value = SQL_C_SSHORT;
 };
 
-template <>
-struct sql_ctype<unsigned short>
+template <typename T>
+struct sql_ctype<
+    T,
+    typename std::enable_if<is_integral16<T>::value && std::is_unsigned<T>::value>::type>
 {
     static const SQLSMALLINT value = SQL_C_USHORT;
 };
 
-template <>
-struct sql_ctype<int32_t>
+template <typename T>
+struct sql_ctype<
+    T,
+    typename std::enable_if<is_integral32<T>::value && std::is_signed<T>::value>::type>
 {
     static const SQLSMALLINT value = SQL_C_SLONG;
 };
 
-template <>
-struct sql_ctype<uint32_t>
+template <typename T>
+struct sql_ctype<
+    T,
+    typename std::enable_if<is_integral32<T>::value && std::is_unsigned<T>::value>::type>
 {
     static const SQLSMALLINT value = SQL_C_ULONG;
 };
 
-template <>
-struct sql_ctype<int64_t>
+template <typename T>
+struct sql_ctype<
+    T,
+    typename std::enable_if<is_integral64<T>::value && std::is_signed<T>::value>::type>
 {
     static const SQLSMALLINT value = SQL_C_SBIGINT;
 };
 
-template <>
-struct sql_ctype<uint64_t>
+template <typename T>
+struct sql_ctype<
+    T,
+    typename std::enable_if<is_integral64<T>::value && std::is_unsigned<T>::value>::type>
 {
     static const SQLSMALLINT value = SQL_C_UBIGINT;
 };
@@ -529,6 +574,16 @@ template <>
 struct sql_ctype<double>
 {
     static const SQLSMALLINT value = SQL_C_DOUBLE;
+};
+
+template <>
+struct sql_ctype<nanodbc::string_type::value_type>
+{
+#ifdef NANODBC_USE_UNICODE
+    static const SQLSMALLINT value = SQL_C_WCHAR;
+#else
+    static const SQLSMALLINT value = SQL_C_CHAR;
+#endif
 };
 
 template <>
@@ -1596,6 +1651,21 @@ public:
 
     void reset_parameters() NANODBC_NOEXCEPT { NANODBC_CALL(SQLFreeStmt, stmt_, SQL_RESET_PARAMS); }
 
+    short parameters() const
+    {
+        SQLSMALLINT params;
+        RETCODE rc;
+
+#if defined(NANODBC_DO_ASYNC_IMPL)
+        disable_async();
+#endif
+
+        NANODBC_CALL_RC(SQLNumParams, rc, stmt_, &params);
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        return params;
+    }
+
     unsigned long parameter_size(short param_index) const
     {
         RETCODE rc;
@@ -1692,8 +1762,6 @@ public:
     template <class T>
     void bind_parameter(bound_parameter const& param, bound_buffer<T>& buffer)
     {
-        NANODBC_ASSERT(param.index_ >= 0);
-
         auto const buffer_size = buffer.value_size_ > 0 ? buffer.value_size_ : param.size_;
 
         RETCODE rc;
@@ -2541,16 +2609,19 @@ private:
                 break;
             case SQL_TIME:
             case SQL_TYPE_TIME:
+            case SQL_SS_TIME2:
                 col.ctype_ = SQL_C_TIME;
                 col.clen_ = sizeof(time);
                 break;
             case SQL_TIMESTAMP:
             case SQL_TYPE_TIMESTAMP:
+            case SQL_SS_TIMESTAMPOFFSET:
                 col.ctype_ = SQL_C_TIMESTAMP;
                 col.clen_ = sizeof(timestamp);
                 break;
             case SQL_CHAR:
             case SQL_VARCHAR:
+            case SQL_NVARCHAR:
                 col.ctype_ = SQL_C_CHAR;
                 col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLCHAR);
                 if (is_blob)
@@ -3168,6 +3239,59 @@ std::list<driver> list_drivers()
     return drivers;
 }
 
+std::list<data_source> list_data_sources()
+{
+    NANODBC_SQLCHAR name[1024] = {0};
+    NANODBC_SQLCHAR descr[1024] = {0};
+    SQLSMALLINT name_len_ret{0};
+    SQLSMALLINT descr_len_ret{0};
+    SQLUSMALLINT direction{SQL_FETCH_FIRST};
+
+    HENV env{0};
+    allocate_environment_handle(env);
+
+    std::list<data_source> data_sources;
+    RETCODE rc{SQL_SUCCESS};
+    do
+    {
+        NANODBC_ASSERT(env);
+        NANODBC_CALL_RC(
+            NANODBC_FUNC(SQLDataSources),
+            rc,
+            env,                                     // EnvironmentHandle
+            direction,                               // Direction
+            name,                                   // ServerName
+            sizeof(name) / sizeof(NANODBC_SQLCHAR), // BufferLength1
+            &name_len_ret,                          // NameLength1Ptr
+            descr,                                   // Description
+            sizeof(descr) / sizeof(NANODBC_SQLCHAR), // BufferLength2
+            &descr_len_ret);                         // NameLength2Ptr
+
+        if (rc == SQL_SUCCESS)
+        {
+            using char_type = string_type::value_type;
+            static_assert(
+                sizeof(NANODBC_SQLCHAR) == sizeof(char_type),
+                "incompatible SQLCHAR and string_type::value_type");
+
+            data_source src;
+            src.name = string_type(&name[0], &name[strarrlen(name)]);
+            src.description = string_type(&descr[0], &descr[strarrlen(descr)]);
+
+            data_sources.push_back(std::move(src));
+
+            direction = SQL_FETCH_NEXT;
+        }
+        else
+        {
+            if (rc != SQL_NO_DATA)
+                NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
+        }
+    } while (success(rc));
+
+    return data_sources;
+}
+
 result execute(connection& conn, const string_type& query, long batch_operations, long timeout)
 {
     class statement statement;
@@ -3675,6 +3799,11 @@ short statement::columns() const
     return impl_->columns();
 }
 
+short statement::parameters() const
+{
+    return impl_->parameters();
+}
+
 void statement::reset_parameters() NANODBC_NOEXCEPT
 {
     impl_->reset_parameters();
@@ -3698,10 +3827,12 @@ unsigned long statement::parameter_size(short param_index) const
 NANODBC_INSTANTIATE_BINDS(string_type::value_type);
 NANODBC_INSTANTIATE_BINDS(short);
 NANODBC_INSTANTIATE_BINDS(unsigned short);
-NANODBC_INSTANTIATE_BINDS(int32_t);
-NANODBC_INSTANTIATE_BINDS(uint32_t);
-NANODBC_INSTANTIATE_BINDS(int64_t);
-NANODBC_INSTANTIATE_BINDS(uint64_t);
+NANODBC_INSTANTIATE_BINDS(int);
+NANODBC_INSTANTIATE_BINDS(unsigned int);
+NANODBC_INSTANTIATE_BINDS(long int);
+NANODBC_INSTANTIATE_BINDS(unsigned long int);
+NANODBC_INSTANTIATE_BINDS(long long);
+NANODBC_INSTANTIATE_BINDS(unsigned long long);
 NANODBC_INSTANTIATE_BINDS(float);
 NANODBC_INSTANTIATE_BINDS(double);
 NANODBC_INSTANTIATE_BINDS(date);
@@ -4539,10 +4670,12 @@ result::operator bool() const
 template void result::get_ref(short, string_type::value_type&) const;
 template void result::get_ref(short, short&) const;
 template void result::get_ref(short, unsigned short&) const;
-template void result::get_ref(short, int32_t&) const;
-template void result::get_ref(short, uint32_t&) const;
-template void result::get_ref(short, int64_t&) const;
-template void result::get_ref(short, uint64_t&) const;
+template void result::get_ref(short, int&) const;
+template void result::get_ref(short, unsigned int&) const;
+template void result::get_ref(short, long int&) const;
+template void result::get_ref(short, unsigned long int&) const;
+template void result::get_ref(short, long long int&) const;
+template void result::get_ref(short, unsigned long long int&) const;
 template void result::get_ref(short, float&) const;
 template void result::get_ref(short, double&) const;
 template void result::get_ref(short, string_type&) const;
@@ -4554,10 +4687,12 @@ template void result::get_ref(short, std::vector<std::uint8_t>&) const;
 template void result::get_ref(const string_type&, string_type::value_type&) const;
 template void result::get_ref(const string_type&, short&) const;
 template void result::get_ref(const string_type&, unsigned short&) const;
-template void result::get_ref(const string_type&, int32_t&) const;
-template void result::get_ref(const string_type&, uint32_t&) const;
-template void result::get_ref(const string_type&, int64_t&) const;
-template void result::get_ref(const string_type&, uint64_t&) const;
+template void result::get_ref(const string_type&, int&) const;
+template void result::get_ref(const string_type&, unsigned int&) const;
+template void result::get_ref(const string_type&, long int&) const;
+template void result::get_ref(const string_type&, unsigned long int&) const;
+template void result::get_ref(const string_type&, long long int&) const;
+template void result::get_ref(const string_type&, unsigned long long int&) const;
 template void result::get_ref(const string_type&, float&) const;
 template void result::get_ref(const string_type&, double&) const;
 template void result::get_ref(const string_type&, string_type&) const;
@@ -4571,10 +4706,12 @@ template void
 result::get_ref(short, const string_type::value_type&, string_type::value_type&) const;
 template void result::get_ref(short, const short&, short&) const;
 template void result::get_ref(short, const unsigned short&, unsigned short&) const;
-template void result::get_ref(short, const int32_t&, int32_t&) const;
-template void result::get_ref(short, const uint32_t&, uint32_t&) const;
-template void result::get_ref(short, const int64_t&, int64_t&) const;
-template void result::get_ref(short, const uint64_t&, uint64_t&) const;
+template void result::get_ref(short, const int&, int&) const;
+template void result::get_ref(short, const unsigned int&, unsigned int&) const;
+template void result::get_ref(short, const long int&, long int&) const;
+template void result::get_ref(short, const unsigned long int&, unsigned long int&) const;
+template void result::get_ref(short, const long long int&, long long int&) const;
+template void result::get_ref(short, const unsigned long long int&, unsigned long long int&) const;
 template void result::get_ref(short, const float&, float&) const;
 template void result::get_ref(short, const double&, double&) const;
 template void result::get_ref(short, const string_type&, string_type&) const;
@@ -4588,10 +4725,14 @@ template void
 result::get_ref(const string_type&, const string_type::value_type&, string_type::value_type&) const;
 template void result::get_ref(const string_type&, const short&, short&) const;
 template void result::get_ref(const string_type&, const unsigned short&, unsigned short&) const;
-template void result::get_ref(const string_type&, const int32_t&, int32_t&) const;
-template void result::get_ref(const string_type&, const uint32_t&, uint32_t&) const;
-template void result::get_ref(const string_type&, const int64_t&, int64_t&) const;
-template void result::get_ref(const string_type&, const uint64_t&, uint64_t&) const;
+template void result::get_ref(const string_type&, const int&, int&) const;
+template void result::get_ref(const string_type&, const unsigned int&, unsigned int&) const;
+template void result::get_ref(const string_type&, const long int&, long int&) const;
+template void
+result::get_ref(const string_type&, const unsigned long int&, unsigned long int&) const;
+template void result::get_ref(const string_type&, const long long int&, long long int&) const;
+template void
+result::get_ref(const string_type&, const unsigned long long int&, unsigned long long int&) const;
 template void result::get_ref(const string_type&, const float&, float&) const;
 template void result::get_ref(const string_type&, const double&, double&) const;
 template void result::get_ref(const string_type&, const string_type&, string_type&) const;
@@ -4607,10 +4748,12 @@ template void result::get_ref(
 template string_type::value_type result::get(short) const;
 template short result::get(short) const;
 template unsigned short result::get(short) const;
-template int32_t result::get(short) const;
-template uint32_t result::get(short) const;
-template int64_t result::get(short) const;
-template uint64_t result::get(short) const;
+template int result::get(short) const;
+template unsigned int result::get(short) const;
+template long int result::get(short) const;
+template unsigned long int result::get(short) const;
+template long long int result::get(short) const;
+template unsigned long long int result::get(short) const;
 template float result::get(short) const;
 template double result::get(short) const;
 template string_type result::get(short) const;
@@ -4622,10 +4765,12 @@ template std::vector<std::uint8_t> result::get(short) const;
 template string_type::value_type result::get(const string_type&) const;
 template short result::get(const string_type&) const;
 template unsigned short result::get(const string_type&) const;
-template int32_t result::get(const string_type&) const;
-template uint32_t result::get(const string_type&) const;
-template int64_t result::get(const string_type&) const;
-template uint64_t result::get(const string_type&) const;
+template int result::get(const string_type&) const;
+template unsigned int result::get(const string_type&) const;
+template long int result::get(const string_type&) const;
+template unsigned long int result::get(const string_type&) const;
+template long long int result::get(const string_type&) const;
+template unsigned long long int result::get(const string_type&) const;
 template float result::get(const string_type&) const;
 template double result::get(const string_type&) const;
 template string_type result::get(const string_type&) const;
@@ -4638,10 +4783,12 @@ template std::vector<std::uint8_t> result::get(const string_type&) const;
 template string_type::value_type result::get(short, const string_type::value_type&) const;
 template short result::get(short, const short&) const;
 template unsigned short result::get(short, const unsigned short&) const;
-template int32_t result::get(short, const int32_t&) const;
-template uint32_t result::get(short, const uint32_t&) const;
-template int64_t result::get(short, const int64_t&) const;
-template uint64_t result::get(short, const uint64_t&) const;
+template int result::get(short, const int&) const;
+template unsigned int result::get(short, const unsigned int&) const;
+template long int result::get(short, const long int&) const;
+template unsigned long int result::get(short, const unsigned long int&) const;
+template long long int result::get(short, const long long int&) const;
+template unsigned long long int result::get(short, const unsigned long long int&) const;
 template float result::get(short, const float&) const;
 template double result::get(short, const double&) const;
 template string_type result::get(short, const string_type&) const;
@@ -4654,10 +4801,13 @@ template string_type::value_type
 result::get(const string_type&, const string_type::value_type&) const;
 template short result::get(const string_type&, const short&) const;
 template unsigned short result::get(const string_type&, const unsigned short&) const;
-template int32_t result::get(const string_type&, const int32_t&) const;
-template uint32_t result::get(const string_type&, const uint32_t&) const;
-template int64_t result::get(const string_type&, const int64_t&) const;
-template uint64_t result::get(const string_type&, const uint64_t&) const;
+template int result::get(const string_type&, const int&) const;
+template unsigned int result::get(const string_type&, const unsigned int&) const;
+template long int result::get(const string_type&, const long int&) const;
+template unsigned long int result::get(const string_type&, const unsigned long int&) const;
+template long long int result::get(const string_type&, const long long int&) const;
+template unsigned long long int
+result::get(const string_type&, const unsigned long long int&) const;
 template float result::get(const string_type&, const float&) const;
 template double result::get(const string_type&, const double&) const;
 template string_type result::get(const string_type&, const string_type&) const;

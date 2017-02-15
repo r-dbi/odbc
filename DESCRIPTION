@@ -1,13 +1,13 @@
 Package: odbc
-Title: Connect to ODBC databases (using the DBI interface)
-Version: 0.0.0.9000
+Title: Connect to ODBC Compatible Databases (using the DBI Interface)
+Version: 1.0.1
 Authors@R: c(
     person("Jim", "Hester", , "james.hester@rstudio.com", role = c("aut", "cre")),
     person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut")),
     person(family = "lexicalunit", role = c("cph"), comment = "nanodbc library"),
-    person("RStudio", role = c("cph", "fnd"))
+    person(family = "RStudio", role = c("cph", "fnd"))
   )
-Description: Use ODBC drivers to connect to databases.
+Description: A DBI-compatible interface to ODBC databases.
 License: MIT + file LICENSE
 LazyData: true
 Imports:
@@ -19,6 +19,7 @@ LinkingTo: Rcpp, BH
 RoxygenNote: 6.0.1
 URL: https://github.com/rstats-db/odbc
 BugReports: https://github.com/rstats-db/odbc/issues
+SystemRequirements: An ODBC3 driver manager and drivers.
 Suggests:
     tibble,
     DBItest,
@@ -34,6 +35,3 @@ Collate:
     'Table.R'
     'utils.R'
     'zzz.R'
-Remotes: rstats-db/DBI,
-    jimhester/DBItest@mine,
-    hadley/blob

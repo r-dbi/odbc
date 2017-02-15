@@ -4,7 +4,7 @@
 \name{odbc-package}
 \title{odbc: Connect to ODBC databases (using the DBI interface)}
 \description{
-Use ODBC drivers to connect to databases.
+A DBI-compatible interface to ODBC databases.
 }
 \details{
 TBD.

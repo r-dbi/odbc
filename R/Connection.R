@@ -82,7 +82,7 @@ setMethod(
     }
 
     connection_release(conn@ptr)
-    TRUE
+    invisible(TRUE)
   })
 
 #' @rdname OdbcConnection
@@ -92,7 +92,6 @@ setMethod(
   "dbSendQuery", c("OdbcConnection", "character"),
   function(conn, statement, ...) {
     res <- OdbcResult(connection = conn, statement = statement)
-    result_execute(res@ptr)
     res
   })
 
@@ -103,7 +102,6 @@ setMethod(
   "dbSendStatement", c("OdbcConnection", "character"),
   function(conn, statement, ...) {
     res <- OdbcResult(connection = conn, statement = statement)
-    result_execute(res@ptr)
     res
   })
 
@@ -210,7 +208,7 @@ setMethod(
   "dbBegin", "OdbcConnection",
   function(conn, ...) {
     connection_begin(conn@ptr)
-    TRUE
+    invisible(TRUE)
   })
 
 #' @rdname OdbcConnection
@@ -220,7 +218,7 @@ setMethod(
   "dbCommit", "OdbcConnection",
   function(conn, ...) {
     connection_commit(conn@ptr)
-    TRUE
+    invisible(TRUE)
   })
 
 #' @rdname OdbcConnection
@@ -230,7 +228,7 @@ setMethod(
   "dbRollback", "OdbcConnection",
   function(conn, ...) {
     connection_rollback(conn@ptr)
-    TRUE
+    invisible(TRUE)
   })
 
 get_data_type <- function(info, obj, ...) UseMethod("get_data_type")
@@ -323,4 +321,33 @@ get_data_type.PostgreSQL <- function(info, obj, ...) {
     list = "TEXT",
     stop("Unsupported type", call. = FALSE)
   )
+}
+
+#' List Available ODBC Drivers
+#'
+#' @return A data frame with three columns.
+#' If a given driver does not have any attributes the last two columns will be
+#' \code{NA}.
+#' \describe{
+#'   \item{name}{Name of the driver}
+#'   \item{attribute}{Driver attribute name}
+#'   \item{value}{Driver attribute value}
+#' }
+#' @export
+list_drivers <- function() {
+  res <- list_drivers_()
+  res[res == ""] <- NA_character_
+  res
+}
+
+#' List Available Data Source Names
+#'
+#' @return A data frame with two columns.
+#' \describe{
+#'   \item{name}{Name of the data source}
+#'   \item{description}{Data Source description}
+#' }
+#' @export
+list_data_sources <- function() {
+  list_data_sources_()
 }

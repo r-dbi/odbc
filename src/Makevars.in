@@ -7,7 +7,7 @@ PKG_LIBS=@PKG_LIBS@ -Lcctz -lcctz
 
 .PHONY: all cctz clean
 
-all: cctz $(OBJECTS) $(SHLIB)
+all: clean cctz $(OBJECTS) $(SHLIB)
 
 cctz:
 	(cd cctz && \
@@ -15,3 +15,4 @@ make libcctz.a PREFIX="../" CC="$(CC)" CXX="$(CXX)" AR="$(AR)" ARFLAGS=$(ARFLAGS
 
 clean:
 	(cd cctz; make clean)
+	rm -f $(OBJECTS) $(SHLIB)
