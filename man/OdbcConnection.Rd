@@ -4,23 +4,23 @@
 \name{OdbcConnection}
 \alias{OdbcConnection}
 \alias{OdbcConnection-class}
-\alias{dbBegin,OdbcConnection-method}
-\alias{dbCommit,OdbcConnection-method}
-\alias{dbDataType,OdbcConnection,ANY-method}
-\alias{dbDisconnect,OdbcConnection-method}
-\alias{dbExistsTable,OdbcConnection,character-method}
-\alias{dbGetInfo,OdbcConnection-method}
-\alias{dbGetQuery,OdbcConnection,character-method}
+\alias{show,OdbcConnection-method}
 \alias{dbIsValid,OdbcConnection-method}
-\alias{dbListFields,OdbcConnection,character-method}
-\alias{dbListTables,OdbcConnection-method}
-\alias{dbQuoteIdentifier,OdbcConnection,character-method}
-\alias{dbQuoteString,OdbcConnection,character-method}
-\alias{dbRemoveTable,OdbcConnection,character-method}
-\alias{dbRollback,OdbcConnection-method}
+\alias{dbDisconnect,OdbcConnection-method}
 \alias{dbSendQuery,OdbcConnection,character-method}
 \alias{dbSendStatement,OdbcConnection,character-method}
-\alias{show,OdbcConnection-method}
+\alias{dbDataType,OdbcConnection,ANY-method}
+\alias{dbQuoteString,OdbcConnection,character-method}
+\alias{dbQuoteIdentifier,OdbcConnection,character-method}
+\alias{dbListTables,OdbcConnection-method}
+\alias{dbExistsTable,OdbcConnection,character-method}
+\alias{dbListFields,OdbcConnection,character-method}
+\alias{dbRemoveTable,OdbcConnection,character-method}
+\alias{dbGetInfo,OdbcConnection-method}
+\alias{dbGetQuery,OdbcConnection,character-method}
+\alias{dbBegin,OdbcConnection-method}
+\alias{dbCommit,OdbcConnection-method}
+\alias{dbRollback,OdbcConnection-method}
 \title{Odbc Connection Methods}
 \usage{
 \S4method{show}{OdbcConnection}(object)
@@ -66,14 +66,14 @@ or a \code{\linkS4class{DBIResult}}}
 
 \item{...}{Other arguments to methods.}
 
-\item{conn}{A \code{\linkS4class{DBIConnection}} object, as produced by
+\item{conn}{A \code{\linkS4class{DBIConnection}} object, as returned by
 \code{\link[=dbConnect]{dbConnect()}}.}
 
 \item{statement}{a character vector of length 1 containing SQL.}
 
 \item{obj}{An R object whose SQL type we want to determine.}
 
-\item{x}{A character vector to label as being escaped SQL.}
+\item{x}{A character vector to quote as string.}
 
 \item{name}{A character string specifying a DBMS table name.}
 }
@@ -81,4 +81,3 @@ or a \code{\linkS4class{DBIResult}}}
 Implementations of pure virtual functions defined in the \code{DBI} package
 for OdbcConnection objects.
 }
-

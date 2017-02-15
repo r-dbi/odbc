@@ -15,4 +15,3 @@ Driver for an ODBC database.
 Odbc::Odbc()
 }
 }
-
