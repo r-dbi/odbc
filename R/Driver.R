@@ -41,6 +41,9 @@ setMethod(
 #'
 #' @inheritParams DBI::dbConnect
 #' @param dsn The Data Source Name.
+#' @param timezone The Server Time Zone. If the server has an internal timezone
+#' that is _not_ 'UTC', this will be used to set the `tzone` attribute for the
+#' returned `POSIXct` object.
 #' @param driver The ODBC driver name.
 #' @param server The server hostname.
 #' @param database The database on the server.
@@ -61,12 +64,13 @@ setMethod(
 #' @export
 setMethod(
   "dbConnect", "OdbcDriver",
-  function(drv, dsn = NULL, ..., driver = NULL, server = NULL, database = NULL,
+  function(drv, dsn = NULL, ..., timezone = "", driver = NULL, server = NULL, database = NULL,
     uid = NULL, pwd = NULL, .connection_string = NULL) {
 
     OdbcConnection(
       dsn = dsn,
       ...,
+      timezone = timezone,
       driver = driver,
       server = server,
       database = database,

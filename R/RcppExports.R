@@ -5,8 +5,8 @@ list_drivers <- function() {
     .Call('odbc_list_drivers', PACKAGE = 'odbc')
 }
 
-odbc_connect <- function(connection_string) {
-    .Call('odbc_odbc_connect', PACKAGE = 'odbc', connection_string)
+odbc_connect <- function(connection_string, timezone = "") {
+    .Call('odbc_odbc_connect', PACKAGE = 'odbc', connection_string, timezone)
 }
 
 connection_info <- function(p) {

@@ -9,8 +9,8 @@ class odbc_result;
 
 class odbc_connection {
   public:
-    odbc_connection(std::string connection_string) :
-      current_result_(nullptr)
+    odbc_connection(std::string connection_string, std::string timezone = "") :
+      current_result_(nullptr), timezone_(timezone)
       {
         c_ = std::make_shared<nanodbc::connection>(connection_string);
       }
@@ -45,10 +45,15 @@ class odbc_connection {
     }
     void set_current_result(odbc_result *r);
 
+    std::string timezone() const {
+      return timezone_;
+    }
+
   private:
       std::shared_ptr<nanodbc::connection> c_;
       std::unique_ptr<nanodbc::transaction> t_;
       odbc_result* current_result_;
+      std::string timezone_;
 };
 
 }
