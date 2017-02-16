@@ -18,7 +18,7 @@ test_roundtrip <- function(columns = "", invert = TRUE) {
     con <- DBItest:::connect(ctx)
     it <- iris
     set.seed(42)
-    it$Petal.Length <- as.POSIXct(as.numeric(iris$Petal.Length * 10), origin = "2016-01-01", tz = "GMT")
+    it$Petal.Length <- as.POSIXct(as.numeric(iris$Petal.Length * 10), origin = "2016-01-01", tz = "UTC")
     it$Petal.Width <- as.integer(iris$Petal.Width * 100)
     it$Sepal.Width <- as.Date(iris$Sepal.Width * 100, origin = Sys.time())
     it$Logical <- sample(c(TRUE, FALSE), size = nrow(it), replace = T)

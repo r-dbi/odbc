@@ -8,7 +8,7 @@ NULL
 #' @name OdbcConnection
 NULL
 
-OdbcConnection <- function(dsn = NULL, ..., timezone = "", driver = NULL, server = NULL, database = NULL, uid = NULL, pwd = NULL, .connection_string = NULL) {
+OdbcConnection <- function(dsn = NULL, ..., timezone = "UTC", driver = NULL, server = NULL, database = NULL, uid = NULL, pwd = NULL, .connection_string = NULL) {
   args <- c(dsn = dsn, driver = driver, server = server, database = database, uid = uid, pwd = pwd, list(...))
   stopifnot(all(has_names(args)))
 
