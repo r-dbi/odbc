@@ -7,7 +7,9 @@ PKG_LIBS=@PKG_LIBS@ -Lcctz -lcctz
 
 .PHONY: all cctz clean
 
-all: clean cctz $(OBJECTS) $(SHLIB)
+all: $(OBJECTS) $(SHLIB)
+
+$(SHLIB): cctz
 
 cctz:
 	(cd cctz && \
