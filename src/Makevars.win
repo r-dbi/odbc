@@ -1,6 +1,6 @@
 CXX_STD = CXX11
-PKG_CXXFLAGS=-I. -DNANODBC_USE_BOOST_CONVERT
-PKG_LIBS=-lodbc32
+PKG_CXXFLAGS=-I. -DNANODBC_USE_BOOST_CONVERT -Icctz/include
+PKG_LIBS=-lodbc32 -Lcctz -lcctz
 
 .PHONY: all cctz clean
 
