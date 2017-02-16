@@ -23,6 +23,7 @@ test_that("MySQL", {
       "roundtrip_logical", # Not an error, PostgreSQL has a logical data type
       "roundtrip_64_bit", # TODO
       "roundtrip_numeric_special", # #6
+      "roundtrip_timestamp", # We explicitly want to set tzone to UTC regardless of input
       NULL))
   DBItest::test_meta(c(
       NULL))

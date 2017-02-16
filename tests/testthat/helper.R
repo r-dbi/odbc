@@ -5,8 +5,8 @@ skip_unless_has_test_db <- function(expr) {
   tryCatch({
     DBItest:::connect(expr)
     TRUE
-  }, error = function(...) {
-    skip("Test database not available")
+  }, error = function(e) {
+    skip(paste0("Test database not available:\n'", conditionMessage(e), "'"))
   })
 }
 
