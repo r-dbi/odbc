@@ -12,6 +12,7 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
+#  define HAS_STRPTIME 1  // assume everyone has strptime()
 #if !defined(HAS_STRPTIME)
 # if !defined(_WIN32) && !defined(_WIN64)
 #  define HAS_STRPTIME 1  // assume everyone has strptime() except windows
@@ -490,7 +491,8 @@ const char* ParseSubSeconds(const char* dp,
 // Parses a string into a std::tm using strptime(3).
 const char* ParseTM(const char* dp, const char* fmt, std::tm* tm) {
   if (dp != nullptr) {
-    dp = strptime(dp, fmt, tm);
+    // We are not parsing from strings, so don't need this
+    //dp = strptime(dp, fmt, tm);
   }
   return dp;
 }

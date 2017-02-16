@@ -647,7 +647,7 @@ bool TimeZoneInfo::Load(const std::string& name) {
   // Map time-zone name to its machine-specific path.
   std::string path;
   if (name == "localtime") {
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && (!defined(__MINGW32__) && !defined(__MINGW64__))
     char* localtime = nullptr;
     _dupenv_s(&localtime, nullptr, "LOCALTIME");
     path = localtime ? localtime : "/etc/localtime";
@@ -659,7 +659,7 @@ bool TimeZoneInfo::Load(const std::string& name) {
   } else if (!name.empty() && name[0] == '/') {
     path = name;
   } else {
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && (!defined(__MINGW32__) && !defined(__MINGW64__))
     char* tzdir = nullptr;
     _dupenv_s(&tzdir, nullptr, "TZDIR");
     path = tzdir ? tzdir : "/usr/share/zoneinfo";
