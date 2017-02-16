@@ -2,7 +2,7 @@
 % Please edit documentation in R/odbc.R
 \docType{package}
 \name{odbc-package}
-\title{odbc: Connect to ODBC databases (using the DBI interface)}
+\title{odbc: Connect to ODBC Compatible Databases (using the DBI Interface)}
 \description{
 A DBI-compatible interface to ODBC databases.
 }
@@ -28,7 +28,7 @@ Authors:
 Other contributors:
 \itemize{
   \item  lexicalunit (nanodbc library) [copyright holder]
-  \item RStudio [copyright holder, funder]
+  \item  RStudio [copyright holder, funder]
 }
 
 }

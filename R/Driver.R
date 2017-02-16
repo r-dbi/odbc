@@ -3,7 +3,7 @@ NULL
 
 #' Odbc Driver Methods
 #'
-#' Implementations of pure virtual functions defined in the \code{DBI} package
+#' Implementations of pure virtual functions defined in the `DBI` package
 #' for OdbcDriver objects.
 #' @name OdbcDriver
 NULL

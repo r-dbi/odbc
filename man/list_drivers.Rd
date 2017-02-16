@@ -11,9 +11,9 @@ A data frame with three columns.
 If a given driver does not have any attributes the last two columns will be
 \code{NA}.
 \describe{
-  \item{name}{Name of the driver}
-  \item{attribute}{Driver attribute name}
-  \item{value}{Driver attribute value}
+\item{name}{Name of the driver}
+\item{attribute}{Driver attribute name}
+\item{value}{Driver attribute value}
 }
 }
 \description{

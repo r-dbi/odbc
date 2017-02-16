@@ -3,7 +3,7 @@ NULL
 
 #' Odbc Result Methods
 #'
-#' Implementations of pure virtual functions defined in the \code{DBI} package
+#' Implementations of pure virtual functions defined in the `DBI` package
 #' for OdbcResult objects.
 #' @name OdbcResult
 #' @docType methods

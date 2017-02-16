@@ -1,7 +1,7 @@
 #' Convenience functions for reading/writing DBMS tables
 #'
 #' @param conn a \code{\linkS4class{OdbcConnection}} object, produced by
-#'   \code{\link[DBI]{dbConnect}}
+#'   [DBI::dbConnect()]
 #' @param name a character string specifying a table name. Names will be
 #'   automatically quoted so you can use any sequence of characters, not
 #'   just any valid bare table name.
@@ -30,9 +30,9 @@ NULL
 #' @rdname odbc-tables
 #' @inheritParams DBI::dbWriteTable
 #' @param overwrite Allow overwriting the destination table. Cannot be
-#'   \code{TRUE} if \code{append} is also \code{TRUE}.
+#'   `TRUE` if `append` is also `TRUE`.
 #' @param append Allow appending to the destination table. Cannot be
-#'   \code{TRUE} if \code{overwrite} is also \code{TRUE}.
+#'   `TRUE` if `overwrite` is also `TRUE`.
 #' @export
 setMethod(
   "dbWriteTable", c("OdbcConnection", "character", "data.frame"),

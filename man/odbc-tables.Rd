@@ -17,7 +17,7 @@
 }
 \arguments{
 \item{conn}{a \code{\linkS4class{OdbcConnection}} object, produced by
-\code{\link[DBI]{dbConnect}}}
+\code{\link[DBI:dbConnect]{DBI::dbConnect()}}}
 
 \item{name}{a character string specifying a table name. Names will be
 automatically quoted so you can use any sequence of characters, not

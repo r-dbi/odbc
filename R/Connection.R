@@ -3,7 +3,7 @@ NULL
 
 #' Odbc Connection Methods
 #'
-#' Implementations of pure virtual functions defined in the \code{DBI} package
+#' Implementations of pure virtual functions defined in the `DBI` package
 #' for OdbcConnection objects.
 #' @name OdbcConnection
 NULL
@@ -327,7 +327,7 @@ get_data_type.PostgreSQL <- function(info, obj, ...) {
 #'
 #' @return A data frame with three columns.
 #' If a given driver does not have any attributes the last two columns will be
-#' \code{NA}.
+#' `NA`.
 #' \describe{
 #'   \item{name}{Name of the driver}
 #'   \item{attribute}{Driver attribute name}

@@ -35,3 +35,4 @@ Collate:
     'Table.R'
     'utils.R'
     'zzz.R'
+Roxygen: list(markdown = TRUE)
