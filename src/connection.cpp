@@ -2,6 +2,7 @@
 #include "nanodbc.h"
 #include "odbc_types.h"
 #include <sqlext.h>
+#include "condition.h"
 
 using namespace odbc;
 

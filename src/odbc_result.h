@@ -5,6 +5,7 @@
 #include <Rcpp.h>
 #include "r_types.h"
 #include "odbc_connection.h"
+#include "condition.h"
 
 namespace odbc {
 
@@ -435,7 +436,10 @@ class odbc_result {
             break;
           default:
             types.push_back(string_t);
-            Rcpp::warning("Unknown field type (%s) in column %s", type, r.column_name(i));
+
+            char buf[100];
+            sprintf(buf, "Unknown field type (%i) in column %s", type, r.column_name(i).c_str());
+            signal_condition(buf, "odbc_unknown_field_type");
             break;
         }
       }
@@ -474,7 +478,9 @@ class odbc_result {
             case logical_t: assign_logical(out, row, col, r); break;
             case raw_t: assign_raw(out, row, col, r); break;
             default:
-                            Rcpp::warning("Unknown field type (%s) in column %s", types[col], r.column_name(col));
+              char buf[100];
+              sprintf(buf, "Unknown field type (%i) in column %s", types[col], r.column_name(col).c_str());
+              signal_condition(buf, "odbc_unknown_field_type");
           }
         }
 
