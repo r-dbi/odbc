@@ -1,5 +1,6 @@
 language: r
 cache: packages
+dist: trusty
 env:
   - MAKEFLAGS = -j2 ODBCSYSINI=${TRAVIS_BUILD_DIR}/travis/odbc INCLUDE_DIR=/usr/include LIB_DIR=/usr/lib/x86_64-linux-gnu/
 
@@ -15,19 +16,10 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - gcc-4.9
-      - g++-4.9
-      - unixodbc unixodbc-dev
+      - unixodbc-dev
       - odbc-postgresql
       - libmyodbc
       - libsqliteodbc
-
-before_install: |
-  mkdir ~/.R
-  cat <<EOF > ~/.R/Makevars
-  CXX1X=g++-4.9
-  CXX1XSTD=-std=c++11
-  CXX1XPICFLAGS=-fPIC
 
 before_script:
   - sudo -u postgres psql -U postgres -c 'CREATE DATABASE test_db;'
@@ -38,4 +30,4 @@ r_github_packages:
   - jimhester/DBItest@mine
 
 after_success:
-  - R -e 'options(covr.gcov = "/usr/bin/gcov-4.9");covr::codecov(line_exclusions = c("src/nanodbc.h", "src/nanodbc.cpp"))'
+  - R -e 'covr::codecov(line_exclusions = c("src/nanodbc.h", "src/nanodbc.cpp"))'
