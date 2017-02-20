@@ -11,7 +11,8 @@ extern "C"
 static SEXP signal_condition(const char * msg, const char * class_, SEXP env = R_GlobalEnv) {
   SEXP condition, c, signalConditionFun, out;
 
-  PROTECT(condition = Rf_mkNamed(VECSXP, (const char *[]) { "message", ""}));
+  const char *nms[] = {"message", ""};
+  PROTECT(condition = Rf_mkNamed(VECSXP, nms));
 
   PROTECT(c = Rf_allocVector(STRSXP, 2));
   SET_STRING_ELT(c, 0, Rf_mkChar(class_));
@@ -22,9 +23,9 @@ static SEXP signal_condition(const char * msg, const char * class_, SEXP env = R
   signalConditionFun = Rf_findFun(Rf_install("signalCondition"), R_BaseEnv);
 
   SEXP call = PROTECT(Rf_lang2(signalConditionFun, condition));
-  out = Rf_eval(call, env);
+  PROTECT(out = Rf_eval(call, env));
 
-  UNPROTECT(3);
+  UNPROTECT(4);
 
   return out;
 }
