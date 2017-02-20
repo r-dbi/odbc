@@ -5,7 +5,7 @@
 }
 
 .onLoad <- function(libname, pkgname) {
-  is_windows <- isTRUE(.Platform$OS.type == "windows")
+  is_windows <- identical(.Platform$OS.type, "windows")
 
   # If TZDIR is not set we need to set it to R's timezone database on windows,
   # we can use the standard timezone database elsewhere.
