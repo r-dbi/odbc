@@ -9,6 +9,11 @@
 
 namespace odbc {
 
+  inline void signal_unknown_field_type(short type, const std::string& name) {
+    char buf[100];
+    sprintf(buf, "Unknown field type (%i) in column (%s)", type, name.c_str());
+    signal_condition(buf, "odbc_unknown_field_type");
+  }
 
 class odbc_error : public std::runtime_error {
   public:
@@ -436,10 +441,7 @@ class odbc_result {
             break;
           default:
             types.push_back(string_t);
-
-            char buf[100];
-            sprintf(buf, "Unknown field type (%i) in column %s", type, r.column_name(i).c_str());
-            signal_condition(buf, "odbc_unknown_field_type");
+            signal_unknown_field_type(type, r.column_name(i));
             break;
         }
       }
@@ -477,10 +479,7 @@ class odbc_result {
             case string_t: assign_string(out, row, col, r); break;
             case logical_t: assign_logical(out, row, col, r); break;
             case raw_t: assign_raw(out, row, col, r); break;
-            default:
-              char buf[100];
-              sprintf(buf, "Unknown field type (%i) in column %s", types[col], r.column_name(col).c_str());
-              signal_condition(buf, "odbc_unknown_field_type");
+            default: signal_unknown_field_type(types[col], r.column_name(col)); break;
           }
         }
 
