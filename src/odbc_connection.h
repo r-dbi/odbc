@@ -2,16 +2,21 @@
 
 #include "nanodbc.h"
 #include <Rcpp.h>
-
+#include "time_zone.h"
 
 namespace odbc {
 class odbc_result;
 
 class odbc_connection {
   public:
-    odbc_connection(std::string connection_string) :
+    odbc_connection(std::string connection_string, std::string timezone = "UTC") :
       current_result_(nullptr)
       {
+
+        if (!cctz::load_time_zone(timezone, &timezone_)) {
+          Rcpp::stop("Error loading time zone (%s)", timezone);
+        }
+
         c_ = std::make_shared<nanodbc::connection>(connection_string);
       }
 
@@ -45,10 +50,15 @@ class odbc_connection {
     }
     void set_current_result(odbc_result *r);
 
+    cctz::time_zone timezone() const {
+      return timezone_;
+    }
+
   private:
       std::shared_ptr<nanodbc::connection> c_;
       std::unique_ptr<nanodbc::transaction> t_;
       odbc_result* current_result_;
+      cctz::time_zone timezone_;
 };
 
 }

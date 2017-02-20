@@ -36,6 +36,7 @@ test_that("SQLServer", {
       "roundtrip_date", # unsupported
       "roundtrip_quotes", # TODO, not sure why this is failing
       "roundtrip_rownames", # #10
+      "roundtrip_timestamp", # We explicitly want to set tzone to UTC regardless of input
       NULL))
   DBItest::test_meta(c(
       "bind_empty",

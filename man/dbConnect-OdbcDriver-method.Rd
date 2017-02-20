@@ -5,9 +5,9 @@
 \alias{dbConnect,OdbcDriver-method}
 \title{Connect to a ODBC compatible database}
 \usage{
-\S4method{dbConnect}{OdbcDriver}(drv, dsn = NULL, ..., driver = NULL,
-  server = NULL, database = NULL, uid = NULL, pwd = NULL,
-  .connection_string = NULL)
+\S4method{dbConnect}{OdbcDriver}(drv, dsn = NULL, ..., timezone = "UTC",
+  driver = NULL, server = NULL, database = NULL, uid = NULL,
+  pwd = NULL, .connection_string = NULL)
 }
 \arguments{
 \item{drv}{an object that inherits from \code{\linkS4class{DBIDriver}},
@@ -18,6 +18,11 @@ object (in order to clone an existing connection).}
 
 \item{...}{Additional ODBC keywords, these will be joined with the other
 arguments to form the final connection string.}
+
+\item{timezone}{The Server Time Zone. Useful if the database has an internal
+timezone that is \emph{not} 'UTC'. If the database is in your local timezone set
+to \code{Sys.timezone()}. See \code{\link[=OlsonNames]{OlsonNames()}} for a complete list of available
+timezones on your system.}
 
 \item{driver}{The ODBC driver name.}
 

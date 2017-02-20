@@ -3,7 +3,7 @@ NULL
 
 #' Odbc Driver Methods
 #'
-#' Implementations of pure virtual functions defined in the \code{DBI} package
+#' Implementations of pure virtual functions defined in the `DBI` package
 #' for OdbcDriver objects.
 #' @name OdbcDriver
 NULL
@@ -41,6 +41,10 @@ setMethod(
 #'
 #' @inheritParams DBI::dbConnect
 #' @param dsn The Data Source Name.
+#' @param timezone The Server Time Zone. Useful if the database has an internal
+#' timezone that is _not_ 'UTC'. If the database is in your local timezone set
+#' to `Sys.timezone()`. See [OlsonNames()] for a complete list of available
+#' timezones on your system.
 #' @param driver The ODBC driver name.
 #' @param server The server hostname.
 #' @param database The database on the server.
@@ -61,12 +65,13 @@ setMethod(
 #' @export
 setMethod(
   "dbConnect", "OdbcDriver",
-  function(drv, dsn = NULL, ..., driver = NULL, server = NULL, database = NULL,
+  function(drv, dsn = NULL, ..., timezone = "UTC", driver = NULL, server = NULL, database = NULL,
     uid = NULL, pwd = NULL, .connection_string = NULL) {
 
     OdbcConnection(
       dsn = dsn,
       ...,
+      timezone = timezone,
       driver = driver,
       server = server,
       database = database,

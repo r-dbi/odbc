@@ -66,14 +66,14 @@ or a \code{\linkS4class{DBIResult}}}
 
 \item{...}{Other arguments to methods.}
 
-\item{conn}{A \code{\linkS4class{DBIConnection}} object, as produced by
+\item{conn}{A \code{\linkS4class{DBIConnection}} object, as returned by
 \code{\link[=dbConnect]{dbConnect()}}.}
 
 \item{statement}{a character vector of length 1 containing SQL.}
 
 \item{obj}{An R object whose SQL type we want to determine.}
 
-\item{x}{A character vector to label as being escaped SQL.}
+\item{x}{A character vector to quote as string.}
 
 \item{name}{A character string specifying a DBMS table name.}
 }

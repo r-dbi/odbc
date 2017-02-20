@@ -6,6 +6,8 @@
 #include "r_types.h"
 #include "odbc_connection.h"
 #include "condition.h"
+#include "time_zone.h"
+#include <chrono>
 
 namespace odbc {
 
@@ -164,12 +166,14 @@ class odbc_result {
     std::map<short, std::vector<std::string>> strings_;
     std::map<short, std::vector<std::vector<uint8_t>>> raws_;
     std::map<short, std::vector<nanodbc::timestamp>> times_;
+    std::map<short, std::vector<nanodbc::date>> dates_;
     std::map<short, std::vector<uint8_t>> nulls_;
 
     void clear_buffers() {
       strings_.clear();
       raws_.clear();
       times_.clear();
+      dates_.clear();
       nulls_.clear();
     }
 
@@ -234,25 +238,42 @@ class odbc_result {
     nanodbc::timestamp as_timestamp(double value) {
       nanodbc::timestamp ts;
       auto frac = modf(value, &value);
-      time_t t = static_cast<time_t>(value);
-      auto tm = gmtime(&t);
+
+      using namespace std::chrono;
+      auto utc_time = system_clock::from_time_t(static_cast<std::time_t>(value));
+
+      auto civil_time = cctz::convert(utc_time, c_->timezone());
       ts.fract = frac;
-      ts.sec = tm->tm_sec;
-      ts.min = tm->tm_min;
-      ts.hour = tm->tm_hour;
-      ts.day = tm->tm_mday;
-      ts.month = tm->tm_mon + 1;
-      ts.year = tm->tm_year + 1900;
+      ts.sec = civil_time.second();
+      ts.min = civil_time.minute();
+      ts.hour = civil_time.hour();
+      ts.day = civil_time.day();
+      ts.month = civil_time.month();
+      ts.year = civil_time.year();
       return ts;
+    }
+
+    nanodbc::date as_date(double value) {
+      nanodbc::date dt;
+
+      using namespace std::chrono;
+      auto utc_time = system_clock::from_time_t(static_cast<std::time_t>(value));
+
+      auto civil_time = cctz::convert(utc_time, c_->timezone());
+      dt.day = civil_time.day();
+      dt.month = civil_time.month();
+      dt.year = civil_time.year();
+      return dt;
     }
 
     void bind_datetime(nanodbc::statement & statement, Rcpp::List const & data, short column, size_t start, size_t size) {
 
       nulls_[column] = std::vector<uint8_t>(size, false);
+      auto d = REAL(data[column]);
 
+      nanodbc::timestamp ts;
       for (size_t i = 0;i < size;++i) {
-        nanodbc::timestamp ts;
-        auto value = REAL(data[column])[start + i];
+        auto value = d[start + i];
         if (ISNA(value)) {
           nulls_[column][i] = true;
         } else {
@@ -265,18 +286,19 @@ class odbc_result {
     void bind_date(nanodbc::statement & statement, Rcpp::List const & data, short column, size_t start, size_t size) {
 
       nulls_[column] = std::vector<uint8_t>(size, false);
+      auto d = REAL(data[column]);
 
+      nanodbc::date dt;
       for (size_t i = 0;i < size;++i) {
-        nanodbc::timestamp ts;
-        auto value = REAL(data[column])[start + i] * seconds_in_day_;
+        auto value = d[start + i] * seconds_in_day_;
         if (ISNA(value)) {
           nulls_[column][i] = true;
         } else {
-          ts = as_timestamp(value);
+          dt = as_date(value);
         }
-        times_[column].push_back(ts);
+        dates_[column].push_back(dt);
       }
-      statement.bind(column, times_[column].data(), size, reinterpret_cast<bool *>(nulls_[column].data()));
+      statement.bind(column, dates_[column].data(), size, reinterpret_cast<bool *>(nulls_[column].data()));
     }
 
     std::vector<std::string> column_names(nanodbc::result const & r) {
@@ -290,19 +312,16 @@ class odbc_result {
 
     double as_double(nanodbc::timestamp const & ts)
     {
-      tm t;
-      t.tm_sec = t.tm_min = t.tm_hour = t.tm_isdst = 0;
+      using namespace cctz;
+      auto sec = convert(civil_second(ts.year, ts.month, ts.day, ts.hour, ts.min, ts.sec), c_->timezone());
+      return sec.time_since_epoch().count() + (ts.fract / 1000000000.0);
+    }
 
-      t.tm_year = ts.year - 1900;
-      t.tm_mon = ts.month - 1;
-      t.tm_mday = ts.day;
-      t.tm_hour = ts.hour;
-      t.tm_min = ts.min;
-      t.tm_sec = ts.sec;
-
-      // Fractional part is in billionths of a second
-      // https://msdn.microsoft.com/en-us/library/ms714556.aspx
-      return Rcpp::mktime00(t) + (ts.fract / 1000000000.0);
+    double as_double(nanodbc::date const & dt)
+    {
+      using namespace cctz;
+      auto sec = convert(civil_day(dt.year, dt.month, dt.day), c_->timezone());
+      return sec.time_since_epoch().count();
     }
 
     Rcpp::List create_dataframe(std::vector<r_type> types, std::vector<std::string> names, int n) {
@@ -351,6 +370,7 @@ class odbc_result {
             break;
           case datetime_t:
             x.attr("class") = Rcpp::CharacterVector::create("POSIXct", "POSIXt");
+            x.attr("tzone") = Rcpp::CharacterVector::create("UTC");
             break;
           case raw_t:
             x.attr("class") = Rcpp::CharacterVector::create("blob");
@@ -545,7 +565,7 @@ class odbc_result {
       if (value.is_null(column)) {
         res = NA_REAL;
       } else {
-        auto ts = value.get<nanodbc::timestamp>(column);
+        auto ts = value.get<nanodbc::date>(column);
         res = as_double(ts);
       }
 

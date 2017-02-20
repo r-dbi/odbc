@@ -14,6 +14,7 @@ test_that("PostgreSQL", {
       "data_64_bit.*", # TODO
       "data_raw.*", # cast(1 bytea) is not valid `cannot cast type integer to bytea`
       "^data_time$", "^data_time_.*", # time objects not supported
+      "^data_timestamp.*", # We explicitly want to set tzone to UTC
       "^data_timestamp_utc.*", # syntax not supported
       "^data_timestamp_parens.*", # syntax not supported
       NULL))
@@ -21,6 +22,7 @@ test_that("PostgreSQL", {
       "quote_identifier_not_vectorized", # Can't implement until https://github.com/rstats-db/DBI/issues/71 is closed
       "roundtrip_logical_int", # Not an error, PostgreSQL has a logical data type
       "roundtrip_64_bit", # TODO
+      "roundtrip_timestamp", # We explicitly want to set tzone to UTC
       NULL))
   DBItest::test_meta(c(
       "bind_logical", # DBItest coerces this to character

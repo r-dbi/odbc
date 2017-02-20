@@ -9,8 +9,8 @@ list_data_sources()
 \value{
 A data frame with two columns.
 \describe{
-  \item{name}{Name of the data source}
-  \item{description}{Data Source description}
+\item{name}{Name of the data source}
+\item{description}{Data Source description}
 }
 }
 \description{

@@ -3,17 +3,17 @@ NULL
 
 #' Odbc Connection Methods
 #'
-#' Implementations of pure virtual functions defined in the \code{DBI} package
+#' Implementations of pure virtual functions defined in the `DBI` package
 #' for OdbcConnection objects.
 #' @name OdbcConnection
 NULL
 
-OdbcConnection <- function(dsn = NULL, ..., driver = NULL, server = NULL, database = NULL, uid = NULL, pwd = NULL, .connection_string = NULL) {
+OdbcConnection <- function(dsn = NULL, ..., timezone = "UTC", driver = NULL, server = NULL, database = NULL, uid = NULL, pwd = NULL, .connection_string = NULL) {
   args <- c(dsn = dsn, driver = driver, server = server, database = database, uid = uid, pwd = pwd, list(...))
   stopifnot(all(has_names(args)))
 
   connection_string <- paste0(.connection_string, paste(collapse = ";", sep = "=", names(args), args))
-  ptr <- odbc_connect(connection_string)
+  ptr <- odbc_connect(connection_string, timezone = timezone)
   quote <- connection_quote(ptr)
 
   info <- connection_info(ptr)
@@ -327,7 +327,7 @@ get_data_type.PostgreSQL <- function(info, obj, ...) {
 #'
 #' @return A data frame with three columns.
 #' If a given driver does not have any attributes the last two columns will be
-#' \code{NA}.
+#' `NA`.
 #' \describe{
 #'   \item{name}{Name of the driver}
 #'   \item{attribute}{Driver attribute name}
