@@ -17,7 +17,7 @@ NULL
 #' @examples
 #' \dontrun{
 #' #' library(DBI)
-#' Odbc::Odbc()
+#' odbc::odbc()
 #' }
 odbc <- function() {
   new("OdbcDriver")
