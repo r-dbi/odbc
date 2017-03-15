@@ -25,10 +25,13 @@ list_columns <- function(connection, ...) {
 list_columns.default <- function(connection, ...) {
   # default implementation: list columns in the given table
   args <- list(...)
-  fields <- dbListFields(connection$con, args$table)
+  cols <- connection_sql_columns(connection$con@ptr,
+    table_name = args$table)
+
+  # extract and name fields for observer
   data.frame(
-    name = fields,
-    type = rep_len("", length(fields)),
+    name = cols[["name"]],
+    type = cols[["field.type"]],
     stringsAsFactors = FALSE)
 }
 
