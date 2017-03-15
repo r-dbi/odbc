@@ -87,7 +87,7 @@ setMethod(
 setMethod(
   "dbDataType", "OdbcDriver",
   function(dbObj, obj, ...) {
-    get_data_type(dbObj, obj, ...)
+    odbcDataType(dbObj, obj, ...)
   })
 
 #' @rdname OdbcDriver
@@ -96,7 +96,7 @@ setMethod(
 setMethod(
   "dbDataType", c("OdbcDriver", "list"),
   function(dbObj, obj, ...) {
-    get_data_type(dbObj, obj, ...)
+    odbcDataType(dbObj, obj, ...)
   })
 
 #' @rdname OdbcDriver

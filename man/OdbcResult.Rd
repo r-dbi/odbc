@@ -37,11 +37,12 @@
 \S4method{dbBind}{OdbcResult}(res, params, ...)
 }
 \arguments{
-\item{res}{An object inheriting from \code{\linkS4class{DBIResult}}.}
+\item{res}{An object inheriting from \linkS4class{DBIResult}.}
 
 \item{...}{Other arguments passed on to methods.}
 
 \item{n}{maximum number of records to retrieve per fetch. Use \code{n = -1}
+or \code{n = Inf}
 to retrieve all pending records.  Some implementations may recognize other
 special values.}
 
@@ -56,11 +57,11 @@ default name.
 
 For backward compatibility, \code{NULL} is equivalent to \code{FALSE}.}
 
-\item{dbObj}{An object inheriting from \code{\linkS4class{DBIObject}},
-i.e. \code{\linkS4class{DBIDriver}}, \code{\linkS4class{DBIConnection}},
-or a \code{\linkS4class{DBIResult}}}
+\item{dbObj}{An object inheriting from \linkS4class{DBIObject},
+i.e. \linkS4class{DBIDriver}, \linkS4class{DBIConnection},
+or a \linkS4class{DBIResult}}
 
-\item{params}{A list of bindings}
+\item{params}{A list of bindings, named or unnamed.}
 }
 \description{
 Implementations of pure virtual functions defined in the \code{DBI} package

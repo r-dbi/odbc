@@ -17,7 +17,7 @@ OdbcConnection <- function(dsn = NULL, ..., timezone = "UTC", driver = NULL, ser
   quote <- connection_quote(ptr)
 
   info <- connection_info(ptr)
-  class(info) <- c(info$dbms.name, "list")
+  class(info) <- c(info$dbms.name, "driver_info", "list")
 
   new("OdbcConnection", ptr = ptr, quote = quote, info = info)
 }
@@ -111,7 +111,7 @@ setMethod(
 setMethod(
   "dbDataType", "OdbcConnection",
   function(dbObj, obj, ...) {
-    get_data_type(dbObj@info, obj)
+    odbcDataType(dbObj@info, obj)
   })
 
 #' @rdname OdbcConnection
@@ -180,7 +180,8 @@ setMethod(
 setMethod(
   "dbGetInfo", "OdbcConnection",
   function(dbObj, ...) {
-    connection_info(dbObj@ptr)
+    info <- connection_info(dbObj@ptr)
+    structure(info, class = c(info$dbms.name, "driver_info", "list"))
   })
 
 #' @rdname OdbcConnection
@@ -231,7 +232,65 @@ setMethod(
     invisible(TRUE)
   })
 
-get_data_type <- function(info, obj, ...) UseMethod("get_data_type")
+
+switch_type <- function(obj, ...) {
+  switch(object_type(obj), ...)
+}
+
+object_type <- function(obj) {
+  if (is.factor(obj)) return("factor")
+  if (is(obj, "POSIXct")) return("datetime")
+  if (is(obj, "Date")) return("date")
+  if (is(obj, "blob")) return("binary")
+
+  return(typeof(obj))
+}
+
+#' Return the corresponding ODBC data type for an R object
+#'
+#' This is used when creating a new table with `dbWriteTable()`.
+#' Databases with default methods defined are
+#' - MySQL
+#' - PostgreSQL
+#' - SQL Server
+#' - SQLite
+#' - Spark
+#'
+#' If you are using a different database and `dbWriteTable()` fails with a SQL
+#' parsing error the default method is not appropriate, you will need to write
+#' a new method.
+#'
+#' @section Defining a new dbDataType method:
+#'
+#' The object type for your connection will be the database name retrieved by
+#' `dbGetInfo(con)$dbms.name`. Use the documentation provided with your
+#' database to determine appropriate values for each R data type. An example
+#' method definition of a fictional `foo` database follows.
+#' ```
+#' con <- dbConnect(odbc::odbc(), "FooConnection")
+#' dbGetInfo(con)$dbms.name
+#' #> [1] "foo"
+#'
+#' `odbcDataType.foo <- function(info, obj, ...) {
+#'   switch_type(obj,
+#'     factor = "VARCHAR(255)",
+#'     datetime = "TIMESTAMP",
+#'     date = "DATE",
+#'     binary = "BINARY",
+#'     integer = "INTEGER",
+#'     double = "DOUBLE",
+#'     character = "VARCHAR(255)",
+#'     logical = "BIT",
+#'     list = "VARCHAR(255)",
+#'     stop("Unsupported type", call. = FALSE)
+#'   )
+#' }
+#' ```
+#' @param info A driver information object, as returned by `dbGetInfo()`.
+#' @param obj An R object.
+#' @return Corresponding SQL type for the `obj`.
+#' @export
+odbcDataType <- function(info, obj, ...) UseMethod("odbcDataType")
 
 varchar <- function(x, type = "varchar") {
   max_length <- max(nchar(as.character(x)), na.rm = TRUE)
@@ -243,29 +302,45 @@ varbinary <- function(x, type = "varbinary") {
   paste0(type, "(", max(255, max_length), ")")
 }
 
-get_data_type.default <- function(info, obj, ...) {
-  if (is.factor(obj)) return(varchar(obj))
-  if (is(obj, "POSIXct")) return("TIMESTAMP")
-  if (is(obj, "Date")) return("DATE")
-  if (is(obj, "blob")) return("BLOB")
-
-  switch(typeof(obj),
+#' @export
+odbcDataType.default <- function(info, obj, ...) {
+  switch_type(obj,
+    factor = "VARCHAR(255)",
+    datetime = "TIMESTAMP",
+    date = "DATE",
+    binary = "BINARY",
     integer = "INTEGER",
-    double = "DOUBLE PRECISION",
-    character = varchar(obj),
-    logical = "SMALLINT",
-    list = varchar(obj),
+    double = "DOUBLE",
+    character = "VARCHAR(255)",
+    logical = "VARCHAR(5)", # Needs to be able to handle NA as well as TRUE, FALSE
+    list = "VARCHAR(255)",
     stop("Unsupported type", call. = FALSE)
   )
 }
 
-get_data_type.MySQL <- function(info, obj, ...) {
-  if (is.factor(obj)) return("TEXT")
-  if (is(obj, "POSIXct")) return("DATETIME")
-  if (is(obj, "Date")) return("DATE")
-  if (is(obj, "blob")) return("BLOB")
+#' @export
+`odbcDataType.Spark SQL` <- function(info, obj, ...) {
+  switch_type(obj,
+    factor = "VARCHAR(255)",
+    datetime = "DATE",
+    date = "DATE",
+    binary = "BINARY",
+    integer = "INT",
+    double = "DOUBLE",
+    character = "VARCHAR(255)",
+    logical = "BOOLEAN",
+    list = "VARCHAR(255)",
+    stop("Unsupported type", call. = FALSE)
+  )
+}
 
-  switch(typeof(obj),
+#' @export
+`odbcDataType.MySQL` <- function(info, obj, ...) {
+  switch_type(obj,
+    factor = "TEXT",
+    datetime = "DATETIME",
+    date = "DATE",
+    binary = "BLOB",
     integer = "INTEGER",
     double = "DOUBLE",
     character = "TEXT",
@@ -275,13 +350,13 @@ get_data_type.MySQL <- function(info, obj, ...) {
   )
 }
 
-get_data_type.PostgreSQL <- function(info, obj, ...) {
-  if (is.factor(obj)) return("TEXT")
-  if (is(obj, "POSIXct")) return("TIMESTAMP")
-  if (is(obj, "Date")) return("DATE")
-  if (is(obj, "blob")) return("bytea")
-
-  switch(typeof(obj),
+#' @export
+`odbcDataType.PostgreSQL` <- function(info, obj, ...) {
+  switch_type(obj,
+    factor = "TEXT",
+    datetime = "TIMESTAMP",
+    date = "DATE",
+    binary = "bytea",
     integer = "INTEGER",
     double = "DOUBLE PRECISION",
     character = "TEXT",
@@ -291,15 +366,15 @@ get_data_type.PostgreSQL <- function(info, obj, ...) {
   )
 }
 
-`get_data_type.Microsoft SQL Server` <- function(info, obj, ...) {
-  if (is.factor(obj)) return(varchar(obj))
-  if (is(obj, "POSIXct")) return("datetime")
-  if (is(obj, "Date")) return("date")
-  if (is(obj, "blob")) return(varbinary(obj))
-
-  switch(typeof(obj),
-    integer = "int",
-    double = "float",
+#' @export
+`odbcDataType.Microsoft SQL Server` <- function(info, obj, ...) {
+  switch_type(obj,
+    factor = varchar(obj),
+    datetime = "DATETIME",
+    date = "DATE",
+    binary = varbinary(obj),
+    integer = "INT",
+    double = "FLOAT",
     character = varchar(obj),
     logical = "BIT",
     list = varchar(obj),
@@ -307,13 +382,13 @@ get_data_type.PostgreSQL <- function(info, obj, ...) {
   )
 }
 
-`get_data_type.SQLite` <- function(info, obj, ...) {
-  if (is.factor(obj)) return("TEXT")
-  if (is(obj, "POSIXct")) return("NUMERIC")
-  if (is(obj, "Date")) return("NUMERIC")
-  if (is(obj, "blob")) return("BLOB")
-
-  switch(typeof(obj),
+#' @export
+`odbcDataType.SQLite` <- function(info, obj, ...) {
+  switch_type(obj,
+    factor = "TEXT",
+    datetime = "NUMERIC",
+    date = "NUMERIC",
+    binary = "BLOB",
     integer = "INTEGER",
     double = "REAL",
     character = "TEXT",
@@ -334,7 +409,7 @@ get_data_type.PostgreSQL <- function(info, obj, ...) {
 #'   \item{value}{Driver attribute value}
 #' }
 #' @export
-list_drivers <- function() {
+odbcListDrivers <- function() {
   res <- list_drivers_()
   res[res == ""] <- NA_character_
   res
@@ -348,6 +423,6 @@ list_drivers <- function() {
 #'   \item{description}{Data Source description}
 #' }
 #' @export
-list_data_sources <- function() {
+odbcListDataSources <- function() {
   list_data_sources_()
 }
