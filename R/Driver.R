@@ -82,7 +82,7 @@ setMethod(
     parentCall <- match.call(
       definition = sys.function(sys.parent(2)),
       call = sys.call(sys.parent()))
-    on_connection_opened(con, paste("con <-", deparse(parentCall)))
+    on_connection_opened(con, paste("library(odbc)\ncon <-", deparse(parentCall)))
     con
   }
 )
