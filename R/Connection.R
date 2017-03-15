@@ -81,6 +81,7 @@ setMethod(
       warning("Connection already closed.", call. = FALSE)
     }
 
+    on_connection_closed(conn)
     connection_release(conn@ptr)
     invisible(TRUE)
   })
@@ -171,6 +172,7 @@ setMethod(
   function(conn, name, ...) {
     name <- dbQuoteIdentifier(conn, name)
     dbGetQuery(conn, paste("DROP TABLE ", name))
+    on_connection_updated(conn, name)
     invisible(TRUE)
   })
 
