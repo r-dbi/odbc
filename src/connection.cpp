@@ -120,8 +120,8 @@ Rcpp::DataFrame connection_sql_tables(
     names.push_back(tables.table_name());
     types.push_back(tables.table_type());
     schemas.push_back(tables.table_schema());
-    remarks.push_back(tables.table_catalog());
-    catalog.push_back(tables.table_remarks());
+    remarks.push_back(tables.table_remarks());
+    catalog.push_back(tables.table_catalog());
   }
   return Rcpp::DataFrame::create(
       Rcpp::_["table_catalog"] = catalog,
