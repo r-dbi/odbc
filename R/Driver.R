@@ -79,10 +79,26 @@ setMethod(
       pwd = pwd,
       .connection_string = .connection_string)
 
-    parentCall <- match.call(
-      definition = sys.function(sys.parent(2)),
-      call = sys.call(sys.parent()))
-    on_connection_opened(con, paste("library(odbc)\ncon <-", deparse(parentCall)))
+    # perform the connection notification at the top level, to ensure that it's had
+    # a chance to get its external pointer connected, and so we can capture the
+    # expression that created it
+    if (!is.null(getOption("connectionObserver"))) {
+      addTaskCallback(function(expr, ...) {
+        tryCatch({
+          if (deparse(expr[[1]]) == "<-") {
+            # notify if this is an assignment we can replay
+            on_connection_opened(eval(expr[[2]]), paste(
+              c("library(odbc)", deparse(expr)), collapse = "\n"))
+          }
+        }, error = function(e) {
+          warning("Could not notify connection observer. ", e$message)
+        })
+
+        # always return false so the task callback is run at most once
+        FALSE
+      })
+    }
+
     con
   }
 )

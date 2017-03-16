@@ -29,10 +29,10 @@ Suggests:
 Collate:
     'odbc.R'
     'Driver.R'
+    'DriverMethods.R'
     'Connection.R'
     'RcppExports.R'
     'Result.R'
-    'SQLite.R'
     'Table.R'
     'Viewer.R'
     'utils.R'

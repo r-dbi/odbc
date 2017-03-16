@@ -4,9 +4,31 @@ list_object_types <- function(connection) {
 }
 
 list_object_types.default <- function(connection) {
-  # default implementation: only tables are returned
-  return(list(
-    table = list(contains = "data")))
+  # slurp all the objects in the database so we can determine the correct
+  # object hierarchy
+  objs <- connection_sql_tables(connection$con@ptr)
+
+  # all databases contain tables, at a minimum
+  obj_types <- list(table = list(contains = "data"))
+
+  # see if we have views too
+  if (any(objs[["table_type"]] == "VIEW")) {
+    obj_types <- c(obj_types, list(view = list(contains = "data")))
+  }
+
+  # check for multiple schema or a named schema
+  schemas <- unique(objs[["table_schema"]])
+  if (length(schemas) > 1 || nzchar(schemas)) {
+    obj_types <- list(schema = obj_types)
+  }
+
+  # check for multiple catalogs
+  catalogs <- unique(objs[["table_catalog"]])
+  if (length(catalogs) > 1) {
+    obj_types <- list(catalog = obj_types)
+  }
+
+  obj_types
 }
 
 list_objects <- function(connection, ...) {
@@ -14,8 +36,43 @@ list_objects <- function(connection, ...) {
 }
 
 list_objects.default <- function(connection, ...) {
-  # default implementation: list all the objects in the database
-  dbListTables(connection$con)
+  args <- list(...)
+
+  # get all the matching objects
+  objs <- connection_sql_tables(connection$con@ptr,
+      catalog_name = if (is.null(args$catalog)) "" else args$catalog,
+      schema_name = if (is.null(args$schema)) "" else args$schema)
+
+  # if no catalog was supplied but this database has catalogs, return a list of
+  # catalogs
+  if (is.null(args$catalog)) {
+    catalogs <- unique(objs[["table_catalog"]])
+    if (length(catalogs) > 1) {
+      return(data.frame(
+        name = catalogs,
+        type = rep("catalog", times = length(catalogs))
+      ))
+    }
+  }
+
+  # if no schema was supplied but this database has schema, return a list of
+  # schema
+  if (is.null(args$schema)) {
+    schema <- unique(objs[["table_schema"]])
+    if (length(schema) > 1) {
+      return(data.frame(
+        name = schema,
+        type = rep("schema", times = length(catalogs))
+      ))
+    }
+  }
+
+  # just return a list of the objects and their types, possibly filtered by the
+  # options above
+  data.frame(
+    name = objs[[table_name]],
+    type = objs[[table_type]]
+  )
 }
 
 list_columns <- function(connection, ...) {
@@ -25,8 +82,15 @@ list_columns <- function(connection, ...) {
 list_columns.default <- function(connection, ...) {
   # default implementation: list columns in the given table
   args <- list(...)
+
+  # read table or view as desired
+  obj <- if (is.null(args$table)) args$view else args$table
+
+  # specify schema or catalog if given
   cols <- connection_sql_columns(connection$con@ptr,
-    table_name = args$table)
+    table_name = obj,
+    schema_name = if (is.null(args$schema)) "" else args$schema,
+    catalog_name = if (is.null(args$catalog)) "" else args$catalog)
 
   # extract and name fields for observer
   data.frame(
@@ -40,9 +104,16 @@ preview_object <- function(connection, rowLimit, ...) {
 }
 
 preview_object.default <- function(connection, rowLimit, ...) {
-  # default implementation: read the table
   args <- list(...)
-  dbReadTable(connection$con, args$table)
+
+  # read table or view as desired
+  obj <- if (is.null(args$table)) args$view else args$table
+
+  # append schema if specified
+  if (!is.null(args$schema))
+    obj <- paste(args$schema, obj, sep = ".")
+
+  dbGetQuery(connection$con, paste("SELECT * FROM", obj))
 }
 
 connection_icon <- function(connection) {
