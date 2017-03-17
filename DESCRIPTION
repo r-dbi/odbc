@@ -26,10 +26,11 @@ Suggests:
     testthat,
     covr,
     magrittr
-Collate:
+Collate: 
     'odbc.R'
     'Driver.R'
     'Connection.R'
+    'DataTypes.R'
     'RcppExports.R'
     'Result.R'
     'Table.R'
