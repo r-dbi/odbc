@@ -19,13 +19,13 @@ list_object_types.default <- function(connection) {
   # check for multiple schema or a named schema
   schemas <- unique(objs[["table_schema"]])
   if (length(schemas) > 1 || nzchar(schemas)) {
-    obj_types <- list(schema = obj_types)
+    obj_types <- list(schema = list(contains = obj_types))
   }
 
   # check for multiple catalogs
   catalogs <- unique(objs[["table_catalog"]])
   if (length(catalogs) > 1) {
-    obj_types <- list(catalog = obj_types)
+    obj_types <- list(catalog = list(contains = obj_types))
   }
 
   obj_types
@@ -50,7 +50,8 @@ list_objects.default <- function(connection, ...) {
     if (length(catalogs) > 1) {
       return(data.frame(
         name = catalogs,
-        type = rep("catalog", times = length(catalogs))
+        type = rep("catalog", times = length(catalogs)),
+        stringAsFactors = FALSE
       ))
     }
   }
@@ -62,8 +63,8 @@ list_objects.default <- function(connection, ...) {
     if (length(schema) > 1) {
       return(data.frame(
         name = schema,
-        type = rep("schema", times = length(catalogs))
-      ))
+        type = rep("schema", times = length(schema)),
+        stringsAsFactors = FALSE))
     }
   }
 
@@ -71,7 +72,8 @@ list_objects.default <- function(connection, ...) {
   # options above
   data.frame(
     name = objs[[table_name]],
-    type = objs[[table_type]]
+    type = objs[[table_type]],
+    stringsAsFactors = FALSE
   )
 }
 
