@@ -1,8 +1,8 @@
 # odbc 1.0.1.9000
 
-# odbc 1.0.1
-
 * Adding support for Hive data types (#38 @edgararuiz)
+
+# odbc 1.0.1
 
 * Fixes for the CRAN build machines
   - Do not force c++14 on windows
