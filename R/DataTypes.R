@@ -7,6 +7,7 @@
 #' - SQL Server
 #' - SQLite
 #' - Spark
+#' - Hive
 #'
 #' If you are using a different database and `dbWriteTable()` fails with a SQL
 #' parsing error the default method is not appropriate, you will need to write
@@ -76,6 +77,22 @@ odbcDataType.default <- function(info, obj, ...) {
   )
 }
 
+#' @export
+`odbcDataType.Hive` <- function(info, obj, ...) {
+  switch_type(obj,
+    factor = "VARCHAR(255)",
+    datetime = "TIMESTAMP",
+    date = "DATE",
+    binary = "BINARY",
+    integer = "INT",
+    double = "DOUBLE",
+    character = "STRING",
+    logical = "BOOLEAN",
+    list = "VARCHAR(255)",
+    stop("Unsupported type", call. = FALSE)
+  )
+}
+  
 #' @export
 `odbcDataType.MySQL` <- function(info, obj, ...) {
   switch_type(obj,
