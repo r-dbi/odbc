@@ -23,6 +23,7 @@ Databases with default methods defined are
 \item SQL Server
 \item SQLite
 \item Spark
+\item Hive
 }
 }
 \details{
