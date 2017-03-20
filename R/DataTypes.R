@@ -80,7 +80,7 @@ odbcDataType.default <- function(info, obj, ...) {
 #' @export
 `odbcDataType.Hive` <- function(info, obj, ...) {
   switch_type(obj,
-    factor = "VARCHAR(255)",
+    factor = "STRING",
     datetime = "TIMESTAMP",
     date = "DATE",
     binary = "BINARY",
@@ -88,7 +88,7 @@ odbcDataType.default <- function(info, obj, ...) {
     double = "DOUBLE",
     character = "STRING",
     logical = "BOOLEAN",
-    list = "VARCHAR(255)",
+    list = "STRING",
     stop("Unsupported type", call. = FALSE)
   )
 }
