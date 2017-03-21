@@ -72,7 +72,8 @@ Rcpp::List connection_info(connection_ptr const &p) {
       Rcpp::_["drivername"] = get_info_or_empty(p, SQL_DRIVER_NAME),
       Rcpp::_["odbc.version"] = get_info_or_empty(p, SQL_ODBC_VER),
       Rcpp::_["driver.version"] = get_info_or_empty(p, SQL_DRIVER_VER),
-      Rcpp::_["odbcdriver.version"] = get_info_or_empty(p, SQL_DRIVER_ODBC_VER));
+      Rcpp::_["odbcdriver.version"] = get_info_or_empty(p, SQL_DRIVER_ODBC_VER),
+      Rcpp::_["supports.transactions"] = (*p)->supports_transactions());
 }
 
 // [[Rcpp::export]]

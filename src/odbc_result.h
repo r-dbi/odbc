@@ -87,7 +87,10 @@ class odbc_result {
       auto nrows = Rf_length(x[0]);
       int start = 0;
       int batch_size = 1024;
-      nanodbc::transaction transaction(*c_->connection());
+      std::unique_ptr<nanodbc::transaction> t;
+      if (c_->supports_transactions()) {
+        t = std::unique_ptr<nanodbc::transaction>(new nanodbc::transaction(*c_->connection()));
+      }
 
       while(start < nrows) {
         auto s = nanodbc::statement(*c_->connection(), sql_);
@@ -113,7 +116,9 @@ class odbc_result {
 
         Rcpp::checkUserInterrupt();
       }
-      transaction.commit();
+      if (t) {
+        t->commit();
+      }
       bound_ = true;
     }
     Rcpp::DataFrame fetch(int n_max = -1) {

@@ -3,6 +3,7 @@
 #include "nanodbc.h"
 #include <Rcpp.h>
 #include "time_zone.h"
+#include <sqlext.h>
 
 namespace odbc {
 class odbc_result;
@@ -48,6 +49,10 @@ class odbc_connection {
     bool is_current_result(odbc_result* result) const {
       return current_result_ == result;
     }
+    bool supports_transactions() const {
+      return c_->get_info<unsigned short>(SQL_TXN_CAPABLE) != SQL_TC_NONE;
+    }
+
     void set_current_result(odbc_result *r);
 
     cctz::time_zone timezone() const {
