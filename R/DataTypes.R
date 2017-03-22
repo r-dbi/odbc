@@ -92,7 +92,7 @@ odbcDataType.default <- function(info, obj, ...) {
     stop("Unsupported type", call. = FALSE)
   )
 }
-  
+
 #' @export
 `odbcDataType.MySQL` <- function(info, obj, ...) {
   switch_type(obj,
@@ -231,9 +231,9 @@ test_roundtrip <- function(con = DBItest:::connect(DBItest:::get_default_context
     add_na <- function(x, p = .1) { is.na(x) <- runif(length(x)) < p; x}
     it[] <- lapply(it, add_na, p = .1)
     if (isTRUE(invert)) {
-      it <- it[, names(it) != columns]
+      it <- it[, !names(it) %in% columns]
     } else {
-      it <- it[, names(it) == columns]
+      it <- it[, names(it) %in% columns]
     }
 
     DBI::dbWriteTable(con, "it", it, overwrite = TRUE)
