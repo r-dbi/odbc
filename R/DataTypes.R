@@ -8,6 +8,7 @@
 #' - SQLite
 #' - Spark
 #' - Hive
+#' - Impala
 #'
 #' If you are using a different database and `dbWriteTable()` fails with a SQL
 #' parsing error the default method is not appropriate, you will need to write
@@ -90,6 +91,22 @@ odbcDataType.default <- function(info, obj, ...) {
     logical = "BOOLEAN",
     list = "STRING",
     stop("Unsupported type", call. = FALSE)
+  )
+}
+
+#' TODO: Revisit binary type (Impala)
+#' @export
+`odbcDataType.Impala` <- function(info, obj, ...) {
+  switch_type(obj,
+              factor = "STRING",
+              datetime = "STRING",
+              date = "VARCHAR(10)",
+              integer = "INT",
+              double = "DOUBLE",
+              character = "STRING",
+              logical = "BOOLEAN",
+              list = "STRING",
+              stop("Unsupported type", call. = FALSE)
   )
 }
 

@@ -1,5 +1,7 @@
 # odbc 1.0.1.9000
 
+* Adding support for Impala data types (@edgararuiz)
+
 * Adding support for Hive data types (#38 @edgararuiz)
 
 # odbc 1.0.1
