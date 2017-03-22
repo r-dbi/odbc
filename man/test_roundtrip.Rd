@@ -15,7 +15,16 @@ the value of \code{invert}. One of \code{datetime}, \code{date}, \code{binary},
 \code{integer}, \code{double}, \code{character}, \code{logical}.}
 
 \item{invert}{If \code{TRUE}, change the definition of columns to be inclusive,
-rather than exclusive.}
+rather than exclusive.
+\dontrun{
+test_roundtrip(con)
+
+# exclude a few columns
+test_roundtrip(con, c("integer", "double"))
+
+# Only test a specific column
+test_roundtrip(con, "integer", invert = FALSE)
+}}
 }
 \description{
 This tests all the supported data types, including missing values. It first

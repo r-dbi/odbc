@@ -195,6 +195,15 @@ varbinary <- function(x, type = "varbinary") {
 #' `integer`, `double`, `character`, `logical`.
 #' @param invert If `TRUE`, change the definition of columns to be inclusive,
 #' rather than exclusive.
+#' \dontrun{
+#' test_roundtrip(con)
+#'
+#' # exclude a few columns
+#' test_roundtrip(con, c("integer", "double"))
+#'
+#' # Only test a specific column
+#' test_roundtrip(con, "integer", invert = FALSE)
+#' }
 test_roundtrip <- function(con = DBItest:::connect(DBItest:::get_default_context()), columns = "", invert = TRUE) {
   dbms <- dbGetInfo(con)$dbms.name
   testthat::context(paste0("roundtrip[", dbms, "]"))
