@@ -239,5 +239,6 @@ test_roundtrip <- function(con = DBItest:::connect(DBItest:::get_default_context
     DBI::dbWriteTable(con, "it", it, overwrite = TRUE)
     res <- DBI::dbReadTable(con, "it")
     testthat::expect_equal(it, res)
+    invisible(list(sent = it, received = res))
   })
 }
