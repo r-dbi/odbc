@@ -179,3 +179,56 @@ varbinary <- function(x, type = "varbinary") {
   max_length <- max(lengths(x), na.rm = TRUE)
   paste0(type, "(", max(255, max_length), ")")
 }
+
+#' Test round tripping a simple table
+#'
+#' This tests all the supported data types, including missing values. It first
+#' writes them to the database, then reads them back and verifies the data is
+#' identical to the original.
+#'
+#' This function is not exported and should only be used during tests and as a
+#' sanity check when writing new `odbcDataType()` methods.
+#'
+#' @param con An established DBI connection.
+#' @param columns Table columns to exclude (default) or include, dependent on
+#' the value of `invert`. One of `datetime`, `date`, `binary`,
+#' `integer`, `double`, `character`, `logical`.
+#' @param invert If `TRUE`, change the definition of columns to be inclusive,
+#' rather than exclusive.
+test_roundtrip <- function(con = DBItest:::connect(DBItest:::get_default_context()), columns = "", invert = TRUE) {
+  dbms <- dbGetInfo(con)$dbms.name
+  testthat::context(paste0("roundtrip[", dbms, "]"))
+  testthat::test_that(paste0("[", dbms, "] round tripping data.frames works"), {
+    on.exit(try(DBI::dbRemoveTable(con, "it"), silent = TRUE))
+    set.seed(42)
+
+    # We can't use the data.frame constructor directly as list columns don't work there.
+    it <- list(
+
+      # We always return strings as factors
+      #factor = iris$Species,
+
+      datetime = as.POSIXct(as.numeric(iris$Petal.Length * 10), origin = "2016-01-01", tz = "UTC"),
+      date = as.Date(iris$Sepal.Width * 100, origin = Sys.time()),
+      binary = blob::as.blob(lapply(seq_len(NROW(iris)), function(x) as.raw(sample(0:100, size = sample(0:25, 1))))),
+      integer = as.integer(iris$Petal.Width * 100),
+      double = iris$Sepal.Length,
+      character = as.character(iris$Species),
+      logical = sample(c(TRUE, FALSE), size = nrow(iris), replace = T)
+    )
+    attributes(it) <- list(names = names(it), row.names = c(NA_integer_, -length(it[[1]])), class = "data.frame")
+
+    # Add a proportion of NA values to a data frame
+    add_na <- function(x, p = .1) { is.na(x) <- runif(length(x)) < p; x}
+    it[] <- lapply(it, add_na, p = .1)
+    if (isTRUE(invert)) {
+      it <- it[, names(it) != columns]
+    } else {
+      it <- it[, names(it) == columns]
+    }
+
+    DBI::dbWriteTable(con, "it", it, overwrite = TRUE)
+    res <- DBI::dbReadTable(con, "it")
+    testthat::expect_equal(it, res)
+  })
+}
