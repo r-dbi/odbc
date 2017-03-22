@@ -207,12 +207,13 @@ varbinary <- function(x, type = "varbinary") {
 test_roundtrip <- function(con = DBItest:::connect(DBItest:::get_default_context()), columns = "", invert = TRUE) {
   dbms <- dbGetInfo(con)$dbms.name
   testthat::context(paste0("roundtrip[", dbms, "]"))
+  res <- list()
   testthat::test_that(paste0("[", dbms, "] round tripping data.frames works"), {
-    on.exit(try(DBI::dbRemoveTable(con, "it"), silent = TRUE))
+    on.exit(try(DBI::dbRemoveTable(con, "test_table"), silent = TRUE))
     set.seed(42)
 
     # We can't use the data.frame constructor directly as list columns don't work there.
-    it <- list(
+    sent <- list(
 
       # We always return strings as factors
       #factor = iris$Species,
@@ -225,20 +226,21 @@ test_roundtrip <- function(con = DBItest:::connect(DBItest:::get_default_context
       character = as.character(iris$Species),
       logical = sample(c(TRUE, FALSE), size = nrow(iris), replace = T)
     )
-    attributes(it) <- list(names = names(it), row.names = c(NA_integer_, -length(it[[1]])), class = "data.frame")
+    attributes(sent) <- list(names = names(sent), row.names = c(NA_integer_, -length(sent[[1]])), class = "data.frame")
 
     # Add a proportion of NA values to a data frame
     add_na <- function(x, p = .1) { is.na(x) <- runif(length(x)) < p; x}
-    it[] <- lapply(it, add_na, p = .1)
+    sent[] <- lapply(sent, add_na, p = .1)
     if (isTRUE(invert)) {
-      it <- it[, !names(it) %in% columns]
+      sent <- sent[, !names(sent) %in% columns]
     } else {
-      it <- it[, names(it) %in% columns]
+      sent <- sent[, names(sent) %in% columns]
     }
 
-    DBI::dbWriteTable(con, "it", it, overwrite = TRUE)
-    res <- DBI::dbReadTable(con, "it")
-    testthat::expect_equal(it, res)
-    invisible(list(sent = it, received = res))
+    DBI::dbWriteTable(con, "test_table", sent, overwrite = TRUE)
+    received <- DBI::dbReadTable(con, "test_table")
+    testthat::expect_equal(sent, received)
+    res <<- list(sent = sent, received = received)
   })
+  invisible(res)
 }
