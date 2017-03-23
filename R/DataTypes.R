@@ -42,6 +42,7 @@
 #' ```
 #' @param info A driver information object, as returned by `dbGetInfo()`.
 #' @param obj An R object.
+#' @param ... Additional arguments passed to methods.
 #' @return Corresponding SQL type for the `obj`.
 #' @export
 odbcDataType <- function(info, obj, ...) UseMethod("odbcDataType")
@@ -94,7 +95,7 @@ odbcDataType.default <- function(info, obj, ...) {
   )
 }
 
-#' TODO: Revisit binary type (Impala)
+# TODO: Revisit binary type (Impala)
 #' @export
 `odbcDataType.Impala` <- function(info, obj, ...) {
   switch_type(obj,
@@ -221,7 +222,6 @@ varbinary <- function(x, type = "varbinary") {
 #' # Only test a specific column
 #' test_roundtrip(con, "integer", invert = FALSE)
 #' }
-#' @importFrom datasets iris
 #' @importFrom stats runif
 test_roundtrip <- function(con = DBItest:::connect(DBItest:::get_default_context()), columns = "", invert = TRUE) {
   dbms <- dbGetInfo(con)$dbms.name
@@ -230,6 +230,8 @@ test_roundtrip <- function(con = DBItest:::connect(DBItest:::get_default_context
   testthat::test_that(paste0("[", dbms, "] round tripping data.frames works"), {
     on.exit(try(DBI::dbRemoveTable(con, "test_table"), silent = TRUE))
     set.seed(42)
+
+    iris <- datasets::iris
 
     # We can't use the data.frame constructor directly as list columns don't work there.
     sent <- list(

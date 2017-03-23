@@ -10,6 +10,8 @@ odbcDataType(info, obj, ...)
 \item{info}{A driver information object, as returned by \code{dbGetInfo()}.}
 
 \item{obj}{An R object.}
+
+\item{...}{Additional arguments passed to methods.}
 }
 \value{
 Corresponding SQL type for the \code{obj}.
