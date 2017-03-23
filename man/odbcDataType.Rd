@@ -24,6 +24,7 @@ Databases with default methods defined are
 \item SQLite
 \item Spark
 \item Hive
+\item Impala
 }
 }
 \details{

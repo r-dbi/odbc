@@ -221,6 +221,8 @@ varbinary <- function(x, type = "varbinary") {
 #' # Only test a specific column
 #' test_roundtrip(con, "integer", invert = FALSE)
 #' }
+#' @importFrom datasets iris
+#' @importFrom stats runif
 test_roundtrip <- function(con = DBItest:::connect(DBItest:::get_default_context()), columns = "", invert = TRUE) {
   dbms <- dbGetInfo(con)$dbms.name
   testthat::context(paste0("roundtrip[", dbms, "]"))
