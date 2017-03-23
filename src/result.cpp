@@ -1,6 +1,6 @@
 #include "odbc_result.h"
 #include "odbc_types.h"
-#include "sqlext.h"
+#include "sql_types.h"
 
 using namespace Rcpp;
 using namespace nanodbc;

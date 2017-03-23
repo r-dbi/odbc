@@ -1,7 +1,7 @@
 #include "Rcpp.h"
 #include "nanodbc.h"
 #include "odbc_types.h"
-#include <sqlext.h>
+#include "r_types.h"
 #include "condition.h"
 
 using namespace odbc;

@@ -3,7 +3,7 @@
 #include "nanodbc.h"
 #include <Rcpp.h>
 #include "time_zone.h"
-#include <sqlext.h>
+#include "sql_types.h"
 
 namespace odbc {
 class odbc_result;
