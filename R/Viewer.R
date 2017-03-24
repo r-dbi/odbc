@@ -71,8 +71,8 @@ list_objects.default <- function(connection, ...) {
   # just return a list of the objects and their types, possibly filtered by the
   # options above
   data.frame(
-    name = objs[[table_name]],
-    type = objs[[table_type]],
+    name = objs[["table_name"]],
+    type = objs[["table_type"]],
     stringsAsFactors = FALSE
   )
 }
