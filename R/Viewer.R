@@ -72,7 +72,7 @@ list_objects.default <- function(connection, ...) {
   # options above
   data.frame(
     name = objs[["table_name"]],
-    type = objs[["table_type"]],
+    type = tolower(objs[["table_type"]]),
     stringsAsFactors = FALSE
   )
 }
