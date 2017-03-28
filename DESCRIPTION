@@ -29,7 +29,6 @@ Suggests:
 Collate:
     'odbc.R'
     'Driver.R'
-    'DriverMethods.R'
     'Connection.R'
     'RcppExports.R'
     'Result.R'
