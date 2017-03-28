@@ -123,8 +123,25 @@ connection_icon <- function(connection) {
 }
 
 connection_icon.default <- function(connection) {
-  # default implementation: use default icon
-  system.file(file.path("icons", "ODBC.png"), package = "odbc")
+  # no icon is returned by default
+  ""
+}
+
+connection_actions <- function(connection) {
+  UseMethod("connection_actions")
+}
+
+connection_actions.default <- function(connection) {
+  list(
+    Help = list(
+      # show README for this package as the help; we will update to a more
+      # helpful (and/or more driver-specific) website once one exists
+      icon = "",
+      callback = function() {
+        utils::browseURL("https://github.com/rstats-db/odbc/blob/master/README.md")
+      }
+    )
+  )
 }
 
 on_connection_closed <- function(con) {
@@ -207,7 +224,7 @@ on_connection_opened <- function(con, code) {
     },
 
     # other actions that can be executed on this connection
-    actions = list(),
+    actions = connection_actions(connection),
 
     # raw connection object
     connectionObject = con
