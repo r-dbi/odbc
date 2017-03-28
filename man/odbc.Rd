@@ -12,6 +12,6 @@ Driver for an ODBC database.
 \examples{
 \dontrun{
 #' library(DBI)
-Odbc::Odbc()
+odbc::odbc()
 }
 }

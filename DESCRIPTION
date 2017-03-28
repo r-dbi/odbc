@@ -1,6 +1,6 @@
 Package: odbc
 Title: Connect to ODBC Compatible Databases (using the DBI Interface)
-Version: 1.0.1
+Version: 1.0.1.9000
 Authors@R: c(
     person("Jim", "Hester", , "james.hester@rstudio.com", role = c("aut", "cre")),
     person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut")),
@@ -26,10 +26,11 @@ Suggests:
     testthat,
     covr,
     magrittr
-Collate:
+Collate: 
     'odbc.R'
     'Driver.R'
     'Connection.R'
+    'DataTypes.R'
     'RcppExports.R'
     'Result.R'
     'Table.R'

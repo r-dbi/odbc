@@ -17,7 +17,7 @@ OdbcConnection <- function(dsn = NULL, ..., timezone = "UTC", driver = NULL, ser
   quote <- connection_quote(ptr)
 
   info <- connection_info(ptr)
-  class(info) <- c(info$dbms.name, "list")
+  class(info) <- c(info$dbms.name, "driver_info", "list")
 
   new("OdbcConnection", ptr = ptr, quote = quote, info = info)
 }
@@ -112,7 +112,7 @@ setMethod(
 setMethod(
   "dbDataType", "OdbcConnection",
   function(dbObj, obj, ...) {
-    get_data_type(dbObj@info, obj)
+    odbcDataType(dbObj@info, obj)
   })
 
 #' @rdname OdbcConnection
@@ -182,7 +182,8 @@ setMethod(
 setMethod(
   "dbGetInfo", "OdbcConnection",
   function(dbObj, ...) {
-    connection_info(dbObj@ptr)
+    info <- connection_info(dbObj@ptr)
+    structure(info, class = c(info$dbms.name, "driver_info", "list"))
   })
 
 #' @rdname OdbcConnection
@@ -233,98 +234,6 @@ setMethod(
     invisible(TRUE)
   })
 
-get_data_type <- function(info, obj, ...) UseMethod("get_data_type")
-
-varchar <- function(x, type = "varchar") {
-  max_length <- max(nchar(as.character(x)), na.rm = TRUE)
-  paste0(type, "(", max(255, max_length), ")")
-}
-
-varbinary <- function(x, type = "varbinary") {
-  max_length <- max(lengths(x), na.rm = TRUE)
-  paste0(type, "(", max(255, max_length), ")")
-}
-
-get_data_type.default <- function(info, obj, ...) {
-  if (is.factor(obj)) return(varchar(obj))
-  if (is(obj, "POSIXct")) return("TIMESTAMP")
-  if (is(obj, "Date")) return("DATE")
-  if (is(obj, "blob")) return("BLOB")
-
-  switch(typeof(obj),
-    integer = "INTEGER",
-    double = "DOUBLE PRECISION",
-    character = varchar(obj),
-    logical = "SMALLINT",
-    list = varchar(obj),
-    stop("Unsupported type", call. = FALSE)
-  )
-}
-
-get_data_type.MySQL <- function(info, obj, ...) {
-  if (is.factor(obj)) return("TEXT")
-  if (is(obj, "POSIXct")) return("DATETIME")
-  if (is(obj, "Date")) return("DATE")
-  if (is(obj, "blob")) return("BLOB")
-
-  switch(typeof(obj),
-    integer = "INTEGER",
-    double = "DOUBLE",
-    character = "TEXT",
-    logical = "TINYINT",
-    list = "TEXT",
-    stop("Unsupported type", call. = FALSE)
-  )
-}
-
-get_data_type.PostgreSQL <- function(info, obj, ...) {
-  if (is.factor(obj)) return("TEXT")
-  if (is(obj, "POSIXct")) return("TIMESTAMP")
-  if (is(obj, "Date")) return("DATE")
-  if (is(obj, "blob")) return("bytea")
-
-  switch(typeof(obj),
-    integer = "INTEGER",
-    double = "DOUBLE PRECISION",
-    character = "TEXT",
-    logical = "BOOLEAN",
-    list = "TEXT",
-    stop("Unsupported type", call. = FALSE)
-  )
-}
-
-`get_data_type.Microsoft SQL Server` <- function(info, obj, ...) {
-  if (is.factor(obj)) return(varchar(obj))
-  if (is(obj, "POSIXct")) return("datetime")
-  if (is(obj, "Date")) return("date")
-  if (is(obj, "blob")) return(varbinary(obj))
-
-  switch(typeof(obj),
-    integer = "int",
-    double = "float",
-    character = varchar(obj),
-    logical = "BIT",
-    list = varchar(obj),
-    stop("Unsupported type", call. = FALSE)
-  )
-}
-
-`get_data_type.SQLite` <- function(info, obj, ...) {
-  if (is.factor(obj)) return("TEXT")
-  if (is(obj, "POSIXct")) return("NUMERIC")
-  if (is(obj, "Date")) return("NUMERIC")
-  if (is(obj, "blob")) return("BLOB")
-
-  switch(typeof(obj),
-    integer = "INTEGER",
-    double = "REAL",
-    character = "TEXT",
-    logical = "NUMERIC",
-    list = "TEXT",
-    stop("Unsupported type", call. = FALSE)
-  )
-}
-
 #' List Available ODBC Drivers
 #'
 #' @return A data frame with three columns.
@@ -336,7 +245,7 @@ get_data_type.PostgreSQL <- function(info, obj, ...) {
 #'   \item{value}{Driver attribute value}
 #' }
 #' @export
-list_drivers <- function() {
+odbcListDrivers <- function() {
   res <- list_drivers_()
   res[res == ""] <- NA_character_
   res
@@ -350,6 +259,6 @@ list_drivers <- function() {
 #'   \item{description}{Data Source description}
 #' }
 #' @export
-list_data_sources <- function() {
+odbcListDataSources <- function() {
   list_data_sources_()
 }

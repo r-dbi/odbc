@@ -33,5 +33,5 @@ test_that("MySQL", {
       "read_only", # Setting SQL_MODE_READ_ONLY is not supported in most DBs, so ignoring.
       NULL))
 
-  test_roundtrip("Logical")
+  test_roundtrip(columns = "logical")
 })

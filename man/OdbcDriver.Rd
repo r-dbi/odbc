@@ -24,8 +24,8 @@
 \arguments{
 \item{object}{Any R object}
 
-\item{dbObj}{A object inheriting from \code{\linkS4class{DBIDriver}}
-or \code{\linkS4class{DBIConnection}}}
+\item{dbObj}{A object inheriting from \linkS4class{DBIDriver}
+or \linkS4class{DBIConnection}}
 
 \item{obj}{An R object whose SQL type we want to determine.}
 

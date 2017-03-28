@@ -1,5 +1,5 @@
 #!/bin/bash
-# Anticonf (tm) script by Jeroen Ooms, Jim Hester (2016)
+# Anticonf (tm) script by Jeroen Ooms, Jim Hester (2017)
 # This script will query 'pkg-config' for the required cflags and ldflags.
 # If pkg-config is unavailable or does not find the library, try setting
 # INCLUDE_DIR and LIB_DIR manually via e.g:
@@ -39,16 +39,8 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
   if [ "$(command -v brew)" ]; then
     BREWDIR=$(brew --prefix)
   else
-    echo "Auto-brewing $PKG_BREW_NAME..."
-    TEMP_DIR=${TMPDIR-${TMP-${TEMP-/tmp}}}
-    BREWDIR=$TEMP_DIR/homebrew
-    rm -Rf "$BREWDIR"
-    BREWCACHE=$TEMP_DIR
-    mkdir -p "$BREWDIR"
-    echo "Auto-brewing $PKG_BREW_NAME in $BREWDIR..."
-    curl -fsSL https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C "$BREWDIR"
-    HOMEBREW_CACHE="$BREWCACHE" "$BREWDIR/bin/brew" install $PKG_BREW_NAME --force-bottle 2>&1 | perl -pe 's/Warning/Note/gi'
-    rm -f "$BREWDIR/opt/$PKG_BREW_NAME/lib/*.dylib"
+    curl -sfL "https://jeroen.github.io/autobrew/$PKG_BREW_NAME" > autobrew
+    source autobrew
   fi
   PKG_CFLAGS="-I$BREWDIR/opt/$PKG_BREW_NAME/include"
   PKG_LIBS="-L$BREWDIR/opt/$PKG_BREW_NAME/lib $PKG_LIBS"

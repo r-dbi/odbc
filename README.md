@@ -5,7 +5,7 @@ odbc
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/odbc)](https://cran.r-project.org/package=odbc) [![Travis-CI Build Status](https://travis-ci.org/rstats-db/odbc.svg?branch=master)](https://travis-ci.org/rstats-db/odbc) [![Coverage Status](https://img.shields.io/codecov/c/github/rstats-db/odbc/master.svg)](https://codecov.io/github/rstats-db/odbc?branch=master) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/2bnahh7qg5iu7197?svg=true)](https://ci.appveyor.com/project/hadley/odbconnect-cqvmd)
 
-The goal of the odbc package is to provide a DBI-compliant interface to [Open Database Connectivity](https://msdn.microsoft.com/en-us/library/ms710252(v=vs.85).aspx) (ODBC) drivers. This gives a efficient, easy to setup connection to any database with ODBC drivers available, including [SQL Server](https://www.microsoft.com/en-us/sql-server/), [Oracle](https://www.oracle.com/database), [MySQL](https://www.mysql.com/), [PostgreSQL](https://www.postgresql.org/), [SQLite](https://sqlite.org/) and others. The implementation builds on the [nanodbc](http://nanodbc.lexicalunit.com/) C++ library.
+The goal of the odbc package is to provide a DBI-compliant interface to [Open Database Connectivity](https://msdn.microsoft.com/en-us/library/ms710252(v=vs.85).aspx) (ODBC) drivers. This allows for an efficient, easy to setup connection to any database with ODBC drivers available, including [SQL Server](https://www.microsoft.com/en-us/sql-server/), [Oracle](https://www.oracle.com/database), [MySQL](https://www.mysql.com/), [PostgreSQL](https://www.postgresql.org/), [SQLite](https://sqlite.org/) and others. The implementation builds on the [nanodbc](http://nanodbc.lexicalunit.com/) C++ library.
 
 -   [Installation](#installation)
     -   [Windows](#windows)
@@ -151,7 +151,7 @@ A local DSN file can also be used with the files `~/.odbc.ini` and `~/.odbcinst.
 Contains driver information, particularly the name of the driver library. Multiple drivers can be specified in the same file.
 
 ``` ini
-[PostgreSQL]
+[PostgreSQL Driver]
 Driver          = /usr/local/lib/psqlodbcw.so
 
 [SQLite Driver]

@@ -1,7 +1,7 @@
 #include "Rcpp.h"
 #include "nanodbc.h"
 #include "odbc_types.h"
-#include <sqlext.h>
+#include "r_types.h"
 #include "condition.h"
 
 using namespace odbc;
@@ -72,7 +72,8 @@ Rcpp::List connection_info(connection_ptr const &p) {
       Rcpp::_["drivername"] = get_info_or_empty(p, SQL_DRIVER_NAME),
       Rcpp::_["odbc.version"] = get_info_or_empty(p, SQL_ODBC_VER),
       Rcpp::_["driver.version"] = get_info_or_empty(p, SQL_DRIVER_VER),
-      Rcpp::_["odbcdriver.version"] = get_info_or_empty(p, SQL_DRIVER_ODBC_VER));
+      Rcpp::_["odbcdriver.version"] = get_info_or_empty(p, SQL_DRIVER_ODBC_VER),
+      Rcpp::_["supports.transactions"] = (*p)->supports_transactions());
 }
 
 // [[Rcpp::export]]
@@ -120,8 +121,8 @@ Rcpp::DataFrame connection_sql_tables(
     names.push_back(tables.table_name());
     types.push_back(tables.table_type());
     schemas.push_back(tables.table_schema());
-    remarks.push_back(tables.table_catalog());
-    catalog.push_back(tables.table_remarks());
+    remarks.push_back(tables.table_remarks());
+    catalog.push_back(tables.table_catalog());
   }
   return Rcpp::DataFrame::create(
       Rcpp::_["table_catalog"] = catalog,
