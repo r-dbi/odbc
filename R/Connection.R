@@ -19,10 +19,10 @@ OdbcConnection <- function(dsn = NULL, ..., timezone = "UTC", driver = NULL, ser
   info <- connection_info(ptr)
   class(info) <- c(info$dbms.name, "driver_info", "list")
 
-  class <- getClassDef(info$dbms.name)
+  class <- getClassDef(info$dbms.name, package = "odbc", inherits = FALSE)
   if (is.null(class)) {
     setClass(info$dbms.name,
-      contains = "OdbcConnection")
+      contains = "OdbcConnection", package = "odbc")
   }
   new(info$dbms.name, ptr = ptr, quote = quote, info = info)
 }
