@@ -31,11 +31,12 @@ class odbc_connection {
       }
       t_ = std::unique_ptr<nanodbc::transaction>(new nanodbc::transaction(*c_));
     }
-    void commit() const {
+    void commit() {
       if (!t_) {
         Rcpp::stop("Commit without beginning transaction");
       }
       t_->commit();
+      t_.release();
     }
     void rollback() const {
       if (!t_) {
