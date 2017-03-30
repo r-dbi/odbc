@@ -1,8 +1,35 @@
-
+#' Return the object hierarchy supported by a connection.
+#'
+#' Lists the object types and metadata known by the connection, and how those
+#' object types relate to each other.
+#'
+#' The returned hierarchy takes the form of a nested list, in which each object
+#' type supported by the connection is a named list with the following
+#' attributes:
+#'
+#' \describe{
+#'   \item{contains}{A list of other object types contained by the object, or
+#'       "data" if the object contains data}
+#'   \item{icon}{An optional path to an icon representing the type}
+#' }
+#
+#' For instance, a connection in which the top-level object is a schema that
+#' contains tables and views, the function will return a list like the
+#' following:
+#'
+#' \preformatted{list(schema = list(contains = list(
+#'                    list(name = "table", contains = "data")
+#'                    list(name = "view", contains = "data"))))
+#'
+#' }
+#' @param connection A connection object, as returned by `dbConnect()`.
+#' @return The hierarchy of object types supported by the connection.
+#' @export
 odbcListObjectTypes <- function(connection) {
   UseMethod("odbcListObjectTypes")
 }
 
+#' @export
 odbcListObjectTypes.default <- function(connection) {
   # slurp all the objects in the database so we can determine the correct
   # object hierarchy
@@ -31,10 +58,26 @@ odbcListObjectTypes.default <- function(connection) {
   obj_types
 }
 
+#' List objects in a connection.
+#'
+#' Lists all of the objects in the connection, or all the objects which have
+#' specific attributes.
+#'
+#' When used without parameters, this function returns all of the objects known
+#' by the connection. Any parameters passed will filter the list to only objects
+#' which have the given attributes; for instance, passing \code{schema = "foo"}
+#' will return only objects matching the schema \code{foo}.
+#'
+#' @param connection A connection object, as returned by `dbConnect()`.
+#' @param ... Attributes to filter by.
+#' @return A data frame with \code{name} and \code{type} columns, listing the
+#'   objects.
+#' @export
 odbcListObjects <- function(connection, ...) {
   UseMethod("odbcListObjects")
 }
 
+#' @export
 odbcListObjects.default <- function(connection, ...) {
   args <- list(...)
 
@@ -77,6 +120,19 @@ odbcListObjects.default <- function(connection, ...) {
   )
 }
 
+#' List columns in an object.
+#'
+#' Lists the names and types of each column (field) of a specified object.
+#'
+#' The object to inspect must be specified as one of the arguments
+#' (e.g. \code{table = "employees"}); depending on the driver and underlying
+#' data store, additional specification arguments may be required.
+#'
+#' @param connection A connection object, as returned by `dbConnect()`.
+#' @param ... Parameters specifying the object.
+#' @return A data frame with \code{name} and \code{type} columns, listing the
+#'   object's fields.
+#' @export
 odbcListColumns <- function(connection, ...) {
   UseMethod("odbcListColumns")
 }
@@ -101,10 +157,23 @@ odbcListColumns.default <- function(connection, ...) {
     stringsAsFactors = FALSE)
 }
 
+#' Preview the data in an object.
+#'
+#' Return the data inside an object as a data frame.
+#'
+#' The object to previewed must be specified as one of the arguments
+#' (e.g. \code{table = "employees"}); depending on the driver and underlying
+#' data store, additional specification arguments may be required.
+#'
+#' @param connection A connection object, as returned by `dbConnect()`.
+#' @param ... Parameters specifying the object.
+#' @return A data frame containing the data in the object.
+#' @export
 odbcPreviewObject <- function(connection, rowLimit, ...) {
   UseMethod("odbcPreviewObject")
 }
 
+#' @export
 odbcPreviewObject.default <- function(connection, rowLimit, ...) {
   args <- list(...)
 
@@ -118,19 +187,45 @@ odbcPreviewObject.default <- function(connection, rowLimit, ...) {
   dbGetQuery(connection$con, paste("SELECT * FROM", obj))
 }
 
-connection_icon <- function(connection) {
-  UseMethod("connection_icon")
+#' Get an icon representing a connection.
+#'
+#' Return the path on disk to an icon representing a connection.
+#'
+#' The icon returned should be a 32x32 square image file.
+#'
+#' @param connection A connection object, as returned by `dbConnect()`.
+#' @return The path to an icon file on disk.
+#' @export
+odbcConnectionIcon <- function(connection) {
+  UseMethod("odbcConnectionIcon")
 }
 
-connection_icon.default <- function(connection) {
+#' @export
+odbcConnectionIcon.default <- function(connection) {
   # no icon is returned by default
   ""
 }
 
+#' List the actions supported for the connection
+#'
+#' Return a list of actions that can be performed on the connection.
+#'
+#' The list returned is a named list of actions, where each action has the
+#' following properties:
+#'
+#' \describe{
+#'   \item{callback}{A function to be invoked to perform the action}
+#'   \item{icon}{An optional path to an icon representing the action}
+#' }
+#'
+#' @param connection A connection object, as returned by `dbConnect()`.
+#' @return A named list of actions that can be performed on the connection.
+#' @export
 odbcConnectionActions <- function(connection) {
   UseMethod("odbcConnectionActions")
 }
 
+#' @export
 odbcConnectionActions.default <- function(connection) {
   list(
     Help = list(
@@ -180,7 +275,7 @@ on_connection_opened <- function(con, code) {
   )
 
   # find an icon for this DBMS
-  icon <- connection_icon(connection)
+  icon <- odbcConnectionIcon(connection)
 
   # let observer know that connection has opened
   observer$connectionOpened(
