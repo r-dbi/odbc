@@ -85,7 +85,7 @@ setMethod(
     if (!is.null(getOption("connectionObserver"))) {
       addTaskCallback(function(expr, ...) {
         tryCatch({
-          if (deparse(expr[[1]]) == "<-") {
+          if (is.call(expr) && identical(expr[[1]], as.symbol("<-"))) {
             # notify if this is an assignment we can replay
             on_connection_opened(eval(expr[[2]]), paste(
               c("library(odbc)", deparse(expr)), collapse = "\n"))

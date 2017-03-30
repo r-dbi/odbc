@@ -1,9 +1,9 @@
 
-list_object_types <- function(connection) {
-  UseMethod("list_object_types")
+odbcListObjectTypes <- function(connection) {
+  UseMethod("odbcListObjectTypes")
 }
 
-list_object_types.default <- function(connection) {
+odbcListObjectTypes.default <- function(connection) {
   # slurp all the objects in the database so we can determine the correct
   # object hierarchy
   objs <- connection_sql_tables(connection$con@ptr)
@@ -31,11 +31,11 @@ list_object_types.default <- function(connection) {
   obj_types
 }
 
-list_objects <- function(connection, ...) {
-  UseMethod("list_objects")
+odbcListObjects <- function(connection, ...) {
+  UseMethod("odbcListObjects")
 }
 
-list_objects.default <- function(connection, ...) {
+odbcListObjects.default <- function(connection, ...) {
   args <- list(...)
 
   # get all the matching objects
@@ -77,11 +77,11 @@ list_objects.default <- function(connection, ...) {
   )
 }
 
-list_columns <- function(connection, ...) {
-  UseMethod("list_columns")
+odbcListColumns <- function(connection, ...) {
+  UseMethod("odbcListColumns")
 }
 
-list_columns.default <- function(connection, ...) {
+odbcListColumns.default <- function(connection, ...) {
   # default implementation: list columns in the given table
   args <- list(...)
 
@@ -101,11 +101,11 @@ list_columns.default <- function(connection, ...) {
     stringsAsFactors = FALSE)
 }
 
-preview_object <- function(connection, rowLimit, ...) {
-  UseMethod("preview_object")
+odbcPreviewObject <- function(connection, rowLimit, ...) {
+  UseMethod("odbcPreviewObject")
 }
 
-preview_object.default <- function(connection, rowLimit, ...) {
+odbcPreviewObject.default <- function(connection, rowLimit, ...) {
   args <- list(...)
 
   # read table or view as desired
@@ -127,11 +127,11 @@ connection_icon.default <- function(connection) {
   ""
 }
 
-connection_actions <- function(connection) {
-  UseMethod("connection_actions")
+odbcConnectionActions <- function(connection) {
+  UseMethod("odbcConnectionActions")
 }
 
-connection_actions.default <- function(connection) {
+odbcConnectionActions.default <- function(connection) {
   list(
     Help = list(
       # show README for this package as the help; we will update to a more
@@ -205,26 +205,26 @@ on_connection_opened <- function(con, code) {
     },
 
     listObjectTypes = function () {
-      list_object_types(connection)
+      odbcListObjectTypes(connection)
     },
 
     # table enumeration code
     listObjects = function(...) {
-      list_objects(connection, ...)
+      odbcListObjects(connection, ...)
     },
 
     # column enumeration code
     listColumns = function(...) {
-      list_columns(connection, ...)
+      odbcListColumns(connection, ...)
     },
 
     # table preview code
     previewObject = function(rowLimit, ...) {
-      preview_object(connection, rowLimit, ...)
+      odbcPreviewObject(connection, rowLimit, ...)
     },
 
     # other actions that can be executed on this connection
-    actions = connection_actions(connection),
+    actions = odbcConnectionActions(connection),
 
     # raw connection object
     connectionObject = con
