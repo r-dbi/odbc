@@ -110,10 +110,11 @@ apt-get install libsqliteodbc
 ```
 
 ### R
-odbc is not yet available on CRAN, however
-[devtools](https://cran.r-project.org/package=devtools) can be used to install
-the latest version.
 ```R
+# Install the latest odbc release from CRAN:
+install.packages("odbc")
+
+# Or the the development version from GitHub:
 # install.packages(devtools)
 devtools::install_github("rstats-db/odbc")
 ```
