@@ -68,7 +68,7 @@ setMethod(
   function(drv, dsn = NULL, ..., timezone = "UTC", driver = NULL, server = NULL, database = NULL,
     uid = NULL, pwd = NULL, .connection_string = NULL) {
 
-    OdbcConnection(
+    con <- OdbcConnection(
       dsn = dsn,
       ...,
       timezone = timezone,
@@ -78,6 +78,11 @@ setMethod(
       uid = uid,
       pwd = pwd,
       .connection_string = .connection_string)
+
+    parentCall <- match.call()
+    on_connection_opened(con, globalenv(), parentCall)
+
+    con
   }
 )
 

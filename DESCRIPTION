@@ -35,5 +35,6 @@ Collate:
     'Result.R'
     'Table.R'
     'utils.R'
+    'Viewer.R'
     'zzz.R'
 Roxygen: list(markdown = TRUE)
