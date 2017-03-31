@@ -45,5 +45,6 @@ test_that("SQLServer", {
       NULL))
   DBItest::test_compliance(c(
       "read_only", # Setting SQL_MODE_READ_ONLY is not supported in most DBs, so ignoring.
+      "compliance", # We are defining additional subclasses for OdbcConnections
       NULL))
 })

@@ -19,7 +19,12 @@ OdbcConnection <- function(dsn = NULL, ..., timezone = "UTC", driver = NULL, ser
   info <- connection_info(ptr)
   class(info) <- c(info$dbms.name, "driver_info", "list")
 
-  new("OdbcConnection", ptr = ptr, quote = quote, info = info)
+  class <- getClassDef(info$dbms.name, package = "odbc", inherits = FALSE)
+  if (is.null(class)) {
+    setClass(info$dbms.name,
+      contains = "OdbcConnection", package = "odbc")
+  }
+  new(info$dbms.name, ptr = ptr, quote = quote, info = info)
 }
 
 #' @rdname OdbcConnection
@@ -111,7 +116,7 @@ setMethod(
 setMethod(
   "dbDataType", "OdbcConnection",
   function(dbObj, obj, ...) {
-    odbcDataType(dbObj@info, obj)
+    odbcDataType(dbObj, obj)
   })
 
 #' @rdname OdbcConnection
