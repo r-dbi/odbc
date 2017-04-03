@@ -8,6 +8,8 @@ NULL
 #' @name OdbcConnection
 NULL
 
+class_cache <- new.env(parent = emptyenv())
+
 OdbcConnection <- function(dsn = NULL, ..., timezone = "UTC", driver = NULL, server = NULL, database = NULL, uid = NULL, pwd = NULL, .connection_string = NULL) {
   args <- c(dsn = dsn, driver = driver, server = server, database = database, uid = uid, pwd = pwd, list(...))
   stopifnot(all(has_names(args)))
@@ -19,10 +21,10 @@ OdbcConnection <- function(dsn = NULL, ..., timezone = "UTC", driver = NULL, ser
   info <- connection_info(ptr)
   class(info) <- c(info$dbms.name, "driver_info", "list")
 
-  class <- getClassDef(info$dbms.name, package = "odbc", inherits = FALSE)
+  class <- getClassDef(info$dbms.name, where = class_cache, inherits = FALSE)
   if (is.null(class)) {
     setClass(info$dbms.name,
-      contains = "OdbcConnection", package = "odbc")
+      contains = "OdbcConnection", where = class_cache)
   }
   new(info$dbms.name, ptr = ptr, quote = quote, info = info)
 }
