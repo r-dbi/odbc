@@ -68,7 +68,7 @@ setMethod(
   function(drv, dsn = NULL, ..., timezone = "UTC", driver = NULL, server = NULL, database = NULL,
     uid = NULL, pwd = NULL, .connection_string = NULL) {
 
-    OdbcConnection(
+    con <- OdbcConnection(
       dsn = dsn,
       ...,
       timezone = timezone,
@@ -78,6 +78,28 @@ setMethod(
       uid = uid,
       pwd = pwd,
       .connection_string = .connection_string)
+
+    # perform the connection notification at the top level, to ensure that it's had
+    # a chance to get its external pointer connected, and so we can capture the
+    # expression that created it
+    if (!is.null(getOption("connectionObserver"))) {
+      addTaskCallback(function(expr, ...) {
+        tryCatch({
+          if (is.call(expr) && identical(expr[[1]], as.symbol("<-"))) {
+            # notify if this is an assignment we can replay
+            on_connection_opened(eval(expr[[2]]), paste(
+              c("library(odbc)", deparse(expr)), collapse = "\n"))
+          }
+        }, error = function(e) {
+          warning("Could not notify connection observer. ", e$message)
+        })
+
+        # always return false so the task callback is run at most once
+        FALSE
+      })
+    }
+
+    con
   }
 )
 

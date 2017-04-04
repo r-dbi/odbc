@@ -34,6 +34,7 @@ Collate:
     'RcppExports.R'
     'Result.R'
     'Table.R'
+    'Viewer.R'
     'utils.R'
     'zzz.R'
 Roxygen: list(markdown = TRUE)
