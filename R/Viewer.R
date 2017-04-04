@@ -33,7 +33,7 @@ odbcListObjectTypes <- function(connection) {
 odbcListObjectTypes.default <- function(connection) {
   # slurp all the objects in the database so we can determine the correct
   # object hierarchy
-  objs <- connection_sql_tables(connection$con@ptr)
+  objs <- connection_sql_tables(connection@ptr)
 
   # all databases contain tables, at a minimum
   obj_types <- list(table = list(contains = "data"))
@@ -82,7 +82,7 @@ odbcListObjects.default <- function(connection, ...) {
   args <- list(...)
 
   # get all the matching objects
-  objs <- connection_sql_tables(connection$con@ptr,
+  objs <- connection_sql_tables(connection@ptr,
       catalog_name = if (is.null(args$catalog)) "" else args$catalog,
       schema_name = if (is.null(args$schema)) "" else args$schema)
 
@@ -145,7 +145,7 @@ odbcListColumns.default <- function(connection, ...) {
   obj <- if (is.null(args$table)) args$view else args$table
 
   # specify schema or catalog if given
-  cols <- connection_sql_columns(connection$con@ptr,
+  cols <- connection_sql_columns(connection@ptr,
     table_name = obj,
     schema_name = if (is.null(args$schema)) "" else args$schema,
     catalog_name = if (is.null(args$catalog)) "" else args$catalog)
@@ -184,7 +184,7 @@ odbcPreviewObject.default <- function(connection, rowLimit, ...) {
   if (!is.null(args$schema))
     obj <- paste(args$schema, obj, sep = ".")
 
-  dbGetQuery(connection$con, paste("SELECT * FROM", obj))
+  dbGetQuery(connection, paste("SELECT * FROM", obj))
 }
 
 #' Get an icon representing a connection.
@@ -273,13 +273,13 @@ on_connection_opened <- function(connection, code) {
   # let observer know that connection has opened
   observer$connectionOpened(
     # connection type
-    type = con@info$dbms.name,
+    type = connection@info$dbms.name,
 
     # name displayed in connection pane
-    displayName = con@info$dbname,
+    displayName = connection@info$dbname,
 
     # host key
-    host = con@info$dbname,
+    host = connection@info$dbname,
 
     # icon for connection
     icon = icon,
@@ -315,6 +315,6 @@ on_connection_opened <- function(connection, code) {
     actions = odbcConnectionActions(connection),
 
     # raw connection object
-    connectionObject = con
+    connectionObject = connection
   )
 }
