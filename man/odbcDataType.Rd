@@ -4,10 +4,10 @@
 \alias{odbcDataType}
 \title{Return the corresponding ODBC data type for an R object}
 \usage{
-odbcDataType(info, obj, ...)
+odbcDataType(con, obj, ...)
 }
 \arguments{
-\item{info}{A driver information object, as returned by \code{dbGetInfo()}.}
+\item{con}{A driver connection object, as returned by \code{dbConnect()}.}
 
 \item{obj}{An R object.}
 
@@ -44,7 +44,7 @@ method definition of a fictional \code{foo} database follows.\preformatted{con <
 dbGetInfo(con)$dbms.name
 #> [1] "foo"
 
-`odbcDataType.foo <- function(info, obj, ...) {
+`odbcDataType.foo <- function(con, obj, ...) {
   switch_type(obj,
     factor = "VARCHAR(255)",
     datetime = "TIMESTAMP",
