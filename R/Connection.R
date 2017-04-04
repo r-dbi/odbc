@@ -254,7 +254,9 @@ setMethod(
 #' @export
 odbcListDrivers <- function() {
   res <- list_drivers_()
-  res[res == ""] <- NA_character_
+  if (nrow(res) > 0) {
+    res[res == ""] <- NA_character_
+  }
   res
 }
 
