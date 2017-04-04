@@ -261,18 +261,11 @@ on_connection_updated <- function(con, hint) {
   observer$connectionUpdated(type, host, hint = hint)
 }
 
-on_connection_opened <- function(con, code) {
+on_connection_opened <- function(connection, code) {
   # make sure we have an observer
   observer <- getOption("connectionObserver")
   if (is.null(observer))
     return(invisible(NULL))
-
-  # wrap the S4 connection object in an S3 object which understands the
-  # connection type for dispatch
-  connection <- structure(
-    list(con = con),
-    class = con@info$dbms.name
-  )
 
   # find an icon for this DBMS
   icon <- odbcConnectionIcon(connection)
