@@ -29,6 +29,8 @@ Installation
 
 For Unix and MacOS ODBC drivers should be compiled against [unixODBC](http://www.unixodbc.org/). Drivers compiled against [iODBC](http://www.iodbc.org/) *may* also work, but are not fully supported.
 
+After installation of the driver manager and driver, you will have to register the driver in a [odbcinst.ini](#dsn-configuration-files) file for it to appear in `odbc::odbcListDrivers()`.
+
 ### Windows
 
 Windows is bundled with ODBC libraries however drivers for each database need to be installed separately. Windows ODBC drivers typically include a installer that needs to be run and will install the driver to the proper locations.
