@@ -289,7 +289,7 @@ on_connection_opened <- function(connection, code) {
 
     # disconnection code
     disconnect = function() {
-      dbDisconnect(con)
+      dbDisconnect(connection)
     },
 
     listObjectTypes = function () {
