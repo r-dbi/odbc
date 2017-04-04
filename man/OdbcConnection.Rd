@@ -52,7 +52,7 @@
 
 \S4method{dbGetInfo}{OdbcConnection}(dbObj, ...)
 
-\S4method{dbGetQuery}{OdbcConnection,character}(conn, statement, ...)
+\S4method{dbGetQuery}{OdbcConnection,character}(conn, statement, n = -1, ...)
 
 \S4method{dbBegin}{OdbcConnection}(conn, ...)
 
@@ -79,6 +79,11 @@ or a \linkS4class{DBIResult}}
 \item{x}{A character vector to quote as string.}
 
 \item{name}{A character string specifying a DBMS table name.}
+
+\item{n}{maximum number of records to retrieve per fetch. Use \code{n = -1}
+or \code{n = Inf}
+to retrieve all pending records.  Some implementations may recognize other
+special values.}
 }
 \description{
 Implementations of pure virtual functions defined in the \code{DBI} package

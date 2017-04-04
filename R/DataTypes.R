@@ -213,6 +213,7 @@ varbinary <- function(x, type = "varbinary") {
 #' `integer`, `double`, `character`, `logical`.
 #' @param invert If `TRUE`, change the definition of columns to be inclusive,
 #' rather than exclusive.
+#' @examples
 #' \dontrun{
 #' test_roundtrip(con)
 #'

@@ -9,6 +9,8 @@ odbcPreviewObject(connection, rowLimit, ...)
 \arguments{
 \item{connection}{A connection object, as returned by \code{dbConnect()}.}
 
+\item{rowLimit}{The maximum number of rows to display.}
+
 \item{...}{Parameters specifying the object.}
 }
 \value{

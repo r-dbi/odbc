@@ -7,7 +7,7 @@
 \alias{show,OdbcDriver-method}
 \alias{dbDataType,OdbcDriver,ANY-method}
 \alias{dbDataType,OdbcDriver,list-method}
-\alias{dbDataType,OdbcConnection,data.frame-method}
+\alias{dbDataType,OdbcDriver,data.frame-method}
 \alias{dbIsValid,OdbcDriver-method}
 \alias{dbGetInfo,OdbcDriver-method}
 \title{Odbc Driver Methods}
@@ -18,7 +18,7 @@
 
 \S4method{dbDataType}{OdbcDriver,list}(dbObj, obj, ...)
 
-\S4method{dbDataType}{OdbcConnection,data.frame}(dbObj, obj, ...)
+\S4method{dbDataType}{OdbcDriver,data.frame}(dbObj, obj, ...)
 
 \S4method{dbIsValid}{OdbcDriver}(dbObj, ...)
 

@@ -15,16 +15,7 @@ the value of \code{invert}. One of \code{datetime}, \code{date}, \code{binary},
 \code{integer}, \code{double}, \code{character}, \code{logical}.}
 
 \item{invert}{If \code{TRUE}, change the definition of columns to be inclusive,
-rather than exclusive.
-\dontrun{
-test_roundtrip(con)
-
-# exclude a few columns
-test_roundtrip(con, c("integer", "double"))
-
-# Only test a specific column
-test_roundtrip(con, "integer", invert = FALSE)
-}}
+rather than exclusive.}
 }
 \description{
 This tests all the supported data types, including missing values. It first
@@ -34,4 +25,15 @@ identical to the original.
 \details{
 This function is not exported and should only be used during tests and as a
 sanity check when writing new \code{odbcDataType()} methods.
+}
+\examples{
+\dontrun{
+test_roundtrip(con)
+
+# exclude a few columns
+test_roundtrip(con, c("integer", "double"))
+
+# Only test a specific column
+test_roundtrip(con, "integer", invert = FALSE)
+}
 }

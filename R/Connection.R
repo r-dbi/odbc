@@ -204,13 +204,14 @@ setMethod(
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbGetQuery
+#' @inheritParams DBI::dbFetch
 #' @export
 setMethod("dbGetQuery", signature("OdbcConnection", "character"),
-  function(conn, statement, ...) {
+  function(conn, statement, n = -1, ...) {
     rs <- dbSendQuery(conn, statement, ...)
     on.exit(dbClearResult(rs))
 
-    df <- dbFetch(rs, n = -1, ...)
+    df <- dbFetch(rs, n = n, ...)
 
     if (!dbHasCompleted(rs)) {
       warning("Pending rows", call. = FALSE)

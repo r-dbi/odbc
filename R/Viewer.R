@@ -166,6 +166,7 @@ odbcListColumns.default <- function(connection, ...) {
 #' data store, additional specification arguments may be required.
 #'
 #' @param connection A connection object, as returned by `dbConnect()`.
+#' @param rowLimit The maximum number of rows to display.
 #' @param ... Parameters specifying the object.
 #' @return A data frame containing the data in the object.
 #' @export
