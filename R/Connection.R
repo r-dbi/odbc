@@ -123,6 +123,15 @@ setMethod(
   })
 
 #' @rdname OdbcConnection
+#' @inheritParams DBI::dbDataType
+#' @export
+setMethod(
+  "dbDataType", c("OdbcConnection", "data.frame"),
+  function(dbObj, obj, ...) {
+    vapply(obj, odbcDataType, con = dbObj, FUN.VALUE = character(1), USE.NAMES = TRUE)
+  })
+
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbQuoteString
 #' @export
 setMethod(

@@ -122,6 +122,15 @@ setMethod(
   })
 
 #' @rdname OdbcDriver
+#' @inheritParams DBI::dbDataType
+#' @export
+setMethod(
+  "dbDataType", c("OdbcDriver", "data.frame"),
+  function(dbObj, obj, ...) {
+    vapply(obj, odbcDataType, con = dbObj, FUN.VALUE = character(1), USE.NAMES = TRUE)
+  })
+
+#' @rdname OdbcDriver
 #' @inheritParams DBI::dbIsValid
 #' @export
 setMethod(

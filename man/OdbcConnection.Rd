@@ -10,6 +10,7 @@
 \alias{dbSendQuery,OdbcConnection,character-method}
 \alias{dbSendStatement,OdbcConnection,character-method}
 \alias{dbDataType,OdbcConnection,ANY-method}
+\alias{dbDataType,OdbcConnection,data.frame-method}
 \alias{dbQuoteString,OdbcConnection,character-method}
 \alias{dbQuoteIdentifier,OdbcConnection,character-method}
 \alias{dbListTables,OdbcConnection-method}
@@ -34,6 +35,8 @@
 \S4method{dbSendStatement}{OdbcConnection,character}(conn, statement, ...)
 
 \S4method{dbDataType}{OdbcConnection,ANY}(dbObj, obj, ...)
+
+\S4method{dbDataType}{OdbcConnection,data.frame}(dbObj, obj, ...)
 
 \S4method{dbQuoteString}{OdbcConnection,character}(conn, x, ...)
 
