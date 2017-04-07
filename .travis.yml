@@ -30,4 +30,5 @@ r_github_packages:
   - rstats-db/DBItest@9087f76
 
 after_success:
+  - R -f travis/drop_tables.R
   - R -e 'covr::codecov(line_exclusions = c("src/nanodbc.h", "src/nanodbc.cpp"))'
