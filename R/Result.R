@@ -108,7 +108,7 @@ setMethod(
   })
 
 #' @rdname OdbcResult
-#' @inheritParams DBI::getRowsAffected
+#' @inheritParams DBI::dbGetRowsAffected
 #' @export
 setMethod(
   "dbGetRowsAffected", "OdbcResult",

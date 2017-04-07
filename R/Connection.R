@@ -155,6 +155,12 @@ setMethod(
   })
 
 
+#' Un-Quote identifiers
+#'
+#' Call this method to generate a string that is unquoted. This is the inverse
+#' of `DBI::dbQuoteIdentifier`.
+#'
+#' @param x A character vector to un-quote.
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbQuoteIdentifier
 #' @export

@@ -82,7 +82,7 @@ or a \linkS4class{DBIResult}}
 
 \item{obj}{An R object whose SQL type we want to determine.}
 
-\item{x}{A character vector to quote as string.}
+\item{x}{A character vector to un-quote.}
 
 \item{name}{A character string specifying a DBMS table name.}
 
@@ -94,4 +94,7 @@ special values.}
 \description{
 Implementations of pure virtual functions defined in the \code{DBI} package
 for OdbcConnection objects.
+
+Call this method to generate a string that is unquoted. This is the inverse
+of \code{DBI::dbQuoteIdentifier}.
 }
