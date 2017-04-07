@@ -1,5 +1,7 @@
 library(DBI)
 
+devtools::load_all()
+
 pg <- dbConnect(odbc::odbc(), "PostgreSQL")
 lapply(dbListTables(pg), dbRemoveTable)
 
