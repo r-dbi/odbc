@@ -37,7 +37,7 @@ NULL
 setMethod(
   "dbWriteTable", c("OdbcConnection", "character", "data.frame"),
   function(conn, name, value, overwrite=FALSE, append=FALSE, temporary = FALSE,
-    ...) {
+    row.names = NA, ...) {
 
     if (overwrite && append)
       stop("overwrite and append cannot both be TRUE", call. = FALSE)
@@ -51,15 +51,11 @@ setMethod(
       dbRemoveTable(conn, name)
     }
 
-    if (!found && append) {
-      stop("Table ", name, " does not exist", call. = FALSE)
-    }
-
-    values <- sqlData(conn, value[, , drop = FALSE])
+    values <- sqlData(conn, row.names = row.names, value[, , drop = FALSE])
 
     if (!found || overwrite) {
-      sql <- sqlCreateTable(conn, name, values, temporary = temporary)
-      dbGetQuery(conn, sql)
+      sql <- sqlCreateTable(conn, name, values, row.names = FALSE, temporary = temporary)
+      dbExecute(conn, sql)
     }
 
     if (nrow(value) > 0) {
@@ -100,14 +96,3 @@ setMethod("sqlData", "OdbcConnection", function(con, value, row.names = NA, ...)
 
   value
 })
-
-
-#' @rdname odbc-tables
-#' @inheritParams DBI::dbReadTable
-#' @export
-setMethod(
-  "dbReadTable", c("OdbcConnection", "character"),
-  function(conn, name, ...) {
-    name <- dbQuoteIdentifier(conn, name)
-    dbGetQuery(conn, paste("SELECT * FROM ", name))
-  })

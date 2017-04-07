@@ -5,15 +5,13 @@
 \alias{odbc-tables}
 \alias{dbWriteTable,OdbcConnection,character,data.frame-method}
 \alias{sqlData,OdbcConnection-method}
-\alias{dbReadTable,OdbcConnection,character-method}
 \title{Convenience functions for reading/writing DBMS tables}
 \usage{
 \S4method{dbWriteTable}{OdbcConnection,character,data.frame}(conn, name, value,
-  overwrite = FALSE, append = FALSE, temporary = FALSE, ...)
+  overwrite = FALSE, append = FALSE, temporary = FALSE, row.names = NA,
+  ...)
 
 \S4method{sqlData}{OdbcConnection}(con, value, row.names = NA, ...)
-
-\S4method{dbReadTable}{OdbcConnection,character}(conn, name, ...)
 }
 \arguments{
 \item{conn}{a \code{\linkS4class{OdbcConnection}} object, produced by
@@ -33,10 +31,6 @@ just any valid bare table name.}
 
 \item{temporary}{If \code{TRUE}, will generate a temporary table statement.}
 
-\item{...}{Other arguments used by individual methods.}
-
-\item{con}{A database connection.}
-
 \item{row.names}{Either \code{TRUE}, \code{FALSE}, \code{NA} or a string.
 
 If \code{TRUE}, always translate row names to a column called "row_names".
@@ -47,6 +41,10 @@ A string is equivalent to \code{TRUE}, but allows you to override the
 default name.
 
 For backward compatibility, \code{NULL} is equivalent to \code{FALSE}.}
+
+\item{...}{Other arguments used by individual methods.}
+
+\item{con}{A database connection.}
 }
 \description{
 Convenience functions for reading/writing DBMS tables

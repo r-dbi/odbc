@@ -110,6 +110,7 @@ setMethod(
   "dbSendStatement", c("OdbcConnection", "character"),
   function(conn, statement, ...) {
     res <- OdbcResult(connection = conn, statement = statement)
+    result_execute(res@ptr)
     res
   })
 
@@ -153,6 +154,33 @@ setMethod(
     DBI::SQL(paste(conn@quote, encodeString(x), conn@quote, sep = ""))
   })
 
+
+#' @rdname OdbcConnection
+#' @inheritParams DBI::dbQuoteIdentifier
+#' @export
+setGeneric(
+  "dbUnQuoteIdentifier",
+  function(conn, x, ...) standardGeneric("dbUnQuoteIdentifier")
+)
+
+#' @rdname OdbcConnection
+#' @inheritParams DBI::dbQuoteIdentifier
+#' @export
+setMethod(
+  "dbUnQuoteIdentifier", c("OdbcConnection", "SQL"),
+  function(conn, x) {
+    x <- as.character(x)
+    x <- gsub(paste0("^", conn@quote), "", x)
+    x <- gsub(paste0(conn@quote, "$"), "", x)
+    x
+  })
+
+setMethod(
+  "dbUnQuoteIdentifier", c("OdbcConnection", "character"),
+  function(conn, x) {
+    x
+  })
+
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbListTables
 #' @export
@@ -168,7 +196,8 @@ setMethod(
 setMethod(
   "dbExistsTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
-    name %in% dbListTables(conn)
+    stopifnot(length(name) == 1)
+    dbUnQuoteIdentifier(conn, name) %in% dbListTables(conn)
   })
 
 #' @rdname OdbcConnection
@@ -187,7 +216,7 @@ setMethod(
   "dbRemoveTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     name <- dbQuoteIdentifier(conn, name)
-    dbGetQuery(conn, paste("DROP TABLE ", name))
+    dbExecute(conn, paste("DROP TABLE ", name))
     on_connection_updated(conn, name)
     invisible(TRUE)
   })

@@ -80,8 +80,12 @@ class odbc_result {
       auto types = column_types(x);
       auto ncols = x.size();
 
+      if (s_->parameters() == 0) {
+        Rcpp::stop("Query does not require parameters.");
+      }
+
       if (ncols != s_->parameters()) {
-        Rcpp::stop("Query requires %i params; %i supplied.",
+        Rcpp::stop("Query requires '%i' params; '%i' supplied.",
             s_->parameters(), ncols);
       }
       auto nrows = Rf_length(x[0]);

@@ -5,7 +5,7 @@
 \alias{OdbcResult}
 \alias{OdbcResult-class}
 \alias{dbClearResult,OdbcResult-method}
-\alias{dbFetch,OdbcResult-method}
+\alias{dbFetch,OdbcResult,ANY-method}
 \alias{dbHasCompleted,OdbcResult-method}
 \alias{dbGetInfo,OdbcResult-method}
 \alias{dbIsValid,OdbcResult-method}
@@ -18,7 +18,7 @@
 \usage{
 \S4method{dbClearResult}{OdbcResult}(res, ...)
 
-\S4method{dbFetch}{OdbcResult}(res, n = -1, ..., row.names = NA)
+\S4method{dbFetch}{OdbcResult,ANY}(res, n = -1, ...)
 
 \S4method{dbHasCompleted}{OdbcResult}(res, ...)
 
@@ -45,17 +45,6 @@
 or \code{n = Inf}
 to retrieve all pending records.  Some implementations may recognize other
 special values.}
-
-\item{row.names}{Either \code{TRUE}, \code{FALSE}, \code{NA} or a string.
-
-If \code{TRUE}, always translate row names to a column called "row_names".
-If \code{FALSE}, never translate row names. If \code{NA}, translate
-rownames only if they're a character vector.
-
-A string is equivalent to \code{TRUE}, but allows you to override the
-default name.
-
-For backward compatibility, \code{NULL} is equivalent to \code{FALSE}.}
 
 \item{dbObj}{An object inheriting from \linkS4class{DBIObject},
 i.e. \linkS4class{DBIDriver}, \linkS4class{DBIConnection},
