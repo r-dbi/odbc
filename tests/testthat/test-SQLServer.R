@@ -57,6 +57,7 @@ test_that("SQLServer", {
       "write_table_error", # TODO
       "list_tables", # TODO
       ".*_table_name", # TODO
+      "append_table_error", # TODO
       NULL))
   DBItest::test_meta(c(
       "bind_empty",
