@@ -3,6 +3,7 @@
 environment:
   global:
     R_VERSION: stable
+    NOT_CRAN: true
 
 # Download script file from GitHub
 init:
