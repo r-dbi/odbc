@@ -82,7 +82,7 @@ setMethod(
     # perform the connection notification at the top level, to ensure that it's had
     # a chance to get its external pointer connected, and so we can capture the
     # expression that created it
-    if (!is.null(getOption("connectionObserver"))) {
+    if (!is.null(getOption("connectionObserver"))) { # nocov start
       addTaskCallback(function(expr, ...) {
         tryCatch({
           if (is.call(expr) && identical(expr[[1]], as.symbol("<-"))) {
@@ -97,7 +97,7 @@ setMethod(
         # always return false so the task callback is run at most once
         FALSE
       })
-    }
+    } # nocov end
 
     con
   }

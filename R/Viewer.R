@@ -25,6 +25,7 @@
 #' @param connection A connection object, as returned by `dbConnect()`.
 #' @return The hierarchy of object types supported by the connection.
 #' @export
+# nocov start
 odbcListObjectTypes <- function(connection) {
   UseMethod("odbcListObjectTypes")
 }
@@ -319,3 +320,4 @@ on_connection_opened <- function(connection, code) {
     connectionObject = connection
   )
 }
+# nocov end
