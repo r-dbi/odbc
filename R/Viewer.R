@@ -272,13 +272,24 @@ on_connection_opened <- function(connection, code) {
   # find an icon for this DBMS
   icon <- odbcConnectionIcon(connection)
 
+  # use the database name as the display name
+  display_name <- connection@info$dbname
+  server_name <-connection@info$servername
+
+  # append the server name if we know it, and it isn't the same as the database name
+  # (this can happen for serverless, nameless databases such as SQLite)
+  if (!is.null(server_name) && nzchar(server_name) &&
+      !identical(server_name, display_name)) {
+    display_name <- paste(display_name, "-", server_name)
+  }
+
   # let observer know that connection has opened
   observer$connectionOpened(
     # connection type
     type = connection@info$dbms.name,
 
     # name displayed in connection pane
-    displayName = connection@info$dbname,
+    displayName = display_name,
 
     # host key
     host = connection@info$dbname,
