@@ -21,7 +21,6 @@ test_that("MySQL", {
       "fetch_no_return_value",           # TODO
       "data_date_types", # Dates should be numeric, not integers
       "data_logical($|_.+)",             # Not an error, PostgreSQL has a logical data type
-      "data_64_bit.*",                   # TODO
       "data_raw.*",                      # cast(1 bytea) is not valid `cannot cast type integer to bytea`
       "^data_time$", "^data_time_.*",    # time objects not supported
       "^data_timestamp.*",               # MySQL converts the timestamps from local times, so they roundtrip unexpectedly
@@ -31,7 +30,6 @@ test_that("MySQL", {
   DBItest::test_sql(c(
       "quote_identifier_vectorized", # Can't implement until https://github.com/rstats-db/DBI/issues/71 is closed
       "roundtrip_logical",               # Not an error, PostgreSQL has a logical data type
-      "roundtrip_64_bit",                # TODO
       "roundtrip_numeric_special",       # 6
       "roundtrip_timestamp",             # We explicitly want to set tzone to UTC regardless of input
       "roundtrip_time", # TODO
