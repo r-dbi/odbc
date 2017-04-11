@@ -449,10 +449,8 @@ class odbc_result {
             types.push_back(date_t);
             break;
             // Time
-          case SQL_TIME:
           case SQL_TIMESTAMP:
           case SQL_TYPE_TIMESTAMP:
-          case SQL_TYPE_TIME:
             types.push_back(datetime_t);
             break;
           case SQL_CHAR:
