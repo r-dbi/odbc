@@ -41,6 +41,7 @@ test_that("SQLServer", {
       "quote_identifier", # Invalid Syntax
       "quote_identifier_special", # TODO
       "roundtrip_logical_int", # Not an error, PostgreSQL has a logical data type
+      "roundtrip_64_bit", # TODO
       "temporary_table", # Unsupported
       "roundtrip_numeric_special", # Unsupported
       "roundtrip_character", # #10
