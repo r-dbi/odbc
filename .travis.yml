@@ -27,8 +27,7 @@ before_script:
   - mysql -u root -e 'CREATE DATABASE test_db;'
 
 r_github_packages:
-  - rstats-db/DBItest@9087f76
-  - jimhester/covr
+  - jimhester/DBItest@bit64
 
 after_success:
   - R -f travis/drop_tables.R

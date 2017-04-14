@@ -26,6 +26,7 @@ services:
 
 build_script:
   - travis-tool.sh install_deps
+  - travis-tool.sh install_github jimhester/DBItest@bit64
 
 test_script:
   - travis-tool.sh run_tests

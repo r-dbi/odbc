@@ -29,7 +29,6 @@ test_that("SQLServer", {
       "data_logical_.*", # Not an error
 
       "data_date.*", # Date not a builtin function name
-      "data_64_bit.*", # TODO
       "data_raw.*", # cast(1 bytea) is not valid `cannot cast type integer to bytea`
       "^data_time$", "^data_time_.*", # time objects not supported
       "^data_timestamp.*", # syntax not supported

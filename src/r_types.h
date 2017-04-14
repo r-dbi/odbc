@@ -7,6 +7,7 @@ namespace odbc {
   typedef enum {
     logical_t,
     integer_t,
+    integer64_t,
     double_t,
     date_t,
     datetime_t,

@@ -7,6 +7,7 @@
 #include "odbc_connection.h"
 #include "condition.h"
 #include "time_zone.h"
+#include "integer64.h"
 #include <chrono>
 
 namespace odbc {
@@ -343,6 +344,7 @@ class odbc_result {
       for (int j = 0; j < num_cols; ++j) {
         switch (types[j]) {
           case integer_t: out[j] = Rf_allocVector(INTSXP, n); break;
+          case integer64_t:
           case date_t:
           case datetime_t:
           case odbc::double_t: out[j] = Rf_allocVector(REALSXP, n); break;
@@ -374,6 +376,9 @@ class odbc_result {
       for (int col = 0; col < df.size(); ++col) {
         Rcpp::RObject x = df[col];
         switch (types[col]) {
+          case integer64_t:
+            x.attr("class") = Rcpp::CharacterVector::create("integer64");
+            break;
           case date_t:
             x.attr("class") = Rcpp::CharacterVector::create("Date");
             break;
@@ -432,8 +437,10 @@ class odbc_result {
           case SQL_TINYINT:
           case SQL_SMALLINT:
           case SQL_INTEGER:
-          case SQL_BIGINT:
             types.push_back(integer_t);
+            break;
+          case SQL_BIGINT:
+            types.push_back(integer64_t);
             break;
             // Double
           case SQL_DOUBLE:
@@ -503,6 +510,7 @@ class odbc_result {
             case datetime_t: assign_datetime(out, row, col, r); break;
             case odbc::double_t: assign_double(out, row, col, r); break;
             case integer_t: assign_integer(out, row, col, r); break;
+            case integer64_t: assign_integer64(out, row, col, r); break;
             case string_t: assign_string(out, row, col, r); break;
             case logical_t: assign_logical(out, row, col, r); break;
             case raw_t: assign_raw(out, row, col, r); break;
@@ -529,6 +537,9 @@ class odbc_result {
 
     void assign_integer(Rcpp::List & out, size_t row, short column, nanodbc::result & value) {
       INTEGER(out[column])[row] = value.get<int>(column, NA_INTEGER);
+    }
+    void assign_integer64(Rcpp::List & out, size_t row, short column, nanodbc::result & value) {
+      INTEGER64(out[column])[row] = value.get<int64_t>(column, NA_INTEGER64);
     }
     void assign_double(Rcpp::List & out, size_t row, short column, nanodbc::result & value) {
       REAL(out[column])[row] = value.get<double>(column, NA_REAL);

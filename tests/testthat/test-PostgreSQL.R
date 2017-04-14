@@ -20,7 +20,6 @@ test_that("PostgreSQL", {
       "get_query_n_zero_rows",                     # todo
       "fetch_no_return_value",           # TODO
       "data_logical_int.*", # Not an error, PostgreSQL has a logical data type
-      "data_64_bit.*", # TODO
       "data_raw.*", # cast(1 bytea) is not valid `cannot cast type integer to bytea`
       "^data_time$", "^data_time_.*", # time objects not supported
       "^data_timestamp.*", # We explicitly want to set tzone to UTC
@@ -34,7 +33,6 @@ test_that("PostgreSQL", {
       "quote_identifier_not_vectorized", # Can't implement until https://github.com/rstats-db/DBI/issues/71 is closed
       "quote_identifier_special", # TODO
       "roundtrip_logical_int", # Not an error, PostgreSQL has a logical data type
-      "roundtrip_64_bit", # TODO
       "roundtrip_timestamp", # We explicitly want to set tzone to UTC
       "roundtrip_numeric_special",       # 6
       "roundtrip_time", # TODO
