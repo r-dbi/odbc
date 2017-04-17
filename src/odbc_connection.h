@@ -18,8 +18,12 @@ class odbc_connection {
           Rcpp::stop("Error loading time zone (%s)", timezone);
         }
 
+      try {
         c_ = std::make_shared<nanodbc::connection>(connection_string);
+      } catch (nanodbc::database_error e) {
+        throw Rcpp::exception(e.what(), FALSE);
       }
+    }
 
     std::shared_ptr<nanodbc::connection> connection() const {
       return std::shared_ptr<nanodbc::connection>(c_);

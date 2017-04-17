@@ -18,11 +18,10 @@ namespace odbc {
     signal_condition(buf, "odbc_unknown_field_type");
   }
 
-class odbc_error : public std::runtime_error {
+class odbc_error : public Rcpp::exception {
   public:
     odbc_error(const nanodbc::database_error e, const std::string& sql) :
-      std::runtime_error(sql)
-    {
+      Rcpp::exception("", false) {
       message = std::string("<SQL> '" + sql + "'\n  " + e.what());
     }
     const char* what() const NANODBC_NOEXCEPT
