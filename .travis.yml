@@ -20,6 +20,10 @@ addons:
       - odbc-postgresql
       - libmyodbc
       - libsqliteodbc
+      - clang-format-3.5
+
+before_install:
+  - travis/check_format.sh
 
 before_script:
   - sudo -u postgres psql -U postgres -c 'CREATE DATABASE test_db;'
