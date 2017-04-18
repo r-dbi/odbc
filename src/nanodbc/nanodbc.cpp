@@ -3260,9 +3260,9 @@ std::list<data_source> list_data_sources()
             rc,
             env,                                     // EnvironmentHandle
             direction,                               // Direction
-            name,                                   // ServerName
-            sizeof(name) / sizeof(NANODBC_SQLCHAR), // BufferLength1
-            &name_len_ret,                          // NameLength1Ptr
+            name,                                    // ServerName
+            sizeof(name) / sizeof(NANODBC_SQLCHAR),  // BufferLength1
+            &name_len_ret,                           // NameLength1Ptr
             descr,                                   // Description
             sizeof(descr) / sizeof(NANODBC_SQLCHAR), // BufferLength2
             &descr_len_ret);                         // NameLength2Ptr

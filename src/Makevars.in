@@ -2,19 +2,24 @@ CXX_STD = CXX11
 
 # Workaround for bug with unixODBC 2.3.1
 # https://github.com/lexicalunit/nanodbc/issues/149
-PKG_CXXFLAGS=-I. -DNANODBC_USE_BOOST_CONVERT -DNANODBC_ODBC_VERSION=SQL_OV_ODBC3 $(CXX1XPICFLAGS) @PKG_CXXFLAGS@ -Icctz/include
+PKG_CXXFLAGS=-I. -DNANODBC_USE_BOOST_CONVERT -DNANODBC_ODBC_VERSION=SQL_OV_ODBC3 $(CXX1XPICFLAGS) @PKG_CXXFLAGS@ -Icctz/include -Inanodbc
 PKG_LIBS=@PKG_LIBS@ -Lcctz -lcctz
 
-.PHONY: all cctz clean
+OBJECTS = connection.o nanodbc.o result.o odbc_connection.o RcppExports.o
 
-all: $(OBJECTS) $(SHLIB)
+all: $(SHLIB)
 
-$(SHLIB): cctz
+$(SHLIB): cctz $(OBJECTS)
 
 cctz:
 	(cd cctz && \
 make libcctz.a PREFIX="../" CC="$(CC)" CXX="$(CXX)" AR="$(AR)" ARFLAGS=$(ARFLAGS))
 
+nanodbc.o: nanodbc/nanodbc.cpp
+	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
+
 clean:
 	(cd cctz; make clean)
 	rm -f $(OBJECTS) $(SHLIB)
+
+.PHONY: all cctz clean

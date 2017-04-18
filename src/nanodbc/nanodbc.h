@@ -1708,8 +1708,8 @@ struct driver
 
 struct data_source
 {
-  nanodbc::string_type name;        ///< Driver name
-  nanodbc::string_type description; ///< Driver description
+    nanodbc::string_type name;        ///< Driver name
+    nanodbc::string_type description; ///< Driver description
 };
 
 /// \brief Returns a list of ODBC drivers on your system.
