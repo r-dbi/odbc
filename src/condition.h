@@ -2,13 +2,13 @@
 #define CONDITION_H_
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include <Rinternals.h>
 
-static SEXP signal_condition(const char * msg, const char * class_, SEXP env = R_GlobalEnv) {
+static SEXP signal_condition(const char *msg, const char *class_,
+                             SEXP env = R_GlobalEnv) {
   SEXP condition, c, signalConditionFun, out;
 
   const char *nms[] = {"message", ""};

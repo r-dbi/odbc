@@ -14,9 +14,7 @@ bool result_active(result_ptr const &r) {
 }
 
 // [[Rcpp::export]]
-bool result_completed(result_ptr const &r) {
-  return r->complete();
-}
+bool result_completed(result_ptr const &r) { return r->complete(); }
 
 // [[Rcpp::export]]
 result_ptr new_result(connection_ptr const &p, std::string const &sql) {

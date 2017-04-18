@@ -1,8 +1,8 @@
 #include "Rcpp.h"
+#include "condition.h"
 #include "nanodbc.h"
 #include "odbc_types.h"
 #include "r_types.h"
-#include "condition.h"
 
 using namespace odbc;
 
@@ -25,10 +25,8 @@ Rcpp::DataFrame list_drivers_() {
     }
   }
   return Rcpp::DataFrame::create(
-      Rcpp::_["name"] = names,
-      Rcpp::_["attribute"] = attributes,
-      Rcpp::_["value"] = values,
-      Rcpp::_["stringsAsFactors"] = false);
+      Rcpp::_["name"] = names, Rcpp::_["attribute"] = attributes,
+      Rcpp::_["value"] = values, Rcpp::_["stringsAsFactors"] = false);
 }
 
 // [[Rcpp::export]]
@@ -39,14 +37,14 @@ Rcpp::DataFrame list_data_sources_() {
     names.push_back(data_source.name);
     descriptions.push_back(data_source.description);
   }
-  return Rcpp::DataFrame::create(
-      Rcpp::_["name"] = names,
-      Rcpp::_["description"] = descriptions,
-      Rcpp::_["stringsAsFactors"] = false);
+  return Rcpp::DataFrame::create(Rcpp::_["name"] = names,
+                                 Rcpp::_["description"] = descriptions,
+                                 Rcpp::_["stringsAsFactors"] = false);
 }
 
 // [[Rcpp::export]]
-connection_ptr odbc_connect(std::string const &connection_string, std::string const &timezone = "") {
+connection_ptr odbc_connect(std::string const &connection_string,
+                            std::string const &timezone = "") {
   return connection_ptr(new std::shared_ptr<odbc_connection>(
       new odbc_connection(connection_string, timezone)));
 }
@@ -54,7 +52,7 @@ connection_ptr odbc_connect(std::string const &connection_string, std::string co
 std::string get_info_or_empty(connection_ptr const &p, short type) {
   try {
     return (*p)->connection()->get_info<std::string>(type);
-  } catch(nanodbc::database_error c) {
+  } catch (nanodbc::database_error c) {
     return "";
   }
 }
@@ -104,10 +102,11 @@ void connection_rollback(connection_ptr const &p) { (*p)->rollback(); }
 bool connection_valid(connection_ptr const &p) { return p.get() != nullptr; }
 
 // [[Rcpp::export]]
-Rcpp::DataFrame connection_sql_tables(
-    connection_ptr const &p, std::string const &catalog_name = "",
-    std::string const &schema_name = "", std::string const &table_name = "",
-    std::string const &table_type = "") {
+Rcpp::DataFrame connection_sql_tables(connection_ptr const &p,
+                                      std::string const &catalog_name = "",
+                                      std::string const &schema_name = "",
+                                      std::string const &table_name = "",
+                                      std::string const &table_type = "") {
   auto c = nanodbc::catalog(*(*p)->connection());
   auto tables =
       c.find_tables(table_name, table_type, schema_name, catalog_name);
@@ -125,12 +124,9 @@ Rcpp::DataFrame connection_sql_tables(
     catalog.push_back(tables.table_catalog());
   }
   return Rcpp::DataFrame::create(
-      Rcpp::_["table_catalog"] = catalog,
-      Rcpp::_["table_name"] = names,
-      Rcpp::_["table_type"] = types,
-      Rcpp::_["table_schema"] = schemas,
-      Rcpp::_["table_remarks"] = remarks,
-      Rcpp::_["stringsAsFactors"] = false);
+      Rcpp::_["table_catalog"] = catalog, Rcpp::_["table_name"] = names,
+      Rcpp::_["table_type"] = types, Rcpp::_["table_schema"] = schemas,
+      Rcpp::_["table_remarks"] = remarks, Rcpp::_["stringsAsFactors"] = false);
 }
 
 // "%" is a wildcard for all possible values
