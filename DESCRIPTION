@@ -39,4 +39,4 @@ Collate:
     'utils.R'
     'zzz.R'
 Roxygen: list(markdown = TRUE)
-Remotes: RcppCore/Rcpp@a15ba45695cb11a8064d39a140f06821e7f5ca0b
+Remotes: RcppCore/Rcpp@940e34edb5ca44f4d9acf5aac806613f5b699535
