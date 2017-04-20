@@ -15,7 +15,8 @@ Imports:
     methods,
     Rcpp (>= 0.12.10.1),
     blob,
-    bit64
+    bit64,
+    hms
 LinkingTo: Rcpp, BH
 RoxygenNote: 6.0.1
 URL: https://github.com/rstats-db/odbc

@@ -20,7 +20,6 @@ addons:
       - odbc-postgresql
       - libmyodbc
       - libsqliteodbc
-      - clang-format-3.5
 
 before_install:
   - travis/check_format.sh

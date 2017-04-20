@@ -115,6 +115,9 @@ public:
         case integer_t:
           bind_integer(s, x, col, start, size);
           break;
+        case odbc::time_t:
+          bind_time(s, x, col, start, size);
+          break;
         case string_t:
           bind_string(s, x, col, start, size);
           break;
@@ -175,13 +178,16 @@ private:
   std::shared_ptr<nanodbc::result> r_;
   std::string sql_;
   static const int seconds_in_day_ = 24 * 60 * 60;
+  static const int seconds_in_hour_ = 60 * 60;
+  static const int seconds_in_minute_ = 60;
   size_t rows_fetched_;
   bool complete_;
   bool bound_;
 
   std::map<short, std::vector<std::string>> strings_;
   std::map<short, std::vector<std::vector<uint8_t>>> raws_;
-  std::map<short, std::vector<nanodbc::timestamp>> times_;
+  std::map<short, std::vector<nanodbc::time>> times_;
+  std::map<short, std::vector<nanodbc::timestamp>> timestamps_;
   std::map<short, std::vector<nanodbc::date>> dates_;
   std::map<short, std::vector<uint8_t>> nulls_;
 
@@ -189,6 +195,7 @@ private:
     strings_.clear();
     raws_.clear();
     times_.clear();
+    timestamps_.clear();
     dates_.clear();
     nulls_.clear();
   }
@@ -292,6 +299,15 @@ private:
     return dt;
   }
 
+  nanodbc::time as_time(double value) {
+    nanodbc::time ts;
+    ts.hour = value / seconds_in_hour_;
+    auto remainder = static_cast<int>(value) % seconds_in_hour_;
+    ts.min = remainder / seconds_in_minute_;
+    ts.sec = remainder % seconds_in_minute_;
+    return ts;
+  }
+
   void bind_datetime(nanodbc::statement &statement, Rcpp::List const &data,
                      short column, size_t start, size_t size) {
 
@@ -306,9 +322,9 @@ private:
       } else {
         ts = as_timestamp(value);
       }
-      times_[column].push_back(ts);
+      timestamps_[column].push_back(ts);
     }
-    statement.bind(column, times_[column].data(), size,
+    statement.bind(column, timestamps_[column].data(), size,
                    reinterpret_cast<bool *>(nulls_[column].data()));
   }
   void bind_date(nanodbc::statement &statement, Rcpp::List const &data,
@@ -331,6 +347,25 @@ private:
                    reinterpret_cast<bool *>(nulls_[column].data()));
   }
 
+  void bind_time(nanodbc::statement &statement, Rcpp::List const &data,
+                 short column, size_t start, size_t size) {
+
+    nulls_[column] = std::vector<uint8_t>(size, false);
+    auto d = REAL(data[column]);
+
+    nanodbc::time ts;
+    for (size_t i = 0; i < size; ++i) {
+      auto value = d[start + i];
+      if (ISNA(value)) {
+        nulls_[column][i] = true;
+      } else {
+        ts = as_time(value);
+      }
+      times_[column].push_back(ts);
+    }
+    statement.bind(column, times_[column].data(), size,
+                   reinterpret_cast<bool *>(nulls_[column].data()));
+  }
   std::vector<std::string> column_names(nanodbc::result const &r) {
     std::vector<std::string> names;
     names.reserve(r.columns());
@@ -370,6 +405,7 @@ private:
       case integer64_t:
       case date_t:
       case datetime_t:
+      case odbc::time_t:
       case odbc::double_t:
         out[j] = Rf_allocVector(REALSXP, n);
         break;
@@ -417,6 +453,10 @@ private:
         x.attr("class") = Rcpp::CharacterVector::create("POSIXct", "POSIXt");
         x.attr("tzone") = Rcpp::CharacterVector::create("UTC");
         break;
+      case odbc::time_t:
+        x.attr("class") = Rcpp::CharacterVector::create("hms", "difftime");
+        x.attr("units") = Rcpp::CharacterVector::create("secs");
+        break;
       case raw_t:
         x.attr("class") = Rcpp::CharacterVector::create("blob");
         break;
@@ -443,6 +483,8 @@ private:
           types.push_back(date_t);
         } else if (x.inherits("POSIXct")) {
           types.push_back(datetime_t);
+        } else if (x.inherits("difftime")) {
+          types.push_back(odbc::time_t);
         } else {
           types.push_back(double_t);
         }
@@ -495,6 +537,10 @@ private:
         types.push_back(date_t);
         break;
       // Time
+      case SQL_TIME:
+      case SQL_TYPE_TIME:
+        types.push_back(odbc::time_t);
+        break;
       case SQL_TIMESTAMP:
       case SQL_TYPE_TIMESTAMP:
         types.push_back(datetime_t);
@@ -559,6 +605,9 @@ private:
           break;
         case integer64_t:
           assign_integer64(out, row, col, r);
+          break;
+        case odbc::time_t:
+          assign_time(out, row, col, r);
           break;
         case string_t:
           assign_string(out, row, col, r);
@@ -656,6 +705,19 @@ private:
     }
 
     REAL(out[column])[row] = res / seconds_in_day_;
+  }
+  void assign_time(Rcpp::List &out, size_t row, short column,
+                   nanodbc::result &value) {
+    double res;
+
+    if (value.is_null(column)) {
+      res = NA_REAL;
+    } else {
+      auto ts = value.get<nanodbc::time>(column);
+      res = ts.hour * 3600 + ts.min * 60 + ts.sec;
+    }
+
+    REAL(out[column])[row] = res;
   }
 
   void assign_logical(Rcpp::List &out, size_t row, short column,

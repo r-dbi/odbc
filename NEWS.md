@@ -1,5 +1,9 @@
 # odbc 1.0.1.9000
 
+* Time objects are converted to and from `hms` objects.
+
+* 64 bit integers are converted to and from `bit64` objects.
+
 * Adding support for Impala data types (@edgararuiz)
 
 * Adding support for Hive data types (#38 @edgararuiz)

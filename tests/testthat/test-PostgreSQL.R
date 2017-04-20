@@ -21,7 +21,7 @@ test_that("PostgreSQL", {
       "fetch_no_return_value",           # TODO
       "data_logical_int.*", # Not an error, PostgreSQL has a logical data type
       "data_raw.*", # cast(1 bytea) is not valid `cannot cast type integer to bytea`
-      "^data_time$", "^data_time_.*", # time objects not supported
+      "^data_time$", "^data_time_.*", # `time()` function is not valid syntax
       "^data_timestamp.*", # We explicitly want to set tzone to UTC
       "^data_timestamp_utc.*", # syntax not supported
       "^data_timestamp_parens.*", # syntax not supported
@@ -37,7 +37,6 @@ test_that("PostgreSQL", {
       "roundtrip_logical_int", # Not an error, PostgreSQL has a logical data type
       "roundtrip_timestamp", # We explicitly want to set tzone to UTC
       "roundtrip_numeric_special",       # 6
-      "roundtrip_time", # TODO
       "roundtrip_raw", #TODO
       "list_tables",
       ".*_table_name",

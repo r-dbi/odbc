@@ -11,6 +11,7 @@ typedef enum {
   double_t,
   date_t,
   datetime_t,
+  time_t,
   string_t,
   raw_t,
 } r_type;

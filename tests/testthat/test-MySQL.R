@@ -22,7 +22,6 @@ test_that("MySQL", {
       "data_date_types", # Dates should be numeric, not integers
       "data_logical($|_.+)",             # Not an error, PostgreSQL has a logical data type
       "data_raw.*",                      # cast(1 bytea) is not valid `cannot cast type integer to bytea`
-      "^data_time$", "^data_time_.*",    # time objects not supported
       "^data_timestamp.*",               # MySQL converts the timestamps from local times, so they roundtrip unexpectedly
       "^data_timestamp_utc.*",           # syntax not supported
       "^data_timestamp_parens.*",        # syntax not supported
@@ -32,7 +31,6 @@ test_that("MySQL", {
       "roundtrip_logical",               # Not an error, PostgreSQL has a logical data type
       "roundtrip_numeric_special",       # 6
       "roundtrip_timestamp",             # We explicitly want to set tzone to UTC regardless of input
-      "roundtrip_time", # TODO
       "roundtrip_raw", #TODO
       "list_tables",
       ".*_table_name",
