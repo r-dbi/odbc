@@ -13,8 +13,6 @@
 \alias{dbDataType,OdbcConnection,data.frame-method}
 \alias{dbQuoteString,OdbcConnection,character-method}
 \alias{dbQuoteIdentifier,OdbcConnection,character-method}
-\alias{dbUnQuoteIdentifier}
-\alias{dbUnQuoteIdentifier,OdbcConnection,SQL-method}
 \alias{dbListTables,OdbcConnection-method}
 \alias{dbExistsTable,OdbcConnection,character-method}
 \alias{dbListFields,OdbcConnection,character-method}
@@ -43,10 +41,6 @@
 \S4method{dbQuoteString}{OdbcConnection,character}(conn, x, ...)
 
 \S4method{dbQuoteIdentifier}{OdbcConnection,character}(conn, x, ...)
-
-dbUnQuoteIdentifier(conn, x, ...)
-
-\S4method{dbUnQuoteIdentifier}{OdbcConnection,SQL}(conn, x)
 
 \S4method{dbListTables}{OdbcConnection}(conn, ...)
 
@@ -82,7 +76,7 @@ or a \linkS4class{DBIResult}}
 
 \item{obj}{An R object whose SQL type we want to determine.}
 
-\item{x}{A character vector to un-quote.}
+\item{x}{A character vector to quote as string.}
 
 \item{name}{A character string specifying a DBMS table name.}
 
@@ -94,7 +88,4 @@ special values.}
 \description{
 Implementations of pure virtual functions defined in the \code{DBI} package
 for OdbcConnection objects.
-
-Call this method to generate a string that is unquoted. This is the inverse
-of \code{DBI::dbQuoteIdentifier}.
 }

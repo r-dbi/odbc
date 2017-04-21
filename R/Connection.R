@@ -161,7 +161,6 @@ setMethod(
 #' of `DBI::dbQuoteIdentifier`.
 #'
 #' @param x A character vector to un-quote.
-#' @rdname OdbcConnection
 #' @inheritParams DBI::dbQuoteIdentifier
 #' @export
 setGeneric(
@@ -169,7 +168,7 @@ setGeneric(
   function(conn, x, ...) standardGeneric("dbUnQuoteIdentifier")
 )
 
-#' @rdname OdbcConnection
+#' @rdname dbUnQuoteIdentifier
 #' @inheritParams DBI::dbQuoteIdentifier
 #' @export
 setMethod(
@@ -181,6 +180,9 @@ setMethod(
     x
   })
 
+#' @rdname dbUnQuoteIdentifier
+#' @inheritParams DBI::dbQuoteIdentifier
+#' @export
 setMethod(
   "dbUnQuoteIdentifier", c("OdbcConnection", "character"),
   function(conn, x) {
