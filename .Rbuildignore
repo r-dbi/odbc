@@ -20,3 +20,5 @@
 ^docs$
 ^.*pl$
 ^cran-comments\.md$
+^src/\.clang-format$
+^src/nanodbc/\.clang-format$
