@@ -1,14 +1,16 @@
 CXX_STD = CXX11
-PKG_CXXFLAGS=-I. -DNANODBC_USE_BOOST_CONVERT -Icctz/include
+PKG_CXXFLAGS=-I. -DNANODBC_USE_BOOST_CONVERT -Icctz/include -Inanodbc
 PKG_LIBS=-lodbc32 -Lcctz -lcctz
 
 OBJECTS = connection.o nanodbc.o result.o odbc_connection.o RcppExports.o
 
 all: $(SHLIB)
 
-$(SHLIB): cctz $(OBJECTS)
+$(SHLIB): $(OBJECTS)
 
-cctz:
+$(OBJECTS): cctz/libcctz.a
+
+cctz/libcctz.a:
 	(cd cctz && \
 make libcctz.a PREFIX="../" CC="$(CC)" CXX="$(CXX)" AR="$(AR)" ARFLAGS=$(ARFLAGS))
 
