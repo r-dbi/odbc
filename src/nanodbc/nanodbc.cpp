@@ -3998,14 +3998,14 @@ string_type catalog::tables::table_schema() const
 
 string_type catalog::tables::table_name() const
 {
-    // TABLE_NAME column is never NULL
-    return result_.get<string_type>(2);
+    // TABLE_NAME might be NULL
+    return result_.get<string_type>(2, string_type());
 }
 
 string_type catalog::tables::table_type() const
 {
-    // TABLE_TYPE column is never NULL
-    return result_.get<string_type>(3);
+    // TABLE_TYPE might be NULL
+    return result_.get<string_type>(3, string_type());
 }
 
 string_type catalog::tables::table_remarks() const
@@ -4236,10 +4236,10 @@ catalog::catalog(connection& conn)
 }
 
 catalog::tables catalog::find_tables(
-    const string_type& table,
-    const string_type& type,
-    const string_type& schema,
-    const string_type& catalog)
+    const string_type::value_type* table,
+    const string_type::value_type* type,
+    const string_type::value_type* schema,
+    const string_type::value_type* catalog)
 {
     // Passing a null pointer to a search pattern argument does not
     // constrain the search for that argument; that is, a null pointer and
@@ -4254,14 +4254,14 @@ catalog::tables catalog::find_tables(
         NANODBC_FUNC(SQLTables),
         rc,
         stmt.native_statement_handle(),
-        (NANODBC_SQLCHAR*)(catalog.empty() ? nullptr : catalog.c_str()),
-        (catalog.empty() ? 0 : SQL_NTS),
-        (NANODBC_SQLCHAR*)(schema.empty() ? nullptr : schema.c_str()),
-        (schema.empty() ? 0 : SQL_NTS),
-        (NANODBC_SQLCHAR*)(table.empty() ? nullptr : table.c_str()),
-        (table.empty() ? 0 : SQL_NTS),
-        (NANODBC_SQLCHAR*)(type.empty() ? nullptr : type.c_str()),
-        (type.empty() ? 0 : SQL_NTS));
+        (NANODBC_SQLCHAR*)(catalog),
+        (catalog == nullptr ? 0 : SQL_NTS),
+        (NANODBC_SQLCHAR*)(schema),
+        (schema == nullptr ? 0 : SQL_NTS),
+        (NANODBC_SQLCHAR*)(table),
+        (table == nullptr ? 0 : SQL_NTS),
+        (NANODBC_SQLCHAR*)(type),
+        (type == nullptr ? 0 : SQL_NTS));
     if (!success(rc))
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
 

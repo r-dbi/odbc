@@ -109,13 +109,17 @@ bool connection_valid(connection_ptr const& p) { return p.get() != nullptr; }
 // [[Rcpp::export]]
 Rcpp::DataFrame connection_sql_tables(
     connection_ptr const& p,
-    std::string const& catalog_name = "",
-    std::string const& schema_name = "",
-    std::string const& table_name = "",
-    std::string const& table_type = "") {
+    SEXP catalog_name,
+    SEXP schema_name,
+    SEXP table_name,
+    SEXP table_type) {
   auto c = nanodbc::catalog(*(*p)->connection());
-  auto tables =
-      c.find_tables(table_name, table_type, schema_name, catalog_name);
+  nanodbc::catalog::tables tables = nanodbc::catalog::tables(c.find_tables(
+      table_name == R_NilValue ? nullptr : Rcpp::as<const char*>(table_name),
+      table_type == R_NilValue ? nullptr : Rcpp::as<const char*>(table_type),
+      schema_name == R_NilValue ? nullptr : Rcpp::as<const char*>(schema_name),
+      catalog_name == R_NilValue ? nullptr
+                                 : Rcpp::as<const char*>(catalog_name)));
   std::vector<std::string> names;
   std::vector<std::string> types;
   std::vector<std::string> schemas;
