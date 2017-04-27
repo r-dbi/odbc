@@ -13,7 +13,7 @@
 
 namespace odbc {
 
-inline void signal_unknown_field_type(short type, const std::string &name) {
+inline void signal_unknown_field_type(short type, const std::string& name) {
   char buf[100];
   sprintf(buf, "Unknown field type (%i) in column (%s)", type, name.c_str());
   signal_condition(buf, "odbc_unknown_field_type");
@@ -21,11 +21,11 @@ inline void signal_unknown_field_type(short type, const std::string &name) {
 
 class odbc_error : public Rcpp::exception {
 public:
-  odbc_error(const nanodbc::database_error e, const std::string &sql)
+  odbc_error(const nanodbc::database_error e, const std::string& sql)
       : Rcpp::exception("", false) {
     message = std::string("<SQL> '" + sql + "'\n  " + e.what());
   }
-  const char *what() const NANODBC_NOEXCEPT { return message.c_str(); }
+  const char* what() const NANODBC_NOEXCEPT { return message.c_str(); }
 
 private:
   std::string message;
@@ -60,7 +60,7 @@ public:
     if (!r_) {
       try {
         r_ = std::make_shared<nanodbc::result>(s_->execute());
-      } catch (const nanodbc::database_error &e) {
+      } catch (const nanodbc::database_error& e) {
         c_->set_current_result(nullptr);
         throw odbc_error(e, sql_);
       } catch (...) {
@@ -69,7 +69,7 @@ public:
       }
     }
   }
-  void insert_dataframe(Rcpp::List const &x) {
+  void insert_dataframe(Rcpp::List const& x) {
     complete_ = false;
     rows_fetched_ = 0;
     auto types = column_types(x);
@@ -80,8 +80,10 @@ public:
     }
 
     if (ncols != s_->parameters()) {
-      Rcpp::stop("Query requires '%i' params; '%i' supplied.", s_->parameters(),
-                 ncols);
+      Rcpp::stop(
+          "Query requires '%i' params; '%i' supplied.",
+          s_->parameters(),
+          ncols);
     }
     auto nrows = Rf_length(x[0]);
     int start = 0;
@@ -200,8 +202,12 @@ private:
     nulls_.clear();
   }
 
-  void bind_logical(nanodbc::statement &statement, Rcpp::List const &data,
-                    short column, size_t start, size_t size) {
+  void bind_logical(
+      nanodbc::statement& statement,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size) {
     nulls_[column] = std::vector<uint8_t>(size, false);
     auto vector = LOGICAL(data[column]);
     for (size_t i = 0; i < size; ++i) {
@@ -209,20 +215,28 @@ private:
         nulls_[column][i] = true;
       }
     }
-    auto t = reinterpret_cast<const int *>(&LOGICAL(data[column])[start]);
-    statement.bind<int>(column, t, size,
-                        reinterpret_cast<bool *>(nulls_[column].data()));
+    auto t = reinterpret_cast<const int*>(&LOGICAL(data[column])[start]);
+    statement.bind<int>(
+        column, t, size, reinterpret_cast<bool*>(nulls_[column].data()));
   }
 
-  void bind_integer(nanodbc::statement &statement, Rcpp::List const &data,
-                    short column, size_t start, size_t size) {
+  void bind_integer(
+      nanodbc::statement& statement,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size) {
     statement.bind(column, &INTEGER(data[column])[start], size, &NA_INTEGER);
   }
 
   // We cannot use a sentinel for doubles becuase NaN != NaN for all values
   // of NaN, even if the bits are the same.
-  void bind_double(nanodbc::statement &statement, Rcpp::List const &data,
-                   short column, size_t start, size_t size) {
+  void bind_double(
+      nanodbc::statement& statement,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size) {
     nulls_[column] = std::vector<uint8_t>(size, false);
 
     auto vector = REAL(data[column]);
@@ -232,12 +246,19 @@ private:
       }
     }
 
-    statement.bind(column, &vector[start], size,
-                   reinterpret_cast<bool *>(nulls_[column].data()));
+    statement.bind(
+        column,
+        &vector[start],
+        size,
+        reinterpret_cast<bool*>(nulls_[column].data()));
   }
 
-  void bind_string(nanodbc::statement &statement, Rcpp::List const &data,
-                   short column, size_t start, size_t size) {
+  void bind_string(
+      nanodbc::statement& statement,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size) {
     nulls_[column] = std::vector<uint8_t>(size, false);
     for (size_t i = 0; i < size; ++i) {
       auto value = STRING_ELT(data[column], start + i);
@@ -247,11 +268,17 @@ private:
       strings_[column].push_back(Rf_translateCharUTF8(value));
     }
 
-    statement.bind_strings(column, strings_[column],
-                           reinterpret_cast<bool *>(nulls_[column].data()));
+    statement.bind_strings(
+        column,
+        strings_[column],
+        reinterpret_cast<bool*>(nulls_[column].data()));
   }
-  void bind_raw(nanodbc::statement &statement, Rcpp::List const &data,
-                short column, size_t start, size_t size) {
+  void bind_raw(
+      nanodbc::statement& statement,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size) {
     nulls_[column] = std::vector<uint8_t>(size, false);
     for (size_t i = 0; i < size; ++i) {
       SEXP value = VECTOR_ELT(data[column], start + i);
@@ -264,8 +291,8 @@ private:
       }
     }
 
-    statement.bind(column, raws_[column],
-                   reinterpret_cast<bool *>(nulls_[column].data()));
+    statement.bind(
+        column, raws_[column], reinterpret_cast<bool*>(nulls_[column].data()));
   }
 
   nanodbc::timestamp as_timestamp(double value) {
@@ -308,8 +335,12 @@ private:
     return ts;
   }
 
-  void bind_datetime(nanodbc::statement &statement, Rcpp::List const &data,
-                     short column, size_t start, size_t size) {
+  void bind_datetime(
+      nanodbc::statement& statement,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size) {
 
     nulls_[column] = std::vector<uint8_t>(size, false);
     auto d = REAL(data[column]);
@@ -324,11 +355,18 @@ private:
       }
       timestamps_[column].push_back(ts);
     }
-    statement.bind(column, timestamps_[column].data(), size,
-                   reinterpret_cast<bool *>(nulls_[column].data()));
+    statement.bind(
+        column,
+        timestamps_[column].data(),
+        size,
+        reinterpret_cast<bool*>(nulls_[column].data()));
   }
-  void bind_date(nanodbc::statement &statement, Rcpp::List const &data,
-                 short column, size_t start, size_t size) {
+  void bind_date(
+      nanodbc::statement& statement,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size) {
 
     nulls_[column] = std::vector<uint8_t>(size, false);
     auto d = REAL(data[column]);
@@ -343,12 +381,19 @@ private:
       }
       dates_[column].push_back(dt);
     }
-    statement.bind(column, dates_[column].data(), size,
-                   reinterpret_cast<bool *>(nulls_[column].data()));
+    statement.bind(
+        column,
+        dates_[column].data(),
+        size,
+        reinterpret_cast<bool*>(nulls_[column].data()));
   }
 
-  void bind_time(nanodbc::statement &statement, Rcpp::List const &data,
-                 short column, size_t start, size_t size) {
+  void bind_time(
+      nanodbc::statement& statement,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size) {
 
     nulls_[column] = std::vector<uint8_t>(size, false);
     auto d = REAL(data[column]);
@@ -363,10 +408,13 @@ private:
       }
       times_[column].push_back(ts);
     }
-    statement.bind(column, times_[column].data(), size,
-                   reinterpret_cast<bool *>(nulls_[column].data()));
+    statement.bind(
+        column,
+        times_[column].data(),
+        size,
+        reinterpret_cast<bool*>(nulls_[column].data()));
   }
-  std::vector<std::string> column_names(nanodbc::result const &r) {
+  std::vector<std::string> column_names(nanodbc::result const& r) {
     std::vector<std::string> names;
     names.reserve(r.columns());
     for (short i = 0; i < r.columns(); ++i) {
@@ -375,7 +423,7 @@ private:
     return names;
   }
 
-  double as_double(nanodbc::timestamp const &ts) {
+  double as_double(nanodbc::timestamp const& ts) {
     using namespace cctz;
     auto sec = convert(
         civil_second(ts.year, ts.month, ts.day, ts.hour, ts.min, ts.sec),
@@ -383,14 +431,14 @@ private:
     return sec.time_since_epoch().count() + (ts.fract / 1000000000.0);
   }
 
-  double as_double(nanodbc::date const &dt) {
+  double as_double(nanodbc::date const& dt) {
     using namespace cctz;
     auto sec = convert(civil_day(dt.year, dt.month, dt.day), c_->timezone());
     return sec.time_since_epoch().count();
   }
 
-  Rcpp::List create_dataframe(std::vector<r_type> types,
-                              std::vector<std::string> names, int n) {
+  Rcpp::List create_dataframe(
+      std::vector<r_type> types, std::vector<std::string> names, int n) {
     int num_cols = types.size();
     Rcpp::List out(num_cols);
     out.attr("names") = names;
@@ -438,7 +486,7 @@ private:
     return out;
   }
 
-  void add_classes(Rcpp::List &df, const std::vector<r_type> &types) {
+  void add_classes(Rcpp::List& df, const std::vector<r_type>& types) {
     df.attr("class") = Rcpp::CharacterVector::create("data.frame");
     for (int col = 0; col < df.size(); ++col) {
       Rcpp::RObject x = df[col];
@@ -466,7 +514,7 @@ private:
     }
   }
 
-  std::vector<r_type> column_types(Rcpp::List const &list) {
+  std::vector<r_type> column_types(Rcpp::List const& list) {
     std::vector<r_type> types;
     types.reserve(list.size());
     for (short i = 0; i < list.size(); ++i) {
@@ -505,7 +553,7 @@ private:
     return types;
   }
 
-  std::vector<r_type> column_types(nanodbc::result const &r) {
+  std::vector<r_type> column_types(nanodbc::result const& r) {
     std::vector<r_type> types;
     types.reserve(r.columns());
     for (short i = 0; i < r.columns(); ++i) {
@@ -567,7 +615,7 @@ private:
     return types;
   }
 
-  Rcpp::List result_to_dataframe(nanodbc::result &r, int n_max = -1) {
+  Rcpp::List result_to_dataframe(nanodbc::result& r, int n_max = -1) {
 
     auto types = column_types(r);
 
@@ -641,20 +689,20 @@ private:
     return out;
   }
 
-  void assign_integer(Rcpp::List &out, size_t row, short column,
-                      nanodbc::result &value) {
+  void assign_integer(
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value) {
     INTEGER(out[column])[row] = value.get<int>(column, NA_INTEGER);
   }
-  void assign_integer64(Rcpp::List &out, size_t row, short column,
-                        nanodbc::result &value) {
+  void assign_integer64(
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value) {
     INTEGER64(out[column])[row] = value.get<int64_t>(column, NA_INTEGER64);
   }
-  void assign_double(Rcpp::List &out, size_t row, short column,
-                     nanodbc::result &value) {
+  void assign_double(
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value) {
     REAL(out[column])[row] = value.get<double>(column, NA_REAL);
   }
-  void assign_string(Rcpp::List &out, size_t row, short column,
-                     nanodbc::result &value) {
+  void assign_string(
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value) {
     SEXP res;
 
     if (value.is_null(column)) {
@@ -680,8 +728,8 @@ private:
     SET_STRING_ELT(out[column], row, res);
   }
 
-  void assign_datetime(Rcpp::List &out, size_t row, short column,
-                       nanodbc::result &value) {
+  void assign_datetime(
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value) {
     double res;
 
     if (value.is_null(column)) {
@@ -693,8 +741,8 @@ private:
 
     REAL(out[column])[row] = res;
   }
-  void assign_date(Rcpp::List &out, size_t row, short column,
-                   nanodbc::result &value) {
+  void assign_date(
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value) {
     double res;
 
     if (value.is_null(column)) {
@@ -706,8 +754,8 @@ private:
 
     REAL(out[column])[row] = res / seconds_in_day_;
   }
-  void assign_time(Rcpp::List &out, size_t row, short column,
-                   nanodbc::result &value) {
+  void assign_time(
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value) {
     double res;
 
     if (value.is_null(column)) {
@@ -720,13 +768,13 @@ private:
     REAL(out[column])[row] = res;
   }
 
-  void assign_logical(Rcpp::List &out, size_t row, short column,
-                      nanodbc::result &value) {
+  void assign_logical(
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value) {
     LOGICAL(out[column])[row] = value.get<int>(column, NA_LOGICAL);
   }
 
-  void assign_raw(Rcpp::List &out, size_t row, short column,
-                  nanodbc::result &value) {
+  void assign_raw(
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value) {
 
     // Same issue as assign_string, null is never true unless the column has
     // been bound

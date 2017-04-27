@@ -7,11 +7,11 @@ extern "C" {
 
 #include <Rinternals.h>
 
-static SEXP signal_condition(const char *msg, const char *class_,
-                             SEXP env = R_GlobalEnv) {
+static SEXP
+signal_condition(const char* msg, const char* class_, SEXP env = R_GlobalEnv) {
   SEXP condition, c, signalConditionFun, out;
 
-  const char *nms[] = {"message", ""};
+  const char* nms[] = {"message", ""};
   PROTECT(condition = Rf_mkNamed(VECSXP, nms));
 
   PROTECT(c = Rf_allocVector(STRSXP, 2));
