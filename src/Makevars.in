@@ -9,17 +9,19 @@ OBJECTS = connection.o nanodbc.o result.o odbc_connection.o RcppExports.o
 
 all: $(SHLIB)
 
-$(SHLIB): cctz $(OBJECTS)
+$(SHLIB): $(OBJECTS)
 
-cctz:
+$(OBJECTS): cctz/libcctz.a
+
+cctz/libcctz.a:
 	(cd cctz && \
-make libcctz.a PREFIX="../" CC="$(CC)" CXX="$(CXX)" AR="$(AR)" ARFLAGS=$(ARFLAGS))
+make libcctz.a CC="$(CC)" CXX="$(CXX)" AR="$(AR)" ARFLAGS=$(ARFLAGS))
 
 nanodbc.o: nanodbc/nanodbc.cpp
 	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
 
 clean:
 	(cd cctz; make clean)
-	rm -f $(OBJECTS) $(SHLIB)
+	rm -f $(OBJECTS) cctz/libcctz.a $(SHLIB)
 
-.PHONY: all cctz clean
+.PHONY: all clean
