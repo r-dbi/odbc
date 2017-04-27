@@ -15,11 +15,13 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
+      - llvm-toolchain-trusty-3.9
     packages:
       - unixodbc-dev
       - odbc-postgresql
       - libmyodbc
       - libsqliteodbc
+      - clang-format-3.9
 
 before_install:
   - travis/check_format.sh
