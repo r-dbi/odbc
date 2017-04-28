@@ -41,7 +41,7 @@ connection_valid <- function(p) {
     .Call('odbc_connection_valid', PACKAGE = 'odbc', p)
 }
 
-connection_sql_tables <- function(p, catalog_name, schema_name, table_name, table_type) {
+connection_sql_tables <- function(p, catalog_name = NULL, schema_name = NULL, table_name = NULL, table_type = NULL) {
     .Call('odbc_connection_sql_tables', PACKAGE = 'odbc', p, catalog_name, schema_name, table_name, table_type)
 }
 
