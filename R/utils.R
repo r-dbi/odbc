@@ -6,3 +6,5 @@ has_names <- function(x) {
     !(is.na(nms) | nms == "")
   }
 }
+
+`%||%` <- function(x, y) if (is.null(x)) y else x

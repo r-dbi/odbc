@@ -79,39 +79,37 @@ odbcListObjects <- function(connection, ...) {
 }
 
 #' @export
-odbcListObjects.default <- function(connection, ...) {
-  args <- list(...)
-
-  # get all the matching objects
-  objs <- connection_sql_tables(connection@ptr,
-      catalog_name = if (is.null(args$catalog)) "" else args$catalog,
-      schema_name = if (is.null(args$schema)) "" else args$schema)
+odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = NULL, name = NULL, type = NULL, ...) {
 
   # if no catalog was supplied but this database has catalogs, return a list of
   # catalogs
-  if (is.null(args$catalog)) {
-    catalogs <- unique(objs[["table_catalog"]])
+  if (is.null(catalog)) {
+    catalogs <- connection_sql_tables(connection@ptr, catalog_name = catalog %||% "%", "", "", NULL)[["table_catalog"]]
     if (length(catalogs) > 1) {
-      return(data.frame(
-        name = catalogs,
-        type = rep("catalog", times = length(catalogs)),
-        stringAsFactors = FALSE
+      return(
+        data.frame(
+          name = catalogs,
+          type = rep("catalog", times = length(catalogs)),
+          stringsAsFactors = FALSE
       ))
     }
   }
 
   # if no schema was supplied but this database has schema, return a list of
   # schema
-  if (is.null(args$schema)) {
-    schema <- unique(objs[["table_schema"]])
-    if (length(schema) > 1) {
-      return(data.frame(
-        name = schema,
-        type = rep("schema", times = length(schema)),
-        stringsAsFactors = FALSE))
+  if (is.null(schema)) {
+    schemas <- connection_sql_tables(connection@ptr, "", schema_name = schema %||% "%", "", NULL)[["table_schema"]]
+    if (length(schemas) > 1) {
+      return(
+        data.frame(
+          name = schemas,
+          type = rep("schema", times = length(schemas)),
+          stringsAsFactors = FALSE
+      ))
     }
   }
 
+  objs <- connection_sql_tables(connection@ptr, catalog, schema, name, type)
   # just return a list of the objects and their types, possibly filtered by the
   # options above
   data.frame(
@@ -138,18 +136,13 @@ odbcListColumns <- function(connection, ...) {
   UseMethod("odbcListColumns")
 }
 
-odbcListColumns.default <- function(connection, ...) {
-  # default implementation: list columns in the given table
-  args <- list(...)
-
-  # read table or view as desired
-  obj <- if (is.null(args$table)) args$view else args$table
+odbcListColumns.OdbcConnection <- function(connection, name, catalog = NULL, schema = NULL, ...) {
 
   # specify schema or catalog if given
   cols <- connection_sql_columns(connection@ptr,
-    table_name = obj,
-    schema_name = if (is.null(args$schema)) "" else args$schema,
-    catalog_name = if (is.null(args$catalog)) "" else args$catalog)
+    table_name = name,
+    catalog_name = catalog %||% "",
+    schema_name = schema %||% "")
 
   # extract and name fields for observer
   data.frame(
@@ -176,17 +169,13 @@ odbcPreviewObject <- function(connection, rowLimit, ...) {
 }
 
 #' @export
-odbcPreviewObject.default <- function(connection, rowLimit, ...) {
-  args <- list(...)
-
-  # read table or view as desired
-  obj <- if (is.null(args$table)) args$view else args$table
-
+odbcPreviewObject.OdbcConnection <- function(connection, rowLimit, name, schema = NULL, ...) {
   # append schema if specified
-  if (!is.null(args$schema))
-    obj <- paste(args$schema, obj, sep = ".")
+  if (!is.null(schema)) {
+    name <- paste(dbQuoteIdentifier(schema), dbQuoteIdentifier(name), sep = ".")
+  }
 
-  dbGetQuery(connection, paste("SELECT * FROM", obj))
+  dbGetQuery(connection, paste("SELECT * FROM", name), n = rowLimit)
 }
 
 #' Get an icon representing a connection.
