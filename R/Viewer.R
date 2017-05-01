@@ -169,7 +169,23 @@ odbcPreviewObject <- function(connection, rowLimit, ...) {
 }
 
 #' @export
-odbcPreviewObject.OdbcConnection <- function(connection, rowLimit, name, schema = NULL, ...) {
+odbcPreviewObject.OdbcConnection <- function(connection, rowLimit, table = NULL, view = NULL, schema = NULL, ...) {
+  # Error if both table and view are passed
+  if (!is.null(table) && !is.null(view)) {
+    stop("`table` and `view` can not both be used", call. = FALSE)
+  }
+
+  # Error if neither table and view are passed
+  if (is.null(table) && is.null(view)) {
+    stop("`table` and `view` can not both be `NULL`", call. = FALSE)
+  }
+
+  name <- if (!is.null(table)) {
+    table
+  } else {
+    view
+  }
+
   # append schema if specified
   if (!is.null(schema)) {
     name <- paste(dbQuoteIdentifier(schema), dbQuoteIdentifier(name), sep = ".")
