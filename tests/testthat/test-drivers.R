@@ -13,3 +13,4 @@ test_that("odbcListDataSources() returns available data sources", {
   expect_identical(names(res), c("name", "description"))
   expect_true(nrow(res) >= 1)
 })
+
