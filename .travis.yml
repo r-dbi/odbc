@@ -36,4 +36,4 @@ r_github_packages:
 
 after_success:
   - R -f travis/drop_tables.R
-  - R -e 'covr::codecov(line_exclusions = c("src/nanodbc.h", "src/nanodbc.cpp", "src/cctz/include/civil_time_detail.h", "src/cctz/include/time_zone.h"))'
+  - R -e 'covr::codecov(line_exclusions = c("src/nanodbc/nanodbc.h", "src/nanodbc/nanodbc.cpp", "src/cctz/include/civil_time_detail.h", "src/cctz/include/time_zone.h"))'
