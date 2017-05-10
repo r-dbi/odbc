@@ -7,8 +7,8 @@
 \title{Connect to a ODBC compatible database}
 \usage{
 \S4method{dbConnect}{OdbcDriver}(drv, dsn = NULL, ..., timezone = "UTC",
-  driver = NULL, server = NULL, database = NULL, uid = NULL,
-  pwd = NULL, .connection_string = NULL)
+  encoding = "UTF-8", driver = NULL, server = NULL, database = NULL,
+  uid = NULL, pwd = NULL, .connection_string = NULL)
 }
 \arguments{
 \item{drv}{an object that inherits from \linkS4class{DBIDriver},
@@ -25,6 +25,11 @@ timezone that is \emph{not} 'UTC'. If the database is in your local timezone set
 to \code{Sys.timezone()}. See \code{\link[=OlsonNames]{OlsonNames()}} for a complete list of available
 timezones on your system.}
 
+\item{encoding}{The Server text encoding. Used if the database has an
+internal encoding that is \emph{not} \code{UTF-8}. If the database is in your local
+encoding set to \code{""}. See \code{\link[=iconvlist]{iconvlist()}} for a complete list of available
+encodings on your system.}
+
 \item{driver}{The ODBC driver name.}
 
 \item{server}{The server hostname.}
@@ -38,11 +43,6 @@ timezones on your system.}
 \item{.connection_string}{A complete connection string, useful if you are
 copy pasting it from another source. If this argument is used any additional
 arguments will be appended to this string.}
-
-\item{encoding}{The Server text encoding. Used if the database has an
-internal encoding that is \emph{not} \code{UTF-8}. If the database is in your local
-encoding set to \code{""}. See \code{\link[=iconvlist]{iconvlist()}} for a complete list of available
-encodings on your system.}
 }
 \description{
 Connect to a ODBC compatible database

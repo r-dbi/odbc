@@ -70,13 +70,14 @@ setMethod(
 #' @export
 setMethod(
   "dbConnect", "OdbcDriver",
-  function(drv, dsn = NULL, ..., timezone = "UTC", driver = NULL, server = NULL, database = NULL,
+  function(drv, dsn = NULL, ..., timezone = "UTC", encoding = "UTF-8", driver = NULL, server = NULL, database = NULL,
     uid = NULL, pwd = NULL, .connection_string = NULL) {
 
     con <- OdbcConnection(
       dsn = dsn,
       ...,
       timezone = timezone,
+      encoding = encoding,
       driver = driver,
       server = server,
       database = database,
