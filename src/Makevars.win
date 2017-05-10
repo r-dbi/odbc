@@ -2,7 +2,7 @@ CXX_STD = CXX11
 PKG_CXXFLAGS=-I. -DNANODBC_USE_BOOST_CONVERT -Icctz/include -Inanodbc
 PKG_LIBS=-lodbc32 -Lcctz -lcctz
 
-OBJECTS = connection.o nanodbc.o result.o odbc_connection.o RcppExports.o
+OBJECTS = connection.o nanodbc.o result.o odbc_connection.o RcppExports.o Iconv.o
 
 all: $(SHLIB)
 

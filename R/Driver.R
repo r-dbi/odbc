@@ -41,10 +41,14 @@ setMethod(
 #'
 #' @inheritParams DBI::dbConnect
 #' @param dsn The Data Source Name.
-#' @param timezone The Server Time Zone. Useful if the database has an internal
+#' @param timezone The Server time zone. Useful if the database has an internal
 #' timezone that is _not_ 'UTC'. If the database is in your local timezone set
 #' to `Sys.timezone()`. See [OlsonNames()] for a complete list of available
 #' timezones on your system.
+#' @param encoding The Server text encoding. Used if the database has an
+#' internal encoding that is _not_ `UTF-8`. If the database is in your local
+#' encoding set to `""`. See [iconvlist()] for a complete list of available
+#' encodings on your system.
 #' @param driver The ODBC driver name.
 #' @param server The server hostname.
 #' @param database The database on the server.

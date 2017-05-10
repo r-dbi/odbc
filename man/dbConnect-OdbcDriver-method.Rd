@@ -20,7 +20,7 @@ object (in order to clone an existing connection).}
 \item{...}{Additional ODBC keywords, these will be joined with the other
 arguments to form the final connection string.}
 
-\item{timezone}{The Server Time Zone. Useful if the database has an internal
+\item{timezone}{The Server time zone. Useful if the database has an internal
 timezone that is \emph{not} 'UTC'. If the database is in your local timezone set
 to \code{Sys.timezone()}. See \code{\link[=OlsonNames]{OlsonNames()}} for a complete list of available
 timezones on your system.}
@@ -38,6 +38,11 @@ timezones on your system.}
 \item{.connection_string}{A complete connection string, useful if you are
 copy pasting it from another source. If this argument is used any additional
 arguments will be appended to this string.}
+
+\item{encoding}{The Server text encoding. Used if the database has an
+internal encoding that is \emph{not} \code{UTF-8}. If the database is in your local
+encoding set to \code{""}. See \code{\link[=iconvlist]{iconvlist()}} for a complete list of available
+encodings on your system.}
 }
 \description{
 Connect to a ODBC compatible database

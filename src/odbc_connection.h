@@ -10,8 +10,11 @@ class odbc_result;
 
 class odbc_connection {
 public:
-  odbc_connection(std::string connection_string, std::string timezone = "UTC")
-      : current_result_(nullptr) {
+  odbc_connection(
+      std::string connection_string,
+      std::string timezone = "UTC",
+      std::string encoding = "UTF-8")
+      : current_result_(nullptr), encoding_(encoding) {
 
     if (!cctz::load_time_zone(timezone, &timezone_)) {
       Rcpp::stop("Error loading time zone (%s)", timezone);
@@ -58,11 +61,13 @@ public:
   void set_current_result(odbc_result* r);
 
   cctz::time_zone timezone() const { return timezone_; }
+  std::string encoding() const { return encoding_; }
 
 private:
   std::shared_ptr<nanodbc::connection> c_;
   std::unique_ptr<nanodbc::transaction> t_;
   odbc_result* current_result_;
   cctz::time_zone timezone_;
+  std::string encoding_;
 };
-}
+} // namespace odbc

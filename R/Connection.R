@@ -10,12 +10,12 @@ NULL
 
 class_cache <- new.env(parent = emptyenv())
 
-OdbcConnection <- function(dsn = NULL, ..., timezone = "UTC", driver = NULL, server = NULL, database = NULL, uid = NULL, pwd = NULL, .connection_string = NULL) {
+OdbcConnection <- function(dsn = NULL, ..., encoding = "UTF-8", timezone = "UTC", driver = NULL, server = NULL, database = NULL, uid = NULL, pwd = NULL, .connection_string = NULL) {
   args <- c(dsn = dsn, driver = driver, server = server, database = database, uid = uid, pwd = pwd, list(...))
   stopifnot(all(has_names(args)))
 
   connection_string <- paste0(.connection_string, paste(collapse = ";", sep = "=", names(args), args))
-  ptr <- odbc_connect(connection_string, timezone = timezone)
+  ptr <- odbc_connect(connection_string, timezone = timezone, encoding = encoding)
   quote <- connection_quote(ptr)
 
   info <- connection_info(ptr)

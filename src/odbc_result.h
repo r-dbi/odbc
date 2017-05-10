@@ -2,6 +2,7 @@
 
 #include <Rcpp.h>
 
+#include "Iconv.h"
 #include "condition.h"
 #include "integer64.h"
 #include "nanodbc.h"
@@ -36,7 +37,13 @@ typedef std::array<const char, 255> string_buf;
 class odbc_result {
 public:
   odbc_result(std::shared_ptr<odbc_connection> c, std::string sql)
-      : c_(c), sql_(sql), rows_fetched_(0), complete_(0), bound_(false) {
+      : c_(c),
+        sql_(sql),
+        rows_fetched_(0),
+        complete_(0),
+        bound_(false),
+        input_encoder_(Iconv("", c_->encoding())),
+        output_encoder_(Iconv(c_->encoding())) {
     prepare();
     c_->set_current_result(this);
     if (s_->parameters() == 0) {
@@ -185,6 +192,8 @@ private:
   size_t rows_fetched_;
   bool complete_;
   bool bound_;
+  Iconv input_encoder_;
+  Iconv output_encoder_;
 
   std::map<short, std::vector<std::string>> strings_;
   std::map<short, std::vector<std::vector<uint8_t>>> raws_;
@@ -265,7 +274,9 @@ private:
       if (value == NA_STRING) {
         nulls_[column][i] = true;
       }
-      strings_[column].push_back(Rf_translateCharUTF8(value));
+      const char* v = CHAR(value);
+      strings_[column].push_back(
+          input_encoder_.makeString(v, v + Rf_length(value)));
     }
 
     statement.bind_strings(
@@ -722,7 +733,7 @@ private:
       if (value.is_null(column)) {
         res = NA_STRING;
       } else {
-        res = Rf_mkCharCE(str.c_str(), CE_UTF8);
+        res = output_encoder_.makeSEXP(str.c_str(), str.c_str() + str.length());
       }
     }
     SET_STRING_ELT(out[column], row, res);
@@ -793,4 +804,4 @@ private:
     SET_VECTOR_ELT(out[column], row, bytes);
   }
 };
-}
+} // namespace odbc
