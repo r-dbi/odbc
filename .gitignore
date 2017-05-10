@@ -10,3 +10,4 @@ README_cache/
 docs/
 script.R
 *.pl
+.vimrc
