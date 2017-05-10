@@ -1,6 +1,10 @@
 #ifndef READ_ICONV_H_
 #define READ_ICONV_H_
 
+/* This file originally from
+ * https://github.com/cran/readr/blob/4c2d7c77810a3cb66586727179c339192964aa3d/src/Iconv.h
+ */
+
 #include "R_ext/Riconv.h"
 #include <errno.h>
 

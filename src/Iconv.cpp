@@ -1,3 +1,7 @@
+/* This file originally from
+ * https://github.com/cran/readr/blob/4c2d7c77810a3cb66586727179c339192964aa3d/src/Iconv.cpp
+ */
+
 #include <Rcpp.h>
 using namespace Rcpp;
 
