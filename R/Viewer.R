@@ -34,24 +34,24 @@ odbcListObjectTypes <- function(connection) {
 odbcListObjectTypes.default <- function(connection) {
   # slurp all the objects in the database so we can determine the correct
   # object hierarchy
-  objs <- connection_sql_tables(connection@ptr)
 
   # all databases contain tables, at a minimum
   obj_types <- list(table = list(contains = "data"))
 
   # see if we have views too
-  if (any(objs[["table_type"]] == "VIEW")) {
+  table_types <- connection_sql_tables(connection@ptr, "", "", "", "%")[["table_type"]]
+  if (any(table_types == "VIEW")) {
     obj_types <- c(obj_types, list(view = list(contains = "data")))
   }
 
   # check for multiple schema or a named schema
-  schemas <- unique(objs[["table_schema"]])
+  schemas <- connection_sql_tables(connection@ptr, "", "%", "", "")[["table_schema"]]
   if (length(schemas) > 1 || nzchar(schemas)) {
     obj_types <- list(schema = list(contains = obj_types))
   }
 
   # check for multiple catalogs
-  catalogs <- unique(objs[["table_catalog"]])
+  catalogs <- connection_sql_tables(connection@ptr, "%", "", "", "")[["table_catalog"]]
   if (length(catalogs) > 1) {
     obj_types <- list(catalog = list(contains = obj_types))
   }
