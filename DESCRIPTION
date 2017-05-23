@@ -13,7 +13,7 @@ LazyData: true
 Imports:
     DBI (>= 0.3.0),
     methods,
-    Rcpp (>= 0.12.10.1),
+    Rcpp (>= 0.12.11),
     blob,
     bit64,
     hms
@@ -40,4 +40,3 @@ Collate:
     'utils.R'
     'zzz.R'
 Roxygen: list(markdown = TRUE)
-Remotes: RcppCore/Rcpp@940e34edb5ca44f4d9acf5aac806613f5b699535, hadley/blob
