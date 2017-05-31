@@ -136,11 +136,11 @@ odbcListColumns <- function(connection, ...) {
   UseMethod("odbcListColumns")
 }
 
-odbcListColumns.OdbcConnection <- function(connection, name, catalog = NULL, schema = NULL, ...) {
+odbcListColumns.OdbcConnection <- function(connection, table, catalog = NULL, schema = NULL, ...) {
 
   # specify schema or catalog if given
   cols <- connection_sql_columns(connection@ptr,
-    table_name = name,
+    table_name = table,
     catalog_name = catalog %||% "",
     schema_name = schema %||% "")
 
@@ -188,7 +188,7 @@ odbcPreviewObject.OdbcConnection <- function(connection, rowLimit, table = NULL,
 
   # append schema if specified
   if (!is.null(schema)) {
-    name <- paste(dbQuoteIdentifier(schema), dbQuoteIdentifier(name), sep = ".")
+    name <- paste(dbQuoteIdentifier(connection, schema), dbQuoteIdentifier(connection, name), sep = ".")
   }
 
   dbGetQuery(connection, paste("SELECT * FROM", name), n = rowLimit)
