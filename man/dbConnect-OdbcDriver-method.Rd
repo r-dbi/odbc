@@ -3,6 +3,7 @@
 \docType{methods}
 \name{dbConnect,OdbcDriver-method}
 \alias{dbConnect,OdbcDriver-method}
+\alias{dbConnect}
 \title{Connect to a ODBC compatible database}
 \usage{
 \S4method{dbConnect}{OdbcDriver}(drv, dsn = NULL, ..., timezone = "UTC",

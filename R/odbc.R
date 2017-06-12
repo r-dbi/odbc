@@ -2,5 +2,7 @@
 #' @aliases NULL
 #' @importFrom Rcpp sourceCpp
 #' @importFrom blob blob
-#' @useDynLib odbc
+#' @importFrom bit64 integer64
+#' @importFrom hms hms
+#' @useDynLib odbc, .registration = TRUE
 "_PACKAGE"

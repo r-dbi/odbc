@@ -2,98 +2,98 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 list_drivers_ <- function() {
-    .Call('odbc_list_drivers_', PACKAGE = 'odbc')
+    .Call(odbc_list_drivers_)
 }
 
 list_data_sources_ <- function() {
-    .Call('odbc_list_data_sources_', PACKAGE = 'odbc')
+    .Call(odbc_list_data_sources_)
 }
 
 odbc_connect <- function(connection_string, timezone = "") {
-    .Call('odbc_odbc_connect', PACKAGE = 'odbc', connection_string, timezone)
+    .Call(odbc_odbc_connect, connection_string, timezone)
 }
 
 connection_info <- function(p) {
-    .Call('odbc_connection_info', PACKAGE = 'odbc', p)
+    .Call(odbc_connection_info, p)
 }
 
 connection_quote <- function(p) {
-    .Call('odbc_connection_quote', PACKAGE = 'odbc', p)
+    .Call(odbc_connection_quote, p)
 }
 
 connection_release <- function(p) {
-    invisible(.Call('odbc_connection_release', PACKAGE = 'odbc', p))
+    invisible(.Call(odbc_connection_release, p))
 }
 
 connection_begin <- function(p) {
-    invisible(.Call('odbc_connection_begin', PACKAGE = 'odbc', p))
+    invisible(.Call(odbc_connection_begin, p))
 }
 
 connection_commit <- function(p) {
-    invisible(.Call('odbc_connection_commit', PACKAGE = 'odbc', p))
+    invisible(.Call(odbc_connection_commit, p))
 }
 
 connection_rollback <- function(p) {
-    invisible(.Call('odbc_connection_rollback', PACKAGE = 'odbc', p))
+    invisible(.Call(odbc_connection_rollback, p))
 }
 
 connection_valid <- function(p) {
-    .Call('odbc_connection_valid', PACKAGE = 'odbc', p)
+    .Call(odbc_connection_valid, p)
 }
 
-connection_sql_tables <- function(p, catalog_name = "", schema_name = "", table_name = "", table_type = "") {
-    .Call('odbc_connection_sql_tables', PACKAGE = 'odbc', p, catalog_name, schema_name, table_name, table_type)
+connection_sql_tables <- function(p, catalog_name = NULL, schema_name = NULL, table_name = NULL, table_type = NULL) {
+    .Call(odbc_connection_sql_tables, p, catalog_name, schema_name, table_name, table_type)
 }
 
 connection_sql_columns <- function(p, column_name = "", catalog_name = "", schema_name = "", table_name = "") {
-    .Call('odbc_connection_sql_columns', PACKAGE = 'odbc', p, column_name, catalog_name, schema_name, table_name)
+    .Call(odbc_connection_sql_columns, p, column_name, catalog_name, schema_name, table_name)
 }
 
 result_release <- function(r) {
-    invisible(.Call('odbc_result_release', PACKAGE = 'odbc', r))
+    invisible(.Call(odbc_result_release, r))
 }
 
 result_active <- function(r) {
-    .Call('odbc_result_active', PACKAGE = 'odbc', r)
+    .Call(odbc_result_active, r)
 }
 
 result_completed <- function(r) {
-    .Call('odbc_result_completed', PACKAGE = 'odbc', r)
+    .Call(odbc_result_completed, r)
 }
 
 new_result <- function(p, sql) {
-    .Call('odbc_new_result', PACKAGE = 'odbc', p, sql)
+    .Call(odbc_new_result, p, sql)
 }
 
 result_fetch <- function(r, n_max = -1L) {
-    .Call('odbc_result_fetch', PACKAGE = 'odbc', r, n_max)
+    .Call(odbc_result_fetch, r, n_max)
 }
 
 result_column_info <- function(r) {
-    .Call('odbc_result_column_info', PACKAGE = 'odbc', r)
+    .Call(odbc_result_column_info, r)
 }
 
 result_bind <- function(r, params) {
-    invisible(.Call('odbc_result_bind', PACKAGE = 'odbc', r, params))
+    invisible(.Call(odbc_result_bind, r, params))
 }
 
 result_execute <- function(r) {
-    invisible(.Call('odbc_result_execute', PACKAGE = 'odbc', r))
+    invisible(.Call(odbc_result_execute, r))
 }
 
 result_insert_dataframe <- function(r, df) {
-    invisible(.Call('odbc_result_insert_dataframe', PACKAGE = 'odbc', r, df))
+    invisible(.Call(odbc_result_insert_dataframe, r, df))
 }
 
 result_rows_affected <- function(r) {
-    .Call('odbc_result_rows_affected', PACKAGE = 'odbc', r)
+    .Call(odbc_result_rows_affected, r)
 }
 
 result_row_count <- function(r) {
-    .Call('odbc_result_row_count', PACKAGE = 'odbc', r)
+    .Call(odbc_result_row_count, r)
 }
 
 column_types <- function(df) {
-    invisible(.Call('odbc_column_types', PACKAGE = 'odbc', df))
+    invisible(.Call(odbc_column_types, df))
 }
 

@@ -1608,10 +1608,10 @@ public:
     /// All arguments are treated as the Pattern Value Arguments.
     /// Empty string argument is equivalent to passing the search pattern '%'.
     catalog::tables find_tables(
-        const string_type& table = string_type(),
-        const string_type& type = string_type(),
-        const string_type& schema = string_type(),
-        const string_type& catalog = string_type());
+        const string_type::value_type* table = nullptr,
+        const string_type::value_type* = nullptr,
+        const string_type::value_type* = nullptr,
+        const string_type::value_type* = nullptr);
 
     /// \brief Creates result set with tables and the privileges associated with each table.
     /// Tables information is obtained by executing `SQLTablePrivileges` function within
@@ -1708,8 +1708,8 @@ struct driver
 
 struct data_source
 {
-  nanodbc::string_type name;        ///< Driver name
-  nanodbc::string_type description; ///< Driver description
+    nanodbc::string_type name;        ///< Driver name
+    nanodbc::string_type description; ///< Driver description
 };
 
 /// \brief Returns a list of ODBC drivers on your system.

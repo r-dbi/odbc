@@ -53,6 +53,7 @@ odbcDataType.default <- function(con, obj, ...) {
     factor = "VARCHAR(255)",
     datetime = "TIMESTAMP",
     date = "DATE",
+    time = "TIME",
     binary = "BINARY",
     integer = "INTEGER",
     double = "DOUBLE",
@@ -75,6 +76,7 @@ odbcDataType.default <- function(con, obj, ...) {
     character = "VARCHAR(255)",
     logical = "BOOLEAN",
     list = "VARCHAR(255)",
+    time = ,
     stop("Unsupported type", call. = FALSE)
   )
 }
@@ -91,6 +93,7 @@ odbcDataType.default <- function(con, obj, ...) {
     character = "STRING",
     logical = "BOOLEAN",
     list = "STRING",
+    time = ,
     stop("Unsupported type", call. = FALSE)
   )
 }
@@ -99,16 +102,17 @@ odbcDataType.default <- function(con, obj, ...) {
 #' @export
 `odbcDataType.Impala` <- function(con, obj, ...) {
   switch_type(obj,
-              factor = "STRING",
-              datetime = "STRING",
-              date = "VARCHAR(10)",
-              integer = "INT",
-              double = "DOUBLE",
-              character = "STRING",
-              logical = "BOOLEAN",
-              list = "STRING",
-              stop("Unsupported type", call. = FALSE)
-  )
+    factor = "STRING",
+    datetime = "STRING",
+    date = "VARCHAR(10)",
+    integer = "INT",
+    double = "DOUBLE",
+    character = "STRING",
+    logical = "BOOLEAN",
+    list = "STRING",
+    time = ,
+    stop("Unsupported type", call. = FALSE)
+    )
 }
 
 #' @export
@@ -117,6 +121,7 @@ odbcDataType.default <- function(con, obj, ...) {
     factor = "TEXT",
     datetime = "DATETIME",
     date = "DATE",
+    time = "TIME",
     binary = "BLOB",
     integer = "INTEGER",
     double = "DOUBLE",
@@ -133,6 +138,7 @@ odbcDataType.default <- function(con, obj, ...) {
     factor = "TEXT",
     datetime = "TIMESTAMP",
     date = "DATE",
+    time = "TIME",
     binary = "bytea",
     integer = "INTEGER",
     double = "DOUBLE PRECISION",
@@ -149,6 +155,7 @@ odbcDataType.default <- function(con, obj, ...) {
     factor = varchar(obj),
     datetime = "DATETIME",
     date = "DATE",
+    time = "TIME",
     binary = varbinary(obj),
     integer = "INT",
     double = "FLOAT",
@@ -184,6 +191,7 @@ object_type <- function(obj) {
   if (is(obj, "POSIXct")) return("datetime")
   if (is(obj, "Date")) return("date")
   if (is(obj, "blob")) return("binary")
+  if (is(obj, "difftime")) return("time")
 
   return(typeof(obj))
 }
@@ -229,7 +237,7 @@ test_roundtrip <- function(con = DBItest:::connect(DBItest:::get_default_context
   testthat::context(paste0("roundtrip[", dbms, "]"))
   res <- list()
   testthat::test_that(paste0("[", dbms, "] round tripping data.frames works"), {
-    on.exit(try(DBI::dbRemoveTable(con, "test_table"), silent = TRUE))
+    #on.exit(try(DBI::dbRemoveTable(con, "test_table"), silent = TRUE))
     set.seed(42)
 
     iris <- datasets::iris
@@ -242,6 +250,7 @@ test_roundtrip <- function(con = DBItest:::connect(DBItest:::get_default_context
 
       datetime = as.POSIXct(as.numeric(iris$Petal.Length * 10), origin = "2016-01-01", tz = "UTC"),
       date = as.Date(iris$Sepal.Width * 100, origin = Sys.time()),
+      time = hms::hms(seconds = sample.int(24 * 60 * 60, NROW(iris))),
       binary = blob::as.blob(lapply(seq_len(NROW(iris)), function(x) as.raw(sample(0:100, size = sample(0:25, 1))))),
       integer = as.integer(iris$Petal.Width * 100),
       double = iris$Sepal.Length,

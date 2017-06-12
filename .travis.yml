@@ -15,11 +15,16 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
+      - llvm-toolchain-trusty-3.9
     packages:
       - unixodbc-dev
       - odbc-postgresql
       - libmyodbc
       - libsqliteodbc
+      - clang-format-3.9
+
+before_install:
+  - travis/check_format.sh
 
 before_script:
   - sudo -u postgres psql -U postgres -c 'CREATE DATABASE test_db;'
@@ -27,9 +32,8 @@ before_script:
   - mysql -u root -e 'CREATE DATABASE test_db;'
 
 r_github_packages:
-  - rstats-db/DBItest@9087f76
-  - jimhester/covr
+  - jimhester/DBItest@bit64
 
 after_success:
   - R -f travis/drop_tables.R
-  - R -e 'covr::codecov(line_exclusions = c("src/nanodbc.h", "src/nanodbc.cpp"))'
+  - R -e 'covr::codecov(line_exclusions = c("src/nanodbc/nanodbc.h", "src/nanodbc/nanodbc.cpp", "src/cctz/include/civil_time_detail.h", "src/cctz/include/time_zone.h"))'
