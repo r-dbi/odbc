@@ -39,19 +39,19 @@ odbcListObjectTypes.default <- function(connection) {
   obj_types <- list(table = list(contains = "data"))
 
   # see if we have views too
-  table_types <- connection_sql_tables(connection@ptr, "", "", "", "%")[["table_type"]]
+  table_types <- string_values(connection_sql_tables(connection@ptr, "", "", "", "%")[["table_type"]])
   if (any(table_types == "VIEW")) {
     obj_types <- c(obj_types, list(view = list(contains = "data")))
   }
 
   # check for multiple schema or a named schema
-  schemas <- connection_sql_tables(connection@ptr, "", "%", "", "")[["table_schema"]]
-  if (length(schemas) > 1 || nzchar(schemas)) {
+  schemas <- string_values(connection_sql_tables(connection@ptr, "", "%", "", "")[["table_schema"]])
+  if (length(schemas) > 1) {
     obj_types <- list(schema = list(contains = obj_types))
   }
 
   # check for multiple catalogs
-  catalogs <- connection_sql_tables(connection@ptr, "%", "", "", "")[["table_catalog"]]
+  catalogs <- string_values(connection_sql_tables(connection@ptr, "%", "", "", "")[["table_catalog"]])
   if (length(catalogs) > 1) {
     obj_types <- list(catalog = list(contains = obj_types))
   }
@@ -84,8 +84,8 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
   # if no catalog was supplied but this database has catalogs, return a list of
   # catalogs
   if (is.null(catalog)) {
-    catalogs <- connection_sql_tables(connection@ptr, catalog_name = catalog %||% "%", "", "", NULL)[["table_catalog"]]
-    if (length(catalogs) > 1 && any(nzchar(catalogs))) {
+    catalogs <- string_values(connection_sql_tables(connection@ptr, catalog_name = catalog %||% "%", "", "", NULL)[["table_catalog"]])
+    if (length(catalogs) > 1) {
       return(
         data.frame(
           name = catalogs,
@@ -98,8 +98,8 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
   # if no schema was supplied but this database has schema, return a list of
   # schema
   if (is.null(schema)) {
-    schemas <- connection_sql_tables(connection@ptr, "", schema_name = schema %||% "%", "", NULL)[["table_schema"]]
-    if (length(schemas) > 1 && any(nzchar(schemas))) {
+    schemas <- string_values(connection_sql_tables(connection@ptr, "", schema_name = schema %||% "%", "", NULL)[["table_schema"]])
+    if (length(schemas)) {
       return(
         data.frame(
           name = schemas,

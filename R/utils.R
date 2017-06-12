@@ -8,3 +8,7 @@ has_names <- function(x) {
 }
 
 `%||%` <- function(x, y) if (is.null(x)) y else x
+
+string_values <- function(x) {
+  unique(x[nzchar(x)])
+}
