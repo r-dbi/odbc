@@ -36,8 +36,8 @@ NULL
 #' @export
 setMethod(
   "dbWriteTable", c("OdbcConnection", "character", "data.frame"),
-  function(conn, name, value, overwrite=FALSE, append=FALSE, temporary = FALSE,
-    row.names = NA, ...) {
+  function(conn, name, value, dataTypes = NULL, overwrite=FALSE, append=FALSE, temporary = FALSE,
+    row.names = NA, fieldTypes = NULL, ...) {
 
     if (overwrite && append)
       stop("overwrite and append cannot both be TRUE", call. = FALSE)
@@ -54,7 +54,7 @@ setMethod(
     values <- sqlData(conn, row.names = row.names, value[, , drop = FALSE])
 
     if (!found || overwrite) {
-      sql <- sqlCreateTable(conn, name, values, row.names = FALSE, temporary = temporary)
+      sql <- sqlCreateTable(conn, name, values, types, fieldTypes = fieldTypes, row.names = FALSE, temporary = temporary)
       dbExecute(conn, sql)
     }
 
@@ -96,3 +96,30 @@ setMethod("sqlData", "OdbcConnection", function(con, value, row.names = NA, ...)
 
   value
 })
+
+##' @rdname odbc-tables
+##' @inheritParams DBI::sqlCreateTable
+##' @param fieldTypes Additional field types used to override derived types.
+##' @export
+setMethod("sqlCreateTable", "OdbcConnection",
+  function(con, table, fields, fieldTypes = NULL, row.names = NA, temporary = FALSE, ...) {
+    table <- dbQuoteIdentifier(con, table)
+
+    if (is.data.frame(fields)) {
+      fields <- sqlRownamesToColumn(fields, row.names)
+      fields <- vapply(fields, function(x) DBI::dbDataType(con, x), character(1))
+    }
+    if (!is.null(fieldTypes)) {
+      fields[names(fieldTypes)] <- fieldTypes
+    }
+
+    field_names <- dbQuoteIdentifier(con, names(fields))
+    field_types <- unname(fields)
+    fields <- paste0(field_names, " ", field_types)
+
+    SQL(paste0(
+      "CREATE ", if (temporary) "TEMPORARY ", "TABLE ", table, " (\n",
+      "  ", paste(fields, collapse = ",\n  "), "\n)\n"
+    ))
+  }
+)
