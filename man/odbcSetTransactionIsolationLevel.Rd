@@ -7,8 +7,23 @@
 odbcSetTransactionIsolationLevel(conn, levels)
 }
 \arguments{
-\item{levels}{One or more of \Sexpr\link{stage=render, results=rd}{odbc:::choices_rd(names(odbc:::transactionLevels()))}.}
+\item{conn}{A \linkS4class{DBIConnection} object, as returned by
+\code{\link[=dbConnect]{dbConnect()}}.}
+
+\item{levels}{One or more of \Sexpr[stage=render, results=rd]{odbc:::choices_rd(names(odbc:::transactionLevels()))}.}
 }
 \description{
 Set the Transaction Isolation Level for a Connection
+}
+\examples{
+\dontrun{
+  # Can use spaces or underscores in between words.
+  odbcSetTransactionIsolationLevel(con, "read uncommitted")
+
+  # Can also use the full constant name.
+  odbcSetTransactionIsolationLevel(con, "SQL_TXN_READ_UNCOMMITTED")
+}
+}
+\seealso{
+\url{https://docs.microsoft.com/en-us/sql/odbc/reference/develop-app/setting-the-transaction-isolation-level}
 }
