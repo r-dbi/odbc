@@ -54,7 +54,7 @@ setMethod(
     values <- sqlData(conn, row.names = row.names, value[, , drop = FALSE])
 
     if (!found || overwrite) {
-      sql <- sqlCreateTable(conn, name, values, types, fieldTypes = fieldTypes, row.names = FALSE, temporary = temporary)
+      sql <- sqlCreateTable(conn, name, values, fieldTypes = fieldTypes, row.names = FALSE, temporary = temporary)
       dbExecute(conn, sql)
     }
 
