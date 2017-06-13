@@ -1,8 +1,5 @@
 #include "odbc_result.h"
-#include "Iconv.h"
-#include "condition.h"
 #include "integer64.h"
-#include "r_types.h"
 #include "time_zone.h"
 #include <chrono>
 #include <memory>
@@ -621,6 +618,9 @@ Rcpp::List odbc_result::result_to_dataframe(nanodbc::result& r, int n_max) {
         break;
       case string_t:
         assign_string(out, row, col, r);
+        break;
+      case ustring_t:
+        assign_ustring(out, row, col, r);
         break;
       case logical_t:
         assign_logical(out, row, col, r);
