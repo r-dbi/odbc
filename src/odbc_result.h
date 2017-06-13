@@ -37,7 +37,12 @@ typedef std::array<const char, 255> string_buf;
 class odbc_result {
 public:
   odbc_result(std::shared_ptr<odbc_connection> c, std::string sql)
-      : c_(c), sql_(sql), rows_fetched_(0), complete_(0), bound_(false) {
+      : c_(c),
+        sql_(sql),
+        rows_fetched_(0),
+        complete_(0),
+        bound_(false),
+        output_encoder_(Iconv(c_->encoding(), "UTF-8")) {
     prepare();
     c_->set_current_result(this);
     if (s_->parameters() == 0) {
@@ -186,6 +191,7 @@ private:
   size_t rows_fetched_;
   bool complete_;
   bool bound_;
+  Iconv output_encoder_;
 
   std::map<short, std::vector<std::string>> strings_;
   std::map<short, std::vector<std::vector<uint8_t>>> raws_;
@@ -596,10 +602,12 @@ private:
         types.push_back(datetime_t);
         break;
       case SQL_CHAR:
-      case SQL_WCHAR:
       case SQL_VARCHAR:
-      case SQL_WVARCHAR:
       case SQL_LONGVARCHAR:
+        types.push_back(string_t);
+        break;
+      case SQL_WCHAR:
+      case SQL_WVARCHAR:
       case SQL_WLONGVARCHAR:
         types.push_back(string_t);
         break;
@@ -703,6 +711,9 @@ private:
       Rcpp::List& out, size_t row, short column, nanodbc::result& value) {
     REAL(out[column])[row] = value.get<double>(column, NA_REAL);
   }
+
+  // Strings may be in the server's internal code page, so we need to re-encode
+  // in UTF-8 if necessary.
   void assign_string(
       Rcpp::List& out, size_t row, short column, nanodbc::result& value) {
     SEXP res;
@@ -720,6 +731,36 @@ private:
       // SQLGetData()
       // has been called for that column (i.e. after get() or get_ref() is
       // called).
+      auto str = value.get<std::string>(column);
+      if (value.is_null(column)) {
+        res = NA_STRING;
+      } else {
+        if (c_->encoding() != "") {
+          res =
+              output_encoder_.makeSEXP(str.c_str(), str.c_str() + str.length());
+        } else { // If no encoding specified assume it is UTF-8 / ASCII
+          res = Rf_mkCharLenCE(str.c_str(), str.length(), CE_UTF8);
+        }
+      }
+      SET_STRING_ELT(out[column], row, res);
+    }
+  }
+
+  // unicode strings are converted to UTF-8 by nanodbc, so we just need to
+  // mark the encoding.
+  void assign_ustring(
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value) {
+    SEXP res;
+
+    if (value.is_null(column)) {
+      res = NA_STRING;
+    } else {
+      // There is a bug/limitation in ODBC drivers for SQL Server (and
+      // possibly others) which causes SQLBindCol() to never write
+      // SQL_NOT_NULL to the length/indicator buffer unless you also bind the
+      // data column. nanodbc's is_null() will return correct values for
+      // (n)varchar(max) columns when you ensure that SQLGetData() has been
+      // called for that column (i.e. after get() or get_ref() is called).
       auto str = value.get<std::string>(column);
       if (value.is_null(column)) {
         res = NA_STRING;

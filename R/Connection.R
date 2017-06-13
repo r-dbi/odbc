@@ -15,7 +15,7 @@ OdbcConnection <- function(dsn = NULL, ..., encoding = "", timezone = "UTC", dri
   stopifnot(all(has_names(args)))
 
   connection_string <- paste0(.connection_string, paste(collapse = ";", sep = "=", names(args), args))
-  ptr <- odbc_connect(connection_string, timezone = timezone)
+  ptr <- odbc_connect(connection_string, timezone = timezone, encoding = encoding)
   quote <- connection_quote(ptr)
 
   info <- connection_info(ptr)

@@ -27,14 +27,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // odbc_connect
-connection_ptr odbc_connect(std::string const& connection_string, std::string const& timezone);
-RcppExport SEXP odbc_odbc_connect(SEXP connection_stringSEXP, SEXP timezoneSEXP) {
+connection_ptr odbc_connect(std::string const& connection_string, std::string const& timezone, std::string const& encoding);
+RcppExport SEXP odbc_odbc_connect(SEXP connection_stringSEXP, SEXP timezoneSEXP, SEXP encodingSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string const& >::type connection_string(connection_stringSEXP);
     Rcpp::traits::input_parameter< std::string const& >::type timezone(timezoneSEXP);
-    rcpp_result_gen = Rcpp::wrap(odbc_connect(connection_string, timezone));
+    Rcpp::traits::input_parameter< std::string const& >::type encoding(encodingSEXP);
+    rcpp_result_gen = Rcpp::wrap(odbc_connect(connection_string, timezone, encoding));
     return rcpp_result_gen;
 END_RCPP
 }
