@@ -49,6 +49,14 @@ connection_sql_columns <- function(p, column_name = "", catalog_name = "", schem
     .Call(odbc_connection_sql_columns, p, column_name, catalog_name, schema_name, table_name)
 }
 
+transactionLevels <- function() {
+    .Call(odbc_transactionLevels)
+}
+
+set_transaction_isolation <- function(p, level) {
+    invisible(.Call(odbc_set_transaction_isolation, p, level))
+}
+
 result_release <- function(r) {
     invisible(.Call(odbc_result_release, r))
 }

@@ -172,3 +172,20 @@ Rcpp::DataFrame connection_sql_columns(
       Rcpp::_["nullable"] = nullable,
       Rcpp::_["stringsAsFactors"] = false);
 }
+
+// [[Rcpp::export]]
+Rcpp::IntegerVector transactionLevels() {
+  Rcpp::IntegerVector out = Rcpp::IntegerVector::create(
+      Rcpp::_["read_uncommitted"] = SQL_TXN_READ_UNCOMMITTED,
+      Rcpp::_["read_committed"] = SQL_TXN_READ_COMMITTED,
+      Rcpp::_["repeatable_read"] = SQL_TXN_REPEATABLE_READ,
+      Rcpp::_["serializable"] = SQL_TXN_SERIALIZABLE);
+  return out;
+}
+
+// [[Rcpp::export]]
+void set_transaction_isolation(connection_ptr const& p, int level) {
+  auto c = (*p)->connection();
+  SQLSetConnectAttr(
+      c->native_dbc_handle(), SQL_ATTR_TXN_ISOLATION, (SQLPOINTER)level, 0);
+}

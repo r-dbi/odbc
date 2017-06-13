@@ -28,3 +28,7 @@ enc2iconv <- function(x, to, ...) {
   }
   x
 }
+
+choices_rd <- function(x) {
+  paste0(collapse = ", ", paste0("\\sQuote{", x, "}"))
+}

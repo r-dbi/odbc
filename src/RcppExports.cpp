@@ -142,6 +142,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// transactionLevels
+Rcpp::IntegerVector transactionLevels();
+RcppExport SEXP odbc_transactionLevels() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(transactionLevels());
+    return rcpp_result_gen;
+END_RCPP
+}
+// set_transaction_isolation
+void set_transaction_isolation(connection_ptr const& p, int level);
+RcppExport SEXP odbc_set_transaction_isolation(SEXP pSEXP, SEXP levelSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< connection_ptr const& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< int >::type level(levelSEXP);
+    set_transaction_isolation(p, level);
+    return R_NilValue;
+END_RCPP
+}
 // result_release
 void result_release(result_ptr r);
 RcppExport SEXP odbc_result_release(SEXP rSEXP) {
@@ -287,6 +308,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"odbc_connection_valid", (DL_FUNC) &odbc_connection_valid, 1},
     {"odbc_connection_sql_tables", (DL_FUNC) &odbc_connection_sql_tables, 5},
     {"odbc_connection_sql_columns", (DL_FUNC) &odbc_connection_sql_columns, 5},
+    {"odbc_transactionLevels", (DL_FUNC) &odbc_transactionLevels, 0},
+    {"odbc_set_transaction_isolation", (DL_FUNC) &odbc_set_transaction_isolation, 2},
     {"odbc_result_release", (DL_FUNC) &odbc_result_release, 1},
     {"odbc_result_active", (DL_FUNC) &odbc_result_active, 1},
     {"odbc_result_completed", (DL_FUNC) &odbc_result_completed, 1},
