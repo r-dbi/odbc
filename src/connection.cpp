@@ -184,8 +184,7 @@ Rcpp::IntegerVector transactionLevels() {
 }
 
 // [[Rcpp::export]]
-void set_transaction_isolation(connection_ptr const& p, int level) {
+void set_transaction_isolation(connection_ptr const& p, SQLPOINTER level) {
   auto c = (*p)->connection();
-  SQLSetConnectAttr(
-      c->native_dbc_handle(), SQL_ATTR_TXN_ISOLATION, (SQLPOINTER)level, 0);
+  SQLSetConnectAttr(c->native_dbc_handle(), SQL_ATTR_TXN_ISOLATION, level, 0);
 }
