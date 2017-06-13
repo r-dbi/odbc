@@ -318,3 +318,15 @@ odbcListDrivers <- function() {
 odbcListDataSources <- function() {
   list_data_sources_()
 }
+
+#' Set the Transaction Isolation Level for a Connection
+#'
+#' @param levels One or more of \Sexpr[stage=render, results=rd]{odbc:::choices_rd(names(odbc:::transactionLevels()))}.
+#' @inheritParams DBI::dbIsValid
+#' @export
+#' @md
+odbcSetTransactionIsolationLevel <- function(conn, levels) {
+  levels = match.arg(tolower(levels), names(transactionLevels()), several.ok = TRUE)
+
+  set_transaction_isolation(con@ptr, transactionLevels()[levels])
+}
