@@ -36,7 +36,7 @@ NULL
 #' @export
 setMethod(
   "dbWriteTable", c("OdbcConnection", "character", "data.frame"),
-  function(conn, name, value, dataTypes = NULL, overwrite=FALSE, append=FALSE, temporary = FALSE,
+  function(conn, name, value, overwrite=FALSE, append=FALSE, temporary = FALSE,
     row.names = NA, fieldTypes = NULL, ...) {
 
     if (overwrite && append)

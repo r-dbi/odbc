@@ -10,7 +10,7 @@ list_data_sources_ <- function() {
 }
 
 odbc_connect <- function(connection_string, timezone = "", encoding = "") {
-    .Call('odbc_odbc_connect', connection_string, timezone, encoding)
+    .Call(odbc_odbc_connect, connection_string, timezone, encoding)
 }
 
 connection_info <- function(p) {

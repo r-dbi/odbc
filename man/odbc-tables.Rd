@@ -9,8 +9,8 @@
 \title{Convenience functions for reading/writing DBMS tables}
 \usage{
 \S4method{dbWriteTable}{OdbcConnection,character,data.frame}(conn, name, value,
-  dataTypes = NULL, overwrite = FALSE, append = FALSE,
-  temporary = FALSE, row.names = NA, fieldTypes = NULL, ...)
+  overwrite = FALSE, append = FALSE, temporary = FALSE, row.names = NA,
+  fieldTypes = NULL, ...)
 
 \S4method{sqlData}{OdbcConnection}(con, value, row.names = NA, ...)
 
