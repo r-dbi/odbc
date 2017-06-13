@@ -7,7 +7,7 @@
 \title{Connect to a ODBC compatible database}
 \usage{
 \S4method{dbConnect}{OdbcDriver}(drv, dsn = NULL, ..., timezone = "UTC",
-  encoding = "UTF-8", driver = NULL, server = NULL, database = NULL,
+  encoding = "", driver = NULL, server = NULL, database = NULL,
   uid = NULL, pwd = NULL, .connection_string = NULL)
 }
 \arguments{
@@ -25,10 +25,10 @@ timezone that is \emph{not} 'UTC'. If the database is in your local timezone set
 to \code{Sys.timezone()}. See \code{\link[=OlsonNames]{OlsonNames()}} for a complete list of available
 timezones on your system.}
 
-\item{encoding}{The Server text encoding. Used if the database has an
-internal encoding that is \emph{not} \code{UTF-8}. If the database is in your local
-encoding set to \code{""}. See \code{\link[=iconvlist]{iconvlist()}} for a complete list of available
-encodings on your system.}
+\item{encoding}{The text encoding used on the Database. If the database is
+the same as your local encoding set to \code{""}. See \code{\link[=iconvlist]{iconvlist()}} for a
+complete list of available encodings on your system. Note strings are always
+returned \code{UTF-8} encoded.}
 
 \item{driver}{The ODBC driver name.}
 
@@ -36,7 +36,7 @@ encodings on your system.}
 
 \item{database}{The database on the server.}
 
-\item{uid}{The user identifer.}
+\item{uid}{The user identifier.}
 
 \item{pwd}{The password to use.}
 

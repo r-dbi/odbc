@@ -47,11 +47,9 @@ Rcpp::DataFrame list_data_sources_() {
 
 // [[Rcpp::export]]
 connection_ptr odbc_connect(
-    std::string const& connection_string,
-    std::string const& timezone = "",
-    std::string const& encoding = "") {
+    std::string const& connection_string, std::string const& timezone = "") {
   return connection_ptr(new std::shared_ptr<odbc_connection>(
-      new odbc_connection(connection_string, timezone, encoding)));
+      new odbc_connection(connection_string, timezone)));
 }
 
 std::string get_info_or_empty(connection_ptr const& p, short type) {

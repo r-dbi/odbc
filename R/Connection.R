@@ -10,12 +10,12 @@ NULL
 
 class_cache <- new.env(parent = emptyenv())
 
-OdbcConnection <- function(dsn = NULL, ..., encoding = "UTF-8", timezone = "UTC", driver = NULL, server = NULL, database = NULL, uid = NULL, pwd = NULL, .connection_string = NULL) {
+OdbcConnection <- function(dsn = NULL, ..., encoding = "", timezone = "UTC", driver = NULL, server = NULL, database = NULL, uid = NULL, pwd = NULL, .connection_string = NULL) {
   args <- c(dsn = dsn, driver = driver, server = server, database = database, uid = uid, pwd = pwd, list(...))
   stopifnot(all(has_names(args)))
 
   connection_string <- paste0(.connection_string, paste(collapse = ";", sep = "=", names(args), args))
-  ptr <- odbc_connect(connection_string, timezone = timezone, encoding = encoding)
+  ptr <- odbc_connect(connection_string, timezone = timezone)
   quote <- connection_quote(ptr)
 
   info <- connection_info(ptr)
@@ -26,7 +26,7 @@ OdbcConnection <- function(dsn = NULL, ..., encoding = "UTF-8", timezone = "UTC"
     setClass(info$dbms.name,
       contains = "OdbcConnection", where = class_cache)
   }
-  new(info$dbms.name, ptr = ptr, quote = quote, info = info)
+  new(info$dbms.name, ptr = ptr, quote = quote, info = info, encoding = encoding)
 }
 
 #' @rdname OdbcConnection
@@ -37,7 +37,8 @@ setClass(
   slots = list(
     ptr = "externalptr",
     quote = "character",
-    info = "ANY"
+    info = "ANY",
+    encoding = "character"
   )
 )
 

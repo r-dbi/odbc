@@ -45,14 +45,14 @@ setMethod(
 #' timezone that is _not_ 'UTC'. If the database is in your local timezone set
 #' to `Sys.timezone()`. See [OlsonNames()] for a complete list of available
 #' timezones on your system.
-#' @param encoding The Server text encoding. Used if the database has an
-#' internal encoding that is _not_ `UTF-8`. If the database is in your local
-#' encoding set to `""`. See [iconvlist()] for a complete list of available
-#' encodings on your system.
+#' @param encoding The text encoding used on the Database. If the database is
+#' the same as your local encoding set to `""`. See [iconvlist()] for a
+#' complete list of available encodings on your system. Note strings are always
+#' returned `UTF-8` encoded.
 #' @param driver The ODBC driver name.
 #' @param server The server hostname.
 #' @param database The database on the server.
-#' @param uid The user identifer.
+#' @param uid The user identifier.
 #' @param pwd The password to use.
 #' @param ... Additional ODBC keywords, these will be joined with the other
 #' arguments to form the final connection string.
@@ -70,7 +70,7 @@ setMethod(
 #' @export
 setMethod(
   "dbConnect", "OdbcDriver",
-  function(drv, dsn = NULL, ..., timezone = "UTC", encoding = "UTF-8", driver = NULL, server = NULL, database = NULL,
+  function(drv, dsn = NULL, ..., timezone = "UTC", encoding = "", driver = NULL, server = NULL, database = NULL,
     uid = NULL, pwd = NULL, .connection_string = NULL) {
 
     con <- OdbcConnection(

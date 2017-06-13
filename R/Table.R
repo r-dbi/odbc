@@ -94,6 +94,11 @@ setMethod("sqlData", "OdbcConnection", function(con, value, row.names = NA, ...)
   is_object <- vapply(value, function(x) is.object(x) && !(is(x, "POSIXct") || is(x, "Date") || is(x, "blob") || is(x, "difftime")), logical(1))
   value[is_object] <- lapply(value[is_object], as.character)
 
+  if (nzchar(con@encoding)) {
+    is_character <- vapply(value, is.character, logical(1))
+    value[is_character] <- lapply(value[is_character], enc2iconv, to = con@encoding)
+  }
+
   value
 })
 

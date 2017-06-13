@@ -5,13 +5,17 @@
 \alias{odbc-tables}
 \alias{dbWriteTable,OdbcConnection,character,data.frame-method}
 \alias{sqlData,OdbcConnection-method}
+\alias{sqlCreateTable,OdbcConnection-method}
 \title{Convenience functions for reading/writing DBMS tables}
 \usage{
 \S4method{dbWriteTable}{OdbcConnection,character,data.frame}(conn, name, value,
-  overwrite = FALSE, append = FALSE, temporary = FALSE, row.names = NA,
-  ...)
+  dataTypes = NULL, overwrite = FALSE, append = FALSE,
+  temporary = FALSE, row.names = NA, fieldTypes = NULL, ...)
 
 \S4method{sqlData}{OdbcConnection}(con, value, row.names = NA, ...)
+
+\S4method{sqlCreateTable}{OdbcConnection}(con, table, fields,
+  fieldTypes = NULL, row.names = NA, temporary = FALSE, ...)
 }
 \arguments{
 \item{conn}{a \code{\linkS4class{OdbcConnection}} object, produced by
@@ -42,9 +46,23 @@ default name.
 
 For backward compatibility, \code{NULL} is equivalent to \code{FALSE}.}
 
+\item{fieldTypes}{Additional field types used to override derived types.}
+
 \item{...}{Other arguments used by individual methods.}
 
 \item{con}{A database connection.}
+
+\item{table}{Name of the table. Escaped with
+\code{\link[=dbQuoteIdentifier]{dbQuoteIdentifier()}}.}
+
+\item{fields}{Either a character vector or a data frame.
+
+A named character vector: Names are column names, values are types.
+Names are escaped with \code{\link[=dbQuoteIdentifier]{dbQuoteIdentifier()}}.
+Field types are unescaped.
+
+A data frame: field types are generated using
+\code{\link[=dbDataType]{dbDataType()}}.}
 }
 \description{
 Convenience functions for reading/writing DBMS tables
