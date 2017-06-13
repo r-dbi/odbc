@@ -94,6 +94,7 @@ void odbc_result::insert_dataframe(Rcpp::List const& x) {
       case odbc::time_t:
         bind_time(s, x, col, start, size);
         break;
+      case ustring_t:
       case string_t:
         bind_string(s, x, col, start, size);
         break;
@@ -413,6 +414,7 @@ Rcpp::List odbc_result::create_dataframe(
     case odbc::double_t:
       out[j] = Rf_allocVector(REALSXP, n);
       break;
+    case ustring_t:
     case string_t:
       out[j] = Rf_allocVector(STRSXP, n);
       break;
@@ -558,7 +560,7 @@ std::vector<r_type> odbc_result::column_types(nanodbc::result const& r) {
     case SQL_WCHAR:
     case SQL_WVARCHAR:
     case SQL_WLONGVARCHAR:
-      types.push_back(string_t);
+      types.push_back(ustring_t);
       break;
     case SQL_BINARY:
     case SQL_VARBINARY:

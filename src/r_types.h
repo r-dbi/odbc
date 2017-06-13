@@ -13,6 +13,7 @@ typedef enum {
   datetime_t,
   time_t,
   string_t,
+  ustring_t,
   raw_t,
 } r_type;
 }
