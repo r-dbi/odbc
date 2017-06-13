@@ -3,7 +3,7 @@ test_that("SQLServer", {
     if (identical(Sys.getenv("APPVEYOR"), "True")) {
       DBItest::make_context(odbc(), list(Driver ="{SQL Server}", "Server" = "(local)\\SQL2014", "Database" = "master", "User ID" = "sa", "Password" = "Password12"), tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "SQLServer")
     } else {
-      DBItest::make_context(odbc(), list(dsn = "test"), tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "SQLServer")
+      DBItest::make_context(odbc(), list(dsn = "test", encoding = "latin1"), tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "SQLServer")
     }
   })
 
