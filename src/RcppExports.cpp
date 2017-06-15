@@ -153,12 +153,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // set_transaction_isolation
-void set_transaction_isolation(connection_ptr const& p, SQLPOINTER level);
+void set_transaction_isolation(connection_ptr const& p, size_t level);
 RcppExport SEXP odbc_set_transaction_isolation(SEXP pSEXP, SEXP levelSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< connection_ptr const& >::type p(pSEXP);
-    Rcpp::traits::input_parameter< SQLPOINTER >::type level(levelSEXP);
+    Rcpp::traits::input_parameter< size_t >::type level(levelSEXP);
     set_transaction_isolation(p, level);
     return R_NilValue;
 END_RCPP
