@@ -46,7 +46,7 @@ void odbc_result::execute() {
     }
   }
 }
-void odbc_result::insert_dataframe(Rcpp::List const& x) {
+void odbc_result::insert_dataframe(Rcpp::List const& x, bool use_transaction) {
   complete_ = false;
   rows_fetched_ = 0;
   auto types = column_types(x);
@@ -64,7 +64,7 @@ void odbc_result::insert_dataframe(Rcpp::List const& x) {
   int start = 0;
   int batch_size = 1024;
   std::unique_ptr<nanodbc::transaction> t;
-  if (c_->supports_transactions()) {
+  if (use_transaction && c_->supports_transactions()) {
     t = std::unique_ptr<nanodbc::transaction>(
         new nanodbc::transaction(*c_->connection()));
   }
