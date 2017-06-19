@@ -70,7 +70,6 @@ void odbc_result::insert_dataframe(Rcpp::List const& x, bool use_transaction) {
   }
 
   while (start < nrows) {
-    auto s = nanodbc::statement(*c_->connection(), sql_);
     size_t end = start + batch_size > nrows ? nrows : start + batch_size;
     size_t size = end - start;
     clear_buffers();
@@ -78,36 +77,36 @@ void odbc_result::insert_dataframe(Rcpp::List const& x, bool use_transaction) {
     for (short col = 0; col < ncols; ++col) {
       switch (types[col]) {
       case logical_t:
-        bind_logical(s, x, col, start, size);
+        bind_logical(*s_, x, col, start, size);
         break;
       case date_t:
-        bind_date(s, x, col, start, size);
+        bind_date(*s_, x, col, start, size);
         break;
       case datetime_t:
-        bind_datetime(s, x, col, start, size);
+        bind_datetime(*s_, x, col, start, size);
         break;
       case double_t:
-        bind_double(s, x, col, start, size);
+        bind_double(*s_, x, col, start, size);
         break;
       case integer_t:
-        bind_integer(s, x, col, start, size);
+        bind_integer(*s_, x, col, start, size);
         break;
       case odbc::time_t:
-        bind_time(s, x, col, start, size);
+        bind_time(*s_, x, col, start, size);
         break;
       case ustring_t:
       case string_t:
-        bind_string(s, x, col, start, size);
+        bind_string(*s_, x, col, start, size);
         break;
       case raw_t:
-        bind_raw(s, x, col, start, size);
+        bind_raw(*s_, x, col, start, size);
         break;
       default:
         Rcpp::stop("Not yet implemented (%s)!", types[col]);
         break;
       }
     }
-    r_ = std::make_shared<nanodbc::result>(nanodbc::execute(s, size));
+    r_ = std::make_shared<nanodbc::result>(nanodbc::execute(*s_, size));
     start += batch_size;
 
     Rcpp::checkUserInterrupt();
