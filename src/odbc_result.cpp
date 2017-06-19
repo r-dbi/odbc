@@ -373,8 +373,9 @@ void odbc_result::bind_time(
 }
 std::vector<std::string> odbc_result::column_names(nanodbc::result const& r) {
   std::vector<std::string> names;
-  names.reserve(r.columns());
-  for (short i = 0; i < r.columns(); ++i) {
+  auto num_cols = r.columns();
+  names.reserve(num_cols);
+  for (short i = 0; i < num_cols; ++i) {
     names.push_back(r.column_name(i));
   }
   return names;
@@ -514,8 +515,9 @@ std::vector<r_type> odbc_result::column_types(Rcpp::List const& list) {
 
 std::vector<r_type> odbc_result::column_types(nanodbc::result const& r) {
   std::vector<r_type> types;
-  types.reserve(r.columns());
-  for (short i = 0; i < r.columns(); ++i) {
+  auto num_cols = r.columns();
+  types.reserve(num_cols);
+  for (short i = 0; i < num_cols; ++i) {
 
     short type = r.column_datatype(i);
     switch (type) {
@@ -598,7 +600,7 @@ Rcpp::List odbc_result::result_to_dataframe(nanodbc::result& r, int n_max) {
         break;
       }
     }
-    for (short col = 0; col < r.columns(); ++col) {
+    for (short col = 0; col < types.size(); ++col) {
       switch (types[col]) {
       case date_t:
         assign_date(out, row, col, r);
