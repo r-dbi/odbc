@@ -56,6 +56,7 @@ private:
   static const int seconds_in_hour_ = 60 * 60;
   static const int seconds_in_minute_ = 60;
   size_t rows_fetched_;
+  int num_columns_;
   bool complete_;
   bool bound_;
   Iconv output_encoder_;

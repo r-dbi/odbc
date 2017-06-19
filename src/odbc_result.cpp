@@ -10,6 +10,7 @@ odbc_result::odbc_result(std::shared_ptr<odbc_connection> c, std::string sql)
     : c_(c),
       sql_(sql),
       rows_fetched_(0),
+      num_columns_(-1),
       complete_(0),
       bound_(false),
       output_encoder_(Iconv(c_->encoding(), "UTF-8")) {
@@ -120,7 +121,8 @@ Rcpp::DataFrame odbc_result::fetch(int n_max) {
   if (!bound_) {
     Rcpp::stop("Query needs to be bound before fetching");
   }
-  if (r_->columns() == 0) {
+  num_columns_ = r_->columns();
+  if (num_columns_ == 0) {
     return Rcpp::DataFrame();
   }
   try {
@@ -136,8 +138,8 @@ int odbc_result::rows_fetched() {
 }
 
 bool odbc_result::complete() {
-  return r_->columns() == 0 || // query had no result
-         complete_;            // result is completed
+  return num_columns_ == 0 || // query had no result
+         complete_;           // result is completed
 }
 
 bool odbc_result::active() { return c_->is_current_result(this); }
@@ -373,9 +375,8 @@ void odbc_result::bind_time(
 }
 std::vector<std::string> odbc_result::column_names(nanodbc::result const& r) {
   std::vector<std::string> names;
-  auto num_cols = r.columns();
-  names.reserve(num_cols);
-  for (short i = 0; i < num_cols; ++i) {
+  names.reserve(num_columns_);
+  for (short i = 0; i < num_columns_; ++i) {
     names.push_back(r.column_name(i));
   }
   return names;
@@ -515,9 +516,8 @@ std::vector<r_type> odbc_result::column_types(Rcpp::List const& list) {
 
 std::vector<r_type> odbc_result::column_types(nanodbc::result const& r) {
   std::vector<r_type> types;
-  auto num_cols = r.columns();
-  types.reserve(num_cols);
-  for (short i = 0; i < num_cols; ++i) {
+  types.reserve(num_columns_);
+  for (short i = 0; i < num_columns_; ++i) {
 
     short type = r.column_datatype(i);
     switch (type) {
