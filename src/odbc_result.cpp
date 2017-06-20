@@ -705,7 +705,7 @@ void odbc_result::assign_string(
       if (c_->encoding() != "") {
         res = output_encoder_.makeSEXP(str.c_str(), str.c_str() + str.length());
       } else { // If no encoding specified assume it is UTF-8 / ASCII
-        res = Rf_mkCharLenCE(str.c_str(), str.length(), CE_UTF8);
+        res = Rf_mkCharCE(str.c_str(), CE_UTF8);
       }
     }
   }
