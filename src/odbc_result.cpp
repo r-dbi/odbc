@@ -37,6 +37,7 @@ void odbc_result::execute() {
   if (!r_) {
     try {
       r_ = std::make_shared<nanodbc::result>(s_->execute());
+      num_columns_ = r_->columns();
     } catch (const nanodbc::database_error& e) {
       c_->set_current_result(nullptr);
       throw odbc_error(e, sql_);
@@ -132,7 +133,6 @@ Rcpp::DataFrame odbc_result::fetch(int n_max) {
   if (!bound_) {
     Rcpp::stop("Query needs to be bound before fetching");
   }
-  num_columns_ = r_->columns();
   if (num_columns_ == 0) {
     return Rcpp::DataFrame();
   }
