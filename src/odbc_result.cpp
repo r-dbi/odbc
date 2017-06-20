@@ -20,7 +20,7 @@ odbc_result::odbc_result(std::shared_ptr<odbc_connection> c, std::string sql)
     bound_ = true;
     execute();
   }
-};
+}
 std::shared_ptr<odbc_connection> odbc_result::connection() const {
   return std::shared_ptr<odbc_connection>(c_);
 }
@@ -611,7 +611,7 @@ Rcpp::List odbc_result::result_to_dataframe(nanodbc::result& r, int n_max) {
         break;
       }
     }
-    for (short col = 0; col < types.size(); ++col) {
+    for (size_t col = 0; col < types.size(); ++col) {
       switch (types[col]) {
       case date_t:
         assign_date(out, row, col, r);
