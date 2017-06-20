@@ -731,7 +731,7 @@ void odbc_result::assign_ustring(
     if (value.is_null(column)) {
       res = NA_STRING;
     } else {
-      res = Rf_mkCharLenCE(str.c_str(), str.length(), CE_UTF8);
+      res = Rf_mkCharCE(str.c_str(), CE_UTF8);
     }
   }
   SET_STRING_ELT(out[column], row, res);
