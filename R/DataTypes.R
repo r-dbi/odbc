@@ -168,7 +168,7 @@ odbcDataType.default <- function(con, obj, ...) {
 
 #' @export
 odbcDataType.Oracle <- function(con, obj, ...) {
-  odbc:::switch_type(obj,
+  switch_type(obj,
      factor = "VARCHAR(255)",
 
      # No native oracle type for time
