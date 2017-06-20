@@ -36,7 +36,7 @@ public:
   std::shared_ptr<nanodbc::result> result() const;
   void prepare();
   void execute();
-  void insert_dataframe(Rcpp::List const& x, bool use_transaction = true);
+  void bind_list(Rcpp::List const& x, bool use_transaction = true);
   Rcpp::DataFrame fetch(int n_max = -1);
 
   int rows_fetched();
@@ -69,6 +69,14 @@ private:
   std::map<short, std::vector<uint8_t>> nulls_;
 
   void clear_buffers();
+
+  void bind_columns(
+      nanodbc::statement& statement,
+      r_type type,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size);
 
   void bind_logical(
       nanodbc::statement& statement,

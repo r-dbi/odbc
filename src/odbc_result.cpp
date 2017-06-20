@@ -46,7 +46,48 @@ void odbc_result::execute() {
     }
   }
 }
-void odbc_result::insert_dataframe(Rcpp::List const& x, bool use_transaction) {
+
+void odbc_result::bind_columns(
+    nanodbc::statement& statement,
+    r_type type,
+    Rcpp::List const& data,
+    short column,
+    size_t start,
+    size_t size) {
+
+  switch (type) {
+  case logical_t:
+    bind_logical(*s_, data, column, start, size);
+    break;
+  case date_t:
+    bind_date(*s_, data, column, start, size);
+    break;
+  case datetime_t:
+    bind_datetime(*s_, data, column, start, size);
+    break;
+  case double_t:
+    bind_double(*s_, data, column, start, size);
+    break;
+  case integer_t:
+    bind_integer(*s_, data, column, start, size);
+    break;
+  case odbc::time_t:
+    bind_time(*s_, data, column, start, size);
+    break;
+  case ustring_t:
+  case string_t:
+    bind_string(*s_, data, column, start, size);
+    break;
+  case raw_t:
+    bind_raw(*s_, data, column, start, size);
+    break;
+  default:
+    Rcpp::stop("Not yet implemented (%s)!", type);
+    break;
+  }
+}
+
+void odbc_result::bind_list(Rcpp::List const& x, bool use_transaction) {
   complete_ = false;
   rows_fetched_ = 0;
   auto types = column_types(x);
@@ -75,36 +116,7 @@ void odbc_result::insert_dataframe(Rcpp::List const& x, bool use_transaction) {
     clear_buffers();
 
     for (short col = 0; col < ncols; ++col) {
-      switch (types[col]) {
-      case logical_t:
-        bind_logical(*s_, x, col, start, size);
-        break;
-      case date_t:
-        bind_date(*s_, x, col, start, size);
-        break;
-      case datetime_t:
-        bind_datetime(*s_, x, col, start, size);
-        break;
-      case double_t:
-        bind_double(*s_, x, col, start, size);
-        break;
-      case integer_t:
-        bind_integer(*s_, x, col, start, size);
-        break;
-      case odbc::time_t:
-        bind_time(*s_, x, col, start, size);
-        break;
-      case ustring_t:
-      case string_t:
-        bind_string(*s_, x, col, start, size);
-        break;
-      case raw_t:
-        bind_raw(*s_, x, col, start, size);
-        break;
-      default:
-        Rcpp::stop("Not yet implemented (%s)!", types[col]);
-        break;
-      }
+      bind_columns(*s_, types[col], x, col, start, size);
     }
     r_ = std::make_shared<nanodbc::result>(nanodbc::execute(*s_, size));
     start += batch_size;

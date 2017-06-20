@@ -45,7 +45,7 @@ Rcpp::DataFrame result_column_info(result_ptr const& r) {
 
 // [[Rcpp::export]]
 void result_bind(result_ptr const& r, List const& params) {
-  r->insert_dataframe(params, false);
+  r->bind_list(params, false);
 }
 
 // [[Rcpp::export]]
@@ -53,7 +53,7 @@ void result_execute(result_ptr const& r) { r->execute(); }
 
 // [[Rcpp::export]]
 void result_insert_dataframe(result_ptr const& r, DataFrame const& df) {
-  r->insert_dataframe(df);
+  r->bind_list(df);
 }
 
 // [[Rcpp::export]]
