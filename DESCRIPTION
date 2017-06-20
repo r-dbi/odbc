@@ -40,4 +40,4 @@ Collate:
     'utils.R'
     'zzz.R'
 Roxygen: list(markdown = TRUE)
-Remotes: hadley/blob
+Remotes: hadley/blob, jimhester/covr
