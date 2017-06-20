@@ -708,8 +708,8 @@ void odbc_result::assign_string(
         res = Rf_mkCharLenCE(str.c_str(), str.length(), CE_UTF8);
       }
     }
-    SET_STRING_ELT(out[column], row, res);
   }
+  SET_STRING_ELT(out[column], row, res);
 }
 
 // unicode strings are converted to UTF-8 by nanodbc, so we just need to
