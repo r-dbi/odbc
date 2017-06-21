@@ -10,7 +10,13 @@ Authors@R: c(
   )
 Description: A DBI-compatible interface to ODBC databases.
 License: MIT + file LICENSE
+URL: https://github.com/rstats-db/odbc
+BugReports: https://github.com/rstats-db/odbc/issues
+SystemRequirements: An ODBC3 driver manager and drivers.
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.0.1
 LazyData: true
+ByteCompile: true
 Imports:
     DBI (>= 0.3.0),
     methods,
@@ -18,17 +24,13 @@ Imports:
     blob (>= 1.1.0),
     bit64,
     hms
-LinkingTo: Rcpp, BH
-RoxygenNote: 6.0.1
-URL: https://github.com/rstats-db/odbc
-BugReports: https://github.com/rstats-db/odbc/issues
-SystemRequirements: An ODBC3 driver manager and drivers.
 Suggests:
     tibble,
     DBItest,
     testthat,
     covr,
     magrittr
+LinkingTo: Rcpp, BH
 Collate:
     'odbc.R'
     'Driver.R'
