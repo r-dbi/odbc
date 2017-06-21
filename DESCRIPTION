@@ -41,3 +41,4 @@ Collate:
     'zzz.R'
 Roxygen: list(markdown = TRUE)
 Remotes: hadley/blob, jimhester/covr
+ByteCompile: true
