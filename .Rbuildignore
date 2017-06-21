@@ -24,3 +24,4 @@
 ^src/nanodbc/\.clang-format$
 ^\.vimrc$
 ^vignettes$
+^revdep$

@@ -13,3 +13,4 @@ script.R
 .vimrc
 vignettes/
 testing/
+/revdep/.cache.rds
