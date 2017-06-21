@@ -11,3 +11,5 @@ docs/
 script.R
 *.pl
 .vimrc
+vignettes/
+testing/
