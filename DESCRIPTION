@@ -1,6 +1,6 @@
 Package: odbc
 Title: Connect to ODBC Compatible Databases (using the DBI Interface)
-Version: 1.0.1.9000
+Version: 1.1.0
 Authors@R: c(
     person("Jim", "Hester", , "james.hester@rstudio.com", role = c("aut", "cre")),
     person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut")),
@@ -42,6 +42,3 @@ Collate:
     'Viewer.R'
     'utils.R'
     'zzz.R'
-Roxygen: list(markdown = TRUE)
-Remotes: hadley/blob, jimhester/covr
-ByteCompile: true
