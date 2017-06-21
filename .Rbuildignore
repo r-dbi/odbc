@@ -25,3 +25,4 @@
 ^\.vimrc$
 ^vignettes$
 ^revdep$
+^testing$
