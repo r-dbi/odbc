@@ -307,3 +307,30 @@ system.time(dbWriteTable(odbc, "flights3", as.data.frame(flights)))
 #>    user  system elapsed 
 #>   7.802   3.703  26.016
 ```
+
+### SQL Server
+
+``` r
+packageVersion("RSQLServer")
+#> [1] ‘0.3.0’
+
+# Writing
+rsqlserver <- dbConnect(RSQLServer::SQLServer(), server = "SQLServer")
+system.time(dbWriteTable(rsqlserver, "flights2", as.data.frame(flights)))
+#>    user  system elapsed
+#> 645.219  12.287 820.806
+
+odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
+system.time(dbWriteTable(odbc, "flights3", as.data.frame(flights)))
+#>    user  system elapsed
+#>  12.336   0.412  21.802
+
+# Reading
+system.time(dbReadTable(rsqlserver, "flights", as.data.frame(flights)))
+#>    user  system elapsed
+#>   5.101   1.289   3.584
+
+system.time(dbReadTable(odbc, "flights", as.data.frame(flights)))
+#>   user  system elapsed
+#>  2.187   0.108   2.298
+```
