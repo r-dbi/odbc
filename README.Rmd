@@ -320,7 +320,7 @@ system.time(dbWriteTable(rsqlserver, "flights2", as.data.frame(flights)))
 #>    user  system elapsed
 #> 645.219  12.287 820.806
 
-odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
+odbc <- dbConnect(odbc::odbc(), dsn = "SQLServer", UID = "testuser", PWD = "test")
 system.time(dbWriteTable(odbc, "flights3", as.data.frame(flights)))
 #>    user  system elapsed
 #>  12.336   0.412  21.802
