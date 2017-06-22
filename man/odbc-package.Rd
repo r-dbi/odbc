@@ -6,9 +6,6 @@
 \description{
 A DBI-compatible interface to ODBC databases.
 }
-\details{
-TBD.
-}
 \seealso{
 Useful links:
 \itemize{
@@ -27,8 +24,9 @@ Authors:
 
 Other contributors:
 \itemize{
-  \item  lexicalunit (nanodbc library) [copyright holder]
-  \item  RStudio [copyright holder, funder]
+  \item lexicalunit (nanodbc library) [copyright holder]
+  \item Google Inc. (cctz library) [copyright holder]
+  \item RStudio [copyright holder, funder]
 }
 
 }

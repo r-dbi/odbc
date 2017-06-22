@@ -61,7 +61,7 @@ setMethod(
 #' arguments will be appended to this string.
 #'
 #' @details
-#' The connection string keywords are driver dependant. The parameters
+#' The connection string keywords are driver dependent. The parameters
 #' documented here are common, but some drivers may not accept them. Please see
 #' the specific driver documentation for allowed parameters,
 #' \url{https://www.connectionstrings.com} is also a useful resource of example
