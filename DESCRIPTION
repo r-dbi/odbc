@@ -4,9 +4,9 @@ Version: 1.1.0
 Authors@R: c(
     person("Jim", "Hester", , "james.hester@rstudio.com", role = c("aut", "cre")),
     person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut")),
-    person(family = "lexicalunit", role = c("cph"), comment = "nanodbc library"),
-    person(family = "Google Inc.", role = c("cph"), comment = "cctz library"),
-    person(family = "RStudio", role = c("cph", "fnd"))
+    person("lexicalunit", role = c("cph"), comment = "nanodbc library"),
+    person("Google Inc.", role = c("cph"), comment = "cctz library"),
+    person("RStudio", role = c("cph", "fnd"))
   )
 Description: A DBI-compatible interface to ODBC databases.
 License: MIT + file LICENSE
