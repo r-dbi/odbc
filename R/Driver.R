@@ -97,7 +97,7 @@ setMethod(
               c("library(odbc)", deparse(expr)), collapse = "\n"))
           }
         }, error = function(e) {
-          warning("Could not notify connection observer. ", e$message)
+          warning("Could not notify connection observer. ", e$message, call. = FALSE)
         })
 
         # always return false so the task callback is run at most once

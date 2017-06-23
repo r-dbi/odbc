@@ -63,7 +63,11 @@ bool odbc_connection::is_current_result(odbc_result* result) const {
   return current_result_ == result;
 }
 bool odbc_connection::supports_transactions() const {
-  return c_->get_info<unsigned short>(SQL_TXN_CAPABLE) != SQL_TC_NONE;
+  try {
+    return c_->get_info<unsigned short>(SQL_TXN_CAPABLE) != SQL_TC_NONE;
+  } catch (nanodbc::database_error e) {
+    return false;
+  }
 }
 
 cctz::time_zone odbc_connection::timezone() const { return timezone_; }
