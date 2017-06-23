@@ -12,13 +12,13 @@ $(OBJECTS): cctz/libcctz.a
 
 cctz/libcctz.a:
 	(cd cctz && \
-make libcctz.a PREFIX="../" CC="$(CC)" CXX="$(CXX)" AR="$(AR)" ARFLAGS=$(ARFLAGS))
+$(MAKE) libcctz.a PREFIX="../" CC="$(CC)" CXX="$(CXX)" AR="$(AR)" ARFLAGS=$(ARFLAGS))
 
 nanodbc.o: nanodbc/nanodbc.cpp
 	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
 
 clean:
-	(cd cctz; make clean)
+	(cd cctz; $(MAKE) clean)
 	rm -f $(OBJECTS) $(SHLIB)
 
 .PHONY: all cctz clean
