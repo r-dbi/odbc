@@ -1,5 +1,8 @@
 # odbc 1.1.0.9000
 
+* Workaround for drivers which do not implement SQLGetInfo, such as the Access
+  driver. (#78)
+
 * Fix for installation error for systems without GNU Make as the default make, such as
   Solaris.
 
