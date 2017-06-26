@@ -1,4 +1,4 @@
-# odbc 1.1.0.9000
+# odbc 1.1.1
 
 * Workaround for drivers which do not implement SQLGetInfo, such as the Access
   driver. (#78)
