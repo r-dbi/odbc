@@ -1,5 +1,8 @@
 # odbc 1.1.1.9000
 
+* Fix regression when binding due to the num_columns variable not being updated
+  by `odbc_result::bind_list()`.
+
 # odbc 1.1.1
 
 * Workaround for drivers which do not implement SQLGetInfo, such as the Access
