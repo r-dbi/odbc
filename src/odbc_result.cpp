@@ -120,6 +120,7 @@ void odbc_result::bind_list(Rcpp::List const& x, bool use_transaction) {
       bind_columns(*s_, types[col], x, col, start, size);
     }
     r_ = std::make_shared<nanodbc::result>(nanodbc::execute(*s_, size));
+    num_columns_ = r_->columns();
     start += batch_size;
 
     Rcpp::checkUserInterrupt();
