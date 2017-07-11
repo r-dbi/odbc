@@ -9,6 +9,11 @@
 If possible include a _small_ dump of the table with the error and the R code
 that generates the error.
 
+The reprex package can be helpful in doing this.
+
+    install.packages("reprex")
+    reprex::reprex()
+
 Example:
 ```r
 library(odbc)
