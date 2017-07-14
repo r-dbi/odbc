@@ -74,3 +74,6 @@ void column_types(DataFrame const& df) {
     Rcpp::Rcout << "type: " << Rf_type2char(TYPEOF(df[j])) << std::endl;
   }
 }
+
+// [[Rcpp::export]]
+void set_bigint_map(int map_to) { odbc::odbc_result::BIGINT_MAP = map_to; }

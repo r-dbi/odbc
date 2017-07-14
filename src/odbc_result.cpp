@@ -6,6 +6,8 @@
 
 namespace odbc {
 
+int odbc_result::BIGINT_MAP = 0;
+
 odbc_result::odbc_result(std::shared_ptr<odbc_connection> c, std::string sql)
     : c_(c),
       sql_(sql),
@@ -532,6 +534,21 @@ std::vector<r_type> odbc_result::column_types(nanodbc::result const& r) {
   for (short i = 0; i < num_columns_; ++i) {
 
     short type = r.column_datatype(i);
+
+    if (type == SQL_BIGINT) {
+      switch (BIGINT_MAP) {
+      case i64_to_integer:
+        types.push_back(integer_t);
+        break;
+      case i64_to_double:
+        types.push_back(double_t);
+        break;
+      default:
+        types.push_back(integer64_t);
+      }
+      continue;
+    }
+
     switch (type) {
     case SQL_BIT:
       types.push_back(logical_t);
@@ -540,9 +557,6 @@ std::vector<r_type> odbc_result::column_types(nanodbc::result const& r) {
     case SQL_SMALLINT:
     case SQL_INTEGER:
       types.push_back(integer_t);
-      break;
-    case SQL_BIGINT:
-      types.push_back(integer64_t);
       break;
     // Double
     case SQL_DOUBLE:

@@ -10,6 +10,12 @@
 
 namespace odbc {
 
+enum bigint_map_t {
+  i64_to_integer64,
+  i64_to_integer,
+  i64_to_double
+};
+
 inline void signal_unknown_field_type(short type, const std::string& name) {
   char buf[100];
   sprintf(buf, "Unknown field type (%i) in column (%s)", type, name.c_str());
@@ -46,6 +52,8 @@ public:
   bool active();
 
   ~odbc_result();
+
+  static int BIGINT_MAP;
 
 private:
   std::shared_ptr<odbc_connection> c_;

@@ -294,6 +294,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// set_bigint_map
+void set_bigint_map(int map_to);
+RcppExport SEXP odbc_set_bigint_map(SEXP map_toSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type map_to(map_toSEXP);
+    set_bigint_map(map_to);
+    return R_NilValue;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"odbc_list_drivers_", (DL_FUNC) &odbc_list_drivers_, 0},
@@ -322,6 +332,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"odbc_result_rows_affected", (DL_FUNC) &odbc_result_rows_affected, 1},
     {"odbc_result_row_count", (DL_FUNC) &odbc_result_row_count, 1},
     {"odbc_column_types", (DL_FUNC) &odbc_column_types, 1},
+    {"odbc_set_bigint_map", (DL_FUNC) &odbc_set_bigint_map, 1},
     {NULL, NULL, 0}
 };
 

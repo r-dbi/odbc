@@ -105,3 +105,7 @@ column_types <- function(df) {
     invisible(.Call(odbc_column_types, df))
 }
 
+set_bigint_map <- function(map_to) {
+    invisible(.Call(odbc_set_bigint_map, map_to))
+}
+

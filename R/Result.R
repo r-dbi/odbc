@@ -125,3 +125,13 @@ setMethod(
     result_bind(res@ptr, as.list(params))
     invisible(res)
   })
+
+#' Set the BIGINT type mapping
+#'
+#' @param map.to the R type (as string) that SQL BIGINT type should be mapped to.
+#' @export
+setBigintMapping <- function(map.to = c("integer64", "integer", "numeric")) {
+  map.to <- match.arg(map.to)
+  map.to <- switch(map.to, integer64 = 0, integer = 1, numeric = 2)
+  set_bigint_map(map.to)
+}
