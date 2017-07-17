@@ -57,6 +57,10 @@ set_transaction_isolation <- function(p, level) {
     invisible(.Call(odbc_set_transaction_isolation, p, level))
 }
 
+set_bigint_map <- function(p, map_to) {
+    invisible(.Call(odbc_set_bigint_map, p, map_to))
+}
+
 result_release <- function(r) {
     invisible(.Call(odbc_result_release, r))
 }
@@ -103,9 +107,5 @@ result_row_count <- function(r) {
 
 column_types <- function(df) {
     invisible(.Call(odbc_column_types, df))
-}
-
-set_bigint_map <- function(map_to) {
-    invisible(.Call(odbc_set_bigint_map, map_to))
 }
 

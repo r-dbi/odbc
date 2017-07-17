@@ -343,3 +343,16 @@ odbcSetTransactionIsolationLevel <- function(conn, levels) {
 
   set_transaction_isolation(conn@ptr, transactionLevels()[levels])
 }
+
+#' Set the BIGINT type mapping
+#'
+#' @inheritParams DBI::dbDisconnect
+#' @param bigint An R type name that SQL BIGINT type should be mapped to while
+#' reading from the database.
+#'
+#' @export
+setBigintMapping <- function(conn, bigint = c("integer64", "integer", "numeric")) {
+  bigint <- match.arg(bigint)
+  bigint <- switch(bigint, integer64 = 0, integer = 1, numeric = 2)
+  set_bigint_map(conn@ptr, bigint)
+}

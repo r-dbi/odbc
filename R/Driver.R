@@ -59,6 +59,7 @@ setMethod(
 #' @param .connection_string A complete connection string, useful if you are
 #' copy pasting it from another source. If this argument is used any additional
 #' arguments will be appended to this string.
+#' @inheritParams setBigintMapping
 #'
 #' @details
 #' The connection string keywords are driver dependent. The parameters
@@ -71,7 +72,7 @@ setMethod(
 setMethod(
   "dbConnect", "OdbcDriver",
   function(drv, dsn = NULL, ..., timezone = "UTC", encoding = "", driver = NULL, server = NULL, database = NULL,
-    uid = NULL, pwd = NULL, .connection_string = NULL) {
+    uid = NULL, pwd = NULL, .connection_string = NULL, bigint = c("integer64", "integer", "numeric")) {
 
     con <- OdbcConnection(
       dsn = dsn,
@@ -104,6 +105,8 @@ setMethod(
         FALSE
       })
     } # nocov end
+
+    setBigintMapping(con, bigint)
 
     con
   }

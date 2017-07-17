@@ -6,6 +6,13 @@
 #include <Rcpp.h>
 
 namespace odbc {
+
+enum bigint_map_t {
+  i64_to_integer64,
+  i64_to_integer,
+  i64_to_double
+};
+
 class odbc_result;
 
 class odbc_connection {
@@ -29,11 +36,15 @@ public:
   cctz::time_zone timezone() const;
   std::string encoding() const;
 
+  int get_bigint_map() const;
+  void set_bigint_map(int map_to);
+
 private:
   std::shared_ptr<nanodbc::connection> c_;
   std::unique_ptr<nanodbc::transaction> t_;
   odbc_result* current_result_;
   cctz::time_zone timezone_;
   std::string encoding_;
+  int bigint_map_;
 };
 } // namespace odbc

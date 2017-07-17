@@ -6,8 +6,6 @@
 
 namespace odbc {
 
-int odbc_result::BIGINT_MAP = 0;
-
 odbc_result::odbc_result(std::shared_ptr<odbc_connection> c, std::string sql)
     : c_(c),
       sql_(sql),
@@ -536,7 +534,7 @@ std::vector<r_type> odbc_result::column_types(nanodbc::result const& r) {
     short type = r.column_datatype(i);
 
     if (type == SQL_BIGINT) {
-      switch (BIGINT_MAP) {
+      switch (connection()->get_bigint_map()) {
       case i64_to_integer:
         types.push_back(integer_t);
         break;

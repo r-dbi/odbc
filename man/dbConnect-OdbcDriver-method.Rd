@@ -8,7 +8,8 @@
 \usage{
 \S4method{dbConnect}{OdbcDriver}(drv, dsn = NULL, ..., timezone = "UTC",
   encoding = "", driver = NULL, server = NULL, database = NULL,
-  uid = NULL, pwd = NULL, .connection_string = NULL)
+  uid = NULL, pwd = NULL, .connection_string = NULL,
+  bigint = c("integer64", "integer", "numeric"))
 }
 \arguments{
 \item{drv}{an object that inherits from \linkS4class{DBIDriver},
@@ -43,6 +44,9 @@ returned \code{UTF-8} encoded.}
 \item{.connection_string}{A complete connection string, useful if you are
 copy pasting it from another source. If this argument is used any additional
 arguments will be appended to this string.}
+
+\item{bigint}{An R type name that SQL BIGINT type should be mapped to while
+reading from the database.}
 }
 \description{
 Connect to a ODBC compatible database
