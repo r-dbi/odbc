@@ -174,6 +174,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// bigint_mappings
+Rcpp::IntegerVector bigint_mappings();
+RcppExport SEXP odbc_bigint_mappings() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(bigint_mappings());
+    return rcpp_result_gen;
+END_RCPP
+}
 // result_release
 void result_release(result_ptr r);
 RcppExport SEXP odbc_result_release(SEXP rSEXP) {
@@ -322,6 +332,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"odbc_transactionLevels", (DL_FUNC) &odbc_transactionLevels, 0},
     {"odbc_set_transaction_isolation", (DL_FUNC) &odbc_set_transaction_isolation, 2},
     {"odbc_set_bigint_mapping", (DL_FUNC) &odbc_set_bigint_mapping, 2},
+    {"odbc_bigint_mappings", (DL_FUNC) &odbc_bigint_mappings, 0},
     {"odbc_result_release", (DL_FUNC) &odbc_result_release, 1},
     {"odbc_result_active", (DL_FUNC) &odbc_result_active, 1},
     {"odbc_result_completed", (DL_FUNC) &odbc_result_completed, 1},

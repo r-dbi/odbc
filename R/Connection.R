@@ -367,7 +367,6 @@ odbcSetTransactionIsolationLevel <- function(conn, levels) {
 #' @export
 odbcSetBigIntMapping <- function(conn, bigint = c("integer64", "integer", "numeric", "character")) {
   bigint <- match.arg(bigint)
-  bigint <- switch(bigint, integer64 = 0, integer = 1, numeric = 2, character = 3)
-  set_bigint_mapping(conn@ptr, bigint)
+  set_bigint_mapping(conn@ptr, bigint_mappings()[bigint])
   conn
 }

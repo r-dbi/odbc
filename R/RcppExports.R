@@ -61,6 +61,10 @@ set_bigint_mapping <- function(p, map_to) {
     invisible(.Call(odbc_set_bigint_mapping, p, map_to))
 }
 
+bigint_mappings <- function() {
+    .Call(odbc_bigint_mappings)
+}
+
 result_release <- function(r) {
     invisible(.Call(odbc_result_release, r))
 }

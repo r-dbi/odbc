@@ -194,3 +194,13 @@ void set_transaction_isolation(connection_ptr const& p, size_t level) {
 void set_bigint_mapping(connection_ptr p, int map_to) {
   (*p)->set_bigint_mapping(static_cast<bigint_map_t>(map_to));
 }
+
+// [[Rcpp::export]]
+Rcpp::IntegerVector bigint_mappings() {
+  Rcpp::IntegerVector out = Rcpp::IntegerVector::create(
+      Rcpp::_["integer64"] = bigint_map_t::i64_to_integer64,
+      Rcpp::_["integer"] = bigint_map_t::i64_to_integer,
+      Rcpp::_["numeric"] = bigint_map_t::i64_to_double,
+      Rcpp::_["character"] = bigint_map_t::i64_to_character);
+  return out;
+}
