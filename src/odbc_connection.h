@@ -10,7 +10,8 @@ namespace odbc {
 enum bigint_map_t {
   i64_to_integer64,
   i64_to_integer,
-  i64_to_double
+  i64_to_double,
+  i64_to_character,
 };
 
 class odbc_result;
@@ -36,8 +37,8 @@ public:
   cctz::time_zone timezone() const;
   std::string encoding() const;
 
-  int get_bigint_map() const;
-  void set_bigint_map(int map_to);
+  bigint_map_t get_bigint_mapping() const;
+  void set_bigint_mapping(bigint_map_t map_to);
 
 private:
   std::shared_ptr<nanodbc::connection> c_;
@@ -45,6 +46,6 @@ private:
   odbc_result* current_result_;
   cctz::time_zone timezone_;
   std::string encoding_;
-  int bigint_map_;
+  bigint_map_t bigint_mapping_;
 };
 } // namespace odbc

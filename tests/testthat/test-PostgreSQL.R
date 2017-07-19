@@ -3,6 +3,36 @@ test_that("PostgreSQL", {
     DBItest::make_context(odbc(), list(dsn = "PostgreSQL"), tweaks = DBItest::tweaks(temporary_tables = FALSE, placeholder_pattern = "?"), name = "PostgreSQL")
   })
 
+  context("custom tests")
+  test_that("show method works as expected with real connection", {
+    skip_on_os("windows")
+    con <- dbConnect(odbc(), "PostgreSQL")
+
+    expect_output(show(con), "postgres@localhost")
+    expect_output(show(con), "Database: test_db")
+    expect_output(show(con), "PostgreSQL Version: ")
+  })
+
+  test_that("64 bit integers work with alternate mappings", {
+    con <- dbConnect(odbc(), "PostgreSQL")
+
+    dbWriteTable(con, "test", data.frame(a = 1:10L), fieldTypes = c(a = "BIGINT"))
+    on.exit(dbRemoveTable(con, "test"))
+
+    expect_is(dbReadTable(con, "test")$a, "integer64")
+
+    odbcSetBigIntMapping(con, "integer")
+    expect_is(dbReadTable(con, "test")$a, "integer")
+
+    odbcSetBigIntMapping(con, "numeric")
+    expect_is(dbReadTable(con, "test")$a, "numeric")
+
+    odbcSetBigIntMapping(con, "character")
+    expect_is(dbReadTable(con, "test")$a, "character")
+
+    expect_error(odbcSetBigIntMapping(con, "raw"), "'arg' should be one of")
+  })
+
   DBItest::test_getting_started(c(
       "package_name", # Not an error
       NULL))
@@ -57,13 +87,4 @@ test_that("PostgreSQL", {
       NULL))
 
   test_roundtrip()
-
-  test_that("show method works as expected with real connection", {
-    skip_on_os("windows")
-    con <- dbConnect(odbc(), "PostgreSQL")
-
-    expect_output(show(con), "postgres@localhost")
-    expect_output(show(con), "Database: test_db")
-    expect_output(show(con), "PostgreSQL Version: ")
-  })
 })

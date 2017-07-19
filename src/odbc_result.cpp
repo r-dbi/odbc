@@ -533,20 +533,6 @@ std::vector<r_type> odbc_result::column_types(nanodbc::result const& r) {
 
     short type = r.column_datatype(i);
 
-    if (type == SQL_BIGINT) {
-      switch (connection()->get_bigint_map()) {
-      case i64_to_integer:
-        types.push_back(integer_t);
-        break;
-      case i64_to_double:
-        types.push_back(double_t);
-        break;
-      default:
-        types.push_back(integer64_t);
-      }
-      continue;
-    }
-
     switch (type) {
     case SQL_BIT:
       types.push_back(logical_t);
@@ -564,6 +550,29 @@ std::vector<r_type> odbc_result::column_types(nanodbc::result const& r) {
     case SQL_NUMERIC:
       types.push_back(double_t);
       break;
+
+    // 64 Bit Double
+    case SQL_BIGINT:
+      switch (connection()->get_bigint_mapping()) {
+      case i64_to_integer:
+        types.push_back(integer_t);
+        break;
+      case i64_to_double:
+        types.push_back(double_t);
+        break;
+      case i64_to_character:
+        types.push_back(string_t);
+        break;
+      case i64_to_integer64:
+        types.push_back(integer64_t);
+        break;
+      default:
+        types.push_back(string_t);
+        signal_unknown_field_type(type, r.column_name(i));
+        break;
+      }
+      break;
+
     // Date
     case SQL_DATE:
     case SQL_TYPE_DATE:

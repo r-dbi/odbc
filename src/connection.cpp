@@ -191,4 +191,6 @@ void set_transaction_isolation(connection_ptr const& p, size_t level) {
 }
 
 // [[Rcpp::export]]
-void set_bigint_map(connection_ptr p, int map_to) { (*p)->set_bigint_map(map_to); }
+void set_bigint_mapping(connection_ptr p, int map_to) {
+  (*p)->set_bigint_mapping(static_cast<bigint_map_t>(map_to));
+}

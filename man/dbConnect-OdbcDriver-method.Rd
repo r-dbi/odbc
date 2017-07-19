@@ -7,9 +7,9 @@
 \title{Connect to a ODBC compatible database}
 \usage{
 \S4method{dbConnect}{OdbcDriver}(drv, dsn = NULL, ..., timezone = "UTC",
-  encoding = "", driver = NULL, server = NULL, database = NULL,
-  uid = NULL, pwd = NULL, .connection_string = NULL,
-  bigint = c("integer64", "integer", "numeric"))
+  encoding = "", bigint = c("integer64", "integer", "numeric", "character"),
+  driver = NULL, server = NULL, database = NULL, uid = NULL,
+  pwd = NULL, .connection_string = NULL)
 }
 \arguments{
 \item{drv}{an object that inherits from \linkS4class{DBIDriver},
@@ -31,6 +31,9 @@ the same as your local encoding set to \code{""}. See \code{\link[=iconvlist]{ic
 complete list of available encodings on your system. Note strings are always
 returned \code{UTF-8} encoded.}
 
+\item{bigint}{An R type that \code{SQL BIGINT} type should be mapped to while
+reading from the database.}
+
 \item{driver}{The ODBC driver name.}
 
 \item{server}{The server hostname.}
@@ -44,9 +47,6 @@ returned \code{UTF-8} encoded.}
 \item{.connection_string}{A complete connection string, useful if you are
 copy pasting it from another source. If this argument is used any additional
 arguments will be appended to this string.}
-
-\item{bigint}{An R type name that SQL BIGINT type should be mapped to while
-reading from the database.}
 }
 \description{
 Connect to a ODBC compatible database
