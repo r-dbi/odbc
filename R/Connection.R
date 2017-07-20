@@ -219,7 +219,7 @@ setMethod(
   "dbExistsTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     stopifnot(length(name) == 1)
-    dbUnQuoteIdentifier(conn, name) %in% dbListTables(conn)
+    dbUnQuoteIdentifier(conn, name) %in% dbListTables(conn, ...)
   })
 
 #' @rdname OdbcConnection
