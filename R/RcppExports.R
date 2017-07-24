@@ -9,8 +9,8 @@ list_data_sources_ <- function() {
     .Call(`_odbc_list_data_sources_`)
 }
 
-odbc_connect <- function(connection_string, timezone = "", encoding = "") {
-    .Call(`_odbc_odbc_connect`, connection_string, timezone, encoding)
+odbc_connect <- function(connection_string, timezone = "", encoding = "", bigint = 0L) {
+    .Call(`_odbc_odbc_connect`, connection_string, timezone, encoding, bigint)
 }
 
 connection_info <- function(p) {
@@ -55,10 +55,6 @@ transactionLevels <- function() {
 
 set_transaction_isolation <- function(p, level) {
     invisible(.Call(`_odbc_set_transaction_isolation`, p, level))
-}
-
-set_bigint_mapping <- function(p, map_to) {
-    invisible(.Call(`_odbc_set_bigint_mapping`, p, map_to))
 }
 
 bigint_mappings <- function() {

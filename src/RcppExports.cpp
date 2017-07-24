@@ -27,15 +27,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // odbc_connect
-connection_ptr odbc_connect(std::string const& connection_string, std::string const& timezone, std::string const& encoding);
-RcppExport SEXP _odbc_odbc_connect(SEXP connection_stringSEXP, SEXP timezoneSEXP, SEXP encodingSEXP) {
+connection_ptr odbc_connect(std::string const& connection_string, std::string const& timezone, std::string const& encoding, int bigint);
+RcppExport SEXP _odbc_odbc_connect(SEXP connection_stringSEXP, SEXP timezoneSEXP, SEXP encodingSEXP, SEXP bigintSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string const& >::type connection_string(connection_stringSEXP);
     Rcpp::traits::input_parameter< std::string const& >::type timezone(timezoneSEXP);
     Rcpp::traits::input_parameter< std::string const& >::type encoding(encodingSEXP);
-    rcpp_result_gen = Rcpp::wrap(odbc_connect(connection_string, timezone, encoding));
+    Rcpp::traits::input_parameter< int >::type bigint(bigintSEXP);
+    rcpp_result_gen = Rcpp::wrap(odbc_connect(connection_string, timezone, encoding, bigint));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -160,17 +161,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< connection_ptr const& >::type p(pSEXP);
     Rcpp::traits::input_parameter< size_t >::type level(levelSEXP);
     set_transaction_isolation(p, level);
-    return R_NilValue;
-END_RCPP
-}
-// set_bigint_mapping
-void set_bigint_mapping(connection_ptr p, int map_to);
-RcppExport SEXP _odbc_set_bigint_mapping(SEXP pSEXP, SEXP map_toSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< connection_ptr >::type p(pSEXP);
-    Rcpp::traits::input_parameter< int >::type map_to(map_toSEXP);
-    set_bigint_mapping(p, map_to);
     return R_NilValue;
 END_RCPP
 }
@@ -319,7 +309,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_odbc_list_drivers_", (DL_FUNC) &_odbc_list_drivers_, 0},
     {"_odbc_list_data_sources_", (DL_FUNC) &_odbc_list_data_sources_, 0},
-    {"_odbc_odbc_connect", (DL_FUNC) &_odbc_odbc_connect, 3},
+    {"_odbc_odbc_connect", (DL_FUNC) &_odbc_odbc_connect, 4},
     {"_odbc_connection_info", (DL_FUNC) &_odbc_connection_info, 1},
     {"_odbc_connection_quote", (DL_FUNC) &_odbc_connection_quote, 1},
     {"_odbc_connection_release", (DL_FUNC) &_odbc_connection_release, 1},
@@ -331,7 +321,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_odbc_connection_sql_columns", (DL_FUNC) &_odbc_connection_sql_columns, 5},
     {"_odbc_transactionLevels", (DL_FUNC) &_odbc_transactionLevels, 0},
     {"_odbc_set_transaction_isolation", (DL_FUNC) &_odbc_set_transaction_isolation, 2},
-    {"_odbc_set_bigint_mapping", (DL_FUNC) &_odbc_set_bigint_mapping, 2},
     {"_odbc_bigint_mappings", (DL_FUNC) &_odbc_bigint_mappings, 0},
     {"_odbc_result_release", (DL_FUNC) &_odbc_result_release, 1},
     {"_odbc_result_active", (DL_FUNC) &_odbc_result_active, 1},

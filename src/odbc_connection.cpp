@@ -19,10 +19,13 @@ void odbc_connection::set_current_result(odbc_result* r) {
 }
 
 odbc_connection::odbc_connection(
-    std::string connection_string, std::string timezone, std::string encoding)
+    std::string connection_string,
+    std::string timezone,
+    std::string encoding,
+    bigint_map_t bigint_mapping)
     : current_result_(nullptr),
       encoding_(encoding),
-      bigint_mapping_(i64_to_integer64) {
+      bigint_mapping_(bigint_mapping) {
 
   if (!cctz::load_time_zone(timezone, &timezone_)) {
     Rcpp::stop("Error loading time zone (%s)", timezone);
@@ -77,10 +80,6 @@ std::string odbc_connection::encoding() const { return encoding_; }
 
 bigint_map_t odbc_connection::get_bigint_mapping() const {
   return bigint_mapping_;
-}
-
-void odbc_connection::set_bigint_mapping(bigint_map_t map_to) {
-  bigint_mapping_ = map_to;
 }
 
 } // namespace odbc

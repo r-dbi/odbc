@@ -49,9 +49,14 @@ Rcpp::DataFrame list_data_sources_() {
 connection_ptr odbc_connect(
     std::string const& connection_string,
     std::string const& timezone = "",
-    std::string const& encoding = "") {
-  return connection_ptr(new std::shared_ptr<odbc_connection>(
-      new odbc_connection(connection_string, timezone, encoding)));
+    std::string const& encoding = "",
+    int bigint = 0) {
+  return connection_ptr(
+      new std::shared_ptr<odbc_connection>(new odbc_connection(
+          connection_string,
+          timezone,
+          encoding,
+          static_cast<bigint_map_t>(bigint))));
 }
 
 std::string get_info_or_empty(connection_ptr const& p, short type) {
@@ -188,11 +193,6 @@ void set_transaction_isolation(connection_ptr const& p, size_t level) {
   auto c = (*p)->connection();
   SQLSetConnectAttr(
       c->native_dbc_handle(), SQL_ATTR_TXN_ISOLATION, (SQLPOINTER)level, 0);
-}
-
-// [[Rcpp::export]]
-void set_bigint_mapping(connection_ptr p, int map_to) {
-  (*p)->set_bigint_mapping(static_cast<bigint_map_t>(map_to));
 }
 
 // [[Rcpp::export]]

@@ -21,7 +21,8 @@ public:
   odbc_connection(
       std::string connection_string,
       std::string timezone = "UTC",
-      std::string encoding = "");
+      std::string encoding = "",
+      bigint_map_t bigint_mapping = i64_to_integer64);
 
   std::shared_ptr<nanodbc::connection> connection() const;
 
@@ -38,7 +39,6 @@ public:
   std::string encoding() const;
 
   bigint_map_t get_bigint_mapping() const;
-  void set_bigint_mapping(bigint_map_t map_to);
 
 private:
   std::shared_ptr<nanodbc::connection> c_;

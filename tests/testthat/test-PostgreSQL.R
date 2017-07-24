@@ -14,23 +14,23 @@ test_that("PostgreSQL", {
   })
 
   test_that("64 bit integers work with alternate mappings", {
-    con <- dbConnect(odbc(), "PostgreSQL")
+    con_default <- dbConnect(odbc(), "PostgreSQL")
+    con_integer64 <- dbConnect(odbc(), "PostgreSQL", bigint = "integer64")
+    con_integer <- dbConnect(odbc(), "PostgreSQL", bigint = "integer")
+    con_numeric <- dbConnect(odbc(), "PostgreSQL", bigint = "numeric")
+    con_character <- dbConnect(odbc(), "PostgreSQL", bigint = "character")
 
-    dbWriteTable(con, "test", data.frame(a = 1:10L), fieldTypes = c(a = "BIGINT"))
-    on.exit(dbRemoveTable(con, "test"))
+    dbWriteTable(con_default, "test", data.frame(a = 1:10L), fieldTypes = c(a = "BIGINT"))
+    on.exit(dbRemoveTable(con_default, "test"))
 
-    expect_is(dbReadTable(con, "test")$a, "integer64")
+    expect_is(dbReadTable(con_default, "test")$a, "integer64")
+    expect_is(dbReadTable(con_integer64, "test")$a, "integer64")
 
-    odbcSetBigIntMapping(con, "integer")
-    expect_is(dbReadTable(con, "test")$a, "integer")
+    expect_is(dbReadTable(con_integer, "test")$a, "integer")
 
-    odbcSetBigIntMapping(con, "numeric")
-    expect_is(dbReadTable(con, "test")$a, "numeric")
+    expect_is(dbReadTable(con_numeric, "test")$a, "numeric")
 
-    odbcSetBigIntMapping(con, "character")
-    expect_is(dbReadTable(con, "test")$a, "character")
-
-    expect_error(odbcSetBigIntMapping(con, "raw"), "'arg' should be one of")
+    expect_is(dbReadTable(con_character, "test")$a, "character")
   })
 
   DBItest::test_getting_started(c(

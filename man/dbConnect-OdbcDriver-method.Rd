@@ -31,8 +31,9 @@ the same as your local encoding set to \code{""}. See \code{\link[=iconvlist]{ic
 complete list of available encodings on your system. Note strings are always
 returned \code{UTF-8} encoded.}
 
-\item{bigint}{An R type that \code{SQL BIGINT} type should be mapped to while
-reading from the database.}
+\item{bigint}{The R type that \code{SQL_BIGINT} types should be mapped to,
+default is \link[bit64:integer64]{bit64::integer64}, which allows the full range of 64 bit
+integers.}
 
 \item{driver}{The ODBC driver name.}
 

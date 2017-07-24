@@ -27,7 +27,10 @@ OdbcConnection <- function(
   stopifnot(all(has_names(args)))
 
   connection_string <- paste0(.connection_string, paste(collapse = ";", sep = "=", names(args), args))
-  ptr <- odbc_connect(connection_string, timezone = timezone, encoding = encoding)
+
+  bigint <- bigint_mappings()[match.arg(bigint, names(bigint_mappings()))]
+
+  ptr <- odbc_connect(connection_string, timezone = timezone, encoding = encoding, bigint = bigint)
   quote <- connection_quote(ptr)
 
   info <- connection_info(ptr)
@@ -39,7 +42,6 @@ OdbcConnection <- function(
       contains = "OdbcConnection", where = class_cache)
   }
   res <- new(info$dbms.name, ptr = ptr, quote = quote, info = info, encoding = encoding)
-  odbcSetBigIntMapping(res, bigint)
 }
 
 #' @rdname OdbcConnection
@@ -356,17 +358,4 @@ odbcSetTransactionIsolationLevel <- function(conn, levels) {
   levels <- match.arg(tolower(levels), names(transactionLevels()), several.ok = TRUE)
 
   set_transaction_isolation(conn@ptr, transactionLevels()[levels])
-}
-
-#' Set the BIGINT type mapping
-#'
-#' @inheritParams DBI::dbDisconnect
-#' @param bigint An R type that `SQL BIGINT` type should be mapped to while
-#' reading from the database.
-#'
-#' @export
-odbcSetBigIntMapping <- function(conn, bigint = c("integer64", "integer", "numeric", "character")) {
-  bigint <- match.arg(bigint)
-  set_bigint_mapping(conn@ptr, bigint_mappings()[bigint])
-  conn
 }
