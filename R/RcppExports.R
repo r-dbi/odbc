@@ -2,114 +2,114 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 list_drivers_ <- function() {
-    .Call(odbc_list_drivers_)
+    .Call(`_odbc_list_drivers_`)
 }
 
 list_data_sources_ <- function() {
-    .Call(odbc_list_data_sources_)
+    .Call(`_odbc_list_data_sources_`)
 }
 
 odbc_connect <- function(connection_string, timezone = "", encoding = "") {
-    .Call(odbc_odbc_connect, connection_string, timezone, encoding)
+    .Call(`_odbc_odbc_connect`, connection_string, timezone, encoding)
 }
 
 connection_info <- function(p) {
-    .Call(odbc_connection_info, p)
+    .Call(`_odbc_connection_info`, p)
 }
 
 connection_quote <- function(p) {
-    .Call(odbc_connection_quote, p)
+    .Call(`_odbc_connection_quote`, p)
 }
 
 connection_release <- function(p) {
-    invisible(.Call(odbc_connection_release, p))
+    invisible(.Call(`_odbc_connection_release`, p))
 }
 
 connection_begin <- function(p) {
-    invisible(.Call(odbc_connection_begin, p))
+    invisible(.Call(`_odbc_connection_begin`, p))
 }
 
 connection_commit <- function(p) {
-    invisible(.Call(odbc_connection_commit, p))
+    invisible(.Call(`_odbc_connection_commit`, p))
 }
 
 connection_rollback <- function(p) {
-    invisible(.Call(odbc_connection_rollback, p))
+    invisible(.Call(`_odbc_connection_rollback`, p))
 }
 
 connection_valid <- function(p) {
-    .Call(odbc_connection_valid, p)
+    .Call(`_odbc_connection_valid`, p)
 }
 
 connection_sql_tables <- function(p, catalog_name = NULL, schema_name = NULL, table_name = NULL, table_type = NULL) {
-    .Call(odbc_connection_sql_tables, p, catalog_name, schema_name, table_name, table_type)
+    .Call(`_odbc_connection_sql_tables`, p, catalog_name, schema_name, table_name, table_type)
 }
 
 connection_sql_columns <- function(p, column_name = "", catalog_name = "", schema_name = "", table_name = "") {
-    .Call(odbc_connection_sql_columns, p, column_name, catalog_name, schema_name, table_name)
+    .Call(`_odbc_connection_sql_columns`, p, column_name, catalog_name, schema_name, table_name)
 }
 
 transactionLevels <- function() {
-    .Call(odbc_transactionLevels)
+    .Call(`_odbc_transactionLevels`)
 }
 
 set_transaction_isolation <- function(p, level) {
-    invisible(.Call(odbc_set_transaction_isolation, p, level))
+    invisible(.Call(`_odbc_set_transaction_isolation`, p, level))
 }
 
 set_bigint_mapping <- function(p, map_to) {
-    invisible(.Call(odbc_set_bigint_mapping, p, map_to))
+    invisible(.Call(`_odbc_set_bigint_mapping`, p, map_to))
 }
 
 bigint_mappings <- function() {
-    .Call(odbc_bigint_mappings)
+    .Call(`_odbc_bigint_mappings`)
 }
 
 result_release <- function(r) {
-    invisible(.Call(odbc_result_release, r))
+    invisible(.Call(`_odbc_result_release`, r))
 }
 
 result_active <- function(r) {
-    .Call(odbc_result_active, r)
+    .Call(`_odbc_result_active`, r)
 }
 
 result_completed <- function(r) {
-    .Call(odbc_result_completed, r)
+    .Call(`_odbc_result_completed`, r)
 }
 
 new_result <- function(p, sql) {
-    .Call(odbc_new_result, p, sql)
+    .Call(`_odbc_new_result`, p, sql)
 }
 
 result_fetch <- function(r, n_max = -1L) {
-    .Call(odbc_result_fetch, r, n_max)
+    .Call(`_odbc_result_fetch`, r, n_max)
 }
 
 result_column_info <- function(r) {
-    .Call(odbc_result_column_info, r)
+    .Call(`_odbc_result_column_info`, r)
 }
 
 result_bind <- function(r, params) {
-    invisible(.Call(odbc_result_bind, r, params))
+    invisible(.Call(`_odbc_result_bind`, r, params))
 }
 
 result_execute <- function(r) {
-    invisible(.Call(odbc_result_execute, r))
+    invisible(.Call(`_odbc_result_execute`, r))
 }
 
 result_insert_dataframe <- function(r, df) {
-    invisible(.Call(odbc_result_insert_dataframe, r, df))
+    invisible(.Call(`_odbc_result_insert_dataframe`, r, df))
 }
 
 result_rows_affected <- function(r) {
-    .Call(odbc_result_rows_affected, r)
+    .Call(`_odbc_result_rows_affected`, r)
 }
 
 result_row_count <- function(r) {
-    .Call(odbc_result_row_count, r)
+    .Call(`_odbc_result_row_count`, r)
 }
 
 column_types <- function(df) {
-    invisible(.Call(odbc_column_types, df))
+    invisible(.Call(`_odbc_column_types`, df))
 }
 
