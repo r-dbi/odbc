@@ -54,11 +54,11 @@ odbcDataType.default <- function(con, obj, ...) {
     datetime = "TIMESTAMP",
     date = "DATE",
     time = "TIME",
-    binary = "BINARY",
+    binary = "VARBINARY(255)",
     integer = "INTEGER",
-    double = "DOUBLE",
+    double = "DOUBLE PRECISION",
     character = "VARCHAR(255)",
-    logical = "VARCHAR(5)", # Needs to be able to handle NA as well as TRUE, FALSE
+    logical = "BIT", # only valid if DB supports Null fields
     list = "VARCHAR(255)",
     stop("Unsupported type", call. = FALSE)
   )
