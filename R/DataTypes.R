@@ -168,6 +168,23 @@ odbcDataType.default <- function(con, obj, ...) {
 }
 
 #' @export
+`odbcDataType.Vertica Database` <- function(con, obj, ...) {
+  switch_type(obj,
+    factor = "VARCHAR",
+    datetime = "TIMESTAMP",
+    date = "DATE",
+    integer = "INTEGER",
+    double = "DOUBLE PRECISION",
+    character = "VARCHAR",
+    logical = "BOOLEAN",
+    list = "VARCHAR",
+    time = "TIME",
+    binary = "VARBINARY",
+    stop("Unsupported type", call. = FALSE)
+  )
+}
+
+#' @export
 `odbcDataType.Microsoft SQL Server` <- function(con, obj, ...) {
   switch_type(obj,
     factor = varchar(obj),
@@ -265,6 +282,10 @@ varbinary <- function(x, type = "varbinary") {
 #' `integer`, `double`, `character`, `logical`.
 #' @param invert If `TRUE`, change the definition of columns to be inclusive,
 #' rather than exclusive.
+#' @param force_sorted If `TRUE`, a sorted `id` column is added to the sent
+#' data, and the received data is sorted by this column before doing the
+#' comparison. This is necessary for some databases that do not preserve row
+#' order.
 #' @examples
 #' \dontrun{
 #' test_roundtrip(con)
@@ -276,7 +297,7 @@ varbinary <- function(x, type = "varbinary") {
 #' test_roundtrip(con, "integer", invert = FALSE)
 #' }
 #' @importFrom stats runif
-test_roundtrip <- function(con = DBItest:::connect(DBItest:::get_default_context()), columns = "", invert = TRUE) {
+test_roundtrip <- function(con = DBItest:::connect(DBItest:::get_default_context()), columns = "", invert = TRUE, force_sorted = FALSE) {
   dbms <- dbGetInfo(con)$dbms.name
   testthat::context(paste0("roundtrip[", dbms, "]"))
   res <- list()
@@ -311,9 +332,12 @@ test_roundtrip <- function(con = DBItest:::connect(DBItest:::get_default_context
     } else {
       sent <- sent[, names(sent) %in% columns]
     }
+    if (force_sorted) sent$id <- seq_len(NROW(iris))
 
     DBI::dbWriteTable(con, "test_table", sent, overwrite = TRUE)
     received <- DBI::dbReadTable(con, "test_table")
+    if (force_sorted) received <- received[order(received$id),]
+    row.names(received) <- NULL
     testthat::expect_equal(sent, received)
     res <<- list(sent = sent, received = received)
   })
