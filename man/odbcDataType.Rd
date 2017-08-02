@@ -27,6 +27,8 @@ Databases with default methods defined are
 \item Spark
 \item Hive
 \item Impala
+\item Redshift
+\item Vertica
 }
 }
 \details{
