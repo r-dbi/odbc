@@ -99,7 +99,7 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
   # schema
   if (is.null(schema)) {
     schemas <- string_values(connection_sql_tables(connection@ptr, "", schema_name = schema %||% "%", "", NULL)[["table_schema"]])
-    if (length(schemas)) {
+    if (length(schemas) > 1) {
       return(
         data.frame(
           name = schemas,
@@ -169,7 +169,8 @@ odbcPreviewObject <- function(connection, rowLimit, ...) {
 }
 
 #' @export
-odbcPreviewObject.OdbcConnection <- function(connection, rowLimit, table = NULL, view = NULL, schema = NULL, ...) {
+odbcPreviewObject.OdbcConnection <- function(connection, rowLimit, table = NULL, view = NULL, 
+                                             schema = NULL, catalog = NULL, ...) {
   # Error if both table and view are passed
   if (!is.null(table) && !is.null(view)) {
     stop("`table` and `view` can not both be used", call. = FALSE)
@@ -186,9 +187,15 @@ odbcPreviewObject.OdbcConnection <- function(connection, rowLimit, table = NULL,
     view
   }
 
-  # append schema if specified
+  # prepend schema if specified
   if (!is.null(schema)) {
-    name <- paste(dbQuoteIdentifier(connection, schema), dbQuoteIdentifier(connection, name), sep = ".")
+    name <- paste(dbQuoteIdentifier(connection, schema), 
+                  dbQuoteIdentifier(connection, name), sep = ".")
+  }
+
+  # prepend catalog if specified
+  if (!is.null(catalog)) {
+    name <- paste(dbQuoteIdentifier(connection, catalog), name, sep = ".")
   }
 
   dbGetQuery(connection, paste("SELECT * FROM", name), n = rowLimit)
