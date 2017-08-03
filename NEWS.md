@@ -3,6 +3,10 @@
 * Fix regression when binding due to the num_columns variable not being updated
   by `odbc_result::bind_list()`.
 
+* Support table creation for Redshift.
+
+* Support table creation for Vertica (#93, @khotilov).
+
 # odbc 1.1.1
 
 * Workaround for drivers which do not implement SQLGetInfo, such as the Access
