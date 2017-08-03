@@ -85,7 +85,7 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
   # catalogs
   if (is.null(catalog)) {
     catalogs <- string_values(connection_sql_tables(connection@ptr, catalog_name = catalog %||% "%", "", "", NULL)[["table_catalog"]])
-    if (length(catalogs) > 1 && any(nzchar(catalogs))) {
+    if (length(catalogs) > 1) {
       return(
         data.frame(
           name = catalogs,
@@ -99,7 +99,7 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
   # schema
   if (is.null(schema)) {
     schemas <- string_values(connection_sql_tables(connection@ptr, "", schema_name = schema %||% "%", "", NULL)[["table_schema"]])
-    if (length(schemas) > 1 && any(nzchar(schemas))) {
+    if (length(schemas) > 1) {
       return(
         data.frame(
           name = schemas,
