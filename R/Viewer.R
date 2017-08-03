@@ -84,7 +84,7 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
   # if no catalog was supplied but this database has catalogs, return a list of
   # catalogs
   if (is.null(catalog)) {
-    catalogs <- connection_sql_tables(connection@ptr, catalog_name = catalog %||% "%", "", "", NULL)[["table_catalog"]]
+    catalogs <- string_values(connection_sql_tables(connection@ptr, catalog_name = catalog %||% "%", "", "", NULL)[["table_catalog"]])
     if (length(catalogs) > 1 && any(nzchar(catalogs))) {
       return(
         data.frame(
@@ -99,7 +99,7 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
   # schema
   if (is.null(schema)) {
     schemas <- string_values(connection_sql_tables(connection@ptr, "", schema_name = schema %||% "%", "", NULL)[["table_schema"]])
-    if (length(schemas)) {
+    if (length(schemas) > 1 && any(nzchar(schemas))) {
       return(
         data.frame(
           name = schemas,
