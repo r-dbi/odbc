@@ -12,7 +12,7 @@ PKG_RPM_NAME="unixodbc-devel"
 PKG_CSW_NAME="unixodbc_dev"
 PKG_BREW_NAME="unixodbc"
 PKG_TEST_HEADER="<sql.h>"
-PKG_LIBS=-lodbc
+PKG_LIBS="${PKG_LIBS:-lodbc}"
 
 # Use odbc_config, iodbc-config if available
 if [ "$(command -v odbc_config)" ]; then
