@@ -1,3 +1,4 @@
+#' @rdname hidden_aliases
 #' @export
 setMethod("sqlCreateTable", "Oracle",
           function(con, table, fields, row.names = NA, temporary = FALSE, ...) {

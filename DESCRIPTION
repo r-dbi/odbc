@@ -41,5 +41,6 @@ Collate:
     'Table.R'
     'Viewer.R'
     'db_oracle.R'
+    'hidden.R'
     'utils.R'
     'zzz.R'
