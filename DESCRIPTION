@@ -31,7 +31,7 @@ Suggests:
     covr,
     magrittr
 LinkingTo: Rcpp, BH
-Collate:
+Collate: 
     'odbc.R'
     'Driver.R'
     'Connection.R'
@@ -40,5 +40,6 @@ Collate:
     'Result.R'
     'Table.R'
     'Viewer.R'
+    'db_oracle.R'
     'utils.R'
     'zzz.R'
