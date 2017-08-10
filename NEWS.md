@@ -1,5 +1,7 @@
 # odbc 1.1.1.9000
 
+* Added temporary-table support for Oracle database using a custom `sqlCreateTable` (@edgararuiz)
+
 * Fix regression when binding due to the num_columns variable not being updated
   by `odbc_result::bind_list()`.
 
