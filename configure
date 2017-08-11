@@ -8,7 +8,7 @@
 # Library settings
 PKG_CONFIG_NAME="odbc"
 PKG_DEB_NAME="unixodbc-dev"
-PKG_RPM_NAME="unixodbc-devel"
+PKG_RPM_NAME="unixODBC-devel"
 PKG_CSW_NAME="unixodbc_dev"
 PKG_BREW_NAME="unixodbc"
 PKG_TEST_HEADER="<sql.h>"
