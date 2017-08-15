@@ -1,7 +1,13 @@
 # odbc 1.1.1.9000
 
+* Added temporary-table support for Oracle database using a custom `sqlCreateTable` (@edgararuiz)
+
 * Fix regression when binding due to the num_columns variable not being updated
   by `odbc_result::bind_list()`.
+
+* Support table creation for Redshift.
+
+* Support table creation for Vertica (#93, @khotilov).
 
 # odbc 1.1.1
 

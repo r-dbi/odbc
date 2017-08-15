@@ -5,7 +5,7 @@
 \title{Test round tripping a simple table}
 \usage{
 test_roundtrip(con = DBItest:::connect(DBItest:::get_default_context()),
-  columns = "", invert = TRUE)
+  columns = "", invert = TRUE, force_sorted = FALSE)
 }
 \arguments{
 \item{con}{An established DBI connection.}
@@ -16,6 +16,11 @@ the value of \code{invert}. One of \code{datetime}, \code{date}, \code{binary},
 
 \item{invert}{If \code{TRUE}, change the definition of columns to be inclusive,
 rather than exclusive.}
+
+\item{force_sorted}{If \code{TRUE}, a sorted \code{id} column is added to the sent
+data, and the received data is sorted by this column before doing the
+comparison. This is necessary for some databases that do not preserve row
+order.}
 }
 \description{
 This tests all the supported data types, including missing values. It first
