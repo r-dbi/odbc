@@ -138,24 +138,31 @@ odbcListColumns <- function(connection, ...) {
 
 # given a connection, returns its "host name" (a unique string which identifies it)
 computeHostName <- function(connection) {
+  paste(collapse = "_",
+        string_values(c(
+          connection@info$username,
+          connection@info$dbname,
+          if (!identical(connection@info$servername, connection@info$dbname)) connection@info$servername
+        )))
+}
 
-  # start with the name of the database
-  host_name <- connection@info$dbname
+computeDisplayName <- function(connection) {
 
-  # prepend user name if we know it
-  user_name <- connection@info$username
-  if (!is.null(user_name) && nzchar(user_name)) {
-    host_name <- paste(user_name, host_name, sep = "_")
-  }
-
-  # append the server name if we know it
+  # use the database name as the display name
+  display_name <- connection@info$dbname
   server_name <- connection@info$servername
-  if (!is.null(server_name) && nzchar(server_name) &&
-      !identical(server_name, connection@info$dbname)) {
-    host_name <- paste(host_name, server_name, sep = "_")
+  user_name <- connection@info$username
+
+  # prepend username if present
+  server_name <- paste(collapse = "@", string_values(c(user_name, server_name)))
+
+  # add server name (if it isn't already the display name, which can be the case
+  # for serverless DBMS)
+  if (!identical(server_name, display_name)) {
+    display_name <- paste(collapse = " - ", string_values(c(display_name, server_name)))
   }
 
-  host_name
+  display_name
 }
 
 # selects the table or view from arguments
@@ -171,11 +178,7 @@ validateObjectName <- function(table, view) {
     stop("`table` and `view` can not both be `NULL`", call. = FALSE)
   }
 
-  if (!is.null(table)) {
-    table
-  } else {
-    view
-  }
+  table %||% view
 }
 
 odbcListColumns.OdbcConnection <- function(connection, table = NULL, view = NULL,
@@ -314,30 +317,13 @@ on_connection_opened <- function(connection, code) {
   # find an icon for this DBMS
   icon <- odbcConnectionIcon(connection)
 
-  # use the database name as the display name
-  display_name <- connection@info$dbname
-  server_name <- connection@info$servername
-
-  # prepend username if we know it
-  user_name <- connection@info$username
-  if (!is.null(user_name) && nzchar(user_name)) {
-    server_name <- paste(user_name, server_name, sep = "@")
-  }
-
-  # append the server name if we know it, and it isn't the same as the database name
-  # (this can happen for serverless, nameless databases such as SQLite)
-  if (!is.null(server_name) && nzchar(server_name) &&
-      !identical(server_name, display_name)) {
-    display_name <- paste(display_name, "-", server_name)
-  }
-
   # let observer know that connection has opened
   observer$connectionOpened(
     # connection type
     type = connection@info$dbms.name,
 
     # name displayed in connection pane
-    displayName = display_name,
+    displayName = computeDisplayName(connection),
 
     # host key
     host = computeHostName(connection),
