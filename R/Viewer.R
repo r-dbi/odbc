@@ -136,11 +136,54 @@ odbcListColumns <- function(connection, ...) {
   UseMethod("odbcListColumns")
 }
 
-odbcListColumns.OdbcConnection <- function(connection, table, catalog = NULL, schema = NULL, ...) {
+# given a connection, returns its "host name" (a unique string which identifies it)
+computeHostName <- function(connection) {
+
+  # start with the name of the database
+  host_name <- connection@info$dbname
+
+  # prepend user name if we know it
+  user_name <- connection@info$username
+  if (!is.null(user_name) && nzchar(user_name)) {
+    host_name <- paste(user_name, host_name, sep = "_")
+  }
+
+  # append the server name if we know it
+  server_name <- connection@info$servername
+  if (!is.null(server_name) && nzchar(server_name) &&
+      !identical(server_name, connection@info$dbname)) {
+    host_name <- paste(host_name, server_name, sep = "_")
+  }
+
+  host_name
+}
+
+# selects the table or view from arguments
+validateObjectName <- function(table, view) {
+
+  # Error if both table and view are passed
+  if (!is.null(table) && !is.null(view)) {
+    stop("`table` and `view` can not both be used", call. = FALSE)
+  }
+
+  # Error if neither table and view are passed
+  if (is.null(table) && is.null(view)) {
+    stop("`table` and `view` can not both be `NULL`", call. = FALSE)
+  }
+
+  if (!is.null(table)) {
+    table
+  } else {
+    view
+  }
+}
+
+odbcListColumns.OdbcConnection <- function(connection, table = NULL, view = NULL,
+                                           catalog = NULL, schema = NULL, ...) {
 
   # specify schema or catalog if given
   cols <- connection_sql_columns(connection@ptr,
-    table_name = table,
+    table_name = validateObjectName(table, view),
     catalog_name = catalog %||% "",
     schema_name = schema %||% "")
 
@@ -169,27 +212,14 @@ odbcPreviewObject <- function(connection, rowLimit, ...) {
 }
 
 #' @export
-odbcPreviewObject.OdbcConnection <- function(connection, rowLimit, table = NULL, view = NULL, 
+odbcPreviewObject.OdbcConnection <- function(connection, rowLimit, table = NULL, view = NULL,
                                              schema = NULL, catalog = NULL, ...) {
-  # Error if both table and view are passed
-  if (!is.null(table) && !is.null(view)) {
-    stop("`table` and `view` can not both be used", call. = FALSE)
-  }
-
-  # Error if neither table and view are passed
-  if (is.null(table) && is.null(view)) {
-    stop("`table` and `view` can not both be `NULL`", call. = FALSE)
-  }
-
-  name <- if (!is.null(table)) {
-    table
-  } else {
-    view
-  }
+  # extract object name from arguments
+  name <- validateObjectName(table, view)
 
   # prepend schema if specified
   if (!is.null(schema)) {
-    name <- paste(dbQuoteIdentifier(connection, schema), 
+    name <- paste(dbQuoteIdentifier(connection, schema),
                   dbQuoteIdentifier(connection, name), sep = ".")
   }
 
@@ -260,7 +290,7 @@ on_connection_closed <- function(con) {
     return(invisible(NULL))
 
   type <- con@info$dbms.name
-  host <- con@info$dbname
+  host <- computeHostName(con)
   observer$connectionClosed(type, host)
 }
 
@@ -271,7 +301,7 @@ on_connection_updated <- function(con, hint) {
     return(invisible(NULL))
 
   type <- con@info$dbms.name
-  host <- con@info$dbname
+  host <- computeHostName(con)
   observer$connectionUpdated(type, host, hint = hint)
 }
 
@@ -286,7 +316,13 @@ on_connection_opened <- function(connection, code) {
 
   # use the database name as the display name
   display_name <- connection@info$dbname
-  server_name <-connection@info$servername
+  server_name <- connection@info$servername
+
+  # prepend username if we know it
+  user_name <- connection@info$username
+  if (!is.null(user_name) && nzchar(user_name)) {
+    server_name <- paste(user_name, server_name, sep = "@")
+  }
 
   # append the server name if we know it, and it isn't the same as the database name
   # (this can happen for serverless, nameless databases such as SQLite)
@@ -304,7 +340,7 @@ on_connection_opened <- function(connection, code) {
     displayName = display_name,
 
     # host key
-    host = connection@info$dbname,
+    host = computeHostName(connection),
 
     # icon for connection
     icon = icon,
