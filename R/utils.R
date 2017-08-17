@@ -10,6 +10,9 @@ has_names <- function(x) {
 `%||%` <- function(x, y) if (is.null(x)) y else x
 
 string_values <- function(x) {
+
+  # TODO: Throw a condition object that can be caught for debugging purposes
+  x <- tryCatch(x, error = function(x) "")
   unique(x[nzchar(x)])
 }
 
