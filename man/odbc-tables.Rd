@@ -10,7 +10,7 @@
 \usage{
 \S4method{dbWriteTable}{OdbcConnection,character,data.frame}(conn, name, value,
   overwrite = FALSE, append = FALSE, temporary = FALSE, row.names = NA,
-  fieldTypes = NULL, ...)
+  field.types = NULL, ...)
 
 \S4method{sqlData}{OdbcConnection}(con, value, row.names = NA, ...)
 
