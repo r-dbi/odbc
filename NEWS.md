@@ -9,6 +9,8 @@
 
 * Support table creation for Vertica (#93, @khotilov).
 
+* Changed parameter `fieldTypes` to `field.types` in functions `dbWriteTable()` and `sqlCreateTable()` to be compliant with DBI (#106, @jschelbert).
+
 # odbc 1.1.1
 
 * Workaround for drivers which do not implement SQLGetInfo, such as the Access
