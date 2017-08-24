@@ -10,12 +10,12 @@
 \usage{
 \S4method{dbWriteTable}{OdbcConnection,character,data.frame}(conn, name, value,
   overwrite = FALSE, append = FALSE, temporary = FALSE, row.names = NA,
-  fieldTypes = NULL, ...)
+  field.types = NULL, ...)
 
 \S4method{sqlData}{OdbcConnection}(con, value, row.names = NA, ...)
 
 \S4method{sqlCreateTable}{OdbcConnection}(con, table, fields,
-  fieldTypes = NULL, row.names = NA, temporary = FALSE, ...)
+  field.types = NULL, row.names = NA, temporary = FALSE, ...)
 }
 \arguments{
 \item{conn}{a \code{\linkS4class{OdbcConnection}} object, produced by
@@ -46,7 +46,7 @@ default name.
 
 For backward compatibility, \code{NULL} is equivalent to \code{FALSE}.}
 
-\item{fieldTypes}{Additional field types used to override derived types.}
+\item{field.types}{Additional field types used to override derived types.}
 
 \item{...}{Other arguments used by individual methods.}
 

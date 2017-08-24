@@ -20,7 +20,7 @@ test_that("PostgreSQL", {
     con_numeric <- dbConnect(odbc(), "PostgreSQL", bigint = "numeric")
     con_character <- dbConnect(odbc(), "PostgreSQL", bigint = "character")
 
-    dbWriteTable(con_default, "test", data.frame(a = 1:10L), fieldTypes = c(a = "BIGINT"))
+    dbWriteTable(con_default, "test", data.frame(a = 1:10L), field.types = c(a = "BIGINT"))
     on.exit(dbRemoveTable(con_default, "test"))
 
     expect_is(dbReadTable(con_default, "test")$a, "integer64")
