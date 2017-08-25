@@ -31,6 +31,8 @@ For Unix and MacOS ODBC drivers should be compiled against [unixODBC](http://www
 
 After installation of the driver manager and driver, you will have to register the driver in a [odbcinst.ini](#dsn-configuration-files) file for it to appear in `odbc::odbcListDrivers()`.
 
+**odbc** and it's dependencies use C++11 features. Therefore you need [gcc 4.8](https://gcc.gnu.org/), [clang 3.3](https://clang.llvm.org) or [Rtools 3.3](https://cloud.r-project.org/bin/windows/Rtools/) or later.
+
 ### Windows
 
 Windows is bundled with ODBC libraries however drivers for each database need to be installed separately. Windows ODBC drivers typically include an installer that needs to be run and will install the driver to the proper locations.
@@ -246,34 +248,33 @@ Reading a table from a PostgreSQL database with the 'flights' dataset (336,776 r
 ``` r
 # First using RODBC / RODBCDBI
 library(DBI)
-library(RODBCDBI)
+#> Loading required package: methods
 rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "PostgreSQL")
 system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
-#> Warning: closing unused RODBC handle 2
 #>    user  system elapsed 
-#>  19.203   1.356  21.724
+#>  12.130   2.139  15.590
 
 # Now using odbc
 odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
 system.time(odbc_result <- dbReadTable(odbc, "flights"))
 #>    user  system elapsed 
-#>   5.119   0.290   6.771
+#>   4.923   0.285   6.723
 
 library(tibble)
 as_tibble(odbc_result)
-#> # A tibble: 336,776 × 20
-#>    row.names  year month   day dep_time sched_dep_time dep_delay arr_time
-#>        <chr> <int> <int> <int>    <int>          <int>     <dbl>    <int>
-#> 1          1  2013     1     1      517            515         2      830
-#> 2          2  2013     1     1      533            529         4      850
-#> 3          3  2013     1     1      542            540         2      923
-#> 4          4  2013     1     1      544            545        -1     1004
-#> 5          5  2013     1     1      554            600        -6      812
-#> 6          6  2013     1     1      554            558        -4      740
-#> 7          7  2013     1     1      555            600        -5      913
-#> 8          8  2013     1     1      557            600        -3      709
-#> 9          9  2013     1     1      557            600        -3      838
-#> 10        10  2013     1     1      558            600        -2      753
+#> # A tibble: 336,776 x 19
+#>     year month   day dep_time sched_dep_time dep_delay arr_time
+#>    <int> <int> <int>    <int>          <int>     <dbl>    <int>
+#>  1  2013     1     1      517            515         2      830
+#>  2  2013     1     1      533            529         4      850
+#>  3  2013     1     1      542            540         2      923
+#>  4  2013     1     1      544            545        -1     1004
+#>  5  2013     1     1      554            600        -6      812
+#>  6  2013     1     1      554            558        -4      740
+#>  7  2013     1     1      555            600        -5      913
+#>  8  2013     1     1      557            600        -3      709
+#>  9  2013     1     1      557            600        -3      838
+#> 10  2013     1     1      558            600        -2      753
 #> # ... with 336,766 more rows, and 12 more variables: sched_arr_time <int>,
 #> #   arr_delay <dbl>, carrier <chr>, flight <int>, tailnum <chr>,
 #> #   origin <chr>, dest <chr>, air_time <dbl>, distance <dbl>, hour <dbl>,
@@ -283,10 +284,10 @@ identical(dim(rodbc_result), dim(odbc_result))
 #> [1] TRUE
 rm(rodbc_result, odbc_result, odbc, rodbc)
 gc(verbose = FALSE)
-#> Warning: closing unused RODBC handle 3
+#> Warning in .Internal(gc(verbose, reset)): closing unused RODBC handle 1
 #>           used (Mb) gc trigger  (Mb) max used  (Mb)
-#> Ncells  712236 38.1    1770749  94.6  1770749  94.6
-#> Vcells 8991012 68.6   27225095 207.8 33776265 257.7
+#> Ncells  706729 37.8    1168576  62.5  1024752  54.8
+#> Vcells 2041397 15.6   13704358 104.6 17130448 130.7
 ```
 
 ### Writing
@@ -299,13 +300,13 @@ library(nycflights13)
 rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "PostgreSQL")
 system.time(dbWriteTable(rodbc, "flights2", as.data.frame(flights[, names(flights) != "time_hour"])))
 #>    user  system elapsed 
-#>   6.693   3.786  48.423
+#>   7.696   4.813  52.925
 
 # Now using odbc
 odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
 system.time(dbWriteTable(odbc, "flights3", as.data.frame(flights)))
 #>    user  system elapsed 
-#>   7.802   3.703  26.016
+#>   7.302   4.061  27.118
 ```
 
 ### SQL Server
@@ -320,7 +321,7 @@ system.time(dbWriteTable(rsqlserver, "flights2", as.data.frame(flights)))
 #>    user  system elapsed
 #> 645.219  12.287 820.806
 
-odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
+odbc <- dbConnect(odbc::odbc(), dsn = "SQLServer", UID = "testuser", PWD = "test")
 system.time(dbWriteTable(odbc, "flights3", as.data.frame(flights)))
 #>    user  system elapsed
 #>  12.336   0.412  21.802

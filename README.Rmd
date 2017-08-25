@@ -275,7 +275,6 @@ Reading a table from a PostgreSQL database with the 'flights' dataset (336,776 r
 ```{r, cache = TRUE}
 # First using RODBC / RODBCDBI
 library(DBI)
-library(RODBCDBI)
 rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "PostgreSQL")
 system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
 
