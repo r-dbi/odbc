@@ -12,7 +12,7 @@ Description: A DBI-compatible interface to ODBC databases.
 License: MIT + file LICENSE
 URL: https://github.com/rstats-db/odbc
 BugReports: https://github.com/rstats-db/odbc/issues
-SystemRequirements: GNU make, An ODBC3 driver manager and drivers.
+SystemRequirements: C++11, GNU make, An ODBC3 driver manager and drivers.
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.0.1
 LazyData: true
