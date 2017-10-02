@@ -1,4 +1,4 @@
-# odbc 1.1.1.9000
+# odbc 1.1.2
 
 * Add `bigint` parameter to `dbConnect()` to allow the user to set the behavior
   when converting 64 bit integers into R types.
