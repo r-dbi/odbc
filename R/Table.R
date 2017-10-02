@@ -80,9 +80,9 @@ setMethod(
   }
 )
 
-##' @rdname odbc-tables
-##' @inheritParams DBI::dbReadTable
-##' @export
+#' @rdname odbc-tables
+#' @inheritParams DBI::dbReadTable
+#' @export
 setMethod("sqlData", "OdbcConnection", function(con, value, row.names = NA, ...) {
   value <- sqlRownamesToColumn(value, row.names)
 
@@ -102,10 +102,10 @@ setMethod("sqlData", "OdbcConnection", function(con, value, row.names = NA, ...)
   value
 })
 
-##' @rdname odbc-tables
-##' @inheritParams DBI::sqlCreateTable
-##' @param field.types Additional field types used to override derived types.
-##' @export
+#' @rdname odbc-tables
+#' @inheritParams DBI::sqlCreateTable
+#' @param field.types Additional field types used to override derived types.
+#' @export
 setMethod("sqlCreateTable", "OdbcConnection",
   function(con, table, fields, field.types = NULL, row.names = NA, temporary = FALSE, ...) {
     table <- dbQuoteIdentifier(con, table)
@@ -126,5 +126,4 @@ setMethod("sqlCreateTable", "OdbcConnection",
       "CREATE ", if (temporary) "TEMPORARY ", "TABLE ", table, " (\n",
       "  ", paste(fields, collapse = ",\n  "), "\n)\n"
     ))
-  }
-)
+})
