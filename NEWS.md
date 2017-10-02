@@ -1,15 +1,28 @@
 # odbc 1.1.1.9000
 
-* Added temporary-table support for Oracle database using a custom `sqlCreateTable` (@edgararuiz)
+* Add `bigint` parameter to `dbConnect()` to allow the user to set the behavior
+  when converting 64 bit integers into R types.
+
+* Fixes for compatibility with the RStudio Connections pane and
+  viewer. (@jmcphers).
+
+* Define `BUILD_REAL_64_BIT_MODE` for compatibility with older systems `sql.h`,
+  to ensure we always use 8 byte pointers.
+
+* Added temporary-table support for Oracle database using a custom
+  `sqlCreateTable` (#99, @edgararuiz)
 
 * Fix regression when binding due to the num_columns variable not being updated
   by `odbc_result::bind_list()`.
 
-* Support table creation for Redshift.
+* Support table creation for Vertica and Redshift (#93, @khotilov).
 
-* Support table creation for Vertica (#93, @khotilov).
+* Changed parameter `fieldTypes` to `field.types` in functions `dbWriteTable()`
+  and `sqlCreateTable()` to be compliant with DBI (#106, @jschelbert).
 
-* Changed parameter `fieldTypes` to `field.types` in functions `dbWriteTable()` and `sqlCreateTable()` to be compliant with DBI (#106, @jschelbert).
+* dbSendStatement no longer executes the statement, this is instead done when
+  `dbBind()` or `dbGetRowsAffected()` is called. This change brings ODBC into
+  compliance with the DBI specification for `dbSendStatement()`. (#84, @ruiyiz).
 
 # odbc 1.1.1
 
