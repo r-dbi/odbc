@@ -9,8 +9,6 @@ r:
   - release
   - devel
 
-warnings_are_errors: false
-
 addons:
   apt:
     sources:
