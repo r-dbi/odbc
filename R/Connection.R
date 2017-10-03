@@ -21,6 +21,7 @@ OdbcConnection <- function(
   database = NULL,
   uid = NULL,
   pwd = NULL,
+  dbms.name = NULL,
   .connection_string = NULL) {
 
   args <- c(dsn = dsn, driver = driver, server = server, database = database, uid = uid, pwd = pwd, list(...))
@@ -34,6 +35,9 @@ OdbcConnection <- function(
   quote <- connection_quote(ptr)
 
   info <- connection_info(ptr)
+  if (!is.null(dbms.name)) {
+    info$dbms.name <- dbms.name
+  }
   class(info) <- c(info$dbms.name, "driver_info", "list")
 
   class <- getClassDef(info$dbms.name, where = class_cache, inherits = FALSE)
