@@ -54,6 +54,11 @@ setMethod(
 #' @param database The database on the server.
 #' @param uid The user identifier.
 #' @param pwd The password to use.
+#' @param dbms.name The database management system name. This should normally
+#' be queried automatically by the ODBC driver. This name is used as the class
+#' name for the OdbcConnect object returned from `dbConnect()`. However if the
+#' driver does not return a valid value it can be set manually with this
+#' parameter.
 #' @param ... Additional ODBC keywords, these will be joined with the other
 #' arguments to form the final connection string.
 #' @param .connection_string A complete connection string, useful if you are

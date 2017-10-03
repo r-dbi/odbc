@@ -48,6 +48,12 @@ integers.}
 \item{.connection_string}{A complete connection string, useful if you are
 copy pasting it from another source. If this argument is used any additional
 arguments will be appended to this string.}
+
+\item{dbms.name}{The database management system name. This should normally
+be queried automatically by the ODBC driver. This name is used as the class
+name for the OdbcConnect object returned from \code{dbConnect()}. However if the
+driver does not return a valid value it can be set manually with this
+parameter.}
 }
 \description{
 Connect to a ODBC compatible database
