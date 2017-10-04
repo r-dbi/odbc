@@ -1,3 +1,7 @@
+# odbc 1.1.3
+
+* Small patch to fix install errors on CRAN's MacOS machines.
+
 # odbc 1.1.2
 
 * Add `bigint` parameter to `dbConnect()` to allow the user to set the behavior
