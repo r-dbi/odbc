@@ -9,7 +9,7 @@
 \S4method{dbConnect}{OdbcDriver}(drv, dsn = NULL, ..., timezone = "UTC",
   encoding = "", bigint = c("integer64", "integer", "numeric", "character"),
   driver = NULL, server = NULL, database = NULL, uid = NULL,
-  pwd = NULL, .connection_string = NULL)
+  pwd = NULL, dbms.name = NULL, .connection_string = NULL)
 }
 \arguments{
 \item{drv}{an object that inherits from \linkS4class{DBIDriver},
@@ -45,15 +45,15 @@ integers.}
 
 \item{pwd}{The password to use.}
 
-\item{.connection_string}{A complete connection string, useful if you are
-copy pasting it from another source. If this argument is used any additional
-arguments will be appended to this string.}
-
 \item{dbms.name}{The database management system name. This should normally
 be queried automatically by the ODBC driver. This name is used as the class
 name for the OdbcConnect object returned from \code{dbConnect()}. However if the
 driver does not return a valid value it can be set manually with this
 parameter.}
+
+\item{.connection_string}{A complete connection string, useful if you are
+copy pasting it from another source. If this argument is used any additional
+arguments will be appended to this string.}
 }
 \description{
 Connect to a ODBC compatible database
