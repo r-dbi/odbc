@@ -1,8 +1,12 @@
-# odbc 1.1.2.9000
+# odbc 1.1.3.9000
 
 * Add `dbms.name` parameter to `dbConnect()` to allow the user to set the
   database management system name in cases it cannot be queried from the
   Driver (#115, @hoxo-m).
+
+# odbc 1.1.3
+
+* Small patch to fix install errors on CRAN's MacOS machines.
 
 # odbc 1.1.2
 
