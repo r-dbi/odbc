@@ -7,7 +7,8 @@
 ### Reproducible Example
 <!--
 If possible include a _small_ dump of the table with the error and the R code
-that generates the error.
+that generates the error. In your reprex please use `con` as the name of the
+connection, this makes it easier to run locally.
 
 The reprex package can be helpful in doing this.
 
