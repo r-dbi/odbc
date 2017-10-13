@@ -198,7 +198,19 @@ void odbc_result::bind_integer(
     short column,
     size_t start,
     size_t size) {
-  statement.bind(column, &INTEGER(data[column])[start], size, &NA_INTEGER);
+  nulls_[column] = std::vector<uint8_t>(size, false);
+
+  auto vector = INTEGER(data[column]);
+  for (size_t i = 0; i < size; ++i) {
+    if (vector[start + i] == NA_INTEGER) {
+      nulls_[column][i] = true;
+    }
+  }
+  statement.bind(
+      column,
+      &INTEGER(data[column])[start],
+      size,
+      reinterpret_cast<bool*>(nulls_[column].data()));
 }
 
 // We cannot use a sentinel for doubles becuase NaN != NaN for all values

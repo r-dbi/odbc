@@ -1,5 +1,7 @@
 # odbc 1.1.3.9000
 
+* Fix translation of missing values for integer types (#119).
+
 * Add `dbms.name` parameter to `dbConnect()` to allow the user to set the
   database management system name in cases it cannot be queried from the
   Driver (#115, @hoxo-m).
