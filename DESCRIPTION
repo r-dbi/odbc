@@ -41,6 +41,7 @@ Collate:
     'Table.R'
     'Viewer.R'
     'db_oracle.R'
+    'db_teradata.R'
     'hidden.R'
     'utils.R'
     'zzz.R'
