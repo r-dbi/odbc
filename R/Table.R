@@ -109,21 +109,25 @@ setMethod("sqlData", "OdbcConnection", function(con, value, row.names = NA, ...)
 setMethod("sqlCreateTable", "OdbcConnection",
   function(con, table, fields, field.types = NULL, row.names = NA, temporary = FALSE, ...) {
     table <- dbQuoteIdentifier(con, table)
-
-    if (is.data.frame(fields)) {
-      fields <- sqlRownamesToColumn(fields, row.names)
-      fields <- vapply(fields, function(x) DBI::dbDataType(con, x), character(1))
-    }
-    if (!is.null(field.types)) {
-      fields[names(field.types)] <- field.types
-    }
-
-    field_names <- dbQuoteIdentifier(con, names(fields))
-    field_types <- unname(fields)
-    fields <- paste0(field_names, " ", field_types)
+    fields <- createFields(con, fields, field.types, row.names)
 
     SQL(paste0(
       "CREATE ", if (temporary) "TEMPORARY ", "TABLE ", table, " (\n",
       "  ", paste(fields, collapse = ",\n  "), "\n)\n"
     ))
 })
+
+# Helper function useful for defining custom sqlCreateTable methods.
+createFields <- function(con, fields, field.types, row.names) {
+  if (is.data.frame(fields)) {
+    fields <- sqlRownamesToColumn(fields, row.names)
+    fields <- vapply(fields, function(x) DBI::dbDataType(con, x), character(1))
+  }
+  if (!is.null(field.types)) {
+    fields[names(field.types)] <- field.types
+  }
+
+  field_names <- dbQuoteIdentifier(con, names(fields))
+  field_types <- unname(fields)
+  paste0(field_names, " ", field_types)
+}
