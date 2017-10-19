@@ -17,6 +17,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.0.1.9000
 LazyData: true
 ByteCompile: true
+Depends: R (>= 3.2.0)
 Imports:
     DBI (>= 0.3.0),
     methods,
