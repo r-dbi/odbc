@@ -111,7 +111,10 @@ setMethod(
     if (!is.null(getOption("connectionObserver"))) { # nocov start
       addTaskCallback(function(expr, ...) {
         tryCatch({
-          if (is.call(expr) && identical(expr[[1]], as.symbol("<-"))) {
+          if (is.call(expr) &&
+              as.character(expr[[1]]) %in% c("<-", "=") &&
+              "dbConnect" %in% as.character(expr[[3]][[1]])) {
+
             # notify if this is an assignment we can replay
             on_connection_opened(eval(expr[[2]]), paste(
               c("library(odbc)", deparse(expr)), collapse = "\n"))
