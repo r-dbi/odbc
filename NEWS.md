@@ -1,5 +1,7 @@
 # odbc 1.1.3.9000
 
+* Add custom `sqlCreateTable` and `dbListTables` method for Taradata connections (@edgararuiz)
+
 * Fix translation of missing values for integer types (#119).
 
 * Add `dbms.name` parameter to `dbConnect()` to allow the user to set the
