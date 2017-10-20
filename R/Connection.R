@@ -8,8 +8,6 @@ NULL
 #' @name OdbcConnection
 NULL
 
-class_cache <- new.env(parent = emptyenv())
-
 OdbcConnection <- function(
   dsn = NULL,
   ...,
@@ -43,10 +41,9 @@ OdbcConnection <- function(
   }
   class(info) <- c(info$dbms.name, "driver_info", "list")
 
-  class <- getClassDef(info$dbms.name, where = class_cache, inherits = FALSE)
-  if (is.null(class)) {
-    setClass(info$dbms.name,
-      contains = "OdbcConnection", where = class_cache)
+  class <- getClassDef(info$dbms.name, inherits = FALSE)
+  if (is.null(class) || methods::isVirtualClass(class)) {
+    setClass(info$dbms.name, contains = "OdbcConnection")
   }
   res <- new(info$dbms.name, ptr = ptr, quote = quote, info = info, encoding = encoding)
 }
