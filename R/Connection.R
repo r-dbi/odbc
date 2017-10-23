@@ -44,7 +44,7 @@ OdbcConnection <- function(
   class(info) <- c(info$dbms.name, "driver_info", "list")
 
   class <- getClassDef(info$dbms.name, where = class_cache, inherits = FALSE)
-  if (is.null(class)) {
+  if (is.null(class) || methods::isVirtualClass(class)) {
     setClass(info$dbms.name,
       contains = "OdbcConnection", where = class_cache)
   }

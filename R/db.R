@@ -1,7 +1,7 @@
 # Oracle --------------------------------------------------------------------
 
 # Simple class prototype to avoid messages about unknown classes from setMethod
-setClass("Oracle")
+setClass("Oracle", where = class_cache)
 
 #' @rdname hidden_aliases
 #' @export
@@ -18,7 +18,7 @@ setMethod("sqlCreateTable", "Oracle",
 
 # Teradata --------------------------------------------------------------------
 
-setClass("Teradata")
+setClass("Teradata", where = class_cache)
 
 #' @rdname hidden_aliases
 #' @export
