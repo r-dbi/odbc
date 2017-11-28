@@ -28,7 +28,7 @@ public:
 
   void begin();
   void commit();
-  void rollback() const;
+  void rollback();
   bool has_active_result() const;
   bool is_current_result(odbc_result* result) const;
   bool supports_transactions() const;
