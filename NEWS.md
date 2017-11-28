@@ -1,5 +1,7 @@
 # odbc 1.1.3.9000
 
+* Fix multiple transactions with rollback (#136).
+
 * Add custom `sqlCreateTable` and `dbListTables` method for Taradata connections (@edgararuiz)
 
 * Fix translation of missing values for integer types (#119).
