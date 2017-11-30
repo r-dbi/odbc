@@ -10,8 +10,8 @@ Authors@R: c(
   )
 Description: A DBI-compatible interface to ODBC databases.
 License: MIT + file LICENSE
-URL: https://github.com/rstats-db/odbc
-BugReports: https://github.com/rstats-db/odbc/issues
+URL: https://github.com/r-dbi/odbc
+BugReports: https://github.com/r-dbi/odbc/issues
 SystemRequirements: C++11, GNU make, An ODBC3 driver manager and drivers.
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.0.1.9000
