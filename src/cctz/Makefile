@@ -24,6 +24,7 @@ CXX = g++
 STD = c++11
 OPT = -O
 PREFIX = /usr/local
+CXXPICFLAGS = -fPIC
 
 # possible support for googletest
 ## TESTS = civil_time_test time_zone_lookup_test time_zone_format_test
@@ -33,7 +34,7 @@ PREFIX = /usr/local
 VPATH = $(SRC)include:$(SRC)src:$(SRC)examples
 CC = $(CXX)
 CPPFLAGS = -Wall -I$(SRC)include -std=$(STD) -pthread \
-	   $(TEST_FLAGS) $(OPT) -fPIC -MMD
+	   $(TEST_FLAGS) $(OPT) $(CXXPICFLAGS) -MMD
 ARFLAGS = rcs
 LDFLAGS = -pthread
 LDLIBS = $(TEST_LIBS)
