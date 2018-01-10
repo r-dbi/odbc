@@ -2,7 +2,8 @@
 
 ## Features
 
-* Add custom `sqlCreateTable` and `dbListTables` method for Taradata connections (@edgararuiz)
+* Add custom `sqlCreateTable` and `dbListTables` method for Teradata
+  connections (@edgararuiz)
 
 * Add `dbms.name` parameter to `dbConnect()` to allow the user to set the
   database management system name in cases it cannot be queried from the
@@ -14,7 +15,7 @@
 
 * Fix translation of missing values for integer types (#119).
 
-* Update FPIC flags to avoid portability concerns.
+* Update PIC flags to avoid portability concerns.
 
 # odbc 1.1.3
 
