@@ -1,6 +1,9 @@
-# odbc 1.1.4
+# odbc 1.1.5
 
-* Fix odbc returns double quotes for empty IDENT (#146)
+* Fix the return value for `dbQuoteIdentifier()` when given a length 0 input
+  (#146 @edgararuiz).
+
+# odbc 1.1.4
 
 * Fix multiple transactions with rollback (#136).
 
