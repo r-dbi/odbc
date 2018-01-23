@@ -1,5 +1,6 @@
-This release fixes a -Wtautological-constant-compare warning and removes use of
-CXX1X Macros.
+This release fixes an upstream due to a change in the latest version of dbplyr
+(1.2.0), which is the reason odbc needs an update so soon after the previous
+one.
 
 ## Test environments
 * local OS X install, R 3.4.3
