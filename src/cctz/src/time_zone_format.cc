@@ -60,8 +60,8 @@ std::tm ToTM(const time_zone::absolute_lookup& al) {
   // Saturate tm.tm_year is cases of over/underflow.
   if (al.cs.year() < std::numeric_limits<int>::min() + 1900) {
     tm.tm_year = std::numeric_limits<int>::min();
-  } else if (al.cs.year() - 1900 > std::numeric_limits<int>::max()) {
-    tm.tm_year = std::numeric_limits<int>::max();
+  //} else if (al.cs.year() - 1900 > std::numeric_limits<int>::max()) {
+    //tm.tm_year = std::numeric_limits<int>::max();
   } else {
     tm.tm_year = static_cast<int>(al.cs.year() - 1900);
   }
