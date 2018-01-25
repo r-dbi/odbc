@@ -7,7 +7,6 @@
 \alias{dbClearResult,OdbcResult-method}
 \alias{dbFetch,OdbcResult-method}
 \alias{dbHasCompleted,OdbcResult-method}
-\alias{dbGetInfo,OdbcResult-method}
 \alias{dbIsValid,OdbcResult-method}
 \alias{dbGetStatement,OdbcResult-method}
 \alias{dbColumnInfo,OdbcResult-method}
@@ -21,8 +20,6 @@
 \S4method{dbFetch}{OdbcResult}(res, n = -1, ...)
 
 \S4method{dbHasCompleted}{OdbcResult}(res, ...)
-
-\S4method{dbGetInfo}{OdbcResult}(dbObj, ...)
 
 \S4method{dbIsValid}{OdbcResult}(dbObj, ...)
 

@@ -155,15 +155,8 @@ setMethod(
     vapply(obj, odbcDataType, con = dbObj, FUN.VALUE = character(1), USE.NAMES = TRUE)
   })
 
-#' @rdname OdbcConnection
-#' @inheritParams DBI::dbQuoteString
-#' @export
-setMethod(
-  "dbQuoteString", c("OdbcConnection", "character"),
-  function(conn, x, ...) {
-    # Optional
-    getMethod("dbQuoteString", c("DBIConnection", "character"), asNamespace("DBI"))(conn, x, ...)
-  })
+#' @rawNamespace exportMethods(dbQuoteString)
+NULL
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbQuoteIdentifier

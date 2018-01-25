@@ -11,7 +11,6 @@
 \alias{dbSendStatement,OdbcConnection,character-method}
 \alias{dbDataType,OdbcConnection,ANY-method}
 \alias{dbDataType,OdbcConnection,data.frame-method}
-\alias{dbQuoteString,OdbcConnection,character-method}
 \alias{dbQuoteIdentifier,OdbcConnection,character-method}
 \alias{dbListTables,OdbcConnection-method}
 \alias{dbExistsTable,OdbcConnection,character-method}
@@ -37,8 +36,6 @@
 \S4method{dbDataType}{OdbcConnection,ANY}(dbObj, obj, ...)
 
 \S4method{dbDataType}{OdbcConnection,data.frame}(dbObj, obj, ...)
-
-\S4method{dbQuoteString}{OdbcConnection,character}(conn, x, ...)
 
 \S4method{dbQuoteIdentifier}{OdbcConnection,character}(conn, x, ...)
 
@@ -76,7 +73,7 @@ or a \linkS4class{DBIResult}}
 
 \item{obj}{An R object whose SQL type we want to determine.}
 
-\item{x}{A character vector to quote as string.}
+\item{x}{A character vector to quote as identifier.}
 
 \item{name}{A character string specifying a DBMS table name.}
 

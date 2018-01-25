@@ -59,16 +59,6 @@ setMethod(
   })
 
 #' @rdname OdbcResult
-#' @inheritParams DBI::dbGetInfo
-#' @export
-setMethod(
-  "dbGetInfo", "OdbcResult",
-  function(dbObj, ...) {
-    # Optional
-    getMethod("dbGetInfo", "DBIResult", asNamespace("DBI"))(dbObj, ...)
-  })
-
-#' @rdname OdbcResult
 #' @inheritParams DBI::dbIsValid
 #' @export
 setMethod(
