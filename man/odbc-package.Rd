@@ -9,8 +9,8 @@ A DBI-compatible interface to ODBC databases.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/rstats-db/odbc}
-  \item Report bugs at \url{https://github.com/rstats-db/odbc/issues}
+  \item \url{https://github.com/r-dbi/odbc}
+  \item Report bugs at \url{https://github.com/r-dbi/odbc/issues}
 }
 
 }
