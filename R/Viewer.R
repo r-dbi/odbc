@@ -109,7 +109,7 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
     }
   }
 
-  objs <- connection_sql_tables(connection@ptr, catalog, schema, name, type)
+  objs <- tryCatch(connection_sql_tables(connection@ptr, catalog, schema, name, type), error = function(e) NULL)
   # just return a list of the objects and their types, possibly filtered by the
   # options above
   data.frame(
