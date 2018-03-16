@@ -22,7 +22,8 @@ bool result_completed(result_ptr const& r, bool result_set) {
 }
 
 // [[Rcpp::export]]
-result_ptr new_result(connection_ptr const& p, std::string const& sql, bool direct) {
+result_ptr
+new_result(connection_ptr const& p, std::string const& sql, bool direct) {
   return result_ptr(new odbc::odbc_result(*p, sql, direct));
 }
 

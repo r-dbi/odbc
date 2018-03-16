@@ -6,7 +6,8 @@
 
 namespace odbc {
 
-odbc_result::odbc_result(std::shared_ptr<odbc_connection> c, std::string sql, bool direct)
+odbc_result::odbc_result(
+    std::shared_ptr<odbc_connection> c, std::string sql, bool direct)
     : c_(c),
       sql_(sql),
       rows_fetched_(0),
@@ -19,7 +20,9 @@ odbc_result::odbc_result(std::shared_ptr<odbc_connection> c, std::string sql, bo
   prepare();
   c_->set_current_result(this);
   if (direct || s_->parameters() == 0) {
-    if (!direct) bound_ = true;
+    if (!direct) {
+      bound_ = true;
+    }
     execute();
   }
 }
@@ -33,14 +36,15 @@ std::shared_ptr<nanodbc::result> odbc_result::result() const {
   return std::shared_ptr<nanodbc::result>(r_);
 }
 void odbc_result::prepare() {
-  s_ = direct_ ? std::make_shared<nanodbc::statement>() :
-                 std::make_shared<nanodbc::statement>(*c_->connection(), sql_);
+  s_ = direct_ ? std::make_shared<nanodbc::statement>()
+               : std::make_shared<nanodbc::statement>(*c_->connection(), sql_);
 }
 void odbc_result::execute() {
   if (!r_) {
     try {
-      r_ = direct_ ? std::make_shared<nanodbc::result>(s_->execute_direct(*c_->connection(), sql_)) :
-                     std::make_shared<nanodbc::result>(s_->execute());
+      r_ = direct_ ? std::make_shared<nanodbc::result>(
+                         s_->execute_direct(*c_->connection(), sql_))
+                   : std::make_shared<nanodbc::result>(s_->execute());
       num_columns_ = r_->columns();
     } catch (const nanodbc::database_error& e) {
       c_->set_current_result(nullptr);
@@ -147,7 +151,7 @@ Rcpp::DataFrame odbc_result::fetch(int n_max) {
       num_columns_ = 0;
       complete_ = 0;
       num_columns_ = 0;
-      if(r_->next_result()) {
+      if (r_->next_result()) {
         num_columns_ = r_->columns();
       } else {
         complete_set_ = true;
@@ -178,8 +182,7 @@ bool odbc_result::complete() {
 }
 
 bool odbc_result::complete_set() {
-  return (!direct_ && this->complete()) ||
-         complete_set_;
+  return (!direct_ && this->complete()) || complete_set_;
 }
 
 bool odbc_result::active() { return c_->is_current_result(this); }
