@@ -181,9 +181,7 @@ bool odbc_result::complete() {
          complete_;           // result is completed
 }
 
-bool odbc_result::complete_set() {
-  return direct_ && complete_set_;
-}
+bool odbc_result::complete_set() { return direct_ && complete_set_; }
 
 bool odbc_result::active() { return c_->is_current_result(this); }
 
