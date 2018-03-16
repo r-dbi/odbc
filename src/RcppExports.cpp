@@ -196,25 +196,27 @@ BEGIN_RCPP
 END_RCPP
 }
 // result_completed
-bool result_completed(result_ptr const& r);
-RcppExport SEXP _odbc_result_completed(SEXP rSEXP) {
+bool result_completed(result_ptr const& r, bool result_set);
+RcppExport SEXP _odbc_result_completed(SEXP rSEXP, SEXP result_setSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< result_ptr const& >::type r(rSEXP);
-    rcpp_result_gen = Rcpp::wrap(result_completed(r));
+    Rcpp::traits::input_parameter< bool >::type result_set(result_setSEXP);
+    rcpp_result_gen = Rcpp::wrap(result_completed(r, result_set));
     return rcpp_result_gen;
 END_RCPP
 }
 // new_result
-result_ptr new_result(connection_ptr const& p, std::string const& sql);
-RcppExport SEXP _odbc_new_result(SEXP pSEXP, SEXP sqlSEXP) {
+result_ptr new_result(connection_ptr const& p, std::string const& sql, bool direct);
+RcppExport SEXP _odbc_new_result(SEXP pSEXP, SEXP sqlSEXP, SEXP directSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< connection_ptr const& >::type p(pSEXP);
     Rcpp::traits::input_parameter< std::string const& >::type sql(sqlSEXP);
-    rcpp_result_gen = Rcpp::wrap(new_result(p, sql));
+    Rcpp::traits::input_parameter< bool >::type direct(directSEXP);
+    rcpp_result_gen = Rcpp::wrap(new_result(p, sql, direct));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -324,8 +326,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_odbc_bigint_mappings", (DL_FUNC) &_odbc_bigint_mappings, 0},
     {"_odbc_result_release", (DL_FUNC) &_odbc_result_release, 1},
     {"_odbc_result_active", (DL_FUNC) &_odbc_result_active, 1},
-    {"_odbc_result_completed", (DL_FUNC) &_odbc_result_completed, 1},
-    {"_odbc_new_result", (DL_FUNC) &_odbc_new_result, 2},
+    {"_odbc_result_completed", (DL_FUNC) &_odbc_result_completed, 2},
+    {"_odbc_new_result", (DL_FUNC) &_odbc_new_result, 3},
     {"_odbc_result_fetch", (DL_FUNC) &_odbc_result_fetch, 2},
     {"_odbc_result_column_info", (DL_FUNC) &_odbc_result_column_info, 1},
     {"_odbc_result_bind", (DL_FUNC) &_odbc_result_bind, 2},

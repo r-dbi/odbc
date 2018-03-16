@@ -9,9 +9,10 @@ NULL
 #' @docType methods
 NULL
 
-OdbcResult <- function(connection, statement) {
-  ptr <- new_result(connection@ptr, statement)
-  new("OdbcResult", connection = connection, statement = statement, ptr = ptr)
+OdbcResult <- function(connection, statement, ...) {
+  direct <- isTRUE(as.logical(list(...)[['direct']]))
+  ptr <- new_result(connection@ptr, statement, direct)
+  new("OdbcResult", connection = connection, statement = statement, direct = direct, ptr = ptr)
 }
 
 #' @rdname OdbcResult
@@ -22,6 +23,7 @@ setClass(
   slots = list(
     connection = "OdbcConnection",
     statement = "character",
+    direct = "logical",
     ptr = "externalptr"
   )
 )
@@ -46,7 +48,7 @@ setMethod(
 setMethod(
   "dbFetch", "OdbcResult",
   function(res, n = -1, ...) {
-    result_fetch(res@ptr, n, ...)
+    result_fetch(res@ptr, n)
   })
 
 #' @rdname OdbcResult
@@ -55,7 +57,8 @@ setMethod(
 setMethod(
   "dbHasCompleted", "OdbcResult",
   function(res, ...) {
-    result_completed(res@ptr)
+    result_set <- isTRUE(as.logical(list(...)[['result_set']]))
+    result_completed(res@ptr, result_set)
   })
 
 #' @rdname OdbcResult

@@ -69,12 +69,12 @@ result_active <- function(r) {
     .Call(`_odbc_result_active`, r)
 }
 
-result_completed <- function(r) {
-    .Call(`_odbc_result_completed`, r)
+result_completed <- function(r, result_set) {
+    .Call(`_odbc_result_completed`, r, result_set)
 }
 
-new_result <- function(p, sql) {
-    .Call(`_odbc_new_result`, p, sql)
+new_result <- function(p, sql, direct) {
+    .Call(`_odbc_new_result`, p, sql, direct)
 }
 
 result_fetch <- function(r, n_max = -1L) {

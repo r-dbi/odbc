@@ -73,7 +73,7 @@ or a \linkS4class{DBIResult}}
 
 \item{obj}{An R object whose SQL type we want to determine.}
 
-\item{x}{A character vector to quote as identifier.}
+\item{x}{A character vector, \link{SQL} or \link{Id} object to quote as identifier.}
 
 \item{name}{A character string specifying a DBMS table name.}
 

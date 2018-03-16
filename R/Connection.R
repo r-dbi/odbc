@@ -123,7 +123,7 @@ setMethod(
 setMethod(
   "dbSendQuery", c("OdbcConnection", "character"),
   function(conn, statement, ...) {
-    res <- OdbcResult(connection = conn, statement = statement)
+    res <- OdbcResult(connection = conn, statement = statement, ...)
     res
   })
 
@@ -133,7 +133,7 @@ setMethod(
 setMethod(
   "dbSendStatement", c("OdbcConnection", "character"),
   function(conn, statement, ...) {
-    res <- OdbcResult(connection = conn, statement = statement)
+    res <- OdbcResult(connection = conn, statement = statement, ...)
     res
   })
 
@@ -236,7 +236,7 @@ setMethod(
 setMethod(
   "dbListFields", c("OdbcConnection", "character"),
   function(conn, name, ...) {
-    connection_sql_columns(conn@ptr, table_name = name)[["name"]]
+    connection_sql_columns(conn@ptr, table_name = name, ...)[["name"]]
   })
 
 #' @rdname OdbcConnection
@@ -246,7 +246,7 @@ setMethod(
   "dbRemoveTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     name <- dbQuoteIdentifier(conn, name)
-    dbExecute(conn, paste("DROP TABLE ", name))
+    dbExecute(conn, paste("DROP TABLE ", name), ...)
     on_connection_updated(conn, name)
     invisible(TRUE)
   })

@@ -30,7 +30,7 @@ private:
 
 class odbc_result {
 public:
-  odbc_result(std::shared_ptr<odbc_connection> c, std::string sql);
+  odbc_result(std::shared_ptr<odbc_connection> c, std::string sql, bool direct = false);
   std::shared_ptr<odbc_connection> connection() const;
   std::shared_ptr<nanodbc::statement> statement() const;
   std::shared_ptr<nanodbc::result> result() const;
@@ -42,6 +42,7 @@ public:
   int rows_fetched();
 
   bool complete();
+  bool complete_set();
 
   bool active();
 
@@ -58,7 +59,9 @@ private:
   size_t rows_fetched_;
   int num_columns_;
   bool complete_;
+  bool complete_set_;
   bool bound_;
+  bool direct_;
   Iconv output_encoder_;
 
   std::map<short, std::vector<std::string>> strings_;

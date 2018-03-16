@@ -14,11 +14,16 @@ bool result_active(result_ptr const& r) {
 }
 
 // [[Rcpp::export]]
-bool result_completed(result_ptr const& r) { return r->complete(); }
+bool result_completed(result_ptr const& r, bool result_set) {
+  if (result_set) {
+    return r->complete_set();
+  }
+  return r->complete();
+}
 
 // [[Rcpp::export]]
-result_ptr new_result(connection_ptr const& p, std::string const& sql) {
-  return result_ptr(new odbc::odbc_result(*p, sql));
+result_ptr new_result(connection_ptr const& p, std::string const& sql, bool direct) {
+  return result_ptr(new odbc::odbc_result(*p, sql, direct));
 }
 
 // [[Rcpp::export]]
@@ -59,7 +64,7 @@ void result_insert_dataframe(result_ptr const& r, DataFrame const& df) {
 // [[Rcpp::export]]
 int result_rows_affected(result_ptr const& r) {
   auto res = r->result();
-  if (!res) {
+  if (!res || r->complete_set()) {
     return 0;
   }
   return res->affected_rows() > 0 ? res->affected_rows() : 0;
