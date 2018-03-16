@@ -182,7 +182,7 @@ bool odbc_result::complete() {
 }
 
 bool odbc_result::complete_set() {
-  return (!direct_ && this->complete()) || complete_set_;
+  return direct_ && complete_set_;
 }
 
 bool odbc_result::active() { return c_->is_current_result(this); }
