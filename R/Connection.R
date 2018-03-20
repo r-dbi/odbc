@@ -176,40 +176,12 @@ setMethod(
     DBI::SQL(paste(conn@quote, encodeString(x), conn@quote, sep = ""))
   })
 
-
-#' Un-Quote identifiers
-#'
-#' Call this method to generate a string that is unquoted. This is the inverse
-#' of `DBI::dbQuoteIdentifier`.
-#'
-#' @param x A character vector to un-quote.
-#' @inheritParams DBI::dbQuoteIdentifier
-#' @export
-setGeneric(
-  "dbUnQuoteIdentifier",
-  function(conn, x, ...) standardGeneric("dbUnQuoteIdentifier")
-)
-
-#' @rdname dbUnQuoteIdentifier
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbQuoteIdentifier
 #' @export
 setMethod(
-  "dbUnQuoteIdentifier", c("OdbcConnection", "SQL"),
-  function(conn, x) {
-    x <- as.character(x)
-    x <- gsub(paste0("^", conn@quote), "", x)
-    x <- gsub(paste0(conn@quote, "$"), "", x)
-    x
-  })
-
-#' @rdname dbUnQuoteIdentifier
-#' @inheritParams DBI::dbQuoteIdentifier
-#' @export
-setMethod(
-  "dbUnQuoteIdentifier", c("OdbcConnection", "character"),
-  function(conn, x) {
-    x
-  })
+  "dbQuoteIdentifier", c("OdbcConnection", "SQL"),
+  getMethod("dbQuoteIdentifier", c("DBIConnection", "SQL"), asNamespace("DBI")))
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbListTables
