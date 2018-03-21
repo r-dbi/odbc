@@ -214,7 +214,7 @@ setMethod(
   "dbExistsTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     stopifnot(length(name) == 1)
-    dbUnQuoteIdentifier(conn, name) %in% dbListTables(conn, ...)
+    dbUnquoteIdentifier(conn, name) %in% dbListTables(conn, ...)
   })
 
 #' @inherit DBI::dbListFields
