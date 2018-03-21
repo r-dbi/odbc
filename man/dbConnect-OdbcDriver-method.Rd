@@ -27,9 +27,9 @@ to \code{Sys.timezone()}. See \code{\link[=OlsonNames]{OlsonNames()}} for a comp
 timezones on your system.}
 
 \item{encoding}{The text encoding used on the Database. If the database is
-the same as your local encoding set to \code{""}. See \code{\link[=iconvlist]{iconvlist()}} for a
-complete list of available encodings on your system. Note strings are always
-returned \code{UTF-8} encoded.}
+not using UTF-8 you will need to set the encoding to get accurate re-encoding.
+See \code{\link[=iconvlist]{iconvlist()}} for a complete list of available encodings on your system.
+Note strings are always returned \code{UTF-8} encoded.}
 
 \item{bigint}{The R type that \code{SQL_BIGINT} types should be mapped to,
 default is \link[bit64:integer64]{bit64::integer64}, which allows the full range of 64 bit

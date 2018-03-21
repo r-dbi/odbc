@@ -46,9 +46,9 @@ setMethod(
 #' to `Sys.timezone()`. See [OlsonNames()] for a complete list of available
 #' timezones on your system.
 #' @param encoding The text encoding used on the Database. If the database is
-#' the same as your local encoding set to `""`. See [iconvlist()] for a
-#' complete list of available encodings on your system. Note strings are always
-#' returned `UTF-8` encoded.
+#' not using UTF-8 you will need to set the encoding to get accurate re-encoding.
+#' See [iconvlist()] for a complete list of available encodings on your system.
+#' Note strings are always returned `UTF-8` encoded.
 #' @param driver The ODBC driver name.
 #' @param server The server hostname.
 #' @param database The database on the server.
