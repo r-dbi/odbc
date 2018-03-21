@@ -13,9 +13,7 @@
 \alias{dbDataType,OdbcConnection,data.frame-method}
 \alias{dbQuoteIdentifier,OdbcConnection,character-method}
 \alias{dbQuoteIdentifier,OdbcConnection,SQL-method}
-\alias{dbListTables,OdbcConnection-method}
 \alias{dbExistsTable,OdbcConnection,character-method}
-\alias{dbListFields,OdbcConnection,character-method}
 \alias{dbRemoveTable,OdbcConnection,character-method}
 \alias{dbGetInfo,OdbcConnection-method}
 \alias{dbGetQuery,OdbcConnection,character-method}
@@ -44,11 +42,7 @@
 
 \S4method{dbQuoteIdentifier}{OdbcConnection,SQL}(conn, x, ...)
 
-\S4method{dbListTables}{OdbcConnection}(conn, ...)
-
 \S4method{dbExistsTable}{OdbcConnection,character}(conn, name, ...)
-
-\S4method{dbListFields}{OdbcConnection,character}(conn, name, ...)
 
 \S4method{dbRemoveTable}{OdbcConnection,character}(conn, name, ...)
 

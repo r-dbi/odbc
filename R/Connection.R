@@ -183,13 +183,28 @@ setMethod(
   "dbQuoteIdentifier", c("OdbcConnection", "SQL"),
   getMethod("dbQuoteIdentifier", c("DBIConnection", "SQL"), asNamespace("DBI")))
 
-#' @rdname OdbcConnection
-#' @inheritParams DBI::dbListTables
+#' @inherit DBI::dbListTables
+#' @param catalog_name The name of the catalog to return, the default returns all catalogs.
+#' @param schema_name The name of the schema to return, the default returns all schemas.
+#' @param table_name The name of the table to return, the default returns all tables.
+#' @param table_type The type of the table to return, the default returns all table types.
+#' @aliases dbListTables
+#' @details
+#' \code{\%} can be used as a wildcard in any of the search parameters to
+#'   match 0 or more characters. `_` can be used to match any single character.
+#' @seealso The ODBC documentation on [Pattern Value Arguments](https://docs.microsoft.com/en-us/sql/odbc/reference/develop-app/pattern-value-arguments)
+#'   for further details on the supported syntax.
 #' @export
 setMethod(
   "dbListTables", "OdbcConnection",
-  function(conn, ...) {
-    connection_sql_tables(conn@ptr, ...)$table_name
+  function(conn, catalog_name = NULL, schema_name = NULL, table_name = NULL,
+    table_type = NULL, ...) {
+
+    connection_sql_tables(conn@ptr,
+      catalog_name = catalog_name,
+      schema_name = schema_name,
+      table_name = table_name,
+      table_type = table_type)$table_name
   })
 
 #' @rdname OdbcConnection
@@ -202,13 +217,21 @@ setMethod(
     dbUnQuoteIdentifier(conn, name) %in% dbListTables(conn, ...)
   })
 
-#' @rdname OdbcConnection
+#' @inherit DBI::dbListFields
 #' @inheritParams DBI::dbListFields
+#' @aliases dbListFields
+#' @inheritParams dbListTables,OdbcConnection-method
+#' @param column_name The name of the column to return, the default returns all columns.
+#' @inherit dbListTables,OdbcConnection-method details
 #' @export
 setMethod(
   "dbListFields", c("OdbcConnection", "character"),
-  function(conn, name, ...) {
-    connection_sql_columns(conn@ptr, table_name = name)[["name"]]
+  function(conn, name, catalog_name = "", schema_name = "", column_name = "", ...) {
+    connection_sql_columns(conn@ptr,
+      table_name = name,
+      catalog_name = catalog_name,
+      schema_name = schema_name,
+      column_name = column_name)[["name"]]
   })
 
 #' @rdname OdbcConnection
