@@ -226,7 +226,7 @@ setMethod(
 #' @export
 setMethod(
   "dbListFields", c("OdbcConnection", "character"),
-  function(conn, name, catalog_name = "", schema_name = "", column_name = "", ...) {
+  function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL) {
     connection_sql_columns(conn@ptr,
       table_name = name,
       catalog_name = catalog_name,

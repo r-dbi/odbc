@@ -129,16 +129,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // connection_sql_columns
-Rcpp::DataFrame connection_sql_columns(connection_ptr const& p, std::string const& column_name, std::string const& catalog_name, std::string const& schema_name, std::string const& table_name);
+Rcpp::DataFrame connection_sql_columns(connection_ptr const& p, SEXP column_name, SEXP catalog_name, SEXP schema_name, SEXP table_name);
 RcppExport SEXP _odbc_connection_sql_columns(SEXP pSEXP, SEXP column_nameSEXP, SEXP catalog_nameSEXP, SEXP schema_nameSEXP, SEXP table_nameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< connection_ptr const& >::type p(pSEXP);
-    Rcpp::traits::input_parameter< std::string const& >::type column_name(column_nameSEXP);
-    Rcpp::traits::input_parameter< std::string const& >::type catalog_name(catalog_nameSEXP);
-    Rcpp::traits::input_parameter< std::string const& >::type schema_name(schema_nameSEXP);
-    Rcpp::traits::input_parameter< std::string const& >::type table_name(table_nameSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type column_name(column_nameSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type catalog_name(catalog_nameSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type schema_name(schema_nameSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type table_name(table_nameSEXP);
     rcpp_result_gen = Rcpp::wrap(connection_sql_columns(p, column_name, catalog_name, schema_name, table_name));
     return rcpp_result_gen;
 END_RCPP
