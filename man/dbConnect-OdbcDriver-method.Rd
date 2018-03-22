@@ -8,8 +8,8 @@
 \usage{
 \S4method{dbConnect}{OdbcDriver}(drv, dsn = NULL, ..., timezone = "UTC",
   encoding = "", bigint = c("integer64", "integer", "numeric", "character"),
-  driver = NULL, server = NULL, database = NULL, uid = NULL,
-  pwd = NULL, dbms.name = NULL, .connection_string = NULL)
+  timeout = Inf, driver = NULL, server = NULL, database = NULL,
+  uid = NULL, pwd = NULL, dbms.name = NULL, .connection_string = NULL)
 }
 \arguments{
 \item{drv}{an object that inherits from \linkS4class{DBIDriver},
@@ -34,6 +34,9 @@ Note strings are always returned \code{UTF-8} encoded.}
 \item{bigint}{The R type that \code{SQL_BIGINT} types should be mapped to,
 default is \link[bit64:integer64]{bit64::integer64}, which allows the full range of 64 bit
 integers.}
+
+\item{timeout}{Time in seconds to timeout the connection attempt. The
+default \code{Inf} indicates no timeout.}
 
 \item{driver}{The ODBC driver name.}
 

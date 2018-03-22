@@ -27,8 +27,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // odbc_connect
-connection_ptr odbc_connect(std::string const& connection_string, std::string const& timezone, std::string const& encoding, int bigint);
-RcppExport SEXP _odbc_odbc_connect(SEXP connection_stringSEXP, SEXP timezoneSEXP, SEXP encodingSEXP, SEXP bigintSEXP) {
+connection_ptr odbc_connect(std::string const& connection_string, std::string const& timezone, std::string const& encoding, int bigint, long timeout);
+RcppExport SEXP _odbc_odbc_connect(SEXP connection_stringSEXP, SEXP timezoneSEXP, SEXP encodingSEXP, SEXP bigintSEXP, SEXP timeoutSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -36,7 +36,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::string const& >::type timezone(timezoneSEXP);
     Rcpp::traits::input_parameter< std::string const& >::type encoding(encodingSEXP);
     Rcpp::traits::input_parameter< int >::type bigint(bigintSEXP);
-    rcpp_result_gen = Rcpp::wrap(odbc_connect(connection_string, timezone, encoding, bigint));
+    Rcpp::traits::input_parameter< long >::type timeout(timeoutSEXP);
+    rcpp_result_gen = Rcpp::wrap(odbc_connect(connection_string, timezone, encoding, bigint, timeout));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -309,7 +310,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_odbc_list_drivers_", (DL_FUNC) &_odbc_list_drivers_, 0},
     {"_odbc_list_data_sources_", (DL_FUNC) &_odbc_list_data_sources_, 0},
-    {"_odbc_odbc_connect", (DL_FUNC) &_odbc_odbc_connect, 4},
+    {"_odbc_odbc_connect", (DL_FUNC) &_odbc_odbc_connect, 5},
     {"_odbc_connection_info", (DL_FUNC) &_odbc_connection_info, 1},
     {"_odbc_connection_quote", (DL_FUNC) &_odbc_connection_quote, 1},
     {"_odbc_connection_release", (DL_FUNC) &_odbc_connection_release, 1},

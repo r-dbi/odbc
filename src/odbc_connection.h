@@ -22,7 +22,8 @@ public:
       std::string connection_string,
       std::string timezone = "UTC",
       std::string encoding = "",
-      bigint_map_t bigint_mapping = i64_to_integer64);
+      bigint_map_t bigint_mapping = i64_to_integer64,
+      long timeout = 0);
 
   std::shared_ptr<nanodbc::connection> connection() const;
 

@@ -7,7 +7,7 @@
 \title{List field names of a remote table}
 \usage{
 \S4method{dbListFields}{OdbcConnection,character}(conn, name,
-  catalog_name = "", schema_name = "", column_name = "", ...)
+  catalog_name = NULL, schema_name = NULL, column_name = NULL)
 }
 \arguments{
 \item{conn}{A \linkS4class{DBIConnection} object, as returned by
@@ -20,8 +20,6 @@
 \item{schema_name}{The name of the schema to return, the default returns all schemas.}
 
 \item{column_name}{The name of the column to return, the default returns all columns.}
-
-\item{...}{Other parameters passed on to methods.}
 }
 \value{
 a character vector

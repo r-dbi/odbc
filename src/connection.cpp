@@ -50,13 +50,15 @@ connection_ptr odbc_connect(
     std::string const& connection_string,
     std::string const& timezone = "",
     std::string const& encoding = "",
-    int bigint = 0) {
+    int bigint = 0,
+    long timeout = 0) {
   return connection_ptr(
       new std::shared_ptr<odbc_connection>(new odbc_connection(
           connection_string,
           timezone,
           encoding,
-          static_cast<bigint_map_t>(bigint))));
+          static_cast<bigint_map_t>(bigint),
+          timeout)));
 }
 
 std::string get_info_or_empty(connection_ptr const& p, short type) {

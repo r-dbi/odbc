@@ -67,6 +67,8 @@ setMethod(
 #' @param bigint The R type that `SQL_BIGINT` types should be mapped to,
 #' default is [bit64::integer64], which allows the full range of 64 bit
 #' integers.
+#' @param timeout Time in seconds to timeout the connection attempt. The
+#' default `Inf` indicates no timeout.
 #' @details
 #' The connection string keywords are driver dependent. The parameters
 #' documented here are common, but some drivers may not accept them. Please see
@@ -83,6 +85,7 @@ setMethod(
     timezone = "UTC",
     encoding = "",
     bigint = c("integer64", "integer", "numeric", "character"),
+    timeout = Inf,
     driver = NULL,
     server = NULL,
     database = NULL,
@@ -97,6 +100,7 @@ setMethod(
       timezone = timezone,
       encoding = encoding,
       bigint = bigint,
+      timeout = timeout,
       driver = driver,
       server = server,
       database = database,

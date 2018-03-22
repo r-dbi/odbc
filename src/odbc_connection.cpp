@@ -22,7 +22,8 @@ odbc_connection::odbc_connection(
     std::string connection_string,
     std::string timezone,
     std::string encoding,
-    bigint_map_t bigint_mapping)
+    bigint_map_t bigint_mapping,
+    long timeout)
     : current_result_(nullptr),
       encoding_(encoding),
       bigint_mapping_(bigint_mapping) {
@@ -32,7 +33,7 @@ odbc_connection::odbc_connection(
   }
 
   try {
-    c_ = std::make_shared<nanodbc::connection>(connection_string);
+    c_ = std::make_shared<nanodbc::connection>(connection_string, timeout);
   } catch (nanodbc::database_error e) {
     throw Rcpp::exception(e.what(), FALSE);
   }
