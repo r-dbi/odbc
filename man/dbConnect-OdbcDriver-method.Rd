@@ -8,7 +8,7 @@
 \usage{
 \S4method{dbConnect}{OdbcDriver}(drv, dsn = NULL, ..., timezone = "UTC",
   encoding = "", bigint = c("integer64", "integer", "numeric", "character"),
-  timeout = Inf, driver = NULL, server = NULL, database = NULL,
+  timeout = 10, driver = NULL, server = NULL, database = NULL,
   uid = NULL, pwd = NULL, dbms.name = NULL, .connection_string = NULL)
 }
 \arguments{
@@ -35,8 +35,8 @@ Note strings are always returned \code{UTF-8} encoded.}
 default is \link[bit64:integer64]{bit64::integer64}, which allows the full range of 64 bit
 integers.}
 
-\item{timeout}{Time in seconds to timeout the connection attempt. The
-default \code{Inf} indicates no timeout.}
+\item{timeout}{Time in seconds to timeout the connection attempt. Setting a
+timeout of \code{Inf} indicates no timeout. (defaults to 10 seconds).}
 
 \item{driver}{The ODBC driver name.}
 
