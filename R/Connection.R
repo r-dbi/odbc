@@ -219,7 +219,7 @@ setMethod(
   "dbExistsTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     stopifnot(length(name) == 1)
-    dbUnquoteIdentifier(conn, name) %in% dbListTables(conn, ...)
+    name %in% dbListTables(conn, ...)
   })
 
 #' @inherit DBI::dbListFields
@@ -231,7 +231,7 @@ setMethod(
 #' @export
 setMethod(
   "dbListFields", c("OdbcConnection", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL) {
+  function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL, ...) {
     connection_sql_columns(conn@ptr,
       table_name = name,
       catalog_name = catalog_name,
