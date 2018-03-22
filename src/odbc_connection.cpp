@@ -54,14 +54,14 @@ void odbc_connection::commit() {
     Rcpp::stop("Commit without beginning transaction");
   }
   t_->commit();
-  t_.release();
+  t_.reset();
 }
 void odbc_connection::rollback() {
   if (!t_) {
     Rcpp::stop("Rollback without beginning transaction");
   }
   t_->rollback();
-  t_.release();
+  t_.reset();
 }
 bool odbc_connection::has_active_result() const {
   return current_result_ != nullptr;
