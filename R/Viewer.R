@@ -181,6 +181,7 @@ validateObjectName <- function(table, view) {
   table %||% view
 }
 
+#' @export
 odbcListColumns.OdbcConnection <- function(connection, table = NULL, view = NULL,
                                            catalog = NULL, schema = NULL, ...) {
 
