@@ -294,7 +294,7 @@ odbcConnectionActions.default <- function(connection) {
             }
             assign(varname, connection, envir = .GlobalEnv)
 
-            tables <- odbcListObjects(connection)
+            tables <- dbListTables(connection)
 
             contents <- paste(
               paste("-- !preview conn=", varname, sep = ""),
