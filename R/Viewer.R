@@ -275,7 +275,46 @@ odbcConnectionActions <- function(connection) {
 
 #' @export
 odbcConnectionActions.default <- function(connection) {
-  list(
+  actions <- list()
+
+  if (exists(".rs.api.documentNew")) {
+    documentNew <- get(".rs.api.documentNew")
+    actions <- c(
+      actions,
+      list(
+        SQL = list(
+          icon = system.file("icons/edit-sql.png", package = "odbc"),
+          callback = function() {
+
+            i <- 1
+            varname <- "connection1"
+            while (exists(varname, envir = .GlobalEnv)) {
+              varname <- paste("connection", i, sep = "")
+              i <- i + 1
+            }
+            assign(varname, connection, envir = .GlobalEnv)
+
+            tables <- odbcListObjects(connection)
+
+            contents <- paste(
+              paste("-- !preview conn=", varname, sep = ""),
+              "",
+              if (length(tables) > 0)
+                paste("SELECT * FROM `", tables[[1]], "` LIMIT 1000", sep = "")
+              else
+                "SELECT 1",
+              "",
+              sep = "\n"
+            )
+
+            documentNew("sql", contents, row = 2, column = 15, execute = TRUE)
+          }
+        )
+      )
+    )
+  }
+
+  actions <- c(actions, list(
     Help = list(
       # show README for this package as the help; we will update to a more
       # helpful (and/or more driver-specific) website once one exists
@@ -284,7 +323,9 @@ odbcConnectionActions.default <- function(connection) {
         utils::browseURL("https://github.com/rstats-db/odbc/blob/master/README.md")
       }
     )
-  )
+  ))
+
+  actions
 }
 
 on_connection_closed <- function(con) {
