@@ -289,7 +289,7 @@ odbcConnectionActions.default <- function(connection) {
             i <- 1
             varname <- "connection1"
             while (exists(varname, envir = .GlobalEnv)) {
-              varname <- paste("connection", i, sep = "")
+              varname <- paste0("connection", i)
               i <- i + 1
             }
             assign(varname, connection, envir = .GlobalEnv)
@@ -297,10 +297,10 @@ odbcConnectionActions.default <- function(connection) {
             tables <- dbListTables(connection)
 
             contents <- paste(
-              paste("-- !preview conn=", varname, sep = ""),
+              paste0("-- !preview conn=", varname),
               "",
               if (length(tables) > 0)
-                paste("SELECT * FROM ", tables[[1]], sep = "")
+                paste0("SELECT * FROM ", dbQuoteIdentifier(connection, tables[[1]]))
               else
                 "SELECT 1",
               "",
