@@ -300,7 +300,7 @@ odbcConnectionActions.default <- function(connection) {
               paste("-- !preview conn=", varname, sep = ""),
               "",
               if (length(tables) > 0)
-                paste("SELECT * FROM `", tables[[1]], "` LIMIT 1000", sep = "")
+                paste("SELECT * FROM ", tables[[1]], sep = "")
               else
                 "SELECT 1",
               "",
