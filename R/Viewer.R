@@ -294,20 +294,46 @@ odbcConnectionActions.default <- function(connection) {
             }
             assign(varname, connection, envir = .GlobalEnv)
 
+            tables <- odbc:::connection_sql_tables(con@ptr)
+            columnPos <- 6
+            if (nrow(tables) == 0) {
+              contents <- paste(
+                paste0("-- !preview conn=", varname),
+                "",
+                "SELECT 1",
+                "",
+                sep = "\n"
+              )
+            }
+            else
+            {
+              firstTable <- tables[1, ]
+
+              tableName <- dbQuoteIdentifier(connection, firstTable$table_name)
+
+              # add schema
+              if (!is.null(firstTable$table_schema) && nchar(firstTable$table_schema) > 0) {
+                tableName <- paste(dbQuoteIdentifier(connection, firstTable$table_schema), tableName, sep = ".")
+              }
+
+              # add catalog
+              if (!is.null(firstTable$table_catalog) && nchar(firstTable$table_catalog) > 0) {
+                tableName <- paste(dbQuoteIdentifier(connection, firstTable$table_catalog), tableName, sep = ".")
+              }
+
+              contents <- paste(
+                paste0("-- !preview conn=", varname),
+                "",
+                paste0("SELECT * FROM ", tableName),
+                "",
+                sep = "\n"
+              )
+
+              columnPos <- 14
+            }
             tables <- dbListTables(connection)
 
-            contents <- paste(
-              paste0("-- !preview conn=", varname),
-              "",
-              if (length(tables) > 0)
-                paste0("SELECT * FROM ", dbQuoteIdentifier(connection, tables[[1]]))
-              else
-                "SELECT 1",
-              "",
-              sep = "\n"
-            )
-
-            documentNew("sql", contents, row = 2, column = 14, execute = TRUE)
+            documentNew("sql", contents, row = 2, column = columnPos, execute = TRUE)
           }
         )
       )
