@@ -14,12 +14,12 @@ URL: https://github.com/r-dbi/odbc
 BugReports: https://github.com/r-dbi/odbc/issues
 SystemRequirements: C++11, GNU make, An ODBC3 driver manager and drivers.
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.0.1.9000
+RoxygenNote: 6.0.1
 LazyData: true
 ByteCompile: true
 Depends: R (>= 3.2.0)
 Imports:
-    DBI (>= 0.3.0),
+    DBI (>= 0.8.0),
     methods,
     Rcpp (>= 0.12.11),
     blob (>= 1.1.0),
@@ -45,3 +45,5 @@ Collate:
     'hidden.R'
     'utils.R'
     'zzz.R'
+Remotes:
+  r-dbi/DBI#233

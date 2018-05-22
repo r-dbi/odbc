@@ -131,3 +131,25 @@ createFields <- function(con, fields, field.types, row.names) {
   field_types <- unname(fields)
   paste0(field_names, " ", field_types)
 }
+
+#' @rdname OdbcConnection
+#' @inheritParams DBI::dbExistsTable
+#' @export
+setMethod(
+  "dbExistsTable", c("OdbcConnection", "Id"),
+  function(conn, name, ...) {
+    name@name[["table"]] %in% connection_sql_tables(conn@ptr,
+      catalog_name = if ("catalog" %in% names(name@name)) name@name[["catalog"]] else "%",
+      schema_name = if ("schema" %in% names(name@name)) name@name[["schema"]] else "%",
+      table_name = if ("table" %in% names(name@name)) name@name[["table"]] else "%"
+    )
+  })
+
+#' @rdname OdbcConnection
+#' @inheritParams DBI::dbExistsTable
+#' @export
+setMethod(
+  "dbExistsTable", c("OdbcConnection", "SQL"),
+  function(conn, name, ...) {
+    dbExistsTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+  })

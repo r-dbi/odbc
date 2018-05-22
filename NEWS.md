@@ -1,3 +1,10 @@
+# odbc 1.1.5.9000
+
+* `dbConnect()` gains a `timeout` parameter, to control how long a connection
+  should be attempted before timing out. (#139)
+
+* Full schema support using Id objects available in DBI 8.0 (#91, #120)
+
 # odbc 1.1.5
 
 * Fix the return value for `dbQuoteIdentifier()` when given a length 0 input

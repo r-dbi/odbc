@@ -4301,10 +4301,10 @@ catalog::table_privileges catalog::find_table_privileges(
 }
 
 catalog::columns catalog::find_columns(
-    const string_type& column,
-    const string_type& table,
-    const string_type& schema,
-    const string_type& catalog)
+    const string_type::value_type* column,
+    const string_type::value_type* table,
+    const string_type::value_type* schema,
+    const string_type::value_type* catalog)
 {
     statement stmt(conn_);
     RETCODE rc;
@@ -4312,14 +4312,14 @@ catalog::columns catalog::find_columns(
         NANODBC_FUNC(SQLColumns),
         rc,
         stmt.native_statement_handle(),
-        (NANODBC_SQLCHAR*)(catalog.empty() ? nullptr : catalog.c_str()),
-        (catalog.empty() ? 0 : SQL_NTS),
-        (NANODBC_SQLCHAR*)(schema.empty() ? nullptr : schema.c_str()),
-        (schema.empty() ? 0 : SQL_NTS),
-        (NANODBC_SQLCHAR*)(table.empty() ? nullptr : table.c_str()),
-        (table.empty() ? 0 : SQL_NTS),
-        (NANODBC_SQLCHAR*)(column.empty() ? nullptr : column.c_str()),
-        (column.empty() ? 0 : SQL_NTS));
+        (NANODBC_SQLCHAR*)(catalog),
+        (catalog == nullptr ? 0 : SQL_NTS),
+        (NANODBC_SQLCHAR*)(schema),
+        (schema == nullptr ? 0 : SQL_NTS),
+        (NANODBC_SQLCHAR*)(table),
+        (table == nullptr ? 0 : SQL_NTS),
+        (NANODBC_SQLCHAR*)(column),
+        (column == nullptr ? 0 : SQL_NTS));
     if (!success(rc))
         NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
 

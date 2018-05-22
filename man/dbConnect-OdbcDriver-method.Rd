@@ -8,8 +8,8 @@
 \usage{
 \S4method{dbConnect}{OdbcDriver}(drv, dsn = NULL, ..., timezone = "UTC",
   encoding = "", bigint = c("integer64", "integer", "numeric", "character"),
-  driver = NULL, server = NULL, database = NULL, uid = NULL,
-  pwd = NULL, dbms.name = NULL, .connection_string = NULL)
+  timeout = 10, driver = NULL, server = NULL, database = NULL,
+  uid = NULL, pwd = NULL, dbms.name = NULL, .connection_string = NULL)
 }
 \arguments{
 \item{drv}{an object that inherits from \linkS4class{DBIDriver},
@@ -27,13 +27,16 @@ to \code{Sys.timezone()}. See \code{\link[=OlsonNames]{OlsonNames()}} for a comp
 timezones on your system.}
 
 \item{encoding}{The text encoding used on the Database. If the database is
-the same as your local encoding set to \code{""}. See \code{\link[=iconvlist]{iconvlist()}} for a
-complete list of available encodings on your system. Note strings are always
-returned \code{UTF-8} encoded.}
+not using UTF-8 you will need to set the encoding to get accurate re-encoding.
+See \code{\link[=iconvlist]{iconvlist()}} for a complete list of available encodings on your system.
+Note strings are always returned \code{UTF-8} encoded.}
 
 \item{bigint}{The R type that \code{SQL_BIGINT} types should be mapped to,
 default is \link[bit64:integer64]{bit64::integer64}, which allows the full range of 64 bit
 integers.}
+
+\item{timeout}{Time in seconds to timeout the connection attempt. Setting a
+timeout of \code{Inf} indicates no timeout. (defaults to 10 seconds).}
 
 \item{driver}{The ODBC driver name.}
 

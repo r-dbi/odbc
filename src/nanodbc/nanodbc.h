@@ -1641,10 +1641,10 @@ public:
     /// All arguments are treated as the Pattern Value Arguments.
     /// Empty string argument is equivalent to passing the search pattern '%'.
     catalog::columns find_columns(
-        const string_type& column = string_type(),
-        const string_type& table = string_type(),
-        const string_type& schema = string_type(),
-        const string_type& catalog = string_type());
+        const string_type::value_type* column = nullptr,
+        const string_type::value_type* table = nullptr,
+        const string_type::value_type* schema = nullptr,
+        const string_type::value_type* catalog = nullptr);
 
     /// \brief Creates result set with columns that compose the primary key of a single table.
     ///

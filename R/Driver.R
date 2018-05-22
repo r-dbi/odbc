@@ -46,9 +46,9 @@ setMethod(
 #' to `Sys.timezone()`. See [OlsonNames()] for a complete list of available
 #' timezones on your system.
 #' @param encoding The text encoding used on the Database. If the database is
-#' the same as your local encoding set to `""`. See [iconvlist()] for a
-#' complete list of available encodings on your system. Note strings are always
-#' returned `UTF-8` encoded.
+#' not using UTF-8 you will need to set the encoding to get accurate re-encoding.
+#' See [iconvlist()] for a complete list of available encodings on your system.
+#' Note strings are always returned `UTF-8` encoded.
 #' @param driver The ODBC driver name.
 #' @param server The server hostname.
 #' @param database The database on the server.
@@ -67,6 +67,8 @@ setMethod(
 #' @param bigint The R type that `SQL_BIGINT` types should be mapped to,
 #' default is [bit64::integer64], which allows the full range of 64 bit
 #' integers.
+#' @param timeout Time in seconds to timeout the connection attempt. Setting a
+#' timeout of `Inf` indicates no timeout. (defaults to 10 seconds).
 #' @details
 #' The connection string keywords are driver dependent. The parameters
 #' documented here are common, but some drivers may not accept them. Please see
@@ -83,6 +85,7 @@ setMethod(
     timezone = "UTC",
     encoding = "",
     bigint = c("integer64", "integer", "numeric", "character"),
+    timeout = 10,
     driver = NULL,
     server = NULL,
     database = NULL,
@@ -97,6 +100,7 @@ setMethod(
       timezone = timezone,
       encoding = encoding,
       bigint = bigint,
+      timeout = timeout,
       driver = driver,
       server = server,
       database = database,

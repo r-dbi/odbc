@@ -50,13 +50,15 @@ connection_ptr odbc_connect(
     std::string const& connection_string,
     std::string const& timezone = "",
     std::string const& encoding = "",
-    int bigint = 0) {
+    int bigint = 0,
+    long timeout = 0) {
   return connection_ptr(
       new std::shared_ptr<odbc_connection>(new odbc_connection(
           connection_string,
           timezone,
           encoding,
-          static_cast<bigint_map_t>(bigint))));
+          static_cast<bigint_map_t>(bigint),
+          timeout)));
 }
 
 std::string get_info_or_empty(connection_ptr const& p, short type) {
@@ -153,27 +155,72 @@ Rcpp::DataFrame connection_sql_tables(
 // [[Rcpp::export]]
 Rcpp::DataFrame connection_sql_columns(
     connection_ptr const& p,
-    std::string const& column_name = "",
-    std::string const& catalog_name = "",
-    std::string const& schema_name = "",
-    std::string const& table_name = "") {
+    SEXP column_name = R_NilValue,
+    SEXP catalog_name = R_NilValue,
+    SEXP schema_name = R_NilValue,
+    SEXP table_name = R_NilValue) {
   auto c = nanodbc::catalog(*(*p)->connection());
-  auto tables =
-      c.find_columns(column_name, table_name, schema_name, catalog_name);
-  std::vector<std::string> names;
-  std::vector<std::string> field_type;
-  // std::vector<std::string> data_type; // TODO expose sql type to r type
-  // mapping
+  auto tables = c.find_columns(
+      column_name == R_NilValue ? nullptr : Rcpp::as<const char*>(column_name),
+      table_name == R_NilValue ? nullptr : Rcpp::as<const char*>(table_name),
+      schema_name == R_NilValue ? nullptr : Rcpp::as<const char*>(schema_name),
+      catalog_name == R_NilValue ? nullptr
+                                 : Rcpp::as<const char*>(catalog_name));
+
+  std::vector<std::string> column_names;
+  std::vector<std::string> table_names;
+  std::vector<std::string> schema_names;
+  std::vector<std::string> catalog_names;
+  std::vector<short> data_type;
+  std::vector<std::string> type_name;
+  std::vector<long> column_size;
+  std::vector<long> buffer_length;
+  std::vector<short> decimal_digits;
+  std::vector<short> numeric_precision_radix;
   std::vector<bool> nullable;
+  std::vector<std::string> remarks;
+  std::vector<std::string> column_default;
+  std::vector<short> sql_data_type;
+  std::vector<short> sql_datetime_subtype;
+  std::vector<long> char_octet_length;
+  std::vector<long> ordinal_position;
+
   while (tables.next()) {
-    names.push_back(tables.column_name());
-    field_type.push_back(tables.type_name());
-    // data_type.push_back(tables.data_type());
-    nullable.push_back(static_cast<bool>(tables.nullable()));
+    column_names.push_back(tables.column_name());
+    table_names.push_back(tables.table_name());
+    schema_names.push_back(tables.table_schema());
+    catalog_names.push_back(tables.table_catalog());
+    data_type.push_back(tables.data_type());
+    type_name.push_back(tables.type_name());
+    column_size.push_back(tables.column_size());
+    buffer_length.push_back(tables.buffer_length());
+    decimal_digits.push_back(tables.decimal_digits());
+    numeric_precision_radix.push_back(tables.numeric_precision_radix());
+    nullable.push_back(tables.nullable());
+    remarks.push_back(tables.remarks());
+    column_default.push_back(tables.column_default());
+    sql_data_type.push_back(tables.sql_data_type());
+    sql_datetime_subtype.push_back(tables.sql_datetime_subtype());
+    char_octet_length.push_back(tables.char_octet_length());
+    ordinal_position.push_back(tables.ordinal_position());
   }
   return Rcpp::DataFrame::create(
-      Rcpp::_["name"] = names,
-      Rcpp::_["field.type"] = field_type,
+      Rcpp::_["name"] = column_names,
+      Rcpp::_["field.type"] = type_name,
+      Rcpp::_["table_name"] = table_names,
+      Rcpp::_["schema_name"] = schema_names,
+      Rcpp::_["catalog_name"] = catalog_names,
+      Rcpp::_["data_type"] = data_type,
+      Rcpp::_["column_size"] = column_size,
+      Rcpp::_["buffer_length"] = buffer_length,
+      Rcpp::_["decimal_digits"] = decimal_digits,
+      Rcpp::_["numeric_precision_radix"] = numeric_precision_radix,
+      Rcpp::_["remarks"] = remarks,
+      Rcpp::_["column_default"] = column_default,
+      Rcpp::_["sql_data_type"] = sql_data_type,
+      Rcpp::_["sql_datetime_subtype"] = sql_datetime_subtype,
+      Rcpp::_["char_octet_length"] = char_octet_length,
+      Rcpp::_["ordinal_position"] = ordinal_position,
       Rcpp::_["nullable"] = nullable,
       Rcpp::_["stringsAsFactors"] = false);
 }
