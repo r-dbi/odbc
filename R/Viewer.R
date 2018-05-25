@@ -286,19 +286,15 @@ odbcConnectionActions.default <- function(connection) {
           icon = system.file("icons/edit-sql.png", package = "odbc"),
           callback = function() {
 
-            i <- 1
-            varname <- "connection1"
-            while (exists(varname, envir = .GlobalEnv)) {
-              varname <- paste0("connection", i)
-              i <- i + 1
-            }
-            assign(varname, connection, envir = .GlobalEnv)
+            varname <- Filter(
+              function(e) identical(get(e, envir = .GlobalEnv), connection),
+              ls(envir = .GlobalEnv))
 
-            tables <- odbc:::connection_sql_tables(con@ptr)
+            tables <- odbc:::connection_sql_tables(connection@ptr)
             columnPos <- 6
             if (nrow(tables) == 0) {
               contents <- paste(
-                paste0("-- !preview conn=", varname),
+                paste0("-- !preview conn=", ifelse(length(varname) > 0, varname[[1]], "")),
                 "",
                 "SELECT 1",
                 "",
