@@ -290,7 +290,7 @@ odbcConnectionActions.default <- function(connection) {
               function(e) identical(get(e, envir = .GlobalEnv), connection),
               ls(envir = .GlobalEnv))
 
-            tables <- odbc:::connection_sql_tables(connection@ptr)
+            tables <- connection_sql_tables(connection@ptr)
             columnPos <- 6
             if (nrow(tables) == 0) {
               contents <- paste(
