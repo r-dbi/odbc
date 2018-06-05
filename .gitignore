@@ -16,3 +16,4 @@ testing/
 /revdep/.cache.rds
 /revdep/library
 /revdep/checks/
+.DS_Store

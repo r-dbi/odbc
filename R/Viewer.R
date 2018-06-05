@@ -275,7 +275,68 @@ odbcConnectionActions <- function(connection) {
 
 #' @export
 odbcConnectionActions.default <- function(connection) {
-  list(
+  actions <- list()
+
+  if (exists(".rs.api.documentNew")) {
+    documentNew <- get(".rs.api.documentNew")
+    actions <- c(
+      actions,
+      list(
+        SQL = list(
+          icon = system.file("icons/edit-sql.png", package = "odbc"),
+          callback = function() {
+
+            varname <- Filter(
+              function(e) identical(get(e, envir = .GlobalEnv), connection),
+              ls(envir = .GlobalEnv))
+
+            tables <- connection_sql_tables(connection@ptr)
+            columnPos <- 6
+            if (nrow(tables) == 0) {
+              contents <- paste(
+                paste0("-- !preview conn=", ifelse(length(varname) > 0, varname[[1]], "")),
+                "",
+                "SELECT 1",
+                "",
+                sep = "\n"
+              )
+            }
+            else
+            {
+              firstTable <- tables[1, ]
+
+              tableName <- dbQuoteIdentifier(connection, firstTable$table_name)
+
+              # add schema
+              if (!is.null(firstTable$table_schema) && nchar(firstTable$table_schema) > 0) {
+                tableName <- paste(dbQuoteIdentifier(connection, firstTable$table_schema), tableName, sep = ".")
+              }
+
+              # add catalog
+              if (!is.null(firstTable$table_catalog) && nchar(firstTable$table_catalog) > 0) {
+                tableName <- paste(dbQuoteIdentifier(connection, firstTable$table_catalog), tableName, sep = ".")
+              }
+
+              contents <- paste(
+                paste0("-- !preview conn=", varname),
+                "",
+                paste0("SELECT * FROM ", tableName),
+                "",
+                sep = "\n"
+              )
+
+              columnPos <- 14
+            }
+            tables <- dbListTables(connection)
+
+            documentNew("sql", contents, row = 2, column = columnPos, execute = TRUE)
+          }
+        )
+      )
+    )
+  }
+
+  actions <- c(actions, list(
     Help = list(
       # show README for this package as the help; we will update to a more
       # helpful (and/or more driver-specific) website once one exists
@@ -284,7 +345,9 @@ odbcConnectionActions.default <- function(connection) {
         utils::browseURL("https://github.com/rstats-db/odbc/blob/master/README.md")
       }
     )
-  )
+  ))
+
+  actions
 }
 
 on_connection_closed <- function(con) {
