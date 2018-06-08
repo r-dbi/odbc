@@ -10,7 +10,7 @@ NULL
 NULL
 
 OdbcResult <- function(connection, statement) {
-  ptr <- new_result(connection@ptr, statement)
+  ptr <- new_result(connection@ptr, enc2utf8(statement))
   new("OdbcResult", connection = connection, statement = statement, ptr = ptr)
 }
 
