@@ -19,7 +19,7 @@ LazyData: true
 ByteCompile: true
 Depends: R (>= 3.2.0)
 Imports:
-    DBI (>= 0.8.0),
+    DBI (>= 1.0.0),
     methods,
     Rcpp (>= 0.12.11),
     blob (>= 1.1.0),
@@ -45,5 +45,3 @@ Collate:
     'hidden.R'
     'utils.R'
     'zzz.R'
-Remotes:
-  r-dbi/DBI#233
