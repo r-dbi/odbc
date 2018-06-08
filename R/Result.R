@@ -10,7 +10,10 @@ NULL
 NULL
 
 OdbcResult <- function(connection, statement) {
-  ptr <- new_result(connection@ptr, enc2utf8(statement))
+  if (nzchar(connection@encoding)) {
+    statement <- enc2iconv(statement, connection@encoding)
+  }
+  ptr <- new_result(connection@ptr, statement)
   new("OdbcResult", connection = connection, statement = statement, ptr = ptr)
 }
 

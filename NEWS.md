@@ -1,9 +1,15 @@
-# odbc 1.1.5.9000
+# odbc 1.1.6
+
+## Features
 
 * `dbConnect()` gains a `timeout` parameter, to control how long a connection
   should be attempted before timing out. (#139)
 
 * Full schema support using Id objects available in DBI 8.0 (#91, #120)
+
+## Bugfixes
+
+* SQL inputs are always converted to database encoding before querying (#179).
 
 # odbc 1.1.5
 
