@@ -2817,14 +2817,22 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                     buffer,          // TargetValuePtr
                     buffer_size,     // BufferLength
                     &ValueLenOrInd); // StrLen_or_IndPtr
+                // For col.ctype_ != SQL_C_BINARY, buffer is assumed to terminate by 0.
+                // In some cases, buffer has multiple trailing zeros which causes early
+                // termination of string. To avoid that, use strlen(buffer) to determine
+                // the actual string length first and append only this length as supposed.
+                std::size_t append_size = col.ctype_ == SQL_C_BINARY ? buffer_size : strlen(buffer);
+                if (append_size == 0) {
+                    break;
+                }
                 if (ValueLenOrInd == SQL_NO_TOTAL)
-                    out.append(buffer, col.ctype_ == SQL_C_BINARY ? buffer_size : buffer_size - 1);
+                    out.append(buffer, append_size);
                 else if (ValueLenOrInd > 0)
                     out.append(
                         buffer,
                         std::min<std::size_t>(
                             ValueLenOrInd,
-                            col.ctype_ == SQL_C_BINARY ? buffer_size : buffer_size - 1));
+                            append_size));
                 else if (ValueLenOrInd == SQL_NULL_DATA)
                     col.cbdata_[rowset_position_] = (SQLINTEGER)SQL_NULL_DATA;
                 // Sequence of successful calls is:
