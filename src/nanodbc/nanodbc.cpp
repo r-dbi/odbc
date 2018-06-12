@@ -2817,10 +2817,6 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                     buffer,          // TargetValuePtr
                     buffer_size,     // BufferLength
                     &ValueLenOrInd); // StrLen_or_IndPtr
-                // For col.ctype_ != SQL_C_BINARY, buffer is assumed to terminate by 0.
-                // In some cases, buffer has multiple trailing zeros which causes early
-                // termination of string. To avoid that, use strlen(buffer) to determine
-                // the actual string length first and append only this length as supposed.
                 if (ValueLenOrInd == SQL_NO_TOTAL || ValueLenOrInd > 0) {
                     std::size_t append_size = col.ctype_ == SQL_C_BINARY ? buffer_size : strlen(buffer);
                     if (append_size == 0) {
