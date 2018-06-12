@@ -2821,18 +2821,17 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
                 // In some cases, buffer has multiple trailing zeros which causes early
                 // termination of string. To avoid that, use strlen(buffer) to determine
                 // the actual string length first and append only this length as supposed.
-                std::size_t append_size = col.ctype_ == SQL_C_BINARY ? buffer_size : strlen(buffer);
-                if (append_size == 0) {
-                    break;
-                }
-                if (ValueLenOrInd == SQL_NO_TOTAL)
+                if (ValueLenOrInd == SQL_NO_TOTAL || ValueLenOrInd > 0) {
+                    std::size_t append_size = col.ctype_ == SQL_C_BINARY ? buffer_size : strlen(buffer);
+                    if (append_size == 0) {
+                        rc = SQL_SUCCESS;
+                        break;
+                    }
+                    if (ValueLenOrInd > 0) {
+                        append_size = std::min<std::size_t>(ValueLenOrInd, append_size);
+                    }
                     out.append(buffer, append_size);
-                else if (ValueLenOrInd > 0)
-                    out.append(
-                        buffer,
-                        std::min<std::size_t>(
-                            ValueLenOrInd,
-                            append_size));
+                }
                 else if (ValueLenOrInd == SQL_NULL_DATA)
                     col.cbdata_[rowset_position_] = (SQLINTEGER)SQL_NULL_DATA;
                 // Sequence of successful calls is:
