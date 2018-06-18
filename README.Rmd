@@ -30,7 +30,7 @@ Server](https://www.microsoft.com/en-us/sql-server/),
 [Oracle](https://www.oracle.com/database), [MySQL](https://www.mysql.com/),
 [PostgreSQL](https://www.postgresql.org/), [SQLite](https://sqlite.org/) and
 others. The implementation builds on the
-[nanodbc](http://nanodbc.lexicalunit.com/) C++ library.
+[nanodbc](https://nanodbc.github.io/nanodbc/) C++ library.
 
 -   [Installation](#installation)
     -   [Windows](#windows)
