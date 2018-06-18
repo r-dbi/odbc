@@ -121,7 +121,7 @@ setMethod(
 
             # notify if this is an assignment we can replay
             on_connection_opened(eval(expr[[2]]), paste(
-              c("library(odbc)", deparse(expr)), collapse = "\n"))
+              c("library(DBI)", deparse(expr)), collapse = "\n"))
           }
         }, error = function(e) {
           warning("Could not notify connection observer. ", e$message, call. = FALSE)
