@@ -5,7 +5,7 @@
 * `dbConnect()` gains a `timeout` parameter, to control how long a connection
   should be attempted before timing out. (#139)
 
-* Full schema support using Id objects available in DBI 8.0 (#91, #120)
+* Full schema support using Id objects available in DBI 0.8 (#91, #120)
 
 ## Bugfixes
 
