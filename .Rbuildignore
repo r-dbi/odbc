@@ -26,3 +26,4 @@
 ^vignettes$
 ^revdep$
 ^testing$
+^CRAN-RELEASE$
