@@ -35,7 +35,7 @@ NULL
 #'   `TRUE` if `overwrite` is also `TRUE`.
 #' @export
 setMethod(
-  "dbWriteTable", c("OdbcConnection", "character", "data.frame"),
+  "dbWriteTable", c("OdbcConnection", "Id", "data.frame"),
   function(conn, name, value, overwrite=FALSE, append=FALSE, temporary = FALSE,
     row.names = NA, field.types = NULL, ...) {
 
