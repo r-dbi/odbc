@@ -4,11 +4,21 @@
 \name{odbc-tables}
 \alias{odbc-tables}
 \alias{dbWriteTable,OdbcConnection,character,data.frame-method}
+\alias{dbWriteTable,OdbcConnection,Id,data.frame-method}
+\alias{dbWriteTable,OdbcConnection,SQL,data.frame-method}
 \alias{sqlData,OdbcConnection-method}
 \alias{sqlCreateTable,OdbcConnection-method}
 \title{Convenience functions for reading/writing DBMS tables}
 \usage{
 \S4method{dbWriteTable}{OdbcConnection,character,data.frame}(conn, name, value,
+  overwrite = FALSE, append = FALSE, temporary = FALSE, row.names = NA,
+  field.types = NULL, ...)
+
+\S4method{dbWriteTable}{OdbcConnection,Id,data.frame}(conn, name, value,
+  overwrite = FALSE, append = FALSE, temporary = FALSE, row.names = NA,
+  field.types = NULL, ...)
+
+\S4method{dbWriteTable}{OdbcConnection,SQL,data.frame}(conn, name, value,
   overwrite = FALSE, append = FALSE, temporary = FALSE, row.names = NA,
   field.types = NULL, ...)
 

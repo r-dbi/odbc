@@ -51,18 +51,6 @@ This should include views and temporary objects, but not all database backends
 \code{\%} can be used as a wildcard in any of the search parameters to
 match 0 or more characters. \code{_} can be used to match any single character.
 }
-\section{Additional arguments}{
-
-
-
-TBD: \code{temporary = NA}
-
-This must be provided as named argument.
-See the "Specification" section for details on their usage.
-
-
-}
-
 \seealso{
 The ODBC documentation on \href{https://docs.microsoft.com/en-us/sql/odbc/reference/develop-app/pattern-value-arguments}{Pattern Value Arguments}
 for further details on the supported syntax.

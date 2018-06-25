@@ -27,15 +27,7 @@
 #' @name odbc-tables
 NULL
 
-#' @rdname odbc-tables
-#' @inheritParams DBI::dbWriteTable
-#' @param overwrite Allow overwriting the destination table. Cannot be
-#'   `TRUE` if `append` is also `TRUE`.
-#' @param append Allow appending to the destination table. Cannot be
-#'   `TRUE` if `overwrite` is also `TRUE`.
-#' @export
-setMethod(
-  "dbWriteTable", c("OdbcConnection", "Id", "data.frame"),
+odbc_write_table <-
   function(conn, name, value, overwrite=FALSE, append=FALSE, temporary = FALSE,
     row.names = NA, field.types = NULL, ...) {
 
@@ -78,7 +70,29 @@ setMethod(
 
     invisible(TRUE)
   }
-)
+
+#' @rdname odbc-tables
+#' @inheritParams DBI::dbWriteTable
+#' @param overwrite Allow overwriting the destination table. Cannot be
+#'   `TRUE` if `append` is also `TRUE`.
+#' @param append Allow appending to the destination table. Cannot be
+#'   `TRUE` if `overwrite` is also `TRUE`.
+#' @export
+setMethod(
+  "dbWriteTable", c("OdbcConnection", "character", "data.frame"),
+  odbc_write_table)
+
+#' @rdname odbc-tables
+#' @export
+setMethod(
+  "dbWriteTable", c("OdbcConnection", "Id", "data.frame"),
+  odbc_write_table)
+
+#' @rdname odbc-tables
+#' @export
+setMethod(
+  "dbWriteTable", c("OdbcConnection", "SQL", "data.frame"),
+  odbc_write_table)
 
 #' @rdname odbc-tables
 #' @inheritParams DBI::dbReadTable
