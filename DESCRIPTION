@@ -2,7 +2,7 @@ Package: odbc
 Title: Connect to ODBC Compatible Databases (using the DBI Interface)
 Version: 1.1.6
 Authors@R: c(
-    person("Jim", "Hester", , "james.hester@rstudio.com", role = c("aut", "cre")),
+    person("Jim", "Hester", , "jim.hester@rstudio.com", role = c("aut", "cre")),
     person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut")),
     person("lexicalunit", role = c("cph"), comment = "nanodbc library"),
     person("Google Inc.", role = c("cph"), comment = "cctz library"),
