@@ -1,3 +1,10 @@
+# odbc 1.1.6.9000
+
+- fix SQL Server ODBC's unsupported '-155' data type, and its losing
+  sub-second precision on timestamps; this still returns type
+  `DATETIMEOFFSET` as a character, but it preserves sub-seconds and
+  has a numeric timezone offset (#207, @r2evans)
+
 # odbc 1.1.6
 
 ## Features
