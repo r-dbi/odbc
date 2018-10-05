@@ -1,3 +1,12 @@
+# odbc 1.1.7 (UNRELEASED)
+
+## Features
+
+## Bugfixes
+
+* Fixed an issue where `DBI::dbListFields()` could fail when used with a
+  a qualified Id object (using both schema and table). (#226)
+
 # odbc 1.1.6
 
 ## Features
