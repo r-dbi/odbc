@@ -11,6 +11,7 @@
 #' - Impala
 #' - Redshift
 #' - Vertica
+#' - BigQuery
 #'
 #' If you are using a different database and `dbWriteTable()` fails with a SQL
 #' parsing error the default method is not appropriate, you will need to write
@@ -241,6 +242,22 @@ odbcDataType.Oracle <- function(con, obj, ...) {
     character = "TEXT",
     logical = "NUMERIC",
     list = "TEXT",
+    stop("Unsupported type", call. = FALSE)
+  )
+}
+
+#' @export
+`odbcDataType.BigQuery` <- function(con, obj, ...) {
+  switch_type(obj,
+    factor = "STRING",
+    datetime = "TIMESTAMP",
+    date = "DATE",
+    binary = "BYTES",
+    integer = "INT64",
+    double = "FLOAT64",
+    character = "STRING",
+    logical = "BOOL",
+    list = "STRING",
     stop("Unsupported type", call. = FALSE)
   )
 }
