@@ -299,8 +299,8 @@ varbinary <- function(x, type = "varbinary") {
 #' @param columns Table columns to exclude (default) or include, dependent on
 #' the value of `invert`. One of `datetime`, `date`, `binary`,
 #' `integer`, `double`, `character`, `logical`.
-#' @param invert If `TRUE`, change the definition of columns to be inclusive,
-#' rather than exclusive.
+#' @param invert If `TRUE`, change the definition of columns to be exclusive,
+#' rather than inclusive.
 #' @param force_sorted If `TRUE`, a sorted `id` column is added to the sent
 #' data, and the received data is sorted by this column before doing the
 #' comparison. This is necessary for some databases that do not preserve row
