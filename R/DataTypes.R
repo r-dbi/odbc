@@ -11,6 +11,7 @@
 #' - Impala
 #' - Redshift
 #' - Vertica
+#' - BigQuery
 #'
 #' If you are using a different database and `dbWriteTable()` fails with a SQL
 #' parsing error the default method is not appropriate, you will need to write
@@ -245,6 +246,22 @@ odbcDataType.Oracle <- function(con, obj, ...) {
   )
 }
 
+#' @export
+`odbcDataType.BigQuery` <- function(con, obj, ...) {
+  switch_type(obj,
+    factor = "STRING",
+    datetime = "TIMESTAMP",
+    time = "TIME",
+    date = "DATE",
+    binary = "BYTES",
+    integer = "INT64",
+    double = "FLOAT64",
+    character = "STRING",
+    logical = "BOOL",
+    stop("Unsupported type", call. = FALSE)
+  )
+}
+
 switch_type <- function(obj, ...) {
   switch(object_type(obj), ...)
 }
@@ -282,8 +299,8 @@ varbinary <- function(x, type = "varbinary") {
 #' @param columns Table columns to exclude (default) or include, dependent on
 #' the value of `invert`. One of `datetime`, `date`, `binary`,
 #' `integer`, `double`, `character`, `logical`.
-#' @param invert If `TRUE`, change the definition of columns to be inclusive,
-#' rather than exclusive.
+#' @param invert If `TRUE`, change the definition of columns to be exclusive,
+#' rather than inclusive.
 #' @param force_sorted If `TRUE`, a sorted `id` column is added to the sent
 #' data, and the received data is sorted by this column before doing the
 #' comparison. This is necessary for some databases that do not preserve row
