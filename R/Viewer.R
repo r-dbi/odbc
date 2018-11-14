@@ -329,7 +329,7 @@ odbcConnectionActions.default <- function(connection) {
             }
             tables <- dbListTables(connection)
 
-            documentNew("sql", contents, row = 2, column = columnPos, execute = TRUE)
+            documentNew("sql", contents, row = 2, column = columnPos, execute = FALSE)
           }
         )
       )
