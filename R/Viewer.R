@@ -109,7 +109,7 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
     }
   }
 
-  objs <- tryCatch(connection_sql_tables(connection@ptr, catalog, schema, name, type), error = function(e) NULL)
+  objs <- tryCatch(connection_sql_tables(connection@ptr, catalog, schema, name, table_type = type), error = function(e) NULL)
   # just return a list of the objects and their types, possibly filtered by the
   # options above
   data.frame(
@@ -188,8 +188,8 @@ odbcListColumns.OdbcConnection <- function(connection, table = NULL, view = NULL
   # specify schema or catalog if given
   cols <- connection_sql_columns(connection@ptr,
     table_name = validateObjectName(table, view),
-    catalog_name = catalog %||% "",
-    schema_name = schema %||% "")
+    catalog_name = catalog,
+    schema_name = schema)
 
   # extract and name fields for observer
   data.frame(
