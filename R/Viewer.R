@@ -119,6 +119,48 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
   )
 }
 
+#' @export
+odbcListObjects.PostgreSQL <- function(connection, catalog = NULL, schema = NULL, name = NULL, type = NULL, ...) {
+  # if no catalog was supplied but this database has catalogs, return a list of
+  # catalogs
+  if (is.null(catalog)) {
+    catalogs <- string_values(connection_sql_tables(connection@ptr, catalog_name = catalog %||% "%", "", "", NULL)[["table_catalog"]])
+    if (length(catalogs) > 1) {
+      return(
+        data.frame(
+          name = catalogs,
+          type = rep("catalog", times = length(catalogs)),
+          stringsAsFactors = FALSE
+        ))
+    }
+  }
+
+  # if no schema was supplied but this database has schema, return a list of
+  # schema
+  if (is.null(schema)) {
+    schemas <- string_values(connection_sql_tables(connection@ptr, "", schema_name = schema %||% "%", "", NULL)[["table_schema"]])
+    if (length(schemas) > 1) {
+      schemas_df <- data.frame(
+        name = schemas,
+        type = rep("schema", times = length(schemas)),
+        stringsAsFactors = FALSE
+      )
+      return(
+        schemas_df[!grepl("^pg(_toast)?_temp_[0-9]*$", schemas_df[["name"]]),]
+      )
+    }
+  }
+
+  objs <- tryCatch(connection_sql_tables(connection@ptr, catalog, schema, name, table_type = type), error = function(e) NULL)
+  # just return a list of the objects and their types, possibly filtered by the
+  # options above
+  data.frame(
+    name = objs[["table_name"]],
+    type = tolower(objs[["table_type"]]),
+    stringsAsFactors = FALSE
+  )
+}
+
 #' List columns in an object.
 #'
 #' Lists the names and types of each column (field) of a specified object.
