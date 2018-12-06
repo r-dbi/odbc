@@ -138,16 +138,14 @@ odbcListObjects.PostgreSQL <- function(connection, catalog = NULL, schema = NULL
   # if no schema was supplied but this database has schema, return a list of
   # schema
   if (is.null(schema)) {
-    schemas <- string_values(connection_sql_tables(connection@ptr, "", schema_name = schema %||% "%", "", NULL)[["table_schema"]])
+    schemas <- string_values(DBI::dbGetQuery(connection, "select schema_name from information_schema.schemata")[["schema_name"]])
     if (length(schemas) > 1) {
-      schemas_df <- data.frame(
-        name = schemas,
-        type = rep("schema", times = length(schemas)),
-        stringsAsFactors = FALSE
-      )
       return(
-        schemas_df[!grepl("^pg(_toast)?_temp_[0-9]*$", schemas_df[["name"]]),]
-      )
+        data.frame(
+          name = schemas,
+          type = rep("schema", times = length(schemas)),
+          stringsAsFactors = FALSE
+        ))
     }
   }
 
