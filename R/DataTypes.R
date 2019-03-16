@@ -204,6 +204,39 @@ odbcDataType.default <- function(con, obj, ...) {
   )
 }
 
+`odbcDataType.ACCESS` <- function(con, obj, ...) {
+  switch_type(
+    obj,
+    factor = varchar(obj),
+    datetime = "DATETIME",
+    date = "DATE",
+    time = "TIME",
+    binary = "BINARY",
+    integer = "INTEGER",
+    double = "DOUBLE",
+    character = varchar(obj),
+    logical = "BIT",
+    list = varchar(obj),
+    stop("Unsupported type", call. = FALSE)
+  )
+}
+
+# `odbcDataType.ACCESS` <- function(con, obj, ...) {
+#   switch_type(obj,
+#               factor = "SQL_VARCHAR(255)",
+#               datetime = "SQL_TIMESTAMP",
+#               date = "SQL_TIMESTAMP",
+#               binary = "SQL_BINARY",
+#               integer = "SQL_INTEGER",
+#               double = "SQL_DOUBLE",
+#               character = "SQL_VARCHAR(255)",
+#               logical = "SQL_BINARY",
+#               list = "SQL_VARCHAR(255)",
+#               time = "SQL_TIMESTAMP",
+#               stop("Unsupported type", call. = FALSE)
+#   )
+# }
+
 #' @export
 odbcDataType.Oracle <- function(con, obj, ...) {
   switch_type(obj,
