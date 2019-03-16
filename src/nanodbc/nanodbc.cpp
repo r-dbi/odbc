@@ -460,7 +460,7 @@ const std::string database_error::state() const NANODBC_NOEXCEPT
 // and line numbers to be inserted into the error message. Useful for debugging.
 #define NANODBC_THROW_DATABASE_ERROR(handle, handle_type)                                          \
     throw nanodbc::database_error(                                                                 \
-        handle, handle_type, __FILE__ ":" NANODBC_STRINGIZE(__LINE__) ": ") /**/
+        handle, handle_type, __FILE__ ":" NANODBC_STRINGIZE(__LINE__) ": ")
 
 // clang-format off
 // 8888888b.           888             d8b 888
