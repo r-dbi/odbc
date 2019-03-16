@@ -1746,7 +1746,7 @@ public:
             // work for all data types, but is necessary to support drivers
             // which do not support SQLDescribeParam.
             param.type_ = SQL_VARCHAR;
-            param.size_ = 256;
+            param.size_ = 255;
             param.scale_ = 0;
         }
 
