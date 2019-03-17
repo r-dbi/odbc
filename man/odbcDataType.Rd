@@ -29,6 +29,7 @@ Databases with default methods defined are
 \item Impala
 \item Redshift
 \item Vertica
+\item Access
 }
 }
 \details{
