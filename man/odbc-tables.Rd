@@ -10,17 +10,20 @@
 \alias{sqlCreateTable,OdbcConnection-method}
 \title{Convenience functions for reading/writing DBMS tables}
 \usage{
-\S4method{dbWriteTable}{OdbcConnection,character,data.frame}(conn, name, value,
-  overwrite = FALSE, append = FALSE, temporary = FALSE, row.names = NA,
-  field.types = NULL, ...)
+\S4method{dbWriteTable}{OdbcConnection,character,data.frame}(conn, name,
+  value, overwrite = FALSE, append = FALSE, temporary = FALSE,
+  row.names = NA, field.types = NULL,
+  max_batch_size = switch(class(con), ACCESS = 1, 1024), ...)
 
 \S4method{dbWriteTable}{OdbcConnection,Id,data.frame}(conn, name, value,
-  overwrite = FALSE, append = FALSE, temporary = FALSE, row.names = NA,
-  field.types = NULL, ...)
+  overwrite = FALSE, append = FALSE, temporary = FALSE,
+  row.names = NA, field.types = NULL,
+  max_batch_size = switch(class(con), ACCESS = 1, 1024), ...)
 
 \S4method{dbWriteTable}{OdbcConnection,SQL,data.frame}(conn, name, value,
-  overwrite = FALSE, append = FALSE, temporary = FALSE, row.names = NA,
-  field.types = NULL, ...)
+  overwrite = FALSE, append = FALSE, temporary = FALSE,
+  row.names = NA, field.types = NULL,
+  max_batch_size = switch(class(con), ACCESS = 1, 1024), ...)
 
 \S4method{sqlData}{OdbcConnection}(con, value, row.names = NA, ...)
 

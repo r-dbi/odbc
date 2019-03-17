@@ -29,7 +29,7 @@ NULL
 
 odbc_write_table <-
   function(conn, name, value, overwrite=FALSE, append=FALSE, temporary = FALSE,
-    row.names = NA, field.types = NULL, ...) {
+    row.names = NA, field.types = NULL, max_batch_size = switch(class(con), "ACCESS" = 1, 1024), ...) {
 
     if (overwrite && append)
       stop("overwrite and append cannot both be TRUE", call. = FALSE)
@@ -63,7 +63,7 @@ odbc_write_table <-
       rs <- OdbcResult(conn, sql)
 
       tryCatch(
-        result_insert_dataframe(rs@ptr, values),
+        result_insert_dataframe(rs@ptr, values, max_batch_size),
         finally = dbClearResult(rs)
         )
     }

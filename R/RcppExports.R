@@ -85,16 +85,16 @@ result_column_info <- function(r) {
     .Call(`_odbc_result_column_info`, r)
 }
 
-result_bind <- function(r, params) {
-    invisible(.Call(`_odbc_result_bind`, r, params))
+result_bind <- function(r, params, max_batch_size = 1024L) {
+    invisible(.Call(`_odbc_result_bind`, r, params, max_batch_size))
 }
 
 result_execute <- function(r) {
     invisible(.Call(`_odbc_result_execute`, r))
 }
 
-result_insert_dataframe <- function(r, df) {
-    invisible(.Call(`_odbc_result_insert_dataframe`, r, df))
+result_insert_dataframe <- function(r, df, max_batch_size = 1024L) {
+    invisible(.Call(`_odbc_result_insert_dataframe`, r, df, max_batch_size))
 }
 
 result_rows_affected <- function(r) {

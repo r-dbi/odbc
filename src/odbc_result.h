@@ -36,7 +36,7 @@ public:
   std::shared_ptr<nanodbc::result> result() const;
   void prepare();
   void execute();
-  void bind_list(Rcpp::List const& x, bool use_transaction = true);
+  void bind_list(Rcpp::List const& x, bool use_transaction = true, int max_batch_size = 1024);
   Rcpp::DataFrame fetch(int n_max = -1);
 
   int rows_fetched();

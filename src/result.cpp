@@ -44,16 +44,16 @@ Rcpp::DataFrame result_column_info(result_ptr const& r) {
 }
 
 // [[Rcpp::export]]
-void result_bind(result_ptr const& r, List const& params) {
-  r->bind_list(params, false);
+void result_bind(result_ptr const& r, List const& params, const int max_batch_size = 1024) {
+  r->bind_list(params, false, max_batch_size);
 }
 
 // [[Rcpp::export]]
 void result_execute(result_ptr const& r) { r->execute(); }
 
 // [[Rcpp::export]]
-void result_insert_dataframe(result_ptr const& r, DataFrame const& df) {
-  r->bind_list(df);
+void result_insert_dataframe(result_ptr const& r, DataFrame const& df, const int max_batch_size = 1024) {
+  r->bind_list(df, true, max_batch_size);
 }
 
 // [[Rcpp::export]]

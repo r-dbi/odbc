@@ -88,7 +88,7 @@ void odbc_result::bind_columns(
   }
 }
 
-void odbc_result::bind_list(Rcpp::List const& x, bool use_transaction) {
+void odbc_result::bind_list(Rcpp::List const& x, bool use_transaction, int max_batch_size) {
   complete_ = false;
   rows_fetched_ = 0;
   auto types = column_types(x);
@@ -104,7 +104,7 @@ void odbc_result::bind_list(Rcpp::List const& x, bool use_transaction) {
   }
   auto nrows = Rf_length(x[0]);
   int start = 0;
-  int batch_size = 1024;
+  int batch_size = max_batch_size;
   std::unique_ptr<nanodbc::transaction> t;
   if (use_transaction && c_->supports_transactions()) {
     t = std::unique_ptr<nanodbc::transaction>(
