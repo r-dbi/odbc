@@ -12,6 +12,7 @@
 #' - Redshift
 #' - Vertica
 #' - BigQuery
+#' - Access
 #'
 #' If you are using a different database and `dbWriteTable()` fails with a SQL
 #' parsing error the default method is not appropriate, you will need to write
