@@ -17,8 +17,8 @@ bool result_active(result_ptr const& r) {
 bool result_completed(result_ptr const& r) { return r->complete(); }
 
 // [[Rcpp::export]]
-result_ptr new_result(connection_ptr const& p, std::string const& sql) {
-  return result_ptr(new odbc::odbc_result(*p, sql));
+result_ptr new_result(connection_ptr const& p, std::string const& sql, const bool immediate) {
+  return result_ptr(new odbc::odbc_result(*p, sql, immediate));
 }
 
 // [[Rcpp::export]]

@@ -127,8 +127,8 @@ setMethod(
 #' @export
 setMethod(
   "dbSendQuery", c("OdbcConnection", "character"),
-  function(conn, statement, ...) {
-    res <- OdbcResult(connection = conn, statement = statement)
+  function(conn, statement, ..., params = NULL, immediate = FALSE) {
+    res <- OdbcResult(connection = conn, statement = statement, params = params, immediate = immediate)
     res
   })
 
@@ -137,8 +137,8 @@ setMethod(
 #' @export
 setMethod(
   "dbSendStatement", c("OdbcConnection", "character"),
-  function(conn, statement, ...) {
-    res <- OdbcResult(connection = conn, statement = statement)
+  function(conn, statement, ..., params = NULL, immediate = FALSE) {
+    res <- OdbcResult(connection = conn, statement = statement, params = params, immediate = immediate)
     res
   })
 

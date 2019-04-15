@@ -30,7 +30,7 @@ private:
 
 class odbc_result {
 public:
-  odbc_result(std::shared_ptr<odbc_connection> c, std::string sql);
+  odbc_result(std::shared_ptr<odbc_connection> c, std::string sql, bool immediate);
   std::shared_ptr<odbc_connection> connection() const;
   std::shared_ptr<nanodbc::statement> statement() const;
   std::shared_ptr<nanodbc::result> result() const;
