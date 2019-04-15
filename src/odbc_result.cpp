@@ -6,7 +6,8 @@
 
 namespace odbc {
 
-odbc_result::odbc_result(std::shared_ptr<odbc_connection> c, std::string sql, bool immediate)
+odbc_result::odbc_result(
+    std::shared_ptr<odbc_connection> c, std::string sql, bool immediate)
     : c_(c),
       sql_(sql),
       rows_fetched_(0),
@@ -19,10 +20,10 @@ odbc_result::odbc_result(std::shared_ptr<odbc_connection> c, std::string sql, bo
     s_ = std::make_shared<nanodbc::statement>();
     c_->set_current_result(this);
     bound_ = true;
-    r_ = std::make_shared<nanodbc::result>(s_->execute_direct(*c_->connection(), sql_));
+    r_ = std::make_shared<nanodbc::result>(
+        s_->execute_direct(*c_->connection(), sql_));
     num_columns_ = r_->columns();
-  }
-  else {
+  } else {
     prepare();
     c_->set_current_result(this);
     if (s_->parameters() == 0) {
