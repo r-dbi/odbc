@@ -63,6 +63,14 @@ A column named \code{row_names} is treated like any other column.
 
 }
 
+\examples{
+con <- dbConnect(RSQLite::SQLite(), ":memory:")
+
+dbWriteTable(con, "mtcars", mtcars)
+dbListFields(con, "mtcars")
+
+dbDisconnect(con)
+}
 \seealso{
 \code{\link[=dbColumnInfo]{dbColumnInfo()}} to get the type of the fields.
 
