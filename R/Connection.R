@@ -124,6 +124,9 @@ setMethod(
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbSendQuery
+#' @param params Optional query parameters, passed on to [dbBind()]
+#' @param immediate If `TRUE`, SQLExecDirect will be used instead of
+#'   SQLPrepare, and the `params` argument is ignored
 #' @export
 setMethod(
   "dbSendQuery", c("OdbcConnection", "character"),
