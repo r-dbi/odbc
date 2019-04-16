@@ -1,4 +1,11 @@
-# odbc 1.1.6.9000
+# odbc (development version)
+
+## Features
+
+## Bugfixes
+
+* Fixed an issue where `DBI::dbListFields()` could fail when used with a
+  a qualified Id object (using both schema and table). (#226)
 
 - fix SQL Server ODBC's unsupported '-155' data type, and its losing
   sub-second precision on timestamps; this still returns type
