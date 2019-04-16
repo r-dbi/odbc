@@ -2,7 +2,7 @@ language: r
 cache: packages
 dist: trusty
 env:
-  - MAKEFLAGS = -j2 ODBCSYSINI=${TRAVIS_BUILD_DIR}/travis/odbc INCLUDE_DIR=/usr/include LIB_DIR=/usr/lib/x86_64-linux-gnu/
+  - MAKEFLAGS = -j2 ODBCSYSINI=${TRAVIS_BUILD_DIR}/travis/odbc
 
 r:
   - 3.2
@@ -29,6 +29,8 @@ before_script:
   - sudo -u postgres psql -U postgres -c 'CREATE DATABASE test_db;'
   - sudo -u postgres psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'password';"
   - mysql -u root -e 'CREATE DATABASE test_db;'
+  - export INCLUDE_DIR=/usr/include
+  - export LIB_DIR=/usr/lib/x86_64-linux-gnu/
 
 r_github_packages:
   - jimhester/DBItest@bit64

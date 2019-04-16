@@ -1,4 +1,4 @@
-# odbc 1.1.7 (UNRELEASED)
+# odbc (development version)
 
 ## Features
 
@@ -6,6 +6,11 @@
 
 * Fixed an issue where `DBI::dbListFields()` could fail when used with a
   a qualified Id object (using both schema and table). (#226)
+
+- fix SQL Server ODBC's unsupported '-155' data type, and its losing
+  sub-second precision on timestamps; this still returns type
+  `DATETIMEOFFSET` as a character, but it preserves sub-seconds and
+  has a numeric timezone offset (#207, @r2evans)
 
 # odbc 1.1.6
 
