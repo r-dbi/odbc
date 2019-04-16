@@ -30,7 +30,8 @@ Suggests:
     DBItest,
     testthat,
     covr,
-    magrittr
+    magrittr,
+    RSQLite
 LinkingTo: Rcpp, BH
 Collate: 
     'odbc.R'
