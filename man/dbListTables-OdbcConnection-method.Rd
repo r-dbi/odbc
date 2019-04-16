@@ -51,6 +51,15 @@ This should include views and temporary objects, but not all database backends
 \code{\%} can be used as a wildcard in any of the search parameters to
 match 0 or more characters. \code{_} can be used to match any single character.
 }
+\examples{
+con <- dbConnect(RSQLite::SQLite(), ":memory:")
+
+dbListTables(con)
+dbWriteTable(con, "mtcars", mtcars)
+dbListTables(con)
+
+dbDisconnect(con)
+}
 \seealso{
 The ODBC documentation on \href{https://docs.microsoft.com/en-us/sql/odbc/reference/develop-app/pattern-value-arguments}{Pattern Value Arguments}
 for further details on the supported syntax.

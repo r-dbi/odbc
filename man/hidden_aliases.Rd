@@ -11,8 +11,8 @@
 \S4method{sqlCreateTable}{Oracle}(con, table, fields, field.types = NULL,
   row.names = NA, temporary = FALSE, ...)
 
-\S4method{sqlCreateTable}{Teradata}(con, table, fields, field.types = NULL,
-  row.names = NA, temporary = FALSE, ...)
+\S4method{sqlCreateTable}{Teradata}(con, table, fields,
+  field.types = NULL, row.names = NA, temporary = FALSE, ...)
 
 \S4method{dbListTables}{Teradata}(conn, ...)
 }

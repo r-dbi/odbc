@@ -6,10 +6,11 @@
 \alias{dbConnect}
 \title{Connect to a ODBC compatible database}
 \usage{
-\S4method{dbConnect}{OdbcDriver}(drv, dsn = NULL, ..., timezone = "UTC",
-  encoding = "", bigint = c("integer64", "integer", "numeric", "character"),
-  timeout = 10, driver = NULL, server = NULL, database = NULL,
-  uid = NULL, pwd = NULL, dbms.name = NULL, .connection_string = NULL)
+\S4method{dbConnect}{OdbcDriver}(drv, dsn = NULL, ...,
+  timezone = "UTC", encoding = "", bigint = c("integer64", "integer",
+  "numeric", "character"), timeout = 10, driver = NULL,
+  server = NULL, database = NULL, uid = NULL, pwd = NULL,
+  dbms.name = NULL, .connection_string = NULL)
 }
 \arguments{
 \item{drv}{an object that inherits from \linkS4class{DBIDriver},
