@@ -9,7 +9,8 @@ odbcListDrivers()
 \value{
 A data frame with three columns.
 If a given driver does not have any attributes the last two columns will be
-\code{NA}.
+\code{NA}. Drivers can be excluded from being returned by setting the
+\code{odbc.drivers.filter} option.
 \describe{
 \item{name}{Name of the driver}
 \item{attribute}{Driver attribute name}

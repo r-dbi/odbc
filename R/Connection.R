@@ -314,7 +314,8 @@ setMethod(
 #'
 #' @return A data frame with three columns.
 #' If a given driver does not have any attributes the last two columns will be
-#' `NA`.
+#' `NA`. Drivers can be excluded from being returned by setting the
+#' \code{odbc.drivers.filter} option.
 #' \describe{
 #'   \item{name}{Name of the driver}
 #'   \item{attribute}{Driver attribute name}
@@ -325,6 +326,7 @@ odbcListDrivers <- function() {
   res <- list_drivers_()
   if (nrow(res) > 0) {
     res[res == ""] <- NA_character_
+    res <- res[!res[["name"]] %in% getOption("odbc.drivers.filter"),]
   }
   res
 }
