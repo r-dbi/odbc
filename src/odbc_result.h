@@ -18,7 +18,7 @@ inline void signal_unknown_field_type(short type, const std::string& name) {
 
 class odbc_error : public Rcpp::exception {
 public:
-  odbc_error(const nanodbc::database_error e, const std::string& sql)
+  odbc_error(const nanodbc::database_error& e, const std::string& sql)
       : Rcpp::exception("", false) {
     message = std::string(e.what()) + "\n<SQL> '" + sql + "'";
   }

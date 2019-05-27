@@ -42,7 +42,7 @@ odbc_connection::odbc_connection(
 
   try {
     c_ = std::make_shared<nanodbc::connection>(connection_string, timeout);
-  } catch (nanodbc::database_error e) {
+  } catch (const nanodbc::database_error& e) {
     throw Rcpp::exception(e.what(), FALSE);
   }
 }
@@ -80,7 +80,7 @@ bool odbc_connection::is_current_result(odbc_result* result) const {
 bool odbc_connection::supports_transactions() const {
   try {
     return c_->get_info<unsigned short>(SQL_TXN_CAPABLE) != SQL_TC_NONE;
-  } catch (nanodbc::database_error e) {
+  } catch (const nanodbc::database_error& e) {
     return false;
   }
 }

@@ -66,7 +66,7 @@ connection_ptr odbc_connect(
 std::string get_info_or_empty(connection_ptr const& p, short type) {
   try {
     return (*p)->connection()->get_info<std::string>(type);
-  } catch (nanodbc::database_error c) {
+  } catch (const nanodbc::database_error& c) {
     return "";
   }
 }
