@@ -1938,7 +1938,7 @@ void statement::statement_impl::bind_parameter<string_type::value_type>(
         param.scale_,               // decimal digits
         (SQLPOINTER)buffer.values_, // parameter value
         buffer_size,                // buffer length
-        (buffer.size_ <= 1 ? nullptr : bind_len_or_null_[param.index_].data()));
+        bind_len_or_null_[param.index_].data());
 
     if (!success(rc))
         NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
