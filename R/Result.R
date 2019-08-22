@@ -95,7 +95,7 @@ setMethod(
 setMethod(
   "dbColumnInfo", "OdbcResult",
   function(res, ...) {
-    result_column_info(res@ptr, ...)
+    result_column_info(res@ptr)
   })
 
 #' @rdname OdbcResult
