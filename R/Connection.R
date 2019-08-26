@@ -14,6 +14,7 @@ OdbcConnection <- function(
   dsn = NULL,
   ...,
   timezone = "UTC",
+  timezone_out = "UTC",
   encoding = "",
   bigint = c("integer64", "integer", "numeric", "character"),
   timeout = Inf,
@@ -36,7 +37,7 @@ OdbcConnection <- function(
     timeout <- 0
   }
 
-  ptr <- odbc_connect(connection_string, timezone = timezone, encoding = encoding, bigint = bigint, timeout = timeout)
+  ptr <- odbc_connect(connection_string, timezone = timezone, timezone_out = timezone_out, encoding = encoding, bigint = bigint, timeout = timeout)
   quote <- connection_quote(ptr)
 
   info <- connection_info(ptr)

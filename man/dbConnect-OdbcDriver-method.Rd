@@ -7,10 +7,11 @@
 \title{Connect to a ODBC compatible database}
 \usage{
 \S4method{dbConnect}{OdbcDriver}(drv, dsn = NULL, ...,
-  timezone = "UTC", encoding = "", bigint = c("integer64", "integer",
-  "numeric", "character"), timeout = 10, driver = NULL,
-  server = NULL, database = NULL, uid = NULL, pwd = NULL,
-  dbms.name = NULL, .connection_string = NULL)
+  timezone = "UTC", timezone_out = "UTC", encoding = "",
+  bigint = c("integer64", "integer", "numeric", "character"),
+  timeout = 10, driver = NULL, server = NULL, database = NULL,
+  uid = NULL, pwd = NULL, dbms.name = NULL,
+  .connection_string = NULL)
 }
 \arguments{
 \item{drv}{an object that inherits from \linkS4class{DBIDriver},
@@ -26,6 +27,9 @@ arguments to form the final connection string.}
 timezone that is \emph{not} 'UTC'. If the database is in your local timezone set
 to \code{Sys.timezone()}. See \code{\link[=OlsonNames]{OlsonNames()}} for a complete list of available
 timezones on your system.}
+
+\item{timezone_out}{The time zone returned to R. Useful if you want the
+timezone returned to R is \emph{not} 'UTC'.}
 
 \item{encoding}{The text encoding used on the Database. If the database is
 not using UTF-8 you will need to set the encoding to get accurate re-encoding.
