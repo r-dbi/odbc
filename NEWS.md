@@ -7,13 +7,13 @@
 * Fixed an issue where `DBI::dbListFields()` could fail when used with a
   a qualified Id object (using both schema and table). (#226)
 
-* Fix SQL Server ODBC's unsupported '-155' data type, and its losing
+- fix SQL Server ODBC's unsupported '-155' data type, and its losing
   sub-second precision on timestamps; this still returns type
   `DATETIMEOFFSET` as a character, but it preserves sub-seconds and
   has a numeric timezone offset (#207, @r2evans)
 
-* The case-sensitivity of dbExistsTable() now is the same as other methods.
-  (#285 , @shrektan)
+* `dbExistsTable()` now handles the case-sensitivity consistently as
+  other methods (@shrektan, #285).
 
 # odbc 1.1.6
 
