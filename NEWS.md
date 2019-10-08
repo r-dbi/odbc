@@ -11,6 +11,9 @@
   sub-second precision on timestamps; this still returns type
   `DATETIMEOFFSET` as a character, but it preserves sub-seconds and
   has a numeric timezone offset (#207, @r2evans)
+  
+* Fix an issue that the date value fetched from the database may be one
+  day before its real value (@shrektan, #295).
 
 # odbc 1.1.6
 
