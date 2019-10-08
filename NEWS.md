@@ -2,6 +2,8 @@
 
 ## Features
 
+* The RStudio Connections Pane now shows the DSN, when available (#304, @davidchall)
+
 ## Bugfixes
 
 * Fixed an issue where `DBI::dbListFields()` could fail when used with a
