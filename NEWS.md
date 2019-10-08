@@ -2,7 +2,7 @@
 
 ## Features
 
-* The RStudio Connections Pane now shows the DSN, when available (#304, @davidchall)
+* The RStudio Connections Pane now shows the DSN, when available (#304, @davidchall).
 
 ## Bugfixes
 
@@ -12,7 +12,7 @@
 * Fix SQL Server ODBC's unsupported '-155' data type, and its losing
   sub-second precision on timestamps; this still returns type
   `DATETIMEOFFSET` as a character, but it preserves sub-seconds and
-  has a numeric timezone offset (@r2evans, #207)
+  has a numeric timezone offset (@r2evans, #207).
 
 # odbc 1.1.6
 
@@ -21,7 +21,7 @@
 * `dbConnect()` gains a `timeout` parameter, to control how long a connection
   should be attempted before timing out (#139).
 
-* Full schema support using Id objects available in DBI 0.8 (#91, #120)
+* Full schema support using Id objects available in DBI 0.8 (#91, #120).
 
 ## Bugfixes
 
