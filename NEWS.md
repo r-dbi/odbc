@@ -17,6 +17,9 @@
 * Fix an issue that the date value fetched from the database may be one
   day before its real value (@shrektan, #295).
 
+* `dbExistsTable()` now handles the case-sensitivity consistently as
+  other methods (@shrektan, #285).
+
 # odbc 1.1.6
 
 ## Features
