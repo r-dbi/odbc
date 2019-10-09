@@ -38,7 +38,6 @@ public:
   void set_current_result(odbc_result* r);
 
   cctz::time_zone timezone() const;
-  cctz::time_zone timezone_out() const;
   std::string timezone_out_str() const;
   std::string encoding() const;
 
