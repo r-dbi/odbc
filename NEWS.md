@@ -4,6 +4,9 @@
 
 * The RStudio Connections Pane now shows the DSN, when available (#304, @davidchall).
 
+* `dbConnect()` now has a new param `timezone_out` which is useful if the user wants 
+  the datetime values be marked as a specific timezone instead of UTC (@shrektan, #294).
+
 ## Bugfixes
 
 * Fixed an issue where `DBI::dbListFields()` could fail when used with a
