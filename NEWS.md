@@ -12,7 +12,7 @@
 * Fix SQL Server ODBC's unsupported '-155' data type, and its losing
   sub-second precision on timestamps; this still returns type
   `DATETIMEOFFSET` as a character, but it preserves sub-seconds and
- has a numeric timezone offset (@r2evans, #207).
+  has a numeric timezone offset (@r2evans, #207).
   
 * Fix an issue that the date value fetched from the database may be one
   day before its real value (@shrektan, #295).
