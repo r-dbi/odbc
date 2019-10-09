@@ -220,7 +220,7 @@ setMethod(
   function(conn, name, ...) {
     stopifnot(length(name) == 1)
     df <- connection_sql_tables(conn@ptr, table_name = name)
-    nrow(df) > 0
+    NROW(df) > 0
   })
 
 #' @inherit DBI::dbListFields
