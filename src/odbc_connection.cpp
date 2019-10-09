@@ -34,6 +34,8 @@ odbc_connection::odbc_connection(
     Rcpp::stop("Error loading time zone (%s)", timezone);
   }
 
+  // timezone_out_ will not be used. This line is just to ensure
+  // the provided value is valid.
   if (!cctz::load_time_zone(timezone_out, &timezone_out_)) {
     Rcpp::stop("Error loading timezone_out (%s)", timezone_out);
   }
