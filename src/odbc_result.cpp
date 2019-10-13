@@ -416,7 +416,8 @@ double odbc_result::as_double(nanodbc::timestamp const& ts) {
 
 double odbc_result::as_double(nanodbc::date const& dt) {
   using namespace cctz;
-  auto sec = convert(civil_day(dt.year, dt.month, dt.day), cctz::utc_time_zone());
+  auto sec =
+      convert(civil_day(dt.year, dt.month, dt.day), cctz::utc_time_zone());
   return sec.time_since_epoch().count();
 }
 
