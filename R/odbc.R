@@ -4,4 +4,5 @@
 #' @importFrom bit64 integer64
 #' @importFrom hms hms
 #' @useDynLib odbc, .registration = TRUE
+#' @include s4.R
 "_PACKAGE"

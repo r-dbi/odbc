@@ -19,7 +19,7 @@ LazyData: true
 ByteCompile: true
 Depends: R (>= 3.2.0)
 Imports:
-    DBI (>= 1.0.0),
+    DBI (>= 1.0.0.9003),
     methods,
     Rcpp (>= 0.12.11),
     blob (>= 1.1.0),
@@ -33,7 +33,10 @@ Suggests:
     magrittr,
     RSQLite
 LinkingTo: Rcpp, BH
+Remotes: 
+    r-dbi/DBI
 Collate: 
+    's4.R'
     'odbc.R'
     'Driver.R'
     'Connection.R'
