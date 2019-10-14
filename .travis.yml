@@ -33,7 +33,7 @@ before_script:
   - export LIB_DIR=/usr/lib/x86_64-linux-gnu/
 
 r_github_packages:
-  - jimhester/DBItest@bit64
+  - r-dbi/DBItest
 
 after_success:
   - R -f travis/drop_tables.R
