@@ -49,7 +49,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 # Find compiler
-CXXCPP="$("${R_HOME}"/bin/R CMD config CXX11) -E"
+CXXCPP="$("${R_HOME}"/bin/R CMD config CXX11 || "${R_HOME}"/bin/R CMD config CXX1X) -E"
 CXXFLAGS=$("${R_HOME}"/bin/R CMD config CXXFLAGS)
 CPPFLAGS=$("${R_HOME}"/bin/R CMD config CPPFLAGS)
 
