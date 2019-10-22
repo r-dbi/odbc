@@ -86,7 +86,9 @@ bool odbc_connection::supports_transactions() const {
 }
 
 cctz::time_zone odbc_connection::timezone() const { return timezone_; }
-std::string odbc_connection::timezone_out_str() const { return timezone_out_str_; }
+std::string odbc_connection::timezone_out_str() const {
+  return timezone_out_str_;
+}
 std::string odbc_connection::encoding() const { return encoding_; }
 
 bigint_map_t odbc_connection::get_bigint_mapping() const {
