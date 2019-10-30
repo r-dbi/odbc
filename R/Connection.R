@@ -69,6 +69,85 @@ setClass(
   )
 )
 
+#' @title odbcConnectionColumns
+#' @name odbcConnectionColumns
+#'
+#' @description For a given table this function recturns detailed information on
+#' all fields / columns.  The expectation is that this is a relatively thin
+#' wrapper around the ODBC SQLColumns function call.
+#'
+#' @details For more information see SQLColumns ODBC function
+#' @param conn OdbcConnection
+#' @name table we wish to get information on
+#'
+#' @return data.frame with columns
+#' \itemize{
+#'   \item{table_cat}
+#'   \item{table_schem}
+#'   \item{table_name}
+#'   \item{column_name}
+#'   \item{data_type}
+#'   \item{type_name}
+#'   \item{column_size}
+#'   \item{buffer_length}
+#'   \item{decimal_digits}
+#'   \item{numeric_precision_radix}
+#'   \item{nullable}
+#"   \item{remarks}
+#'   \item{column_def}
+#'   \item{sql_data_type}
+#'   \item{sql_datetime_subtype}
+#'   \item{char_octet_length}
+#'   \item{ordinal_position}
+#' }
+#' @export
+setGeneric(
+  "odbcConnectionColumns",
+  valueClass = "data.frame",
+  function(conn, name, ...) {
+    standardGeneric("odbcConnectionColumns")
+  }
+)
+
+#' @aliases getFactorTimeSeriesInternal,OdbcConnection-Id-method
+#' @inheritParams odbcConnectionColumns
+#' @export
+setMethod(
+  "odbcConnectionColumns",
+  c("OdbcConnection", "Id"),
+  function(conn, name, column_name = NULL) {
+
+    odbcConnectionColumns(conn,
+      name = name@name[["table"]],
+      catalog_name = name@name[["catalog"]],
+      schema_name = name@name[["schema"]],
+      column_name = column_name)
+  }
+)
+
+#' @aliases getFactorTimeSeriesInternal,OdbcConnection-character-method
+#' @inheritParams odbcConnectionColumns
+#' @export
+setMethod(
+  "odbcConnectionColumns",
+  c("OdbcConnection", "character"),
+  function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL) {
+    detail <-
+      connection_sql_columns(conn@ptr,
+        table_name = name,
+        catalog_name = catalog_name,
+        schema_name = schema_name,
+        column_name = column_name)
+    # Rename/re-order columns to make output ODBC-like
+    names(detail) <- c("column_name", "type_name", "table_name", "table_schem",
+      "table_cat", "data_type", "column_size", "buffer_length", "decimal_digits",
+      "numeric_precision_radix", "remarks", "column_def", "sql_data_type",
+      "sql_datetime_subtype", "char_octet_length", "ordinal_position",
+      "nullable")
+    detail[, c(5, 4, 3, 1, 6, 2, 7, 8, 9, 10, 17, 11, 12, 13, 14, 15, 16)]
+  }
+)
+
 # TODO: show encoding, timezone, bigint mapping
 #' @rdname OdbcConnection
 #' @inheritParams methods::show
@@ -233,11 +312,11 @@ setMethod(
 setMethod(
   "dbListFields", c("OdbcConnection", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL, ...) {
-    connection_sql_columns(conn@ptr,
-      table_name = name,
+    odbcConnectionColumns(conn,
+      name = name,
       catalog_name = catalog_name,
       schema_name = schema_name,
-      column_name = column_name)[["name"]]
+      column_name = column_name)[["column_name"]]
   })
 
 #' @rdname OdbcConnection
