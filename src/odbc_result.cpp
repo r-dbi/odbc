@@ -88,6 +88,27 @@ void odbc_result::bind_columns(
   }
 }
 
+void odbc_result::describe_parameters(Rcpp::List const& x) {
+  auto ncols = x.size();
+  auto nrows = Rf_length(x[0]);
+
+  if (nrows > s_->parameters()) {
+    Rcpp::stop(
+        "Query requires '%i' params; '%i' supplied.", s_->parameters(), ncols);
+  }
+  Rcpp::NumericVector idx = x["ordinal_position"];
+  Rcpp::NumericVector type = x["sql_data_type"];
+  Rcpp::NumericVector size = x["column_size"];
+  Rcpp::NumericVector scale = x["decimal_digits"];
+
+  idx = idx - 1L;
+  s_->describe_parameters(
+      Rcpp::as<std::vector<short>>(idx),
+      Rcpp::as<std::vector<short>>(type),
+      Rcpp::as<std::vector<unsigned long>>(size),
+      Rcpp::as<std::vector<short>>(scale));
+}
+
 void odbc_result::bind_list(Rcpp::List const& x, bool use_transaction) {
   complete_ = false;
   rows_fetched_ = 0;

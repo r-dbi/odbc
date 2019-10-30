@@ -97,6 +97,10 @@ result_insert_dataframe <- function(r, df) {
     invisible(.Call(`_odbc_result_insert_dataframe`, r, df))
 }
 
+result_describe_parameters <- function(r, df) {
+    invisible(.Call(`_odbc_result_describe_parameters`, r, df))
+}
+
 result_rows_affected <- function(r) {
     .Call(`_odbc_result_rows_affected`, r)
 }

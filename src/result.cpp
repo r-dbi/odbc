@@ -57,6 +57,11 @@ void result_insert_dataframe(result_ptr const& r, DataFrame const& df) {
 }
 
 // [[Rcpp::export]]
+void result_describe_parameters(result_ptr const& r, DataFrame const& df) {
+  r->describe_parameters(df);
+}
+
+// [[Rcpp::export]]
 int result_rows_affected(result_ptr const& r) {
   auto res = r->result();
   if (!res) {
