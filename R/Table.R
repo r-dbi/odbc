@@ -54,7 +54,7 @@ odbc_write_table <-
       tryCatch({
         details <- odbcConnectionColumns(conn, name)
         datails <- details[match(names(values), details$column_name)]
-        details[, c("ordinal_position", "sql_data_type", "column_size", "decimal_digits")]
+        details[, c("ordinal_position", "data_type", "column_size", "decimal_digits")]
       }, error = function(e) {
         return(NULL)
       })

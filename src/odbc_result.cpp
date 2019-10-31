@@ -97,7 +97,7 @@ void odbc_result::describe_parameters(Rcpp::List const& x) {
         "Query requires '%i' params; '%i' supplied.", s_->parameters(), ncols);
   }
   Rcpp::NumericVector idx = x["ordinal_position"];
-  Rcpp::NumericVector type = x["sql_data_type"];
+  Rcpp::NumericVector type = x["data_type"];
   Rcpp::NumericVector size = x["column_size"];
   Rcpp::NumericVector scale = x["decimal_digits"];
 
