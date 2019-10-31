@@ -78,7 +78,11 @@ setClass(
 #'
 #' @details For more information see SQLColumns ODBC function
 #' @param conn OdbcConnection
-#' @name table we wish to get information on
+#' @param name table we wish to get information on
+#' @param ... additional parameters to methods
+#'
+#' @seealso The ODBC documentation on [SQLColumns](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
+#' for further details on the expected output.
 #'
 #' @return data.frame with columns
 #' \itemize{
@@ -109,8 +113,11 @@ setGeneric(
   }
 )
 
-#' @aliases getFactorTimeSeriesInternal,OdbcConnection-Id-method
+#' @name odbcConnectionColumns
+#' @aliases odbcConnectionColumns,OdbcConnection,Id-method
 #' @inheritParams odbcConnectionColumns
+#' @param column_name The name of the column to return, the default returns all columns.
+#'
 #' @export
 setMethod(
   "odbcConnectionColumns",
@@ -125,8 +132,11 @@ setMethod(
   }
 )
 
-#' @aliases getFactorTimeSeriesInternal,OdbcConnection-character-method
+#' @name odbcConnectionColumns
+#' @aliases odbcConnectionColumns,OdbcConnection,character-method
 #' @inheritParams odbcConnectionColumns
+#' @param catalog_name charaacter catalog where the table is located
+#' @param schema_name charaacter schema where the table is located
 #' @export
 setMethod(
   "odbcConnectionColumns",
@@ -144,7 +154,13 @@ setMethod(
       "numeric_precision_radix", "remarks", "column_def", "sql_data_type",
       "sql_datetime_subtype", "char_octet_length", "ordinal_position",
       "nullable")
-    detail[, c(5, 4, 3, 1, 6, 2, 7, 8, 9, 10, 17, 11, 12, 13, 14, 15, 16)]
+    detail <-
+      detail[, c(5, 4, 3, 1, 6, 2, 7, 8, 9, 10, 17, 11, 12, 13, 14, 15, 16)]
+
+    if (!is.null(column_name))
+      detail <- subset(detail, detail$column_name == column_name)
+
+    detail
   }
 )
 
