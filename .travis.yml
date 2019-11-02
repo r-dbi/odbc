@@ -21,6 +21,7 @@ addons:
       - libmyodbc
       - libsqliteodbc
       - clang-format-3.9
+      - devscripts
 
 before_install:
   - travis/check_format.sh
