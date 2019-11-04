@@ -219,7 +219,8 @@ setMethod(
   "dbExistsTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     stopifnot(length(name) == 1)
-    name %in% dbListTables(conn, ...)
+    df <- connection_sql_tables(conn@ptr, table_name = name)
+    NROW(df) > 0
   })
 
 #' @inherit DBI::dbListFields
