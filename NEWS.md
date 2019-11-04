@@ -20,6 +20,9 @@
 * `dbExistsTable()` now handles the case-sensitivity consistently as
   other methods (@shrektan, #285).
 
+* `dbWriteTable()` now always writes `NA_character` as `NULL` for
+  data.frame with only one row (@shrektan, #288).
+
 # odbc 1.1.6
 
 ## Features
