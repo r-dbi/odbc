@@ -53,8 +53,8 @@ odbc_write_table <-
     fieldDetails <-
       tryCatch({
         details <- odbcConnectionColumns(conn, name)
-        datails <- details[match(names(values), details$column_name)]
-        details[, c("ordinal_position", "data_type", "column_size", "decimal_digits")]
+        details$param_index <- match(details$column_name, names(values))
+        details[!is.na(param_index)]
       }, error = function(e) {
         return(NULL)
       })
@@ -71,8 +71,9 @@ odbc_write_table <-
         )
       rs <- OdbcResult(conn, sql)
 
-      if (!is.null(fieldDetails) && nrow(fieldDetails))
+      if (!is.null(fieldDetails) && nrow(fieldDetails)) {
         result_describe_parameters(rs@ptr, fieldDetails)
+      }
 
       tryCatch(
         result_insert_dataframe(rs@ptr, values),

@@ -148,17 +148,14 @@ setMethod(
         catalog_name = catalog_name,
         schema_name = schema_name,
         column_name = column_name)
-    # Rename/re-order columns to make output ODBC-like
-    names(detail) <- c("column_name", "type_name", "table_name", "table_schem",
-      "table_cat", "data_type", "column_size", "buffer_length", "decimal_digits",
-      "numeric_precision_radix", "remarks", "column_def", "sql_data_type",
-      "sql_datetime_subtype", "char_octet_length", "ordinal_position",
-      "nullable")
-    detail <-
-      detail[, c(5, 4, 3, 1, 6, 2, 7, 8, 9, 10, 17, 11, 12, 13, 14, 15, 16)]
-
-    if (!is.null(column_name))
-      detail <- subset(detail, detail$column_name == column_name)
+    # Re-order/rename columns to make output ODBC-like
+    detail <- detail[, c("catalog_name", "schema_name", "table_name", "name",
+      "data_type", "field.type", "column_size", "buffer_length",
+      "decimal_digits", "numeric_precision_radix", "nullable", "remarks",
+      "column_default", "sql_data_type", "sql_datetime_subtype",
+      "char_octet_length", "ordinal_position")]
+    names(detail)[c(1, 2, 4, 6, 13)] <- c("table_cat", "table_schem",
+      "column_name", "type_name", "column_def")
 
     detail
   }
