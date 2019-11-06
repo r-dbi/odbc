@@ -358,6 +358,16 @@ test_roundtrip <- function(con = DBItest:::connect(DBItest:::get_default_context
     if (force_sorted) received <- received[order(received$id),]
     row.names(received) <- NULL
     testthat::expect_equal(sent, received)
+
+    # To same table, we append a data.frame with re-ordered columns
+    sent2 <- sent
+    if (force_sorted) sent2$id <- seq_len(NROW(iris)) + NROW(iris)
+    DBI::dbWriteTable(con, "test_table", sent2[sample(1:ncol(sent2))], overwrite = FALSE, append = TRUE)
+    received2 <- DBI::dbReadTable(con, "test_table")
+    if (force_sorted) received2 <- received2[order(received2$id),]
+    received2 <- tail(received2, n = nrow(sent2))
+    row.names(received2) <- NULL
+    testthat::expect_equal(sent2, received2)
     res <<- list(sent = sent, received = received)
   })
   invisible(res)
