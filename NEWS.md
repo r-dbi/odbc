@@ -2,29 +2,44 @@
 
 ## Features
 
+
 * `odbcListDrivers()` gains a `keep` and `filter` argument and global options
   `odbc.drivers_keep`, `odbc.drivers_filter` to keep and filter the drivers
   returned. This is useful if system administrators want to reduce the number
   of drivers shown to users. (@blairj09, #274)
 
+* The RStudio Connections Pane now shows the DSN, when available (#304, @davidchall).
+
+* `dbConnect()` now has a new param `timezone_out` which is useful if the user wants 
+  the datetime values be marked with a specific timezone instead of UTC (@shrektan, #294).
+
 ## Bugfixes
 
 * Fixed an issue where `DBI::dbListFields()` could fail when used with a
-  a qualified Id object (using both schema and table). (#226)
+  a qualified Id object (using both schema and table) (#226).
 
-- fix SQL Server ODBC's unsupported '-155' data type, and its losing
+* Fix SQL Server ODBC's unsupported '-155' data type, and its losing
   sub-second precision on timestamps; this still returns type
   `DATETIMEOFFSET` as a character, but it preserves sub-seconds and
-  has a numeric timezone offset (#207, @r2evans)
+  has a numeric timezone offset (@r2evans, #207).
+  
+* Fix an issue that the date value fetched from the database may be one
+  day before its real value (@shrektan, #295).
+
+* `dbExistsTable()` now handles the case-sensitivity consistently as
+  other methods (@shrektan, #285).
+
+* `dbWriteTable()` now always writes `NA_character` as `NULL` for
+  data.frame with only one row (@shrektan, #288).
 
 # odbc 1.1.6
 
 ## Features
 
 * `dbConnect()` gains a `timeout` parameter, to control how long a connection
-  should be attempted before timing out. (#139)
+  should be attempted before timing out (#139).
 
-* Full schema support using Id objects available in DBI 0.8 (#91, #120)
+* Full schema support using Id objects available in DBI 0.8 (#91, #120).
 
 ## Bugfixes
 
@@ -37,13 +52,10 @@
 
 # odbc 1.1.4
 
-* Fix multiple transactions with rollback (#136).
-
-* Add custom `sqlCreateTable` and `dbListTables` method for Taradata connections (@edgararuiz)
 ## Features
 
 * Add custom `sqlCreateTable` and `dbListTables` method for Teradata
-  connections (@edgararuiz)
+  connections (#121, @edgararuiz).
 
 * Add `dbms.name` parameter to `dbConnect()` to allow the user to set the
   database management system name in cases it cannot be queried from the
@@ -73,7 +85,7 @@
   to ensure we always use 8 byte pointers.
 
 * Added temporary-table support for Oracle database using a custom
-  `sqlCreateTable` (#99, @edgararuiz)
+  `sqlCreateTable` (#99, @edgararuiz).
 
 * Fix regression when binding due to the num_columns variable not being updated
   by `odbc_result::bind_list()`.
@@ -85,12 +97,12 @@
 
 * dbSendStatement no longer executes the statement, this is instead done when
   `dbBind()` or `dbGetRowsAffected()` is called. This change brings ODBC into
-  compliance with the DBI specification for `dbSendStatement()`. (#84, @ruiyiz).
+  compliance with the DBI specification for `dbSendStatement()` (#84, @ruiyiz).
 
 # odbc 1.1.1
 
 * Workaround for drivers which do not implement SQLGetInfo, such as the Access
-  driver. (#78)
+  driver (#78).
 
 * Fix for installation error for systems without GNU Make as the default make, such as
   Solaris.
@@ -122,13 +134,14 @@
 
 * 64 bit integers are converted to and from `bit64` objects.
 
-* Support table creation for Impala and Hive Databases (# 38, @edgararuiz).
+* Support table creation for Impala and Hive Databases (#38, @edgararuiz).
 
 # odbc 1.0.1
 
 * Fixes for the CRAN build machines
   - Do not force c++14 on windows
-  - Turn off database tests on CRAN, as I think they will be difficult to debug even if databases are supported.
+  - Turn off database tests on CRAN, as I think they will be difficult 
+    to debug even if databases are supported.
 
 * Added a `NEWS.md` file to track changes to the package.
 

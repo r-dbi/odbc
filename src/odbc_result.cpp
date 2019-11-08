@@ -416,7 +416,8 @@ double odbc_result::as_double(nanodbc::timestamp const& ts) {
 
 double odbc_result::as_double(nanodbc::date const& dt) {
   using namespace cctz;
-  auto sec = convert(civil_day(dt.year, dt.month, dt.day), c_->timezone());
+  auto sec =
+      convert(civil_day(dt.year, dt.month, dt.day), cctz::utc_time_zone());
   return sec.time_since_epoch().count();
 }
 
@@ -484,14 +485,17 @@ void odbc_result::add_classes(
       break;
     case datetime_t:
       x.attr("class") = Rcpp::CharacterVector::create("POSIXct", "POSIXt");
-      x.attr("tzone") = Rcpp::CharacterVector::create("UTC");
+      x.attr("tzone") = Rcpp::CharacterVector::create(c_->timezone_out_str());
       break;
     case odbc::time_t:
       x.attr("class") = Rcpp::CharacterVector::create("hms", "difftime");
       x.attr("units") = Rcpp::CharacterVector::create("secs");
       break;
     case raw_t:
-      x.attr("class") = Rcpp::CharacterVector::create("blob");
+      // FIXME: Use new_blob()
+      x.attr("ptype") = Rcpp::RawVector::create();
+      x.attr("class") =
+          Rcpp::CharacterVector::create("blob", "vctrs_list_of", "vctrs_vctr");
       break;
     default:
       break;
