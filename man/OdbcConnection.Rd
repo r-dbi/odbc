@@ -48,8 +48,7 @@
 
 \S4method{dbGetInfo}{OdbcConnection}(dbObj, ...)
 
-\S4method{dbGetQuery}{OdbcConnection,character}(conn, statement, n = -1,
-  ...)
+\S4method{dbGetQuery}{OdbcConnection,character}(conn, statement, n = -1, ...)
 
 \S4method{dbBegin}{OdbcConnection}(conn, ...)
 
@@ -77,7 +76,7 @@ or a \linkS4class{DBIResult}}
 
 \item{obj}{An R object whose SQL type we want to determine.}
 
-\item{x}{A character vector, \link{SQL} or \link{Id} object to quote as identifier.}
+\item{x}{A character vector, \link[DBI]{SQL} or \link[DBI]{Id} object to quote as identifier.}
 
 \item{name}{A character string specifying a DBMS table name.}
 

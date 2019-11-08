@@ -2,6 +2,12 @@
 
 ## Features
 
+
+* `odbcListDrivers()` gains a `keep` and `filter` argument and global options
+  `odbc.drivers_keep`, `odbc.drivers_filter` to keep and filter the drivers
+  returned. This is useful if system administrators want to reduce the number
+  of drivers shown to users. (@blairj09, #274)
+
 * The RStudio Connections Pane now shows the DSN, when available (#304, @davidchall).
 
 * `dbConnect()` now has a new param `timezone_out` which is useful if the user wants 

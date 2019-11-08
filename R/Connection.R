@@ -314,20 +314,35 @@ setMethod(
 
 #' List Available ODBC Drivers
 #'
+#' @param keep A character vector of driver names to keep in the results, if
+#'   `NULL` (the default) will keep all drivers.
+#' @param filter A character vector of driver names to filter from the results, if
+#'   `NULL` (the default) will not filter any drivers.
 #' @return A data frame with three columns.
 #' If a given driver does not have any attributes the last two columns will be
-#' `NA`.
+#' `NA`. Drivers can be excluded from being returned by setting the
+#' \code{odbc.drivers.filter} option.
 #' \describe{
 #'   \item{name}{Name of the driver}
 #'   \item{attribute}{Driver attribute name}
 #'   \item{value}{Driver attribute value}
 #' }
 #' @export
-odbcListDrivers <- function() {
+odbcListDrivers <- function(keep = getOption("odbc.drivers_keep"), filter = getOption("odbc.drivers_filter")) {
   res <- list_drivers_()
+
   if (nrow(res) > 0) {
     res[res == ""] <- NA_character_
+
+    if (!is.null(keep)) {
+      res <- res[res[["name"]] %in% keep, ]
+    }
+
+    if (!is.null(filter)) {
+      res <- res[!res[["name"]] %in% filter, ]
+    }
   }
+
   res
 }
 
