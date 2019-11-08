@@ -4,7 +4,17 @@
 \alias{odbcListDrivers}
 \title{List Available ODBC Drivers}
 \usage{
-odbcListDrivers()
+odbcListDrivers(
+  keep = getOption("odbc.drivers_keep"),
+  filter = getOption("odbc.drivers_filter")
+)
+}
+\arguments{
+\item{keep}{A character vector of driver names to keep in the results, if
+\code{NULL} (the default) will keep all drivers.}
+
+\item{filter}{A character vector of driver names to filter from the results, if
+\code{NULL} (the default) will not filter any drivers.}
 }
 \value{
 A data frame with three columns.

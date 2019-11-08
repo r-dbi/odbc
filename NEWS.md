@@ -2,6 +2,11 @@
 
 ## Features
 
+* `odbcListDrivers()` gains a `keep` and `filter` argument and global options
+  `odbc.drivers_keep`, `odbc.drivers_filter` to keep and filter the drivers
+  returned. This is useful if system administrators want to reduce the number
+  of drivers shown to users. (@blairj09, #274)
+
 ## Bugfixes
 
 * Fixed an issue where `DBI::dbListFields()` could fail when used with a
