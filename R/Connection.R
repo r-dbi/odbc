@@ -74,35 +74,39 @@ setClass(
 #'
 #' @description For a given table this function recturns detailed information on
 #' all fields / columns.  The expectation is that this is a relatively thin
-#' wrapper around the ODBC SQLColumns function call.
+#' wrapper around the ODBC SQLColumns function call, with some of the field names
+#' renamed / re-ordered according to the return specifications below.
 #'
-#' @details For more information see SQLColumns ODBC function
+#' @details In \code{\link{dbWriteTable}} we make a call to this method
+#' to get details on the fields of the table we are writing to.  In particualar
+#' the columns `data_type`, `column_size`, and `decimal_digits` are used.  An
+#' implementation is not necessary for \code{\link{dbWriteTable}} to work.
 #' @param conn OdbcConnection
 #' @param name table we wish to get information on
 #' @param ... additional parameters to methods
 #'
 #' @seealso The ODBC documentation on [SQLColumns](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
-#' for further details on the expected output.
+#' for further details.
 #'
 #' @return data.frame with columns
 #' \itemize{
-#'   \item{table_cat}
-#'   \item{table_schem}
+#'   \item{name}
+#'   \item{field.type} {equivalent to type_name in SQLColumns output}
 #'   \item{table_name}
-#'   \item{column_name}
+#'   \item{schema_name}
+#'   \item{catalog_name}
 #'   \item{data_type}
-#'   \item{type_name}
 #'   \item{column_size}
 #'   \item{buffer_length}
 #'   \item{decimal_digits}
 #'   \item{numeric_precision_radix}
-#'   \item{nullable}
 #"   \item{remarks}
-#'   \item{column_def}
+#'   \item{column_default}
 #'   \item{sql_data_type}
 #'   \item{sql_datetime_subtype}
 #'   \item{char_octet_length}
 #'   \item{ordinal_position}
+#'   \item{nullable}
 #' }
 #' @export
 setGeneric(
@@ -142,22 +146,13 @@ setMethod(
   "odbcConnectionColumns",
   c("OdbcConnection", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL) {
-    detail <-
-      connection_sql_columns(conn@ptr,
-        table_name = name,
-        catalog_name = catalog_name,
-        schema_name = schema_name,
-        column_name = column_name)
-    # Re-order/rename columns to make output ODBC-like
-    detail <- detail[, c("catalog_name", "schema_name", "table_name", "name",
-      "data_type", "field.type", "column_size", "buffer_length",
-      "decimal_digits", "numeric_precision_radix", "nullable", "remarks",
-      "column_default", "sql_data_type", "sql_datetime_subtype",
-      "char_octet_length", "ordinal_position")]
-    names(detail)[c(1, 2, 4, 6, 13)] <- c("table_cat", "table_schem",
-      "column_name", "type_name", "column_def")
 
-    detail
+    connection_sql_columns(conn@ptr,
+      table_name = name,
+      catalog_name = catalog_name,
+      schema_name = schema_name,
+      column_name = column_name)
+
   }
 )
 
@@ -329,7 +324,7 @@ setMethod(
       name = name,
       catalog_name = catalog_name,
       schema_name = schema_name,
-      column_name = column_name)[["column_name"]]
+      column_name = column_name)[["name"]]
   })
 
 #' @rdname OdbcConnection

@@ -50,14 +50,13 @@ odbc_write_table <-
       dbExecute(conn, sql)
     }
 
-    fieldDetails <-
-      tryCatch({
-        details <- odbcConnectionColumns(conn, name)
-        details$param_index <- match(details$column_name, names(values))
-        details[!is.na(param_index)]
-      }, error = function(e) {
-        return(NULL)
-      })
+    fieldDetails <- tryCatch({
+      details <- odbcConnectionColumns(conn, name)
+      details$param_index <- match(details$name, names(values))
+      details[!is.na(details$param_index)]
+    }, error = function(e) {
+      return(NULL)
+    })
 
     if (nrow(value) > 0) {
 
