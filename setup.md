@@ -35,13 +35,16 @@ docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Passw0rd" \
 Then do some configuration of the server to add a testuser and create the test database
 
 ```r
-library(DBI); con <- dbConnect(odbc::odbc(), "SQLServer", UID = 'SA', PWD = 'Passw0rd');
+library(DBI); con <- dbConnect(odbc::odbc(), "SQLServer", UID = 'SA', PWD = 'Passw0rd')
 
 # Add a test user
+dbExecute(con, "USE test")
 dbExecute(con, "EXEC sp_configure 'contained database authentication', 1")
 dbExecute(con, "RECONFIGURE")
 dbExecute(con, "alter database test set containment = partial")
 dbExecute(con, "CREATE USER testuser with password = 'passW0rd!'")
+dbExecute(con, "GRANT CONTROL TO testuser")
+dbExecute(con, "DROP USER testuser")
 
 # Create a test database
 dbExecute(con, "CREATE DATABASE test")
