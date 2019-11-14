@@ -73,3 +73,25 @@ test_that("SQLServer", {
       NULL))
 })
 
+test_that("SQLServer works with schemas", {
+  con <- DBItest:::connect(DBItest:::get_default_context())
+  dbExecute(con, 'CREATE SCHEMA testSchema')
+  on.exit({
+    dbExecute(con, "DROP TABLE testSchema.iris")
+    dbExecute(con, "DROP SCHEMA testSchema")
+  })
+
+  ir <- iris
+  ir$Species <- as.character(ir$Species)
+
+  table_id <- Id(schema = "testSchema", table = "iris")
+  dbWriteTable(conn = con, name = table_id, value = ir)
+  dbWriteTable(conn = con, name = table_id, value = ir, append = TRUE)
+
+  res <- dbReadTable(con, table_id)
+  expect_equal(res, rbind(ir, ir))
+
+  dbWriteTable(conn = con, name = table_id, value = ir, overwrite = TRUE)
+  res <- dbReadTable(con, table_id)
+  expect_equal(res, ir)
+})

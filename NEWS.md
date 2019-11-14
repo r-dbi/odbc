@@ -19,6 +19,10 @@
   a qualified Id object (using both schema and table) (#226).
 
 * Fix SQL Server ODBC's unsupported '-155' data type, and its losing
+* `dbExistsTable()` now works for SQL Server when specifying schemas but not
+  catalogs using the freeTDS and Simba drivers. (#197)
+
+- fix SQL Server ODBC's unsupported '-155' data type, and its losing
   sub-second precision on timestamps; this still returns type
   `DATETIMEOFFSET` as a character, but it preserves sub-seconds and
   has a numeric timezone offset (@r2evans, #207).
