@@ -138,8 +138,12 @@ setMethod(
 #' @export
 setMethod(
   "dbSendStatement", c("OdbcConnection", "character"),
-  function(conn, statement, ...) {
+  function(conn, statement, params = NULL, ...) {
     res <- OdbcResult(connection = conn, statement = statement)
+    if (!is.null(params)) {
+      res <- dbBind(res, params = params, ...)
+    }
+
     res
   })
 

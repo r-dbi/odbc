@@ -71,27 +71,48 @@ test_that("SQLServer", {
       "read_only", # Setting SQL_MODE_READ_ONLY is not supported in most DBs, so ignoring.
       "compliance", # We are defining additional subclasses for OdbcConnections
       NULL))
+
+  # SQLServer works with schemas (#197)
 })
 
-test_that("SQLServer works with schemas", {
-  con <- DBItest:::connect(DBItest:::get_default_context())
-  dbExecute(con, 'CREATE SCHEMA testSchema')
-  on.exit({
-    dbExecute(con, "DROP TABLE testSchema.iris")
-    dbExecute(con, "DROP SCHEMA testSchema")
+test_that("SQLServer works with schemas (#197)", {
+  skip_unless_has_test_db({
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    dbExecute(con, 'CREATE SCHEMA testSchema')
+    on.exit({
+      dbExecute(con, "DROP TABLE testSchema.iris")
+      dbExecute(con, "DROP SCHEMA testSchema")
+    })
+
+    ir <- iris
+    ir$Species <- as.character(ir$Species)
+
+    table_id <- Id(schema = "testSchema", table = "iris")
+    dbWriteTable(conn = con, name = table_id, value = ir)
+    dbWriteTable(conn = con, name = table_id, value = ir, append = TRUE)
+
+    res <- dbReadTable(con, table_id)
+    expect_equal(res, rbind(ir, ir))
+
+    dbWriteTable(conn = con, name = table_id, value = ir, overwrite = TRUE)
+    res <- dbReadTable(con, table_id)
+    expect_equal(res, ir)
   })
+})
 
-  ir <- iris
-  ir$Species <- as.character(ir$Species)
+test_that("SQLServer works with schemas (#215)", {
+  skip_unless_has_test_db({
+    con <- DBItest:::connect(DBItest:::get_default_context())
 
-  table_id <- Id(schema = "testSchema", table = "iris")
-  dbWriteTable(conn = con, name = table_id, value = ir)
-  dbWriteTable(conn = con, name = table_id, value = ir, append = TRUE)
+    ir <- iris
+    ir$Species <- as.character(ir$Species)
 
-  res <- dbReadTable(con, table_id)
-  expect_equal(res, rbind(ir, ir))
+    dbWriteTable(con, "iris", ir)
+    on.exit(dbRemoveTable(con, "iris"))
 
-  dbWriteTable(conn = con, name = table_id, value = ir, overwrite = TRUE)
-  res <- dbReadTable(con, table_id)
-  expect_equal(res, ir)
+    dbAppendTable(conn = con, name = "iris", value = ir)
+
+    res <- dbReadTable(con, "iris")
+    expect_equal(res, rbind(ir, ir))
+  })
 })
