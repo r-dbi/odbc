@@ -72,11 +72,8 @@ test_that("SQLServer", {
       "compliance", # We are defining additional subclasses for OdbcConnections
       NULL))
 
-  # SQLServer works with schemas (#197)
-})
-
-test_that("SQLServer works with schemas (#197)", {
-  skip_unless_has_test_db({
+  local({
+    # SQLServer works with schemas (#197)
     con <- DBItest:::connect(DBItest:::get_default_context())
     dbExecute(con, 'CREATE SCHEMA testSchema')
     on.exit({
@@ -98,10 +95,9 @@ test_that("SQLServer works with schemas (#197)", {
     res <- dbReadTable(con, table_id)
     expect_equal(res, ir)
   })
-})
 
-test_that("SQLServer works with schemas (#215)", {
-  skip_unless_has_test_db({
+  local({
+    # SQLServer works with dbAppendTable (#215)
     con <- DBItest:::connect(DBItest:::get_default_context())
 
     ir <- iris
