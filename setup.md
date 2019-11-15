@@ -6,20 +6,22 @@ tests locally.
 
 ## SQL Server test setup
 
+Install the [microsoft drivers](https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15#macos)
+
+```shell
+brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
+brew update
+brew install msodbcsql17 mssql-tools
+```
+
 ### ini files
 
 First we need to install the drivers and setup the ini files
 
-`odbcinst.ini`
-```ini
-[SQL Server Driver]
-Driver = /usr/local/lib/libtdsodbc.so
-```
-
 `odbc.ini`
 ```ini
-[SQLServer]
-driver = SQL Server Driver
+[MicrosoftSQLServer]
+driver = ODBC Driver 17 for SQL Server
 Server = 127.0.0.1
 port = 1433
 ```
@@ -48,4 +50,15 @@ dbExecute(con, "DROP USER testuser")
 
 # Create a test database
 dbExecute(con, "CREATE DATABASE test")
+```
+
+### RODBC
+
+We need to install RODBC for benchmarking in the README. The CRAN version of RODBC uses
+iODBC, so to use unixODBC we need to recompile it from source, specifying the
+odbc manager explicitly.
+
+```r
+
+install.packages("RODBC", type = "source", INSTALL_opts="--configure-args='--with-odbc-manager=odbc'")
 ```
