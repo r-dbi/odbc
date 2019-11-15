@@ -111,4 +111,16 @@ test_that("SQLServer", {
     res <- dbReadTable(con, "iris")
     expect_equal(res, rbind(ir, ir))
   })
+
+  local({
+    # Subseconds are retained upon insertion (#208)
+    con <- DBItest:::connect(DBItest:::get_default_context())
+
+    data <- data.frame(time = Sys.time())
+    dbWriteTable(con, "time", data, field.types = list(time = "DATETIME"), overwrite = TRUE)
+    on.exit(dbRemoveTable(con, "time"))
+    res <- dbReadTable(con, "time")
+
+    expect_equal(as.double(res$time), as.double(data$time))
+  })
 })
