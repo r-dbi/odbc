@@ -79,6 +79,11 @@ brew install unixodbc
 
 #### Common DB drivers
 ```shell
+# Microsoft SQL Server ODBC Drivers (Recommended)
+brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
+brew update
+brew install msodbcsql17 mssql-tools
+
 # SQL Server ODBC Drivers (Free TDS)
 brew install freetds --with-unixodbc
 
@@ -103,6 +108,10 @@ apt-get install unixodbc unixodbc-dev
 ```
 
 #### Common DB drivers
+
+For SQL Server on Linux it is recommended you use the [Microsoft
+Drivers](https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15#ubuntu).
+
 ```shell
 # SQL Server ODBC Drivers (Free TDS)
 apt-get install tdsodbc
@@ -271,19 +280,21 @@ The *odbc* package is often much faster than the existing
 
 ### Reading
 
-Reading a table from a PostgreSQL database with the 'flights' dataset (336,776 rows, 19 columns) of the package [nytflights13](https://github.com/hadley/nycflights13).
+Reading a table from a SQL Server database with the 'flights' dataset (336,776
+rows, 19 columns) of the package
+[nytflights13](https://github.com/hadley/nycflights13).
+
 ```{r, cache = TRUE}
 # First using RODBC / RODBCDBI
 library(DBI)
-rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "PostgreSQL")
+rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "MicrosoftSQLServer", user = Sys.getenv("SQLSERVER_UID"), password = Sys.getenv("SQLSERVER_PWD"))
 system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
 
 # Now using odbc
-odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
+odbc <- dbConnect(odbc::odbc(), dsn = "MicrosoftSQLServer", UID = Sys.getenv("SQLSERVER_UID"), PWD = Sys.getenv("SQLSERVER_PWD"))
 system.time(odbc_result <- dbReadTable(odbc, "flights"))
 
-library(tibble)
-as_tibble(odbc_result)
+tibble::as_tibble(odbc_result)
 
 identical(dim(rodbc_result), dim(odbc_result))
 rm(rodbc_result, odbc_result, odbc, rodbc)
@@ -294,46 +305,26 @@ gc(verbose = FALSE)
 
 Writing the same dataset to the database.
 ```{r, echo = FALSE, results = "hide", cache = TRUE}
-odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
+odbc <- dbConnect(odbc::odbc(), dsn = "MicrosoftSQLServer", UID = Sys.getenv("SQLSERVER_UID"), PWD = Sys.getenv("SQLSERVER_PWD"))
 if (dbExistsTable(odbc, "flights2")) { dbRemoveTable(odbc, "flights2") }
 if (dbExistsTable(odbc, "flights3")) { dbRemoveTable(odbc, "flights3") }
 rm(odbc)
 gc(verbose = FALSE)
 ```
 
-```{r, cache = TRUE}
+```{r, cache = TRUE, eval = FALSE}
 library(nycflights13)
-# rodbc does not support writing timestamps natively.
-rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "PostgreSQL")
-system.time(dbWriteTable(rodbc, "flights2", as.data.frame(flights[, names(flights) != "time_hour"])))
+# rodbc does not support writing timestamps natively, so we remove that column
+flights2 <- as.data.frame(flights[, names(flights) != "time_hour"])
+rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "MicrosoftSQLServer", user = Sys.getenv("SQLSERVER_UID"), password = Sys.getenv("SQLSERVER_PWD"))
+system.time(dbWriteTable(rodbc, "flights2", flights2))
+#>    user  system elapsed
+#>  11.891   6.269 765.269
 
 # Now using odbc
-odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
-system.time(dbWriteTable(odbc, "flights3", as.data.frame(flights)))
-```
-
-### SQL Server
-```{r, eval = FALSE}
-packageVersion("RSQLServer")
-#> [1] ‘0.3.0’
-
-# Writing
-rsqlserver <- dbConnect(RSQLServer::SQLServer(), server = "SQLServer")
-system.time(dbWriteTable(rsqlserver, "flights2", as.data.frame(flights)))
+odbc <- dbConnect(odbc::odbc(), dsn = "MicrosoftSQLServer", UID = Sys.getenv("SQLSERVER_UID"), PWD = Sys.getenv("SQLSERVER_PWD"))
+flights3 <- as.data.frame(flights)
+system.time(dbWriteTable(odbc, "flights3", flights3))
 #>    user  system elapsed
-#> 645.219  12.287 820.806
-
-odbc <- dbConnect(odbc::odbc(), dsn = "SQLServer", UID = "testuser", PWD = "test")
-system.time(dbWriteTable(odbc, "flights3", as.data.frame(flights)))
-#>    user  system elapsed
-#>  12.336   0.412  21.802
-
-# Reading
-system.time(dbReadTable(rsqlserver, "flights", as.data.frame(flights)))
-#>    user  system elapsed
-#>   5.101   1.289   3.584
-
-system.time(dbReadTable(odbc, "flights", as.data.frame(flights)))
-#>   user  system elapsed
-#>  2.187   0.108   2.298
+#>   2.617   0.275   9.649
 ```
