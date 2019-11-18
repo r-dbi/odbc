@@ -65,7 +65,14 @@ jobs:
         run: Rscript -e "install.packages('remotes')" -e "remotes::install_deps(dependencies = TRUE)" -e "remotes::install_cran('rcmdcheck')"
 
       - name: Test
-        run: R -e 'install.packages(".", repos = NULL)' -e 'odbc::odbcListDrivers()' -e 'odbc::odbcListDataSources()'
+        run: |
+        install.packages(".", repos = NULL)
+        odbc::odbcListDrivers()
+        odbc::odbcListDataSources()
+        library(DBI)
+        con <- dbConnect(odbc::odbc(), "PostgreSQL")
+        con
+        shell: Rscript {0}
       #- name: Check
         #run: Rscript -e "rcmdcheck::rcmdcheck(args = '--no-manual', error_on = 'warning', check_dir = 'check')"
 
