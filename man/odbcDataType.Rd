@@ -47,7 +47,7 @@ method definition of a fictional \code{foo} database follows.\preformatted{con <
 dbGetInfo(con)$dbms.name
 #> [1] "foo"
 
-`odbcDataType.foo <- function(con, obj, ...) {
+`odbcDataType.foo <- function(con, obj, ...) \{
   switch_type(obj,
     factor = "VARCHAR(255)",
     datetime = "TIMESTAMP",
@@ -60,7 +60,7 @@ dbGetInfo(con)$dbms.name
     list = "VARCHAR(255)",
     stop("Unsupported type", call. = FALSE)
   )
-}
+\}
 }
 }
 
