@@ -135,6 +135,7 @@ setMethod(
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbSendStatement
+#' @param params Query parameters to pass to [dbBind()], See [dbBind()] for details.
 #' @export
 setMethod(
   "dbSendStatement", c("OdbcConnection", "character"),

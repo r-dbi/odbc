@@ -74,6 +74,8 @@ or a \linkS4class{DBIResult}}
 
 \item{statement}{a character string containing SQL.}
 
+\item{params}{Query parameters to pass to \code{\link[=dbBind]{dbBind()}}, See \code{\link[=dbBind]{dbBind()}} for details.}
+
 \item{obj}{An R object whose SQL type we want to determine.}
 
 \item{x}{A character vector, \link[DBI]{SQL} or \link[DBI]{Id} object to quote as identifier.}
