@@ -27,3 +27,4 @@
 ^revdep$
 ^testing$
 ^CRAN-RELEASE$
+^setup.md$
