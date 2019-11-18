@@ -23,13 +23,6 @@ jobs:
         env:
           ACCEPT_EULA: Y
           SA_PASSWORD: Password12
-      mysql:
-        image: mysql
-        ports:
-        - 3306/tcp
-        env:
-          MYSQL_ROOT_PASSWORD:
-          MYSQL_DATABASE: test
 
     name: ${{ matrix.r }}
 
@@ -66,7 +59,7 @@ jobs:
 
       - name: Install driver system dependencies
         run: |
-          sudo apt-get install -y unixodbc-dev odbc-postgresql libmyodbc devscripts
+          sudo apt-get install -y unixodbc-dev odbc-postgresql devscripts
 
       - name: Install dependencies
         run: Rscript -e "install.packages('remotes')" -e "remotes::install_deps(dependencies = TRUE)" -e "remotes::install_cran('rcmdcheck')"
