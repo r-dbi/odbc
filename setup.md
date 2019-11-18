@@ -62,3 +62,30 @@ odbc manager explicitly.
 
 install.packages("RODBC", type = "source", INSTALL_opts="--configure-args='--with-odbc-manager=odbc'")
 ```
+
+## Linux
+
+Create docker container
+
+```shell
+docker run -v "$(pwd)":"/opt/$(basename $(pwd))":delegated --security-opt=seccomp:unconfined --link sql1 -it rstudio/r-base:3.6.1-bionic /bin/bash
+```
+
+In docker
+```shell
+curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+#Ubuntu 18.04
+curl https://packages.microsoft.com/config/ubuntu/18.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
+
+apt-get update
+ACCEPT_EULA=Y apt-get install -y msodbcsql17
+apt-get install -y unixodbc-dev
+```
+
+```ini
+[MicrosoftSQLServer]
+driver = ODBC Driver 17 for SQL Server
+Server = sql1
+port = 1433
+Database = test
+```
