@@ -66,12 +66,12 @@ jobs:
 
       - name: Test
         run: |
-        install.packages(".", repos = NULL)
-        odbc::odbcListDrivers()
-        odbc::odbcListDataSources()
-        library(DBI)
-        con <- dbConnect(odbc::odbc(), "PostgreSQL")
-        con
+          install.packages(".", repos = NULL)
+          odbc::odbcListDrivers()
+          odbc::odbcListDataSources()
+          library(DBI)
+          con <- dbConnect(odbc::odbc(), "PostgreSQL")
+          con
         shell: Rscript {0}
       #- name: Check
         #run: Rscript -e "rcmdcheck::rcmdcheck(args = '--no-manual', error_on = 'warning', check_dir = 'check')"
