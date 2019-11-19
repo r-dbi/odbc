@@ -2,6 +2,10 @@
 
 ## Features
 
+* New `odbcConnectionColumns()` function to describe the column types. This
+  data is used when binding columns, which allows drivers which do not support
+  the `SQLDescribeParam()` ODBC function, such as freeTDS. (#313, @detule)
+
 * The RStudio Connections Pane now shows the DSN, when available (#304, @davidchall).
 
 ## Bugfixes
