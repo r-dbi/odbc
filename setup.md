@@ -29,7 +29,7 @@ port = 1433
 Then we need to start an instance of SQL Server in a docker container.
 
 ```shell
-docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Passw0rd" \
+docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Password12" \
    -p 1433:1433 --name sql1 \
    -d mcr.microsoft.com/mssql/server:2017-latest
 ```
