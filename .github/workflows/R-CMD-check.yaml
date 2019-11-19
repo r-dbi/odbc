@@ -57,9 +57,16 @@ jobs:
           sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
           sudo -s eval "$sysreqs"
 
-      - name: Install driver system dependencies
+      - name: Install PostgreSQL Driver
         run: |
           sudo apt-get install -y unixodbc-dev odbc-postgresql devscripts
+
+      - name: Install SQL Server Driver
+        run: |
+          curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+          sudo curl https://packages.microsoft.com/config/ubuntu/18.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
+          sudo apt-get update
+          ACCEPT_EULA=Y sudo apt-get install -y msodbcsql17
 
       - name: Install dependencies
         run: Rscript -e "install.packages('remotes')" -e "remotes::install_deps(dependencies = TRUE)" -e "remotes::install_cran('rcmdcheck')"
@@ -70,6 +77,8 @@ jobs:
           odbc::odbcListDrivers()
           odbc::odbcListDataSources()
           library(DBI)
+          con <- dbConnect(odbc::odbc(), "MicrosoftSQLServer", UID = "SA", password = "Password12")
+          con
           con <- dbConnect(odbc::odbc(), "PostgreSQL")
           con
         shell: Rscript {0}
