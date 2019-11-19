@@ -19,7 +19,7 @@ jobs:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
         ports:
-        - 1433/1433
+        - 1433:1433
         env:
           ACCEPT_EULA: Y
           SA_PASSWORD: Password12
