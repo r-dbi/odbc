@@ -81,7 +81,7 @@ jobs:
         run: |
           curl -LO https://downloads.mariadb.com/Connectors/odbc/connector-odbc-${MARIADB_DRIVER_VERSION}/mariadb-connector-odbc-${MARIADB_DRIVER_VERSION}-ga-debian-x86_64.tar.gz
           tar -xvzf mariadb-connector-odbc-${MARIADB_DRIVER_VERSION}-ga-debian-x86_64.tar.gz
-          sudo install lib64/libmaodbc.so /usr/lib/
+          sudo install lib/libmaodbc.so /usr/lib/
 
       - name: Install dependencies
         run: Rscript -e "install.packages('remotes')" -e "remotes::install_deps(dependencies = TRUE)" -e "remotes::install_cran('rcmdcheck')"
