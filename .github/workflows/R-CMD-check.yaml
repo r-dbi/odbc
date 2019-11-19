@@ -10,7 +10,7 @@ jobs:
       postgres:
         image: postgres
         ports:
-        - 5432/tcp
+        - 5432:5432
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
@@ -19,7 +19,7 @@ jobs:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
         ports:
-        - 1433/tcp
+        - 1433/1433
         env:
           ACCEPT_EULA: Y
           SA_PASSWORD: Password12
