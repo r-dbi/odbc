@@ -5,6 +5,7 @@
 #' - MySQL
 #' - PostgreSQL
 #' - SQL Server
+#' - Oracle
 #' - SQLite
 #' - Spark
 #' - Hive
@@ -12,6 +13,7 @@
 #' - Redshift
 #' - Vertica
 #' - BigQuery
+#' - Teradata
 #'
 #' If you are using a different database and `dbWriteTable()` fails with a SQL
 #' parsing error the default method is not appropriate, you will need to write
@@ -258,6 +260,23 @@ odbcDataType.Oracle <- function(con, obj, ...) {
     double = "FLOAT64",
     character = "STRING",
     logical = "BOOL",
+    stop("Unsupported type", call. = FALSE)
+  )
+}
+
+#' @export
+`odbcDataType.Teradata` <- function(con, obj, ...) {
+  switch_type(obj,
+    factor = "VARCHAR(255)",
+    datetime = "TIMESTAMP",
+    date = "DATE",
+    time = "TIME",
+    binary = "BLOB",
+    integer = "INTEGER",
+    double = "FLOAT",
+    character = "VARCHAR(255)",
+    logical = "BYTEINT",
+    list = "VARCHAR(255)",
     stop("Unsupported type", call. = FALSE)
   )
 }
