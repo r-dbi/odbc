@@ -29,6 +29,7 @@ jobs:
           - 3307:3307
         env:
           MYSQL_ROOT_PASSWORD: password
+          MYSQL_USER: testuser
           MYSQL_PASSWORD: password
           MYSQL_DATABASE: test_db
         options: --health-cmd "mysqladmin ping" --health-interval 10s --health-timeout 5s --health-retries 5
