@@ -79,6 +79,8 @@ jobs:
 
       - name: Check
         run: Rscript -e "rcmdcheck::rcmdcheck(args = '--no-manual', error_on = 'warning', check_dir = 'check')"
+        env:
+          LIB_DIR: /usr/lib/x86_64-linux-gnu/
 
       - name: Upload check results
         if: failure()
