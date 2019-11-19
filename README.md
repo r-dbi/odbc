@@ -3,16 +3,17 @@
 
 # odbc
 
+<!-- badges: start -->
+
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/odbc)](https://cran.r-project.org/package=odbc)
-[![Travis-CI Build
-Status](https://travis-ci.org/r-dbi/odbc.svg?branch=master)](https://travis-ci.org/r-dbi/odbc)
+[![R build
+status](https://github.com/r-dbi/odbc/workflows/R-CMD-check/badge.svg)](https://github.com/r-dbi/odbc/actions?workflow=R-CMD-check)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/r-dbi/odbc/master.svg)](https://codecov.io/github/r-dbi/odbc?branch=master)
-[![AppVeyor Build
-Status](https://ci.appveyor.com/api/projects/status/2bnahh7qg5iu7197?svg=true)](https://ci.appveyor.com/project/hadley/odbconnect-cqvmd)
+<!-- badges: end -->
 
 The goal of the odbc package is to provide a DBI-compliant interface to
 [Open Database
@@ -320,6 +321,7 @@ Reading a table from a SQL Server database with the ‘flights’ dataset
 library(DBI)
 rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "MicrosoftSQLServer", user = Sys.getenv("SQLSERVER_UID"), password = Sys.getenv("SQLSERVER_PWD"))
 system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
+system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
 #>    user  system elapsed 
 #>  13.986   1.173  15.192
 
@@ -350,11 +352,9 @@ tibble::as_tibble(odbc_result)
 
 identical(dim(rodbc_result), dim(odbc_result))
 #> [1] TRUE
+
 rm(rodbc_result, odbc_result, odbc, rodbc)
 gc(verbose = FALSE)
-#>           used (Mb) gc trigger  (Mb) limit (Mb) max used  (Mb)
-#> Ncells  776634 41.5    1320918  70.6         NA  1320918  70.6
-#> Vcells 1380984 10.6   18155848 138.6      16384 22548279 172.1
 ```
 
 ### Writing
