@@ -89,18 +89,31 @@ jobs:
       - name: Install dependencies
         run: Rscript -e "install.packages('remotes')" -e "remotes::install_deps(dependencies = TRUE)" -e "remotes::install_cran('rcmdcheck')"
 
-      - name: Check
-        run: Rscript -e "rcmdcheck::rcmdcheck(args = '--no-manual', error_on = 'warning', check_dir = 'check')"
-
-      - name: Upload check results
-        if: failure()
-        uses: actions/upload-artifact@master
-        with:
-          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-          path: check
-
-      - name: Test coverage
-        if: matrix.r == '3.6'
+      - name: Test
         run: |
-          Rscript -e 'remotes::install_github("r-lib/covr@gh-actions")'
-          Rscript -e 'covr::codecov(token = "${{secrets.CODECOV_TOKEN}}")'
+          install.packages(".", repos = NULL)
+          odbc::odbcListDrivers()
+          odbc::odbcListDataSources()
+          library(DBI)
+          con <- dbConnect(odbc::odbc(), "MicrosoftSQLServer", UID = "SA", PWD = "Password12")
+          con
+          con <- dbConnect(odbc::odbc(), "PostgreSQL")
+          con
+          con <- dbConnect(odbc::odbc(), "MySQL")
+          con
+        shell: Rscript {0}
+      #- name: Check
+        #run: Rscript -e "rcmdcheck::rcmdcheck(args = '--no-manual', error_on = 'warning', check_dir = 'check')"
+
+      #- name: Upload check results
+        #if: failure()
+        #uses: actions/upload-artifact@master
+        #with:
+          #name: ${{ runner.os }}-r${{ matrix.config.r }}-results
+          #path: check
+
+      #- name: Test coverage
+        #if: matrix.r == '3.6'
+        #run: |
+          #Rscript -e 'remotes::install_github("r-lib/covr@gh-actions")'
+          #Rscript -e 'covr::codecov(token = "${{secrets.CODECOV_TOKEN}}")'
