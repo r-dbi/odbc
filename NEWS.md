@@ -2,6 +2,8 @@
 
 ## Features
 
+* Added a Teradata `odbcDataType()` to support writing logical data to Teradata servers (#240, @blarj09).
+
 * Subseconds are now retained when inserting POSIXct objects (#130, #208)
 
 * `dbSendStatement()` now supports the `params` argument, which allows it to be
