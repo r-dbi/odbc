@@ -6,6 +6,8 @@
   data is used when binding columns, which allows drivers which do not support
   the `SQLDescribeParam()` ODBC function, such as freeTDS. (#313, @detule)
 
+* Added a Teradata `odbcDataType()` to support writing logical data to Teradata servers (#240, @blarj09).
+
 * Subseconds are now retained when inserting POSIXct objects (#130, #208)
 
 * `dbSendStatement()` now supports the `params` argument, which allows it to be
