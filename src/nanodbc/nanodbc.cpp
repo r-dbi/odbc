@@ -1972,7 +1972,11 @@ void statement::statement_impl::bind_parameter<string_type::value_type>(
         param.scale_,               // decimal digits
         (SQLPOINTER)buffer.values_, // parameter value
         buffer_size,                // buffer length
-        (buffer.size_ <= 1 ? nullptr : bind_len_or_null_[param.index_].data()));
+        // the original source line is
+        // (buffer.size_ <= 1 ? nullptr : bind_len_or_null_[param.index_].data()));
+        // but it will lead to an issue that `dbWriteTable()` can't upload NA as
+        // NULL if the row of the data.frame is only 1. See #287 #288.
+        bind_len_or_null_[param.index_].data());
 
     if (!success(rc))
         NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);

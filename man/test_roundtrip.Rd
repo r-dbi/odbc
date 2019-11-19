@@ -4,8 +4,12 @@
 \alias{test_roundtrip}
 \title{Test round tripping a simple table}
 \usage{
-test_roundtrip(con = DBItest:::connect(DBItest:::get_default_context()),
-  columns = "", invert = TRUE, force_sorted = FALSE)
+test_roundtrip(
+  con = DBItest:::connect(DBItest:::get_default_context()),
+  columns = "",
+  invert = TRUE,
+  force_sorted = FALSE
+)
 }
 \arguments{
 \item{con}{An established DBI connection.}

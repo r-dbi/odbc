@@ -307,7 +307,9 @@ nanodbc::timestamp odbc_result::as_timestamp(double value) {
   auto utc_time = system_clock::from_time_t(static_cast<std::time_t>(value));
 
   auto civil_time = cctz::convert(utc_time, c_->timezone());
-  ts.fract = frac;
+  // We are using a fixed precision of 3, as that is all we can be guaranteed
+  // to support in SQLServer
+  ts.fract = (std::int32_t)(frac * 1000) * 1000000;
   ts.sec = civil_time.second();
   ts.min = civil_time.minute();
   ts.hour = civil_time.hour();
@@ -506,7 +508,7 @@ void odbc_result::add_classes(
       break;
     case datetime_t:
       x.attr("class") = Rcpp::CharacterVector::create("POSIXct", "POSIXt");
-      x.attr("tzone") = Rcpp::CharacterVector::create("UTC");
+      x.attr("tzone") = Rcpp::CharacterVector::create(c_->timezone_out_str());
       break;
     case odbc::time_t:
       x.attr("class") = Rcpp::CharacterVector::create("hms", "difftime");

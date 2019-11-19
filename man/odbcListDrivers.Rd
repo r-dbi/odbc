@@ -4,12 +4,23 @@
 \alias{odbcListDrivers}
 \title{List Available ODBC Drivers}
 \usage{
-odbcListDrivers()
+odbcListDrivers(
+  keep = getOption("odbc.drivers_keep"),
+  filter = getOption("odbc.drivers_filter")
+)
+}
+\arguments{
+\item{keep}{A character vector of driver names to keep in the results, if
+\code{NULL} (the default) will keep all drivers.}
+
+\item{filter}{A character vector of driver names to filter from the results, if
+\code{NULL} (the default) will not filter any drivers.}
 }
 \value{
 A data frame with three columns.
 If a given driver does not have any attributes the last two columns will be
-\code{NA}.
+\code{NA}. Drivers can be excluded from being returned by setting the
+\code{odbc.drivers.filter} option.
 \describe{
 \item{name}{Name of the driver}
 \item{attribute}{Driver attribute name}

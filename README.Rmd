@@ -10,16 +10,18 @@ output:
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "README-"
+  fig.path = "README-",
+  eval = as.logical(Sys.getenv("ODBC_EVAL_README", "false"))
 )
 ```
 
 # odbc
+<!-- badges: start -->
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/odbc)](https://cran.r-project.org/package=odbc)
-[![Travis-CI Build Status](https://travis-ci.org/r-dbi/odbc.svg?branch=master)](https://travis-ci.org/r-dbi/odbc)
+[![R build status](https://github.com/r-dbi/odbc/workflows/R-CMD-check/badge.svg)](https://github.com/r-dbi/odbc/actions?workflow=R-CMD-check)
 [![Coverage Status](https://img.shields.io/codecov/c/github/r-dbi/odbc/master.svg)](https://codecov.io/github/r-dbi/odbc?branch=master)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/2bnahh7qg5iu7197?svg=true)](https://ci.appveyor.com/project/hadley/odbconnect-cqvmd)
+<!-- badges: end -->
 
 The goal of the odbc package is to provide a DBI-compliant interface to [Open
 Database
@@ -79,6 +81,11 @@ brew install unixodbc
 
 #### Common DB drivers
 ```shell
+# Microsoft SQL Server ODBC Drivers (Recommended)
+brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
+brew update
+brew install msodbcsql17 mssql-tools
+
 # SQL Server ODBC Drivers (Free TDS)
 brew install freetds --with-unixodbc
 
@@ -103,6 +110,10 @@ apt-get install unixodbc unixodbc-dev
 ```
 
 #### Common DB drivers
+
+For SQL Server on Linux it is recommended you use the [Microsoft
+Drivers](https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15#ubuntu).
+
 ```shell
 # SQL Server ODBC Drivers (Free TDS)
 apt-get install tdsodbc
@@ -271,21 +282,47 @@ The *odbc* package is often much faster than the existing
 
 ### Reading
 
-Reading a table from a PostgreSQL database with the 'flights' dataset (336,776 rows, 19 columns) of the package [nytflights13](https://github.com/hadley/nycflights13).
-```{r, cache = TRUE}
+Reading a table from a SQL Server database with the 'flights' dataset (336,776
+rows, 19 columns) of the package
+[nytflights13](https://github.com/hadley/nycflights13).
+
+```{r}
 # First using RODBC / RODBCDBI
 library(DBI)
-rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "PostgreSQL")
+rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "MicrosoftSQLServer", user = Sys.getenv("SQLSERVER_UID"), password = Sys.getenv("SQLSERVER_PWD"))
 system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
+system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
+#>    user  system elapsed 
+#>  13.986   1.173  15.192
 
 # Now using odbc
-odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
+odbc <- dbConnect(odbc::odbc(), dsn = "MicrosoftSQLServer", UID = Sys.getenv("SQLSERVER_UID"), PWD = Sys.getenv("SQLSERVER_PWD"))
 system.time(odbc_result <- dbReadTable(odbc, "flights"))
+#>    user  system elapsed 
+#>   1.334   0.065   1.406
 
-library(tibble)
-as_tibble(odbc_result)
+tibble::as_tibble(odbc_result)
+#> # A tibble: 336,776 x 19
+#>     year month   day dep_time sched_dep_time dep_delay arr_time
+#>    <int> <int> <int>    <int>          <int>     <dbl>    <int>
+#>  1  2013     1     1      517            515         2      830
+#>  2  2013     1     1      533            529         4      850
+#>  3  2013     1     1      542            540         2      923
+#>  4  2013     1     1      544            545        -1     1004
+#>  5  2013     1     1      554            600        -6      812
+#>  6  2013     1     1      554            558        -4      740
+#>  7  2013     1     1      555            600        -5      913
+#>  8  2013     1     1      557            600        -3      709
+#>  9  2013     1     1      557            600        -3      838
+#> 10  2013     1     1      558            600        -2      753
+#> # … with 336,766 more rows, and 12 more variables: sched_arr_time <int>,
+#> #   arr_delay <dbl>, carrier <chr>, flight <int>, tailnum <chr>,
+#> #   origin <chr>, dest <chr>, air_time <dbl>, distance <dbl>, hour <dbl>,
+#> #   minute <dbl>, time_hour <dttm>
 
 identical(dim(rodbc_result), dim(odbc_result))
+#> [1] TRUE
+
 rm(rodbc_result, odbc_result, odbc, rodbc)
 gc(verbose = FALSE)
 ```
@@ -293,8 +330,8 @@ gc(verbose = FALSE)
 ### Writing
 
 Writing the same dataset to the database.
-```{r, echo = FALSE, results = "hide", cache = TRUE}
-odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
+```{r, echo = FALSE, results = "hide"}
+odbc <- dbConnect(odbc::odbc(), dsn = "MicrosoftSQLServer", UID = Sys.getenv("SQLSERVER_UID"), PWD = Sys.getenv("SQLSERVER_PWD"))
 if (dbExistsTable(odbc, "flights2")) { dbRemoveTable(odbc, "flights2") }
 if (dbExistsTable(odbc, "flights3")) { dbRemoveTable(odbc, "flights3") }
 rm(odbc)
@@ -303,37 +340,17 @@ gc(verbose = FALSE)
 
 ```{r, cache = TRUE}
 library(nycflights13)
-# rodbc does not support writing timestamps natively.
-rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "PostgreSQL")
-system.time(dbWriteTable(rodbc, "flights2", as.data.frame(flights[, names(flights) != "time_hour"])))
+# rodbc does not support writing timestamps natively, so we remove that column
+flights2 <- as.data.frame(flights[, names(flights) != "time_hour"])
+rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "MicrosoftSQLServer", user = Sys.getenv("SQLSERVER_UID"), password = Sys.getenv("SQLSERVER_PWD"))
+system.time(dbWriteTable(rodbc, "flights2", flights2))
+#>    user  system elapsed
+#>  11.891   6.269 765.269
 
 # Now using odbc
-odbc <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
-system.time(dbWriteTable(odbc, "flights3", as.data.frame(flights)))
-```
-
-### SQL Server
-```{r, eval = FALSE}
-packageVersion("RSQLServer")
-#> [1] ‘0.3.0’
-
-# Writing
-rsqlserver <- dbConnect(RSQLServer::SQLServer(), server = "SQLServer")
-system.time(dbWriteTable(rsqlserver, "flights2", as.data.frame(flights)))
+odbc <- dbConnect(odbc::odbc(), dsn = "MicrosoftSQLServer", UID = Sys.getenv("SQLSERVER_UID"), PWD = Sys.getenv("SQLSERVER_PWD"))
+flights3 <- as.data.frame(flights)
+system.time(dbWriteTable(odbc, "flights3", flights3))
 #>    user  system elapsed
-#> 645.219  12.287 820.806
-
-odbc <- dbConnect(odbc::odbc(), dsn = "SQLServer", UID = "testuser", PWD = "test")
-system.time(dbWriteTable(odbc, "flights3", as.data.frame(flights)))
-#>    user  system elapsed
-#>  12.336   0.412  21.802
-
-# Reading
-system.time(dbReadTable(rsqlserver, "flights", as.data.frame(flights)))
-#>    user  system elapsed
-#>   5.101   1.289   3.584
-
-system.time(dbReadTable(odbc, "flights", as.data.frame(flights)))
-#>   user  system elapsed
-#>  2.187   0.108   2.298
+#>   2.617   0.275   9.649
 ```

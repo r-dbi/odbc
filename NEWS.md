@@ -6,7 +6,20 @@
   data is used when binding columns, which allows drivers which do not support
   the `SQLDescribeParam()` ODBC function, such as freeTDS. (#313, @detule)
 
+* Subseconds are now retained when inserting POSIXct objects (#130, #208)
+
+* `dbSendStatement()` now supports the `params` argument, which allows it to be
+  used (indirectly) by `DBI::dbAppendTable()` (#215, #261).
+
+* `odbcListDrivers()` gains a `keep` and `filter` argument and global options
+  `odbc.drivers_keep`, `odbc.drivers_filter` to keep and filter the drivers
+  returned. This is useful if system administrators want to reduce the number
+  of drivers shown to users. (@blairj09, #274)
+
 * The RStudio Connections Pane now shows the DSN, when available (#304, @davidchall).
+
+* `dbConnect()` now has a new param `timezone_out` which is useful if the user wants 
+  the datetime values be marked with a specific timezone instead of UTC (@shrektan, #294).
 
 ## Bugfixes
 
@@ -14,15 +27,22 @@
   a qualified Id object (using both schema and table) (#226).
 
 * Fix SQL Server ODBC's unsupported '-155' data type, and its losing
+* `dbExistsTable()` now works for SQL Server when specifying schemas but not
+  catalogs using the freeTDS and Simba drivers. (#197)
+
+- fix SQL Server ODBC's unsupported '-155' data type, and its losing
   sub-second precision on timestamps; this still returns type
   `DATETIMEOFFSET` as a character, but it preserves sub-seconds and
- has a numeric timezone offset (@r2evans, #207).
+  has a numeric timezone offset (@r2evans, #207).
   
 * Fix an issue that the date value fetched from the database may be one
   day before its real value (@shrektan, #295).
 
 * `dbExistsTable()` now handles the case-sensitivity consistently as
   other methods (@shrektan, #285).
+
+* `dbWriteTable()` now always writes `NA_character` as `NULL` for
+  data.frame with only one row (@shrektan, #288).
 
 # odbc 1.1.6
 
