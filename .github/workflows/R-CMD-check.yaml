@@ -25,7 +25,8 @@ jobs:
           SA_PASSWORD: Password12
       mariadb:
         image: mariadb
-        - 3306/3306
+        ports:
+          - 3306/3306
         env:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_PASSWORD: password
