@@ -75,6 +75,14 @@ jobs:
           ACCEPT_EULA=Y apt-get install -y msodbcsql17
         shell: sudo bash {0}
 
+      - name: Install MariaDB Driver
+        env:
+          MARIADB_DRIVER_VERSION: 3.1.5
+        run: |
+          curl -LO https://downloads.mariadb.com/Connectors/odbc/connector-odbc-${MARIADB_DRIVER_VERSION}/mariadb-connector-odbc-${MARIADB_DRIVER_VERSION}-ga-debian-x86_64.tar.gz
+          tar -xvzf mariadb-connector-odbc-${MARIADB_DRIVER_VERSION}-ga-debian-x86_64.tar.gz
+          sudo install lib64/libmaodbc.so /usr/lib64/
+
       - name: Install dependencies
         run: Rscript -e "install.packages('remotes')" -e "remotes::install_deps(dependencies = TRUE)" -e "remotes::install_cran('rcmdcheck')"
 
