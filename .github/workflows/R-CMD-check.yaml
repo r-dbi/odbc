@@ -23,16 +23,6 @@ jobs:
         env:
           ACCEPT_EULA: Y
           SA_PASSWORD: Password12
-      mariadb:
-        image: mariadb
-        ports:
-          - 3307:3307
-        env:
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_USER: testuser
-          MYSQL_PASSWORD: password
-          MYSQL_DATABASE: test_db
-        options: --health-cmd "mysqladmin ping" --health-interval 10s --health-timeout 5s --health-retries 5
 
     name: ${{ matrix.r }}
 
@@ -79,42 +69,21 @@ jobs:
           ACCEPT_EULA=Y apt-get install -y msodbcsql17
         shell: sudo bash {0}
 
-      - name: Install MariaDB Driver
-        env:
-          MARIADB_DRIVER_VERSION: 3.1.5
-        run: |
-          curl -LO https://downloads.mariadb.com/Connectors/odbc/connector-odbc-${MARIADB_DRIVER_VERSION}/mariadb-connector-odbc-${MARIADB_DRIVER_VERSION}-ga-debian-x86_64.tar.gz
-          tar -xvzf mariadb-connector-odbc-${MARIADB_DRIVER_VERSION}-ga-debian-x86_64.tar.gz
-          sudo install lib/libmaodbc.so /usr/lib/
-
       - name: Install dependencies
         run: Rscript -e "install.packages('remotes')" -e "remotes::install_deps(dependencies = TRUE)" -e "remotes::install_cran('rcmdcheck')"
 
-      - name: Test
+      - name: Check
+        run: Rscript -e "rcmdcheck::rcmdcheck(args = '--no-manual', error_on = 'warning', check_dir = 'check')"
+
+      - name: Upload check results
+        if: failure()
+        uses: actions/upload-artifact@master
+        with:
+          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
+          path: check
+
+      - name: Test coverage
+        if: matrix.r == '3.6'
         run: |
-          install.packages(".", repos = NULL)
-          odbc::odbcListDrivers()
-          odbc::odbcListDataSources()
-          library(DBI)
-          con <- dbConnect(odbc::odbc(), "MicrosoftSQLServer", UID = "SA", PWD = "Password12")
-          con
-          con <- dbConnect(odbc::odbc(), "PostgreSQL")
-          con
-          con <- dbConnect(odbc::odbc(), "MySQL")
-          con
-        shell: Rscript {0}
-      #- name: Check
-        #run: Rscript -e "rcmdcheck::rcmdcheck(args = '--no-manual', error_on = 'warning', check_dir = 'check')"
-
-      #- name: Upload check results
-        #if: failure()
-        #uses: actions/upload-artifact@master
-        #with:
-          #name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-          #path: check
-
-      #- name: Test coverage
-        #if: matrix.r == '3.6'
-        #run: |
-          #Rscript -e 'remotes::install_github("r-lib/covr@gh-actions")'
-          #Rscript -e 'covr::codecov(token = "${{secrets.CODECOV_TOKEN}}")'
+          Rscript -e 'remotes::install_github("r-lib/covr@gh-actions")'
+          Rscript -e 'covr::codecov(token = "${{secrets.CODECOV_TOKEN}}")'
