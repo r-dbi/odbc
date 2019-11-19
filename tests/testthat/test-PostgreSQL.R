@@ -1,4 +1,5 @@
 test_that("PostgreSQL", {
+  skip("foo")
   skip_unless_has_test_db({
     DBItest::make_context(odbc(), list(dsn = "PostgreSQL"), tweaks = DBItest::tweaks(temporary_tables = FALSE, placeholder_pattern = "?"), name = "PostgreSQL")
   })
