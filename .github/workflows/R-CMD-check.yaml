@@ -96,6 +96,8 @@ jobs:
           con
           con <- dbConnect(odbc::odbc(), "PostgreSQL")
           con
+          con <- dbConnect(odbc::odbc(), "MySQL")
+          con
         shell: Rscript {0}
       #- name: Check
         #run: Rscript -e "rcmdcheck::rcmdcheck(args = '--no-manual', error_on = 'warning', check_dir = 'check')"
