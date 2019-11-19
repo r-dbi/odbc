@@ -50,6 +50,14 @@ odbc_write_table <-
       dbExecute(conn, sql)
     }
 
+    fieldDetails <- tryCatch({
+      details <- odbcConnectionColumns(conn, name)
+      details$param_index <- match(details$name, names(values))
+      details[!is.na(details$param_index)]
+    }, error = function(e) {
+      return(NULL)
+    })
+
     if (nrow(value) > 0) {
 
       name <- dbQuoteIdentifier(conn, name)
@@ -61,6 +69,10 @@ odbc_write_table <-
         "VALUES (", paste0(params, collapse = ", "), ")"
         )
       rs <- OdbcResult(conn, sql)
+
+      if (!is.null(fieldDetails) && nrow(fieldDetails)) {
+        result_describe_parameters(rs@ptr, fieldDetails)
+      }
 
       tryCatch(
         result_insert_dataframe(rs@ptr, values),

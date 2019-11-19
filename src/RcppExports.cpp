@@ -275,6 +275,17 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// result_describe_parameters
+void result_describe_parameters(result_ptr const& r, DataFrame const& df);
+RcppExport SEXP _odbc_result_describe_parameters(SEXP rSEXP, SEXP dfSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< result_ptr const& >::type r(rSEXP);
+    Rcpp::traits::input_parameter< DataFrame const& >::type df(dfSEXP);
+    result_describe_parameters(r, df);
+    return R_NilValue;
+END_RCPP
+}
 // result_rows_affected
 int result_rows_affected(result_ptr const& r);
 RcppExport SEXP _odbc_result_rows_affected(SEXP rSEXP) {
@@ -333,6 +344,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_odbc_result_bind", (DL_FUNC) &_odbc_result_bind, 2},
     {"_odbc_result_execute", (DL_FUNC) &_odbc_result_execute, 1},
     {"_odbc_result_insert_dataframe", (DL_FUNC) &_odbc_result_insert_dataframe, 2},
+    {"_odbc_result_describe_parameters", (DL_FUNC) &_odbc_result_describe_parameters, 2},
     {"_odbc_result_rows_affected", (DL_FUNC) &_odbc_result_rows_affected, 1},
     {"_odbc_result_row_count", (DL_FUNC) &_odbc_result_row_count, 1},
     {"_odbc_column_types", (DL_FUNC) &_odbc_column_types, 1},

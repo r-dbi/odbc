@@ -915,6 +915,31 @@ public:
 
     /// @}
 
+    /// \brief Sets descriptions for parameters in the prepared statement.
+    ///
+    /// If your prepared SQL query has any parameter markers, ? (question  mark)
+    /// placeholders this is how you can describe the SQL type, size and scale
+    /// for some or all of the parameters, prior to binding any data to the
+    /// parameters.  Calling this method is optional: if a parameter is not
+    /// described using a call to this method, then during a bind an attempt is
+    /// made to identify it using a call to the ODBC SQLDescribeParam API handle.
+    /// Once set, description is re-used for possibly repeated binds
+    /// execution and only cleared when the statement is cleared / destroyed.
+    /// Parameter markers are numbered using Zero-based index from left to right.
+    ///
+    /// \param idx Vector of zero-based indices of parameters we are describing.
+    /// \param type Vector of (short integer) types.
+    /// \param size Vector of (unsigned long) sizes.
+    /// \param scale Vector of (short integer) decimal precision / scale.
+    /// \throws programming_error
+    void describe_parameters(
+        const std::vector<short>& idx,
+        const std::vector<short>& type,
+        const std::vector<unsigned long>& size,
+        const std::vector<short>& scale);
+
+    /// @}
+
 private:
     typedef std::function<bool(std::size_t)> null_predicate_type;
 

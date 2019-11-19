@@ -70,6 +70,93 @@ setClass(
   )
 )
 
+#' @title odbcConnectionColumns
+#' @name odbcConnectionColumns
+#'
+#' @description For a given table this function recturns detailed information on
+#' all fields / columns.  The expectation is that this is a relatively thin
+#' wrapper around the ODBC SQLColumns function call, with some of the field names
+#' renamed / re-ordered according to the return specifications below.
+#'
+#' @details In \code{\link{dbWriteTable}} we make a call to this method
+#' to get details on the fields of the table we are writing to.  In particualar
+#' the columns `data_type`, `column_size`, and `decimal_digits` are used.  An
+#' implementation is not necessary for \code{\link{dbWriteTable}} to work.
+#' @param conn OdbcConnection
+#' @param name table we wish to get information on
+#' @param ... additional parameters to methods
+#'
+#' @seealso The ODBC documentation on [SQLColumns](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
+#' for further details.
+#'
+#' @return data.frame with columns
+#' \itemize{
+#'   \item{name}
+#'   \item{field.type} {equivalent to type_name in SQLColumns output}
+#'   \item{table_name}
+#'   \item{schema_name}
+#'   \item{catalog_name}
+#'   \item{data_type}
+#'   \item{column_size}
+#'   \item{buffer_length}
+#'   \item{decimal_digits}
+#'   \item{numeric_precision_radix}
+#"   \item{remarks}
+#'   \item{column_default}
+#'   \item{sql_data_type}
+#'   \item{sql_datetime_subtype}
+#'   \item{char_octet_length}
+#'   \item{ordinal_position}
+#'   \item{nullable}
+#' }
+#' @export
+setGeneric(
+  "odbcConnectionColumns",
+  valueClass = "data.frame",
+  function(conn, name, ...) {
+    standardGeneric("odbcConnectionColumns")
+  }
+)
+
+#' @name odbcConnectionColumns
+#' @aliases odbcConnectionColumns,OdbcConnection,Id-method
+#' @inheritParams odbcConnectionColumns
+#' @param column_name The name of the column to return, the default returns all columns.
+#'
+#' @export
+setMethod(
+  "odbcConnectionColumns",
+  c("OdbcConnection", "Id"),
+  function(conn, name, column_name = NULL) {
+
+    odbcConnectionColumns(conn,
+      name = name@name[["table"]],
+      catalog_name = name@name[["catalog"]],
+      schema_name = name@name[["schema"]],
+      column_name = column_name)
+  }
+)
+
+#' @name odbcConnectionColumns
+#' @aliases odbcConnectionColumns,OdbcConnection,character-method
+#' @inheritParams odbcConnectionColumns
+#' @param catalog_name charaacter catalog where the table is located
+#' @param schema_name charaacter schema where the table is located
+#' @export
+setMethod(
+  "odbcConnectionColumns",
+  c("OdbcConnection", "character"),
+  function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL) {
+
+    connection_sql_columns(conn@ptr,
+      table_name = name,
+      catalog_name = catalog_name,
+      schema_name = schema_name,
+      column_name = column_name)
+
+  }
+)
+
 # TODO: show encoding, timezone, bigint mapping
 #' @rdname OdbcConnection
 #' @inheritParams methods::show
@@ -239,8 +326,8 @@ setMethod(
 setMethod(
   "dbListFields", c("OdbcConnection", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL, ...) {
-    connection_sql_columns(conn@ptr,
-      table_name = name,
+    odbcConnectionColumns(conn,
+      name = name,
       catalog_name = catalog_name,
       schema_name = schema_name,
       column_name = column_name)[["name"]]

@@ -36,6 +36,7 @@ public:
   std::shared_ptr<nanodbc::result> result() const;
   void prepare();
   void execute();
+  void describe_parameters(Rcpp::List const& x);
   void bind_list(Rcpp::List const& x, bool use_transaction = true);
   Rcpp::DataFrame fetch(int n_max = -1);
 

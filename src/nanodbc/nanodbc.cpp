@@ -1649,7 +1649,11 @@ public:
         return cols;
     }
 
-    void reset_parameters() NANODBC_NOEXCEPT { NANODBC_CALL(SQLFreeStmt, stmt_, SQL_RESET_PARAMS); }
+    void reset_parameters() NANODBC_NOEXCEPT
+    {
+        param_descr_data_.clear();
+        NANODBC_CALL(SQLFreeStmt, stmt_, SQL_RESET_PARAMS);
+    }
 
     short parameters() const
     {
@@ -1728,26 +1732,35 @@ public:
         disable_async();
 #endif
 
-        RETCODE rc;
-        SQLSMALLINT nullable; // unused
-        NANODBC_CALL_RC(
-            SQLDescribeParam,
-            rc,
-            stmt_,
-            param_index + 1,
-            &param.type_,
-            &param.size_,
-            &param.scale_,
-            &nullable);
-        if (!success(rc))
+        if (!param_descr_data_.count(param_index))
         {
-            // Fallback to binding as a varchar if SQLDescribeParam fails, will
-            // truncate data if it is longer than 256 characters, and may not
-            // work for all data types, but is necessary to support drivers
-            // which do not support SQLDescribeParam.
-            param.type_ = SQL_VARCHAR;
-            param.size_ = 256;
-            param.scale_ = 0;
+            RETCODE rc;
+            SQLSMALLINT nullable; // unused
+            NANODBC_CALL_RC(
+                SQLDescribeParam,
+                rc,
+                stmt_,
+                param_index + 1,
+                &param.type_,
+                &param.size_,
+                &param.scale_,
+                &nullable);
+            if (!success(rc))
+            {
+                // Fallback to binding as a varchar if SQLDescribeParam fails, will
+                // truncate data if it is longer than 256 characters, and may not
+                // work for all data types, but is necessary to support drivers
+                // which do not support SQLDescribeParam.
+                param.type_ = SQL_VARCHAR;
+                param.size_ = 256;
+                param.scale_ = 0;
+            }
+        }
+        else
+        {
+            param.type_ = param_descr_data_[param_index].type_;
+            param.size_ = param_descr_data_[param_index].size_;
+            param.scale_ = param_descr_data_[param_index].scale_;
         }
 
         param.index_ = param_index;
@@ -1893,6 +1906,26 @@ public:
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
+    void describe_parameters(
+        const std::vector<short>& idx,
+        const std::vector<short>& type,
+        const std::vector<unsigned long>& size,
+        const std::vector<short>& scale)
+    {
+
+        if (idx.size() != type.size() || idx.size() != size.size() || idx.size() != scale.size())
+            throw programming_error("parameter description arrays are of different size");
+
+        for (std::size_t i = 0; i < idx.size(); ++i)
+        {
+            param_descr_data_[idx[i]].type_ = static_cast<SQLSMALLINT>(type[i]);
+            param_descr_data_[idx[i]].size_ = static_cast<SQLULEN>(size[i]);
+            param_descr_data_[idx[i]].scale_ = static_cast<SQLSMALLINT>(scale[i]);
+            param_descr_data_[idx[i]].index_ = static_cast<SQLUSMALLINT>(i);
+            param_descr_data_[idx[i]].iotype_ = PARAM_IN; // not used
+        }
+    }
+
     // comparator for null sentry values
     template <class T>
     bool equals(const T& lhs, const T& rhs)
@@ -1907,6 +1940,7 @@ private:
     std::map<short, std::vector<null_type>> bind_len_or_null_;
     std::map<short, std::vector<string_type::value_type>> string_data_;
     std::map<short, std::vector<uint8_t>> binary_data_;
+    std::map<short, bound_parameter> param_descr_data_;
 
 #if defined(NANODBC_DO_ASYNC_IMPL)
     bool async_;                 // true if statement is currently in SQL_STILL_EXECUTING mode
@@ -3971,6 +4005,15 @@ void statement::bind_strings(
 void statement::bind_null(short param_index, std::size_t batch_size)
 {
     impl_->bind_null(param_index, batch_size);
+}
+
+void statement::describe_parameters(
+    const std::vector<short>& idx,
+    const std::vector<short>& type,
+    const std::vector<unsigned long>& size,
+    const std::vector<short>& scale)
+{
+    impl_->describe_parameters(idx, type, size, scale);
 }
 
 } // namespace nanodbc
