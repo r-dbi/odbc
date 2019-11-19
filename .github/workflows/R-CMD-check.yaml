@@ -84,8 +84,8 @@ jobs:
           odbc::odbcListDrivers()
           odbc::odbcListDataSources()
           library(DBI)
-          #con <- dbConnect(odbc::odbc(), "MicrosoftSQLServer", UID = "SA", password = "Password12")
-          #con
+          con <- dbConnect(odbc::odbc(), "MicrosoftSQLServer", UID = "SA", PWD = "Password12")
+          con
           con <- dbConnect(odbc::odbc(), "PostgreSQL")
           con
         shell: Rscript {0}
