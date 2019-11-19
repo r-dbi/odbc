@@ -25,10 +25,12 @@ jobs:
           SA_PASSWORD: Password12
       mariadb:
         image: mariadb
+        - 3306/3306
         env:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_PASSWORD: password
           MYSQL_DATABASE: test_db
+        options: --health-cmd "mysqladmin ping" --health-interval 10s --health-timeout 5s --health-retries 5
 
     name: ${{ matrix.r }}
 
