@@ -78,6 +78,9 @@ test_that("PostgreSQL", {
       "bind_timestamp_lt", # We do not support POSIXlt objects
       "bind_raw", # This test seems to be not quite working as expected
       "bind_.*",
+      "has_completed_statement",
+      "get_statement_statement",
+      "row_count_statement",
       NULL))
   #DBItest::test_transaction(c(
       #NULL))

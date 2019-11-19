@@ -354,7 +354,7 @@ test_roundtrip <- function(con = DBItest:::connect(DBItest:::get_default_context
       datetime = as.POSIXct(as.numeric(iris$Petal.Length * 10), origin = "2016-01-01", tz = "UTC"),
       date = as.Date(iris$Sepal.Width * 100, origin = Sys.time()),
       time = hms::hms(seconds = sample.int(24 * 60 * 60, NROW(iris))),
-      binary = blob::as.blob(lapply(seq_len(NROW(iris)), function(x) as.raw(sample(0:100, size = sample(0:25, 1))))),
+      binary = blob::as_blob(lapply(seq_len(NROW(iris)), function(x) as.raw(sample(0:100, size = sample(0:25, 1))))),
       integer = as.integer(iris$Petal.Width * 100),
       double = iris$Sepal.Length,
       character = as.character(iris$Species),

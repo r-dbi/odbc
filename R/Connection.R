@@ -14,6 +14,7 @@ OdbcConnection <- function(
   dsn = NULL,
   ...,
   timezone = "UTC",
+  timezone_out = "UTC",
   encoding = "",
   bigint = c("integer64", "integer", "numeric", "character"),
   timeout = Inf,
@@ -36,7 +37,7 @@ OdbcConnection <- function(
     timeout <- 0
   }
 
-  ptr <- odbc_connect(connection_string, timezone = timezone, encoding = encoding, bigint = bigint, timeout = timeout)
+  ptr <- odbc_connect(connection_string, timezone = timezone, timezone_out = timezone_out, encoding = encoding, bigint = bigint, timeout = timeout)
   quote <- connection_quote(ptr)
 
   info <- connection_info(ptr)
@@ -134,11 +135,16 @@ setMethod(
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbSendStatement
+#' @param params Query parameters to pass to [dbBind()], See [dbBind()] for details.
 #' @export
 setMethod(
   "dbSendStatement", c("OdbcConnection", "character"),
-  function(conn, statement, ...) {
+  function(conn, statement, params = NULL, ...) {
     res <- OdbcResult(connection = conn, statement = statement)
+    if (!is.null(params)) {
+      res <- dbBind(res, params = params, ...)
+    }
+
     res
   })
 
@@ -219,7 +225,8 @@ setMethod(
   "dbExistsTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     stopifnot(length(name) == 1)
-    name %in% dbListTables(conn, ...)
+    df <- connection_sql_tables(conn@ptr, table_name = name)
+    NROW(df) > 0
   })
 
 #' @inherit DBI::dbListFields
@@ -312,20 +319,35 @@ setMethod(
 
 #' List Available ODBC Drivers
 #'
+#' @param keep A character vector of driver names to keep in the results, if
+#'   `NULL` (the default) will keep all drivers.
+#' @param filter A character vector of driver names to filter from the results, if
+#'   `NULL` (the default) will not filter any drivers.
 #' @return A data frame with three columns.
 #' If a given driver does not have any attributes the last two columns will be
-#' `NA`.
+#' `NA`. Drivers can be excluded from being returned by setting the
+#' \code{odbc.drivers.filter} option.
 #' \describe{
 #'   \item{name}{Name of the driver}
 #'   \item{attribute}{Driver attribute name}
 #'   \item{value}{Driver attribute value}
 #' }
 #' @export
-odbcListDrivers <- function() {
+odbcListDrivers <- function(keep = getOption("odbc.drivers_keep"), filter = getOption("odbc.drivers_filter")) {
   res <- list_drivers_()
+
   if (nrow(res) > 0) {
     res[res == ""] <- NA_character_
+
+    if (!is.null(keep)) {
+      res <- res[res[["name"]] %in% keep, ]
+    }
+
+    if (!is.null(filter)) {
+      res <- res[!res[["name"]] %in% filter, ]
+    }
   }
+
   res
 }
 
