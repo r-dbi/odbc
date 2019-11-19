@@ -23,6 +23,12 @@ jobs:
         env:
           ACCEPT_EULA: Y
           SA_PASSWORD: Password12
+      mariadb:
+        image: mariadb
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_PASSWORD: password
+          MYSQL_DATABASE: test_db
 
     name: ${{ matrix.r }}
 
@@ -78,8 +84,8 @@ jobs:
           odbc::odbcListDrivers()
           odbc::odbcListDataSources()
           library(DBI)
-          con <- dbConnect(odbc::odbc(), "MicrosoftSQLServer", UID = "SA", password = "Password12")
-          con
+          #con <- dbConnect(odbc::odbc(), "MicrosoftSQLServer", UID = "SA", password = "Password12")
+          #con
           con <- dbConnect(odbc::odbc(), "PostgreSQL")
           con
         shell: Rscript {0}
