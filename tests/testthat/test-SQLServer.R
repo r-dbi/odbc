@@ -60,6 +60,9 @@ test_that("SQLServer", {
   DBItest::test_meta(c(
       "bind_empty",
       "rows_affected_query",
+      "has_completed_statement",
+      "get_statement_statement",
+      "row_count_statement",
       NULL))
   # DBItest::test_transaction(c(
   #     NULL))
