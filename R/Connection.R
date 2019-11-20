@@ -212,11 +212,16 @@ setMethod(
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbSendQuery
+#' @inheritParams dbSendStatement
 #' @export
 setMethod(
   "dbSendQuery", c("OdbcConnection", "character"),
-  function(conn, statement, ...) {
+  function(conn, statement, params = NULL, ...) {
     res <- OdbcResult(connection = conn, statement = statement)
+    if (!is.null(params)) {
+      res <- dbBind(res, params = params, ...)
+    }
+
     res
   })
 
@@ -360,8 +365,8 @@ setMethod(
 #' @inheritParams DBI::dbFetch
 #' @export
 setMethod("dbGetQuery", signature("OdbcConnection", "character"),
-  function(conn, statement, n = -1, ...) {
-    rs <- dbSendQuery(conn, statement, ...)
+  function(conn, statement, n = -1, params = NULL, ...) {
+    rs <- dbSendQuery(conn, statement, params = params, ...)
     on.exit(dbClearResult(rs))
 
     df <- dbFetch(rs, n = n, ...)

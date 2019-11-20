@@ -30,7 +30,7 @@
 
 \S4method{dbDisconnect}{OdbcConnection}(conn, ...)
 
-\S4method{dbSendQuery}{OdbcConnection,character}(conn, statement, ...)
+\S4method{dbSendQuery}{OdbcConnection,character}(conn, statement, params = NULL, ...)
 
 \S4method{dbSendStatement}{OdbcConnection,character}(conn, statement, params = NULL, ...)
 

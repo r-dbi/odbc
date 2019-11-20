@@ -10,8 +10,8 @@
 
 * Subseconds are now retained when inserting POSIXct objects (#130, #208)
 
-* `dbSendStatement()` now supports the `params` argument, which allows it to be
-  used (indirectly) by `DBI::dbAppendTable()` (#215, #261).
+* `dbGetQuery()`, `dbSendQuery()` and `dbSendStatement()` gain a `params` argument, which allows them to be
+  used (indirectly) by `DBI::dbAppendTable()` (#210, #215, #261).
 
 * `odbcListDrivers()` gains a `keep` and `filter` argument and global options
   `odbc.drivers_keep`, `odbc.drivers_filter` to keep and filter the drivers

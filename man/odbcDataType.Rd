@@ -23,6 +23,7 @@ Databases with default methods defined are
 \item MySQL
 \item PostgreSQL
 \item SQL Server
+\item Oracle
 \item SQLite
 \item Spark
 \item Hive
@@ -30,6 +31,7 @@ Databases with default methods defined are
 \item Redshift
 \item Vertica
 \item BigQuery
+\item Teradata
 }
 }
 \details{
