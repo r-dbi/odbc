@@ -1011,6 +1011,20 @@ public:
     /// If you explicitly need to know if disconnect() succeeds, call it directly.
     ~connection() NANODBC_NOEXCEPT;
 
+    /// \brief Allocate environment and connection handles.
+    ///
+    /// Allows on-demand allocation of handles to configure the ODBC environment
+    /// and attributes, before database connection is established.
+    /// Typically, user does not have to make this call explicitly.
+    ///
+    /// \throws database_error
+    /// \see deallocate()
+    void allocate();
+
+    /// \brief Release environment and connection handles.
+    /// \see allocate()
+    void deallocate();
+
     /// \brief Connect to the given data source.
     /// \param dsn The name of the data source.
     /// \param user The username for authenticating to the data source.
