@@ -2,6 +2,9 @@
 
 ## Features
 
+* Added a Access `odbcDataType()` method to support writing to Access databases
+  (#262, @vh-d)
+
 * `dbGetQuery()`, `dbSendQuery()` and `dbSendStatement()` gain a `immediate`
   argument to execute the statement or query immediately instead of preparing,
   then executing the statement. (#272, @krlmlr)
