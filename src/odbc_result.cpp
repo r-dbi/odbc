@@ -17,12 +17,12 @@ odbc_result::odbc_result(
       output_encoder_(Iconv(c_->encoding(), "UTF-8")) {
 
   if (immediate) {
-    s_ = std::make_shared<nanodbc::statement>();
-    c_->set_current_result(this);
+    s_ = std::make_shared<nanodbc::statement>(*c_->connection());
     bound_ = true;
     r_ = std::make_shared<nanodbc::result>(
         s_->execute_direct(*c_->connection(), sql_));
     num_columns_ = r_->columns();
+    c_->set_current_result(this);
   } else {
     prepare();
     c_->set_current_result(this);
