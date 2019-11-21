@@ -70,18 +70,17 @@ setClass(
   )
 )
 
-#' @title odbcConnectionColumns
-#' @name odbcConnectionColumns
+#' odbcConnectionColumns
 #'
-#' @description For a given table this function recturns detailed information on
+#' For a given table this function returns detailed information on
 #' all fields / columns.  The expectation is that this is a relatively thin
-#' wrapper around the ODBC SQLColumns function call, with some of the field names
+#' wrapper around the ODBC `SQLColumns` function call, with some of the field names
 #' renamed / re-ordered according to the return specifications below.
 #'
-#' @details In \code{\link{dbWriteTable}} we make a call to this method
-#' to get details on the fields of the table we are writing to.  In particualar
+#' In [dbWriteTable()] we make a call to this method
+#' to get details on the fields of the table we are writing to.  In particular
 #' the columns `data_type`, `column_size`, and `decimal_digits` are used.  An
-#' implementation is not necessary for \code{\link{dbWriteTable}} to work.
+#' implementation is not necessary for [dbWriteTable()] to work.
 #' @param conn OdbcConnection
 #' @param name table we wish to get information on
 #' @param ... additional parameters to methods
@@ -90,25 +89,23 @@ setClass(
 #' for further details.
 #'
 #' @return data.frame with columns
-#' \itemize{
-#'   \item{name}
-#'   \item{field.type} {equivalent to type_name in SQLColumns output}
-#'   \item{table_name}
-#'   \item{schema_name}
-#'   \item{catalog_name}
-#'   \item{data_type}
-#'   \item{column_size}
-#'   \item{buffer_length}
-#'   \item{decimal_digits}
-#'   \item{numeric_precision_radix}
-#"   \item{remarks}
-#'   \item{column_default}
-#'   \item{sql_data_type}
-#'   \item{sql_datetime_subtype}
-#'   \item{char_octet_length}
-#'   \item{ordinal_position}
-#'   \item{nullable}
-#' }
+#' - name
+#' - field.type - equivalent to type_name in SQLColumns output
+#' - table_name
+#' - schema_name
+#' - catalog_name
+#' - data_type
+#' - column_size
+#' - buffer_length
+#' - decimal_digits
+#' - numeric_precision_radix
+#" - remarks
+#' - column_default
+#' - sql_data_type
+#' - sql_datetime_subtype
+#' - char_octet_length
+#' - ordinal_position
+#' - nullable
 #' @export
 setGeneric(
   "odbcConnectionColumns",
@@ -118,11 +115,8 @@ setGeneric(
   }
 )
 
-#' @name odbcConnectionColumns
-#' @aliases odbcConnectionColumns,OdbcConnection,Id-method
-#' @inheritParams odbcConnectionColumns
+#' @rdname odbcConnectionColumns
 #' @param column_name The name of the column to return, the default returns all columns.
-#'
 #' @export
 setMethod(
   "odbcConnectionColumns",
@@ -137,9 +131,7 @@ setMethod(
   }
 )
 
-#' @name odbcConnectionColumns
-#' @aliases odbcConnectionColumns,OdbcConnection,character-method
-#' @inheritParams odbcConnectionColumns
+#' @rdname odbcConnectionColumns
 #' @param catalog_name charaacter catalog where the table is located
 #' @param schema_name charaacter schema where the table is located
 #' @export
@@ -212,7 +204,6 @@ setMethod(
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbSendQuery
-#' @inheritParams dbSendStatement
 #' @export
 setMethod(
   "dbSendQuery", c("OdbcConnection", "character"),

@@ -34,35 +34,35 @@ odbcConnectionColumns(conn, name, ...)
 \value{
 data.frame with columns
 \itemize{
-\item{name}
-\item{field.type} {equivalent to type_name in SQLColumns output}
-\item{table_name}
-\item{schema_name}
-\item{catalog_name}
-\item{data_type}
-\item{column_size}
-\item{buffer_length}
-\item{decimal_digits}
-\item{numeric_precision_radix}
-\item{column_default}
-\item{sql_data_type}
-\item{sql_datetime_subtype}
-\item{char_octet_length}
-\item{ordinal_position}
-\item{nullable}
+\item name
+\item field.type - equivalent to type_name in SQLColumns output
+\item table_name
+\item schema_name
+\item catalog_name
+\item data_type
+\item column_size
+\item buffer_length
+\item decimal_digits
+\item numeric_precision_radix
+\item column_default
+\item sql_data_type
+\item sql_datetime_subtype
+\item char_octet_length
+\item ordinal_position
+\item nullable
 }
 }
 \description{
-For a given table this function recturns detailed information on
+For a given table this function returns detailed information on
 all fields / columns.  The expectation is that this is a relatively thin
-wrapper around the ODBC SQLColumns function call, with some of the field names
+wrapper around the ODBC \code{SQLColumns} function call, with some of the field names
 renamed / re-ordered according to the return specifications below.
 }
 \details{
-In \code{\link{dbWriteTable}} we make a call to this method
-to get details on the fields of the table we are writing to.  In particualar
+In \code{\link[=dbWriteTable]{dbWriteTable()}} we make a call to this method
+to get details on the fields of the table we are writing to.  In particular
 the columns \code{data_type}, \code{column_size}, and \code{decimal_digits} are used.  An
-implementation is not necessary for \code{\link{dbWriteTable}} to work.
+implementation is not necessary for \code{\link[=dbWriteTable]{dbWriteTable()}} to work.
 }
 \seealso{
 The ODBC documentation on \href{https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function}{SQLColumns}
