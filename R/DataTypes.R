@@ -14,6 +14,7 @@
 #' - Vertica
 #' - BigQuery
 #' - Teradata
+#' - Access
 #'
 #' If you are using a different database and `dbWriteTable()` fails with a SQL
 #' parsing error the default method is not appropriate, you will need to write
@@ -205,6 +206,25 @@ odbcDataType.default <- function(con, obj, ...) {
     stop("Unsupported type", call. = FALSE)
   )
 }
+
+#' @export
+`odbcDataType.ACCESS` <- function(con, obj, ...) {
+  switch_type(
+    obj,
+    factor = varchar(obj),
+    datetime = "DATETIME",
+    date = "DATE",
+    time = "TIME",
+    binary = "BINARY",
+    integer = "INTEGER",
+    double = "DOUBLE",
+    character = varchar(obj),
+    logical = "BIT",
+    list = varchar(obj),
+    stop("Unsupported type", call. = FALSE)
+  )
+}
+
 
 #' @export
 odbcDataType.Oracle <- function(con, obj, ...) {
