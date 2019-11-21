@@ -111,10 +111,14 @@ setMethod(
 
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbBind
+#' @inheritParams odbc-tables
 #' @export
 setMethod(
   "dbBind", "OdbcResult",
-  function(res, params, ...) {
-    result_bind(res@ptr, as.list(params))
+  function(res, params, ..., batch_rows = options("odbc.batch_rows", 1024)) {
+
+    batch_rows <- parse_size(batch_rows)
+
+    result_bind(res@ptr, as.list(params), batch_rows)
     invisible(res)
   })

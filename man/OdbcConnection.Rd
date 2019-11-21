@@ -48,7 +48,7 @@
 
 \S4method{dbGetInfo}{OdbcConnection}(dbObj, ...)
 
-\S4method{dbGetQuery}{OdbcConnection,character}(conn, statement, n = -1, ...)
+\S4method{dbGetQuery}{OdbcConnection,character}(conn, statement, n = -1, params = NULL, ...)
 
 \S4method{dbBegin}{OdbcConnection}(conn, ...)
 

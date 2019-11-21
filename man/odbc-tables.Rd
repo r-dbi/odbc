@@ -18,6 +18,7 @@
   temporary = FALSE,
   row.names = NA,
   field.types = NULL,
+  batch_rows = options("odbc.batch_rows", 1024),
   ...
 )
 
@@ -30,6 +31,7 @@
   temporary = FALSE,
   row.names = NA,
   field.types = NULL,
+  batch_rows = options("odbc.batch_rows", 1024),
   ...
 )
 
@@ -42,6 +44,7 @@
   temporary = FALSE,
   row.names = NA,
   field.types = NULL,
+  batch_rows = options("odbc.batch_rows", 1024),
   ...
 )
 
@@ -87,6 +90,10 @@ default name.
 For backward compatibility, \code{NULL} is equivalent to \code{FALSE}.}
 
 \item{field.types}{Additional field types used to override derived types.}
+
+\item{batch_rows}{The number of row of the batch when writing, depending on
+the database, driver and dataset adjusting this lower or higher may improve
+performance.}
 
 \item{...}{Other arguments used by individual methods.}
 

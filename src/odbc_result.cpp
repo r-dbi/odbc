@@ -109,7 +109,8 @@ void odbc_result::describe_parameters(Rcpp::List const& x) {
       Rcpp::as<std::vector<short>>(scale));
 }
 
-void odbc_result::bind_list(Rcpp::List const& x, bool use_transaction) {
+void odbc_result::bind_list(
+    Rcpp::List const& x, bool use_transaction, size_t batch_rows) {
   complete_ = false;
   rows_fetched_ = 0;
   auto types = column_types(x);
@@ -124,8 +125,7 @@ void odbc_result::bind_list(Rcpp::List const& x, bool use_transaction) {
         "Query requires '%i' params; '%i' supplied.", s_->parameters(), ncols);
   }
   auto nrows = Rf_length(x[0]);
-  int start = 0;
-  int batch_size = 1024;
+  size_t start = 0;
   std::unique_ptr<nanodbc::transaction> t;
   if (use_transaction && c_->supports_transactions()) {
     t = std::unique_ptr<nanodbc::transaction>(
@@ -133,7 +133,7 @@ void odbc_result::bind_list(Rcpp::List const& x, bool use_transaction) {
   }
 
   while (start < nrows) {
-    size_t end = start + batch_size > nrows ? nrows : start + batch_size;
+    size_t end = start + batch_rows > nrows ? nrows : start + batch_rows;
     size_t size = end - start;
     clear_buffers();
 
@@ -142,7 +142,7 @@ void odbc_result::bind_list(Rcpp::List const& x, bool use_transaction) {
     }
     r_ = std::make_shared<nanodbc::result>(nanodbc::execute(*s_, size));
     num_columns_ = r_->columns();
-    start += batch_size;
+    start += batch_rows;
 
     Rcpp::checkUserInterrupt();
   }

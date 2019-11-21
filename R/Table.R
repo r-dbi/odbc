@@ -29,7 +29,9 @@ NULL
 
 odbc_write_table <-
   function(conn, name, value, overwrite=FALSE, append=FALSE, temporary = FALSE,
-    row.names = NA, field.types = NULL, ...) {
+    row.names = NA, field.types = NULL, batch_rows = options("odbc.batch_rows", 1024), ...) {
+
+    batch_rows <- parse_size(batch_rows)
 
     if (overwrite && append)
       stop("overwrite and append cannot both be TRUE", call. = FALSE)
@@ -75,7 +77,7 @@ odbc_write_table <-
       }
 
       tryCatch(
-        result_insert_dataframe(rs@ptr, values),
+        result_insert_dataframe(rs@ptr, values, batch_rows),
         finally = dbClearResult(rs)
         )
     }
@@ -89,6 +91,9 @@ odbc_write_table <-
 #'   `TRUE` if `append` is also `TRUE`.
 #' @param append Allow appending to the destination table. Cannot be
 #'   `TRUE` if `overwrite` is also `TRUE`.
+#' @param batch_rows The number of row of the batch when writing, depending on
+#'   the database, driver and dataset adjusting this lower or higher may improve
+#'   performance.
 #' @export
 setMethod(
   "dbWriteTable", c("OdbcConnection", "character", "data.frame"),

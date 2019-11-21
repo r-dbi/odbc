@@ -244,13 +244,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // result_bind
-void result_bind(result_ptr const& r, List const& params);
-RcppExport SEXP _odbc_result_bind(SEXP rSEXP, SEXP paramsSEXP) {
+void result_bind(result_ptr const& r, List const& params, size_t batch_rows);
+RcppExport SEXP _odbc_result_bind(SEXP rSEXP, SEXP paramsSEXP, SEXP batch_rowsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< result_ptr const& >::type r(rSEXP);
     Rcpp::traits::input_parameter< List const& >::type params(paramsSEXP);
-    result_bind(r, params);
+    Rcpp::traits::input_parameter< size_t >::type batch_rows(batch_rowsSEXP);
+    result_bind(r, params, batch_rows);
     return R_NilValue;
 END_RCPP
 }
@@ -265,13 +266,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // result_insert_dataframe
-void result_insert_dataframe(result_ptr const& r, DataFrame const& df);
-RcppExport SEXP _odbc_result_insert_dataframe(SEXP rSEXP, SEXP dfSEXP) {
+void result_insert_dataframe(result_ptr const& r, DataFrame const& df, size_t batch_rows);
+RcppExport SEXP _odbc_result_insert_dataframe(SEXP rSEXP, SEXP dfSEXP, SEXP batch_rowsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< result_ptr const& >::type r(rSEXP);
     Rcpp::traits::input_parameter< DataFrame const& >::type df(dfSEXP);
-    result_insert_dataframe(r, df);
+    Rcpp::traits::input_parameter< size_t >::type batch_rows(batch_rowsSEXP);
+    result_insert_dataframe(r, df, batch_rows);
     return R_NilValue;
 END_RCPP
 }
@@ -341,9 +343,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_odbc_new_result", (DL_FUNC) &_odbc_new_result, 2},
     {"_odbc_result_fetch", (DL_FUNC) &_odbc_result_fetch, 2},
     {"_odbc_result_column_info", (DL_FUNC) &_odbc_result_column_info, 1},
-    {"_odbc_result_bind", (DL_FUNC) &_odbc_result_bind, 2},
+    {"_odbc_result_bind", (DL_FUNC) &_odbc_result_bind, 3},
     {"_odbc_result_execute", (DL_FUNC) &_odbc_result_execute, 1},
-    {"_odbc_result_insert_dataframe", (DL_FUNC) &_odbc_result_insert_dataframe, 2},
+    {"_odbc_result_insert_dataframe", (DL_FUNC) &_odbc_result_insert_dataframe, 3},
     {"_odbc_result_describe_parameters", (DL_FUNC) &_odbc_result_describe_parameters, 2},
     {"_odbc_result_rows_affected", (DL_FUNC) &_odbc_result_rows_affected, 1},
     {"_odbc_result_row_count", (DL_FUNC) &_odbc_result_row_count, 1},

@@ -2,6 +2,12 @@
 
 ## Features
 
+* `dbWriteTable()` and `dbBind()` methods gain a `batch_rows` argument, to
+  control how many rows are bound in each batch. The default can be set
+  globally with `options(odbc.batch_rows)`. This is useful if your database
+  performs better with a larger or smaller number of rows per batch than the
+  default of 1024. (#297)
+
 * New `odbcConnectionColumns()` function to describe the column types. This
   data is used when binding columns, which allows drivers which do not support
   the `SQLDescribeParam()` ODBC function, such as freeTDS. (#313, @detule)
