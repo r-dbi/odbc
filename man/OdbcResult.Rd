@@ -31,7 +31,7 @@
 
 \S4method{dbGetRowsAffected}{OdbcResult}(res, ...)
 
-\S4method{dbBind}{OdbcResult}(res, params, ..., batch_rows = options("odbc.batch_rows", 1024))
+\S4method{dbBind}{OdbcResult}(res, params, ..., batch_rows = getOption("odbc.batch_rows", 1024))
 }
 \arguments{
 \item{res}{An object inheriting from \linkS4class{DBIResult}.}

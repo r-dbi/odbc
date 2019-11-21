@@ -30,9 +30,9 @@
 
 \S4method{dbDisconnect}{OdbcConnection}(conn, ...)
 
-\S4method{dbSendQuery}{OdbcConnection,character}(conn, statement, params = NULL, ...)
+\S4method{dbSendQuery}{OdbcConnection,character}(conn, statement, params = NULL, ..., immediate = FALSE)
 
-\S4method{dbSendStatement}{OdbcConnection,character}(conn, statement, params = NULL, ...)
+\S4method{dbSendStatement}{OdbcConnection,character}(conn, statement, params = NULL, ..., immediate = FALSE)
 
 \S4method{dbDataType}{OdbcConnection,ANY}(dbObj, obj, ...)
 
@@ -75,6 +75,9 @@ or a \linkS4class{DBIResult}}
 \item{statement}{a character string containing SQL.}
 
 \item{params}{Query parameters to pass to \code{\link[=dbBind]{dbBind()}}, See \code{\link[=dbBind]{dbBind()}} for details.}
+
+\item{immediate}{If \code{TRUE}, SQLExecDirect will be used instead of
+SQLPrepare, and the \code{params} argument is ignored}
 
 \item{obj}{An R object whose SQL type we want to determine.}
 

@@ -9,12 +9,19 @@ NULL
 #' @docType methods
 NULL
 
-OdbcResult <- function(connection, statement) {
+OdbcResult <- function(connection, statement, params = NULL, immediate = FALSE) {
   if (nzchar(connection@encoding)) {
     statement <- enc2iconv(statement, connection@encoding)
   }
-  ptr <- new_result(connection@ptr, statement)
-  new("OdbcResult", connection = connection, statement = statement, ptr = ptr)
+  ptr <- new_result(connection@ptr, statement, immediate)
+  res <- new("OdbcResult", connection = connection, statement = statement, ptr = ptr)
+
+  if (!is.null(params)) {
+    on.exit(dbClearResult(res))
+    dbBind(res, params = params)
+    on.exit(NULL)
+  }
+  res
 }
 
 #' @rdname OdbcResult

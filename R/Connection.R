@@ -204,15 +204,14 @@ setMethod(
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbSendQuery
+#' @param params Optional query parameters, passed on to [dbBind()]
+#' @param immediate If `TRUE`, SQLExecDirect will be used instead of
+#'   SQLPrepare, and the `params` argument is ignored
 #' @export
 setMethod(
   "dbSendQuery", c("OdbcConnection", "character"),
-  function(conn, statement, params = NULL, ...) {
-    res <- OdbcResult(connection = conn, statement = statement)
-    if (!is.null(params)) {
-      res <- dbBind(res, params = params, ...)
-    }
-
+  function(conn, statement, params = NULL, ..., immediate = FALSE) {
+    res <- OdbcResult(connection = conn, statement = statement, params = params, immediate = immediate)
     res
   })
 
@@ -222,12 +221,8 @@ setMethod(
 #' @export
 setMethod(
   "dbSendStatement", c("OdbcConnection", "character"),
-  function(conn, statement, params = NULL, ...) {
-    res <- OdbcResult(connection = conn, statement = statement)
-    if (!is.null(params)) {
-      res <- dbBind(res, params = params, ...)
-    }
-
+  function(conn, statement, params = NULL, ..., immediate = FALSE) {
+    res <- OdbcResult(connection = conn, statement = statement, params = params, immediate = immediate)
     res
   })
 
