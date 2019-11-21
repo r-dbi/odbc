@@ -2,6 +2,10 @@
 
 ## Features
 
+* `dbGetQuery()`, `dbSendQuery()` and `dbSendStatement()` gain a `immediate`
+  argument to execute the statement or query immediately instead of preparing,
+  then executing the statement. (#272, @krlmlr)
+
 * `dbWriteTable()` and `dbBind()` methods gain a `batch_rows` argument, to
   control how many rows are bound in each batch. The default can be set
   globally with `options(odbc.batch_rows)`. This is useful if your database
