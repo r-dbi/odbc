@@ -33,7 +33,7 @@ jobs:
 
     env:
       CRAN: "https://demo.rstudiopm.com/all/__linux__/xenial/latest"
-      ODBCSYSINI: ${{ github.workspace }}/travis/odbc
+      ODBCSYSINI: ${{ github.workspace }}/.github/odbc
 
     steps:
       - uses: actions/checkout@v1
