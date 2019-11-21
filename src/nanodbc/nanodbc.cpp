@@ -86,10 +86,6 @@
 #define SQL_SS_UDT (-151) // from sqlncli.h
 #endif
 
-#ifndef SQL_NVARCHAR
-#define SQL_NVARCHAR (-10)
-#endif
-
 // Default to ODBC version defined by NANODBC_ODBC_VERSION if provided.
 #ifndef NANODBC_ODBC_VERSION
 #ifdef SQL_OV_ODBC3_80
@@ -2666,7 +2662,6 @@ private:
                 break;
             case SQL_CHAR:
             case SQL_VARCHAR:
-            case SQL_NVARCHAR:
                 col.ctype_ = SQL_C_CHAR;
                 col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLCHAR);
                 if (is_blob)
@@ -2688,6 +2683,11 @@ private:
                 break;
             case SQL_LONGVARCHAR:
                 col.ctype_ = SQL_C_CHAR;
+                col.blob_ = true;
+                col.clen_ = 0;
+                break;
+            case SQL_WLONGVARCHAR:
+                col.ctype_ = SQL_C_WCHAR;
                 col.blob_ = true;
                 col.clen_ = 0;
                 break;
