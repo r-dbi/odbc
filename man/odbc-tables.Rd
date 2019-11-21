@@ -18,7 +18,7 @@
   temporary = FALSE,
   row.names = NA,
   field.types = NULL,
-  batch_rows = options("odbc.batch_rows", 1024),
+  batch_rows = getOption("odbc.batch_rows", 1024),
   ...
 )
 
@@ -31,7 +31,7 @@
   temporary = FALSE,
   row.names = NA,
   field.types = NULL,
-  batch_rows = options("odbc.batch_rows", 1024),
+  batch_rows = getOption("odbc.batch_rows", 1024),
   ...
 )
 
@@ -44,7 +44,7 @@
   temporary = FALSE,
   row.names = NA,
   field.types = NULL,
-  batch_rows = options("odbc.batch_rows", 1024),
+  batch_rows = getOption("odbc.batch_rows", 1024),
   ...
 )
 
