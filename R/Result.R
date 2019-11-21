@@ -18,7 +18,7 @@ OdbcResult <- function(connection, statement, params = NULL, immediate = FALSE) 
 
   if (!is.null(params)) {
     on.exit(dbClearResult(res))
-    dbBind(res, params)
+    dbBind(res, params = params)
     on.exit(NULL)
   }
   res
