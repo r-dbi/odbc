@@ -40,6 +40,8 @@ DBItest::test_result(c(
     "send_statement_params", # TODO
     "execute_params", # TODO
     "data_numeric", # TODO
+    "clear_result_return_statement",
+    "cannot_clear_result_twice_statement",
     NULL))
 DBItest::test_sql(c(
     "quote_identifier_special", # #7
@@ -95,6 +97,7 @@ DBItest::test_sql(c(
     "read_table_name",
     "write_table_name",
     "remove_table_name",
+    "write_table_append_incompatible",
     NULL))
 DBItest::test_meta(c(
     "column_info_consistent", # TODO

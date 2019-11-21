@@ -14,10 +14,13 @@ test_that("MySQL", {
   DBItest::test_result(c(
       "fetch_n_bad",                     # TODO
       "fetch_n_good_after_bad",          # TODO
+      "fetch_n_multi_row_inf",          # TODO
       "fetch_no_return_value",           # TODO
       "get_query_n_bad",                     # todo
       "get_query_good_after_bad_n",                     # todo
       "get_query_n_zero_rows",                     # todo
+      "get_query_n_incomplete",                     # todo
+      "get_query_n_multi_row_inf",                     # todo
       "fetch_no_return_value",           # TODO
       "data_date_types", # Dates should be numeric, not integers
       "data_logical($|_.+)",             # Not an error, PostgreSQL has a logical data type
@@ -39,15 +42,37 @@ test_that("MySQL", {
       "roundtrip_character", # Strange MySQL Error only reproducible on travis
       "roundtrip_character_native", # Strange MySQL Error only reproducible on travis
       "roundtrip_factor", # Strange MySQL Error only reproducible on travis
+      "unquote_identifier_vectorized",
+      "unquote_identifier_roundtrip",
+      "unquote_identifier_special",
+      "create_table_error",
+      "append_roundtrip_.*",
+      "roundtrip_64_bit_roundtrip",
+      "write_table_row_names_default",
+      "remove_table_temporary_arg",
+      "remove_table_missing_succeed",
+      "remove_table_temporary",
+      "list_objects",
+      "list_objects_features",
+      "list_fields_wrong_table",
+      "list_fields_quoted",
+      "list_fields_object",
       NULL))
   DBItest::test_meta(c(
       "rows_affected_query", # The MySQL Driver returns 1 affected row
+      "rows_affected_statement",
+      "row_count_statement",
+      "column_info_consistent",
+      "bind_.*",
+      "has_completed_statement",
+      "get_statement_statement",
       NULL))
-  #DBItest::test_transaction(c(
-      #NULL))
+  DBItest::test_transaction(c(
+      NULL))
   DBItest::test_compliance(c(
       "read_only",                       # Setting SQL_MODE_READ_ONLY is not supported in most DBs, so ignoring.
       "compliance",                      # We are defining additional subclasses for OdbcConnections
+      "reexport",
       NULL))
 
   test_roundtrip(columns = "logical")

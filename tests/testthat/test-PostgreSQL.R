@@ -111,6 +111,7 @@ test_that("PostgreSQL", {
       "roundtrip_character", # TODO
       "roundtrip_blob", # TODO
       "roundtrip_field_types", # TODO
+      "write_table_append_incompatible",
       "write_table_row_names_default", # TODO
       "remove_table_temporary_arg", # TODO
       "remove_table_missing_succeed", # TODO
