@@ -29,3 +29,4 @@
 ^CRAN-RELEASE$
 ^setup.md$
 ^\.github/workflows/R-CMD-check\.yaml$
+^.covrignore$
