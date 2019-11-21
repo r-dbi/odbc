@@ -74,7 +74,7 @@ jobs:
           install.packages('remotes')
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran('rcmdcheck')
-          remotes::install_github('jimhester/DBItest@bit64')
+          remotes::install_github('r-dbi/DBItest')
         shell: Rscript {0}
 
       - name: Check

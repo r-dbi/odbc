@@ -61,7 +61,13 @@ test_that("PostgreSQL", {
       "package_name", # Not an error
       NULL))
   DBItest::test_driver()
-  DBItest::test_connection()
+  DBItest::test_connection(c(
+      "cannot_forget_disconnect",
+      "clear_result_return_statement",
+      "cannot_clear_result_twice_statement",
+      NULL
+    )
+  )
   DBItest::test_result(c(
       "fetch_n_bad",                     # TODO
       "fetch_n_good_after_bad",          # TODO

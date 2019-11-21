@@ -1,5 +1,7 @@
 if (.Platform$OS.type != "windows") {
-  ctx <- DBItest::make_context(odbc(), list(dsn = "SQLite"), tweaks = DBItest::tweaks(placeholder_pattern = "?"), name = "SQLite")
+  skip_unless_has_test_db({
+    ctx <- DBItest::make_context(odbc(), list(dsn = "SQLite"), tweaks = DBItest::tweaks(placeholder_pattern = "?"), name = "SQLite")
+  })
 
 DBItest::test_getting_started(c(
     "package_name", # Not an error
@@ -11,11 +13,13 @@ DBItest::test_driver(c(
     NULL))
 DBItest::test_connection(c(
     "data_type_connection",
+    "cannot_forget_disconnect",
     NULL))
 DBItest::test_result(c(
     "data_logical$", # Not an error
     "data_logical_.*", # Not an error
     "data_64_bit.*", # TODO
+    "data_integer", # These tests are returned as strings by SQLite (bug?)
     "data_integer_null.*", # These tests are returned as strings by SQLite (bug?)
     "data_numeric_null.*", # These tests are returned as strings by SQLite (bug?)
     "data_raw.*", # cast(1 bytea) is not valid `cannot cast type integer to bytea`
@@ -87,14 +91,21 @@ DBItest::test_sql(c(
     "list_fields_wrong_table", # TODO
     "list_fields_quoted", # TODO
     "list_fields_object", # TODO
+    "exists_table_name",
+    "read_table_name",
+    "write_table_name",
+    "remove_table_name",
     NULL))
 DBItest::test_meta(c(
     "column_info_consistent", # TODO
     "row_count_statement", # TODO
     "rows_affected_statement", # TODO
+    "has_completed_statement",
+    "get_statement_statement",
     "bind_.*", # TODO
     NULL))
 DBItest::test_transaction(c(
+    "begin_write_disconnect",
     NULL))
 DBItest::test_compliance(c(
     "reexport", # TODO
