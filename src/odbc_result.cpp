@@ -99,7 +99,29 @@ void odbc_result::bind_columns(
   }
 }
 
-void odbc_result::bind_list(Rcpp::List const& x, bool use_transaction) {
+void odbc_result::describe_parameters(Rcpp::List const& x) {
+  auto ncols = x.size();
+  auto nrows = Rf_length(x[0]);
+
+  if (nrows > s_->parameters()) {
+    Rcpp::stop(
+        "Query requires '%i' params; '%i' supplied.", s_->parameters(), ncols);
+  }
+  Rcpp::NumericVector idx = x["param_index"];
+  Rcpp::NumericVector type = x["data_type"];
+  Rcpp::NumericVector size = x["column_size"];
+  Rcpp::NumericVector scale = x["decimal_digits"];
+
+  idx = idx - 1L;
+  s_->describe_parameters(
+      Rcpp::as<std::vector<short>>(idx),
+      Rcpp::as<std::vector<short>>(type),
+      Rcpp::as<std::vector<unsigned long>>(size),
+      Rcpp::as<std::vector<short>>(scale));
+}
+
+void odbc_result::bind_list(
+    Rcpp::List const& x, bool use_transaction, size_t batch_rows) {
   complete_ = false;
   rows_fetched_ = 0;
   auto types = column_types(x);
@@ -114,8 +136,7 @@ void odbc_result::bind_list(Rcpp::List const& x, bool use_transaction) {
         "Query requires '%i' params; '%i' supplied.", s_->parameters(), ncols);
   }
   auto nrows = Rf_length(x[0]);
-  int start = 0;
-  int batch_size = 1024;
+  size_t start = 0;
   std::unique_ptr<nanodbc::transaction> t;
   if (use_transaction && c_->supports_transactions()) {
     t = std::unique_ptr<nanodbc::transaction>(
@@ -123,7 +144,7 @@ void odbc_result::bind_list(Rcpp::List const& x, bool use_transaction) {
   }
 
   while (start < nrows) {
-    size_t end = start + batch_size > nrows ? nrows : start + batch_size;
+    size_t end = start + batch_rows > nrows ? nrows : start + batch_rows;
     size_t size = end - start;
     clear_buffers();
 
@@ -132,7 +153,7 @@ void odbc_result::bind_list(Rcpp::List const& x, bool use_transaction) {
     }
     r_ = std::make_shared<nanodbc::result>(nanodbc::execute(*s_, size));
     num_columns_ = r_->columns();
-    start += batch_size;
+    start += batch_rows;
 
     Rcpp::checkUserInterrupt();
   }
@@ -297,7 +318,9 @@ nanodbc::timestamp odbc_result::as_timestamp(double value) {
   auto utc_time = system_clock::from_time_t(static_cast<std::time_t>(value));
 
   auto civil_time = cctz::convert(utc_time, c_->timezone());
-  ts.fract = frac;
+  // We are using a fixed precision of 3, as that is all we can be guaranteed
+  // to support in SQLServer
+  ts.fract = (std::int32_t)(frac * 1000) * 1000000;
   ts.sec = civil_time.second();
   ts.min = civil_time.minute();
   ts.hour = civil_time.hour();
@@ -427,7 +450,8 @@ double odbc_result::as_double(nanodbc::timestamp const& ts) {
 
 double odbc_result::as_double(nanodbc::date const& dt) {
   using namespace cctz;
-  auto sec = convert(civil_day(dt.year, dt.month, dt.day), c_->timezone());
+  auto sec =
+      convert(civil_day(dt.year, dt.month, dt.day), cctz::utc_time_zone());
   return sec.time_since_epoch().count();
 }
 
@@ -495,14 +519,17 @@ void odbc_result::add_classes(
       break;
     case datetime_t:
       x.attr("class") = Rcpp::CharacterVector::create("POSIXct", "POSIXt");
-      x.attr("tzone") = Rcpp::CharacterVector::create("UTC");
+      x.attr("tzone") = Rcpp::CharacterVector::create(c_->timezone_out_str());
       break;
     case odbc::time_t:
       x.attr("class") = Rcpp::CharacterVector::create("hms", "difftime");
       x.attr("units") = Rcpp::CharacterVector::create("secs");
       break;
     case raw_t:
-      x.attr("class") = Rcpp::CharacterVector::create("blob");
+      // FIXME: Use new_blob()
+      x.attr("ptype") = Rcpp::RawVector::create();
+      x.attr("class") =
+          Rcpp::CharacterVector::create("blob", "vctrs_list_of", "vctrs_vctr");
       break;
     default:
       break;

@@ -49,6 +49,7 @@ Rcpp::DataFrame list_data_sources_() {
 connection_ptr odbc_connect(
     std::string const& connection_string,
     std::string const& timezone = "",
+    std::string const& timezone_out = "",
     std::string const& encoding = "",
     int bigint = 0,
     long timeout = 0) {
@@ -56,6 +57,7 @@ connection_ptr odbc_connect(
       new std::shared_ptr<odbc_connection>(new odbc_connection(
           connection_string,
           timezone,
+          timezone_out,
           encoding,
           static_cast<bigint_map_t>(bigint),
           timeout)));

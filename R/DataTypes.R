@@ -5,6 +5,7 @@
 #' - MySQL
 #' - PostgreSQL
 #' - SQL Server
+#' - Oracle
 #' - SQLite
 #' - Spark
 #' - Hive
@@ -12,6 +13,7 @@
 #' - Redshift
 #' - Vertica
 #' - BigQuery
+#' - Teradata
 #'
 #' If you are using a different database and `dbWriteTable()` fails with a SQL
 #' parsing error the default method is not appropriate, you will need to write
@@ -262,6 +264,23 @@ odbcDataType.Oracle <- function(con, obj, ...) {
   )
 }
 
+#' @export
+`odbcDataType.Teradata` <- function(con, obj, ...) {
+  switch_type(obj,
+    factor = "VARCHAR(255)",
+    datetime = "TIMESTAMP",
+    date = "DATE",
+    time = "TIME",
+    binary = "BLOB",
+    integer = "INTEGER",
+    double = "FLOAT",
+    character = "VARCHAR(255)",
+    logical = "BYTEINT",
+    list = "VARCHAR(255)",
+    stop("Unsupported type", call. = FALSE)
+  )
+}
+
 switch_type <- function(obj, ...) {
   switch(object_type(obj), ...)
 }
@@ -335,7 +354,7 @@ test_roundtrip <- function(con = DBItest:::connect(DBItest:::get_default_context
       datetime = as.POSIXct(as.numeric(iris$Petal.Length * 10), origin = "2016-01-01", tz = "UTC"),
       date = as.Date(iris$Sepal.Width * 100, origin = Sys.time()),
       time = hms::hms(seconds = sample.int(24 * 60 * 60, NROW(iris))),
-      binary = blob::as.blob(lapply(seq_len(NROW(iris)), function(x) as.raw(sample(0:100, size = sample(0:25, 1))))),
+      binary = blob::as_blob(lapply(seq_len(NROW(iris)), function(x) as.raw(sample(0:100, size = sample(0:25, 1))))),
       integer = as.integer(iris$Petal.Width * 100),
       double = iris$Sepal.Length,
       character = as.character(iris$Species),

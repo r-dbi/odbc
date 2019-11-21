@@ -1,4 +1,5 @@
 test_that("MySQL", {
+  skip("baz")
   skip_unless_has_test_db({
     DBItest::make_context(odbc(), list(dsn = "MySQL"), tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "MySQL")
   })
