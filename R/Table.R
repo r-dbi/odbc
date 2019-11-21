@@ -29,7 +29,7 @@ NULL
 
 odbc_write_table <-
   function(conn, name, value, overwrite=FALSE, append=FALSE, temporary = FALSE,
-    row.names = NA, field.types = NULL, batch_rows = options("odbc.batch_rows", 1024), ...) {
+    row.names = NA, field.types = NULL, batch_rows = getOption("odbc.batch_rows", 1024), ...) {
 
     batch_rows <- parse_size(batch_rows)
 
