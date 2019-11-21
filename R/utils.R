@@ -39,3 +39,14 @@ choices_rd <- function(x) {
 lengths <- function(x) {
   vapply(x, length, integer(1))
 }
+
+# A 'size' must be an integer greater than 1, returned as a double so we have a larger range
+parse_size <- function(x) {
+  nme <- substitute(x) %||% "NULL"
+
+  if (rlang::is_scalar_integerish(x) && !is.na(x) && !is.infinite(x) && x > 0) {
+    return(as.numeric(x))
+  }
+
+  stop(sprintf("`%s` is not a valid size:\n  Must be a positive integer.", as.character(nme)), call. = FALSE)
+}

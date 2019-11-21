@@ -29,7 +29,9 @@ NULL
 
 odbc_write_table <-
   function(conn, name, value, overwrite=FALSE, append=FALSE, temporary = FALSE,
-    row.names = NA, field.types = NULL, ...) {
+    row.names = NA, field.types = NULL, batch_rows = getOption("odbc.batch_rows", 1024), ...) {
+
+    batch_rows <- parse_size(batch_rows)
 
     if (overwrite && append)
       stop("overwrite and append cannot both be TRUE", call. = FALSE)
@@ -50,6 +52,14 @@ odbc_write_table <-
       dbExecute(conn, sql)
     }
 
+    fieldDetails <- tryCatch({
+      details <- odbcConnectionColumns(conn, name)
+      details$param_index <- match(details$name, names(values))
+      details[!is.na(details$param_index)]
+    }, error = function(e) {
+      return(NULL)
+    })
+
     if (nrow(value) > 0) {
 
       name <- dbQuoteIdentifier(conn, name)
@@ -62,8 +72,12 @@ odbc_write_table <-
         )
       rs <- OdbcResult(conn, sql)
 
+      if (!is.null(fieldDetails) && nrow(fieldDetails)) {
+        result_describe_parameters(rs@ptr, fieldDetails)
+      }
+
       tryCatch(
-        result_insert_dataframe(rs@ptr, values),
+        result_insert_dataframe(rs@ptr, values, batch_rows),
         finally = dbClearResult(rs)
         )
     }
@@ -77,6 +91,9 @@ odbc_write_table <-
 #'   `TRUE` if `append` is also `TRUE`.
 #' @param append Allow appending to the destination table. Cannot be
 #'   `TRUE` if `overwrite` is also `TRUE`.
+#' @param batch_rows The number of row of the batch when writing, depending on
+#'   the database, driver and dataset adjusting this lower or higher may improve
+#'   performance.
 #' @export
 setMethod(
   "dbWriteTable", c("OdbcConnection", "character", "data.frame"),
@@ -153,9 +170,9 @@ setMethod(
   "dbExistsTable", c("OdbcConnection", "Id"),
   function(conn, name, ...) {
     name@name[["table"]] %in% connection_sql_tables(conn@ptr,
-      catalog_name = if ("catalog" %in% names(name@name)) name@name[["catalog"]] else "%",
-      schema_name = if ("schema" %in% names(name@name)) name@name[["schema"]] else "%",
-      table_name = if ("table" %in% names(name@name)) name@name[["table"]] else "%"
+      catalog_name = if ("catalog" %in% names(name@name)) name@name[["catalog"]] else NULL,
+      schema_name = if ("schema" %in% names(name@name)) name@name[["schema"]] else NULL,
+      table_name = if ("table" %in% names(name@name)) name@name[["table"]] else NULL
     )
   })
 

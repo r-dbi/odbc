@@ -30,13 +30,15 @@ private:
 
 class odbc_result {
 public:
-  odbc_result(std::shared_ptr<odbc_connection> c, std::string sql);
+  odbc_result(
+      std::shared_ptr<odbc_connection> c, std::string sql, bool immediate);
   std::shared_ptr<odbc_connection> connection() const;
   std::shared_ptr<nanodbc::statement> statement() const;
   std::shared_ptr<nanodbc::result> result() const;
   void prepare();
   void execute();
-  void bind_list(Rcpp::List const& x, bool use_transaction = true);
+  void describe_parameters(Rcpp::List const& x);
+  void bind_list(Rcpp::List const& x, bool use_transaction, size_t batch_rows);
   Rcpp::DataFrame fetch(int n_max = -1);
 
   int rows_fetched();

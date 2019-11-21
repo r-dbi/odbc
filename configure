@@ -32,10 +32,6 @@ if [ "$INCLUDE_DIR" ] || [ "$LIB_DIR" ]; then
   echo "Found INCLUDE_DIR and/or LIB_DIR!"
   PKG_CFLAGS="-I$INCLUDE_DIR $PKG_CFLAGS"
   PKG_LIBS="-L$LIB_DIR $PKG_LIBS"
-elif [ "$PKGCONFIG_CFLAGS" ] || [ "$PKGCONFIG_LIBS" ]; then
-  echo "Found pkg-config cflags and libs!"
-  PKG_CFLAGS=${PKGCONFIG_CFLAGS}
-  PKG_LIBS=${PKGCONFIG_LIBS}
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   if [ "$(command -v brew)" ]; then
     BREWDIR=$(brew --prefix)
@@ -46,10 +42,19 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
   fi
   PKG_CFLAGS="-I$BREWDIR/opt/$PKG_BREW_NAME/include"
   PKG_LIBS="-L$BREWDIR/lib $PKG_LIBS"
+elif [ "$PKGCONFIG_CFLAGS" ] || [ "$PKGCONFIG_LIBS" ]; then
+  echo "Found pkg-config cflags and libs!"
+  PKG_CFLAGS=${PKGCONFIG_CFLAGS}
+  PKG_LIBS=${PKGCONFIG_LIBS}
 fi
 
 # Find compiler
-CXX11=$("${R_HOME}"/bin/R CMD config CXX11)
+if "${R_HOME}"/bin/R CMD config CXX11 > /dev/null; then
+  CXXCPP="$("${R_HOME}"/bin/R CMD config CXX11) -E"
+else
+  CXXCPP="$("${R_HOME}"/bin/R CMD config CXX1X) -E"
+fi
+
 CXXFLAGS=$("${R_HOME}"/bin/R CMD config CXXFLAGS)
 CPPFLAGS=$("${R_HOME}"/bin/R CMD config CPPFLAGS)
 
@@ -58,7 +63,7 @@ echo "PKG_CFLAGS=$PKG_CFLAGS"
 echo "PKG_LIBS=$PKG_LIBS"
 
 # Test for odbc
-echo "#include $PKG_TEST_HEADER" | ${CXX11} ${CPPFLAGS} ${PKG_CFLAGS} ${CXXFLAGS} -xc++ - > /dev/null
+echo "#include $PKG_TEST_HEADER" | ${CXXCPP} ${CPPFLAGS} ${PKG_CFLAGS} ${CXXFLAGS} -xc++ - > /dev/null
 if [ $? -ne 0 ]; then
   echo "------------------------- ANTICONF ERROR ---------------------------"
   echo "Configuration failed because $PKG_CONFIG_NAME was not found. Try installing:"

@@ -27,17 +27,18 @@ BEGIN_RCPP
 END_RCPP
 }
 // odbc_connect
-connection_ptr odbc_connect(std::string const& connection_string, std::string const& timezone, std::string const& encoding, int bigint, long timeout);
-RcppExport SEXP _odbc_odbc_connect(SEXP connection_stringSEXP, SEXP timezoneSEXP, SEXP encodingSEXP, SEXP bigintSEXP, SEXP timeoutSEXP) {
+connection_ptr odbc_connect(std::string const& connection_string, std::string const& timezone, std::string const& timezone_out, std::string const& encoding, int bigint, long timeout);
+RcppExport SEXP _odbc_odbc_connect(SEXP connection_stringSEXP, SEXP timezoneSEXP, SEXP timezone_outSEXP, SEXP encodingSEXP, SEXP bigintSEXP, SEXP timeoutSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string const& >::type connection_string(connection_stringSEXP);
     Rcpp::traits::input_parameter< std::string const& >::type timezone(timezoneSEXP);
+    Rcpp::traits::input_parameter< std::string const& >::type timezone_out(timezone_outSEXP);
     Rcpp::traits::input_parameter< std::string const& >::type encoding(encodingSEXP);
     Rcpp::traits::input_parameter< int >::type bigint(bigintSEXP);
     Rcpp::traits::input_parameter< long >::type timeout(timeoutSEXP);
-    rcpp_result_gen = Rcpp::wrap(odbc_connect(connection_string, timezone, encoding, bigint, timeout));
+    rcpp_result_gen = Rcpp::wrap(odbc_connect(connection_string, timezone, timezone_out, encoding, bigint, timeout));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -208,14 +209,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // new_result
-result_ptr new_result(connection_ptr const& p, std::string const& sql);
-RcppExport SEXP _odbc_new_result(SEXP pSEXP, SEXP sqlSEXP) {
+result_ptr new_result(connection_ptr const& p, std::string const& sql, const bool immediate);
+RcppExport SEXP _odbc_new_result(SEXP pSEXP, SEXP sqlSEXP, SEXP immediateSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< connection_ptr const& >::type p(pSEXP);
     Rcpp::traits::input_parameter< std::string const& >::type sql(sqlSEXP);
-    rcpp_result_gen = Rcpp::wrap(new_result(p, sql));
+    Rcpp::traits::input_parameter< const bool >::type immediate(immediateSEXP);
+    rcpp_result_gen = Rcpp::wrap(new_result(p, sql, immediate));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -243,13 +245,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // result_bind
-void result_bind(result_ptr const& r, List const& params);
-RcppExport SEXP _odbc_result_bind(SEXP rSEXP, SEXP paramsSEXP) {
+void result_bind(result_ptr const& r, List const& params, size_t batch_rows);
+RcppExport SEXP _odbc_result_bind(SEXP rSEXP, SEXP paramsSEXP, SEXP batch_rowsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< result_ptr const& >::type r(rSEXP);
     Rcpp::traits::input_parameter< List const& >::type params(paramsSEXP);
-    result_bind(r, params);
+    Rcpp::traits::input_parameter< size_t >::type batch_rows(batch_rowsSEXP);
+    result_bind(r, params, batch_rows);
     return R_NilValue;
 END_RCPP
 }
@@ -264,13 +267,25 @@ BEGIN_RCPP
 END_RCPP
 }
 // result_insert_dataframe
-void result_insert_dataframe(result_ptr const& r, DataFrame const& df);
-RcppExport SEXP _odbc_result_insert_dataframe(SEXP rSEXP, SEXP dfSEXP) {
+void result_insert_dataframe(result_ptr const& r, DataFrame const& df, size_t batch_rows);
+RcppExport SEXP _odbc_result_insert_dataframe(SEXP rSEXP, SEXP dfSEXP, SEXP batch_rowsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< result_ptr const& >::type r(rSEXP);
     Rcpp::traits::input_parameter< DataFrame const& >::type df(dfSEXP);
-    result_insert_dataframe(r, df);
+    Rcpp::traits::input_parameter< size_t >::type batch_rows(batch_rowsSEXP);
+    result_insert_dataframe(r, df, batch_rows);
+    return R_NilValue;
+END_RCPP
+}
+// result_describe_parameters
+void result_describe_parameters(result_ptr const& r, DataFrame const& df);
+RcppExport SEXP _odbc_result_describe_parameters(SEXP rSEXP, SEXP dfSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< result_ptr const& >::type r(rSEXP);
+    Rcpp::traits::input_parameter< DataFrame const& >::type df(dfSEXP);
+    result_describe_parameters(r, df);
     return R_NilValue;
 END_RCPP
 }
@@ -310,7 +325,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_odbc_list_drivers_", (DL_FUNC) &_odbc_list_drivers_, 0},
     {"_odbc_list_data_sources_", (DL_FUNC) &_odbc_list_data_sources_, 0},
-    {"_odbc_odbc_connect", (DL_FUNC) &_odbc_odbc_connect, 5},
+    {"_odbc_odbc_connect", (DL_FUNC) &_odbc_odbc_connect, 6},
     {"_odbc_connection_info", (DL_FUNC) &_odbc_connection_info, 1},
     {"_odbc_connection_quote", (DL_FUNC) &_odbc_connection_quote, 1},
     {"_odbc_connection_release", (DL_FUNC) &_odbc_connection_release, 1},
@@ -326,12 +341,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"_odbc_result_release", (DL_FUNC) &_odbc_result_release, 1},
     {"_odbc_result_active", (DL_FUNC) &_odbc_result_active, 1},
     {"_odbc_result_completed", (DL_FUNC) &_odbc_result_completed, 1},
-    {"_odbc_new_result", (DL_FUNC) &_odbc_new_result, 2},
+    {"_odbc_new_result", (DL_FUNC) &_odbc_new_result, 3},
     {"_odbc_result_fetch", (DL_FUNC) &_odbc_result_fetch, 2},
     {"_odbc_result_column_info", (DL_FUNC) &_odbc_result_column_info, 1},
-    {"_odbc_result_bind", (DL_FUNC) &_odbc_result_bind, 2},
+    {"_odbc_result_bind", (DL_FUNC) &_odbc_result_bind, 3},
     {"_odbc_result_execute", (DL_FUNC) &_odbc_result_execute, 1},
-    {"_odbc_result_insert_dataframe", (DL_FUNC) &_odbc_result_insert_dataframe, 2},
+    {"_odbc_result_insert_dataframe", (DL_FUNC) &_odbc_result_insert_dataframe, 3},
+    {"_odbc_result_describe_parameters", (DL_FUNC) &_odbc_result_describe_parameters, 2},
     {"_odbc_result_rows_affected", (DL_FUNC) &_odbc_result_rows_affected, 1},
     {"_odbc_result_row_count", (DL_FUNC) &_odbc_result_row_count, 1},
     {"_odbc_column_types", (DL_FUNC) &_odbc_column_types, 1},

@@ -9,8 +9,8 @@ list_data_sources_ <- function() {
     .Call(`_odbc_list_data_sources_`)
 }
 
-odbc_connect <- function(connection_string, timezone = "", encoding = "", bigint = 0L, timeout = 0L) {
-    .Call(`_odbc_odbc_connect`, connection_string, timezone, encoding, bigint, timeout)
+odbc_connect <- function(connection_string, timezone = "", timezone_out = "", encoding = "", bigint = 0L, timeout = 0L) {
+    .Call(`_odbc_odbc_connect`, connection_string, timezone, timezone_out, encoding, bigint, timeout)
 }
 
 connection_info <- function(p) {
@@ -73,8 +73,8 @@ result_completed <- function(r) {
     .Call(`_odbc_result_completed`, r)
 }
 
-new_result <- function(p, sql) {
-    .Call(`_odbc_new_result`, p, sql)
+new_result <- function(p, sql, immediate) {
+    .Call(`_odbc_new_result`, p, sql, immediate)
 }
 
 result_fetch <- function(r, n_max = -1L) {
@@ -85,16 +85,20 @@ result_column_info <- function(r) {
     .Call(`_odbc_result_column_info`, r)
 }
 
-result_bind <- function(r, params) {
-    invisible(.Call(`_odbc_result_bind`, r, params))
+result_bind <- function(r, params, batch_rows) {
+    invisible(.Call(`_odbc_result_bind`, r, params, batch_rows))
 }
 
 result_execute <- function(r) {
     invisible(.Call(`_odbc_result_execute`, r))
 }
 
-result_insert_dataframe <- function(r, df) {
-    invisible(.Call(`_odbc_result_insert_dataframe`, r, df))
+result_insert_dataframe <- function(r, df, batch_rows) {
+    invisible(.Call(`_odbc_result_insert_dataframe`, r, df, batch_rows))
+}
+
+result_describe_parameters <- function(r, df) {
+    invisible(.Call(`_odbc_result_describe_parameters`, r, df))
 }
 
 result_rows_affected <- function(r) {

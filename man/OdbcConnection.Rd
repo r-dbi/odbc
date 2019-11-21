@@ -30,9 +30,9 @@
 
 \S4method{dbDisconnect}{OdbcConnection}(conn, ...)
 
-\S4method{dbSendQuery}{OdbcConnection,character}(conn, statement, ...)
+\S4method{dbSendQuery}{OdbcConnection,character}(conn, statement, params = NULL, ..., immediate = FALSE)
 
-\S4method{dbSendStatement}{OdbcConnection,character}(conn, statement, ...)
+\S4method{dbSendStatement}{OdbcConnection,character}(conn, statement, params = NULL, ..., immediate = FALSE)
 
 \S4method{dbDataType}{OdbcConnection,ANY}(dbObj, obj, ...)
 
@@ -48,8 +48,7 @@
 
 \S4method{dbGetInfo}{OdbcConnection}(dbObj, ...)
 
-\S4method{dbGetQuery}{OdbcConnection,character}(conn, statement, n = -1,
-  ...)
+\S4method{dbGetQuery}{OdbcConnection,character}(conn, statement, n = -1, params = NULL, ...)
 
 \S4method{dbBegin}{OdbcConnection}(conn, ...)
 
@@ -75,9 +74,14 @@ or a \linkS4class{DBIResult}}
 
 \item{statement}{a character string containing SQL.}
 
+\item{params}{Query parameters to pass to \code{\link[=dbBind]{dbBind()}}, See \code{\link[=dbBind]{dbBind()}} for details.}
+
+\item{immediate}{If \code{TRUE}, SQLExecDirect will be used instead of
+SQLPrepare, and the \code{params} argument is ignored}
+
 \item{obj}{An R object whose SQL type we want to determine.}
 
-\item{x}{A character vector, \link{SQL} or \link{Id} object to quote as identifier.}
+\item{x}{A character vector, \link[DBI]{SQL} or \link[DBI]{Id} object to quote as identifier.}
 
 \item{name}{A character string specifying a DBMS table name.}
 
