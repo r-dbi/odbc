@@ -33,6 +33,30 @@ test_that("PostgreSQL", {
     expect_is(dbReadTable(con_character, "test")$a, "character")
   })
 
+  # This test checks whether when writing to a table and using
+  # result_describe_parameters to offer descriptions of the data
+  # we are attempting to write, our logic remains robust to the
+  # case when the data being written has columns ordered
+  # differently than the table we are targetting.
+  test_that("Writing data.frame with column ordering different than target table", {
+    tblName <- "test_order_write"
+    con <- dbConnect(odbc(), "PostgreSQL")
+    values <- data.frame(
+      datetime = as.POSIXct(c(14, 15), origin = "2016-01-01", tz = "UTC"),
+      name = c("one", "two"),
+      num = 1:2,
+      stringsAsFactors = FALSE)
+    sql <- sqlCreateTable(con, tblName, values)
+    dbExecute(con, sql)
+    on.exit(dbRemoveTable(con, tblName))
+    dbWriteTable(con, tblName, values[c(2, 3, 1)],
+      overwrite = FALSE, append = TRUE)
+    received <- DBI::dbReadTable(con, tblName)
+    received <- received[order(received$num), ]
+    row.names(received) <- NULL
+    expect_equal(values, received)
+  })
+
   DBItest::test_getting_started(c(
       "package_name", # Not an error
       NULL))
@@ -78,6 +102,9 @@ test_that("PostgreSQL", {
       "bind_timestamp_lt", # We do not support POSIXlt objects
       "bind_raw", # This test seems to be not quite working as expected
       "bind_.*",
+      "has_completed_statement",
+      "get_statement_statement",
+      "row_count_statement",
       NULL))
   #DBItest::test_transaction(c(
       #NULL))

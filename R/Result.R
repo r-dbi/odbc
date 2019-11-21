@@ -49,7 +49,7 @@ setMethod(
 setMethod(
   "dbFetch", "OdbcResult",
   function(res, n = -1, ...) {
-    result_fetch(res@ptr, n, ...)
+    result_fetch(res@ptr, n)
   })
 
 #' @rdname OdbcResult
@@ -88,7 +88,7 @@ setMethod(
 setMethod(
   "dbColumnInfo", "OdbcResult",
   function(res, ...) {
-    result_column_info(res@ptr, ...)
+    result_column_info(res@ptr)
   })
 
 #' @rdname OdbcResult
@@ -111,10 +111,14 @@ setMethod(
 
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbBind
+#' @inheritParams odbc-tables
 #' @export
 setMethod(
   "dbBind", "OdbcResult",
-  function(res, params, ...) {
-    result_bind(res@ptr, as.list(params))
+  function(res, params, ..., batch_rows = getOption("odbc.batch_rows", 1024)) {
+
+    batch_rows <- parse_size(batch_rows)
+
+    result_bind(res@ptr, as.list(params), batch_rows)
     invisible(res)
   })

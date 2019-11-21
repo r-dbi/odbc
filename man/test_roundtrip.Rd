@@ -4,8 +4,12 @@
 \alias{test_roundtrip}
 \title{Test round tripping a simple table}
 \usage{
-test_roundtrip(con = DBItest:::connect(DBItest:::get_default_context()),
-  columns = "", invert = TRUE, force_sorted = FALSE)
+test_roundtrip(
+  con = DBItest:::connect(DBItest:::get_default_context()),
+  columns = "",
+  invert = TRUE,
+  force_sorted = FALSE
+)
 }
 \arguments{
 \item{con}{An established DBI connection.}
@@ -14,8 +18,8 @@ test_roundtrip(con = DBItest:::connect(DBItest:::get_default_context()),
 the value of \code{invert}. One of \code{datetime}, \code{date}, \code{binary},
 \code{integer}, \code{double}, \code{character}, \code{logical}.}
 
-\item{invert}{If \code{TRUE}, change the definition of columns to be inclusive,
-rather than exclusive.}
+\item{invert}{If \code{TRUE}, change the definition of columns to be exclusive,
+rather than inclusive.}
 
 \item{force_sorted}{If \code{TRUE}, a sorted \code{id} column is added to the sent
 data, and the received data is sorted by this column before doing the

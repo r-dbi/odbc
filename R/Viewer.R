@@ -148,6 +148,12 @@ computeHostName <- function(connection) {
 
 computeDisplayName <- function(connection) {
 
+  # use DSN if present
+  dsn <- connection@info$sourcename
+  if (!is.null(dsn) & dsn != "") {
+    return(dsn)
+  }
+
   # use the database name as the display name
   display_name <- connection@info$dbname
   server_name <- connection@info$servername

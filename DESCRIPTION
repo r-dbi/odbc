@@ -1,37 +1,55 @@
 Package: odbc
-Title: Connect to ODBC Compatible Databases (using the DBI Interface)
+Title: Connect to ODBC Compatible Databases (using the DBI
+    Interface)
 Version: 1.1.6
-Authors@R: c(
-    person("Jim", "Hester", , "jim.hester@rstudio.com", role = c("aut", "cre")),
-    person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut")),
-    person("lexicalunit", role = c("cph"), comment = "nanodbc library"),
-    person("Google Inc.", role = c("cph"), comment = "cctz library"),
-    person("RStudio", role = c("cph", "fnd"))
-  )
+Authors@R: 
+    c(person(given = "Jim",
+             family = "Hester",
+             role = c("aut", "cre"),
+             email = "jim.hester@rstudio.com"),
+      person(given = "Hadley",
+             family = "Wickham",
+             role = "aut",
+             email = "hadley@rstudio.com"),
+      person(given = "lexicalunit",
+             role = "cph",
+             comment = "nanodbc library"),
+      person(given = "Google Inc.",
+             role = "cph",
+             comment = "cctz library"),
+      person(given = "RStudio",
+             role = c("cph", "fnd")))
 Description: A DBI-compatible interface to ODBC databases.
 License: MIT + file LICENSE
 URL: https://github.com/r-dbi/odbc
 BugReports: https://github.com/r-dbi/odbc/issues
-SystemRequirements: C++11, GNU make, An ODBC3 driver manager and drivers.
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.1.1
-LazyData: true
-ByteCompile: true
-Depends: R (>= 3.2.0)
+Depends: 
+    R (>= 3.2.0)
 Imports:
-    DBI (>= 1.0.0),
-    methods,
-    Rcpp (>= 0.12.11),
-    blob (>= 1.1.0),
     bit64,
-    hms
+    blob (>= 1.2.0),
+    DBI (>= 1.0.0),
+    hms,
+    methods,
+    rlang,
+    Rcpp (>= 0.12.11)
 Suggests:
-    tibble,
-    DBItest,
-    testthat,
     covr,
-    magrittr
-LinkingTo: Rcpp, BH
+    DBItest,
+    magrittr,
+    RSQLite,
+    testthat,
+    tibble
+LinkingTo: 
+    BH,
+    Rcpp
+ByteCompile: true
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.0.0
+SystemRequirements: C++11, GNU make, An ODBC3 driver manager and
+    drivers.
 Collate: 
     'odbc.R'
     'Driver.R'

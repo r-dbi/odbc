@@ -1,10 +1,6 @@
 test_that("SQLServer", {
   skip_unless_has_test_db({
-    if (identical(Sys.getenv("APPVEYOR"), "True")) {
-      DBItest::make_context(odbc(), list(Driver ="{SQL Server}", "Server" = "(local)\\SQL2014", "Database" = "master", "User ID" = "sa", "Password" = "Password12", encoding = "latin1"), tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "SQLServer")
-    } else {
-      DBItest::make_context(odbc(), list(dsn = "SQLServer", UID="testuser", PWD="test"), tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "SQLServer")
-    }
+      DBItest::make_context(odbc(), list(dsn = "MicrosoftSQLServer", UID="SA", PWD="Password12"), tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "SQLServer")
   })
 
   DBItest::test_getting_started(c(
@@ -64,6 +60,9 @@ test_that("SQLServer", {
   DBItest::test_meta(c(
       "bind_empty",
       "rows_affected_query",
+      "has_completed_statement",
+      "get_statement_statement",
+      "row_count_statement",
       NULL))
   # DBItest::test_transaction(c(
   #     NULL))
@@ -71,5 +70,56 @@ test_that("SQLServer", {
       "read_only", # Setting SQL_MODE_READ_ONLY is not supported in most DBs, so ignoring.
       "compliance", # We are defining additional subclasses for OdbcConnections
       NULL))
-})
 
+  local({
+    # SQLServer works with schemas (#197)
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    dbExecute(con, 'CREATE SCHEMA testSchema')
+    on.exit({
+      dbExecute(con, "DROP TABLE testSchema.iris")
+      dbExecute(con, "DROP SCHEMA testSchema")
+    })
+
+    ir <- iris
+    ir$Species <- as.character(ir$Species)
+
+    table_id <- Id(schema = "testSchema", table = "iris")
+    dbWriteTable(conn = con, name = table_id, value = ir)
+    dbWriteTable(conn = con, name = table_id, value = ir, append = TRUE)
+
+    res <- dbReadTable(con, table_id)
+    expect_equal(res, rbind(ir, ir))
+
+    dbWriteTable(conn = con, name = table_id, value = ir, overwrite = TRUE)
+    res <- dbReadTable(con, table_id)
+    expect_equal(res, ir)
+  })
+
+  local({
+    # SQLServer works with dbAppendTable (#215)
+    con <- DBItest:::connect(DBItest:::get_default_context())
+
+    ir <- iris
+    ir$Species <- as.character(ir$Species)
+
+    dbWriteTable(con, "iris", ir)
+    on.exit(dbRemoveTable(con, "iris"))
+
+    dbAppendTable(conn = con, name = "iris", value = ir)
+
+    res <- dbReadTable(con, "iris")
+    expect_equal(res, rbind(ir, ir))
+  })
+
+  local({
+    # Subseconds are retained upon insertion (#208)
+    con <- DBItest:::connect(DBItest:::get_default_context())
+
+    data <- data.frame(time = Sys.time())
+    dbWriteTable(con, "time", data, field.types = list(time = "DATETIME"), overwrite = TRUE)
+    on.exit(dbRemoveTable(con, "time"))
+    res <- dbReadTable(con, "time")
+
+    expect_equal(as.double(res$time), as.double(data$time))
+  })
+})

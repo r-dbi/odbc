@@ -86,10 +86,6 @@
 #define SQL_SS_UDT (-151) // from sqlncli.h
 #endif
 
-#ifndef SQL_NVARCHAR
-#define SQL_NVARCHAR (-10)
-#endif
-
 // Default to ODBC version defined by NANODBC_ODBC_VERSION if provided.
 #ifndef NANODBC_ODBC_VERSION
 #ifdef SQL_OV_ODBC3_80
@@ -430,7 +426,7 @@ const char* programming_error::what() const NANODBC_NOEXCEPT
     return std::runtime_error::what();
 }
 
-database_error::database_error(void* handle, short handle_type, const std::string& info)
+database_error::database_error(SQLHANDLE handle, short handle_type, const std::string& info)
     : std::runtime_error(info)
     , native_error(0)
     , sql_state("00000")
@@ -460,7 +456,7 @@ const std::string database_error::state() const NANODBC_NOEXCEPT
 // and line numbers to be inserted into the error message. Useful for debugging.
 #define NANODBC_THROW_DATABASE_ERROR(handle, handle_type)                                          \
     throw nanodbc::database_error(                                                                 \
-        handle, handle_type, __FILE__ ":" NANODBC_STRINGIZE(__LINE__) ": ")
+        handle, handle_type, __FILE__ ":" NANODBC_STRINGIZE(__LINE__) ": ") /**/
 
 // clang-format off
 // 8888888b.           888             d8b 888
@@ -684,9 +680,23 @@ struct bound_buffer
     std::size_t value_size_ = 0; // Size of single value (max size). Zero, if ignored.
 };
 
-// Allocates the native ODBC handles.
-inline void allocate_environment_handle(SQLHENV& env)
+inline void deallocate_handle(SQLHANDLE& handle, short handle_type)
 {
+    if (!handle)
+        return;
+
+    RETCODE rc;
+    NANODBC_CALL_RC(SQLFreeHandle, rc, handle_type, handle);
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(handle, handle_type);
+    handle = nullptr;
+}
+
+inline void allocate_env_handle(SQLHENV& env)
+{
+    if (env)
+        return;
+
     RETCODE rc;
     NANODBC_CALL_RC(SQLAllocHandle, rc, SQL_HANDLE_ENV, SQL_NULL_HANDLE, &env);
     if (!success(rc))
@@ -706,18 +716,19 @@ inline void allocate_environment_handle(SQLHENV& env)
     }
     catch (...)
     {
-        NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_ENV, env);
+        deallocate_handle(env, SQL_HANDLE_ENV);
         throw;
     }
 }
 
-inline void allocate_handle(SQLHENV& env, SQLHDBC& conn)
+inline void allocate_dbc_handle(SQLHDBC& conn, SQLHENV env)
 {
-    allocate_environment_handle(env);
+    NANODBC_ASSERT(env);
+    if (conn)
+        return;
 
     try
     {
-        NANODBC_ASSERT(env);
         RETCODE rc;
         NANODBC_CALL_RC(SQLAllocHandle, rc, SQL_HANDLE_DBC, env, &conn);
         if (!success(rc))
@@ -725,7 +736,7 @@ inline void allocate_handle(SQLHENV& env, SQLHDBC& conn)
     }
     catch (...)
     {
-        NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_ENV, env);
+        deallocate_handle(conn, SQL_HANDLE_DBC);
         throw;
     }
 }
@@ -757,13 +768,12 @@ public:
     connection_impl& operator=(const connection_impl&) = delete;
 
     connection_impl()
-        : env_(0)
-        , conn_(0)
+        : env_(nullptr)
+        , dbc_(nullptr)
         , connected_(false)
         , transactions_(0)
         , rollback_(false)
     {
-        allocate_handle(env_, conn_);
     }
 
     connection_impl(
@@ -771,41 +781,39 @@ public:
         const string_type& user,
         const string_type& pass,
         long timeout)
-        : env_(0)
-        , conn_(0)
+        : env_(nullptr)
+        , dbc_(nullptr)
         , connected_(false)
         , transactions_(0)
         , rollback_(false)
     {
-        allocate_handle(env_, conn_);
+        allocate();
         try
         {
             connect(dsn, user, pass, timeout);
         }
         catch (...)
         {
-            NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_DBC, conn_);
-            NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_ENV, env_);
+            deallocate();
             throw;
         }
     }
 
     connection_impl(const string_type& connection_string, long timeout)
-        : env_(0)
-        , conn_(0)
+        : env_(nullptr)
+        , dbc_(nullptr)
         , connected_(false)
         , transactions_(0)
         , rollback_(false)
     {
-        allocate_handle(env_, conn_);
+        allocate();
         try
         {
             connect(connection_string, timeout);
         }
         catch (...)
         {
-            NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_DBC, conn_);
-            NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_ENV, env_);
+            deallocate();
             throw;
         }
     }
@@ -820,48 +828,63 @@ public:
         {
             // ignore exceptions thrown during disconnect
         }
-        NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_DBC, conn_);
-        NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_ENV, env_);
+        deallocate();
+    }
+
+    void allocate()
+    {
+        allocate_env_handle(env_);
+        allocate_dbc_handle(dbc_, env_);
+    }
+
+    void deallocate()
+    {
+        deallocate_handle(dbc_, SQL_HANDLE_DBC);
+        deallocate_handle(env_, SQL_HANDLE_ENV);
     }
 
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
     void enable_async(void* event_handle)
     {
+        NANODBC_ASSERT(dbc_);
+
         RETCODE rc;
         NANODBC_CALL_RC(
             SQLSetConnectAttr,
             rc,
-            conn_,
+            dbc_,
             SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE,
             (SQLPOINTER)SQL_ASYNC_DBC_ENABLE_ON,
             SQL_IS_INTEGER);
         if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+            NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
 
         NANODBC_CALL_RC(
-            SQLSetConnectAttr, rc, conn_, SQL_ATTR_ASYNC_DBC_EVENT, event_handle, SQL_IS_POINTER);
+            SQLSetConnectAttr, rc, dbc_, SQL_ATTR_ASYNC_DBC_EVENT, event_handle, SQL_IS_POINTER);
         if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+            NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
     }
 
     void async_complete()
     {
+        NANODBC_ASSERT(dbc_);
+
         RETCODE rc, arc;
-        NANODBC_CALL_RC(SQLCompleteAsync, rc, SQL_HANDLE_DBC, conn_, &arc);
+        NANODBC_CALL_RC(SQLCompleteAsync, rc, SQL_HANDLE_DBC, dbc_, &arc);
         if (!success(rc) || !success(arc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+            NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
 
         connected_ = true;
 
         NANODBC_CALL_RC(
             SQLSetConnectAttr,
             rc,
-            conn_,
+            dbc_,
             SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE,
             (SQLPOINTER)SQL_ASYNC_DBC_ENABLE_OFF,
             SQL_IS_INTEGER);
         if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+            NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
     }
 #endif // !NANODBC_DISABLE_ASYNC && SQL_ATTR_ASYNC_DBC_EVENT
 
@@ -872,21 +895,29 @@ public:
         long timeout,
         void* event_handle = nullptr)
     {
+        allocate_env_handle(env_);
         disconnect();
 
+        deallocate_handle(dbc_, SQL_HANDLE_DBC);
+        allocate_dbc_handle(dbc_, env_);
+
         RETCODE rc;
-        NANODBC_CALL_RC(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
-        NANODBC_CALL_RC(SQLAllocHandle, rc, SQL_HANDLE_DBC, env_, &conn_);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(env_, SQL_HANDLE_ENV);
-
-        NANODBC_CALL_RC(
-            SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)(std::intptr_t)timeout, 0);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+        if (timeout != 0)
+        {
+            // Avoid to set the timeout to 0 (no timeout).
+            // This is a workaround for the Oracle ODBC Driver (11.1), as this
+            // operation is not supported by the Driver.
+            NANODBC_CALL_RC(
+                SQLSetConnectAttr,
+                rc,
+                dbc_,
+                SQL_LOGIN_TIMEOUT,
+                (SQLPOINTER)(std::intptr_t)timeout,
+                0);
+            if (!success(rc))
+                NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
+        }
 
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
         if (event_handle != nullptr)
@@ -896,7 +927,7 @@ public:
         NANODBC_CALL_RC(
             NANODBC_FUNC(SQLConnect),
             rc,
-            conn_,
+            dbc_,
             (NANODBC_SQLCHAR*)dsn.c_str(),
             SQL_NTS,
             !user.empty() ? (NANODBC_SQLCHAR*)user.c_str() : 0,
@@ -904,7 +935,7 @@ public:
             !pass.empty() ? (NANODBC_SQLCHAR*)pass.c_str() : 0,
             SQL_NTS);
         if (!success(rc) && (event_handle == nullptr || rc != SQL_STILL_EXECUTING))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+            NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
 
         connected_ = success(rc);
 
@@ -914,21 +945,29 @@ public:
     RETCODE
     connect(const string_type& connection_string, long timeout, void* event_handle = nullptr)
     {
+
+        allocate_env_handle(env_);
         disconnect();
+        deallocate_handle(dbc_, SQL_HANDLE_DBC);
+        allocate_dbc_handle(dbc_, env_);
 
         RETCODE rc;
-        NANODBC_CALL_RC(SQLFreeHandle, rc, SQL_HANDLE_DBC, conn_);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
 
-        NANODBC_CALL_RC(SQLAllocHandle, rc, SQL_HANDLE_DBC, env_, &conn_);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(env_, SQL_HANDLE_ENV);
-
-        NANODBC_CALL_RC(
-            SQLSetConnectAttr, rc, conn_, SQL_LOGIN_TIMEOUT, (SQLPOINTER)(std::intptr_t)timeout, 0);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+        if (timeout != 0)
+        {
+            // Avoid to set the timeout to 0 (no timeout).
+            // This is a workaround for the Oracle ODBC Driver (11.1), as this
+            // operation is not supported by the Driver.
+            NANODBC_CALL_RC(
+                SQLSetConnectAttr,
+                rc,
+                dbc_,
+                SQL_LOGIN_TIMEOUT,
+                (SQLPOINTER)(std::intptr_t)timeout,
+                0);
+            if (!success(rc))
+                NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
+        }
 
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
         if (event_handle != nullptr)
@@ -938,7 +977,7 @@ public:
         NANODBC_CALL_RC(
             NANODBC_FUNC(SQLDriverConnect),
             rc,
-            conn_,
+            dbc_,
             0,
             (NANODBC_SQLCHAR*)connection_string.c_str(),
             SQL_NTS,
@@ -947,7 +986,7 @@ public:
             nullptr,
             SQL_DRIVER_NOPROMPT);
         if (!success(rc) && (event_handle == nullptr || rc != SQL_STILL_EXECUTING))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+            NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
 
         connected_ = success(rc);
 
@@ -961,16 +1000,16 @@ public:
         if (connected())
         {
             RETCODE rc;
-            NANODBC_CALL_RC(SQLDisconnect, rc, conn_);
+            NANODBC_CALL_RC(SQLDisconnect, rc, dbc_);
             if (!success(rc))
-                NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+                NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
         }
         connected_ = false;
     }
 
     std::size_t transactions() const { return transactions_; }
 
-    void* native_dbc_handle() const { return conn_; }
+    void* native_dbc_handle() const { return dbc_; }
 
     void* native_env_handle() const { return env_; }
 
@@ -995,13 +1034,13 @@ public:
         NANODBC_CALL_RC(
             NANODBC_FUNC(SQLGetConnectAttr),
             rc,
-            conn_,
+            dbc_,
             SQL_ATTR_CURRENT_CATALOG,
             name,
             sizeof(name) / sizeof(NANODBC_SQLCHAR),
             &length);
         if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+            NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
         return string_type(&name[0], &name[strarrlen(name)]);
     }
 
@@ -1023,7 +1062,7 @@ private:
     T get_info_impl(short info_type) const;
 
     HENV env_;
-    HDBC conn_;
+    HDBC dbc_;
     bool connected_;
     std::size_t transactions_;
     bool rollback_; // if true, this connection is marked for eventual transaction rollback
@@ -1034,9 +1073,9 @@ T connection::connection_impl::get_info_impl(short info_type) const
 {
     T value;
     RETCODE rc;
-    NANODBC_CALL_RC(NANODBC_FUNC(SQLGetInfo), rc, conn_, info_type, &value, 0, nullptr);
+    NANODBC_CALL_RC(NANODBC_FUNC(SQLGetInfo), rc, dbc_, info_type, &value, 0, nullptr);
     if (!success(rc))
-        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+        NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
     return value;
 }
 
@@ -1049,13 +1088,13 @@ string_type connection::connection_impl::get_info_impl<string_type>(short info_t
     NANODBC_CALL_RC(
         NANODBC_FUNC(SQLGetInfo),
         rc,
-        conn_,
+        dbc_,
         info_type,
         value,
         sizeof(value) / sizeof(NANODBC_SQLCHAR),
         &length);
     if (!success(rc))
-        NANODBC_THROW_DATABASE_ERROR(conn_, SQL_HANDLE_DBC);
+        NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
     return string_type(&value[0], &value[strarrlen(value)]);
 }
 
@@ -1262,7 +1301,7 @@ public:
         {
             NANODBC_CALL(SQLCancel, stmt_);
             reset_parameters();
-            NANODBC_CALL(SQLFreeHandle, SQL_HANDLE_STMT, stmt_);
+            deallocate_handle(stmt_, SQL_HANDLE_STMT);
         }
     }
 
@@ -1297,10 +1336,7 @@ public:
                 NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
 
             reset_parameters();
-
-            NANODBC_CALL_RC(SQLFreeHandle, rc, SQL_HANDLE_STMT, stmt_);
-            if (!success(rc))
-                NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+            deallocate_handle(stmt_, SQL_HANDLE_STMT);
         }
 
         open_ = false;
@@ -1649,7 +1685,11 @@ public:
         return cols;
     }
 
-    void reset_parameters() NANODBC_NOEXCEPT { NANODBC_CALL(SQLFreeStmt, stmt_, SQL_RESET_PARAMS); }
+    void reset_parameters() NANODBC_NOEXCEPT
+    {
+        param_descr_data_.clear();
+        NANODBC_CALL(SQLFreeStmt, stmt_, SQL_RESET_PARAMS);
+    }
 
     short parameters() const
     {
@@ -1728,26 +1768,35 @@ public:
         disable_async();
 #endif
 
-        RETCODE rc;
-        SQLSMALLINT nullable; // unused
-        NANODBC_CALL_RC(
-            SQLDescribeParam,
-            rc,
-            stmt_,
-            param_index + 1,
-            &param.type_,
-            &param.size_,
-            &param.scale_,
-            &nullable);
-        if (!success(rc))
+        if (!param_descr_data_.count(param_index))
         {
-            // Fallback to binding as a varchar if SQLDescribeParam fails, will
-            // truncate data if it is longer than 256 characters, and may not
-            // work for all data types, but is necessary to support drivers
-            // which do not support SQLDescribeParam.
-            param.type_ = SQL_VARCHAR;
-            param.size_ = 255;
-            param.scale_ = 0;
+            RETCODE rc;
+            SQLSMALLINT nullable; // unused
+            NANODBC_CALL_RC(
+                SQLDescribeParam,
+                rc,
+                stmt_,
+                param_index + 1,
+                &param.type_,
+                &param.size_,
+                &param.scale_,
+                &nullable);
+            if (!success(rc))
+            {
+                // Fallback to binding as a varchar if SQLDescribeParam fails, will
+                // truncate data if it is longer than 256 characters, and may not
+                // work for all data types, but is necessary to support drivers
+                // which do not support SQLDescribeParam.
+                param.type_ = SQL_VARCHAR;
+                param.size_ = 256;
+                param.scale_ = 0;
+            }
+        }
+        else
+        {
+            param.type_ = param_descr_data_[param_index].type_;
+            param.size_ = param_descr_data_[param_index].size_;
+            param.scale_ = param_descr_data_[param_index].scale_;
         }
 
         param.index_ = param_index;
@@ -1893,6 +1942,26 @@ public:
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
+    void describe_parameters(
+        const std::vector<short>& idx,
+        const std::vector<short>& type,
+        const std::vector<unsigned long>& size,
+        const std::vector<short>& scale)
+    {
+
+        if (idx.size() != type.size() || idx.size() != size.size() || idx.size() != scale.size())
+            throw programming_error("parameter description arrays are of different size");
+
+        for (std::size_t i = 0; i < idx.size(); ++i)
+        {
+            param_descr_data_[idx[i]].type_ = static_cast<SQLSMALLINT>(type[i]);
+            param_descr_data_[idx[i]].size_ = static_cast<SQLULEN>(size[i]);
+            param_descr_data_[idx[i]].scale_ = static_cast<SQLSMALLINT>(scale[i]);
+            param_descr_data_[idx[i]].index_ = static_cast<SQLUSMALLINT>(i);
+            param_descr_data_[idx[i]].iotype_ = PARAM_IN; // not used
+        }
+    }
+
     // comparator for null sentry values
     template <class T>
     bool equals(const T& lhs, const T& rhs)
@@ -1907,6 +1976,7 @@ private:
     std::map<short, std::vector<null_type>> bind_len_or_null_;
     std::map<short, std::vector<string_type::value_type>> string_data_;
     std::map<short, std::vector<uint8_t>> binary_data_;
+    std::map<short, bound_parameter> param_descr_data_;
 
 #if defined(NANODBC_DO_ASYNC_IMPL)
     bool async_;                 // true if statement is currently in SQL_STILL_EXECUTING mode
@@ -1938,7 +2008,11 @@ void statement::statement_impl::bind_parameter<string_type::value_type>(
         param.scale_,               // decimal digits
         (SQLPOINTER)buffer.values_, // parameter value
         buffer_size,                // buffer length
-        (buffer.size_ <= 1 ? nullptr : bind_len_or_null_[param.index_].data()));
+        // the original source line is
+        // (buffer.size_ <= 1 ? nullptr : bind_len_or_null_[param.index_].data()));
+        // but it will lead to an issue that `dbWriteTable()` can't upload NA as
+        // NULL if the row of the data.frame is only 1. See #287 #288.
+        bind_len_or_null_[param.index_].data());
 
     if (!success(rc))
         NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
@@ -2628,7 +2702,6 @@ private:
                 break;
             case SQL_CHAR:
             case SQL_VARCHAR:
-            case SQL_NVARCHAR:
                 col.ctype_ = SQL_C_CHAR;
                 col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLCHAR);
                 if (is_blob)
@@ -2650,6 +2723,11 @@ private:
                 break;
             case SQL_LONGVARCHAR:
                 col.ctype_ = SQL_C_CHAR;
+                col.blob_ = true;
+                col.clen_ = 0;
+                break;
+            case SQL_WLONGVARCHAR:
+                col.ctype_ = SQL_C_WCHAR;
                 col.blob_ = true;
                 col.clen_ = 0;
                 break;
@@ -3192,18 +3270,18 @@ std::list<driver> list_drivers()
     SQLSMALLINT attrs_len_ret{0};
     SQLUSMALLINT direction{SQL_FETCH_FIRST};
 
-    HENV env{0};
-    allocate_environment_handle(env);
+    connection env; // ensures handles RAII
+    env.allocate();
+    NANODBC_ASSERT(env.native_env_handle());
 
     std::list<driver> drivers;
     RETCODE rc{SQL_SUCCESS};
     do
     {
-        NANODBC_ASSERT(env);
         NANODBC_CALL_RC(
             NANODBC_FUNC(SQLDrivers),
             rc,
-            env,
+            env.native_env_handle(),
             direction,                               // EnvironmentHandle
             descr,                                   // DriverDescription
             sizeof(descr) / sizeof(NANODBC_SQLCHAR), // BufferLength1
@@ -3244,7 +3322,7 @@ std::list<driver> list_drivers()
         else
         {
             if (rc != SQL_NO_DATA)
-                NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
+                NANODBC_THROW_DATABASE_ERROR(env.native_env_handle(), SQL_HANDLE_ENV);
         }
     } while (success(rc));
 
@@ -3259,8 +3337,8 @@ std::list<data_source> list_data_sources()
     SQLSMALLINT descr_len_ret{0};
     SQLUSMALLINT direction{SQL_FETCH_FIRST};
 
-    HENV env{0};
-    allocate_environment_handle(env);
+    connection env; // ensures handles RAII
+    env.allocate();
 
     std::list<data_source> data_sources;
     RETCODE rc{SQL_SUCCESS};
@@ -3270,7 +3348,7 @@ std::list<data_source> list_data_sources()
         NANODBC_CALL_RC(
             NANODBC_FUNC(SQLDataSources),
             rc,
-            env,                                     // EnvironmentHandle
+            env.native_env_handle(),                 // EnvironmentHandle
             direction,                               // Direction
             name,                                    // ServerName
             sizeof(name) / sizeof(NANODBC_SQLCHAR),  // BufferLength1
@@ -3297,7 +3375,7 @@ std::list<data_source> list_data_sources()
         else
         {
             if (rc != SQL_NO_DATA)
-                NANODBC_THROW_DATABASE_ERROR(env, SQL_HANDLE_ENV);
+                NANODBC_THROW_DATABASE_ERROR(env.native_env_handle(), SQL_HANDLE_ENV);
         }
     } while (success(rc));
 
@@ -3404,6 +3482,16 @@ connection::connection(const string_type& connection_string, long timeout)
 }
 
 connection::~connection() NANODBC_NOEXCEPT {}
+
+void connection::allocate()
+{
+    impl_->allocate();
+}
+
+void connection::deallocate()
+{
+    impl_->deallocate();
+}
 
 void connection::connect(
     const string_type& dsn,
@@ -3967,6 +4055,15 @@ void statement::bind_strings(
 void statement::bind_null(short param_index, std::size_t batch_size)
 {
     impl_->bind_null(param_index, batch_size);
+}
+
+void statement::describe_parameters(
+    const std::vector<short>& idx,
+    const std::vector<short>& type,
+    const std::vector<unsigned long>& size,
+    const std::vector<short>& scale)
+{
+    impl_->describe_parameters(idx, type, size, scale);
 }
 
 } // namespace nanodbc

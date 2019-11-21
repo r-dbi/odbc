@@ -14,6 +14,7 @@ OdbcConnection <- function(
   dsn = NULL,
   ...,
   timezone = "UTC",
+  timezone_out = "UTC",
   encoding = "",
   bigint = c("integer64", "integer", "numeric", "character"),
   timeout = Inf,
@@ -36,7 +37,7 @@ OdbcConnection <- function(
     timeout <- 0
   }
 
-  ptr <- odbc_connect(connection_string, timezone = timezone, encoding = encoding, bigint = bigint, timeout = timeout)
+  ptr <- odbc_connect(connection_string, timezone = timezone, timezone_out = timezone_out, encoding = encoding, bigint = bigint, timeout = timeout)
   quote <- connection_quote(ptr)
 
   info <- connection_info(ptr)
@@ -67,6 +68,85 @@ setClass(
     info = "ANY",
     encoding = "character"
   )
+)
+
+#' odbcConnectionColumns
+#'
+#' For a given table this function returns detailed information on
+#' all fields / columns.  The expectation is that this is a relatively thin
+#' wrapper around the ODBC `SQLColumns` function call, with some of the field names
+#' renamed / re-ordered according to the return specifications below.
+#'
+#' In [dbWriteTable()] we make a call to this method
+#' to get details on the fields of the table we are writing to.  In particular
+#' the columns `data_type`, `column_size`, and `decimal_digits` are used.  An
+#' implementation is not necessary for [dbWriteTable()] to work.
+#' @param conn OdbcConnection
+#' @param name table we wish to get information on
+#' @param ... additional parameters to methods
+#'
+#' @seealso The ODBC documentation on [SQLColumns](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
+#' for further details.
+#'
+#' @return data.frame with columns
+#' - name
+#' - field.type - equivalent to type_name in SQLColumns output
+#' - table_name
+#' - schema_name
+#' - catalog_name
+#' - data_type
+#' - column_size
+#' - buffer_length
+#' - decimal_digits
+#' - numeric_precision_radix
+#" - remarks
+#' - column_default
+#' - sql_data_type
+#' - sql_datetime_subtype
+#' - char_octet_length
+#' - ordinal_position
+#' - nullable
+#' @export
+setGeneric(
+  "odbcConnectionColumns",
+  valueClass = "data.frame",
+  function(conn, name, ...) {
+    standardGeneric("odbcConnectionColumns")
+  }
+)
+
+#' @rdname odbcConnectionColumns
+#' @param column_name The name of the column to return, the default returns all columns.
+#' @export
+setMethod(
+  "odbcConnectionColumns",
+  c("OdbcConnection", "Id"),
+  function(conn, name, column_name = NULL) {
+
+    odbcConnectionColumns(conn,
+      name = name@name[["table"]],
+      catalog_name = name@name[["catalog"]],
+      schema_name = name@name[["schema"]],
+      column_name = column_name)
+  }
+)
+
+#' @rdname odbcConnectionColumns
+#' @param catalog_name charaacter catalog where the table is located
+#' @param schema_name charaacter schema where the table is located
+#' @export
+setMethod(
+  "odbcConnectionColumns",
+  c("OdbcConnection", "character"),
+  function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL) {
+
+    connection_sql_columns(conn@ptr,
+      table_name = name,
+      catalog_name = catalog_name,
+      schema_name = schema_name,
+      column_name = column_name)
+
+  }
 )
 
 # TODO: show encoding, timezone, bigint mapping
@@ -127,18 +207,27 @@ setMethod(
 #' @export
 setMethod(
   "dbSendQuery", c("OdbcConnection", "character"),
-  function(conn, statement, ...) {
+  function(conn, statement, params = NULL, ...) {
     res <- OdbcResult(connection = conn, statement = statement)
+    if (!is.null(params)) {
+      res <- dbBind(res, params = params, ...)
+    }
+
     res
   })
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbSendStatement
+#' @param params Query parameters to pass to [dbBind()], See [dbBind()] for details.
 #' @export
 setMethod(
   "dbSendStatement", c("OdbcConnection", "character"),
-  function(conn, statement, ...) {
+  function(conn, statement, params = NULL, ...) {
     res <- OdbcResult(connection = conn, statement = statement)
+    if (!is.null(params)) {
+      res <- dbBind(res, params = params, ...)
+    }
+
     res
   })
 
@@ -219,7 +308,8 @@ setMethod(
   "dbExistsTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     stopifnot(length(name) == 1)
-    name %in% dbListTables(conn, ...)
+    df <- connection_sql_tables(conn@ptr, table_name = name)
+    NROW(df) > 0
   })
 
 #' @inherit DBI::dbListFields
@@ -232,8 +322,8 @@ setMethod(
 setMethod(
   "dbListFields", c("OdbcConnection", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL, ...) {
-    connection_sql_columns(conn@ptr,
-      table_name = name,
+    odbcConnectionColumns(conn,
+      name = name,
       catalog_name = catalog_name,
       schema_name = schema_name,
       column_name = column_name)[["name"]]
@@ -266,8 +356,8 @@ setMethod(
 #' @inheritParams DBI::dbFetch
 #' @export
 setMethod("dbGetQuery", signature("OdbcConnection", "character"),
-  function(conn, statement, n = -1, ...) {
-    rs <- dbSendQuery(conn, statement, ...)
+  function(conn, statement, n = -1, params = NULL, ...) {
+    rs <- dbSendQuery(conn, statement, params = params, ...)
     on.exit(dbClearResult(rs))
 
     df <- dbFetch(rs, n = n, ...)
@@ -312,20 +402,35 @@ setMethod(
 
 #' List Available ODBC Drivers
 #'
+#' @param keep A character vector of driver names to keep in the results, if
+#'   `NULL` (the default) will keep all drivers.
+#' @param filter A character vector of driver names to filter from the results, if
+#'   `NULL` (the default) will not filter any drivers.
 #' @return A data frame with three columns.
 #' If a given driver does not have any attributes the last two columns will be
-#' `NA`.
+#' `NA`. Drivers can be excluded from being returned by setting the
+#' \code{odbc.drivers.filter} option.
 #' \describe{
 #'   \item{name}{Name of the driver}
 #'   \item{attribute}{Driver attribute name}
 #'   \item{value}{Driver attribute value}
 #' }
 #' @export
-odbcListDrivers <- function() {
+odbcListDrivers <- function(keep = getOption("odbc.drivers_keep"), filter = getOption("odbc.drivers_filter")) {
   res <- list_drivers_()
+
   if (nrow(res) > 0) {
     res[res == ""] <- NA_character_
+
+    if (!is.null(keep)) {
+      res <- res[res[["name"]] %in% keep, ]
+    }
+
+    if (!is.null(filter)) {
+      res <- res[!res[["name"]] %in% filter, ]
+    }
   }
+
   res
 }
 
