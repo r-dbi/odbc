@@ -1778,11 +1778,11 @@ public:
             if (!success(rc))
             {
                 // Fallback to binding as a varchar if SQLDescribeParam fails, will
-                // truncate data if it is longer than 256 characters, and may not
+                // truncate data if it is longer than 255 characters, and may not
                 // work for all data types, but is necessary to support drivers
                 // which do not support SQLDescribeParam.
                 param.type_ = SQL_VARCHAR;
-                param.size_ = 256;
+                param.size_ = 255;
                 param.scale_ = 0;
             }
         }
