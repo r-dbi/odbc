@@ -724,7 +724,7 @@ Rcpp::List odbc_result::result_to_dataframe(nanodbc::result& r, int n_max) {
     complete_ = !r.next();
     ++row;
     ++rows_fetched_;
-    if (rows_fetched_ % 10000 == 0) {
+    if (rows_fetched_ % 16384 == 0) {
       Rcpp::checkUserInterrupt();
     }
   }
