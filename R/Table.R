@@ -152,7 +152,7 @@ setMethod("sqlCreateTable", "OdbcConnection",
 createFields <- function(con, fields, field.types, row.names) {
   if (is.data.frame(fields)) {
     fields <- sqlRownamesToColumn(fields, row.names)
-    fields <- vapply(fields, function(x) DBI::dbDataType(con, x), character(1))
+    fields <- DBI::dbDataType(con, fields)
   }
   if (!is.null(field.types)) {
     fields[names(field.types)] <- field.types

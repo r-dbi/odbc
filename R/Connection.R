@@ -238,11 +238,7 @@ setMethod(
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbDataType
 #' @export
-setMethod(
-  "dbDataType", c("OdbcConnection", "data.frame"),
-  function(dbObj, obj, ...) {
-    vapply(obj, odbcDataType, con = dbObj, FUN.VALUE = character(1), USE.NAMES = TRUE)
-  })
+setMethod("dbDataType", c("OdbcConnection", "data.frame"), odbc_data_type_df)
 
 #' @rawNamespace exportMethods(dbQuoteString)
 NULL

@@ -2,6 +2,9 @@
 
 ## Features
 
+* The error message when trying to write tables with unsupported types now
+  includes the column name (#238).
+
 * Added a Access `odbcDataType()` method to support writing to Access databases
   (#262, @vh-d)
 

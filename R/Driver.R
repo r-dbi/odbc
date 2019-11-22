@@ -158,14 +158,29 @@ setMethod(
     odbcDataType(dbObj, obj, ...)
   })
 
+odbc_data_type_df <- function(dbObj, obj, ...) {
+  res <- character(NCOL(obj))
+  nms <- names(obj)
+  for (i in seq_along(obj)) {
+    tryCatch(
+      res[[i]] <- odbcDataType(con = dbObj, obj[[i]]),
+      error = function(e) {
+        if (conditionMessage(e) == "Unsupported type") {
+          stop("Column '", nms[[i]], "' is of unsupported type: '", object_type(obj[[i]]), "'", call. = FALSE)
+        } else {
+          stop(e)
+        }
+      }
+    )
+  }
+  names(res) <- nms
+  res
+}
+
 #' @rdname OdbcDriver
 #' @inheritParams DBI::dbDataType
 #' @export
-setMethod(
-  "dbDataType", c("OdbcDriver", "data.frame"),
-  function(dbObj, obj, ...) {
-    vapply(obj, odbcDataType, con = dbObj, FUN.VALUE = character(1), USE.NAMES = TRUE)
-  })
+setMethod("dbDataType", c("OdbcDriver", "data.frame"), odbc_data_type_df)
 
 #' @rdname OdbcDriver
 #' @inheritParams DBI::dbIsValid
