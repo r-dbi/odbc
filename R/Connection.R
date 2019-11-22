@@ -393,6 +393,11 @@ setMethod(
 
 #' List Available ODBC Drivers
 #'
+#' List the available drivers on your system. See the
+#' [Installation](https://github.com/r-dbi/odbc#installation) section of the
+#' package README for details on how to install drivers for the most common
+#' databases.
+#'
 #' @param keep A character vector of driver names to keep in the results, if
 #'   `NULL` (the default) will keep all drivers.
 #' @param filter A character vector of driver names to filter from the results, if
@@ -426,6 +431,11 @@ odbcListDrivers <- function(keep = getOption("odbc.drivers_keep"), filter = getO
 }
 
 #' List Available Data Source Names
+#'
+#' List the available data sources on your system. See the [DSN Configuration
+#' files](https://github.com/r-dbi/odbc#dsn-configuration-files) section of the
+#' package README for details on how to install data sources for the most
+#' common databases.
 #'
 #' @return A data frame with two columns.
 #' \describe{

@@ -28,5 +28,8 @@ If a given driver does not have any attributes the last two columns will be
 }
 }
 \description{
-List Available ODBC Drivers
+List the available drivers on your system. See the
+\href{https://github.com/r-dbi/odbc#installation}{Installation} section of the
+package README for details on how to install drivers for the most common
+databases.
 }

@@ -14,5 +14,7 @@ A data frame with two columns.
 }
 }
 \description{
-List Available Data Source Names
+List the available data sources on your system. See the \href{https://github.com/r-dbi/odbc#dsn-configuration-files}{DSN Configuration files} section of the
+package README for details on how to install data sources for the most
+common databases.
 }
