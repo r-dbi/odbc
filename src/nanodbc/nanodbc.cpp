@@ -359,12 +359,6 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
         result += nanodbc::string_type(sql_message.begin(), sql_message.end());
         i++;
 
-// NOTE: unixODBC using PostgreSQL and SQLite drivers crash if you call SQLGetDiagRec()
-// more than once. So as a (terrible but the best possible) workaround just exit
-// this loop early on non-Windows systems.
-#ifndef _MSC_VER
-        break;
-#endif
     } while (rc != SQL_NO_DATA);
 
     convert(result, rvalue);
