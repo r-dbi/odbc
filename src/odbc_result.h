@@ -20,7 +20,7 @@ class odbc_error : public Rcpp::exception {
 public:
   odbc_error(const nanodbc::database_error e, const std::string& sql)
       : Rcpp::exception("", false) {
-    message = std::string("<SQL> '" + sql + "'\n  " + e.what());
+    message = std::string(e.what()) + "\n<SQL> '" + sql + "'";
   }
   const char* what() const NANODBC_NOEXCEPT { return message.c_str(); }
 
