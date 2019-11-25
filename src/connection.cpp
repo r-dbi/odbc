@@ -73,6 +73,8 @@ std::string get_info_or_empty(connection_ptr const& p, short type) {
 
 // [[Rcpp::export]]
 Rcpp::List connection_info(connection_ptr const& p) {
+  auto getdata_ext =
+      (*p)->connection()->get_info<unsigned short>(SQL_GETDATA_EXTENSIONS);
   return Rcpp::List::create(
       Rcpp::_["dbname"] = get_info_or_empty(p, SQL_DATABASE_NAME),
       Rcpp::_["dbms.name"] = get_info_or_empty(p, SQL_DBMS_NAME),
@@ -86,7 +88,11 @@ Rcpp::List connection_info(connection_ptr const& p) {
       Rcpp::_["odbc.version"] = get_info_or_empty(p, SQL_ODBC_VER),
       Rcpp::_["driver.version"] = get_info_or_empty(p, SQL_DRIVER_VER),
       Rcpp::_["odbcdriver.version"] = get_info_or_empty(p, SQL_DRIVER_ODBC_VER),
-      Rcpp::_["supports.transactions"] = (*p)->supports_transactions());
+      Rcpp::_["supports.transactions"] = (*p)->supports_transactions(),
+      Rcpp::_["getdata.extensions.any_column"] =
+          ((getdata_ext & SQL_GD_ANY_COLUMN) != 0),
+      Rcpp::_["getdata.extensions.any_order"] =
+          ((getdata_ext & SQL_GD_ANY_ORDER) != 0));
 }
 
 // [[Rcpp::export]]
