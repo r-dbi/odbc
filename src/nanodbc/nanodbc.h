@@ -267,7 +267,7 @@ public:
     /// \param info Additional info that will be appended to the beginning of the error message.
     database_error(void* handle, short handle_type, const std::string& info = "");
     const char* what() const NANODBC_NOEXCEPT;
-    const long native() const NANODBC_NOEXCEPT;
+    long native() const NANODBC_NOEXCEPT;
     const std::string state() const NANODBC_NOEXCEPT;
 
 private:

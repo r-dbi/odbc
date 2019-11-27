@@ -434,7 +434,7 @@ const char* database_error::what() const NANODBC_NOEXCEPT
     return message.c_str();
 }
 
-const long database_error::native() const NANODBC_NOEXCEPT
+long database_error::native() const NANODBC_NOEXCEPT
 {
     return native_error;
 }
@@ -3076,7 +3076,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
     case SQL_C_DATE:
     {
         const date d = *reinterpret_cast<date*>(col.pdata_ + rowset_position_ * col.clen_);
-        std::tm st = {0};
+        std::tm st = {};
         st.tm_year = d.year - 1900;
         st.tm_mon = d.month - 1;
         st.tm_mday = d.day;
@@ -3092,7 +3092,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
     case SQL_C_TIME:
     {
         const time t = *reinterpret_cast<time*>(col.pdata_ + rowset_position_ * col.clen_);
-        std::tm st = {0};
+        std::tm st = {};
         st.tm_hour = t.hour;
         st.tm_min = t.min;
         st.tm_sec = t.sec;
@@ -3109,7 +3109,7 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
     {
         const timestamp stamp =
             *reinterpret_cast<timestamp*>(col.pdata_ + rowset_position_ * col.clen_);
-        std::tm st = {0};
+        std::tm st = {};
         st.tm_year = stamp.year - 1900;
         st.tm_mon = stamp.month - 1;
         st.tm_mday = stamp.day;

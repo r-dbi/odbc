@@ -135,7 +135,7 @@ void odbc_result::bind_list(
     Rcpp::stop(
         "Query requires '%i' params; '%i' supplied.", s_->parameters(), ncols);
   }
-  auto nrows = Rf_length(x[0]);
+  size_t nrows = Rf_length(x[0]);
   size_t start = 0;
   std::unique_ptr<nanodbc::transaction> t;
   if (use_transaction && c_->supports_transactions()) {
