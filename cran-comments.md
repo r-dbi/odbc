@@ -11,6 +11,6 @@ Small maintenance release
 
 ## Downstream dependencies
 
-I ran `R CMD check` on the 4 reverse dependencies
+I ran `R CMD check` on the 12 reverse dependencies
 (https://github.com/r-dbi/odbc/tree/master/revdep#readme). There were no errors
 from these changes.
