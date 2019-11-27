@@ -155,6 +155,15 @@ createFields <- function(con, fields, field.types, row.names) {
     fields <- DBI::dbDataType(con, fields)
   }
   if (!is.null(field.types)) {
+    is_field <- names(field.types) %in% names(fields)
+    if (!all(is_field)) {
+      stop(
+        sprintf("Columns in `field.types` must be in the input, missing columns:\n%s",
+          paste0("  - '", names(field.types)[!is_field], "'", collapse = "\n")
+        ),
+      call. = FALSE)
+    }
+
     fields[names(field.types)] <- field.types
   }
 

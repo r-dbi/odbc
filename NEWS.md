@@ -2,6 +2,9 @@
 
 ## Features
 
+* `sqlCreateTable()` and `dbWriteTable()` now throw an error if you mistakenly
+  include `field.types` names which do not exist in the input data. (#271)
+
 * The error message when trying to write tables with unsupported types now
   includes the column name (#238).
 

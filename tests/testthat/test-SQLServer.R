@@ -155,4 +155,14 @@ test_that("SQLServer", {
 
     expect_equal(as.double(res$time), as.double(data$time))
   })
+
+  local({
+    # dbWriteTable errors if field.types don't exist (#271)
+    con <- DBItest:::connect(DBItest:::get_default_context())
+
+    expect_error(
+      dbWriteTable(con, "foo", iris, field.types = list(foo = "VARCHAR(10)", bar = "double")),
+      "Columns in `field.types` must be in the input"
+    )
+  })
 })
