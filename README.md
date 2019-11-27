@@ -10,7 +10,7 @@ state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/odbc)](https://cran.r-project.org/package=odbc)
 [![R build
-status](https://github.com/r-dbi/odbc/workflows/R-CMD-check/badge.svg)](https://github.com/r-dbi/odbc/actions?workflow=R-CMD-check)
+status](https://github.com/r-dbi/odbc/workflows/R-CMD-check/badge.svg)](https://github.com/r-dbi/odbc)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/r-dbi/odbc/master.svg)](https://codecov.io/github/r-dbi/odbc?branch=master)
 <!-- badges: end -->
