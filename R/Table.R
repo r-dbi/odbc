@@ -54,9 +54,6 @@ odbc_write_table <-
 
     fieldDetails <- tryCatch({
       details <- odbcConnectionColumns(conn, name)
-      # should be case-insensitive when matching against the db table fields
-      # for issue #319
-      details$param_index <- match(toupper(details$name), toupper(names(values)))
       details[!is.na(details$param_index), ]
     }, error = function(e) {
       return(NULL)

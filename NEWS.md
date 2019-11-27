@@ -62,9 +62,6 @@
 * `dbWriteTable()` now always writes `NA_character` as `NULL` for
   data.frame with only one row (@shrektan, #288).
 
-* `dbWriteTable()` now is case-insensitive as before when matching agains 
-  the database's table fields (@shrektan, #320).
-
 # odbc 1.1.6
 
 ## Features
