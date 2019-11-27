@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/sh
+
 # Anticonf (tm) script by Jeroen Ooms, Jim Hester (2017)
 # This script will query 'pkg-config' for the required cflags and ldflags.
 # If pkg-config is unavailable or does not find the library, try setting
@@ -13,7 +14,6 @@ PKG_CSW_NAME="unixodbc_dev"
 PKG_BREW_NAME="unixodbc"
 PKG_TEST_HEADER="<sql.h>"
 PKG_LIBS="${PKG_LIBS:--lodbc}"
-PKG_LIBS_STATIC="-lodbc -lltdl"
 
 # Use odbc_config, iodbc-config if available
 if [ "$(command -v odbc_config)" ]; then
@@ -32,12 +32,12 @@ if [ "$INCLUDE_DIR" ] || [ "$LIB_DIR" ]; then
   echo "Found INCLUDE_DIR and/or LIB_DIR!"
   PKG_CFLAGS="-I$INCLUDE_DIR $PKG_CFLAGS"
   PKG_LIBS="-L$LIB_DIR $PKG_LIBS"
-elif [[ "$OSTYPE" == "darwin"* ]]; then
+elif [ "$(uname)" = 'Darwin' ]; then
   if [ "$(command -v brew)" ]; then
     BREWDIR=$(brew --prefix)
   else
     curl -sfL "https://jeroen.github.io/autobrew/$PKG_BREW_NAME" > autobrew
-    source autobrew
+    . autobrew
     rm "$BREWDIR"/lib/*.dynlib
   fi
   PKG_CFLAGS="-I$BREWDIR/opt/$PKG_BREW_NAME/include"
@@ -50,9 +50,9 @@ fi
 
 # Find compiler
 if "${R_HOME}"/bin/R CMD config CXX11 > /dev/null; then
-  CXXCPP="$("${R_HOME}"/bin/R CMD config CXX11) -E"
+  CXX11="$("${R_HOME}"/bin/R CMD config CXX11) -E"
 else
-  CXXCPP="$("${R_HOME}"/bin/R CMD config CXX1X) -E"
+  CXX11="$("${R_HOME}"/bin/R CMD config CXX1X) -E"
 fi
 
 CXXFLAGS=$("${R_HOME}"/bin/R CMD config CXXFLAGS)
@@ -63,7 +63,7 @@ echo "PKG_CFLAGS=$PKG_CFLAGS"
 echo "PKG_LIBS=$PKG_LIBS"
 
 # Test for odbc
-echo "#include $PKG_TEST_HEADER" | ${CXXCPP} ${CPPFLAGS} ${PKG_CFLAGS} ${CXXFLAGS} -xc++ - > /dev/null
+echo "#include $PKG_TEST_HEADER" | ${CXX11} ${CPPFLAGS} ${PKG_CFLAGS} ${CXXFLAGS} -xc++ - > /dev/null
 if [ $? -ne 0 ]; then
   echo "------------------------- ANTICONF ERROR ---------------------------"
   echo "Configuration failed because $PKG_CONFIG_NAME was not found. Try installing:"
