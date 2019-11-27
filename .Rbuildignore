@@ -13,7 +13,7 @@
 ^README.R$
 ^README.html$
 ^TODO.md$
-^script.R$
+^script.*R$
 ^docker$
 ^\.github$
 ^README_cache$
