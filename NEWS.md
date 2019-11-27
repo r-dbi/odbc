@@ -5,12 +5,17 @@
 * The error message when trying to write tables with unsupported types now
   includes the column name (#238).
 
-* Added a Access `odbcDataType()` method to support writing to Access databases
-  (#262, @vh-d)
+* `dbConnect()` now has a new param `timezone_out` which is useful if the user
+  wants the datetime values be marked with a specific timezone instead of UTC
+  (@shrektan, #294).
 
 * `dbGetQuery()`, `dbSendQuery()` and `dbSendStatement()` gain a `immediate`
   argument to execute the statement or query immediately instead of preparing,
   then executing the statement. (#272, @krlmlr)
+
+* `dbGetQuery()`, `dbSendQuery()` and `dbSendStatement()` gain a `params`
+  argument, which allows them to be used (indirectly) by `DBI::dbAppendTable()`
+  (#210, #215, #261).
 
 * `dbWriteTable()` and `dbBind()` methods gain a `batch_rows` argument, to
   control how many rows are bound in each batch. The default can be set
@@ -20,47 +25,46 @@
 
 * New `odbcConnectionColumns()` function to describe the column types. This
   data is used when binding columns, which allows drivers which do not support
-  the `SQLDescribeParam()` ODBC function, such as freeTDS. (#313, @detule)
+  the `SQLDescribeParam()` ODBC function, such as freeTDS to work better with
+  bound columns. (#313, @detule)
 
-* Added a Teradata `odbcDataType()` to support writing logical data to Teradata servers (#240, @blarj09).
+* Added a Teradata `odbcDataType()` to support writing logical data to Teradata
+  servers (#240, @blarj09).
 
-* Subseconds are now retained when inserting POSIXct objects (#130, #208)
-
-* `dbGetQuery()`, `dbSendQuery()` and `dbSendStatement()` gain a `params` argument, which allows them to be
-  used (indirectly) by `DBI::dbAppendTable()` (#210, #215, #261).
+* Added a Access `odbcDataType()` method to support writing to Access databases
+  (#262, @vh-d)
 
 * `odbcListDrivers()` gains a `keep` and `filter` argument and global options
   `odbc.drivers_keep`, `odbc.drivers_filter` to keep and filter the drivers
   returned. This is useful if system administrators want to reduce the number
   of drivers shown to users. (@blairj09, #274)
 
-* The RStudio Connections Pane now shows the DSN, when available (#304, @davidchall).
+* Subseconds are now retained when inserting POSIXct objects (#130, #208)
 
-* `dbConnect()` now has a new param `timezone_out` which is useful if the user wants 
-  the datetime values be marked with a specific timezone instead of UTC (@shrektan, #294).
+* The RStudio Connections Pane now shows the DSN, when available (#304,
+  @davidchall).
 
 ## Bugfixes
 
-* Fixed an issue where `DBI::dbListFields()` could fail when used with a
-  a qualified Id object (using both schema and table) (#226).
-
-* Fix SQL Server ODBC's unsupported '-155' data type, and its losing
-* `dbExistsTable()` now works for SQL Server when specifying schemas but not
-  catalogs using the freeTDS and Simba drivers. (#197)
-
-- fix SQL Server ODBC's unsupported '-155' data type, and its losing
-  sub-second precision on timestamps; this still returns type
-  `DATETIMEOFFSET` as a character, but it preserves sub-seconds and
-  has a numeric timezone offset (@r2evans, #207).
-  
-* Fix an issue that the date value fetched from the database may be one
-  day before its real value (@shrektan, #295).
+* SQL Server ODBC's now supports the '-155' data type, and its losing
+  sub-second precision on timestamps; this still returns type `DATETIMEOFFSET`
+  as a character, but it preserves sub-seconds and has a numeric timezone
+  offset (@r2evans, #207).
 
 * `dbExistsTable()` now handles the case-sensitivity consistently as
   other methods (@shrektan, #285).
 
+* `dbExistsTable()` now works for SQL Server when specifying schemas but not
+  catalogs using the freeTDS and Simba drivers. (#197)
+
+* `DBI::dbListFields()` no longer fails when used with a
+  a qualified Id object (using both schema and table) (#226).
+
 * `dbWriteTable()` now always writes `NA_character` as `NULL` for
   data.frame with only one row (@shrektan, #288).
+
+* Fix an issue that the date value fetched from the database may be one
+  day before its real value (@shrektan, #295).
 
 # odbc 1.1.6
 
