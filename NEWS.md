@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* The configure script now works on systems whose /bin/sh does not support
+  command substitution, such as Solaris 10.
+
 # odbc 1.2.0
 
 ## Features
