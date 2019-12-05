@@ -1,4 +1,4 @@
-# odbc (development version)
+# odbc 1.2.1
 
 * Fix the unicode character width issues with the macOS odbc CRAN binary. (#283)
 
