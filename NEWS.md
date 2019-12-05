@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* Fix the unicode character width issues with the macOS odbc CRAN binary. (#283)
+
 * The configure script now works on systems whose /bin/sh does not support
   command substitution, such as Solaris 10.
 
