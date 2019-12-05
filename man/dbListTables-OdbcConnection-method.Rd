@@ -16,7 +16,7 @@
 }
 \arguments{
 \item{conn}{A \linkS4class{DBIConnection} object, as returned by
-\code{\link[=dbConnect]{dbConnect()}}.}
+\code{\link[DBI:dbConnect]{dbConnect()}}.}
 
 \item{catalog_name}{The name of the catalog to return, the default returns all catalogs.}
 
@@ -34,7 +34,7 @@ returns a character vector
 that enumerates all tables
 and views
 in the database.
-Tables added with \code{\link[=dbWriteTable]{dbWriteTable()}}
+Tables added with \code{\link[DBI:dbWriteTable]{dbWriteTable()}}
 are part of the list,
 including temporary tables if supported by the database.
 As soon a table is removed from the database,

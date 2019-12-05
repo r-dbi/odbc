@@ -1,4 +1,4 @@
-Small maintenance release
+This is a patch release that should fix the current check failures on Solaris
 
 ## Test environments
 * local OS X install, R 3.4.3

@@ -16,7 +16,7 @@
 }
 \arguments{
 \item{conn}{A \linkS4class{DBIConnection} object, as returned by
-\code{\link[=dbConnect]{dbConnect()}}.}
+\code{\link[DBI:dbConnect]{dbConnect()}}.}
 
 \item{name}{a character string with the name of the remote table.}
 
@@ -58,9 +58,9 @@ match 0 or more characters. \verb{_} can be used to match any single character.
 The \code{name} argument can be
 \itemize{
 \item a string
-\item the return value of \code{\link[=dbQuoteIdentifier]{dbQuoteIdentifier()}}
+\item the return value of \code{\link[DBI:dbQuoteIdentifier]{dbQuoteIdentifier()}}
 \item a value from the \code{table} column from the return value of
-\code{\link[=dbListObjects]{dbListObjects()}} where \code{is_prefix} is \code{FALSE}
+\code{\link[DBI:dbListObjects]{dbListObjects()}} where \code{is_prefix} is \code{FALSE}
 }
 
 A column named \code{row_names} is treated like any other column.
@@ -77,7 +77,7 @@ dbListFields(con, "mtcars")
 dbDisconnect(con)
 }
 \seealso{
-\code{\link[=dbColumnInfo]{dbColumnInfo()}} to get the type of the fields.
+\code{\link[DBI:dbColumnInfo]{dbColumnInfo()}} to get the type of the fields.
 
 Other DBIConnection generics: \code{\link[DBI]{DBIConnection-class}},
   \code{\link[DBI]{dbAppendTable}}, \code{\link[DBI]{dbCreateTable}},

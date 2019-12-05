@@ -100,16 +100,16 @@ performance.}
 \item{con}{A database connection.}
 
 \item{table}{Name of the table. Escaped with
-\code{\link[=dbQuoteIdentifier]{dbQuoteIdentifier()}}.}
+\code{\link[DBI:dbQuoteIdentifier]{dbQuoteIdentifier()}}.}
 
 \item{fields}{Either a character vector or a data frame.
 
 A named character vector: Names are column names, values are types.
-Names are escaped with \code{\link[=dbQuoteIdentifier]{dbQuoteIdentifier()}}.
+Names are escaped with \code{\link[DBI:dbQuoteIdentifier]{dbQuoteIdentifier()}}.
 Field types are unescaped.
 
 A data frame: field types are generated using
-\code{\link[=dbDataType]{dbDataType()}}.}
+\code{\link[DBI:dbDataType]{dbDataType()}}.}
 }
 \description{
 Convenience functions for reading/writing DBMS tables
