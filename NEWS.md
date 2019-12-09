@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* Fix errors with Drivers who do not fully implement SQLGetInfo (#325).
+
 # odbc 1.2.1
 
 * Fix the unicode character width issues with the macOS odbc CRAN binary. (#283)

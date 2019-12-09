@@ -73,8 +73,14 @@ std::string get_info_or_empty(connection_ptr const& p, short type) {
 
 // [[Rcpp::export]]
 Rcpp::List connection_info(connection_ptr const& p) {
-  auto getdata_ext =
-      (*p)->connection()->get_info<unsigned short>(SQL_GETDATA_EXTENSIONS);
+  unsigned short getdata_ext;
+  try {
+    getdata_ext =
+        (*p)->connection()->get_info<unsigned short>(SQL_GETDATA_EXTENSIONS);
+  } catch (const nanodbc::database_error& c) {
+    getdata_ext = 0;
+  }
+
   return Rcpp::List::create(
       Rcpp::_["dbname"] = get_info_or_empty(p, SQL_DATABASE_NAME),
       Rcpp::_["dbms.name"] = get_info_or_empty(p, SQL_DBMS_NAME),
