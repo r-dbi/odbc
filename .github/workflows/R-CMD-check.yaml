@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        r: ['3.6']
+        r: ['3.2', '3.3', '3.4', '3.5', '3.6']
 
     env:
       CRAN: "https://demo.rstudiopm.com/all/__linux__/xenial/latest"
