@@ -7,6 +7,7 @@ test_that("SQLServer", {
       "package_name", # Not an error
       NULL))
   DBItest::test_driver(c(
+    "connect_format",
     "connect_bigint_integer",
     "connect_bigint_character",
     "connect_bigint_integer64",
