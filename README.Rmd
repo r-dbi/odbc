@@ -291,7 +291,6 @@ rows, 19 columns) of the package
 library(DBI)
 rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "MicrosoftSQLServer", user = Sys.getenv("SQLSERVER_UID"), password = Sys.getenv("SQLSERVER_PWD"))
 system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
-system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
 #>    user  system elapsed 
 #>  13.986   1.173  15.192
 
