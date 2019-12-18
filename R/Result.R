@@ -44,9 +44,8 @@ setMethod(
   function(res, ...) {
     if (!dbIsValid(res)) {
       warning("Result already cleared")
-    } else {
-      result_release(res@ptr)
     }
+    result_release(res@ptr)
     invisible(TRUE)
   })
 
