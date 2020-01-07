@@ -38,8 +38,8 @@ timezone that is \emph{not} 'UTC'. If the database is in your local timezone set
 to \code{Sys.timezone()}. See \code{\link[=OlsonNames]{OlsonNames()}} for a complete list of available
 timezones on your system.}
 
-\item{timezone_out}{The time zone returned to R. Useful if you want the
-timezone returned to R is \emph{not} 'UTC'.}
+\item{timezone_out}{The time zone returned to R. If you want to display
+datetime values in the local timezone, set to \code{Sys.timezone()}.}
 
 \item{encoding}{The text encoding used on the Database. If the database is
 not using UTF-8 you will need to set the encoding to get accurate re-encoding.

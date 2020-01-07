@@ -45,8 +45,8 @@ setMethod(
 #' timezone that is _not_ 'UTC'. If the database is in your local timezone set
 #' to `Sys.timezone()`. See [OlsonNames()] for a complete list of available
 #' timezones on your system.
-#' @param timezone_out The time zone returned to R. Useful if you want the
-#' timezone returned to R is _not_ 'UTC'.
+#' @param timezone_out The time zone returned to R. If you want to display
+#' datetime values in the local timezone, set to `Sys.timezone()`.
 #' @param encoding The text encoding used on the Database. If the database is
 #' not using UTF-8 you will need to set the encoding to get accurate re-encoding.
 #' See [iconvlist()] for a complete list of available encodings on your system.
