@@ -35,7 +35,7 @@ arguments to form the final connection string.}
 
 \item{timezone}{The Server time zone. Useful if the database has an internal
 timezone that is \emph{not} 'UTC'. If the database is in your local timezone set
-to \code{Sys.timezone()}. See \code{\link[=OlsonNames]{OlsonNames()}} for a complete list of available
+to \code{\link[=Sys.timezone]{Sys.timezone()}}. See \code{\link[=OlsonNames]{OlsonNames()}} for a complete list of available
 timezones on your system.}
 
 \item{timezone_out}{The time zone returned to R. If you want to display

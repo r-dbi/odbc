@@ -43,7 +43,7 @@ setMethod(
 #' @param dsn The Data Source Name.
 #' @param timezone The Server time zone. Useful if the database has an internal
 #' timezone that is _not_ 'UTC'. If the database is in your local timezone set
-#' to `Sys.timezone()`. See [OlsonNames()] for a complete list of available
+#' to [Sys.timezone()]. See [OlsonNames()] for a complete list of available
 #' timezones on your system.
 #' @param timezone_out The time zone returned to R. If you want to display
 #' datetime values in the local timezone, set to `Sys.timezone()`.
