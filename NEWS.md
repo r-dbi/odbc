@@ -1,6 +1,8 @@
 # odbc (development version)
 
-* Fix errors with Drivers who do not fully implement SQLGetInfo (#325).
+* The configure script now again uses iodbc-config on macOS, if available.
+
+* Fix errors with drivers who do not fully implement SQLGetInfo (#325).
 
 # odbc 1.2.1
 

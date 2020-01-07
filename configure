@@ -15,37 +15,41 @@ PKG_BREW_NAME="unixodbc"
 PKG_TEST_HEADER="<sql.h>"
 PKG_LIBS="${PKG_LIBS:--lodbc}"
 
-# Use odbc_config, iodbc-config if available
-if [ "`command -v odbc_config`" ]; then
-  PKGCONFIG_CFLAGS=`odbc_config --cflags`
-  PKGCONFIG_LIBS=`odbc_config --libs`
-elif [ "`command -v iodbc-config`" ]; then
-  PKGCONFIG_CFLAGS=`iodbc-config --cflags`
-  PKGCONFIG_LIBS=`iodbc-config --libs`
-elif [ "`command -v pkg-config`" ]; then
-  PKGCONFIG_CFLAGS=`pkg-config --cflags $PKG_CONFIG_NAME 2>/dev/null`
-  PKGCONFIG_LIBS=`pkg-config --libs $PKG_CONFIG_NAME 2>/dev/null`
-fi
 
 # Note that cflags may be empty in case of success
 if [ "$INCLUDE_DIR" ] || [ "$LIB_DIR" ]; then
   echo "Found INCLUDE_DIR and/or LIB_DIR!"
   PKG_CFLAGS="-I$INCLUDE_DIR $PKG_CFLAGS"
   PKG_LIBS="-L$LIB_DIR $PKG_LIBS"
-elif [ "`uname`" = 'Darwin' ]; then
-  if [ "`command -v brew`" ]; then
-    BREWDIR=`brew --prefix`
-  else
-    curl -sfL "https://jeroen.github.io/autobrew/$PKG_BREW_NAME" > autobrew
-    . autobrew
-    rm "$BREWDIR"/lib/*.dynlib
+else
+  # Use odbc_config, iodbc-config if available
+  if [ "`command -v odbc_config`" ]; then
+    echo "Found odbc_config cflags and libs!"
+    PKGCONFIG_CFLAGS=`odbc_config --cflags`
+    PKGCONFIG_LIBS=`odbc_config --libs`
+  elif [ "`command -v iodbc-config`" ]; then
+    echo "Found iodbc-config cflags and libs!"
+    PKGCONFIG_CFLAGS=`iodbc-config --cflags`
+    PKGCONFIG_LIBS=`iodbc-config --libs`
+  elif [ "`command -v pkg-config`" ]; then
+    PKGCONFIG_CFLAGS=`pkg-config --cflags $PKG_CONFIG_NAME 2>/dev/null`
+    echo "Found pkg-config cflags and libs!"
+    PKGCONFIG_LIBS=`pkg-config --libs $PKG_CONFIG_NAME 2>/dev/null`
   fi
-  PKG_CFLAGS="-I$BREWDIR/opt/$PKG_BREW_NAME/include"
-  PKG_LIBS="-L$BREWDIR/lib $PKG_LIBS"
-elif [ "$PKGCONFIG_CFLAGS" ] || [ "$PKGCONFIG_LIBS" ]; then
-  echo "Found pkg-config cflags and libs!"
-  PKG_CFLAGS=${PKGCONFIG_CFLAGS}
-  PKG_LIBS=${PKGCONFIG_LIBS}
+  if [ "$PKGCONFIG_CFLAGS" ] || [ "$PKGCONFIG_LIBS" ]; then
+    PKG_CFLAGS=${PKGCONFIG_CFLAGS}
+    PKG_LIBS=${PKGCONFIG_LIBS}
+  elif [ "`uname`" = 'Darwin' ]; then
+    if [ "`command -v brew`" ]; then
+      BREWDIR=`brew --prefix`
+    else
+      curl -sfL "https://jeroen.github.io/autobrew/$PKG_BREW_NAME" > autobrew
+      . autobrew
+      rm "$BREWDIR"/lib/*.dynlib
+    fi
+    PKG_CFLAGS="-I$BREWDIR/opt/$PKG_BREW_NAME/include"
+    PKG_LIBS="-L$BREWDIR/lib $PKG_LIBS"
+  fi
 fi
 
 # Find compiler
@@ -71,8 +75,8 @@ if [ $? -ne 0 ]; then
   echo " * rpm: $PKG_RPM_NAME (Fedora, CentOS, RHEL)"
   echo " * csw: $PKG_CSW_NAME (Solaris)"
   echo " * brew: $PKG_BREW_NAME (Mac OSX)"
-  echo "To use a custom $PKG_CONFIG_NAME set INCLUDE_DIR and LIB_DIR manually via:"
-  echo "R CMD INSTALL --configure-vars='INCLUDE_DIR=... LIB_DIR=...'"
+  echo "To use a custom $PKG_CONFIG_NAME set INCLUDE_DIR and LIB_DIR and PKG_LIBS manually via:"
+  echo "R CMD INSTALL --configure-vars='INCLUDE_DIR=... LIB_DIR=... PKG_LIBS=...'"
   echo "--------------------------------------------------------------------"
   exit 1;
 fi
