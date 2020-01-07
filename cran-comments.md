@@ -1,4 +1,4 @@
-This is a patch release that should fix the current check failures on Solaris
+This release makes changes to the configure script as requested by CRAN
 
 ## Test environments
 * local OS X install, R 3.4.3
