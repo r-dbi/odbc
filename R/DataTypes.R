@@ -316,13 +316,13 @@ object_type <- function(obj) {
 }
 
 varchar <- function(x, type = "varchar") {
-  max_length <- max(nchar(as.character(x)), na.rm = TRUE)
-  paste0(type, "(", max(255, max_length), ")")
+  max_length <- max(c(1, nchar(as.character(x))), na.rm = TRUE)
+  paste0(type, "(", min(255, max_length), ")")
 }
 
 varbinary <- function(x, type = "varbinary") {
-  max_length <- max(lengths(x), na.rm = TRUE)
-  paste0(type, "(", max(255, max_length), ")")
+  max_length <- max(c(1, lengths(x)), na.rm = TRUE)
+  paste0(type, "(", min(255, max_length), ")")
 }
 
 #' Test round tripping a simple table
