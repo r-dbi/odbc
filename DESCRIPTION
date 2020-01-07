@@ -1,7 +1,7 @@
 Package: odbc
 Title: Connect to ODBC Compatible Databases (using the DBI
     Interface)
-Version: 1.2.1.9000
+Version: 1.2.2
 Authors@R: 
     c(person(given = "Jim",
              family = "Hester",

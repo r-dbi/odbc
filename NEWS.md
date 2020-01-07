@@ -1,4 +1,4 @@
-# odbc (development version)
+# odbc 1.2.2
 
 * The configure script now again uses iodbc-config on macOS, if available.
 
