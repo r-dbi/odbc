@@ -2452,6 +2452,8 @@ public:
             return false;
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
+        row_count_ = 0;
+        rowset_position_ = 0;
         auto_bind();
         return true;
     }
