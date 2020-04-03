@@ -38,7 +38,7 @@ odbc_write_table <-
 
     found <- dbExistsTable(conn, name)
     if (found && !overwrite && !append) {
-      stop("Table ", name, " exists in database, and both overwrite and",
+      stop("Table ", toString(name), " exists in database, and both overwrite and",
         " append are FALSE", call. = FALSE)
     }
     if (found && overwrite) {
