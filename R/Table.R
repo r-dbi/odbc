@@ -49,7 +49,7 @@ odbc_write_table <-
 
     if (!found || overwrite) {
       sql <- sqlCreateTable(conn, name, values, field.types = field.types, row.names = FALSE, temporary = temporary)
-      dbExecute(conn, sql)
+      dbExecute(conn, sql, immediate = TRUE)
     }
 
     fieldDetails <- tryCatch({
