@@ -770,15 +770,19 @@ void odbc_result::assign_string(
     // SQLGetData()
     // has been called for that column (i.e. after get() or get_ref() is
     // called).
-    auto str = value.get<std::string>(column);
-    if (value.is_null(column)) {
-      res = NA_STRING;
-    } else {
-      if (c_->encoding() != "") {
-        res = output_encoder_.makeSEXP(str.c_str(), str.c_str() + str.length());
-      } else { // If no encoding specified assume it is UTF-8 / ASCII
-        res = Rf_mkCharCE(str.c_str(), CE_UTF8);
+    try {
+      auto str = value.get<std::string>(column);
+      if (value.is_null(column)) {
+        res = NA_STRING;
+      } else {
+        if (c_->encoding() != "") {
+          res = output_encoder_.makeSEXP(str.c_str(), str.c_str() + str.length());
+        } else { // If no encoding specified assume it is UTF-8 / ASCII
+          res = Rf_mkCharCE(str.c_str(), CE_UTF8);
+        }
       }
+    } catch (const nanodbc::database_error& e) {
+      res = NA_STRING;
     }
   }
   SET_STRING_ELT(out[column], row, res);
