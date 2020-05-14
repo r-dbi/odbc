@@ -42,7 +42,9 @@ odbc_connection::odbc_connection(
 
   try {
     c_ = std::make_shared<nanodbc::connection>(connection_string, timeout);
-  } catch (const nanodbc::database_error& e) {
+  } catch (nanodbc::database_error e) {
+    // Catching const nanodbc::database_error& e leads to
+    // OOB memory access.
     throw Rcpp::exception(e.what(), FALSE);
   }
 }
