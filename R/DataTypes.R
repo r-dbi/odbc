@@ -309,10 +309,17 @@ object_type <- function(obj) {
   if (is.factor(obj)) return("factor")
   if (is(obj, "POSIXct")) return("datetime")
   if (is(obj, "Date")) return("date")
-  if (is(obj, "blob")) return("binary")
+  if (is_blob(obj)) return("binary")
   if (is(obj, "difftime")) return("time")
 
   return(typeof(obj))
+}
+
+is_blob <- function(obj) {
+  if (is(obj, "blob")) return(TRUE)
+  if (is.object(obj) && any(class(obj) != "AsIs")) return(FALSE)
+  # Assuming raw inside naked lists, not checking
+  is.list(obj)
 }
 
 varchar <- function(x, type = "varchar") {
