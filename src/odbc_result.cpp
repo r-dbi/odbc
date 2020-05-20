@@ -17,7 +17,7 @@ odbc_result::odbc_result(
       output_encoder_(Iconv(c_->encoding(), "UTF-8")) {
 
   if (immediate) {
-    s_ = std::make_shared<nanodbc::statement>(*c_->connection());
+    s_ = std::make_shared<nanodbc::statement>();
     bound_ = true;
     r_ = std::make_shared<nanodbc::result>(
         s_->execute_direct(*c_->connection(), sql_));
