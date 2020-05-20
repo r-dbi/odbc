@@ -318,8 +318,16 @@ object_type <- function(obj) {
 is_blob <- function(obj) {
   if (is(obj, "blob")) return(TRUE)
   if (is.object(obj) && any(class(obj) != "AsIs")) return(FALSE)
-  # Assuming raw inside naked lists, not checking
-  is.list(obj)
+  if (!is.list(obj)) return(FALSE)
+
+  # Assuming raw inside naked lists if the first non-NULL element is raw,
+  # not checking the other elements
+  for (i in seq_along(obj)) {
+    x <- obj[[i]]
+    if (!is.null(x) && !is.raw(x)) return(FALSE)
+  }
+
+  TRUE
 }
 
 varchar <- function(x, type = "varchar") {
