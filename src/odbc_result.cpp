@@ -529,7 +529,7 @@ void odbc_result::add_classes(
       // FIXME: Use new_blob()
       x.attr("ptype") = Rcpp::RawVector::create();
       x.attr("class") =
-          Rcpp::CharacterVector::create("blob", "vctrs_list_of", "vctrs_vctr");
+          Rcpp::CharacterVector::create("blob", "vctrs_list_of", "vctrs_vctr", "list");
       break;
     default:
       break;

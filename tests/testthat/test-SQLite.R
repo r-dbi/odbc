@@ -78,7 +78,6 @@ test_that("SQLite", {
       "temporary_table", # TODO
       "table_visible_in_other_connection", # TODO
       "roundtrip_64_bit_roundtrip", # TODO
-      "roundtrip_blob", # TODO
       "roundtrip_time", # TODO
       "roundtrip_field_types", # TODO
       "write_table_row_names_.*", # TODO

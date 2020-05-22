@@ -109,7 +109,6 @@ test_that("PostgreSQL", {
       "temporary_table_.*", # TODO
       "roundtrip_64_bit_roundtrip", # TODO
       "roundtrip_character", # TODO
-      "roundtrip_blob", # TODO
       "roundtrip_field_types", # TODO
       "write_table_append_incompatible",
       "write_table_row_names_default", # TODO

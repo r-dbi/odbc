@@ -52,8 +52,6 @@ test_that("SQLServer", {
       "roundtrip_character", # #10
       "roundtrip_character_native", # Possible false positive
       "roundtrip_factor", # #10
-      "roundtrip_raw", # #10
-      "roundtrip_blob", # TODO
       "roundtrip_time", #TODO
       "roundtrip_date", # unsupported
       "roundtrip_quotes", # TODO, not sure why this is failing
