@@ -7,21 +7,18 @@ test_that("SQLite", {
       "package_name", # Not an error
       NULL))
   DBItest::test_driver(c(
+      "connect_format",
       "connect_bigint_numeric",
       "connect_bigint_character",
       "connect_bigint_integer64",
       NULL))
   DBItest::test_connection(c(
       "data_type_connection",
-      "cannot_forget_disconnect",
       NULL))
   DBItest::test_result(c(
       "data_logical$", # Not an error
-      "data_logical_.*", # Not an error
       "data_64_bit.*", # TODO
       "data_integer", # These tests are returned as strings by SQLite (bug?)
-      "data_integer_null.*", # These tests are returned as strings by SQLite (bug?)
-      "data_numeric_null.*", # These tests are returned as strings by SQLite (bug?)
       "data_raw.*", # cast(1 bytea) is not valid `cannot cast type integer to bytea`
       "^data_time$", "^data_time_.*", # time objects not supported
       "^data_timestamp.*", # SQLite doesn't do timestamps

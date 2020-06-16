@@ -6,7 +6,7 @@ test_that("MySQL", {
   DBItest::test_getting_started(c(
       "package_name",                    # Not an error
       NULL))
-  DBItest::test_driver()
+  DBItest::test_driver("connect_format")
   DBItest::test_connection(c(
       "cannot_disconnect_twice", # TODO
       "cannot_forget_disconnect", # TODO
