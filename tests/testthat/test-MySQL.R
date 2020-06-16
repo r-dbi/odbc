@@ -8,8 +8,6 @@ test_that("MySQL", {
       NULL))
   DBItest::test_driver("connect_format")
   DBItest::test_connection(c(
-      "cannot_disconnect_twice", # TODO
-      "cannot_forget_disconnect", # TODO
       NULL))
   DBItest::test_result(c(
       "fetch_n_bad",                     # TODO
@@ -22,18 +20,14 @@ test_that("MySQL", {
       "get_query_n_incomplete",                     # todo
       "get_query_n_multi_row_inf",                     # todo
       "fetch_no_return_value",           # TODO
-      "data_date_types", # Dates should be numeric, not integers
       "data_logical($|_.+)",             # Not an error, PostgreSQL has a logical data type
       "data_raw.*",                      # cast(1 bytea) is not valid `cannot cast type integer to bytea`
       "^data_timestamp.*",               # MySQL converts the timestamps from local times, so they roundtrip unexpectedly
-      "^data_timestamp_utc.*",           # syntax not supported
-      "^data_timestamp_parens.*",        # syntax not supported
       "data_character", # Strange MySQL Error only reproducible on travis
       NULL))
   DBItest::test_sql(c(
       "quote_identifier_vectorized", # Can't implement until https://github.com/rstats-db/DBI/issues/71 is closed
       "roundtrip_logical",               # Not an error, PostgreSQL has a logical data type
-      "roundtrip_numeric_special",       # 6
       "roundtrip_timestamp",             # We explicitly want to set tzone to UTC regardless of input
       "roundtrip_raw", #TODO
       "list_tables",
@@ -70,7 +64,6 @@ test_that("MySQL", {
   DBItest::test_transaction(c(
       NULL))
   DBItest::test_compliance(c(
-      "read_only",                       # Setting SQL_MODE_READ_ONLY is not supported in most DBs, so ignoring.
       "compliance",                      # We are defining additional subclasses for OdbcConnections
       "reexport",
       NULL))
