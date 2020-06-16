@@ -3,7 +3,7 @@ mkdir odbc_package
 cd odbc_package
 wget https://downloads.mariadb.com/Connectors/odbc/connector-odbc-3.1.7/mariadb-connector-odbc-3.1.7-ga-debian-x86_64.tar.gz
 tar -xvzf mariadb-connector-odbc-3.1.7-ga-debian-x86_64.tar.gz
-sudo install lib64/libmaodbc.so /usr/lib/
+sudo install lib/libmaodbc.so /usr/lib/
 sudo install -d /usr/lib/mariadb/
 sudo install -d /usr/lib/mariadb/plugin/
 sudo install lib/mariadb/plugin/auth_gssapi_client.so /usr/lib/mariadb/plugin/
