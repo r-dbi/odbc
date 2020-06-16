@@ -81,6 +81,8 @@ jobs:
           curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
           apt-get update
           ACCEPT_EULA=Y apt-get install -y msodbcsql17
+          sqlcmd -U SA -P 'Password12' -Q 'CREATE DATABASE test;'
+
         shell: sudo bash {0}
 
       - name: Install dependencies
