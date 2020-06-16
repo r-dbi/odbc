@@ -60,7 +60,7 @@ test_that("PostgreSQL", {
   DBItest::test_getting_started(c(
       "package_name", # Not an error
       NULL))
-  DBItest::test_driver()
+  DBItest::test_driver("connect_format")
   DBItest::test_connection(c(
       "cannot_forget_disconnect",
       "clear_result_return_statement",
