@@ -71,6 +71,12 @@ jobs:
           sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
           sudo -s eval "$sysreqs"
 
+      - name: Setup MySQL
+        run: |
+          sudo systemctl start mysql.service
+          mysql -uroot -h127.0.0.1 -proot -e 'CREATE DATABASE `test`;'
+          apt get install -y libmysqlclient-dev
+
       - name: Install PostgreSQL Driver
         run: |
           sudo apt-get install -y unixodbc-dev odbc-postgresql devscripts
