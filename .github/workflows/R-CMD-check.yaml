@@ -75,7 +75,7 @@ jobs:
         run: |
           sudo systemctl start mysql.service
           mysql -uroot -h127.0.0.1 -proot -e 'CREATE DATABASE `test`;'
-          apt get install -y libmysqlclient-dev
+          apt-get install -y libmysqlclient-dev
 
       - name: Install PostgreSQL Driver
         run: |
