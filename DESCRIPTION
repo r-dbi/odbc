@@ -41,7 +41,6 @@ Suggests:
     testthat,
     tibble
 LinkingTo: 
-    BH,
     Rcpp
 ByteCompile: true
 Encoding: UTF-8
