@@ -77,6 +77,10 @@ jobs:
           sudo apt-get install -y libmysqlclient-dev
           mysql -uroot -h127.0.0.1 -proot -e 'CREATE DATABASE `test`;'
 
+      - name: Install SQLite Driver
+        run: |
+          sudo apt-get install -y libsqliteodbc
+
       - name: Install PostgreSQL Driver
         run: |
           sudo apt-get install -y unixodbc-dev odbc-postgresql devscripts
