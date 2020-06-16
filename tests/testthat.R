@@ -1,4 +1,4 @@
 library(testthat)
 library(odbc)
 
-test_check("odbc")
+test_check("odbc", reporter = "full")
