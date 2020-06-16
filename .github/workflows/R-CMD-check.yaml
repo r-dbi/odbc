@@ -82,8 +82,11 @@ jobs:
           apt-get update
           ACCEPT_EULA=Y apt-get install -y msodbcsql17
           sqlcmd -U SA -P 'Password12' -Q 'CREATE DATABASE test;'
-
         shell: sudo bash {0}
+
+      - name: Install MariaDB / MySQL Driver
+        run: |
+          sudo apt-get install -y libmariadb-dev
 
       - name: Install dependencies
         run: |
