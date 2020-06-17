@@ -1,5 +1,11 @@
 # odbc (development version)
 
+* `dbWriteTable()` now executes immediately, which fixes issues with temporary tables and the FreeTDS SQL Server driver (@krlmlr).
+
+* blob roundtrips now work in more cases (#364, @krlmlr).
+
+* The BH dependency has been removed (#326)
+
 # odbc 1.2.2
 
 * The configure script now again uses iodbc-config on macOS, if available.

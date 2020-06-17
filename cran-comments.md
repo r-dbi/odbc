@@ -1,9 +1,6 @@
-This release makes changes to the configure script as requested by CRAN
-
 ## Test environments
-* local OS X install, R 3.4.3
-* ubuntu 14.04 (on travis-ci), R 3.5.0
-* win-builder (devel and release)
+* local OS X install, R 4.0.0
+* ubuntu 16.04, macOS Catalina, Windows 10 (on GitHub Actions), R 4.0, 3.6, 3.5, 3.4, 3.3
 
 ## R CMD check results
 
@@ -11,6 +8,4 @@ This release makes changes to the configure script as requested by CRAN
 
 ## Downstream dependencies
 
-I ran `R CMD check` on the 12 reverse dependencies
-(https://github.com/r-dbi/odbc/tree/master/revdep#readme). There were no errors
-from these changes.
+There should be no errors from these changes.
