@@ -1,4 +1,4 @@
-# odbc (development version)
+# odbc 1.2.3
 
 * `dbWriteTable()` now executes immediately, which fixes issues with temporary tables and the FreeTDS SQL Server driver (@krlmlr).
 
