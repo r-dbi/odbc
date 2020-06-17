@@ -29,5 +29,7 @@
 ^CRAN-RELEASE$
 ^setup.md$
 ^\.github/workflows/R-CMD-check\.yaml$
-^.covrignore$
+^\.covrignore$
 ^Makefile$
+^\.clangd$
+^compile_commands\.json$
