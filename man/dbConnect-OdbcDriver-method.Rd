@@ -47,7 +47,7 @@ See \code{\link[=iconvlist]{iconvlist()}} for a complete list of available encod
 Note strings are always returned \code{UTF-8} encoded.}
 
 \item{bigint}{The R type that \code{SQL_BIGINT} types should be mapped to,
-default is \link[bit64:integer64]{bit64::integer64}, which allows the full range of 64 bit
+default is \link[bit64:bit64-package]{bit64::integer64}, which allows the full range of 64 bit
 integers.}
 
 \item{timeout}{Time in seconds to timeout the connection attempt. Setting a
