@@ -17,7 +17,7 @@ odbc_result::odbc_result(
       output_encoder_(Iconv(c_->encoding(), "UTF-8")) {
 
   if (immediate) {
-    s_ = std::make_shared<nanodbc::statement>(*c_->connection());
+    s_ = std::make_shared<nanodbc::statement>();
     bound_ = true;
     r_ = std::make_shared<nanodbc::result>(
         s_->execute_direct(*c_->connection(), sql_));
@@ -529,7 +529,7 @@ void odbc_result::add_classes(
       // FIXME: Use new_blob()
       x.attr("ptype") = Rcpp::RawVector::create();
       x.attr("class") =
-          Rcpp::CharacterVector::create("blob", "vctrs_list_of", "vctrs_vctr");
+          Rcpp::CharacterVector::create("blob", "vctrs_list_of", "vctrs_vctr", "list");
       break;
     default:
       break;

@@ -38,7 +38,7 @@ odbc_write_table <-
 
     found <- dbExistsTable(conn, name)
     if (found && !overwrite && !append) {
-      stop("Table ", name, " exists in database, and both overwrite and",
+      stop("Table ", toString(name), " exists in database, and both overwrite and",
         " append are FALSE", call. = FALSE)
     }
     if (found && overwrite) {
@@ -49,7 +49,7 @@ odbc_write_table <-
 
     if (!found || overwrite) {
       sql <- sqlCreateTable(conn, name, values, field.types = field.types, row.names = FALSE, temporary = temporary)
-      dbExecute(conn, sql)
+      dbExecute(conn, sql, immediate = TRUE)
     }
 
     fieldDetails <- tryCatch({
@@ -122,7 +122,7 @@ setMethod("sqlData", "OdbcConnection", function(con, value, row.names = NA, ...)
   value[is_POSIXlt] <- lapply(value[is_POSIXlt], as.POSIXct)
 
   # C code takes care of atomic vectors, dates, date times, and blobs just need to coerce other objects
-  is_object <- vapply(value, function(x) is.object(x) && !(is(x, "POSIXct") || is(x, "Date") || is(x, "blob") || is(x, "difftime")), logical(1))
+  is_object <- vapply(value, function(x) is.object(x) && !(is(x, "POSIXct") || is(x, "Date") || is_blob(x) || is(x, "difftime")), logical(1))
   value[is_object] <- lapply(value[is_object], as.character)
 
   if (nzchar(con@encoding)) {

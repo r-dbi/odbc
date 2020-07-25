@@ -60,9 +60,8 @@ test_that("PostgreSQL", {
   DBItest::test_getting_started(c(
       "package_name", # Not an error
       NULL))
-  DBItest::test_driver()
+  DBItest::test_driver("connect_format")
   DBItest::test_connection(c(
-      "cannot_forget_disconnect",
       "clear_result_return_statement",
       "cannot_clear_result_twice_statement",
       NULL
@@ -106,10 +105,8 @@ test_that("PostgreSQL", {
       "append_table_.*", # TODO
       "append_roundtrip_.*", # TODO
       "append_table_.*", # TODO
-      "temporary_table_.*", # TODO
       "roundtrip_64_bit_roundtrip", # TODO
       "roundtrip_character", # TODO
-      "roundtrip_blob", # TODO
       "roundtrip_field_types", # TODO
       "write_table_append_incompatible",
       "write_table_row_names_default", # TODO

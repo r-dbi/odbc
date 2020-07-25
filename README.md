@@ -87,7 +87,7 @@ brew update
 brew install msodbcsql17 mssql-tools
 
 # SQL Server ODBC Drivers (Free TDS)
-brew install freetds --with-unixodbc
+brew install freetds
 
 # PostgreSQL ODBC ODBC Drivers
 brew install psqlodbc

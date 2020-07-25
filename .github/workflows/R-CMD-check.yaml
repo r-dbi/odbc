@@ -1,4 +1,10 @@
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 name: R-CMD-check
 
@@ -14,7 +20,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: test_db
+          POSTGRES_DB: test
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
@@ -29,33 +35,51 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        r: ['3.2', '3.3', '3.4', '3.5', '3.6']
+        r: ['3.3', '3.4', '3.5', 'oldrel', 'release']
 
     env:
-      CRAN: "https://demo.rstudiopm.com/all/__linux__/xenial/latest"
+      CRAN: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"
       ODBCSYSINI: ${{ github.workspace }}/.github/odbc
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - uses: r-lib/actions/setup-r@master
         with:
           r-version: ${{ matrix.r}}
 
+      - name: Query dependencies
+        run: |
+          install.packages('remotes')
+          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
+        shell: Rscript {0}
+
       - name: Cache R packages
         uses: actions/cache@v1
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-r-${{ matrix.r }}-${{ hashFiles('DESCRIPTION') }}
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install R system dependencies
         if: runner.os == 'Linux'
         env:
           RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
         run: |
-          Rscript -e "install.packages('remotes')" -e "remotes::install_github('r-hub/sysreqs')"
+          Rscript -e "remotes::install_github('r-hub/sysreqs')"
           sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
           sudo -s eval "$sysreqs"
+
+      - name: Setup MySQL
+        run: |
+          sudo systemctl start mysql.service
+          mysql -uroot -h127.0.0.1 -proot -e 'CREATE DATABASE `test`;'
+          .github/odbc/install-mariadb-driver.sh
+
+      - name: Install SQLite Driver
+        run: |
+          sudo apt-get install -y libsqliteodbc
 
       - name: Install PostgreSQL Driver
         run: |
@@ -67,11 +91,11 @@ jobs:
           curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
           apt-get update
           ACCEPT_EULA=Y apt-get install -y msodbcsql17
+          sqlcmd -U SA -P 'Password12' -Q 'CREATE DATABASE test;'
         shell: sudo bash {0}
 
       - name: Install dependencies
         run: |
-          install.packages('remotes')
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran('rcmdcheck')
           remotes::install_github('r-dbi/DBItest')
@@ -83,6 +107,11 @@ jobs:
           LIB_DIR: /usr/lib/x86_64-linux-gnu/
           INCLUDE_DIR: /usr/include
 
+      - name: Show testthat output
+        if: always()
+        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
+        shell: bash
+
       - name: Upload check results
         if: failure()
         uses: actions/upload-artifact@master
@@ -91,7 +120,5 @@ jobs:
           path: check
 
       - name: Test coverage
-        if: matrix.r == '3.6'
-        run: |
-          Rscript -e 'remotes::install_github("r-lib/covr@gh-actions")'
-          Rscript -e 'covr::codecov(token = "${{secrets.CODECOV_TOKEN}}")'
+        run: covr::codecov()
+        shell: Rscript {0}

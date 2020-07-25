@@ -309,10 +309,25 @@ object_type <- function(obj) {
   if (is.factor(obj)) return("factor")
   if (is(obj, "POSIXct")) return("datetime")
   if (is(obj, "Date")) return("date")
-  if (is(obj, "blob")) return("binary")
+  if (is_blob(obj)) return("binary")
   if (is(obj, "difftime")) return("time")
 
   return(typeof(obj))
+}
+
+is_blob <- function(obj) {
+  if (is(obj, "blob")) return(TRUE)
+  if (is.object(obj) && any(class(obj) != "AsIs")) return(FALSE)
+  if (!is.list(obj)) return(FALSE)
+
+  # Assuming raw inside naked lists if the first non-NULL element is raw,
+  # not checking the other elements
+  for (i in seq_along(obj)) {
+    x <- obj[[i]]
+    if (!is.null(x) && !is.raw(x)) return(FALSE)
+  }
+
+  TRUE
 }
 
 varchar <- function(x, type = "varchar") {
