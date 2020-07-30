@@ -156,4 +156,20 @@ test_that("SQLServer", {
       "Columns in `field.types` must be in the input"
     )
   })
+
+  local({
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    tblName <- "test_out_of_order_blob"
+
+    values <- data.frame(
+      c1 = 1,
+      c2 = "this is varchar max",
+      c3 = 11,
+      c4 = "this is text",
+      stringsAsFactors = FALSE)
+    dbWriteTable(con, tblName, values, field.types = list(c1 = "INT", c2 = "VARCHAR(MAX)", c3 = "INT", c4 = "TEXT"))
+    on.exit(dbRemoveTable(con, tblName))
+    received <- DBI::dbReadTable(con, tblName)
+    expect_equal(values, received)
+  })
 })
