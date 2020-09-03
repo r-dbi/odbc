@@ -70,7 +70,7 @@ odbc_write_table <-
         "INSERT INTO ", name, " (", paste0(fields, collapse = ", "), ")\n",
         "VALUES (", paste0(params, collapse = ", "), ")"
         )
-      rs <- OdbcResult(conn, sql, params = NULL, immediate = TRUE)
+      rs <- OdbcResult(conn, sql)
 
       if (!is.null(fieldDetails) && nrow(fieldDetails)) {
         result_describe_parameters(rs@ptr, fieldDetails)
