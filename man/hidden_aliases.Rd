@@ -5,6 +5,7 @@
 \alias{sqlCreateTable,Oracle-method}
 \alias{sqlCreateTable,Teradata-method}
 \alias{dbListTables,Teradata-method}
+\alias{sqlCreateTable,HDB-method}
 \alias{hidden_aliases}
 \title{Internal page for hidden aliases}
 \usage{
@@ -30,7 +31,7 @@
 
 \S4method{dbListTables}{Teradata}(conn, ...)
 
-\S4method{sqlCreateTable}{Teradata}(
+\S4method{sqlCreateTable}{HDB}(
   con,
   table,
   fields,
