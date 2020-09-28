@@ -41,3 +41,23 @@ setMethod(
     c(dbGetQuery(conn, "HELP VOLATILE TABLE")[["Table SQL Name"]],
       connection_sql_tables(conn@ptr, ...)$table_name)
   })
+
+# SAP HANA ----------------------------------------------------------------
+
+setClass("HDB", where = class_cache)
+
+#' @rdname hidden_aliases
+#' @export
+setMethod("sqlCreateTable", "HDB",
+  function(con, table, fields, field.types = NULL, row.names = NA, temporary = FALSE, ...) {
+    table <- dbQuoteIdentifier(con, table)
+    fields <- createFields(con, fields, field.types, row.names)
+
+    SQL(paste0(
+      "CREATE ", if (temporary) "LOCAL TEMPORARY COLUMN ",
+      "TABLE ", table, " (\n",
+      "  ", paste(fields, collapse = ",\n  "),
+      "\n)\n"
+    ))
+  }
+)

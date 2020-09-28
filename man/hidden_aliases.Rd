@@ -29,6 +29,16 @@
 )
 
 \S4method{dbListTables}{Teradata}(conn, ...)
+
+\S4method{sqlCreateTable}{Teradata}(
+  con,
+  table,
+  fields,
+  field.types = NULL,
+  row.names = NA,
+  temporary = FALSE,
+  ...
+)
 }
 \description{
 For S4 methods that require a documentation entry but only clutter the index.
