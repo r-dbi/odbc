@@ -13,7 +13,7 @@ test_that("odbcListDrivers() returns available drivers", {
 
 test_that("odbcListDrivers() keep and filter work", {
   skip_on_cran()
-  skip("not working on CI")
+  skip_on_ci()
 
   current_drivers <- odbcListDrivers()[["name"]]
 
