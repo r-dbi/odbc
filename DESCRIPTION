@@ -21,7 +21,7 @@ Authors@R:
              role = c("cph", "fnd")))
 Description: A DBI-compatible interface to ODBC databases.
 License: MIT + file LICENSE
-URL: https://github.com/r-dbi/odbc
+URL: https://github.com/r-dbi/odbc, https://db.rstudio.com
 BugReports: https://github.com/r-dbi/odbc/issues
 Depends: 
     R (>= 3.2.0)
