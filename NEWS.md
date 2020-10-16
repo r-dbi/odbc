@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* odbc can now be compiled again with Rtools35 (gcc 4.9.3) (#383)
+
 # odbc 1.2.3
 
 * `dbWriteTable()` now executes immediately, which fixes issues with temporary tables and the FreeTDS SQL Server driver (@krlmlr).
