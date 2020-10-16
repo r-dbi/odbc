@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* `invalid descriptor` issues due to out of order retrieval of long columns are now avoided by unbinding any nanodbc buffer past the long column. Performance for the unbound columns in these cases will be reduced, but the retrieval will work (@detule, #381)
+
 # odbc 1.2.3
 
 * `dbWriteTable()` now executes immediately, which fixes issues with temporary tables and the FreeTDS SQL Server driver (@krlmlr).
