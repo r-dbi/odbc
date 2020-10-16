@@ -276,14 +276,14 @@ inline void convert(const wide_string_type& in, std::string& out)
         return;
     }
     auto size_needed = WideCharToMultiByte(
-        CP_UTF8, 0, in.data(), static_cast<int>(in.size()), nullptr, 0, nullptr, nullptr);
+        CP_UTF8, 0, reinterpret_cast<const wchar_t*>(&in[0]), static_cast<int>(in.size()), nullptr, 0, nullptr, nullptr);
     out.resize(size_needed);
     WideCharToMultiByte(
         CP_UTF8,
         0,
-        in.data(),
+        reinterpret_cast<const wchar_t*>(&in[0]),
         static_cast<int>(in.size()),
-        out.data(),
+        &out[0],
         size_needed,
         nullptr,
         nullptr);
@@ -315,9 +315,9 @@ inline void convert(const std::string& in, wide_string_type& out)
         return;
     }
     auto size_needed =
-        MultiByteToWideChar(CP_UTF8, 0, in.data(), static_cast<int>(in.size()), nullptr, 0);
+        MultiByteToWideChar(CP_UTF8, 0, &in[0], static_cast<int>(in.size()), nullptr, 0);
     out.resize(size_needed);
-    MultiByteToWideChar(CP_UTF8, 0, in.data(), static_cast<int>(in.size()), out.data(), size_needed)
+    MultiByteToWideChar(CP_UTF8, 0, &in[0], static_cast<int>(in.size()), &out[0], size_needed);
 #else
     out = std::wstring_convert<NANODBC_CODECVT_TYPE<wide_char_t>, wide_char_t>().from_bytes(in);
 #endif
