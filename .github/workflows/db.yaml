@@ -35,7 +35,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        r: ['3.3', '3.4', '3.5', 'oldrel', 'release']
+        r: ['release']
 
     env:
       CRAN: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"
