@@ -7,7 +7,7 @@
 
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
-developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+developed.](http://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/odbc)](https://cran.r-project.org/package=odbc)
 [![R build
 status](https://github.com/r-dbi/odbc/workflows/R-CMD-check/badge.svg)](https://github.com/r-dbi/odbc)
@@ -23,7 +23,7 @@ to any database with ODBC drivers available, including [SQL
 Server](https://www.microsoft.com/en-us/sql-server/),
 [Oracle](https://www.oracle.com/database),
 [MySQL](https://www.mysql.com/),
-[PostgreSQL](https://www.postgresql.org/), [SQLite](https://sqlite.org/)
+[PostgreSQL](https://www.postgresql.org/), [SQLite](https://sqlite.org/index.html)
 and others. The implementation builds on the
 [nanodbc](https://nanodbc.github.io/nanodbc/) C++ library.
 
@@ -68,7 +68,7 @@ proper locations.
 
 ### MacOS
 
-[homebrew](http://brew.sh/) can be used to easily install database
+[homebrew](https://brew.sh/) can be used to easily install database
 drivers on MacOS.
 
 #### UnixODBC - Required for all databases

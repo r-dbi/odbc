@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 
 # odbc
 <!-- badges: start -->
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/odbc)](https://cran.r-project.org/package=odbc)
 [![R build status](https://github.com/r-dbi/odbc/workflows/R-CMD-check/badge.svg)](https://github.com/r-dbi/odbc)
 [![Coverage Status](https://img.shields.io/codecov/c/github/r-dbi/odbc/master.svg)](https://codecov.io/github/r-dbi/odbc?branch=master)
@@ -30,7 +30,7 @@ Connectivity](https://msdn.microsoft.com/en-us/library/ms710252(v=vs.85).aspx)
 database with ODBC drivers available, including [SQL
 Server](https://www.microsoft.com/en-us/sql-server/),
 [Oracle](https://www.oracle.com/database), [MySQL](https://www.mysql.com/),
-[PostgreSQL](https://www.postgresql.org/), [SQLite](https://sqlite.org/) and
+[PostgreSQL](https://www.postgresql.org/), [SQLite](https://sqlite.org/index.html) and
 others. The implementation builds on the
 [nanodbc](https://nanodbc.github.io/nanodbc/) C++ library.
 
@@ -71,7 +71,7 @@ installer that needs to be run and will install the driver to the proper
 locations.
 
 ### MacOS
-[homebrew](http://brew.sh/) can be used to easily install database drivers on MacOS.
+[homebrew](https://brew.sh/) can be used to easily install database drivers on MacOS.
 
 #### UnixODBC - Required for all databases
 ```shell
