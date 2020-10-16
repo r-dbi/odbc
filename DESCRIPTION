@@ -11,6 +11,7 @@ Authors@R:
              family = "Wickham",
              role = "aut",
              email = "hadley@rstudio.com"),
+      person(given = "detule", role = "ctb"),
       person(given = "lexicalunit",
              role = "cph",
              comment = "nanodbc library"),
