@@ -37,7 +37,12 @@
 #ifdef NANODBC_USE_BOOST_CONVERT
 #include <boost/locale/encoding_utf.hpp>
 #else
+// libc++ prior to gcc 5 on windows does not have codecvt
+#if defined _WIN32 && (__GNUC__ < 5)
+#define NANODBC_USE_NATIVE_CONVERT
+#else
 #include <codecvt>
+#endif
 #endif
 
 #ifdef __APPLE__
@@ -264,7 +269,27 @@ inline void convert(const wide_string_type& in, std::string& out)
     out = std::wstring_convert<NANODBC_CODECVT_TYPE<unsigned short>, unsigned short>().to_bytes(
         p, p + in.size());
 #else
+
+#ifdef NANODBC_USE_NATIVE_CONVERT
+    if (in.empty())
+    {
+        return;
+    }
+    auto size_needed = WideCharToMultiByte(
+        CP_UTF8, 0, reinterpret_cast<const wchar_t*>(&in[0]), static_cast<int>(in.size()), nullptr, 0, nullptr, nullptr);
+    out.resize(size_needed);
+    WideCharToMultiByte(
+        CP_UTF8,
+        0,
+        reinterpret_cast<const wchar_t*>(&in[0]),
+        static_cast<int>(in.size()),
+        &out[0],
+        size_needed,
+        nullptr,
+        nullptr);
+#else
     out = std::wstring_convert<NANODBC_CODECVT_TYPE<wide_char_t>, wide_char_t>().to_bytes(in);
+#endif
 #endif
 #endif
 }
@@ -284,7 +309,18 @@ inline void convert(const std::string& in, wide_string_type& out)
     auto p = reinterpret_cast<wide_char_t const*>(s.data());
     out.assign(p, p + s.size());
 #else
+#ifdef NANODBC_USE_NATIVE_CONVERT
+    if (in.empty())
+    {
+        return;
+    }
+    auto size_needed =
+        MultiByteToWideChar(CP_UTF8, 0, &in[0], static_cast<int>(in.size()), nullptr, 0);
+    out.resize(size_needed);
+    MultiByteToWideChar(CP_UTF8, 0, &in[0], static_cast<int>(in.size()), &out[0], size_needed);
+#else
     out = std::wstring_convert<NANODBC_CODECVT_TYPE<wide_char_t>, wide_char_t>().from_bytes(in);
+#endif
 #endif
 }
 
@@ -3755,12 +3791,12 @@ const class connection& transaction::connection() const
     return impl_->connection();
 }
 
-transaction::operator class connection&()
+transaction::operator class connection &()
 {
     return impl_->connection();
 }
 
-transaction::operator const class connection&() const
+transaction::operator const class connection &() const
 {
     return impl_->connection();
 }
