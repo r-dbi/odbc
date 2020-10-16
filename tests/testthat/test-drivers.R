@@ -27,6 +27,7 @@ test_that("odbcListDrivers() keep and filter work", {
 test_that("odbcListDataSources() returns available data sources", {
   skip_on_cran()
 
+  res <- odbcListDataSources()
   if (nrow(res) == 0) {
     skip("No drivers installed")
   }
