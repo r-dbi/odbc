@@ -1256,6 +1256,36 @@ public:
     /// \brief Returns true if there are no more results in the current result set.
     bool at_end() const NANODBC_NOEXCEPT;
 
+    /// \brief Unbind data buffers for all columns in the result set.
+    ///
+    /// Wraps unbind(short column)
+    /// \throws index_range_error, database_error
+    void unbind();
+
+    /// \brief Unbind data buffers for specific columns in the result set.
+    ///
+    /// Wraps unbind(short column)
+    ///
+    /// \param column_name string Name of column we wish to unbind.
+    /// \throws index_range_error, database_error
+    void unbind(const string_type& column_name);
+
+    /// \brief Unbind data buffers for specific columns in the result set.
+    ///
+    /// When a result is constructed, in order to optimize data retrieval,
+    /// we automatically try to bind buffers, except for columns that contain
+    /// long/blob data types.  This method gives the caller the option to unbind
+    /// a specific buffer.  Subsequently, during calls to get(), if there is no
+    /// bound data buffer, we will attempt to retrieve the data using a call
+    /// SQLGetData; this is similar to the route taken for columns hosting long
+    /// or bloby data types.  This is suboptimal from efficiency perspective,
+    /// however may be necessary of the driver we are communicating with does
+    /// not support out-of-order retrieval of long data.
+    ///
+    /// \param column short Zero-based index of column we wish to unbind.
+    /// \throws index_range_error, database_error
+    void unbind(short column);
+
     /// \brief Gets data from the given column of the current rowset.
     ///
     /// Columns are numbered from left to right and 0-indexed.
@@ -1353,6 +1383,26 @@ public:
     /// \param column_name column's name.
     /// \throws database_error, index_range_error
     bool is_null(const string_type& column_name) const;
+
+    /// \brief Returns true if we have bound a buffer to the given column.
+    ///
+    /// Generically, nanodbc will greedily bind buffers to columns in the result
+    /// set.  However, we have also given the user the ability to unbind buffers
+    /// via unbind() forcing nanodbc to retrieve data via SQLGetData.  This
+    /// method returns true if there is a buffer bound to the column.
+    ///
+    /// Columns are numbered from left to right and 0-indexed.
+    /// \param column short position.
+    /// \throws index_range_error
+    bool is_bound(short column) const;
+
+    /// \brief Returns true if we have bound a buffer to the given column.
+    ///
+    /// See is_bound(short column) for details.
+    /// \see is_bound()
+    /// \param column_name column's name.
+    /// \throws index_range_error
+    bool is_bound(const string_type& column_name) const;
 
     /// \brief Returns the column number of the specified column name.
     ///

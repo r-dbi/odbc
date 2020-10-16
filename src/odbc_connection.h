@@ -34,6 +34,7 @@ public:
   bool has_active_result() const;
   bool is_current_result(odbc_result* result) const;
   bool supports_transactions() const;
+  bool get_data_any_order() const;
 
   void set_current_result(odbc_result* r);
 

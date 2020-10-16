@@ -85,6 +85,27 @@ bool odbc_connection::supports_transactions() const {
   }
 }
 
+bool odbc_connection::get_data_any_order() const {
+  try {
+    /* In a perfect world, we would use SQL_GETDATA_EXTENSIONS to
+     * determine this.  However, some drivers incorrectly report these
+     * extensions - for example FreeTDS supports out-of-order retrieval
+     * via SQLGetData, but reports otherwise.  Therefore, at this time we
+     * use empirical findings - we know this to be the case for the Microsoft
+     * driver for SQL Server.
+     */
+    std::string dbms = c_->get_info<std::string>(SQL_DBMS_NAME);
+    std::string driver = c_->get_info<std::string>(SQL_DRIVER_NAME);
+    if (dbms == "Microsoft SQL Server" &&
+		    driver.find("msodbcsql") != std::string::npos) {
+      return false;
+    }
+    return true;
+  } catch (const nanodbc::database_error& e) {
+    return true;
+  }
+}
+
 cctz::time_zone odbc_connection::timezone() const { return timezone_; }
 std::string odbc_connection::timezone_out_str() const {
   return timezone_out_str_;
