@@ -183,9 +183,9 @@ setMethod(
   "dbExistsTable", c("OdbcConnection", "Id"),
   function(conn, name, ...) {
     name@name[["table"]] %in% connection_sql_tables(conn@ptr,
-      catalog_name = if ("catalog" %in% names(name@name)) name@name[["catalog"]] else NULL,
-      schema_name = if ("schema" %in% names(name@name)) name@name[["schema"]] else NULL,
-      table_name = if ("table" %in% names(name@name)) name@name[["table"]] else NULL
+      catalog_name = id_field(name, "catalog"),
+      schema_name = id_field(name, "schema"),
+      table_name = id_field(name, "table")
     )
   })
 

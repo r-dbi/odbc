@@ -50,3 +50,11 @@ parse_size <- function(x) {
 
   stop(sprintf("`%s` is not a valid size:\n  Must be a positive integer.", as.character(nme)), call. = FALSE)
 }
+
+id_field <- function(id, field, default = NULL) {
+  if (field %in% names(id@name)) {
+    id@name[[field]]
+  } else {
+    default
+  }
+}
