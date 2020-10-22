@@ -229,10 +229,10 @@ odbcDataType.default <- function(con, obj, ...) {
 #' @export
 odbcDataType.Oracle <- function(con, obj, ...) {
   switch_type(obj,
-     factor = "VARCHAR(255)",
+     factor = "VARCHAR2(255)",
 
      # No native oracle type for time
-     time = "VARCHAR(255)",
+     time = "VARCHAR2(255)",
 
      date = "DATE",
      datetime = "TIMESTAMP",
@@ -240,9 +240,9 @@ odbcDataType.Oracle <- function(con, obj, ...) {
      binary = "BLOB",
      integer = "INTEGER",
      double = "BINARY_DOUBLE",
-     character = "VARCHAR(255)",
+     character = "VARCHAR2(255)",
      logical = "DECIMAL",
-     list = "VARCHAR(255)",
+     list = "VARCHAR2(255)",
      stop("Unsupported type", call. = FALSE)
   )
 }

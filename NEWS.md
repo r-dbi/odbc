@@ -5,6 +5,7 @@
 * `dbWriteTable()` now handles `data.table::IDate()` objects (#388)
 * `odbcConnectionColumns()` now works as intended with `DBI::Id()` objects (#389)
 * Oracle connections now support `Date` and `POSIXct` types via `DATE` and `TIMESTAMP` data types (#324, #349, #350)
+* Oracle connections now use VARCHAR2 rather than VARCHAR, as recommended by Oracle's documentation (#189)
 
 # odbc 1.2.3
 
