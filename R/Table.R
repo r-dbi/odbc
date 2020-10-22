@@ -112,6 +112,13 @@ setMethod(
   odbc_write_table)
 
 #' @rdname odbc-tables
+#' @inheritParams DBI::dbAppendTable
+#' @export
+setMethod("dbAppendTable", "OdbcConnection", function(conn, name, value, ..., row.names = NULL) {
+  dbWriteTable(conn, name, value, ..., row.names = row.names, append = TRUE)
+})
+
+#' @rdname odbc-tables
 #' @inheritParams DBI::dbReadTable
 #' @export
 setMethod("sqlData", "OdbcConnection", function(con, value, row.names = NA, ...) {

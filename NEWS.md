@@ -7,6 +7,7 @@
 * Oracle connections now support `Date` and `POSIXct` types via `DATE` and `TIMESTAMP` data types (#324, #349, #350)
 * Oracle connections now use VARCHAR2 rather than VARCHAR, as recommended by Oracle's documentation (#189)
 * `dbWriteTable(field.types=)` now issues a warning rather than an error for missing columns (#342)
+* New `dbAppendTable()` method for OdbcConnection objects (#335)
 
 # odbc 1.2.3
 
