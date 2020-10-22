@@ -116,6 +116,7 @@ setMethod(
 #' @export
 setMethod("dbAppendTable", "OdbcConnection", function(conn, name, value, ..., row.names = NULL) {
   stopifnot(is.null(row.names))
+  stopifnot(dbExistsTable(conn, name))
   dbWriteTable(conn, name, value, ..., row.names = row.names, append = TRUE)
   invisible(NA_real_)
 })
