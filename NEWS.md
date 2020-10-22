@@ -4,6 +4,7 @@
 * `invalid descriptor` issues due to out of order retrieval of long columns are now avoided by unbinding any nanodbc buffer past the long column. Performance for the unbound columns in these cases will be reduced, but the retrieval will work (@detule, #381)
 * `dbWriteTable()` now handles `data.table::IDate()` objects (#388)
 * `odbcConnectionColumns()` now works as intended with `DBI::Id()` objects (#389)
+* Oracle connections now support `Date` and `POSIXct` types via `DATE` and `TIMESTAMP` data types (#324, #349, #350)
 
 # odbc 1.2.3
 

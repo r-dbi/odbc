@@ -234,14 +234,9 @@ odbcDataType.Oracle <- function(con, obj, ...) {
      # No native oracle type for time
      time = "VARCHAR(255)",
 
-     # There is a native type for date, but the default input format may not be
-     # ISO 8601, it is determined by NLS_DATE_FORMAT or derived from
-     # NLS_TERRITORY, so use character as a fallback.
-     date = "VARCHAR(255)",
+     date = "DATE",
+     datetime = "TIMESTAMP",
 
-     # datetime errors with * character string is not in a standard unambiguous
-     # format, even with character input.
-#    datetime = "VARCHAR(255)",
      binary = "BLOB",
      integer = "INTEGER",
      double = "BINARY_DOUBLE",
