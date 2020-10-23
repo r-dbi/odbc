@@ -119,20 +119,17 @@ test_that("PostgreSQL", {
       "list_fields_object", # TODO
       NULL))
   DBItest::test_meta(c(
-      "bind_logical", # DBItest coerces this to character
-      "bind_multi_row.*", # We do not current support multi row binding
-      "bind_timestamp_lt", # We do not support POSIXlt objects
-      "bind_raw", # This test seems to be not quite working as expected
       "bind_.*", # TODO
       "has_completed_statement",
       "get_statement_statement",
       "column_info_consistent", # TODO
       "row_count_statement", # TODO
       "rows_affected_statement", # TODO
+      "rows_affected_query", # TODO
       "get_info_result", # TODO
       NULL))
-  #DBItest::test_transaction(c(
-      #NULL))
+  DBItest::test_transaction(c(
+      NULL))
   DBItest::test_compliance(c(
       "compliance", # We are defining additional subclasses for OdbcConnections
       "reexport", # TODO
