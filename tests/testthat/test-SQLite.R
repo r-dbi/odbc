@@ -99,6 +99,7 @@ test_that("SQLite", {
       "column_info_consistent", # TODO
       "row_count_statement", # TODO
       "rows_affected_statement", # TODO
+      "rows_affected_query", # TODO
       "has_completed_statement",
       "get_statement_statement",
       "bind_.*", # TODO
