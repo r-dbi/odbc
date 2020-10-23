@@ -33,3 +33,4 @@
 ^Makefile$
 ^\.clangd$
 ^compile_commands\.json$
+^tnsnames\.ora$
