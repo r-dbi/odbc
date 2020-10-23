@@ -151,6 +151,7 @@ test_that("SQLServer", {
     # dbWriteTable errors if field.types don't exist (#271)
     con <- DBItest:::connect(DBItest:::get_default_context())
 
+    on.exit(dbRemoveTable(con, "foo"), add = TRUE)
     expect_warning(
       dbWriteTable(con, "foo", iris, field.types = list(bar = "[int]")),
       "Some columns in `field.types` not in the input, missing columns:"
