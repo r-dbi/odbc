@@ -11,6 +11,7 @@
 * `dbWriteTable()` and `dbBind()` now default to a `batch_rows` of `NA`, which sets the batch size to be the length of the input.
   This avoids problems with drivers that don't support batch sizes larger than the input size.
   To restore the behavior prior to this release pass `batch_rows = 1024` or set `options(odbc.batch_rows = 1024)` (#391).
+* `dbBind()` and `dbFetch()` now support multiple result sets (@vkapartzianis, #234)
 
 # odbc 1.2.3
 
