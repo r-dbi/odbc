@@ -21,7 +21,7 @@ test_that("odbcListDrivers() keep and filter work", {
   expect_true(nrow(res) == 0)
 
   res <- odbcListDrivers(keep = current_drivers[[1]])
-  expect_true(nrow(res) == 1)
+  expect_true(unique(res$name) == current_drivers[[1]])
 })
 
 test_that("odbcListDataSources() returns available data sources", {
