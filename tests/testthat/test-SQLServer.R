@@ -153,7 +153,7 @@ test_that("SQLServer", {
 
     expect_warning(
       dbWriteTable(con, "foo", iris, field.types = list(bar = "[int]")),
-      "Columns in `field.types` must be in the input"
+      "Some columns in `field.types` not in the input, missing columns:"
     )
   })
 
