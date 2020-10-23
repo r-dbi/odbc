@@ -30,6 +30,15 @@ NULL
 odbc_write_table <-
   function(conn, name, value, overwrite=FALSE, append=FALSE, temporary = FALSE,
     row.names = NA, field.types = NULL, batch_rows = getOption("odbc.batch_rows", NA), ...) {
+    stopifnot(
+      rlang::is_scalar_logical(overwrite) && !is.na(overwrite),
+      rlang::is_scalar_logical(append) && !is.na(append),
+      rlang::is_scalar_logical(temporary) && !is.na(temporary),
+      rlang::is_null(field.types) || (rlang::is_named(field.types))
+    )
+    if (append && !is.null(field.types)) {
+      stop("Cannot specify field.types with append = TRUE", call. = FALSE)
+    }
 
     if (is.na(batch_rows)) {
       batch_rows <- NROW(value)
