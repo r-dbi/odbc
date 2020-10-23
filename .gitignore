@@ -17,3 +17,4 @@ testing/
 /revdep/library
 /revdep/checks/
 .DS_Store
+tnsnames.ora
