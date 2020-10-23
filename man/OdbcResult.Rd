@@ -31,7 +31,7 @@
 
 \S4method{dbGetRowsAffected}{OdbcResult}(res, ...)
 
-\S4method{dbBind}{OdbcResult}(res, params, ..., batch_rows = getOption("odbc.batch_rows", 1024))
+\S4method{dbBind}{OdbcResult}(res, params, ..., batch_rows = getOption("odbc.batch_rows", NA))
 }
 \arguments{
 \item{res}{An object inheriting from \linkS4class{DBIResult}.}
@@ -49,8 +49,8 @@ or a \linkS4class{DBIResult}}
 
 \item{params}{A list of bindings, named or unnamed.}
 
-\item{batch_rows}{The number of row of the batch when writing, depending on
-the database, driver and dataset adjusting this lower or higher may improve
+\item{batch_rows}{The number of rows to retrieve. Defaults to \code{NA}, which is set dynamically to the size of the input. Depending on
+the database, driver, dataset and free memory setting this to a lower value may improve
 performance.}
 }
 \description{

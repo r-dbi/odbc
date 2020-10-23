@@ -121,10 +121,18 @@ setMethod(
 #' @export
 setMethod(
   "dbBind", "OdbcResult",
-  function(res, params, ..., batch_rows = getOption("odbc.batch_rows", 1024)) {
+  function(res, params, ..., batch_rows = getOption("odbc.batch_rows", NA)) {
+    params <- as.list(params)
+    if (length(params) == 0) {
+      return(invisible(res))
+    }
+
+    if (is.na(batch_rows)) {
+      batch_rows <- length(params[[1]])
+    }
 
     batch_rows <- parse_size(batch_rows)
 
-    result_bind(res@ptr, as.list(params), batch_rows)
+    result_bind(res@ptr, params, batch_rows)
     invisible(res)
   })

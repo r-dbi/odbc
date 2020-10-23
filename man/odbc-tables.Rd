@@ -5,6 +5,7 @@
 \alias{dbWriteTable,OdbcConnection,character,data.frame-method}
 \alias{dbWriteTable,OdbcConnection,Id,data.frame-method}
 \alias{dbWriteTable,OdbcConnection,SQL,data.frame-method}
+\alias{dbAppendTable,OdbcConnection-method}
 \alias{sqlData,OdbcConnection-method}
 \alias{sqlCreateTable,OdbcConnection-method}
 \title{Convenience functions for reading/writing DBMS tables}
@@ -18,7 +19,7 @@
   temporary = FALSE,
   row.names = NA,
   field.types = NULL,
-  batch_rows = getOption("odbc.batch_rows", 1024),
+  batch_rows = getOption("odbc.batch_rows", NA),
   ...
 )
 
@@ -31,7 +32,7 @@
   temporary = FALSE,
   row.names = NA,
   field.types = NULL,
-  batch_rows = getOption("odbc.batch_rows", 1024),
+  batch_rows = getOption("odbc.batch_rows", NA),
   ...
 )
 
@@ -44,9 +45,11 @@
   temporary = FALSE,
   row.names = NA,
   field.types = NULL,
-  batch_rows = getOption("odbc.batch_rows", 1024),
+  batch_rows = getOption("odbc.batch_rows", NA),
   ...
 )
+
+\S4method{dbAppendTable}{OdbcConnection}(conn, name, value, ..., row.names = NULL)
 
 \S4method{sqlData}{OdbcConnection}(con, value, row.names = NA, ...)
 
@@ -91,8 +94,8 @@ For backward compatibility, \code{NULL} is equivalent to \code{FALSE}.}
 
 \item{field.types}{Additional field types used to override derived types.}
 
-\item{batch_rows}{The number of row of the batch when writing, depending on
-the database, driver and dataset adjusting this lower or higher may improve
+\item{batch_rows}{The number of rows to retrieve. Defaults to \code{NA}, which is set dynamically to the size of the input. Depending on
+the database, driver, dataset and free memory setting this to a lower value may improve
 performance.}
 
 \item{...}{Other arguments used by individual methods.}

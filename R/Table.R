@@ -29,8 +29,14 @@ NULL
 
 odbc_write_table <-
   function(conn, name, value, overwrite=FALSE, append=FALSE, temporary = FALSE,
-    row.names = NA, field.types = NULL, batch_rows = getOption("odbc.batch_rows", 1024), ...) {
+    row.names = NA, field.types = NULL, batch_rows = getOption("odbc.batch_rows", NA), ...) {
 
+    if (is.na(batch_rows)) {
+      batch_rows <- NROW(value)
+      if (batch_rows == 0) {
+        batch_rows <- 1
+      }
+    }
     batch_rows <- parse_size(batch_rows)
 
     if (overwrite && append)
@@ -91,8 +97,8 @@ odbc_write_table <-
 #'   `TRUE` if `append` is also `TRUE`.
 #' @param append Allow appending to the destination table. Cannot be
 #'   `TRUE` if `overwrite` is also `TRUE`.
-#' @param batch_rows The number of row of the batch when writing, depending on
-#'   the database, driver and dataset adjusting this lower or higher may improve
+#' @param batch_rows The number of rows to retrieve. Defaults to `NA`, which is set dynamically to the size of the input. Depending on
+#'   the database, driver, dataset and free memory setting this to a lower value may improve
 #'   performance.
 #' @export
 setMethod(

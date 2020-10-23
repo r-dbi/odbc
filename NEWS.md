@@ -8,6 +8,9 @@
 * Oracle connections now use VARCHAR2 rather than VARCHAR, as recommended by Oracle's documentation (#189)
 * `dbWriteTable(field.types=)` now issues a warning rather than an error for missing columns (#342)
 * New `dbAppendTable()` method for OdbcConnection objects (#335)
+* `dbWriteTable()` and `dbBind()` now default to a `batch_rows` of `NA`, which sets the batch size to be the length of the input.
+  This avoids problems with drivers that don't support batch sizes larger than the input size.
+  To restore the behavior prior to this release pass `batch_rows = 1024` or set `options(odbc.batch_rows = 1024)` (#391).
 
 # odbc 1.2.3
 
