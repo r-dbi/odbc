@@ -17,15 +17,15 @@ Status](https://img.shields.io/codecov/c/github/r-dbi/odbc/master.svg)](https://
 
 The goal of the odbc package is to provide a DBI-compliant interface to
 [Open Database
-Connectivity](https://msdn.microsoft.com/en-us/library/ms710252\(v=vs.85\).aspx)
+Connectivity](https://docs.microsoft.com/en-us/sql/odbc/microsoft-open-database-connectivity-odbc?view=sql-server-ver15)
 (ODBC) drivers. This allows for an efficient, easy to setup connection
 to any database with ODBC drivers available, including [SQL
 Server](https://www.microsoft.com/en-us/sql-server/),
 [Oracle](https://www.oracle.com/database),
 [MySQL](https://www.mysql.com/),
-[PostgreSQL](https://www.postgresql.org/), [SQLite](https://sqlite.org/index.html)
-and others. The implementation builds on the
-[nanodbc](https://nanodbc.github.io/nanodbc/) C++ library.
+[PostgreSQL](https://www.postgresql.org/),
+[SQLite](https://sqlite.org/index.html) and others. The implementation
+builds on the [nanodbc](https://nanodbc.github.io/nanodbc/) C++ library.
 
   - [Installation](#installation)
       - [Windows](#windows)
@@ -187,7 +187,7 @@ con <- dbConnect(odbc::odbc(), "PostgreSQL")
 #### Windows
 
 The [ODBC Data Source
-Administrator](https://msdn.microsoft.com/en-us/library/ms714024\(v=vs.85\).aspx)
+Administrator](https://docs.microsoft.com/en-us/sql/odbc/admin/odbc-data-source-administrator?view=sql-server-ver15)
 application is used to manage ODBC data sources on Windows.
 
 #### MacOS / Linux
@@ -291,8 +291,7 @@ data <- dbWriteTable(con, "iris", iris)
 `dbGetQuery()` will submit a query and fetch the results. It is also
 possible to submit the query and fetch separately with `dbSendQuery()`
 and `dbFetch()`. The `n=` argument to `dbFetch()` can be used to fetch
-only the part of a query result (the next *n*
-rows).
+only the part of a query result (the next *n* rows).
 
 ``` r
 result <- dbSendQuery(con, "SELECT flight, tailnum, origin FROM flights ORDER BY origin")
@@ -320,7 +319,6 @@ Reading a table from a SQL Server database with the ‘flights’ dataset
 # First using RODBC / RODBCDBI
 library(DBI)
 rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "MicrosoftSQLServer", user = Sys.getenv("SQLSERVER_UID"), password = Sys.getenv("SQLSERVER_PWD"))
-system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
 system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
 #>    user  system elapsed 
 #>  13.986   1.173  15.192
