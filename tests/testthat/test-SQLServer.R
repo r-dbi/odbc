@@ -151,8 +151,8 @@ test_that("SQLServer", {
     # dbWriteTable errors if field.types don't exist (#271)
     con <- DBItest:::connect(DBItest:::get_default_context())
 
-    expect_error(
-      dbWriteTable(con, "foo", iris, field.types = list(foo = "VARCHAR(10)", bar = "double")),
+    expect_warning(
+      dbWriteTable(con, "foo", iris, field.types = list(bar = "[int]")),
       "Columns in `field.types` must be in the input"
     )
   })
