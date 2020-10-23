@@ -55,6 +55,7 @@ setMethod(
 setMethod(
   "dbFetch", "OdbcResult",
   function(res, n = -1, ...) {
+    n <- check_n(n)
     result_fetch(res@ptr, n)
   })
 

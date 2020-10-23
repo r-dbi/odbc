@@ -12,6 +12,7 @@
   This avoids problems with drivers that don't support batch sizes larger than the input size.
   To restore the behavior prior to this release pass `batch_rows = 1024` or set `options(odbc.batch_rows = 1024)` (#391).
 * `dbBind()` and `dbFetch()` now support multiple result sets (@vkapartzianis, #234)
+* `dbFetch()` now verifies that `n` is a valid input.
 
 # odbc 1.2.3
 

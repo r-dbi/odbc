@@ -58,3 +58,11 @@ id_field <- function(id, field, default = NULL) {
     default
   }
 }
+
+check_n <- function(n) {
+  if (length(n) != 1) stop("`n` must be scalar", call. = FALSE)
+  if (n < -1) stopc("`n` must be nonnegative or -1")
+  if (is.infinite(n)) n <- -1
+  if (trunc(n) != n) stopc("`n` must be a whole number", call. = FALSE)
+  n
+}
