@@ -29,8 +29,14 @@ NULL
 
 odbc_write_table <-
   function(conn, name, value, overwrite=FALSE, append=FALSE, temporary = FALSE,
-    row.names = NA, field.types = NULL, batch_rows = getOption("odbc.batch_rows", 1024), ...) {
+    row.names = NA, field.types = NULL, batch_rows = getOption("odbc.batch_rows", NA), ...) {
 
+    if (is.na(batch_rows)) {
+      batch_rows <- NROW(value)
+      if (batch_rows == 0) {
+        batch_rows <- 1
+      }
+    }
     batch_rows <- parse_size(batch_rows)
 
     if (overwrite && append)
@@ -91,8 +97,8 @@ odbc_write_table <-
 #'   `TRUE` if `append` is also `TRUE`.
 #' @param append Allow appending to the destination table. Cannot be
 #'   `TRUE` if `overwrite` is also `TRUE`.
-#' @param batch_rows The number of row of the batch when writing, depending on
-#'   the database, driver and dataset adjusting this lower or higher may improve
+#' @param batch_rows The number of rows to retrieve. Defaults to `NA`, which is set dynamically to the size of the input. Depending on
+#'   the database, driver, dataset and free memory setting this to a lower value may improve
 #'   performance.
 #' @export
 setMethod(
@@ -112,6 +118,16 @@ setMethod(
   odbc_write_table)
 
 #' @rdname odbc-tables
+#' @inheritParams DBI::dbAppendTable
+#' @export
+setMethod("dbAppendTable", "OdbcConnection", function(conn, name, value, ..., row.names = NULL) {
+  stopifnot(is.null(row.names))
+  stopifnot(dbExistsTable(conn, name))
+  dbWriteTable(conn, name, value, ..., row.names = row.names, append = TRUE)
+  invisible(NA_real_)
+})
+
+#' @rdname odbc-tables
 #' @inheritParams DBI::dbReadTable
 #' @export
 setMethod("sqlData", "OdbcConnection", function(con, value, row.names = NA, ...) {
@@ -120,6 +136,10 @@ setMethod("sqlData", "OdbcConnection", function(con, value, row.names = NA, ...)
   # Convert POSIXlt to POSIXct
   is_POSIXlt <- vapply(value, function(x) is.object(x) && (is(x, "POSIXlt")), logical(1))
   value[is_POSIXlt] <- lapply(value[is_POSIXlt], as.POSIXct)
+
+  # Convert data.table::IDate to Date
+  is_IDate <- vapply(value, function(x) is.object(x) && (is(x, "IDate")), logical(1))
+  value[is_IDate] <- lapply(value[is_IDate], as.Date)
 
   # C code takes care of atomic vectors, dates, date times, and blobs just need to coerce other objects
   is_object <- vapply(value, function(x) is.object(x) && !(is(x, "POSIXct") || is(x, "Date") || is_blob(x) || is(x, "difftime")), logical(1))
@@ -157,11 +177,11 @@ createFields <- function(con, fields, field.types, row.names) {
   if (!is.null(field.types)) {
     is_field <- names(field.types) %in% names(fields)
     if (!all(is_field)) {
-      stop(
-        sprintf("Columns in `field.types` must be in the input, missing columns:\n%s",
+      warning(
+        sprintf("Some columns in `field.types` not in the input, missing columns:\n%s",
           paste0("  - '", names(field.types)[!is_field], "'", collapse = "\n")
         ),
-      call. = FALSE)
+      call. = FALSE, immediate. = TRUE)
     }
 
     fields[names(field.types)] <- field.types
@@ -179,9 +199,9 @@ setMethod(
   "dbExistsTable", c("OdbcConnection", "Id"),
   function(conn, name, ...) {
     name@name[["table"]] %in% connection_sql_tables(conn@ptr,
-      catalog_name = if ("catalog" %in% names(name@name)) name@name[["catalog"]] else NULL,
-      schema_name = if ("schema" %in% names(name@name)) name@name[["schema"]] else NULL,
-      table_name = if ("table" %in% names(name@name)) name@name[["table"]] else NULL
+      catalog_name = id_field(name, "catalog"),
+      schema_name = id_field(name, "schema"),
+      table_name = id_field(name, "table")
     )
   })
 

@@ -89,3 +89,57 @@ Server = sql1
 port = 1433
 Database = test
 ```
+
+# Oracle
+
+A huge pain.
+
+## Get the DB container
+
+```shell
+docker login
+
+docker pull store/oracle/database-enterprise:12.2.0.1
+```
+
+## Start the container
+
+The -P is important to setup the port forwarding from the docker container
+
+```shell
+docker run -d -it --name oracle_db -P store/oracle/database-enterprise:12.2.0.1
+```
+
+## Query the port and edit the ports in tnsnames.ora
+
+```shell
+docker port oracle_db
+```
+
+Contents of `snsnames.ora`
+
+```
+ORCLCDB=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=32769))
+    (CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCLCDB.localdomain)))
+ORCLPDB1=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=32769))
+    (CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCLPDB1.localdomain)))
+```
+
+Set the current working directory as the 
+
+## Add a new user to the DB
+
+docker exec -it oracle_db bash -c "source /home/oracle/.bashrc; sqlplus SYS/Oradoc_db1 AS SYSDBA"
+
+```sql
+alter session set "_ORACLE_SCRIPT"=true;
+
+create user test identified by 12345;
+
+GRANT ALL PRIVILEGES TO TEST;
+```
+
+```r
+Sys.setenv("TNS_ADMIN" = getwd())
+con <- dbConnect(odbc::odbc(), "OracleODBC-19")
+```

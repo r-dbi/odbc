@@ -71,6 +71,7 @@ private:
   std::map<short, std::vector<uint8_t>> nulls_;
 
   void clear_buffers();
+  void unbind_if_needed();
 
   void bind_columns(
       nanodbc::statement& statement,

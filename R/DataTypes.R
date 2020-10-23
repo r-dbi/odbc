@@ -229,25 +229,20 @@ odbcDataType.default <- function(con, obj, ...) {
 #' @export
 odbcDataType.Oracle <- function(con, obj, ...) {
   switch_type(obj,
-     factor = "VARCHAR(255)",
+     factor = "VARCHAR2(255)",
 
      # No native oracle type for time
-     time = "VARCHAR(255)",
+     time = "VARCHAR2(255)",
 
-     # There is a native type for date, but the default input format may not be
-     # ISO 8601, it is determined by NLS_DATE_FORMAT or derived from
-     # NLS_TERRITORY, so use character as a fallback.
-     date = "VARCHAR(255)",
+     date = "DATE",
+     datetime = "TIMESTAMP",
 
-     # datetime errors with * character string is not in a standard unambiguous
-     # format, even with character input.
-#    datetime = "VARCHAR(255)",
      binary = "BLOB",
      integer = "INTEGER",
      double = "BINARY_DOUBLE",
-     character = "VARCHAR(255)",
+     character = "VARCHAR2(255)",
      logical = "DECIMAL",
-     list = "VARCHAR(255)",
+     list = "VARCHAR2(255)",
      stop("Unsupported type", call. = FALSE)
   )
 }

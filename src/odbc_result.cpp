@@ -31,6 +31,7 @@ odbc_result::odbc_result(
       execute();
     }
   }
+  unbind_if_needed();
 }
 std::shared_ptr<odbc_connection> odbc_result::connection() const {
   return std::shared_ptr<odbc_connection>(c_);
@@ -162,6 +163,7 @@ void odbc_result::bind_list(
   }
   bound_ = true;
 }
+
 Rcpp::DataFrame odbc_result::fetch(int n_max) {
   if (!bound_) {
     Rcpp::stop("Query needs to be bound before fetching");
@@ -175,6 +177,23 @@ Rcpp::DataFrame odbc_result::fetch(int n_max) {
     c_->set_current_result(nullptr);
     throw;
   }
+}
+
+void odbc_result::unbind_if_needed() {
+  bool found_unbound = false;
+
+  if (c_->get_data_any_order())
+    return;
+  try {
+    for (short i = 0; i < num_columns_; ++i) {
+      found_unbound = found_unbound || !r_->is_bound(i);
+      if (found_unbound) {
+        r_->unbind(i);
+      }
+    }
+  } catch (const nanodbc::database_error& e) {
+    Rcpp::warning("Was unable to unbind some nanodbc buffers");
+  };
 }
 
 int odbc_result::rows_fetched() {
