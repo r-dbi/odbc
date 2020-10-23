@@ -6,7 +6,7 @@ on:
     branches:
       - master
 
-name: R-CMD-check - PostgreSQL and SQLServer
+name: R-CMD-check - DBs
 
 jobs:
   R-CMD-check:
