@@ -258,7 +258,10 @@ setMethod(
     if (nzchar(conn@quote)) {
       x <- gsub(conn@quote, paste0(conn@quote, conn@quote), x, fixed = TRUE)
     }
-    DBI::SQL(paste(conn@quote, encodeString(x), conn@quote, sep = ""))
+    nms <- names(x)
+    res <- DBI::SQL(paste(conn@quote, encodeString(x), conn@quote, sep = ""))
+    names(res) <- nms
+    res
   })
 
 #' @rdname OdbcConnection

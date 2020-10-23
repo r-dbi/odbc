@@ -13,6 +13,7 @@
   To restore the behavior prior to this release pass `batch_rows = 1024` or set `options(odbc.batch_rows = 1024)` (#391).
 * `dbBind()` and `dbFetch()` now support multiple result sets (@vkapartzianis, #234)
 * `dbFetch()` now verifies that `n` is a valid input.
+* `dbQuoteIdentifier()` now uses the input names (if any).
 
 # odbc 1.2.3
 
