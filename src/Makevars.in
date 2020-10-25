@@ -14,7 +14,7 @@ $(OBJECTS): cctz/libcctz.a
 
 cctz/libcctz.a:
 	(cd cctz && \
-$(MAKE) libcctz.a CC="$(CC)" CXX="$(CXX)" AR="$(AR)" ARFLAGS=$(ARFLAGS) CXXPICFLAGS="$(CXXPICFLAGS)")
+$(MAKE) libcctz.a CC="$(CC)" CXX="$(CXX)" CXXFLAGS="$(CXXFLAGS)" AR="$(AR)" ARFLAGS=$(ARFLAGS) CXXPICFLAGS="$(CXXPICFLAGS)")
 
 nanodbc.o: nanodbc/nanodbc.cpp
 	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
