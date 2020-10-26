@@ -14,6 +14,7 @@
 * `dbBind()` and `dbFetch()` now support multiple result sets (@vkapartzianis, #234)
 * `dbFetch()` now verifies that `n` is a valid input.
 * `dbQuoteIdentifier()` now uses the input names (if any).
+* Dates are now always interpreted as being in the database's local time zone, regardless of the `timezone` parameter (#398)
 
 # odbc 1.2.3
 

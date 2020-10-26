@@ -147,4 +147,10 @@ test_that("SQLServer", {
     received <- DBI::dbReadTable(con, tblName)
     expect_equal(values, received)
   })
+
+  test_that("dates should always be interpreted in the system time zone (#398)", {
+    con <- DBItest:::connect(DBItest:::get_default_context(), timezone = "America/Chicago")
+    res <- dbGetQuery(con, "SELECT ?", params = as.Date("2019-01-01"))
+    expect_equal(res[[1]], "2019-01-01")
+  })
 })

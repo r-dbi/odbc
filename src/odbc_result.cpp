@@ -355,7 +355,7 @@ nanodbc::date odbc_result::as_date(double value) {
   using namespace std::chrono;
   auto utc_time = system_clock::from_time_t(static_cast<std::time_t>(value));
 
-  auto civil_time = cctz::convert(utc_time, c_->timezone());
+  auto civil_time = cctz::convert(utc_time, cctz::utc_time_zone());
   dt.day = civil_time.day();
   dt.month = civil_time.month();
   dt.year = civil_time.year();
@@ -547,8 +547,8 @@ void odbc_result::add_classes(
     case raw_t:
       // FIXME: Use new_blob()
       x.attr("ptype") = Rcpp::RawVector::create();
-      x.attr("class") =
-          Rcpp::CharacterVector::create("blob", "vctrs_list_of", "vctrs_vctr", "list");
+      x.attr("class") = Rcpp::CharacterVector::create(
+          "blob", "vctrs_list_of", "vctrs_vctr", "list");
       break;
     default:
       break;
