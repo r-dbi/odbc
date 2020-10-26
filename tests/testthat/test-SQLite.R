@@ -47,6 +47,11 @@ test_that("SQLite", {
       "roundtrip_logical", # Not an error
       "read_table", # #7
 
+      "exists_table_temporary",
+      "list_tables_temporary",
+      "list_objects_temporary",
+      "list_fields_temporary",
+
       # These work locally but fail on travis due to an old SQLite version
       "roundtrip_integer",
       "roundtrip_numeric.*",

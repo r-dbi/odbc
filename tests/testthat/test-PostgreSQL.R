@@ -94,6 +94,7 @@ test_that("PostgreSQL", {
       "quote_identifier_vectorized", # Can't implement until https://github.com/rstats-db/DBI/issues/71 is closed
       "quote_identifier_special", # TODO
       "roundtrip_timestamp", # We explicitly want to set tzone to UTC
+      "roundtrip_time",
       "roundtrip_raw", #TODO
       "list_tables",
       ".*_table_name",

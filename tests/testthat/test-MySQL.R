@@ -29,6 +29,7 @@ test_that("MySQL", {
       "quote_identifier_vectorized", # Can't implement until https://github.com/rstats-db/DBI/issues/71 is closed
       "roundtrip_logical",               # Not an error, PostgreSQL has a logical data type
       "roundtrip_timestamp",             # We explicitly want to set tzone to UTC regardless of input
+      "roundtrip_time",
       "roundtrip_raw", #TODO
       "list_tables",
       ".*_table_name",
@@ -51,6 +52,8 @@ test_that("MySQL", {
       "list_fields_wrong_table",
       "list_fields_quoted",
       "list_fields_object",
+      "list_tables_quote",
+      "list_objects_quote",
       NULL))
   DBItest::test_meta(c(
       "rows_affected_query", # The MySQL Driver returns 1 affected row
