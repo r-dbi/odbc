@@ -2,45 +2,33 @@
 
 |field    |value                        |
 |:--------|:----------------------------|
-|version  |R version 3.6.1 (2019-07-05) |
-|os       |macOS Mojave 10.14.6         |
-|system   |x86_64, darwin15.6.0         |
+|version  |R version 4.0.2 (2020-06-22) |
+|os       |macOS Catalina 10.15.6       |
+|system   |x86_64, darwin17.0           |
 |ui       |X11                          |
 |language |(EN)                         |
 |collate  |en_US.UTF-8                  |
 |ctype    |en_US.UTF-8                  |
 |tz       |America/New_York             |
-|date     |2019-11-27                   |
+|date     |2020-10-27                   |
 
 # Dependencies
 
-|package     |old      |new      |Δ  |
-|:-----------|:--------|:--------|:--|
-|odbc        |1.1.6    |1.1.6    |NA |
-|assertthat  |0.2.1    |0.2.1    |NA |
-|backports   |1.1.5    |1.1.5    |NA |
-|BH          |1.69.0-1 |1.69.0-1 |NA |
-|bit         |1.1-14   |1.1-14   |NA |
-|bit64       |0.9-7    |0.9-7    |NA |
-|blob        |1.2.0    |1.2.0    |NA |
-|DBI         |1.0.0    |1.0.0    |NA |
-|digest      |0.6.23   |0.6.23   |NA |
-|ellipsis    |0.3.0    |0.3.0    |NA |
-|glue        |1.3.1    |1.3.1    |NA |
-|hms         |0.5.2    |0.5.2    |NA |
-|magrittr    |1.5      |1.5      |NA |
-|pkgconfig   |2.0.3    |2.0.3    |NA |
-|prettyunits |1.0.2    |1.0.2    |NA |
-|Rcpp        |1.0.3    |1.0.3    |NA |
-|rlang       |0.4.2    |0.4.2    |NA |
-|vctrs       |0.2.0    |0.2.0    |NA |
-|zeallot     |0.1.0    |0.1.0    |NA |
+|package   |old    |new        |Δ  |
+|:---------|:------|:----------|:--|
+|odbc      |1.2.3  |1.2.3.9000 |*  |
+|bit       |4.0.4  |4.0.4      |   |
+|bit64     |4.0.5  |4.0.5      |   |
+|blob      |1.2.1  |1.2.1      |   |
+|DBI       |1.1.0  |1.1.0      |   |
+|digest    |0.6.27 |0.6.27     |   |
+|ellipsis  |0.3.1  |0.3.1      |   |
+|glue      |1.4.2  |1.4.2      |   |
+|hms       |0.5.3  |0.5.3      |   |
+|pkgconfig |2.0.3  |2.0.3      |   |
+|Rcpp      |1.0.5  |1.0.5      |   |
+|rlang     |0.4.8  |0.4.8      |   |
+|vctrs     |0.3.4  |0.3.4      |   |
 
 # Revdeps
-
-## Failed to check (1)
-
-|package |version |error |warning |note |
-|:-------|:-------|:-----|:-------|:----|
-|sf      |0.8-0   |1     |        |     |
 
