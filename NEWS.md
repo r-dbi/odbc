@@ -1,4 +1,4 @@
-# odbc (development version)
+# odbc 1.3.0
 
 ## Major changes
 * odbc can now be compiled again with Rtools35 (gcc 4.9.3) on Windows (#383)
