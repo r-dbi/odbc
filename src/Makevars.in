@@ -1,6 +1,6 @@
 # Workaround for bug with unixODBC 2.3.1
 # https://github.com/lexicalunit/nanodbc/issues/149
-PKG_CPPFLAGS=@PKG_CXXFLAGS@
+PKG_CPPFLAGS=@PKG_CFLAGS@
 PKG_CXXFLAGS=-Icctz/include -Inanodbc -I. -DBUILD_REAL_64_BIT_MODE -DNANODBC_ODBC_VERSION=SQL_OV_ODBC3 $(CXXPICFLAGS)
 PKG_LIBS=@PKG_LIBS@ -Lcctz -lcctz
 
