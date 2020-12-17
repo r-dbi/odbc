@@ -352,7 +352,7 @@ setMethod(
 setMethod("dbGetQuery", signature("OdbcConnection", "character"),
   function(conn, statement, n = -1, params = NULL, ...) {
     rs <- dbSendQuery(conn, statement, params = params, ...)
-    on.exit(dbClearResult(rs))
+    on.exit(if (dbIsValid(rs)) dbClearResult(rs))
 
     df <- dbFetch(rs, n = n, ...)
 
