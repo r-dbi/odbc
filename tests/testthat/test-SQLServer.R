@@ -148,6 +148,26 @@ test_that("SQLServer", {
     expect_equal(values, received)
   })
 
+  local({
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    tblName <- "test_na"
+    # With SELECT ing with the OEM SQL Server driver, everything
+    # after the first column should be unbound. Test null detection for
+    # unbound columns (NULL is registered after a call to nanodbc::result::get)
+    values <- data.frame(
+      c1 = c("this is varchar max", NA_character_),
+      c2 = c(1L, NA_integer_),
+      c3 = c(1.0, NA_real_),
+      c4 = c(TRUE, NA),
+      c5 = c(Sys.Date(), NA),
+      c6 = c(Sys.time(), NA),
+      stringsAsFactors = FALSE)
+    dbWriteTable(con, tblName, values, field.types = list(c1 = "VARCHAR(MAX)", c2 = "INT", c3 = "FLOAT", c4 = "BIT", c5 = "DATE", c6 = "DATETIME"))
+    on.exit(dbRemoveTable(con, tblName))
+    received <- DBI::dbReadTable(con, tblName)
+    expect_equal(values, received)
+  })
+
   test_that("dates should always be interpreted in the system time zone (#398)", {
     con <- DBItest:::connect(DBItest:::get_default_context(), timezone = "America/Chicago")
     res <- dbGetQuery(con, "SELECT ?", params = as.Date("2019-01-01"))
