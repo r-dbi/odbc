@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Fixed null handling in SQL Server / Azure result sets retrieved with
+  Microsoft's ODBC driver. (@detule, #408)
+
 # odbc 1.3.0
 
 ## Major changes
