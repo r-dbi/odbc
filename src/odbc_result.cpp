@@ -766,18 +766,42 @@ Rcpp::List odbc_result::result_to_dataframe(nanodbc::result& r, int n_max) {
   return out;
 }
 
+template <typename T>
+T odbc_result::safe_get(short column, T fallback, nanodbc::result& value) {
+  T res;
+  res = value.get<T>(column, fallback);
+  if (value.is_null(column)) {
+    res = fallback;
+  }
+  return res;
+}
+
 void odbc_result::assign_integer(
     Rcpp::List& out, size_t row, short column, nanodbc::result& value) {
-  INTEGER(out[column])[row] = value.get<int>(column, NA_INTEGER);
+
+  int res = safe_get<int>(column, NA_INTEGER, value);
+  INTEGER(out[column])[row] = res;
 }
 void odbc_result::assign_integer64(
     Rcpp::List& out, size_t row, short column, nanodbc::result& value) {
-  INTEGER64(out[column])[row] = value.get<int64_t>(column, NA_INTEGER64);
+
+  int64_t res = safe_get<int64_t>(column, NA_INTEGER64, value);
+  INTEGER64(out[column])[row] = res;
 }
 void odbc_result::assign_double(
     Rcpp::List& out, size_t row, short column, nanodbc::result& value) {
-  REAL(out[column])[row] = value.get<double>(column, NA_REAL);
+
+  double res = safe_get<double>(column, NA_REAL, value);
+  REAL(out[column])[row] = res;
 }
+
+void odbc_result::assign_logical(
+    Rcpp::List& out, size_t row, short column, nanodbc::result& value) {
+
+  int res = safe_get<int>(column, NA_LOGICAL, value);
+  LOGICAL(out[column])[row] = res;
+}
+
 
 // Strings may be in the server's internal code page, so we need to re-encode
 // in UTF-8 if necessary.
@@ -788,16 +812,6 @@ void odbc_result::assign_string(
   if (value.is_null(column)) {
     res = NA_STRING;
   } else {
-    // There is a bug/limitation in ODBC drivers for SQL Server (and possibly
-    // others)
-    // which causes SQLBindCol() to never write SQL_NOT_NULL to the
-    // length/indicator
-    // buffer unless you also bind the data column. nanodbc's is_null() will
-    // return
-    // correct values for (n)varchar(max) columns when you ensure that
-    // SQLGetData()
-    // has been called for that column (i.e. after get() or get_ref() is
-    // called).
     auto str = value.get<std::string>(column);
     if (value.is_null(column)) {
       res = NA_STRING;
@@ -821,12 +835,6 @@ void odbc_result::assign_ustring(
   if (value.is_null(column)) {
     res = NA_STRING;
   } else {
-    // There is a bug/limitation in ODBC drivers for SQL Server (and
-    // possibly others) which causes SQLBindCol() to never write
-    // SQL_NOT_NULL to the length/indicator buffer unless you also bind the
-    // data column. nanodbc's is_null() will return correct values for
-    // (n)varchar(max) columns when you ensure that SQLGetData() has been
-    // called for that column (i.e. after get() or get_ref() is called).
     auto str = value.get<std::string>(column);
     if (value.is_null(column)) {
       res = NA_STRING;
@@ -845,7 +853,11 @@ void odbc_result::assign_datetime(
     res = NA_REAL;
   } else {
     auto ts = value.get<nanodbc::timestamp>(column);
-    res = as_double(ts);
+    if (value.is_null(column)) {
+      res = NA_REAL;
+    } else {
+      res = as_double(ts);
+    }
   }
 
   REAL(out[column])[row] = res;
@@ -858,7 +870,11 @@ void odbc_result::assign_date(
     res = NA_REAL;
   } else {
     auto ts = value.get<nanodbc::date>(column);
-    res = as_double(ts);
+    if (value.is_null(column)) {
+      res = NA_REAL;
+    } else {
+      res = as_double(ts);
+    }
   }
 
   REAL(out[column])[row] = res / seconds_in_day_;
@@ -871,15 +887,14 @@ void odbc_result::assign_time(
     res = NA_REAL;
   } else {
     auto ts = value.get<nanodbc::time>(column);
-    res = ts.hour * 3600 + ts.min * 60 + ts.sec;
+    if (value.is_null(column)) {
+      res = NA_REAL;
+    } else {
+      res = ts.hour * 3600 + ts.min * 60 + ts.sec;
+    }
   }
 
   REAL(out[column])[row] = res;
-}
-
-void odbc_result::assign_logical(
-    Rcpp::List& out, size_t row, short column, nanodbc::result& value) {
-  LOGICAL(out[column])[row] = value.get<int>(column, NA_LOGICAL);
 }
 
 void odbc_result::assign_raw(

@@ -161,6 +161,28 @@ private:
 
   Rcpp::List result_to_dataframe(nanodbc::result& r, int n_max = -1);
 
+  /// \brief Safely gets data from the given column of the current rowset.
+  ///
+  /// There is a bug/limitation in ODBC drivers for SQL Server (and
+  /// possibly others) which causes SQLBindCol() to never write
+  /// SQL_NOT_NULL to the length/indicator buffer unless you also bind the
+  /// data column. Since, any column can be unbound (think, for example
+  /// columns coming after LONG data in the case of Microsoft's OEM
+  /// ODBC driver) we also have to check for nullity after an attempt to
+  /// nanodbc::get - this is when the null indicator gets set for unbound
+  /// columns.  In the case when the null fallback is the same type
+  /// as the data we are attempting to retrieve (int/NA_INTEGER,
+  /// int64/NA_INTEGER64, double/NA_REAL, logical/NA_INTEGER), we can
+  /// use the safe_get template below.  With others, for example
+  /// std::string / NA_STRING, where the fallback is a SEXP, this
+  /// check-for-nullity-after-get is coded directly in the assign_
+  /// function.
+  /// \param column short int position.
+  /// \param fallback typename T value to use as fallback in case of null
+  /// \param value nanodbc::result
+  template <typename T>
+  T safe_get(short column, T fallback, nanodbc::result& value);
+
   void assign_integer(
       Rcpp::List& out, size_t row, short column, nanodbc::result& value);
   void assign_integer64(
