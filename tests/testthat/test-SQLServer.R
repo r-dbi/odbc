@@ -145,7 +145,11 @@ test_that("SQLServer", {
     dbWriteTable(con, tblName, values, field.types = list(c1 = "INT", c2 = "VARCHAR(MAX)", c3 = "INT", c4 = "TEXT"))
     on.exit(dbRemoveTable(con, tblName))
     received <- DBI::dbReadTable(con, tblName)
+    # Also test retrival using a prepared statement
+    received2 <- dbGetQuery(con,
+      paste0("SELECT * FROM ", tblName, "  WHERE c1 = ?"), params = list(1L))
     expect_equal(values, received)
+    expect_equal(values, received2)
   })
 
   local({
