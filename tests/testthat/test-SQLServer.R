@@ -169,7 +169,8 @@ test_that("SQLServer", {
     dbWriteTable(con, tblName, values, field.types = list(c1 = "VARCHAR(MAX)", c2 = "INT", c3 = "FLOAT", c4 = "BIT", c5 = "DATE", c6 = "DATETIME"))
     on.exit(dbRemoveTable(con, tblName))
     received <- DBI::dbReadTable(con, tblName)
-    expect_equal(values, received)
+    expect_equal(values[-6], received[-6])
+    expect_equal(as.double(values[[6]]), as.double(received[[6]]))
   })
 
   test_that("dates should always be interpreted in the system time zone (#398)", {
