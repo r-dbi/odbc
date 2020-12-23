@@ -31,7 +31,6 @@ odbc_result::odbc_result(
       execute();
     }
   }
-  unbind_if_needed();
 }
 std::shared_ptr<odbc_connection> odbc_result::connection() const {
   return std::shared_ptr<odbc_connection>(c_);
@@ -171,6 +170,7 @@ Rcpp::DataFrame odbc_result::fetch(int n_max) {
   if (num_columns_ == 0) {
     return Rcpp::DataFrame();
   }
+  unbind_if_needed();
   try {
     return result_to_dataframe(*r_, n_max);
   } catch (...) {
