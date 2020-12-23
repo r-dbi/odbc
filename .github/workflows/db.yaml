@@ -112,7 +112,7 @@ jobs:
 
       - name: Test
         run: |
-          testthat::test_local(filter = "{{ matrix.database }}")
+          testthat::test_local(filter = "${{ matrix.database }}")
         shell: Rscript {0}
         env:
           LIB_DIR: /usr/lib/x86_64-linux-gnu/
