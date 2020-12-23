@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* Fixed `invalid descriptor` issues when retrieving results from SQL Server +
+  Microsoft's ODBC driver, using parametrized queries. (@detule, #414)
 * Fixed null handling in SQL Server / Azure result sets retrieved with
   Microsoft's ODBC driver. (@detule, #408)
 
