@@ -111,6 +111,13 @@ jobs:
           remotes::install_github('r-dbi/DBItest')
         shell: Rscript {0}
 
+      - name: Install locally to avoid error with test_local()
+        run: |
+          R CMD INSTALL .
+        env:
+          LIB_DIR: /usr/lib/x86_64-linux-gnu/
+          INCLUDE_DIR: /usr/include
+
       - name: Test
         run: |
           testthat::test_local(filter = "${{ matrix.database }}")
