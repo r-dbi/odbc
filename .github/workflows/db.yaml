@@ -107,7 +107,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          remotes::install_local(dependencies = TRUE)
+          remotes::install_deps(dependencies = TRUE)
           remotes::install_github('r-dbi/DBItest')
         shell: Rscript {0}
 
