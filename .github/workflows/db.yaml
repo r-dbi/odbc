@@ -118,5 +118,5 @@ jobs:
 
       - name: Test
         run: |
-          testthat::test_local(filter = "${{ matrix.database }}")
+          testthat::test_local(filter = "${{ matrix.database }}", reporter = testthat::ProgressReporter$new(max_failures = Inf, update_interval = Inf))
         shell: Rscript {0}
