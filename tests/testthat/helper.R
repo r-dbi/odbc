@@ -4,7 +4,7 @@ skip_unless_has_test_db <- function(expr) {
   }
 
   # Failing database connection should fail the test in DBItest backends
-  if (Sys.getenv("DBITEST_BACKENDS") != "") {
+  if (nzchar(Sys.getenv("DBITEST_BACKENDS"))) {
     con <- DBItest:::connect(expr)
     DBI::dbDisconnect(con)
     TRUE
