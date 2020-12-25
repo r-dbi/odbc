@@ -11,7 +11,7 @@ on:
 name: DBs
 
 jobs:
-  R-CMD-check:
+  testthat:
     runs-on: ubuntu-16.04
 
     services:
