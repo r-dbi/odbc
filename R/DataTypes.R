@@ -319,7 +319,9 @@ is_blob <- function(obj) {
   # not checking the other elements
   for (i in seq_along(obj)) {
     x <- obj[[i]]
-    if (!is.null(x) && !is.raw(x)) return(FALSE)
+    if (!is.null(x)) {
+      return(is.raw(x))
+    }
   }
 
   TRUE
