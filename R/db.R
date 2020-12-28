@@ -74,11 +74,11 @@ setMethod(
   "dbQuoteString", signature("Hive", "character"),
   function(conn, x, ...) {
     if (is(x, "SQL")) return(x)
-    x <- gsub("'", "\\'", enc2utf8(x))
+    x <- gsub("'", "\\\\'", enc2utf8(x))
     if (length(x) == 0L) {
       DBI::SQL(character())
     } else {
-      str <- paste("'", x, "'", sep = "")
+      str <- paste0("'", x, "'")
       str[is.na(x)] <- "NULL"
       DBI::SQL(str)
     }
