@@ -69,17 +69,16 @@ setClass("Hive", where = class_cache)
 #' @rdname hidden_aliases
 #' @export
 setMethod(
-  "dbQuoteString", "Hive",
+  # only need to override dbQuteString when x is character.
+  # DBI:::quote_string just returns x when it is of class SQL, so no need to override that.  
+  "dbQuoteString", signature("Hive", "character"),
   function(conn, x, ...) {
-    if (is(x, "SQL"))
-        return(x)
-    if (!is.character(x))
-        stop("x must be character or SQL", call. = FALSE)
+    if (is(x, "SQL")) return(x)
+    if (!is.character(x)) stop("x must be character or SQL", call. = FALSE)
     x <- gsub("'", "\\'", enc2utf8(x))
     if (length(x) == 0L) {
       DBI::SQL(character())
-    }
-    else {
+    } else {
       str <- paste("'", x, "'", sep = "")
       str[is.na(x)] <- "NULL"
       DBI::SQL(str)
