@@ -75,7 +75,7 @@ setMethod("sqlCreateTable", "DB2/AIX64",
 
     SQL(paste0(
       if (temporary) "DECLARE GLOBAL TEMPORARY" else "CREATE",
-      "TABLE ", table, " (\n",
+      " TABLE ", table, " (\n",
       "  ", paste(fields, collapse = ",\n  "),
       "\n)\n", if (temporary) " ON COMMIT PRESERVE ROWS"
     ))
