@@ -12,7 +12,7 @@
 * `invalid descriptor` errors from drivers such as Microsoft SQLServer driver and the freeTDS driver which do not support out of order retrieval are now avoided.
   This is done by unbinding any nanodbc buffer past the long column.
   Performance for the unbound columns in these cases will be reduced, but the retrieval will work without error (@detule, #381)
-* `dbBind()` and `dbFetch()` now support multiple result sets (@vkapartzianis, #234)
+* `dbBind()` and `dbFetch()` now support multiple result sets (@vkapartzianis, #345)
 
 ## Minor improvements and fixes
 * New `dbAppendTable()` method for OdbcConnection objects (#335)
