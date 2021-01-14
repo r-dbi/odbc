@@ -142,14 +142,14 @@ private:
       short column,
       size_t start,
       size_t size);
-  std::vector<std::string> column_names(nanodbc::result const& r);
+  Rcpp::StringVector column_names(nanodbc::result const& r);
 
   double as_double(nanodbc::timestamp const& ts);
 
   double as_double(nanodbc::date const& dt);
 
   Rcpp::List create_dataframe(
-      std::vector<r_type> types, std::vector<std::string> names, int n);
+      std::vector<r_type> types, Rcpp::StringVector names, int n);
 
   Rcpp::List resize_dataframe(Rcpp::List df, int n);
 
@@ -212,5 +212,7 @@ private:
 
   void
   assign_raw(Rcpp::List& out, size_t row, short column, nanodbc::result& value);
+
+  SEXP to_utf8(const std::string& str);
 };
 } // namespace odbc
