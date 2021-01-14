@@ -1,5 +1,10 @@
 # odbc (development version)
 
+* odbc now always converts the encoding of non-ASCII column names of the SQL
+  results to UTF-8. (@shrektan, #430)
+* Fixed issue that odbc may throw errors with garbage letters when the encoding
+  of client and db-server are different. (@shrektan, #432)
+
 # odbc 1.3.4
 
 * Optimized table preview methods.  Enhances large table preview

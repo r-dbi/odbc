@@ -51,7 +51,9 @@ void odbc_result::execute() {
       num_columns_ = r_->columns();
     } catch (const nanodbc::database_error& e) {
       c_->set_current_result(nullptr);
-      throw odbc_error(e, sql_);
+      // #432: odbc_error() expects UTF-8 encoded strings but both nanodbc and sql are
+      // encoded in the database encoding, which may differ from UTF-8
+      throw odbc_error(CHAR(to_utf8(e.what())), CHAR(to_utf8(sql_)));
     } catch (...) {
       c_->set_current_result(nullptr);
       throw;
@@ -450,11 +452,10 @@ void odbc_result::bind_time(
       size,
       reinterpret_cast<bool*>(nulls_[column].data()));
 }
-std::vector<std::string> odbc_result::column_names(nanodbc::result const& r) {
-  std::vector<std::string> names;
-  names.reserve(num_columns_);
+Rcpp::StringVector odbc_result::column_names(nanodbc::result const& r) {
+  Rcpp::StringVector names(num_columns_);
   for (short i = 0; i < num_columns_; ++i) {
-    names.push_back(r.column_name(i));
+    names[i] = to_utf8(r.column_name(i));
   }
   return names;
 }
@@ -475,7 +476,7 @@ double odbc_result::as_double(nanodbc::date const& dt) {
 }
 
 Rcpp::List odbc_result::create_dataframe(
-    std::vector<r_type> types, std::vector<std::string> names, int n) {
+    std::vector<r_type> types, Rcpp::StringVector names, int n) {
   int num_cols = types.size();
   Rcpp::List out(num_cols);
   out.attr("names") = names;
@@ -816,11 +817,7 @@ void odbc_result::assign_string(
     if (value.is_null(column)) {
       res = NA_STRING;
     } else {
-      if (c_->encoding() != "") {
-        res = output_encoder_.makeSEXP(str.c_str(), str.c_str() + str.length());
-      } else { // If no encoding specified assume it is UTF-8 / ASCII
-        res = Rf_mkCharCE(str.c_str(), CE_UTF8);
-      }
+      res = to_utf8(str);
     }
   }
   SET_STRING_ELT(out[column], row, res);
@@ -915,4 +912,15 @@ void odbc_result::assign_raw(
   std::copy(data.begin(), data.end(), RAW(bytes));
   SET_VECTOR_ELT(out[column], row, bytes);
 }
+
+SEXP odbc_result::to_utf8(const std::string& str) {
+  SEXP res;
+  if (c_->encoding() != "") {
+    res = output_encoder_.makeSEXP(str.c_str(), str.c_str() + str.length());
+  } else { // If no encoding specified assume it is UTF-8 / ASCII
+    res = Rf_mkCharCE(str.c_str(), CE_UTF8);
+  }
+  return res;
+}
+
 } // namespace odbc
