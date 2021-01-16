@@ -237,6 +237,13 @@ private:
    * or the native encoding. It means when db-enc is not one of three supported encodings,
    * the string becomes garbage letters in R.
    *
+   * @note The term of "encoding of the database" (db-enc) may be unambiguous, due to the fact that
+   *    ODBC drivers may provide options to translate character sets, making the issue even
+   *    more complicate. In other words, there's actually an additional "encoding conversion layers"
+   *    between the ODBC drivers and the Database server. Since `odbc` communicates with Database
+   *    through the ODBC driver, the encoding of the database may refer to the encoding that's set
+   *    by the driver (if any).
+   *
    * @param str a `std::string` object encoded in the encoding of the database
    *            (specified by `odbc_connection::encoding`)
    * @return a `SEXP` object encoded in UTF-8
