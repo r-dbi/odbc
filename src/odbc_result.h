@@ -34,7 +34,7 @@ private:
 class odbc_result {
 public:
   odbc_result(
-	  std::shared_ptr<odbc_connection> c, std::string sql, bool immediate);
+      std::shared_ptr<odbc_connection> c, std::string sql, bool immediate);
   std::shared_ptr<odbc_connection> connection() const;
   std::shared_ptr<nanodbc::statement> statement() const;
   std::shared_ptr<nanodbc::result> result() const;
@@ -77,48 +77,48 @@ private:
   void unbind_if_needed();
 
   void bind_columns(
-	  nanodbc::statement& statement,
-	  r_type type,
-	  Rcpp::List const& data,
-	  short column,
-	  size_t start,
-	  size_t size);
+      nanodbc::statement& statement,
+      r_type type,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size);
 
   void bind_logical(
-	  nanodbc::statement& statement,
-	  Rcpp::List const& data,
-	  short column,
-	  size_t start,
-	  size_t size);
+      nanodbc::statement& statement,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size);
 
   void bind_integer(
-	  nanodbc::statement& statement,
-	  Rcpp::List const& data,
-	  short column,
-	  size_t start,
-	  size_t size);
+      nanodbc::statement& statement,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size);
 
   // We cannot use a sentinel for doubles becuase NaN != NaN for all values
   // of NaN, even if the bits are the same.
   void bind_double(
-	  nanodbc::statement& statement,
-	  Rcpp::List const& data,
-	  short column,
-	  size_t start,
-	  size_t size);
+      nanodbc::statement& statement,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size);
 
   void bind_string(
-	  nanodbc::statement& statement,
-	  Rcpp::List const& data,
-	  short column,
-	  size_t start,
-	  size_t size);
+      nanodbc::statement& statement,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size);
   void bind_raw(
-	  nanodbc::statement& statement,
-	  Rcpp::List const& data,
-	  short column,
-	  size_t start,
-	  size_t size);
+      nanodbc::statement& statement,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size);
 
   nanodbc::timestamp as_timestamp(double value);
 
@@ -127,24 +127,24 @@ private:
   nanodbc::time as_time(double value);
 
   void bind_datetime(
-	  nanodbc::statement& statement,
-	  Rcpp::List const& data,
-	  short column,
-	  size_t start,
-	  size_t size);
+      nanodbc::statement& statement,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size);
   void bind_date(
-	  nanodbc::statement& statement,
-	  Rcpp::List const& data,
-	  short column,
-	  size_t start,
-	  size_t size);
+      nanodbc::statement& statement,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size);
 
   void bind_time(
-	  nanodbc::statement& statement,
-	  Rcpp::List const& data,
-	  short column,
-	  size_t start,
-	  size_t size);
+      nanodbc::statement& statement,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size);
   Rcpp::StringVector column_names(nanodbc::result const& r);
 
   double as_double(nanodbc::timestamp const& ts);
@@ -152,7 +152,7 @@ private:
   double as_double(nanodbc::date const& dt);
 
   Rcpp::List create_dataframe(
-	  std::vector<r_type> types, Rcpp::StringVector names, int n);
+      std::vector<r_type> types, Rcpp::StringVector names, int n);
 
   Rcpp::List resize_dataframe(Rcpp::List df, int n);
 
@@ -187,31 +187,31 @@ private:
   T safe_get(short column, T fallback, nanodbc::result& value);
 
   void assign_integer(
-	  Rcpp::List& out, size_t row, short column, nanodbc::result& value);
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value);
   void assign_integer64(
-	  Rcpp::List& out, size_t row, short column, nanodbc::result& value);
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value);
   void assign_double(
-	  Rcpp::List& out, size_t row, short column, nanodbc::result& value);
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value);
 
   // Strings may be in the server's internal code page, so we need to re-encode
   // in UTF-8 if necessary.
   void assign_string(
-	  Rcpp::List& out, size_t row, short column, nanodbc::result& value);
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value);
 
   // unicode strings are converted to UTF-8 by nanodbc, so we just need to
   // mark the encoding.
   void assign_ustring(
-	  Rcpp::List& out, size_t row, short column, nanodbc::result& value);
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value);
 
   void assign_datetime(
-	  Rcpp::List& out, size_t row, short column, nanodbc::result& value);
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value);
   void assign_date(
-	  Rcpp::List& out, size_t row, short column, nanodbc::result& value);
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value);
   void assign_time(
-	  Rcpp::List& out, size_t row, short column, nanodbc::result& value);
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value);
 
   void assign_logical(
-	  Rcpp::List& out, size_t row, short column, nanodbc::result& value);
+      Rcpp::List& out, size_t row, short column, nanodbc::result& value);
 
   void
   assign_raw(Rcpp::List& out, size_t row, short column, nanodbc::result& value);
