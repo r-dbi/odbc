@@ -51,7 +51,9 @@ void odbc_result::execute() {
       num_columns_ = r_->columns();
     } catch (const nanodbc::database_error& e) {
       c_->set_current_result(nullptr);
-      throw odbc_error(e, sql_);
+      // #432: odbc_error() expects UTF-8 encoded strings but both nanodbc and sql are
+      // encoded in the database encoding, which may differ from UTF-8
+      throw odbc_error(CHAR(to_utf8(e.what())), CHAR(to_utf8(sql_)));
     } catch (...) {
       c_->set_current_result(nullptr);
       throw;
