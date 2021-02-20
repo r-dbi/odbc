@@ -96,9 +96,9 @@ const char* ParseDateTime(const char* p, PosixTransition* res) {
           int weekday = 0;
           if ((p = ParseInt(p + 1, 0, 6, &weekday)) != nullptr) {
             res->date.fmt = PosixTransition::M;
-            res->date.m.month = month;
-            res->date.m.week = week;
-            res->date.m.weekday = weekday;
+            res->date.data.m.month = month;
+            res->date.data.m.week = week;
+            res->date.data.m.weekday = weekday;
           }
         }
       }
@@ -106,13 +106,13 @@ const char* ParseDateTime(const char* p, PosixTransition* res) {
       int day = 0;
       if ((p = ParseInt(p + 1, 1, 365, &day)) != nullptr) {
         res->date.fmt = PosixTransition::J;
-        res->date.j.day = day;
+        res->date.data.j.day = day;
       }
     } else {
       int day = 0;
       if ((p = ParseInt(p, 0, 365, &day)) != nullptr) {
         res->date.fmt = PosixTransition::N;
-        res->date.j.day = day;
+        res->date.data.j.day = day;
       }
     }
   }
