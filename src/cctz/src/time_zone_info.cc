@@ -230,24 +230,24 @@ int64_t TransOffset(bool leap_year, int jan1_weekday,
   int days = 0;
   switch (pt.date.fmt) {
     case PosixTransition::J: {
-      days = pt.date.j.day;
+      days = pt.date.data.j.day;
       if (!leap_year || days < kMonthOffsets[1][TM_MARCH + 1]) days -= 1;
       break;
     }
     case PosixTransition::N: {
-      days = pt.date.n.day;
+      days = pt.date.data.n.day;
       break;
     }
     case PosixTransition::M: {
-      const bool last_week = (pt.date.m.week == 5);
-      days = kMonthOffsets[leap_year][pt.date.m.month + last_week];
+      const bool last_week = (pt.date.data.m.week == 5);
+      days = kMonthOffsets[leap_year][pt.date.data.m.month + last_week];
       const int weekday = (jan1_weekday + days) % DAYSPERWEEK;
       if (last_week) {
         days -=
-            (weekday + DAYSPERWEEK - 1 - pt.date.m.weekday) % DAYSPERWEEK + 1;
+            (weekday + DAYSPERWEEK - 1 - pt.date.data.m.weekday) % DAYSPERWEEK + 1;
       } else {
-        days += (pt.date.m.weekday + DAYSPERWEEK - weekday) % DAYSPERWEEK;
-        days += (pt.date.m.week - 1) * DAYSPERWEEK;
+        days += (pt.date.data.m.weekday + DAYSPERWEEK - weekday) % DAYSPERWEEK;
+        days += (pt.date.data.m.week - 1) * DAYSPERWEEK;
       }
       break;
     }

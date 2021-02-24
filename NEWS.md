@@ -1,5 +1,6 @@
 # odbc (development version)
 
+* Fixed warnings about anonymous unions (@detule, #440)
 * Fixed `invalid descriptor` issues when retrieving results from SQL Server +
   Microsoft's ODBC driver, using parametrized queries. (@detule, #414)
 * Fixed null handling in SQL Server / Azure result sets retrieved with
