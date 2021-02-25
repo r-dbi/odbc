@@ -6,6 +6,7 @@
 \alias{sqlCreateTable,Teradata-method}
 \alias{dbListTables,Teradata-method}
 \alias{sqlCreateTable,HDB-method}
+\alias{dbQuoteString,Hive,character-method}
 \alias{hidden_aliases}
 \title{Internal page for hidden aliases}
 \usage{
@@ -40,6 +41,8 @@
   temporary = FALSE,
   ...
 )
+
+\S4method{dbQuoteString}{Hive,character}(conn, x, ...)
 }
 \description{
 For S4 methods that require a documentation entry but only clutter the index.

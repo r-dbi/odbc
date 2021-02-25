@@ -35,10 +35,11 @@ that enumerates all tables
 and views
 in the database.
 Tables added with \code{\link[DBI:dbWriteTable]{dbWriteTable()}}
-are part of the list,
-including temporary tables if supported by the database.
+are part of the list.
 As soon a table is removed from the database,
 it is also removed from the list of database tables.
+
+The same applies to temporary tables if supported by the database.
 
 The returned names are suitable for quoting with \code{dbQuoteIdentifier()}.
 An error is raised when calling this method for a closed
