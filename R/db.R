@@ -54,6 +54,26 @@ setMethod("sqlCreateTable", "HDB",
   }
 )
 
+# Hive --------------------------------------------------------------------
+
+setClass("Hive", where = class_cache)
+
+setMethod(
+  # only need to override dbQuteString when x is character.
+  # DBI:::quote_string just returns x when it is of class SQL, so no need to override that.  
+  "dbQuoteString", signature("Hive", "character"),
+  function(conn, x, ...) {
+    if (is(x, "SQL")) return(x)
+    x <- gsub("'", "\\\\'", enc2utf8(x))
+    if (length(x) == 0L) {
+      DBI::SQL(character())
+    } else {
+      str <- paste0("'", x, "'")
+      str[is.na(x)] <- "NULL"
+      DBI::SQL(str)
+    }
+  })
+
 # DB2 ----------------------------------------------------------------
 
 setClass("DB2/AIX64", where = class_cache)
