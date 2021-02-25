@@ -58,8 +58,6 @@ setMethod("sqlCreateTable", "HDB",
 
 setClass("Hive", where = class_cache)
 
-#' @rdname hidden_aliases
-#' @export
 setMethod(
   # only need to override dbQuteString when x is character.
   # DBI:::quote_string just returns x when it is of class SQL, so no need to override that.  
