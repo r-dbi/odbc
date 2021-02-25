@@ -80,7 +80,7 @@ struct PosixTransition {
         int8_t week;     // week of month [1:5] (5==last)
         int8_t weekday;  // 0==Sun, ..., 6=Sat
       } m;
-    };
+    } data;
   } date;
   struct {
     int offset;  // seconds before/after 00:00:00
