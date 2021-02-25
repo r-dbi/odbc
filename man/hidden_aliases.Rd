@@ -6,7 +6,7 @@
 \alias{sqlCreateTable,Teradata-method}
 \alias{dbListTables,Teradata-method}
 \alias{sqlCreateTable,HDB-method}
-\alias{sqlCreateTable,DB2/AIX64-method}
+\alias{sqlCreateTable,DB2_AIX64-method}
 \alias{hidden_aliases}
 \title{Internal page for hidden aliases}
 \usage{
@@ -42,7 +42,7 @@
   ...
 )
 
-\S4method{sqlCreateTable}{`DB2/AIX64`}(
+\S4method{sqlCreateTable}{DB2_AIX64}(
   con,
   table,
   fields,

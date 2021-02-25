@@ -64,11 +64,11 @@ setMethod("sqlCreateTable", "HDB",
 
 # DB2 ----------------------------------------------------------------
 
-setClass("DB2/AIX64", where = class_cache)
+setClass("DB2_AIX64", where = class_cache)
 
 #' @rdname hidden_aliases
 #' @export
-setMethod("sqlCreateTable", "DB2/AIX64",
+setMethod("sqlCreateTable", "DB2_AIX64",
   function(con, table, fields, field.types = NULL, row.names = NA, temporary = FALSE, ...) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)

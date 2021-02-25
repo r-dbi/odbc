@@ -47,6 +47,8 @@ OdbcConnection <- function(
   if (!nzchar(info$dbms.name)) {
     stop("The ODBC driver returned an invalid `dbms.name`. Please provide one manually with the `dbms.name` parameter.", call. = FALSE)
   }
+  info$dbms.name <- sanitize_dbms_name(info$dbms.name)
+
   class(info) <- c(info$dbms.name, "driver_info", "list")
 
   class <- getClassDef(info$dbms.name, where = class_cache, inherits = FALSE)
@@ -55,6 +57,10 @@ OdbcConnection <- function(
       contains = "OdbcConnection", where = class_cache)
   }
   res <- new(info$dbms.name, ptr = ptr, quote = quote, info = info, encoding = encoding)
+}
+
+sanitize_dbms_name <- function(x) {
+  gsub("[^[:alnum:]]", "_", x)
 }
 
 #' @rdname OdbcConnection
