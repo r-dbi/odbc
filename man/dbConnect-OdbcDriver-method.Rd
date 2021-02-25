@@ -67,7 +67,8 @@ timeout of \code{Inf} indicates no timeout. (defaults to 10 seconds).}
 be queried automatically by the ODBC driver. This name is used as the class
 name for the OdbcConnect object returned from \code{dbConnect()}. However if the
 driver does not return a valid value it can be set manually with this
-parameter.}
+parameter. Any non-alphanumeric or space characters are converted to spaces
+in the name.}
 
 \item{.connection_string}{A complete connection string, useful if you are
 copy pasting it from another source. If this argument is used any additional

@@ -5,6 +5,13 @@
   Microsoft's ODBC driver, using parametrized queries. (@detule, #414)
 * Fixed null handling in SQL Server / Azure result sets retrieved with
   Microsoft's ODBC driver. (@detule, #408)
+* When calling `sqlCreateTable(con, ..., temporary = TRUE)` and `con` is a
+  connection of class `DB2/AIX64`, the `CREATE TABLE` statement that is generated
+  properly creates a temporary table in DB2. The statement begins with
+  [`DECLARE GLOBAL TEMPORARY TABLE`](https://www.ibm.com/support/knowledgecenter/SSEPEK_11.0.0/sqlref/src/tpc/db2z_sql_declareglobaltemptable.html)
+  and ends with `ON COMMIT PRESERVE ROWS` (DB2's default behavior is
+  `ON COMMIT DELETE ROWS`, which results in the inserted data being
+  deleted as soon as `dbWriteTable` completes). (@rnorberg, #426)
 
 # odbc 1.3.0
 
