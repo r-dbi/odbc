@@ -4,6 +4,9 @@
   Microsoft's ODBC driver, using parametrized queries. (@detule, #414)
 * Fixed null handling in SQL Server / Azure result sets retrieved with
   Microsoft's ODBC driver. (@detule, #408)
+* Hive uses C-style escaping for string literals (single quotes are
+  backslash-escaped, note single quote-escaped). `dbQuoteString` now respects
+  this when called on a connection of class `Hive`. (@rnorberg, #184)
 
 # odbc 1.3.0
 
