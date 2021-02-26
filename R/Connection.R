@@ -133,8 +133,8 @@ setMethod(
 )
 
 #' @rdname odbcConnectionColumns
-#' @param catalog_name charaacter catalog where the table is located
-#' @param schema_name charaacter schema where the table is located
+#' @param catalog_name character catalog where the table is located
+#' @param schema_name character schema where the table is located
 #' @export
 setMethod(
   "odbcConnectionColumns",
