@@ -296,6 +296,14 @@ odbcDataType.Oracle <- function(con, obj, ...) {
   )
 }
 
+odbcDataType.Snowflake <- function(con, obj, ...) {
+  switch_type(
+    obj,
+    logical = "BOOLEAN",
+    stop("Unsupported type", call. = FALSE)
+  )
+  }
+
 switch_type <- function(obj, ...) {
   switch(object_type(obj), ...)
 }
