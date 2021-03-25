@@ -296,7 +296,8 @@ odbcDataType.Oracle <- function(con, obj, ...) {
   )
 }
 
-odbcDataType.Snowflake <- function(con, obj, ...) {
+#' @export
+`odbcDataType.Snowflake` <- function(con, obj, ...) {
   switch_type(
     obj,
     factor = "VARCHAR(255)",
