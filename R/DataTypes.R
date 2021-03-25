@@ -299,10 +299,19 @@ odbcDataType.Oracle <- function(con, obj, ...) {
 odbcDataType.Snowflake <- function(con, obj, ...) {
   switch_type(
     obj,
+    factor = "VARCHAR(255)",
+    datetime = "TIMESTAMP",
+    date = "DATE",
+    time = "TIME",
+    binary = "VARBINARY(255)",
+    integer = "INTEGER",
+    double = "DOUBLE PRECISION",
+    character = "VARCHAR(255)",
     logical = "BOOLEAN",
+    list = "VARCHAR(255)",
     stop("Unsupported type", call. = FALSE)
   )
-  }
+}
 
 switch_type <- function(obj, ...) {
   switch(object_type(obj), ...)
