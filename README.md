@@ -164,8 +164,7 @@ con <- dbConnect(odbc::odbc(),
 ```
 
 Alternatively you can pass a complete connection string as the
-`.connection_string` argument. [The Connection Strings
-Reference](https://www.connectionstrings.com) is a useful resource that
+`.connection_string` argument. 'https://www.connectionstrings.com' is a useful resource that
 has example connection strings for a large variety of databases.
 
 ``` r

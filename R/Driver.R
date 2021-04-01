@@ -75,7 +75,7 @@ setMethod(
 #' The connection string keywords are driver dependent. The parameters
 #' documented here are common, but some drivers may not accept them. Please see
 #' the specific driver documentation for allowed parameters,
-#' \url{https://www.connectionstrings.com} is also a useful resource of example
+#' 'https://www.connectionstrings.com' is also a useful resource of example
 #' connection strings for a variety of databases.
 #' @aliases dbConnect
 #' @export
