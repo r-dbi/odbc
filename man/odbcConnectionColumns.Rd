@@ -27,9 +27,9 @@ odbcConnectionColumns(conn, name, ...)
 
 \item{column_name}{The name of the column to return, the default returns all columns.}
 
-\item{catalog_name}{charaacter catalog where the table is located}
+\item{catalog_name}{character catalog where the table is located}
 
-\item{schema_name}{charaacter schema where the table is located}
+\item{schema_name}{character schema where the table is located}
 }
 \value{
 data.frame with columns
