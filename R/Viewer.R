@@ -46,13 +46,13 @@ odbcListObjectTypes.default <- function(connection) {
 
   # check for multiple schema or a named schema
   schemas <- string_values(connection_sql_tables(connection@ptr, "", "%", "", "")[["table_schema"]])
-  if (length(schemas) > 1) {
+  if (length(schemas) > 0) {
     obj_types <- list(schema = list(contains = obj_types))
   }
 
   # check for multiple catalogs
   catalogs <- string_values(connection_sql_tables(connection@ptr, "%", "", "", "")[["table_catalog"]])
-  if (length(catalogs) > 1) {
+  if (length(catalogs) > 0) {
     obj_types <- list(catalog = list(contains = obj_types))
   }
 
@@ -84,8 +84,8 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
   # if no catalog was supplied but this database has catalogs, return a list of
   # catalogs
   if (is.null(catalog)) {
-    catalogs <- string_values(connection_sql_tables(connection@ptr, catalog_name = catalog %||% "%", "", "", NULL)[["table_catalog"]])
-    if (length(catalogs) > 1) {
+    catalogs <- string_values(connection_sql_tables(connection@ptr, catalog_name = "%", "", "", NULL)[["table_catalog"]])
+    if (length(catalogs) > 0) {
       return(
         data.frame(
           name = catalogs,
@@ -98,8 +98,8 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
   # if no schema was supplied but this database has schema, return a list of
   # schema
   if (is.null(schema)) {
-    schemas <- string_values(connection_sql_tables(connection@ptr, "", schema_name = schema %||% "%", "", NULL)[["table_schema"]])
-    if (length(schemas) > 1) {
+    schemas <- string_values(connection_sql_tables(connection@ptr, "", "%", "", NULL)[["table_schema"]])
+    if (length(schemas) > 0) {
       return(
         data.frame(
           name = schemas,

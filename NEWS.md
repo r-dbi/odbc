@@ -17,6 +17,7 @@
   and ends with `ON COMMIT PRESERVE ROWS` (DB2's default behavior is
   `ON COMMIT DELETE ROWS`, which results in the inserted data being
   deleted as soon as `dbWriteTable` completes). (@rnorberg, #426)
+* Fixed RStudio Connections Pane when working with a database that has only one catalog or one schema. (@meztez, #444)
 
 # odbc 1.3.0
 
