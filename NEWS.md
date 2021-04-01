@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* New `odbcDataType.Snowflake()` method for Snowflake databases. (@edgararuiz, #451)
+
 # odbc 1.3.1
 
 * Fixed warnings about anonymous unions (@detule, #440)
