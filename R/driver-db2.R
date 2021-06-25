@@ -35,10 +35,12 @@ setMethod("sqlCreateTable", "DB2/AIX64",
 setMethod("dbExistsTable", c("DB2/AIX64", "Id"),
   function(conn, name, ...) {
     tryCatch(expr = {
-      temptables = dbGetQuery(conn, "SELECT TABSCHEMA, TABNAME FROM SYSIBMADM.ADMINTEMPTABLES")
+      temptables = dbGetQuery(conn, "SELECT TABSCHEMA, TABNAME, INSTANTIATOR FROM SYSIBMADM.ADMINTEMPTABLES")
       # trim whitespace because sometimes schema are saved in the above table with extra whitespace
       return(any(trimws(temptables$TABNAME) == toupper(id_field(name, "table")) & 
-                   trimws(temptables$TABSCHEMA == toupper(id_field(name, "schema")))) |
+                   trimws(temptables$TABSCHEMA == toupper(id_field(name, "schema"))) &
+                   tolower(trimws(temptables$INSTANTIATOR)) == tolower(conn@info$username)
+                   ) |
                name@name[["table"]] %in%
                connection_sql_tables(conn@ptr,
                                      catalog_name = id_field(name, "catalog"),
