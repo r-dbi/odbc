@@ -3,8 +3,6 @@
 # Simple class prototype to avoid messages about unknown classes from setMethod
 setClass("Oracle", where = class_cache)
 
-#' @rdname hidden_aliases
-#' @export
 setMethod("sqlCreateTable", "Oracle",
   function(con, table, fields, field.types = NULL, row.names = NA, temporary = FALSE, ...) {
     table <- dbQuoteIdentifier(con, table)
@@ -20,8 +18,6 @@ setMethod("sqlCreateTable", "Oracle",
 
 setClass("Teradata", where = class_cache)
 
-#' @rdname hidden_aliases
-#' @export
 setMethod("sqlCreateTable", "Teradata",
   function(con, table, fields, field.types = NULL, row.names = NA, temporary = FALSE, ...) {
     table <- dbQuoteIdentifier(con, table)
@@ -33,8 +29,6 @@ setMethod("sqlCreateTable", "Teradata",
         ))
   })
 
-#' @rdname hidden_aliases
-#' @export
 setMethod(
   "dbListTables", "Teradata",
   function(conn, ...) {
@@ -46,8 +40,6 @@ setMethod(
 
 setClass("HDB", where = class_cache)
 
-#' @rdname hidden_aliases
-#' @export
 setMethod("sqlCreateTable", "HDB",
   function(con, table, fields, field.types = NULL, row.names = NA, temporary = FALSE, ...) {
     table <- dbQuoteIdentifier(con, table)
@@ -58,6 +50,44 @@ setMethod("sqlCreateTable", "HDB",
       "TABLE ", table, " (\n",
       "  ", paste(fields, collapse = ",\n  "),
       "\n)\n"
+    ))
+  }
+)
+
+# Hive --------------------------------------------------------------------
+
+setClass("Hive", where = class_cache)
+
+setMethod(
+  # only need to override dbQuteString when x is character.
+  # DBI:::quote_string just returns x when it is of class SQL, so no need to override that.  
+  "dbQuoteString", signature("Hive", "character"),
+  function(conn, x, ...) {
+    if (is(x, "SQL")) return(x)
+    x <- gsub("'", "\\\\'", enc2utf8(x))
+    if (length(x) == 0L) {
+      DBI::SQL(character())
+    } else {
+      str <- paste0("'", x, "'")
+      str[is.na(x)] <- "NULL"
+      DBI::SQL(str)
+    }
+  })
+
+# DB2 ----------------------------------------------------------------
+
+setClass("DB2/AIX64", where = class_cache)
+
+setMethod("sqlCreateTable", "DB2/AIX64",
+  function(con, table, fields, field.types = NULL, row.names = NA, temporary = FALSE, ...) {
+    table <- dbQuoteIdentifier(con, table)
+    fields <- createFields(con, fields, field.types, row.names)
+
+    SQL(paste0(
+      if (temporary) "DECLARE GLOBAL TEMPORARY" else "CREATE",
+      " TABLE ", table, " (\n",
+      "  ", paste(fields, collapse = ",\n  "),
+      "\n)\n", if (temporary) " ON COMMIT PRESERVE ROWS"
     ))
   }
 )

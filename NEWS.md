@@ -1,11 +1,30 @@
 # odbc (development version)
 
+* odbc now always converts the encoding of non-ASCII column names of the SQL results to UTF-8. (@shrektan, #430)
+* Fixed issue that odbc may throw errors with garbage letters when the encoding of client and db-server are different. (@shrektan, #432)
+
+# odbc 1.3.2
+
+* New `odbcDataType.Snowflake()` method for Snowflake databases. (@edgararuiz, #451)
+
+# odbc 1.3.1
+
+* Fixed warnings about anonymous unions (@detule, #440)
 * Fixed `invalid descriptor` issues when retrieving results from SQL Server +
   Microsoft's ODBC driver, using parametrized queries. (@detule, #414)
 * Fixed null handling in SQL Server / Azure result sets retrieved with
   Microsoft's ODBC driver. (@detule, #408)
-* odbc now always converts the encoding of non-ASCII column names of the SQL results to UTF-8. (@shrektan, #430)
-* Fixed issue that odbc may throw errors with garbage letters when the encoding of client and db-server are different. (@shrektan, #432)
+* Hive uses C-style escaping for string literals (single quotes are
+  backslash-escaped, note single quote-escaped). `dbQuoteString` now respects
+  this when called on a connection of class `Hive`. (@rnorberg, #184)
+* When calling `sqlCreateTable(con, ..., temporary = TRUE)` and `con` is a
+  connection of class `DB2/AIX64`, the `CREATE TABLE` statement that is generated
+  properly creates a temporary table in DB2. The statement begins with
+  [`DECLARE GLOBAL TEMPORARY TABLE`](https://www.ibm.com/support/knowledgecenter/SSEPEK_11.0.0/sqlref/src/tpc/db2z_sql_declareglobaltemptable.html)
+  and ends with `ON COMMIT PRESERVE ROWS` (DB2's default behavior is
+  `ON COMMIT DELETE ROWS`, which results in the inserted data being
+  deleted as soon as `dbWriteTable` completes). (@rnorberg, #426)
+* Fixed RStudio Connections Pane when working with a database that has only one catalog or one schema. (@meztez, #444)
 
 # odbc 1.3.0
 
@@ -14,7 +33,7 @@
 * `invalid descriptor` errors from drivers such as Microsoft SQLServer driver and the freeTDS driver which do not support out of order retrieval are now avoided.
   This is done by unbinding any nanodbc buffer past the long column.
   Performance for the unbound columns in these cases will be reduced, but the retrieval will work without error (@detule, #381)
-* `dbBind()` and `dbFetch()` now support multiple result sets (@vkapartzianis, #234)
+* `dbBind()` and `dbFetch()` now support multiple result sets (@vkapartzianis, #345)
 
 ## Minor improvements and fixes
 * New `dbAppendTable()` method for OdbcConnection objects (#335)

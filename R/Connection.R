@@ -47,6 +47,7 @@ OdbcConnection <- function(
   if (!nzchar(info$dbms.name)) {
     stop("The ODBC driver returned an invalid `dbms.name`. Please provide one manually with the `dbms.name` parameter.", call. = FALSE)
   }
+
   class(info) <- c(info$dbms.name, "driver_info", "list")
 
   class <- getClassDef(info$dbms.name, where = class_cache, inherits = FALSE)
@@ -132,8 +133,8 @@ setMethod(
 )
 
 #' @rdname odbcConnectionColumns
-#' @param catalog_name charaacter catalog where the table is located
-#' @param schema_name charaacter schema where the table is located
+#' @param catalog_name character catalog where the table is located
+#' @param schema_name character schema where the table is located
 #' @export
 setMethod(
   "odbcConnectionColumns",
