@@ -5,11 +5,10 @@ Version: 1.3.2.9000
 Authors@R: 
     c(person(given = "Jim",
              family = "Hester",
-             role = c("aut", "cre"),
-             email = "jim.hester@rstudio.com"),
+             role = "aut"),
       person(given = "Hadley",
              family = "Wickham",
-             role = "aut",
+             role = c("aut", "cre"),
              email = "hadley@rstudio.com"),
       person(given = "Oliver", "Gjoneski", role = "ctb", comment = "detule"),
       person(given = "lexicalunit",

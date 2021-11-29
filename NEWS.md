@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* Hadley Wickham is now the maintainer.
+
 # odbc 1.3.2
 
 * New `odbcDataType.Snowflake()` method for Snowflake databases. (@edgararuiz, #451)
