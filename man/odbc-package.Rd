@@ -2,8 +2,7 @@
 % Please edit documentation in R/odbc.R
 \docType{package}
 \name{odbc-package}
-\title{odbc: Connect to ODBC Compatible Databases (using the DBI
-    Interface)}
+\title{odbc: Connect to ODBC Compatible Databases (using the DBI Interface)}
 \description{
 A DBI-compatible interface to ODBC databases.
 }
@@ -17,11 +16,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Jim Hester \email{jim.hester@rstudio.com}
+\strong{Maintainer}: Hadley Wickham \email{hadley@rstudio.com}
 
 Authors:
 \itemize{
-  \item Hadley Wickham \email{hadley@rstudio.com}
+  \item Jim Hester
 }
 
 Other contributors:
