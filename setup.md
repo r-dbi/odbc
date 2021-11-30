@@ -4,6 +4,13 @@ This file contains settings needed to setup local testing of odbc. It is most
 useful for someone trying to develop the R package, so they can run the unit
 tests locally.
 
+## PostgreSQL and MySQL
+
+Run them locally with `brew services start mysql` `brew services start postgres`
+Create a 'test' database and a 'postgres' user with 'password' as the password.
+
+See the configuration files in .github/odbc for examples.
+
 ## SQL Server test setup
 
 Install the [microsoft drivers](https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15#macos)

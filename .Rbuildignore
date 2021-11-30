@@ -34,3 +34,4 @@
 ^\.clangd$
 ^compile_commands\.json$
 ^tnsnames\.ora$
+^MAINTENANCE\.md$
