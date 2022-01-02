@@ -33,6 +33,7 @@ Databases with default methods defined are
 \item BigQuery
 \item Teradata
 \item Access
+\item Snowflake
 }
 }
 \details{
