@@ -18,3 +18,4 @@ testing/
 /revdep/checks/
 .DS_Store
 tnsnames.ora
+docs

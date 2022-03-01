@@ -35,3 +35,5 @@
 ^compile_commands\.json$
 ^tnsnames\.ora$
 ^MAINTENANCE\.md$
+^_pkgdown\.yml$
+^pkgdown$
