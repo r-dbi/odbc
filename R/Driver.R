@@ -120,7 +120,7 @@ setMethod(
       addTaskCallback(function(expr, ...) {
         tryCatch({
           if (is.call(expr) &&
-              as.character(expr[[1]]) %in% c("<-", "=") &&
+              tail(as.character(expr[[1]]), 1) %in% c("<-", "=") &&
               "dbConnect" %in% as.character(expr[[3]][[1]])) {
 
             # notify if this is an assignment we can replay
