@@ -12,7 +12,7 @@ name: DBs
 
 jobs:
   testthat:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
 
     services:
       postgres:
@@ -64,8 +64,8 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: ubuntu-16.04-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ubuntu-16.04-${{ hashFiles('.github/R-version') }}-1-
+          key: ubuntu-20.04-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ubuntu-20.04-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install R system dependencies
         if: runner.os == 'Linux'
@@ -106,6 +106,7 @@ jobs:
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
+          remotes::install_cran('pkgbuild')
           remotes::install_github('r-dbi/DBItest')
         shell: Rscript {0}
 
