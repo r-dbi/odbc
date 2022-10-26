@@ -3464,7 +3464,7 @@ std::list<data_source> list_data_sources()
     RETCODE rc{SQL_SUCCESS};
     do
     {
-        NANODBC_ASSERT(env);
+        //NANODBC_ASSERT(env);
         NANODBC_CALL_RC(
             NANODBC_FUNC(SQLDataSources),
             rc,

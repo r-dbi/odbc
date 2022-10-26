@@ -73,8 +73,8 @@ result_completed <- function(r) {
     .Call(`_odbc_result_completed`, r)
 }
 
-new_result <- function(p, sql, immediate) {
-    .Call(`_odbc_new_result`, p, sql, immediate)
+new_result <- function(p, sql, immediate, query_timeout) {
+    .Call(`_odbc_new_result`, p, sql, immediate, query_timeout)
 }
 
 result_fetch <- function(r, n_max = -1L) {

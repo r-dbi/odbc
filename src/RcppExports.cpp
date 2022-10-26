@@ -209,15 +209,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // new_result
-result_ptr new_result(connection_ptr const& p, std::string const& sql, const bool immediate);
-RcppExport SEXP _odbc_new_result(SEXP pSEXP, SEXP sqlSEXP, SEXP immediateSEXP) {
+result_ptr new_result(connection_ptr const& p, std::string const& sql, const bool immediate, long query_timeout);
+RcppExport SEXP _odbc_new_result(SEXP pSEXP, SEXP sqlSEXP, SEXP immediateSEXP, SEXP query_timeoutSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< connection_ptr const& >::type p(pSEXP);
     Rcpp::traits::input_parameter< std::string const& >::type sql(sqlSEXP);
     Rcpp::traits::input_parameter< const bool >::type immediate(immediateSEXP);
-    rcpp_result_gen = Rcpp::wrap(new_result(p, sql, immediate));
+    Rcpp::traits::input_parameter< long >::type query_timeout(query_timeoutSEXP);
+    rcpp_result_gen = Rcpp::wrap(new_result(p, sql, immediate, query_timeout));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -341,7 +342,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_odbc_result_release", (DL_FUNC) &_odbc_result_release, 1},
     {"_odbc_result_active", (DL_FUNC) &_odbc_result_active, 1},
     {"_odbc_result_completed", (DL_FUNC) &_odbc_result_completed, 1},
-    {"_odbc_new_result", (DL_FUNC) &_odbc_new_result, 3},
+    {"_odbc_new_result", (DL_FUNC) &_odbc_new_result, 4},
     {"_odbc_result_fetch", (DL_FUNC) &_odbc_result_fetch, 2},
     {"_odbc_result_column_info", (DL_FUNC) &_odbc_result_column_info, 1},
     {"_odbc_result_bind", (DL_FUNC) &_odbc_result_bind, 3},

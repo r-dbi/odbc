@@ -211,8 +211,8 @@ setMethod(
 #' @export
 setMethod(
   "dbSendQuery", c("OdbcConnection", "character"),
-  function(conn, statement, params = NULL, ..., immediate = FALSE) {
-    res <- OdbcResult(connection = conn, statement = statement, params = params, immediate = immediate)
+  function(conn, statement, params = NULL, ..., immediate = FALSE, query_timeout = 0) {
+    res <- OdbcResult(connection = conn, statement = statement, params = params, immediate = immediate, query_timeout = query_timeout)
     res
   })
 
@@ -222,8 +222,8 @@ setMethod(
 #' @export
 setMethod(
   "dbSendStatement", c("OdbcConnection", "character"),
-  function(conn, statement, params = NULL, ..., immediate = FALSE) {
-    res <- OdbcResult(connection = conn, statement = statement, params = params, immediate = immediate)
+  function(conn, statement, params = NULL, ..., immediate = FALSE, query_timeout = 0) {
+    res <- OdbcResult(connection = conn, statement = statement, params = params, immediate = immediate, query_timeout = query_timeout)
     res
   })
 
@@ -351,8 +351,8 @@ setMethod(
 #' @inheritParams DBI::dbFetch
 #' @export
 setMethod("dbGetQuery", signature("OdbcConnection", "character"),
-  function(conn, statement, n = -1, params = NULL, ...) {
-    rs <- dbSendQuery(conn, statement, params = params, ...)
+  function(conn, statement, n = -1, params = NULL, query_timeout = 0, ...) {
+    rs <- dbSendQuery(conn, statement, params = params, query_timeout = query_timeout, ...)
     on.exit(dbClearResult(rs))
 
     df <- dbFetch(rs, n = n, ...)
