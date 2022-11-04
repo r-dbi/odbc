@@ -187,7 +187,7 @@ test_that("SQLServer", {
 
   test_that("query_timeout- dbGetQuery - long query", {
     con <- DBItest:::connect(DBItest:::get_default_context())
-    expect_error(dbGetQuery(con, "WaitFor Delay '00:00:02'; SELECT 'HELLO' as world", query_timeout = 1), "Time-out")
+    expect_error(dbGetQuery(con, "WaitFor Delay '00:00:02'; SELECT 'HELLO' as world", query_timeout = 1), "timeout expired")
   })
 
   test_that("query_timeout - dbSendQuery - short query", {
@@ -199,7 +199,7 @@ test_that("SQLServer", {
 
   test_that("query_timeout - dbSendQuery - long query", {
     con <- DBItest:::connect(DBItest:::get_default_context())
-    expect_error(dbSendQuery(con, "WaitFor Delay '00:00:02'; SELECT 'HELLO' as world", query_timeout = 1), "Time-out")
+    expect_error(dbSendQuery(con, "WaitFor Delay '00:00:02'; SELECT 'HELLO' as world", query_timeout = 1), "timeout expired")
   })
 
   test_that("query_timeout - dbSendStatement - short query", {
@@ -212,6 +212,6 @@ test_that("SQLServer", {
 
   test_that("query_timeout - dbSendStatement - long query", {
     con <- DBItest:::connect(DBItest:::get_default_context())
-    expect_error(dbSendStatement(con, "WaitFor Delay '00:00:02';", query_timeout = 1), "Time-out")
+    expect_error(dbSendStatement(con, "WaitFor Delay '00:00:02';", query_timeout = 1), "timeout expired")
   })
 })
