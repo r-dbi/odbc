@@ -184,10 +184,23 @@ test_that("SQLServer", {
     res <- dbGetQuery(con, "WaitFor Delay '00:00:02'; SELECT 'HELLO' as world", query_timeout = 3)
     expect_equal(res[[1]], "HELLO")
   })
+  
+  test_that("query_timeout - dbGetQuery - short query with parameters", {
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    par <- data.frame('HELLO')
+    res <- dbGetQuery(con, "WaitFor Delay '00:00:02'; SELECT ? as world", params = par, query_timeout = 3)
+    expect_equal(res[[1]], "HELLO")
+  })
 
-  test_that("query_timeout- dbGetQuery - long query", {
+  test_that("query_timeout - dbGetQuery - long running query", {
     con <- DBItest:::connect(DBItest:::get_default_context())
     expect_error(dbGetQuery(con, "WaitFor Delay '00:00:02'; SELECT 'HELLO' as world", query_timeout = 1), "timeout expired")
+  })
+
+  test_that("query_timeout - dbGetQuery - long running query with parameters", {
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    par <- data.frame('HELLO')
+    expect_error(dbGetQuery(con, "WaitFor Delay '00:00:02'; SELECT ? as world", params = par, query_timeout = 1), "timeout expired")
   })
 
   test_that("query_timeout - dbSendQuery - short query", {
@@ -196,10 +209,24 @@ test_that("SQLServer", {
     result <- dbFetch(res)
     expect_equal(result[[1]], "HELLO")
   })
+  
+  test_that("query_timeout - dbSendQuery - short query with parameters", {
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    par <- data.frame('HELLO')
+    res <- dbSendQuery(con, "WaitFor Delay '00:00:02'; SELECT ? as world", params = par, query_timeout = 3)
+    result <- dbFetch(res)
+    expect_equal(result[[1]], "HELLO")
+  })
 
-  test_that("query_timeout - dbSendQuery - long query", {
+  test_that("query_timeout - dbSendQuery - long running query", {
     con <- DBItest:::connect(DBItest:::get_default_context())
     expect_error(dbSendQuery(con, "WaitFor Delay '00:00:02'; SELECT 'HELLO' as world", query_timeout = 1), "timeout expired")
+  })
+  
+  test_that("query_timeout - dbSendQuery - long running query with parameters", {
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    par <- data.frame('HELLO')
+    expect_error(dbSendQuery(con, "WaitFor Delay '00:00:02'; SELECT ? as world", params = par, query_timeout = 1), "timeout expired")
   })
 
   test_that("query_timeout - dbSendStatement - short query", {
@@ -209,9 +236,24 @@ test_that("SQLServer", {
     # if the test reaches this line of code, the query is not stopped (as expected)
     expect_equal(result, 0)
   })
+  
+  test_that("query_timeout - dbSendStatement - short query with parameters", {
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    par <- data.frame('HELLO')
+    res <- dbSendStatement(con, "WaitFor Delay '00:00:02'; SELECT ? as world", params = par, query_timeout = 3)
+    result <- dbGetRowsAffected(res)
+    # if the test reaches this line of code, the query is not stopped (as expected)
+    expect_equal(result, 0)
+  })
 
-  test_that("query_timeout - dbSendStatement - long query", {
+  test_that("query_timeout - dbSendStatement - long running query", {
     con <- DBItest:::connect(DBItest:::get_default_context())
     expect_error(dbSendStatement(con, "WaitFor Delay '00:00:02';", query_timeout = 1), "timeout expired")
+  })
+  
+  test_that("query_timeout - dbSendStatement - long running query with parameters", {
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    par <- data.frame('HELLO')
+    expect_error(dbSendStatement(con, "WaitFor Delay '00:00:02'; SELECT ? as world", params = par, query_timeout = 1), "timeout expired")
   })
 })

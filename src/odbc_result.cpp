@@ -152,7 +152,7 @@ void odbc_result::bind_list(
     for (short col = 0; col < ncols; ++col) {
       bind_columns(*s_, types[col], x, col, start, size);
     }
-    r_ = std::make_shared<nanodbc::result>(nanodbc::execute(*s_, size));
+    r_ = std::make_shared<nanodbc::result>(s_->execute(size, query_timeout_));
     num_columns_ = r_->columns();
     start += batch_rows;
 
