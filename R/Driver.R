@@ -78,6 +78,7 @@ setMethod(
 #' \url{https://www.connectionstrings.com} is also a useful resource of example
 #' connection strings for a variety of databases.
 #' @aliases dbConnect
+#' @importFrom rlang is_call
 #' @export
 setMethod(
   "dbConnect", "OdbcDriver",
@@ -119,8 +120,7 @@ setMethod(
     if (!is.null(getOption("connectionObserver"))) { # nocov start
       addTaskCallback(function(expr, ...) {
         tryCatch({
-          if (is.call(expr) &&
-              {op <- expr[[1]]; identical(op, quote(`<-`)) || identical(op, quote(`=`))} &&
+          if (rlang::is_call(x = expr, name = c("<-", "=")) &&
               "dbConnect" %in% as.character(expr[[3]][[1]])) {
 
             # notify if this is an assignment we can replay
