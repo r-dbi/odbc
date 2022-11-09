@@ -26,7 +26,7 @@ Imports:
     hms,
     methods,
     Rcpp (>= 0.12.11),
-    rlang
+    rlang (>= 0.2.0)
 Suggests:
     covr,
     DBItest,

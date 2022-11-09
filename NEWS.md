@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* Fix `length(x) = 3 > 1' in coercion to 'logical(1)` warning in connection observer. (@meztez, #494)
+
 # odbc 1.3.3
 
 * Hadley Wickham is now the maintainer.
