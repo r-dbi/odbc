@@ -78,7 +78,7 @@ setMethod(
 #' \url{https://www.connectionstrings.com} is also a useful resource of example
 #' connection strings for a variety of databases.
 #' @aliases dbConnect
-#' @importFrom rlang is_call
+#' @import rlang
 #' @export
 setMethod(
   "dbConnect", "OdbcDriver",
