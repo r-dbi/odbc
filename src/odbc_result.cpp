@@ -15,7 +15,7 @@ odbc_result::odbc_result(
       complete_(0),
       bound_(false),
       output_encoder_(Iconv(c_->encoding(), "UTF-8")),
-      query_timeout_(query_timeout){
+      query_timeout_(query_timeout) {
 
   if (immediate) {
     s_ = std::make_shared<nanodbc::statement>();
