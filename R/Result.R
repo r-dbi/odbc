@@ -9,7 +9,7 @@ NULL
 #' @docType methods
 NULL
 
-OdbcResult <- function(connection, statement, params = NULL, immediate = FALSE, query_timeout = 0L) {
+OdbcResult <- function(connection, statement, params = NULL, immediate = FALSE, query_timeout = 0) {
   if (nzchar(connection@encoding)) {
     statement <- enc2iconv(statement, connection@encoding)
   }
