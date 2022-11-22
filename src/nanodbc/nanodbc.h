@@ -967,6 +967,14 @@ private:
 class connection
 {
 public:
+    /// \brief A 3-element tuple representing a connection attribute.
+    ///
+    /// The first element is the Attribute argument to the ODBC SQLSetConnectAttr
+    /// function.  The second is the StringLength, and the third is the ValuePtr
+    /// argument.
+    ///
+    /// See https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlsetconnectattr-function
+    typedef std::tuple<long, long, void*> attribute;
     /// \brief Create new connection object, initially not connected.
     connection();
 
@@ -997,6 +1005,24 @@ public:
         const string_type& pass,
         long timeout = 0);
 
+    /// \brief Create new connection object, set the connection attributes passed as
+    /// arguments and connect to the given data source.
+    ///
+    /// The function calls ODBC API SQLConnect.  To set connection attributes,
+    /// SQLSetConnectAttr is called.
+    ///
+    /// \param dsn The name of the data source name (DSN).
+    /// \param user The username for authenticating to the data source.
+    /// \param pass The password for authenticating to the data source.
+    /// \param attributes A list of connection attributes to be set prior to connecting.
+    /// \throws database_error
+    /// \see connected(), connect(), attribute
+    connection(
+        const string_type& dsn,
+        const string_type& user,
+        const string_type& pass,
+        const std::list<attribute>& attributes);
+
     /// \brief Create new connection object and immediately connect using the given connection
     /// string.
     /// \param connection_string The connection string for establishing a connection.
@@ -1004,6 +1030,18 @@ public:
     /// \throws database_error
     /// \see connected(), connect()
     connection(const string_type& connection_string, long timeout = 0);
+
+    /// \brief Create new connection object, set the connection attributes passed as
+    /// arguments and connect to the given connection string.
+    ///
+    /// The function calls ODBC API SQLDriverConnect.  To set connection attributes,
+    /// SQLSetConnectAttr is called.
+    ///
+    /// \param connection_string The connection string for establishing a connection.
+    /// \param attributes A list of connection attributes to be set prior to connecting.
+    /// \throws database_error
+    /// \see connected(), connect(), attribute
+    connection(const string_type& connection_string, const std::list<attribute>& attributes);
 
     /// \brief Automatically disconnects from the database and frees all associated resources.
     ///
@@ -1038,6 +1076,20 @@ public:
         const string_type& pass,
         long timeout = 0);
 
+    /// \brief Set the connection attributes passed by the user, and connect to the given
+    /// data source.
+    /// \param dsn The name of the data source.
+    /// \param user The username for authenticating to the data source.
+    /// \param pass The password for authenticating to the data source.
+    /// \param attributes A list of connection attributes to be set prior to connecting.
+    /// \throws database_error
+    /// \see connected(), attribute
+    void connect(
+        const string_type& dsn,
+        const string_type& user,
+        const string_type& pass,
+        const std::list<attribute>& attributes);
+
     /// \brief Connect using the given connection string.
     /// \param connection_string The connection string for establishing a connection.
     /// \param timeout Seconds before connection timeout. Default is 0 indicating no timeout.
@@ -1045,6 +1097,13 @@ public:
     /// \see connected()
     void connect(const string_type& connection_string, long timeout = 0);
 
+    /// \brief Set the connection attributes passed by the user, and connect to the given
+    /// connection string.
+    /// \param connection_string The connection string for establishing a connection.
+    /// \param attributes A list of connection attributes to be set prior to connecting.
+    /// \throws database_error
+    /// \see connected(), attribute
+    void connect(const string_type& connection_string, const std::list<attribute>& attributes);
 #if !defined(NANODBC_DISABLE_ASYNC)
     /// \brief Initiate an asynchronous connection operation to the given data source.
     ///
