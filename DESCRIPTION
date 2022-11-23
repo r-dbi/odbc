@@ -61,3 +61,5 @@ Collate:
     'hidden.R'
     'utils.R'
     'zzz.R'
+Config/Needs/website: tidyverse/tidytemplate
+
