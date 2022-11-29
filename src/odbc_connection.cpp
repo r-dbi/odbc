@@ -1,5 +1,6 @@
 #include "odbc_connection.h"
 #include "odbc_result.h"
+#include "utils.h"
 
 namespace odbc {
 
@@ -24,7 +25,8 @@ odbc_connection::odbc_connection(
     std::string timezone_out,
     std::string encoding,
     bigint_map_t bigint_mapping,
-    long timeout)
+    long timeout,
+    Rcpp::Nullable<Rcpp::List> const& r_attributes_)
     : current_result_(nullptr),
       timezone_out_str_(timezone_out),
       encoding_(encoding),
@@ -41,7 +43,11 @@ odbc_connection::odbc_connection(
   }
 
   try {
-    c_ = std::make_shared<nanodbc::connection>(connection_string, timeout);
+    std::list< nanodbc::connection::attribute > attributes;
+    std::list< std::shared_ptr< void > > buffer_context;
+    utils::prepare_connection_attributes(
+        timeout, r_attributes_, attributes, buffer_context );
+    c_ = std::make_shared<nanodbc::connection>(connection_string, attributes);
   } catch (const nanodbc::database_error& e) {
     throw Rcpp::exception(e.what(), FALSE);
   }

@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Added `attributes` parameter to `dbConnect(...)`.  Can be used to pass a token and
+  authenticate against Azure AD when using Microsoft SQL Server.  Documented in
+  `?ConnectionAttributes`. (@detule, #521)
 * Fix `length(x) = 3 > 1' in coercion to 'logical(1)` warning in connection observer. (@meztez, #494)
 
 # odbc 1.3.3

@@ -1,6 +1,29 @@
 #' @include Driver.R
 NULL
 
+#' Supported Connection Attributes
+#'
+#' These (pre) connection attributes are supported and can be passed as
+#' part of the `dbConnect` call in the named list `attributes` parameter:
+#'
+#' * `azure_token`: This should be a string scalar; in particular Azure Active
+#'   Directory authentication token.  Only for use with Microsoft SQL Server and
+#'   with limited support away from the OEM Microsoft driver.
+#' @rdname ConnectionAttributes
+#' @aliases ConnectionAttributes
+#' @usage NULL
+#' @format NULL
+#' @examples
+#' \dontrun{
+#' conn <- dbConnect(
+#'   odbc::odbc(),
+#'   dsn = "my_azure_mssql_db",
+#'   Encrypt = "yes",
+#'   attributes = list("azure_token" = .token)
+#' }
+SUPPORTED_CONNECTION_ATTRIBUTES <-
+  c("azure_token")
+
 #' Odbc Connection Methods
 #'
 #' Implementations of pure virtual functions defined in the `DBI` package
@@ -24,10 +47,13 @@ OdbcConnection <- function(
   uid = NULL,
   pwd = NULL,
   dbms.name = NULL,
+  attributes = NULL,
   .connection_string = NULL) {
 
   args <- c(dsn = dsn, driver = driver, server = server, database = database, uid = uid, pwd = pwd, list(...))
   stopifnot(all(has_names(args)))
+  stopifnot(all(has_names(attributes)))
+  stopifnot(all(names(attributes) %in% SUPPORTED_CONNECTION_ATTRIBUTES))
 
   connection_string <- paste0(.connection_string, paste(collapse = ";", sep = "=", names(args), args))
 
@@ -37,7 +63,7 @@ OdbcConnection <- function(
     timeout <- 0
   }
 
-  ptr <- odbc_connect(connection_string, timezone = timezone, timezone_out = timezone_out, encoding = encoding, bigint = bigint, timeout = timeout)
+  ptr <- odbc_connect(connection_string, timezone = timezone, timezone_out = timezone_out, encoding = encoding, bigint = bigint, timeout = timeout, r_attributes_ = attributes)
   quote <- connection_quote(ptr)
 
   info <- connection_info(ptr)
