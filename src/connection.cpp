@@ -52,7 +52,8 @@ connection_ptr odbc_connect(
     std::string const& timezone_out = "",
     std::string const& encoding = "",
     int bigint = 0,
-    long timeout = 0) {
+    long timeout = 0,
+    Rcpp::Nullable<Rcpp::List> const& r_attributes_ = R_NilValue) {
   return connection_ptr(
       new std::shared_ptr<odbc_connection>(new odbc_connection(
           connection_string,
@@ -60,7 +61,8 @@ connection_ptr odbc_connect(
           timezone_out,
           encoding,
           static_cast<bigint_map_t>(bigint),
-          timeout)));
+          timeout,
+          r_attributes_)));
 }
 
 std::string get_info_or_empty(connection_ptr const& p, short type) {
