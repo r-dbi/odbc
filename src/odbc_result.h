@@ -11,8 +11,9 @@
 namespace odbc {
 
 inline void signal_unknown_field_type(short type, const std::string& name) {
-  char buf[100];
-  sprintf(buf, "Unknown field type (%i) in column (%s)", type, name.c_str());
+  const unsigned int BUFF_SIZE( 100 );
+  char buf[ BUFF_SIZE ];
+  std::snprintf(buf, BUFF_SIZE, "Unknown field type (%i) in column (%s)", type, name.c_str());
   signal_condition(buf, "odbc_unknown_field_type");
 }
 
