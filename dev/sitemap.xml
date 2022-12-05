@@ -19,6 +19,9 @@
     <loc>https://r-dbi.github.io/odbc/dev/news/index.html</loc>
   </url>
   <url>
+    <loc>https://r-dbi.github.io/odbc/dev/reference/ConnectionAttributes.html</loc>
+  </url>
+  <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/OdbcConnection.html</loc>
   </url>
   <url>
