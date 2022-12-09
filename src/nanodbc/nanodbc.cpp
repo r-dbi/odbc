@@ -2724,7 +2724,7 @@ public:
 
 private:
     template <typename T>
-    T* ensure_pdata(short column) const;
+    std::unique_ptr<T, std::function<void(T*)>> ensure_pdata(short column) const;
 
     template <class T>
     void get_ref_impl(short column, T& result) const;
@@ -3389,14 +3389,17 @@ inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
 }
 
 template <typename T>
-T* result::result_impl::ensure_pdata(short column) const
+std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(short column) const
 {
     bound_column& col = bound_columns_[column];
     SQLLEN ValueLenOrInd;
     SQLRETURN rc;
     if (is_bound(column))
     {
-        return (T*)(col.pdata_ + rowset_position_ * col.clen_);
+        // Return a unique_ptr with a no-op deleter as this memory allocation
+        // is managed (allocated and released) elsewhere.
+        return std::unique_ptr<T, std::function<void(T*)>>(
+            (T*)(col.pdata_ + rowset_position_ * col.clen_), [](T* ptr) {});
     }
 
     T* buffer = new T;
@@ -3418,7 +3421,10 @@ T* result::result_impl::ensure_pdata(short column) const
         NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
     NANODBC_ASSERT(ValueLenOrInd == (SQLLEN)buffer_size);
 
-    return buffer;
+    // Return a traditional unique_ptr since we just allocated this buffer, and
+    // we most certainly want this memory returned to the heap when the result
+    // goes out of scope.
+    return std::unique_ptr<T>(buffer);
 }
 
 template <class T>
