@@ -176,6 +176,23 @@ setMethod(
   }
 )
 
+#' @details odbcConnectionColumns is routed through the SQLColumns ODBC
+#'  method.  This function, together with remaining catalog functions (SQLTables,
+#'  etc), by default ( SQL_ATTR_METADATA_ID == false ) expect either ordinary
+#'  arguments (OA) in the case of the catalog, or pattern value arguments (PV)
+#'  in the case of schema/table name.  For these, quoted identifiers do not make
+#'  sense, so we unquote identifiers prior to the call.
+#' @seealso The ODBC documentation on [Arguments to catalog functions](https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/arguments-in-catalog-functions?view=sql-server-ver16).
+#' @rdname odbcConnectionColumns
+#' @param conn OdbcConnection
+#' @param name table we wish to get information on
+#' @export
+setMethod(
+  "odbcConnectionColumns", c("OdbcConnection", "SQL"),
+  function(conn, name, ...) {
+    odbcConnectionColumns(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+  })
+
 # TODO: show encoding, timezone, bigint mapping
 #' @rdname OdbcConnection
 #' @inheritParams methods::show

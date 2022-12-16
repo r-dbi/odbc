@@ -91,3 +91,22 @@ setMethod("sqlCreateTable", "DB2/AIX64",
     ))
   }
 )
+
+# Microsoft SQL Server ---------------------------------------------------------
+
+# Simple class prototype to avoid messages about unknown classes from setMethod
+setClass("Microsoft SQL Server", where = class_cache)
+
+# For SQL Server, conn@quote will return the quotation mark, however
+# both quotation marks as well as square bracket are used interchangeably for
+# delimited identifiers.  See:
+# https://learn.microsoft.com/en-us/sql/relational-databases/databases/database-identifiers?view=sql-server-ver16
+# Therefore strip the brackets first, and then call the DBI method that strips
+# the quotation marks.
+# TODO: the generic implementation in DBI should take a quote char as
+# parameter.
+setMethod("dbUnquoteIdentifier", c("Microsoft SQL Server", "SQL"),
+  function(conn, x, ...) {
+    x <- gsub("(\\[)([^\\.]+?)(\\])", "\\2", x)
+    callNextMethod( conn, x, ... )
+  })
