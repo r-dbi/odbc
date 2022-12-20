@@ -238,7 +238,39 @@ odbcPreviewObject.OdbcConnection <- function(connection, rowLimit, table = NULL,
     name <- paste(dbQuoteIdentifier(connection, catalog), name, sep = ".")
   }
 
-  dbGetQuery(connection, paste("SELECT * FROM", name), n = rowLimit)
+  dbGetQuery(connection, odbcPreviewQuery(connection, rowLimit, name ),
+    n = rowLimit)
+}
+
+#' Create a preview query.
+#'
+#' Optimize against the rowLimit argument.  S3 since some
+#' back-ends do not parse the LIMIT syntax.  Internal, not expected that
+#' users would interact with this method.
+#'
+#' @param connection A connection object, as returned by `dbConnect()`.
+#' @param rowLimit The maximum number of rows to display.
+#' @param name Name of the object to be previewed
+odbcPreviewQuery <- function(connection, rowLimit, name) {
+  UseMethod("odbcPreviewQuery")
+}
+
+#' Common top-N syntax ( MYSQL, PSQL, DB2, SNOWFLAKE, etc )
+#' @rdname odbcPreviewQuery
+odbcPreviewQuery.OdbcConnection <- function(connection, rowLimit, name) {
+  paste0("SELECT * FROM ", name, " LIMIT ", rowLimit)
+}
+
+#' SQL Server specific top-N syntax
+#' @rdname odbcPreviewQuery
+`odbcPreviewQuery.Microsoft SQL Server` <- function(connection, rowLimit, name) {
+  paste0("SELECT TOP ", rowLimit, " * FROM ", name)
+}
+
+#' Oracle specific top-N syntax
+#' @rdname odbcPreviewQuery
+odbcPreviewQuery.Oracle <- function(connection, rowLimit, name) {
+  paste0("SELECT * FROM ", name, " WHERE ROWNUM <= ", rowLimit)
 }
 
 #' Get an icon representing a connection.

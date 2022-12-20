@@ -117,6 +117,7 @@ test_that("SQLite", {
       NULL))
 
 
+  context("custom tests")
   local({
     ## Test that trying to write unsupported types (like complex numbers) throws an
     ## informative error message
@@ -124,5 +125,16 @@ test_that("SQLite", {
 
     df <- data.frame(foo = complex(1))
     expect_error(dbWriteTable(con, "df", df), "Column 'foo' is of unsupported type: 'complex'")
+  })
+  test_that("odbcPreviewObject", {
+    tblName <- "test_preview"
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    dbWriteTable(con, tblName, data.frame(a = 1:10L))
+    on.exit(dbRemoveTable(con, tblName))
+    # There should be no "Pending rows" warning
+    expect_no_warning({
+      res <- odbcPreviewObject(con, rowLimit = 3, table = tblName)
+    })
+    expect_equal(nrow(res), 3)
   })
 })

@@ -72,4 +72,16 @@ test_that("MySQL", {
       NULL))
 
   test_roundtrip(columns = "logical")
+  context("custom tests")
+  test_that("odbcPreviewObject", {
+    tblName <- "test_preview"
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    dbWriteTable(con, tblName, data.frame(a = 1:10L))
+    on.exit(dbRemoveTable(con, tblName))
+    # There should be no "Pending rows" warning
+    expect_no_warning({
+      res <- odbcPreviewObject(con, rowLimit = 3, table = tblName)
+    })
+    expect_equal(nrow(res), 3)
+  })
 })
