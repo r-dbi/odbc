@@ -176,19 +176,19 @@ test_that("SQLServer", {
   local({
     con <- DBItest:::connect(DBItest:::get_default_context())
     input <- DBI::SQL(c(
-               "testtable",
-               "[testtable]",
-               "[testschema].[testtable]",
-               "[testschema].testtable",
-               "[testdb].[testschema].[testtable]",
-               "[testdb].[testschema].testtable" ))
+      "testtable",
+      "[testtable]",
+      "[testschema].[testtable]",
+      "[testschema].testtable",
+      "[testdb].[testschema].[testtable]",
+      "[testdb].[testschema].testtable" ))
     expected <- c(
-                  DBI::Id( table = "testtable" ),
-                  DBI::Id( table = "testtable" ),
-                  DBI::Id( schema = "testschema", table = "testtable" ),
-                  DBI::Id( schema = "testschema", table = "testtable" ),
-                  DBI::Id( catalog = "testdb", schema = "testschema", table = "testtable" ),
-                  DBI::Id( catalog = "testdb", schema = "testschema", table = "testtable" ) )
+      DBI::Id( table = "testtable" ),
+      DBI::Id( table = "testtable" ),
+      DBI::Id( schema = "testschema", table = "testtable" ),
+      DBI::Id( schema = "testschema", table = "testtable" ),
+      DBI::Id( catalog = "testdb", schema = "testschema", table = "testtable" ),
+      DBI::Id( catalog = "testdb", schema = "testschema", table = "testtable" ) )
     expect_identical( DBI::dbUnquoteIdentifier( con, input ), expected )
 
   })
