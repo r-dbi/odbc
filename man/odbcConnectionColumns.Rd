@@ -67,12 +67,12 @@ to get details on the fields of the table we are writing to.  In particular
 the columns \code{data_type}, \code{column_size}, and \code{decimal_digits} are used.  An
 implementation is not necessary for \code{\link[=dbWriteTable]{dbWriteTable()}} to work.
 
-odbcConnectionColumns is routed through the SQLColumns ODBC
-method.  This function, together with remaining catalog functions (SQLTables,
-etc), by default ( SQL_ATTR_METADATA_ID == false ) expect either ordinary
-arguments (OA) in the case of the catalog, or pattern value arguments (PV)
-in the case of schema/table name.  For these, quoted identifiers do not make
-sense, so we unquote identifiers prior to the call.
+\code{odbcConnectionColumns} is routed through the \code{SQLColumns} ODBC
+method.  This function, together with remaining catalog functions
+(\code{SQLTables}, etc), by default ( \code{SQL_ATTR_METADATA_ID == false} ) expect
+either ordinary arguments (OA) in the case of the catalog, or pattern value
+arguments (PV) in the case of schema/table name.  For these, quoted
+identifiers do not make sense, so we unquote identifiers prior to the call.
 }
 \seealso{
 The ODBC documentation on \href{https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function}{SQLColumns}
