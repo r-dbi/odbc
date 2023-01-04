@@ -178,6 +178,9 @@ test_that("SQLServer", {
     input <- DBI::SQL(c(
       "testtable",
       "[testtable]",
+      "[\"testtable\"]",
+      "testta[ble",
+      "testta]ble",
       "[testschema].[testtable]",
       "[testschema].testtable",
       "[testdb].[testschema].[testtable]",
@@ -185,6 +188,9 @@ test_that("SQLServer", {
     expected <- c(
       DBI::Id( table = "testtable" ),
       DBI::Id( table = "testtable" ),
+      DBI::Id( table = "testtable" ),
+      DBI::Id( table = "testta[ble" ),
+      DBI::Id( table = "testta]ble" ),
       DBI::Id( schema = "testschema", table = "testtable" ),
       DBI::Id( schema = "testschema", table = "testtable" ),
       DBI::Id( catalog = "testdb", schema = "testschema", table = "testtable" ),
