@@ -186,16 +186,16 @@ test_that("SQLServer", {
       "[testdb].[testschema].[testtable]",
       "[testdb].[testschema].testtable" ))
     expected <- c(
-      DBI::Id( table = "testtable" ),
-      DBI::Id( table = "testtable" ),
-      DBI::Id( table = "testtable" ),
-      DBI::Id( table = "testta[ble" ),
-      DBI::Id( table = "testta]ble" ),
-      DBI::Id( schema = "testschema", table = "testtable" ),
-      DBI::Id( schema = "testschema", table = "testtable" ),
-      DBI::Id( catalog = "testdb", schema = "testschema", table = "testtable" ),
-      DBI::Id( catalog = "testdb", schema = "testschema", table = "testtable" ) )
-    expect_identical( DBI::dbUnquoteIdentifier( con, input ), expected )
+      DBI::Id(table = "testtable"),
+      DBI::Id(table = "testtable"),
+      DBI::Id(table = "testtable"),
+      DBI::Id(table = "testta[ble"),
+      DBI::Id(table = "testta]ble"),
+      DBI::Id(schema = "testschema", table = "testtable"),
+      DBI::Id(schema = "testschema", table = "testtable"),
+      DBI::Id(catalog = "testdb", schema = "testschema", table = "testtable"),
+      DBI::Id(catalog = "testdb", schema = "testschema", table = "testtable"))
+    expect_identical(DBI::dbUnquoteIdentifier(con, input), expected)
 
   })
 
