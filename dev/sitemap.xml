@@ -88,6 +88,9 @@
     <loc>https://r-dbi.github.io/odbc/dev/reference/odbcPreviewObject.html</loc>
   </url>
   <url>
+    <loc>https://r-dbi.github.io/odbc/dev/reference/odbcPreviewQuery.html</loc>
+  </url>
+  <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/odbcSetTransactionIsolationLevel.html</loc>
   </url>
   <url>
