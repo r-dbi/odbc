@@ -4,6 +4,7 @@
 \alias{odbcConnectionColumns}
 \alias{odbcConnectionColumns,OdbcConnection,Id-method}
 \alias{odbcConnectionColumns,OdbcConnection,character-method}
+\alias{odbcConnectionColumns,OdbcConnection,SQL-method}
 \title{odbcConnectionColumns}
 \usage{
 odbcConnectionColumns(conn, name, ...)
@@ -17,6 +18,8 @@ odbcConnectionColumns(conn, name, ...)
   schema_name = NULL,
   column_name = NULL
 )
+
+\S4method{odbcConnectionColumns}{OdbcConnection,SQL}(conn, name, ...)
 }
 \arguments{
 \item{conn}{OdbcConnection}
@@ -63,8 +66,17 @@ In \code{\link[=dbWriteTable]{dbWriteTable()}} we make a call to this method
 to get details on the fields of the table we are writing to.  In particular
 the columns \code{data_type}, \code{column_size}, and \code{decimal_digits} are used.  An
 implementation is not necessary for \code{\link[=dbWriteTable]{dbWriteTable()}} to work.
+
+\code{odbcConnectionColumns} is routed through the \code{SQLColumns} ODBC
+method.  This function, together with remaining catalog functions
+(\code{SQLTables}, etc), by default ( \code{SQL_ATTR_METADATA_ID == false} ) expect
+either ordinary arguments (OA) in the case of the catalog, or pattern value
+arguments (PV) in the case of schema/table name.  For these, quoted
+identifiers do not make sense, so we unquote identifiers prior to the call.
 }
 \seealso{
 The ODBC documentation on \href{https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function}{SQLColumns}
 for further details.
+
+The ODBC documentation on \href{https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/arguments-in-catalog-functions?view=sql-server-ver16}{Arguments to catalog functions}.
 }

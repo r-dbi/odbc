@@ -173,6 +173,32 @@ test_that("SQLServer", {
     expect_equal(as.double(values[[6]]), as.double(received[[6]]))
   })
 
+  local({
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    input <- DBI::SQL(c(
+      "testtable",
+      "[testtable]",
+      "[\"testtable\"]",
+      "testta[ble",
+      "testta]ble",
+      "[testschema].[testtable]",
+      "[testschema].testtable",
+      "[testdb].[testschema].[testtable]",
+      "[testdb].[testschema].testtable" ))
+    expected <- c(
+      DBI::Id(table = "testtable"),
+      DBI::Id(table = "testtable"),
+      DBI::Id(table = "testtable"),
+      DBI::Id(table = "testta[ble"),
+      DBI::Id(table = "testta]ble"),
+      DBI::Id(schema = "testschema", table = "testtable"),
+      DBI::Id(schema = "testschema", table = "testtable"),
+      DBI::Id(catalog = "testdb", schema = "testschema", table = "testtable"),
+      DBI::Id(catalog = "testdb", schema = "testschema", table = "testtable"))
+    expect_identical(DBI::dbUnquoteIdentifier(con, input), expected)
+
+  })
+
   test_that("dates should always be interpreted in the system time zone (#398)", {
     con <- DBItest:::connect(DBItest:::get_default_context(), timezone = "America/Chicago")
     res <- dbGetQuery(con, "SELECT CAST(? AS date)", params = as.Date("2019-01-01"))
