@@ -1,5 +1,6 @@
 # odbc (development version)
-
+* Optimized table preview methods.  Enhances large table preview
+  within RStudio IDE (@detule, #525)
 * Added `attributes` parameter to `dbConnect(...)`.  Can be used to pass a token and
   authenticate against Azure AD when using Microsoft SQL Server.  Documented in
   `?ConnectionAttributes`. (@detule, #521)

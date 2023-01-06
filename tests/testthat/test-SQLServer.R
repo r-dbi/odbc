@@ -196,7 +196,18 @@ test_that("SQLServer", {
       DBI::Id(catalog = "testdb", schema = "testschema", table = "testtable"),
       DBI::Id(catalog = "testdb", schema = "testschema", table = "testtable"))
     expect_identical(DBI::dbUnquoteIdentifier(con, input), expected)
+  })
 
+  test_that("odbcPreviewObject", {
+    tblName <- "test_preview"
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    dbWriteTable(con, tblName, data.frame(a = 1:10L))
+    on.exit(dbRemoveTable(con, tblName))
+    # There should be no "Pending rows" warning
+    expect_no_warning({
+      res <- odbcPreviewObject(con, rowLimit = 3, table = tblName)
+    })
+    expect_equal(nrow(res), 3)
   })
 
   test_that("dates should always be interpreted in the system time zone (#398)", {
