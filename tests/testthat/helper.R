@@ -18,3 +18,9 @@ skip_unless_has_test_db <- function(expr) {
     })
   }
 }
+
+skip_if_no_drivers <- function() {
+  if (nrow(odbcListDrivers()) == 0) {
+    skip("No drivers installed")
+  }
+}
