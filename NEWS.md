@@ -1,4 +1,4 @@
-# odbc (development version)
+# odbc 1.3.4
 
 * Optimized table preview methods.  Enhances large table preview
   within RStudio IDE (@detule, #525).
