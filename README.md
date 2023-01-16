@@ -17,7 +17,7 @@ Status](https://img.shields.io/codecov/c/github/r-dbi/odbc/master.svg)](https://
 
 The goal of the odbc package is to provide a DBI-compliant interface to
 [Open Database
-Connectivity](https://docs.microsoft.com/en-us/sql/odbc/microsoft-open-database-connectivity-odbc?view=sql-server-ver15)
+Connectivity](https://learn.microsoft.com/en-us/sql/odbc/microsoft-open-database-connectivity-odbc?view=sql-server-ver15)
 (ODBC) drivers. This allows for an efficient, easy to setup connection
 to any database with ODBC drivers available, including [SQL
 Server](https://www.microsoft.com/en-us/sql-server/),
@@ -48,7 +48,7 @@ builds on the [nanodbc](https://nanodbc.github.io/nanodbc/) C++ library.
 
 For Unix and MacOS ODBC drivers should be compiled against
 [unixODBC](http://www.unixodbc.org/). Drivers compiled against
-[iODBC](http://www.iodbc.org/) *may* also work, but are not fully
+[iODBC](https://www.iodbc.org/) *may* also work, but are not fully
 supported.
 
 After installation of the driver manager and driver, you will have to
@@ -115,7 +115,7 @@ apt-get install unixodbc unixodbc-dev
 #### Common DB drivers
 
 For SQL Server on Linux it is recommended you use the [Microsoft
-Drivers](https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15#ubuntu).
+Drivers](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15#ubuntu18).
 
 ``` shell
 # SQL Server ODBC Drivers (Free TDS)
@@ -187,7 +187,7 @@ con <- dbConnect(odbc::odbc(), "PostgreSQL")
 #### Windows
 
 The [ODBC Data Source
-Administrator](https://docs.microsoft.com/en-us/sql/odbc/admin/odbc-data-source-administrator?view=sql-server-ver15)
+Administrator](https://learn.microsoft.com/en-us/sql/odbc/admin/odbc-data-source-administrator?view=sql-server-ver15)
 application is used to manage ODBC data sources on Windows.
 
 #### MacOS / Linux
