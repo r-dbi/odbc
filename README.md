@@ -8,9 +8,8 @@
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/)
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/odbc)](https://cran.r-project.org/package=odbc)
-[![R build
-status](https://github.com/r-dbi/odbc/workflows/R-CMD-check/badge.svg)](https://github.com/r-dbi/odbc)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/odbc)](https://cran.r-project.org/package=odbc)
+[![R-CMD-check](https://github.com/r-dbi/odbc/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-dbi/odbc/actions/workflows/R-CMD-check.yaml)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/r-dbi/odbc/master.svg)](https://codecov.io/github/r-dbi/odbc?branch=master)
 <!-- badges: end -->
@@ -27,22 +26,22 @@ Server](https://www.microsoft.com/en-us/sql-server/),
 [SQLite](https://sqlite.org/index.html) and others. The implementation
 builds on the [nanodbc](https://nanodbc.github.io/nanodbc/) C++ library.
 
-  - [Installation](#installation)
-      - [Windows](#windows)
-      - [MacOS](#macos)
-      - [Linux - Debian / Ubuntu](#linux---debian-ubuntu)
-      - [R](#r)
-  - [Connecting to a Database](#connecting-to-a-database)
-      - [Connection Strings](#connection-strings)
-      - [DSN Configuration files](#dsn-configuration-files)
-  - [Usage](#usage)
-      - [Table and Field information](#table-and-field-information)
-      - [Reading](#reading)
-      - [Writing](#writing)
-      - [Querying](#querying)
-  - [Benchmarks](#benchmarks)
-      - [Reading](#reading-1)
-      - [Writing](#writing-1)
+- [Installation](#installation)
+  - [Windows](#windows)
+  - [MacOS](#macos)
+  - [Linux - Debian / Ubuntu](#linux---debian-ubuntu)
+  - [R](#r)
+- [Connecting to a Database](#connecting-to-a-database)
+  - [Connection Strings](#connection-strings)
+  - [DSN Configuration files](#dsn-configuration-files)
+- [Usage](#usage)
+  - [Table and Field information](#table-and-field-information)
+  - [Reading](#reading)
+  - [Writing](#writing)
+  - [Querying](#querying)
+- [Benchmarks](#benchmarks)
+  - [Reading](#reading-1)
+  - [Writing](#writing-1)
 
 ## Installation
 
@@ -199,8 +198,8 @@ files you can also edit by hand if desired.
 
 There are two different files used to setup the DSN information.
 
-  - `odbcinst.ini` - which defines driver options
-  - `odbc.ini` - which defines connection options
+- `odbcinst.ini` - which defines driver options
+- `odbc.ini` - which defines connection options
 
 The DSN configuration files can be defined globally for all users of the
 system, often at `/etc/odbc.ini` or `/opt/local/etc/odbc.ini`, the exact
