@@ -37,3 +37,4 @@
 ^MAINTENANCE\.md$
 ^_pkgdown\.yml$
 ^pkgdown$
+^CRAN-SUBMISSION$
