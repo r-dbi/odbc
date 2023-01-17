@@ -10,6 +10,9 @@
     <loc>https://r-dbi.github.io/odbc/LICENSE-text.html</loc>
   </url>
   <url>
+    <loc>https://r-dbi.github.io/odbc/MAINTENANCE.html</loc>
+  </url>
+  <url>
     <loc>https://r-dbi.github.io/odbc/authors.html</loc>
   </url>
   <url>
@@ -17,6 +20,9 @@
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/news/index.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/reference/ConnectionAttributes.html</loc>
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/reference/OdbcConnection.html</loc>
@@ -83,6 +89,9 @@
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/reference/odbcPreviewObject.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/reference/odbcPreviewQuery.html</loc>
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/reference/odbcSetTransactionIsolationLevel.html</loc>

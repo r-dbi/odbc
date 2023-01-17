@@ -41,45 +41,24 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>NA</h1>
-      <small class="dont-index">Source: <a href="https://github.com/r-dbi/odbc/blob/HEAD/.github/ISSUE_TEMPLATE.md" class="external-link"><code>.github/ISSUE_TEMPLATE.md</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/r-dbi/odbc/blob/HEAD/MAINTENANCE.md" class="external-link"><code>MAINTENANCE.md</code></a></small>
     </div>
 
 
-<div class="section level3">
-<h3 id="issue-description-and-expected-result">Issue Description and Expected Result<a class="anchor" aria-label="anchor" href="#issue-description-and-expected-result"></a></h3>
-<!--Example: `dbGetQuery()` returns incorrect timestamps.-->
+<div class="section level2">
+<h2 id="current-state">Current state<a class="anchor" aria-label="anchor" href="#current-state"></a></h2>
+<p>odbc is stable, though there are still corner cases where it could have issues with certain database backends. Mostly around text encodings, datetime and logical formats.</p>
 </div>
-<div class="section level3">
-<h3 id="database">Database<a class="anchor" aria-label="anchor" href="#database"></a></h3>
-<!--Example: PostgreSQL 9.5, SQL Server 2012-->
+<div class="section level2">
+<h2 id="known-outstanding-issues">Known outstanding issues<a class="anchor" aria-label="anchor" href="#known-outstanding-issues"></a></h2>
+<p><a href="https://github.com/r-dbi/odbc/blob/main/setup.md" class="external-link uri">https://github.com/r-dbi/odbc/blob/main/setup.md</a> contains instructions on running the tests locally, which is important to make the feedback loop shorter.</p>
+<p>The hardest part of maintaining odbc is often an issue only occurs with a specific database, and setting up the environment for that database usually takes a non-trivial amount of time.</p>
 </div>
-<div class="section level3">
-<h3 id="reproducible-example">Reproducible Example<a class="anchor" aria-label="anchor" href="#reproducible-example"></a></h3>
-<!--
-If possible include a _small_ dump of the table with the error and the R code
-that generates the error. In your reprex please use `con` as the name of the
-connection, this makes it easier to run locally.
-
-The reprex package can be helpful in doing this.
-
-    install.packages("reprex")
-    reprex::reprex()
-
-Example:
-```r
-library(odbc)
-library(DBI)
-con <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
-dbWriteTable(con, "iris", iris)
-dbReadTable(con, "iris")
-```
--->
-<details><summary>
-Session Info
-</summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">session_info</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; output</span></span></code></pre></div>
-</details></div>
+<div class="section level2">
+<h2 id="future-directions">Future directions<a class="anchor" aria-label="anchor" href="#future-directions"></a></h2>
+<ul><li><p>Convert from using Rcpp to using cpp11. This is not urgent, but basically all other r-lib/tidyverse packages have been converted.</p></li>
+<li><p>Look into updating the version of nanodbc to a newer version. This is complicated by the fact that nanodbc now requires C++14, so it can’t really be a drop in unless we want to bump up odbc to require C++14. Alternatively look into the recent nanodbc comments and port them to the current version of odbc. We did this for other use cases.</p></li>
+</ul></div>
 
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
