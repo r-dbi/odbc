@@ -215,4 +215,14 @@ test_that("SQLServer", {
     res <- dbGetQuery(con, "SELECT CAST(? AS date)", params = as.Date("2019-01-01"))
     expect_equal(res[[1]], as.Date("2019-01-01"))
   })
+
+  test_that("Zero-row-fetch does not move cursor", {
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    tblName <- "test_zero_row_fetch"
+    dbWriteTable(con, tblName, mtcars[1:2,])
+    on.exit(dbRemoveTable(con, tblName))
+    rs = dbSendStatement(con, paste0("SELECT * FROM ", tblName))
+    expect_equal(nrows(dbFetch(rs, n = 0)), 0)
+    expect_equal(nrows(dbFetch(rs, n = 10)), 2)
+  })
 })
