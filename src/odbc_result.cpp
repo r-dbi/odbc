@@ -689,7 +689,7 @@ Rcpp::List odbc_result::result_to_dataframe(nanodbc::result& r, int n_max) {
   Rcpp::List out = create_dataframe(types, column_names(r), n);
   int row = 0;
 
-  if (rows_fetched_ == 0) {
+  if (rows_fetched_ == 0 && n > 0) {
     complete_ = !r.next();
   }
 
@@ -737,8 +737,8 @@ Rcpp::List odbc_result::result_to_dataframe(nanodbc::result& r, int n_max) {
       default:
         signal_unknown_field_type(types[col], r.column_name(col));
         break;
-      }
-    }
+      } // switch (types[col])
+    } // for (size_t col = 0,... )
 
     complete_ = !r.next();
     ++row;
@@ -755,7 +755,7 @@ Rcpp::List odbc_result::result_to_dataframe(nanodbc::result& r, int n_max) {
         }
       };
     }
-  }
+  } // while ( !complete_ )
 
   // Resize if needed
   if (row < n) {
