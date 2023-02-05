@@ -19,7 +19,8 @@ setMethod("sqlCreateTable", "Oracle",
 setClass("Teradata", where = class_cache)
 
 sql_create_table_teradata <- function(
-  con, table, fields, field.types = NULL, row.names = NA, temporary = FALSE,
+  con, table, fields, row.names = NA, temporary = FALSE,
+  field.types = NULL,
   # teradata specific arguments
   index = NA,
   partition_by = NA,
