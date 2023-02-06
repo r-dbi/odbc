@@ -902,7 +902,14 @@ public:
         {
             // ignore exceptions thrown during disconnect
         }
-        deallocate();
+        try
+        {
+             deallocate();
+        }
+        catch (...)
+        {
+            // ignore exceptions thrown during disconnect
+        }
     }
 
     void allocate()
