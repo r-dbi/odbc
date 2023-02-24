@@ -1,5 +1,6 @@
 # odbc (development version)
 
+* MYSQL: Fixed retrieving results from stored procedures (@detule, #435).
 * Fixed issue related to fetching zero rows (@detule, #528).
 
 # odbc 1.3.4
