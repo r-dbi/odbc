@@ -84,4 +84,16 @@ test_that("MySQL", {
     })
     expect_equal(nrow(res), 3)
   })
+  test_that("sproc result retrieval", {
+    sprocName <- "testSproc"
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    DBI::dbExecute(con,
+      paste0("CREATE PROCEDURE ", sprocName, "(IN arg INT) BEGIN SELECT 'abc' as TestCol; END"))
+    on.exit(DBI::dbExecute(con, paste0("DROP PROCEDURE ", sprocName)))
+    expect_no_error({
+      res <- dbGetQuery(con, paste0("CALL ", sprocName, "(1)"))
+    })
+    expect_identical(res,
+       data.frame("TestCol" = "abc", stringsAsFactors = FALSE))
+  })
 })

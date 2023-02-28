@@ -749,7 +749,14 @@ Rcpp::List odbc_result::result_to_dataframe(nanodbc::result& r, int n_max) {
 
     if (complete_) {
       while (r.next_result()) {
-        if (r.next()) {
+        // MYSQL, when returning from a CALL [proc]
+        // returns a final result set containing a
+        // status flag.  Protect against trying to
+        // process/fetch this result set by checking
+        // the number of columns.  This is
+        // consistent with
+        // https://dev.mysql.com/doc/c-api/8.0/en/c-api-prepared-call-statements.html
+        if (r.columns() && r.next()) {
           complete_ = false;
           break;
         }
