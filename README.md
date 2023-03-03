@@ -272,8 +272,8 @@ Password            = password
 Port                = 5432
 
 [SQLite]
-Driver          = SQLite Driver
-Database=/tmp/testing
+Driver              = SQLite Driver
+Database            = /tmp/testing
 ```
 
 See also: [unixODBC without the
