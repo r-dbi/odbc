@@ -1,6 +1,7 @@
 test_that("MySQL", {
   skip_unless_has_test_db({
-    DBItest::make_context(odbc(), list(dsn = "MySQL"), tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "MySQL")
+    DBItest::make_context(odbc(), list(.connection_string = Sys.getenv("ODBC_CS")),
+      tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "MySQL")
   })
 
   DBItest::test_getting_started(c(
