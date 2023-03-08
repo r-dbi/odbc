@@ -1,0 +1,108 @@
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+
+name: DBs (Windows)
+
+jobs:
+  testthat-Windows:
+    runs-on: windows-latest
+    name: ${{ matrix.database }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        database:
+          - SQLServer
+          - MySQL
+          - PostgreSQL
+          - SQLite
+    env:
+      CRAN: "https://packagemanager.rstudio.com/cran/latest"
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: r-lib/actions/setup-r@v2
+
+      - name: Install SQL Server
+        if: matrix.database == 'SQLServer'
+        uses: potatoqualitee/mssqlsuite@v1.7
+        with:
+          install: sqlengine, sqlclient
+          version: 2019
+          sa-password: Password12
+          show-log: true
+
+      - name: Install MySQL
+        if: matrix.database == 'MySQL'
+        uses: ankane/setup-mysql@v1
+        with:
+          database: test
+
+      - name: Install PostgreSQL
+        if: matrix.database == 'PostgreSQL'
+        uses: ankane/setup-postgres@v1
+        with:
+          database: test
+
+      - name: Install SQLite
+        if: matrix.database == 'SQLite'
+        run: |
+          (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', 'sqliteodbc_w64.exe')
+           ./sqliteodbc_w64.exe /S
+
+      - name: Install Driver Support
+        if: matrix.database == 'SQLServer'
+        run: |
+          echo "ODBC_CS=Driver={ODBC Driver 17 for SQL Server};Server=localhost;Uid=sa;Pwd=Password12" >> $env:GITHUB_ENV
+
+      - name: Install Driver Support
+        if: matrix.database == 'MySQL'
+        run: |
+          choco install mysql-odbc
+          echo "ODBC_CS=Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=test;User=root;Password=" >> $env:GITHUB_ENV
+
+      - name: Install Driver Support
+        if: matrix.database == 'PostgreSQL'
+        run: |
+          choco install psqlodbc
+          echo "ODBC_CS=Driver={PostgreSQL ANSI(x64)};Server=localhost;Port=5432;BoolsAsChar=0;LFConversion=0;Database=test;UID=postgres;PWD=" >> $env:GITHUB_ENV
+
+      - name: Install Driver Support
+        if: matrix.database == 'SQLite'
+        run: |
+          echo "ODBC_CS=Driver={SQLite3 ODBC Driver};Database=${{ runner.temp }}\test;Timeout=2000" >> $env:GITHUB_ENV
+
+      - name: Install dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: r-dbi/DBITest
+          needs: check
+
+      - name: Install locally to avoid error with test_local()
+        run: |
+          install.packages(".", repos = NULL, type = "source")
+        shell: Rscript {0}
+
+      - name: Test0
+        run: |
+          library(odbc); odbc::odbcListDrivers(); odbc::odbcListDataSources();
+        shell: Rscript {0}
+
+      - name: Test1
+        run: |
+          Sys.getenv("ODBC_CS");
+        shell: Rscript {0}
+
+      - name: Test
+        run: |
+          testthat::test_local(filter = "${{ matrix.database }}", reporter = testthat::ProgressReporter$new(max_failures = Inf, update_interval = Inf))
+        shell: Rscript {0}

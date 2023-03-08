@@ -1,6 +1,7 @@
 test_that("SQLite", {
   skip_unless_has_test_db({
-    ctx <- DBItest::make_context(odbc(), list(dsn = "SQLite"), tweaks = DBItest::tweaks(placeholder_pattern = "?", strict_identifier = TRUE), name = "SQLite")
+    DBItest::make_context(odbc(), list(.connection_string = Sys.getenv("ODBC_CS")),
+      tweaks = DBItest::tweaks(placeholder_pattern = "?", strict_identifier = TRUE), name = "SQLite")
   })
 
   DBItest::test_getting_started(c(
