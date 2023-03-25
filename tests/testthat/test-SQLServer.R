@@ -217,6 +217,14 @@ test_that("SQLServer", {
     expect_equal(res[[1]], as.Date("2019-01-01"))
   })
 
+  test_that("UTF in VARCHAR is not truncated", {
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    value <- "grün"
+    res <- dbGetQuery(con,
+      paste0("SELECT '", value, "' AS colone"))
+    expect_equal(value, res[[1]])
+  })
+
   test_that("Zero-row-fetch does not move cursor", {
     con <- DBItest:::connect(DBItest:::get_default_context())
     tblName <- "test_zero_row_fetch"
