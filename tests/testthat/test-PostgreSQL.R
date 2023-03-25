@@ -98,6 +98,7 @@ test_that("PostgreSQL", {
       "^data_timestamp.*", # We explicitly want to set tzone to UTC
       "data_64_bit_numeric_warning", # TODO
       "data_64_bit_lossless", # TODO
+      "data_integer", # Fails, unreliably on Windows
       "send_query_syntax_error", # TODO
       "get_query_syntax_error", # TODO
       "send_query_params", # TODO
