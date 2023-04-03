@@ -92,7 +92,7 @@ odbcDataType.default <- function(con, obj, ...) {
 `odbcDataType.Spark SQL` <- function(con, obj, ...) {
   switch_type(obj,
     factor = "VARCHAR(255)",
-    datetime = "DATE",
+    datetime = "TIMESTAMP",
     date = "DATE",
     binary = "BINARY",
     integer = "INT",
