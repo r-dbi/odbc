@@ -33,7 +33,7 @@ setMethod(
   "dbListTables", "Teradata",
   function(conn, ...) {
     c(dbGetQuery(conn, "HELP VOLATILE TABLE")[["Table SQL Name"]],
-      connection_sql_tables(conn@ptr, ...)$table_name)
+      odbcConnectionTables(conn, ...)$table_name)
   })
 
 # SAP HANA ----------------------------------------------------------------
