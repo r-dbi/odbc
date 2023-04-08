@@ -31,7 +31,7 @@ SUPPORTED_CONNECTION_ATTRIBUTES <-
 #' @name OdbcConnection
 NULL
 
-class_cache <- new.env(parent = emptyenv())
+class_cache <- new.env()
 
 OdbcConnection <- function(
   dsn = NULL,
