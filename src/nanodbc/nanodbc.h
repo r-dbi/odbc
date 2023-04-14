@@ -1809,13 +1809,19 @@ public:
 
     /// \brief Returns names of all catalogs (or databases) available in connected data source.
     ///
-    /// Executes `SQLTable` function with `SQL_ALL_CATALOG` as catalog search pattern.
+    /// Executes `SQLTables` function with `SQL_ALL_CATALOG` as catalog search pattern.
     std::list<string_type> list_catalogs();
 
     /// \brief Returns names of all schemas available in connected data source.
     ///
-    /// Executes `SQLTable` function with `SQL_ALL_SCHEMAS` as schema search pattern.
+    /// Executes `SQLTables` function with `SQL_ALL_SCHEMAS` as schema search pattern.
     std::list<string_type> list_schemas();
+
+    /// \brief Returns all available table types in the connected data source.
+    ///
+    /// Executes `SQLTables` function with `SQL_ALL_TABLE_TYPES` as the
+    /// table type search pattern.
+    std::list<string_type> list_table_types();
 
 private:
     connection conn_;
