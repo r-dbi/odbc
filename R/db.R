@@ -14,6 +14,39 @@ setMethod("sqlCreateTable", "Oracle",
         ))
   })
 
+# Query, rather than use SQLTables ODBC API for performance reasons on Oracle.
+# Catalogs are not supported in ORACLE, so we only make use of schema and table name.
+# If schema is provided we query `all_objects`.  Otherwise `user_objects`.
+setMethod(
+  "dbExistsTable", c("Oracle", "Id"),
+  function(conn, name, ...) {
+    schema_name <- id_field(name, "schema")
+    table_name <- id_field(name, "table")
+
+    if ( is.null(schema_name) )
+    {
+      return(dbExistsTable(conn, table_name))
+    }
+    query <- paste0(" SELECT object_name ",
+                    " FROM all_objects ",
+                    " WHERE owner='", schema_name ,"' AND object_name='", table_name, "'",
+                    " AND ( object_type = 'TABLE' OR object_type = 'VIEW' ) ");
+    df <- dbGetQuery(conn, query);
+    NROW(df) > 0
+  })
+
+setMethod(
+  "dbExistsTable", c("Oracle", "character"),
+  function(conn, name, ...) {
+    stopifnot(length(name) == 1)
+    query <- paste0(" SELECT object_name ",
+                    " FROM user_objects ",
+                    " WHERE object_name='", name, "'",
+                    " AND ( object_type = 'TABLE' OR object_type = 'VIEW' ) ");
+    df <- dbGetQuery(conn, query);
+    NROW(df) > 0
+  })
+
 # Teradata --------------------------------------------------------------------
 
 setClass("Teradata", where = class_cache)

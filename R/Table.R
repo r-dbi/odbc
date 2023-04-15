@@ -218,6 +218,18 @@ setMethod(
 #' @inheritParams DBI::dbExistsTable
 #' @export
 setMethod(
+  "dbExistsTable", c("OdbcConnection", "character"),
+  function(conn, name, ...) {
+    stopifnot(length(name) == 1)
+    df <- connection_sql_tables(conn@ptr, table_name = name)
+    NROW(df) > 0
+  })
+
+
+#' @rdname OdbcConnection
+#' @inheritParams DBI::dbExistsTable
+#' @export
+setMethod(
   "dbExistsTable", c("OdbcConnection", "SQL"),
   function(conn, name, ...) {
     dbExistsTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
