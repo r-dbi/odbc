@@ -4,7 +4,7 @@
 setClass("Oracle", where = class_cache)
 
 setMethod("sqlCreateTable", "Oracle",
-  function(con, table, fields, field.types = NULL, row.names = NA, temporary = FALSE, ...) {
+  function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
@@ -19,7 +19,7 @@ setMethod("sqlCreateTable", "Oracle",
 setClass("Teradata", where = class_cache)
 
 setMethod("sqlCreateTable", "Teradata",
-  function(con, table, fields, field.types = NULL, row.names = NA, temporary = FALSE, ...) {
+  function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
@@ -41,7 +41,7 @@ setMethod(
 setClass("HDB", where = class_cache)
 
 setMethod("sqlCreateTable", "HDB",
-  function(con, table, fields, field.types = NULL, row.names = NA, temporary = FALSE, ...) {
+  function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
@@ -60,7 +60,7 @@ setClass("Hive", where = class_cache)
 
 setMethod(
   # only need to override dbQuteString when x is character.
-  # DBI:::quote_string just returns x when it is of class SQL, so no need to override that.  
+  # DBI:::quote_string just returns x when it is of class SQL, so no need to override that.
   "dbQuoteString", signature("Hive", "character"),
   function(conn, x, ...) {
     if (is(x, "SQL")) return(x)
@@ -79,7 +79,7 @@ setMethod(
 setClass("DB2/AIX64", where = class_cache)
 
 setMethod("sqlCreateTable", "DB2/AIX64",
-  function(con, table, fields, field.types = NULL, row.names = NA, temporary = FALSE, ...) {
+  function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
