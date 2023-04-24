@@ -38,3 +38,4 @@
 ^_pkgdown\.yml$
 ^pkgdown$
 ^CRAN-SUBMISSION$
+^LICENSE\.md$
