@@ -171,8 +171,13 @@ performance.</p></dd>
 
 
 <dt>table</dt>
-<dd><p>Name of the table. Escaped with
-<code><a href="https://dbi.r-dbi.org/reference/dbQuoteIdentifier.html" class="external-link">dbQuoteIdentifier()</a></code>.</p></dd>
+<dd><p>The table name, passed on to <code><a href="https://dbi.r-dbi.org/reference/dbQuoteIdentifier.html" class="external-link">dbQuoteIdentifier()</a></code>. Options are:</p><ul><li><p>a character string with the unquoted DBMS table name,
+e.g. <code>"table_name"</code>,</p></li>
+<li><p>a call to <code><a href="https://dbi.r-dbi.org/reference/Id.html" class="external-link">Id()</a></code> with components to the fully qualified table name,
+e.g. <code>Id(schema = "my_schema", table = "table_name")</code></p></li>
+<li><p>a call to <code><a href="https://dbi.r-dbi.org/reference/SQL.html" class="external-link">SQL()</a></code> with the quoted and fully qualified table name
+given verbatim, e.g. <code>SQL('"my_schema"."table_name"')</code></p></li>
+</ul></dd>
 
 
 <dt>fields</dt>

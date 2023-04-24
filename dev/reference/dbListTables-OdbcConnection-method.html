@@ -139,14 +139,23 @@ it is also removed from the list of database tables.</p>
 <p>The same applies to temporary tables if supported by the database.</p>
 
 
-<p>The returned names are suitable for quoting with <code><a href="https://dbi.r-dbi.org/reference/dbQuoteIdentifier.html" class="external-link">dbQuoteIdentifier()</a></code>.
-An error is raised when calling this method for a closed
-or invalid connection.</p>
+<p>The returned names are suitable for quoting with <code><a href="https://dbi.r-dbi.org/reference/dbQuoteIdentifier.html" class="external-link">dbQuoteIdentifier()</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p><code>%</code> can be used as a wildcard in any of the search parameters to
 match 0 or more characters. <code>_</code> can be used to match any single character.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="failure-modes">Failure modes<a class="anchor" aria-label="anchor" href="#failure-modes"></a></h2>
+    
+
+
+
+<p>An error is raised when calling this method for a closed
+or invalid connection.</p>
+
+
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
