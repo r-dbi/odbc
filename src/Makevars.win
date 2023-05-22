@@ -14,7 +14,7 @@ cctz/libcctz.a:
 $(MAKE) libcctz.a PREFIX="../" CC="$(CC)" CXX="$(CXX)" AR="$(AR)" ARFLAGS=$(ARFLAGS))
 
 nanodbc.o: nanodbc/nanodbc.cpp
-	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
+	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -DNANODBC_OVERALLOCATE_CHAR -c $< -o $@
 
 clean:
 	(cd cctz; $(MAKE) clean)

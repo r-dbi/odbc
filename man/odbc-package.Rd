@@ -9,6 +9,7 @@ A DBI-compatible interface to ODBC databases.
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://r-dbi.github.io/odbc/}
   \item \url{https://github.com/r-dbi/odbc}
   \item \url{https://db.rstudio.com}
   \item Report bugs at \url{https://github.com/r-dbi/odbc/issues}

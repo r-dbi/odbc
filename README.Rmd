@@ -193,12 +193,28 @@ There are two different files used to setup the DSN information.
 
 The DSN configuration files can be defined globally for all users of the
 system, often at
-`/etc/odbc.ini` or `/opt/local/etc/odbc.ini`, the exact location depends on
-what option was used when compiling unixODBC. `odbcinst -j` can be used to find
-the exact location. Alternatively the `ODBCSYSINI` environment variable can be
-used to specify the location of the configuration files. Ex. `ODBCSYSINI=~/ODBC`
+`/etc/odbc.ini`, `/opt/local/etc/odbc.ini` or `/opt/homebrew/etc/odbc.ini`, the
+exact location depends on what option was used when compiling unixODBC. `odbcinst -j`
+can be used to find the exact location. Alternatively the `ODBCSYSINI` environment
+variable can be used to specify the location of the configuration files. Ex. `ODBCSYSINI=~/ODBC`
 
 A local DSN file can also be used with the files `~/.odbc.ini` and `~/.odbcinst.ini`.
+
+##### MacOS aarch64
+If ODBC has trouble locating your system data source names, you may need to
+override the default location where ODBC looks for your configuration files.
+You can use either of the options below to specify the location of your DSN
+configuration files.
+
+###### Option 1: Save Setting to `~/.Renviron`
+1. Create or open the `~/.Renviron` file.
+2. Add `ODBCSYSINI=/opt/homebrew/etc` to your `~/.Renviron` file and
+   save your changes.
+3. Restart any open R sessions before connecting to a database.
+
+###### Option 2: Set `ODBCSYSINI` Environment Variable
+1. Set the `ODBCSYSINI` environment variable, eg. `ODBCSYSINI=/opt/homebrew/etc`.
+2. Restart any open R sessions before connecting to a database.
 
 ##### odbcinst.ini
 Contains driver information, particularly the name of the driver library.
@@ -209,6 +225,17 @@ Driver          = /usr/local/lib/psqlodbcw.so
 
 [SQLite Driver]
 Driver          = /usr/local/lib/libsqlite3odbc.dylib
+```
+
+On MacOS aarch64 machines, drivers installed via homebrew are in a
+different location, as seen below.
+
+```ini
+[PostgreSQL Driver]
+Driver          = /opt/homebrew/lib/psqlodbcw.so
+
+[SQLite Driver]
+Driver          = /opt/homebrew/lib/libsqlite3odbc.dylib
 ```
 
 ##### odbc.ini
@@ -225,8 +252,8 @@ Password            = password
 Port                = 5432
 
 [SQLite]
-Driver          = SQLite Driver
-Database=/tmp/testing
+Driver              = SQLite Driver
+Database            = /tmp/testing
 ```
 
 See also: [unixODBC without the GUI](http://www.unixodbc.org/odbcinst.html) for more information and examples.

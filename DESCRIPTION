@@ -15,7 +15,7 @@ Authors@R: c(
 Description: A DBI-compatible interface to ODBC databases.
 License: MIT + file LICENSE
 URL: https://r-dbi.github.io/odbc/, https://github.com/r-dbi/odbc,
-    https://db.rstudio.com,
+    https://db.rstudio.com
 BugReports: https://github.com/r-dbi/odbc/issues
 Depends: 
     R (>= 3.2.0)
@@ -42,7 +42,7 @@ Config/Needs/check:
     pkgbuild
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 SystemRequirements: C++11, GNU make, An ODBC3 driver manager and drivers.
 Collate: 
     'odbc.R'

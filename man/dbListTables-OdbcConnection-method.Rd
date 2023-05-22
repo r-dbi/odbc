@@ -42,8 +42,6 @@ it is also removed from the list of database tables.
 The same applies to temporary tables if supported by the database.
 
 The returned names are suitable for quoting with \code{dbQuoteIdentifier()}.
-An error is raised when calling this method for a closed
-or invalid connection.
 }
 \description{
 Returns the unquoted names of remote tables accessible through this
@@ -57,6 +55,16 @@ This should include views and temporary objects, but not all database backends
 \code{\%} can be used as a wildcard in any of the search parameters to
 match 0 or more characters. \verb{_} can be used to match any single character.
 }
+\section{Failure modes}{
+
+
+
+An error is raised when calling this method for a closed
+or invalid connection.
+
+
+}
+
 \examples{
 con <- dbConnect(RSQLite::SQLite(), ":memory:")
 

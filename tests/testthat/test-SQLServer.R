@@ -1,6 +1,7 @@
 test_that("SQLServer", {
   skip_unless_has_test_db({
-      DBItest::make_context(odbc(), list(dsn = "MicrosoftSQLServer", UID="SA", PWD="Password12"), tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "SQLServer")
+    DBItest::make_context(odbc(), list(.connection_string = Sys.getenv("ODBC_CS")),
+      tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "SQLServer")
   })
 
   DBItest::test_getting_started(c(
@@ -216,13 +217,21 @@ test_that("SQLServer", {
     expect_equal(res[[1]], as.Date("2019-01-01"))
   })
 
+  test_that("UTF in VARCHAR is not truncated", {
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    value <- "grün"
+    res <- dbGetQuery(con,
+      paste0("SELECT '", value, "' AS colone"))
+    expect_equal(value, res[[1]])
+  })
+
   test_that("Zero-row-fetch does not move cursor", {
     con <- DBItest:::connect(DBItest:::get_default_context())
     tblName <- "test_zero_row_fetch"
     dbWriteTable(con, tblName, mtcars[1:2,])
     on.exit(dbRemoveTable(con, tblName))
     rs = dbSendStatement(con, paste0("SELECT * FROM ", tblName))
-    expect_equal(nrows(dbFetch(rs, n = 0)), 0)
-    expect_equal(nrows(dbFetch(rs, n = 10)), 2)
+    expect_equal(nrow(dbFetch(rs, n = 0)), 0)
+    expect_equal(nrow(dbFetch(rs, n = 10)), 2)
   })
 })

@@ -1,6 +1,7 @@
 test_that("MySQL", {
   skip_unless_has_test_db({
-    DBItest::make_context(odbc(), list(dsn = "MySQL"), tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "MySQL")
+    DBItest::make_context(odbc(), list(.connection_string = Sys.getenv("ODBC_CS")),
+      tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "MySQL")
   })
 
   DBItest::test_getting_started(c(
@@ -83,5 +84,17 @@ test_that("MySQL", {
       res <- odbcPreviewObject(con, rowLimit = 3, table = tblName)
     })
     expect_equal(nrow(res), 3)
+  })
+  test_that("sproc result retrieval", {
+    sprocName <- "testSproc"
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    DBI::dbExecute(con,
+      paste0("CREATE PROCEDURE ", sprocName, "(IN arg INT) BEGIN SELECT 'abc' as TestCol; END"))
+    on.exit(DBI::dbExecute(con, paste0("DROP PROCEDURE ", sprocName)))
+    expect_no_error({
+      res <- dbGetQuery(con, paste0("CALL ", sprocName, "(1)"))
+    })
+    expect_identical(res,
+       data.frame("TestCol" = "abc", stringsAsFactors = FALSE))
   })
 })
