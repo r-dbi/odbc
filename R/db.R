@@ -50,19 +50,7 @@ sql_create_table_teradata <- function(
 #'
 #' @export
 setMethod(
-  "sqlCreateTable", c("TeradataSTM", "character"),
-  sql_create_table_teradata
-)
-
-#' @export
-setMethod(
-  "sqlCreateTable", c("TeradataSTM", "SQL"),
-  sql_create_table_teradata
-)
-
-#' @export
-setMethod(
-  "sqlCreateTable", c("TeradataSTM", "Id"),
+  "sqlCreateTable", c("Teradata"),
   sql_create_table_teradata
 )
 
