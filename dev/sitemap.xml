@@ -64,10 +64,22 @@
     <loc>https://r-dbi.github.io/odbc/dev/reference/odbcConnectionActions.html</loc>
   </url>
   <url>
+    <loc>https://r-dbi.github.io/odbc/dev/reference/odbcConnectionCatalogs.html</loc>
+  </url>
+  <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/odbcConnectionColumns.html</loc>
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/odbcConnectionIcon.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/dev/reference/odbcConnectionSchemas.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/dev/reference/odbcConnectionTableTypes.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/dev/reference/odbcConnectionTables.html</loc>
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/odbcDataType.html</loc>

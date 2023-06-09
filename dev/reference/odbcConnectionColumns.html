@@ -47,7 +47,7 @@ renamed / re-ordered according to the return specifications below."><meta name="
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>odbcConnectionColumns</h1>
-      <small class="dont-index">Source: <a href="https://github.com/r-dbi/odbc/blob/HEAD/R/Connection.R" class="external-link"><code>R/Connection.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/r-dbi/odbc/blob/HEAD/R/Connection.R" class="external-link"><code>R/Connection.R</code></a>, <a href="https://github.com/r-dbi/odbc/blob/HEAD/R/db.R" class="external-link"><code>R/db.R</code></a></small>
       <div class="d-none name"><code>odbcConnectionColumns.Rd</code></div>
     </div>
 
@@ -75,7 +75,16 @@ renamed / re-ordered according to the return specifications below.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for OdbcConnection,SQL</span></span>
-<span><span class="fu">odbcConnectionColumns</span><span class="op">(</span><span class="va">conn</span>, <span class="va">name</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">odbcConnectionColumns</span><span class="op">(</span><span class="va">conn</span>, <span class="va">name</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for Oracle,character</span></span>
+<span><span class="fu">odbcConnectionColumns</span><span class="op">(</span></span>
+<span>  <span class="va">conn</span>,</span>
+<span>  <span class="va">name</span>,</span>
+<span>  catalog_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  schema_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  column_name <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -137,6 +146,8 @@ method.  This function, together with remaining catalog functions
 either ordinary arguments (OA) in the case of the catalog, or pattern value
 arguments (PV) in the case of schema/table name.  For these, quoted
 identifiers do not make sense, so we unquote identifiers prior to the call.</p>
+<p>Query, rather than use SQLColumns ODBC API for ORACLE since when using the API
+we bind a BIGINT to one of the column results.  Oracle's OEM driver is unable to handle.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
