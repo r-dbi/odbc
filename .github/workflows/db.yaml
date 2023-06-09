@@ -97,7 +97,6 @@ jobs:
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: r-dbi/DBITest
           needs: check
 
       - name: Install locally to avoid error with test_local()
