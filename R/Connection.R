@@ -1,8 +1,6 @@
 #' @include Driver.R
 NULL
 
-setClassUnion("missingOrNULL", c("missing", "NULL"))
-
 #' Supported Connection Attributes
 #'
 #' These (pre) connection attributes are supported and can be passed as
@@ -268,10 +266,11 @@ setMethod(
   }
 )
 
+#' @rdname odbcConnectionTables
 setMethod(
   "odbcConnectionTables",
-  c("OdbcConnection", "missingOrNULL"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL) {
+  c("OdbcConnection"),
+  function(conn, name = NULL, catalog_name = NULL, schema_name = NULL, table_type = NULL) {
 
     odbcConnectionTables(conn,
       name = "%",
@@ -335,8 +334,8 @@ setGeneric(
 #' @rdname odbcConnectionSchemas
 setMethod(
   "odbcConnectionSchemas",
-  c("OdbcConnection", "missingOrNULL"),
-  function(conn, catalog_name) {
+  c("OdbcConnection"),
+  function(conn, catalog_name = NULL) {
     connection_sql_schemas(conn@ptr)
   }
 )
