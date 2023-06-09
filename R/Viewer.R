@@ -85,7 +85,9 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
   # catalogs
   if (is.null(catalog)) {
     catalogs <- tryCatch(
-      string_values(odbcConnectionCatalogs(connection)), error = function(e) vector(mode = "character"))
+      string_values(odbcConnectionCatalogs(connection)), 
+      error = function(err) character()
+    )
     if (length(catalogs) > 0) {
       return(
         data.frame(
