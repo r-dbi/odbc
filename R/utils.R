@@ -66,3 +66,17 @@ check_n <- function(n) {
   if (trunc(n) != n) stop("`n` must be a whole number", call. = FALSE)
   n
 }
+
+isPatternValue <- function(val) {
+  grepl("[%|_]", val)
+}
+
+getSelector <- function(key, value) {
+  comp <- " = "
+  if (isPatternValue(value)) {
+    comp <- " LIKE "
+  }
+  value <- paste0("'", value, "'")
+
+  paste0(" AND ", key, comp, value)
+}
