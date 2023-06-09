@@ -133,6 +133,8 @@ setClass(
 #' - char_octet_length
 #' - ordinal_position
 #' - nullable
+#'
+#' @rdname odbcConnectionColumns
 #' @export
 setGeneric(
   "odbcConnectionColumns",
@@ -150,8 +152,8 @@ setMethod(
   c("OdbcConnection", "Id"),
   function(conn, name, column_name = NULL) {
 
-    connection_sql_columns(conn@ptr,
-      table_name = id_field(name, "table"),
+    odbcConnectionColumns(conn,
+      name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
       schema_name = id_field(name, "schema"),
       column_name = column_name)
@@ -190,6 +192,185 @@ setMethod(
   function(conn, name, ...) {
     odbcConnectionColumns(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   })
+
+#' odbcConnectionTables
+#'
+#' This function returns a listing of tables accessible
+#' to the connected user.
+#' The expectation is that this is a relatively thin
+#' wrapper around the ODBC `SQLTables` function call,
+#' albeit returning a subset of the fields.
+#'
+#' It is important to note that, similar to the ODBC/API
+#' call, this method also accomodates pattern-value arguments
+#' for the catalog, schema, and table name arguments.
+#'
+#' If extending this method, be aware that `package:odbc`
+#' internally uses this method to satisfy both
+#' DBI::dbListTables and DBI::dbExistsTable methods.
+#' ( The former also advertises pattern value arguments )
+#'
+#' @param conn OdbcConnection
+#' @param name table we wish to search for
+#' @param ... additional parameters to methods
+#'
+#' @seealso The ODBC documentation on [SQLTables](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
+#' for further details.
+#'
+#' @return data.frame with columns
+#' - table_catalog
+#' - table_schema
+#' - table_name
+#' - table_remarks
+setGeneric(
+  "odbcConnectionTables",
+  valueClass = "data.frame",
+  function(conn, name, ...) {
+    standardGeneric("odbcConnectionTables")
+  }
+)
+
+#' @rdname odbcConnectionTables
+#' @param table_type List tables of this type, for example 'VIEW'.
+#' See odbcConnectionTableTypes for a listing of available table
+#' types for your connection.
+setMethod(
+  "odbcConnectionTables",
+  c("OdbcConnection", "Id"),
+  function(conn, name, table_type = NULL) {
+
+    odbcConnectionTables(conn,
+      name = id_field(name, "table"),
+      catalog_name = id_field(name, "catalog"),
+      schema_name = id_field(name, "schema"),
+      table_type = table_type)
+  }
+)
+
+#' @rdname odbcConnectionTables
+#' @param catalog_name character catalog where we wish to query for
+#' available tables
+#' @param schema_name character schema where we wish to query for
+#' available tables.
+setMethod(
+  "odbcConnectionTables",
+  c("OdbcConnection", "character"),
+  function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL) {
+
+    connection_sql_tables(conn@ptr,
+      catalog_name = catalog_name,
+      schema_name = schema_name,
+      table_name = name,
+      table_type = table_type)
+
+  }
+)
+
+#' @rdname odbcConnectionTables
+setMethod(
+  "odbcConnectionTables",
+  c("OdbcConnection"),
+  function(conn, name = NULL, catalog_name = NULL, schema_name = NULL, table_type = NULL) {
+
+    odbcConnectionTables(conn,
+      name = "%",
+      catalog_name = catalog_name,
+      schema_name = schema_name,
+      table_type = table_type)
+
+  }
+)
+
+#' @rdname odbcConnectionTables
+setMethod(
+  "odbcConnectionTables", c("OdbcConnection", "SQL"),
+  function(conn, name, table_type = NULL) {
+    odbcConnectionTables(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+  })
+
+#' odbcConnectionCatalogs
+#'
+#' This function returns a listing of available
+#' catalogs.
+#' @param conn OdbcConnection
+#' @rdname odbcConnectionCatalogs
+setGeneric(
+  "odbcConnectionCatalogs",
+  valueClass = "character",
+  function(conn) {
+    standardGeneric("odbcConnectionCatalogs")
+  }
+)
+
+#' @rdname odbcConnectionCatalogs
+setMethod(
+  "odbcConnectionCatalogs",
+  c("OdbcConnection"),
+  function(conn) {
+    connection_sql_catalogs(conn@ptr)
+  }
+)
+
+#' odbcConnectionSchemas
+#'
+#' This function returns a listing of available
+#' schemas.
+#'
+#' Currently, for a generic connection the
+#' catalog_name argument is ignored.
+#'
+#' @param conn OdbcConnection
+#' @param catalog_name Catalog where
+#' we are looking to list schemas.
+#' @rdname odbcConnectionSchemas
+setGeneric(
+  "odbcConnectionSchemas",
+  valueClass = "character",
+  function(conn, catalog_name) {
+    standardGeneric("odbcConnectionSchemas")
+  }
+)
+
+#' @rdname odbcConnectionSchemas
+setMethod(
+  "odbcConnectionSchemas",
+  c("OdbcConnection"),
+  function(conn, catalog_name = NULL) {
+    connection_sql_schemas(conn@ptr)
+  }
+)
+
+#' @rdname odbcConnectionSchemas
+setMethod(
+  "odbcConnectionSchemas",
+  c("OdbcConnection", "character"),
+  function(conn, catalog_name) {
+    connection_sql_schemas(conn@ptr)
+  }
+)
+
+#' odbcConnectionTableTypes
+#'
+#' This function returns a listing of table
+#' types available in database.
+#' @param conn OdbcConnection
+#' @rdname odbcConnectionTableTypes
+setGeneric(
+  "odbcConnectionTableTypes",
+  valueClass = "character",
+  function(conn) {
+    standardGeneric("odbcConnectionTableTypes")
+  }
+)
+
+#' @rdname odbcConnectionTableTypes
+setMethod(
+  "odbcConnectionTableTypes",
+  "OdbcConnection",
+  function(conn) {
+    connection_sql_table_types(conn@ptr)
+  }
+)
 
 # TODO: show encoding, timezone, bigint mapping
 #' @rdname OdbcConnection
@@ -330,22 +511,11 @@ setMethod(
   function(conn, catalog_name = NULL, schema_name = NULL, table_name = NULL,
     table_type = NULL, ...) {
 
-    connection_sql_tables(conn@ptr,
+    odbcConnectionTables(conn,
+      name = table_name,
       catalog_name = catalog_name,
       schema_name = schema_name,
-      table_name = table_name,
       table_type = table_type)$table_name
-  })
-
-#' @rdname OdbcConnection
-#' @inheritParams DBI::dbExistsTable
-#' @export
-setMethod(
-  "dbExistsTable", c("OdbcConnection", "character"),
-  function(conn, name, ...) {
-    stopifnot(length(name) == 1)
-    df <- connection_sql_tables(conn@ptr, table_name = name)
-    NROW(df) > 0
   })
 
 #' @inherit DBI::dbListFields

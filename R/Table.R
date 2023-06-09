@@ -207,10 +207,10 @@ createFields <- function(con, fields, field.types, row.names) {
 setMethod(
   "dbExistsTable", c("OdbcConnection", "Id"),
   function(conn, name, ...) {
-    name@name[["table"]] %in% connection_sql_tables(conn@ptr,
+    name@name[["table"]] %in% odbcConnectionTables(conn,
+      name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
-      schema_name = id_field(name, "schema"),
-      table_name = id_field(name, "table")
+      schema_name = id_field(name, "schema")
     )
   })
 
@@ -221,4 +221,15 @@ setMethod(
   "dbExistsTable", c("OdbcConnection", "SQL"),
   function(conn, name, ...) {
     dbExistsTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+  })
+
+#' @rdname OdbcConnection
+#' @inheritParams DBI::dbExistsTable
+#' @export
+setMethod(
+  "dbExistsTable", c("OdbcConnection", "character"),
+  function(conn, name, ...) {
+    stopifnot(length(name) == 1)
+    df <- odbcConnectionTables(conn, name = name)
+    NROW(df) > 0
   })

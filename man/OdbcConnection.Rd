@@ -13,7 +13,6 @@
 \alias{dbDataType,OdbcConnection,data.frame-method}
 \alias{dbQuoteIdentifier,OdbcConnection,character-method}
 \alias{dbQuoteIdentifier,OdbcConnection,SQL-method}
-\alias{dbExistsTable,OdbcConnection,character-method}
 \alias{dbRemoveTable,OdbcConnection,character-method}
 \alias{dbGetInfo,OdbcConnection-method}
 \alias{dbGetQuery,OdbcConnection,character-method}
@@ -22,6 +21,7 @@
 \alias{dbRollback,OdbcConnection-method}
 \alias{dbExistsTable,OdbcConnection,Id-method}
 \alias{dbExistsTable,OdbcConnection,SQL-method}
+\alias{dbExistsTable,OdbcConnection,character-method}
 \title{Odbc Connection Methods}
 \usage{
 \S4method{show}{OdbcConnection}(object)
@@ -42,8 +42,6 @@
 
 \S4method{dbQuoteIdentifier}{OdbcConnection,SQL}(conn, x, ...)
 
-\S4method{dbExistsTable}{OdbcConnection,character}(conn, name, ...)
-
 \S4method{dbRemoveTable}{OdbcConnection,character}(conn, name, ...)
 
 \S4method{dbGetInfo}{OdbcConnection}(dbObj, ...)
@@ -59,6 +57,8 @@
 \S4method{dbExistsTable}{OdbcConnection,Id}(conn, name, ...)
 
 \S4method{dbExistsTable}{OdbcConnection,SQL}(conn, name, ...)
+
+\S4method{dbExistsTable}{OdbcConnection,character}(conn, name, ...)
 }
 \arguments{
 \item{object}{Any R object}

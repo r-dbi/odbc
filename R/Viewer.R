@@ -39,19 +39,19 @@ odbcListObjectTypes.default <- function(connection) {
   obj_types <- list(table = list(contains = "data"))
 
   # see if we have views too
-  table_types <- string_values(connection_sql_tables(connection@ptr, "", "", "", "%")[["table_type"]])
+  table_types <- string_values(odbcConnectionTableTypes(connection))
   if (any(table_types == "VIEW")) {
     obj_types <- c(obj_types, list(view = list(contains = "data")))
   }
 
   # check for multiple schema or a named schema
-  schemas <- string_values(connection_sql_tables(connection@ptr, "", "%", "", "")[["table_schema"]])
+  schemas <- string_values(odbcConnectionSchemas(connection))
   if (length(schemas) > 0) {
     obj_types <- list(schema = list(contains = obj_types))
   }
 
   # check for multiple catalogs
-  catalogs <- string_values(connection_sql_tables(connection@ptr, "%", "", "", "")[["table_catalog"]])
+  catalogs <- string_values(odbcConnectionCatalogs(connection))
   if (length(catalogs) > 0) {
     obj_types <- list(catalog = list(contains = obj_types))
   }
@@ -84,7 +84,10 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
   # if no catalog was supplied but this database has catalogs, return a list of
   # catalogs
   if (is.null(catalog)) {
-    catalogs <- string_values(connection_sql_tables(connection@ptr, catalog_name = "%", "", "", NULL)[["table_catalog"]])
+    catalogs <- tryCatch(
+      string_values(odbcConnectionCatalogs(connection)), 
+      error = function(err) character()
+    )
     if (length(catalogs) > 0) {
       return(
         data.frame(
@@ -98,7 +101,7 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
   # if no schema was supplied but this database has schema, return a list of
   # schema
   if (is.null(schema)) {
-    schemas <- string_values(connection_sql_tables(connection@ptr, "", "%", "", NULL)[["table_schema"]])
+    schemas <- string_values(odbcConnectionSchemas(connection, catalog))
     if (length(schemas) > 0) {
       return(
         data.frame(
@@ -109,7 +112,7 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
     }
   }
 
-  objs <- tryCatch(connection_sql_tables(connection@ptr, catalog, schema, name, table_type = type), error = function(e) NULL)
+  objs <- tryCatch(odbcConnectionTables(connection, name, catalog, schema, table_type = type), error = function(e) NULL)
   # just return a list of the objects and their types, possibly filtered by the
   # options above
   data.frame(
@@ -192,8 +195,8 @@ odbcListColumns.OdbcConnection <- function(connection, table = NULL, view = NULL
                                            catalog = NULL, schema = NULL, ...) {
 
   # specify schema or catalog if given
-  cols <- connection_sql_columns(connection@ptr,
-    table_name = validateObjectName(table, view),
+  cols <- odbcConnectionColumns(connection,
+    name = validateObjectName(table, view),
     catalog_name = catalog,
     schema_name = schema)
 
@@ -328,7 +331,7 @@ odbcConnectionActions.default <- function(connection) {
               function(e) identical(get(e, envir = .GlobalEnv), connection),
               ls(envir = .GlobalEnv))
 
-            tables <- connection_sql_tables(connection@ptr)
+            tables <- odbcConnectionTables(connection)
             columnPos <- 6
             if (nrow(tables) == 0) {
               contents <- paste(
@@ -346,12 +349,12 @@ odbcConnectionActions.default <- function(connection) {
               tableName <- dbQuoteIdentifier(connection, firstTable$table_name)
 
               # add schema
-              if (!is.null(firstTable$table_schema) && nchar(firstTable$table_schema) > 0) {
+              if (!is.na(firstTable$table_schema) && nchar(firstTable$table_schema) > 0) {
                 tableName <- paste(dbQuoteIdentifier(connection, firstTable$table_schema), tableName, sep = ".")
               }
 
               # add catalog
-              if (!is.null(firstTable$table_catalog) && nchar(firstTable$table_catalog) > 0) {
+              if (!is.na(firstTable$table_catalog) && nchar(firstTable$table_catalog) > 0) {
                 tableName <- paste(dbQuoteIdentifier(connection, firstTable$table_catalog), tableName, sep = ".")
               }
 
@@ -365,7 +368,6 @@ odbcConnectionActions.default <- function(connection) {
 
               columnPos <- 14
             }
-            tables <- dbListTables(connection)
 
             documentNew("sql", contents, row = 2, column = columnPos, execute = FALSE)
           }

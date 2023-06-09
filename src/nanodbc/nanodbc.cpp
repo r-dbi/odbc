@@ -4767,6 +4767,35 @@ std::list<string_type> catalog::list_schemas()
     return names;
 }
 
+std::list<string_type> catalog::list_table_types()
+{
+
+    statement stmt(conn_);
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLTables),
+        rc,
+        stmt.native_statement_handle(),
+        (NANODBC_SQLCHAR*)NANODBC_TEXT(""),
+        0,
+        (NANODBC_SQLCHAR*)NANODBC_TEXT(""),
+        0,
+        (NANODBC_SQLCHAR*)NANODBC_TEXT(""),
+        0,
+        (NANODBC_SQLCHAR*)SQL_ALL_TABLE_TYPES,
+        1);
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
+
+    result find_result(stmt, 1);
+    catalog::tables table_types(find_result);
+
+    std::list<string_type> names;
+    while (table_types.next())
+        names.push_back(table_types.table_type());
+    return names;
+}
+
 } // namespace nanodbc
 
 // clang-format off

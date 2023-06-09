@@ -136,6 +136,39 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// connection_sql_catalogs
+Rcpp::StringVector connection_sql_catalogs(connection_ptr const& p);
+RcppExport SEXP _odbc_connection_sql_catalogs(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< connection_ptr const& >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(connection_sql_catalogs(p));
+    return rcpp_result_gen;
+END_RCPP
+}
+// connection_sql_schemas
+Rcpp::StringVector connection_sql_schemas(connection_ptr const& p);
+RcppExport SEXP _odbc_connection_sql_schemas(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< connection_ptr const& >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(connection_sql_schemas(p));
+    return rcpp_result_gen;
+END_RCPP
+}
+// connection_sql_table_types
+Rcpp::StringVector connection_sql_table_types(connection_ptr const& p);
+RcppExport SEXP _odbc_connection_sql_table_types(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< connection_ptr const& >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(connection_sql_table_types(p));
+    return rcpp_result_gen;
+END_RCPP
+}
 // connection_sql_columns
 Rcpp::DataFrame connection_sql_columns(connection_ptr const& p, SEXP column_name, SEXP catalog_name, SEXP schema_name, SEXP table_name);
 RcppExport SEXP _odbc_connection_sql_columns(SEXP pSEXP, SEXP column_nameSEXP, SEXP catalog_nameSEXP, SEXP schema_nameSEXP, SEXP table_nameSEXP) {
@@ -340,6 +373,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_odbc_connection_rollback", (DL_FUNC) &_odbc_connection_rollback, 1},
     {"_odbc_connection_valid", (DL_FUNC) &_odbc_connection_valid, 1},
     {"_odbc_connection_sql_tables", (DL_FUNC) &_odbc_connection_sql_tables, 5},
+    {"_odbc_connection_sql_catalogs", (DL_FUNC) &_odbc_connection_sql_catalogs, 1},
+    {"_odbc_connection_sql_schemas", (DL_FUNC) &_odbc_connection_sql_schemas, 1},
+    {"_odbc_connection_sql_table_types", (DL_FUNC) &_odbc_connection_sql_table_types, 1},
     {"_odbc_connection_sql_columns", (DL_FUNC) &_odbc_connection_sql_columns, 5},
     {"_odbc_transactionLevels", (DL_FUNC) &_odbc_transactionLevels, 0},
     {"_odbc_set_transaction_isolation", (DL_FUNC) &_odbc_set_transaction_isolation, 2},
