@@ -349,12 +349,12 @@ odbcConnectionActions.default <- function(connection) {
               tableName <- dbQuoteIdentifier(connection, firstTable$table_name)
 
               # add schema
-              if (!is.null(firstTable$table_schema) && !is.na(firstTable$table_schema) && nchar(firstTable$table_schema) > 0) {
+              if (!is.na(firstTable$table_schema) && nchar(firstTable$table_schema) > 0) {
                 tableName <- paste(dbQuoteIdentifier(connection, firstTable$table_schema), tableName, sep = ".")
               }
 
               # add catalog
-              if (!is.null(firstTable$table_catalog) && !is.na(firstTable$table_catalog) && nchar(firstTable$table_catalog) > 0) {
+              if (!is.na(firstTable$table_catalog) && nchar(firstTable$table_catalog) > 0) {
                 tableName <- paste(dbQuoteIdentifier(connection, firstTable$table_catalog), tableName, sep = ".")
               }
 
