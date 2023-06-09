@@ -57,10 +57,10 @@
   con,
   table,
   fields,
-  field.types = NULL,
   row.names = NA,
   temporary = FALSE,
-  ...
+  ...,
+  field.types = NULL
 )
 }
 \arguments{

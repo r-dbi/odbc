@@ -22,11 +22,11 @@ Useful links:
 Authors:
 \itemize{
   \item Jim Hester
+  \item Oliver Gjoneski
 }
 
 Other contributors:
 \itemize{
-  \item Oliver Gjoneski (detule) [contributor]
   \item lexicalunit (nanodbc library) [copyright holder]
   \item Google Inc. (cctz library) [copyright holder]
   \item RStudio [copyright holder, funder]
