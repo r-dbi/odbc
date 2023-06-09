@@ -4,8 +4,7 @@ Version: 1.3.4.9000
 Authors@R: c(
     person("Jim", "Hester", role = "aut"),
     person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut", "cre")),
-    person("Oliver", "Gjoneski", role = "ctb",
-           comment = "detule"),
+    person("Oliver", "Gjoneski", role = "aut"),
     person("lexicalunit", role = "cph",
            comment = "nanodbc library"),
     person("Google Inc.", role = "cph",
