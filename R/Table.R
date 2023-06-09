@@ -167,7 +167,7 @@ setMethod("sqlData", "OdbcConnection", function(con, value, row.names = NA, ...)
 #' @param field.types Additional field types used to override derived types.
 #' @export
 setMethod("sqlCreateTable", "OdbcConnection",
-  function(con, table, fields, field.types = NULL, row.names = NA, temporary = FALSE, ...) {
+  function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
