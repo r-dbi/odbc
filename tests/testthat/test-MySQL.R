@@ -24,7 +24,8 @@ test_that("MySQL", {
       "data_logical($|_.+)",             # Not an error, PostgreSQL has a logical data type
       "data_raw.*",                      # cast(1 bytea) is not valid `cannot cast type integer to bytea`
       "^data_timestamp.*",               # MySQL converts the timestamps from local times, so they roundtrip unexpectedly
-      "data_character", # Strange MySQL Error only reproducible on travis
+      "data_character",                  # Strange MySQL Error only reproducible on travis
+      "data_type_create_table",          # 2023/6/23: Strange MySQL Error (warning/Result already cleared) only reproducible on GHA
       NULL))
   DBItest::test_sql(c(
       "quote_identifier_vectorized", # Can't implement until https://github.com/rstats-db/DBI/issues/71 is closed
