@@ -112,9 +112,6 @@
     <loc>https://r-dbi.github.io/odbc/dev/reference/sqlCreateTable-methods.html</loc>
   </url>
   <url>
-    <loc>https://r-dbi.github.io/odbc/dev/reference/test_roundtrip.html</loc>
-  </url>
-  <url>
     <loc>https://r-dbi.github.io/odbc/dev/setup.html</loc>
   </url>
 </urlset>
