@@ -1,6 +1,6 @@
 Package: odbc
 Title: Connect to ODBC Compatible Databases (using the DBI Interface)
-Version: 1.3.5
+Version: 1.3.5.9000
 Authors@R: c(
     person("Jim", "Hester", role = "aut"),
     person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut", "cre")),
