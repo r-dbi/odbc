@@ -1,7 +1,5 @@
 ---
-output:
-  github_document:
-    html_preview: false
+output: github_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -20,7 +18,7 @@ knitr::opts_chunk$set(
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/odbc)](https://cran.r-project.org/package=odbc)
 [![R-CMD-check](https://github.com/r-dbi/odbc/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-dbi/odbc/actions/workflows/R-CMD-check.yaml)
-[![Coverage Status](https://img.shields.io/codecov/c/github/r-dbi/odbc/master.svg)](https://codecov.io/github/r-dbi/odbc?branch=master)
+[![Coverage Status](https://img.shields.io/codecov/c/github/r-dbi/odbc/master.svg)](https://app.codecov.io/github/r-dbi/odbc?branch=main)
 <!-- badges: end -->
 
 The goal of the odbc package is to provide a DBI-compliant interface to [Open
@@ -53,7 +51,7 @@ others. The implementation builds on the
 
 ## Installation
 For Unix and MacOS ODBC drivers should be compiled against
-[unixODBC](http://www.unixodbc.org/). Drivers compiled against [iODBC](https://www.iodbc.org/) _may_ also
+[unixODBC](https://www.unixodbc.org/). Drivers compiled against [iODBC](https://www.iodbc.org/) _may_ also
 work, but are not fully supported.
 
 After installation of the driver manager and driver, you will have to
@@ -256,7 +254,7 @@ Driver              = SQLite Driver
 Database            = /tmp/testing
 ```
 
-See also: [unixODBC without the GUI](http://www.unixodbc.org/odbcinst.html) for more information and examples.
+See also: [unixODBC without the GUI](https://www.unixodbc.org/odbcinst.html) for more information and examples.
 
 ## Usage
 All of the following examples assume you have already created a connection `con`.

@@ -11,7 +11,7 @@ developed.](http://www.repostatus.org/badges/latest/active.svg)](https://www.rep
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/odbc)](https://cran.r-project.org/package=odbc)
 [![R-CMD-check](https://github.com/r-dbi/odbc/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-dbi/odbc/actions/workflows/R-CMD-check.yaml)
 [![Coverage
-Status](https://img.shields.io/codecov/c/github/r-dbi/odbc/master.svg)](https://codecov.io/github/r-dbi/odbc?branch=master)
+Status](https://img.shields.io/codecov/c/github/r-dbi/odbc/master.svg)](https://app.codecov.io/github/r-dbi/odbc?branch=main)
 <!-- badges: end -->
 
 The goal of the odbc package is to provide a DBI-compliant interface to
@@ -46,7 +46,7 @@ builds on the [nanodbc](https://nanodbc.github.io/nanodbc/) C++ library.
 ## Installation
 
 For Unix and MacOS ODBC drivers should be compiled against
-[unixODBC](http://www.unixodbc.org/). Drivers compiled against
+[unixODBC](https://www.unixodbc.org/). Drivers compiled against
 [iODBC](https://www.iodbc.org/) *may* also work, but are not fully
 supported.
 
@@ -277,7 +277,7 @@ Database            = /tmp/testing
 ```
 
 See also: [unixODBC without the
-GUI](http://www.unixodbc.org/odbcinst.html) for more information and
+GUI](https://www.unixodbc.org/odbcinst.html) for more information and
 examples.
 
 ## Usage
