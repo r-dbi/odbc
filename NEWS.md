@@ -1,4 +1,4 @@
-# odbc (development version)
+# odbc 1.3.5
 
 * Various fixes for `R CMD check`.
 
