@@ -2,7 +2,7 @@ pandoc: 2.19.2
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles: {}
-last_built: 2023-06-29T21:02Z
+last_built: 2023-06-29T22:19Z
 urls:
   reference: https://r-dbi.github.io/odbc/reference
   article: https://r-dbi.github.io/odbc/articles
