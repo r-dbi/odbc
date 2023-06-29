@@ -1,15 +1,21 @@
 # odbc (development version)
 
-* Oracle performance enhancements (#577)
+* Various fixes for `R CMD check`.
 
 * The argument order for `sqlCreateTable()` methods avoiding weird argument 
   mismatch problems (#448).
 
 * Fixed truncation when retrieving unicode data stored in
   VAR/CHAR columns (@detule, #553).
-* MYSQL: Fixed retrieving results from stored procedures (@detule, #435).
+
 * Fixed issue related to fetching zero rows (@detule, #528).
-* Spark: Changed data type for date-times from `DATE` to `TIMESTAMP` (@schuemie, #555).
+
+* Backend specific improvements:
+
+  * MYSQL: Fixed retrieving results from stored procedures (@detule, #435).
+  * Oracle: performance enhancements (#577)
+  * Spark: Changed data type for date-times from `DATE` to `TIMESTAMP` 
+    (@schuemie, #555).
 
 # odbc 1.3.4
 
