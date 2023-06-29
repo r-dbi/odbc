@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.3.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.3.5</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,7 +61,7 @@
         <dd>Supported Connection Attributes</dd>
       </dl><dl><dt>
           
-          <code><a href="OdbcConnection.html">show(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbIsValid(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbDisconnect(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbSendQuery(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbSendStatement(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbDataType(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbDataType(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbQuoteIdentifier(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbQuoteIdentifier(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;SQL&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbExistsTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbRemoveTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbGetInfo(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbGetQuery(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbBegin(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbCommit(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbRollback(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbExistsTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;Id&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbExistsTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;SQL&gt;</i>)</a></code> 
+          <code><a href="OdbcConnection.html">show(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbIsValid(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbDisconnect(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbSendQuery(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbSendStatement(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbDataType(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbDataType(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbQuoteIdentifier(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbQuoteIdentifier(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;SQL&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbRemoveTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbGetInfo(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbGetQuery(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbBegin(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbCommit(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbRollback(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbExistsTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;Id&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbExistsTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;SQL&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbExistsTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> 
         </dt>
         <dd>Odbc Connection Methods</dd>
       </dl><dl><dt>
@@ -121,6 +121,11 @@
         <dd>List the actions supported for the connection</dd>
       </dl><dl><dt>
           
+          <code><a href="odbcConnectionCatalogs.html">odbcConnectionCatalogs()</a></code> 
+        </dt>
+        <dd>odbcConnectionCatalogs</dd>
+      </dl><dl><dt>
+          
           <code><a href="odbcConnectionColumns.html">odbcConnectionColumns()</a></code> 
         </dt>
         <dd>odbcConnectionColumns</dd>
@@ -129,6 +134,21 @@
           <code><a href="odbcConnectionIcon.html">odbcConnectionIcon()</a></code> 
         </dt>
         <dd>Get an icon representing a connection.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="odbcConnectionSchemas.html">odbcConnectionSchemas()</a></code> 
+        </dt>
+        <dd>odbcConnectionSchemas</dd>
+      </dl><dl><dt>
+          
+          <code><a href="odbcConnectionTableTypes.html">odbcConnectionTableTypes()</a></code> 
+        </dt>
+        <dd>odbcConnectionTableTypes</dd>
+      </dl><dl><dt>
+          
+          <code><a href="odbcConnectionTables.html">odbcConnectionTables()</a></code> 
+        </dt>
+        <dd>odbcConnectionTables</dd>
       </dl><dl><dt>
           
           <code><a href="odbcDataType.html">odbcDataType()</a></code> 
@@ -179,17 +199,12 @@
           <code><a href="sqlCreateTable-methods.html">sqlCreateTable-methods</a></code> <code><a href="sqlCreateTable-methods.html">sqlCreateTable,DB2/AIX64-method</a></code> <code><a href="sqlCreateTable-methods.html">sqlCreateTable,DBIConnection-method</a></code> <code><a href="sqlCreateTable-methods.html">sqlCreateTable,HDB-method</a></code> <code><a href="sqlCreateTable-methods.html">sqlCreateTable,Oracle-method</a></code> <code><a href="sqlCreateTable-methods.html">sqlCreateTable,Teradata-method</a></code> 
         </dt>
         <dd>~~ Methods for Function <code>sqlCreateTable</code> in Package <span class="pkg">DBI</span> ~~</dd>
-      </dl><dl><dt>
-          
-          <code><a href="test_roundtrip.html">test_roundtrip()</a></code> 
-        </dt>
-        <dd>Test round tripping a simple table</dd>
       </dl></div>
   </main></div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Jim Hester, Hadley Wickham, RStudio.</p>
+  <p></p><p>Developed by Jim Hester, Hadley Wickham, <a href="https://github.com/detule" class="external-link">Oliver Gjoneski</a>, RStudio.</p>
 </div>
 
 <div class="pkgdown-footer-right">

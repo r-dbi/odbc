@@ -10,6 +10,9 @@
     <loc>https://r-dbi.github.io/odbc/LICENSE-text.html</loc>
   </url>
   <url>
+    <loc>https://r-dbi.github.io/odbc/LICENSE.html</loc>
+  </url>
+  <url>
     <loc>https://r-dbi.github.io/odbc/MAINTENANCE.html</loc>
   </url>
   <url>
@@ -64,10 +67,22 @@
     <loc>https://r-dbi.github.io/odbc/reference/odbcConnectionActions.html</loc>
   </url>
   <url>
+    <loc>https://r-dbi.github.io/odbc/reference/odbcConnectionCatalogs.html</loc>
+  </url>
+  <url>
     <loc>https://r-dbi.github.io/odbc/reference/odbcConnectionColumns.html</loc>
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/reference/odbcConnectionIcon.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/reference/odbcConnectionSchemas.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/reference/odbcConnectionTableTypes.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/reference/odbcConnectionTables.html</loc>
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/reference/odbcDataType.html</loc>
@@ -98,9 +113,6 @@
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/reference/sqlCreateTable-methods.html</loc>
-  </url>
-  <url>
-    <loc>https://r-dbi.github.io/odbc/reference/test_roundtrip.html</loc>
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/setup.html</loc>

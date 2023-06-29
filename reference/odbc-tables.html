@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.3.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.3.5</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -104,10 +104,10 @@
 <span>  <span class="va">con</span>,</span>
 <span>  <span class="va">table</span>,</span>
 <span>  <span class="va">fields</span>,</span>
-<span>  field.types <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  row.names <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  temporary <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  field.types <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -171,8 +171,13 @@ performance.</p></dd>
 
 
 <dt>table</dt>
-<dd><p>Name of the table. Escaped with
-<code><a href="https://dbi.r-dbi.org/reference/dbQuoteIdentifier.html" class="external-link">dbQuoteIdentifier()</a></code>.</p></dd>
+<dd><p>The table name, passed on to <code><a href="https://dbi.r-dbi.org/reference/dbQuoteIdentifier.html" class="external-link">dbQuoteIdentifier()</a></code>. Options are:</p><ul><li><p>a character string with the unquoted DBMS table name,
+e.g. <code>"table_name"</code>,</p></li>
+<li><p>a call to <code><a href="https://dbi.r-dbi.org/reference/Id.html" class="external-link">Id()</a></code> with components to the fully qualified table name,
+e.g. <code>Id(schema = "my_schema", table = "table_name")</code></p></li>
+<li><p>a call to <code><a href="https://dbi.r-dbi.org/reference/SQL.html" class="external-link">SQL()</a></code> with the quoted and fully qualified table name
+given verbatim, e.g. <code>SQL('"my_schema"."table_name"')</code></p></li>
+</ul></dd>
 
 
 <dt>fields</dt>
@@ -210,7 +215,7 @@ Field types are unescaped.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Jim Hester, Hadley Wickham, RStudio.</p>
+  <p></p><p>Developed by Jim Hester, Hadley Wickham, <a href="https://github.com/detule" class="external-link">Oliver Gjoneski</a>, RStudio.</p>
 </div>
 
 <div class="pkgdown-footer-right">
