@@ -4,6 +4,7 @@
 \alias{odbcConnectionTables}
 \alias{odbcConnectionTables,OdbcConnection,Id-method}
 \alias{odbcConnectionTables,OdbcConnection,character-method}
+\alias{odbcConnectionTables,OdbcConnection,ANY-method}
 \alias{odbcConnectionTables,OdbcConnection,SQL-method}
 \alias{odbcConnectionTables,Oracle,character-method}
 \title{odbcConnectionTables}
@@ -15,6 +16,14 @@ odbcConnectionTables(conn, name, ...)
 \S4method{odbcConnectionTables}{OdbcConnection,character}(
   conn,
   name,
+  catalog_name = NULL,
+  schema_name = NULL,
+  table_type = NULL
+)
+
+\S4method{odbcConnectionTables}{OdbcConnection,ANY}(
+  conn,
+  name = NULL,
   catalog_name = NULL,
   schema_name = NULL,
   table_type = NULL
