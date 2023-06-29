@@ -285,7 +285,7 @@ setMethod(
 setMethod(
   "odbcConnectionTables", c("OdbcConnection", "SQL"),
   function(conn, name, table_type = NULL) {
-    odbcConnectionTables(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+    odbcConnectionTables(conn, dbUnquoteIdentifier(conn, name)[[1]], table_type = table_type)
   })
 
 #' odbcConnectionCatalogs
