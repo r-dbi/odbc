@@ -70,7 +70,7 @@ odbc_write_table <-
     fieldDetails <- tryCatch({
       details <- odbcConnectionColumns(conn, name)
       details$param_index <- match(details$name, names(values))
-      details[!is.na(details$param_index), ]
+      details[!is.na(details$param_index) & !is.na(details&data_type), ]
     }, error = function(e) {
       return(NULL)
     })
@@ -79,7 +79,8 @@ odbc_write_table <-
 
       name <- dbQuoteIdentifier(conn, name)
       fields <- dbQuoteIdentifier(conn, names(values))
-      params <- rep("?", length(fields))
+      nparam <- length(fields)
+      params <- rep("?", nparam)
 
       sql <- paste0(
         "INSERT INTO ", name, " (", paste0(fields, collapse = ", "), ")\n",
@@ -87,7 +88,7 @@ odbc_write_table <-
         )
       rs <- OdbcResult(conn, sql)
 
-      if (!is.null(fieldDetails) && nrow(fieldDetails)) {
+      if (!is.null(fieldDetails) && nrow(fieldDetails) == nparam) {
         result_describe_parameters(rs@ptr, fieldDetails)
       }
 
