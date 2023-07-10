@@ -70,7 +70,7 @@ odbc_write_table <-
     fieldDetails <- tryCatch({
       details <- odbcConnectionColumns(conn, name)
       details$param_index <- match(details$name, names(values))
-      details[!is.na(details$param_index) & !is.na(details&data_type), ]
+      details[!is.na(details$param_index) & !is.na(details$data_type), ]
     }, error = function(e) {
       return(NULL)
     })
