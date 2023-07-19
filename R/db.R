@@ -111,16 +111,21 @@ setMethod(
   c("Teradata", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL) {
 
-    table_list_from_schema <- connection_sql_tables(
+    schema_table_list <- connection_sql_tables(
       conn@ptr,
       catalog_name = catalog_name,
       schema_name = schema_name,
       table_name = name,
-      table_type = table_type)
+      table_type = table_type)$table_name
 
-    c(
-      dbGetQuery(conn, "HELP VOLATILE TABLE")[["Table SQL Name"]],
-      table_list_from_schema
+    temporary_table_list <- dbGetQuery(conn, "HELP VOLATILE TABLE")[["Table SQL Name"]]
+
+    # dbListTables expect a dataframe with a column `table_name`
+    data.frame(
+      table_name = c(
+        temporary_table_list,
+        schema_table_list
+      )
     )
 
   }
