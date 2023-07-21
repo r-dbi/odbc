@@ -205,6 +205,17 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// set_metadata_id
+void set_metadata_id(connection_ptr const& p, bool val);
+RcppExport SEXP _odbc_set_metadata_id(SEXP pSEXP, SEXP valSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< connection_ptr const& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< bool >::type val(valSEXP);
+    set_metadata_id(p, val);
+    return R_NilValue;
+END_RCPP
+}
 // bigint_mappings
 Rcpp::IntegerVector bigint_mappings();
 RcppExport SEXP _odbc_bigint_mappings() {
@@ -379,6 +390,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_odbc_connection_sql_columns", (DL_FUNC) &_odbc_connection_sql_columns, 5},
     {"_odbc_transactionLevels", (DL_FUNC) &_odbc_transactionLevels, 0},
     {"_odbc_set_transaction_isolation", (DL_FUNC) &_odbc_set_transaction_isolation, 2},
+    {"_odbc_set_metadata_id", (DL_FUNC) &_odbc_set_metadata_id, 2},
     {"_odbc_bigint_mappings", (DL_FUNC) &_odbc_bigint_mappings, 0},
     {"_odbc_result_release", (DL_FUNC) &_odbc_result_release, 1},
     {"_odbc_result_active", (DL_FUNC) &_odbc_result_active, 1},

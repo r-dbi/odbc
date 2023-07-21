@@ -301,6 +301,13 @@ void set_transaction_isolation(connection_ptr const& p, size_t level) {
 }
 
 // [[Rcpp::export]]
+void set_metadata_id(connection_ptr const& p, bool val) {
+  auto c = (*p)->connection();
+  SQLSetConnectAttr(
+      c->native_dbc_handle(), SQL_ATTR_METADATA_ID, (SQLPOINTER)val, 0);
+}
+
+// [[Rcpp::export]]
 Rcpp::IntegerVector bigint_mappings() {
   Rcpp::IntegerVector out = Rcpp::IntegerVector::create(
       Rcpp::_["integer64"] = bigint_map_t::i64_to_integer64,

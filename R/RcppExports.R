@@ -69,6 +69,10 @@ set_transaction_isolation <- function(p, level) {
     invisible(.Call(`_odbc_set_transaction_isolation`, p, level))
 }
 
+set_metadata_id <- function(p, val) {
+    invisible(.Call(`_odbc_set_metadata_id`, p, val))
+}
+
 bigint_mappings <- function() {
     .Call(`_odbc_bigint_mappings`)
 }

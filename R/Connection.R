@@ -686,3 +686,18 @@ odbcSetTransactionIsolationLevel <- function(conn, levels) {
 
   set_transaction_isolation(conn@ptr, transactionLevels()[levels])
 }
+
+#' Set METADATA_ID
+#'
+#' Configure whether the string argument in catalog functions is treated as an
+#' identifier (\code{TRUE}) or a search pattern (\code{FALSE}).  The default
+#' is \code{FALSE}.
+#' @export
+#' @examples
+#' \dontrun{
+#' odbcSetMetadataId(conn, TRUE)
+#' }
+#'
+odbcSetMetadataId <- function(conn, val) {
+  set_metadata_id(conn@ptr, val)
+}
