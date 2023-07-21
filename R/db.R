@@ -107,9 +107,14 @@ setMethod("sqlCreateTable", "Teradata",
 
 setMethod(
   "dbListTables", "Teradata",
-  function(conn, ...) {
+  function(conn, catalog_name = NULL, schema_name = NULL, table_name = NULL,
+    table_type = NULL, ...) {
     c(dbGetQuery(conn, "HELP VOLATILE TABLE")[["Table SQL Name"]],
-      odbcConnectionTables(conn, ...)$table_name)
+      odbcConnectionTables(conn,
+        name = table_name,
+        catalog_name = catalog_name,
+        schema_name = schema_name,
+        table_type = table_type)$table_name)
   })
 
 # SAP HANA ----------------------------------------------------------------
