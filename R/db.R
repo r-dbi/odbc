@@ -111,23 +111,37 @@ setMethod(
   c("Teradata", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL) {
 
-    schema_table_list <- connection_sql_tables(
-      conn@ptr,
-      catalog_name = catalog_name,
-      schema_name = schema_name,
-      table_name = name,
-      table_type = table_type)$table_name
+    res <- callNextMethod()
+    if ( !is.null(schema_name) ) {
+      return(res)
+    }
 
-    temporary_table_list <- dbGetQuery(conn, "HELP VOLATILE TABLE")[["Table SQL Name"]]
+    # Also look through volatile tables if
+    # not querying in a specific schema
+    tempTableNames <- dbGetQuery(conn, "HELP VOLATILE TABLE")[["Table SQL Name"]]
+    # If a name argument is supplied, subset the temp table names vector
+    # to either an exact match, or if pattern value, to an approximate match
+    if ( !is.null( name ) ) {
+      if ( isPatternValue( name ) ) {
+        name <- convertWildCards( name )
+      }
+      else {
+        name <- paste0("^", name, "$")
+      }
+      tempTableNames <- tempTableNames[ grepl(name, tempTableNames) ]
+    }
 
-    # dbListTables expect a dataframe with a column `table_name`
-    data.frame(
-      table_name = c(
-        temporary_table_list,
-        schema_table_list
+    navec <- rep( NA_character_, length( tempTableNames ) )
+    rbind(
+      res,
+      data.frame(
+        table_catalog = navec,
+        table_schema = navec,
+        table_name = tempTableNames,
+        table_remarks = navec,
+        stringsAsFactors = FALSE
       )
     )
-
   }
 )
 
