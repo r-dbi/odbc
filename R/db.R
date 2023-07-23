@@ -145,7 +145,6 @@ setMethod(
   }
 )
 
-
 # SAP HANA ----------------------------------------------------------------
 
 setClass("HDB", where = class_cache)
