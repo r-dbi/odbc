@@ -71,6 +71,16 @@ isPatternValue <- function(val) {
   grepl("[%|_]", val)
 }
 
+# Per ODBC spec, "%" is synonymous with
+# zero or more of any characters. "_" is
+# any one character.  Here we convert
+# a string with pattern value style wildcards
+# to one that can be used in a regex search.
+convertWildCards <- function(val) {
+  val <- gsub("%", "(.*)", val)
+  gsub("_", "(.)", val)
+}
+
 getSelector <- function(key, value) {
   comp <- " = "
   if (isPatternValue(value)) {
