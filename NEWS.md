@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* Modify `odbcDataType.Snowflake` to better reflect Snowflake Data Types documentation (@meztez, #599).
+
 # odbc 1.3.5
 
 * Various fixes for `R CMD check`.
