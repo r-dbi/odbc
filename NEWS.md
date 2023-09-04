@@ -1,4 +1,9 @@
 # odbc (development version)
+* SQL Server: Improved handling for local temp tables in dbWrite, dbAppendTable,
+  dbExistTable (@detule, #600)
+* Teradata: Improved handling for temp tables (@detule, #589, 590)
+* Oracle: Fix regression when falling back to odbcConnectionColumns to
+  describe column data types (@detule, #587)
 
 # odbc 1.3.5
 
