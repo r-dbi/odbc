@@ -7,6 +7,7 @@
 \alias{isTempTable,Microsoft SQL Server,character-method}
 \alias{dbExistsTable,Microsoft SQL Server,character-method}
 \alias{dbExistsTable}
+\alias{sqlCreateTable,Microsoft SQL Server-method}
 \title{Simple class prototype to avoid messages about unknown classes from setMethod}
 \arguments{
 \item{conn}{A \linkS4class{DBIConnection} object, as returned by
@@ -25,6 +26,40 @@ e.g. \code{Id(schema = "my_schema", table = "table_name")}
 \item a call to \code{\link[DBI:SQL]{SQL()}} with the quoted and fully qualified table name
 given verbatim, e.g. \code{SQL('"my_schema"."table_name"')}
 }}
+
+\item{con}{A database connection.}
+
+\item{table}{The table name, passed on to \code{\link[DBI:dbQuoteIdentifier]{dbQuoteIdentifier()}}. Options are:
+\itemize{
+\item a character string with the unquoted DBMS table name,
+e.g. \code{"table_name"},
+\item a call to \code{\link[DBI:Id]{Id()}} with components to the fully qualified table name,
+e.g. \code{Id(schema = "my_schema", table = "table_name")}
+\item a call to \code{\link[DBI:SQL]{SQL()}} with the quoted and fully qualified table name
+given verbatim, e.g. \code{SQL('"my_schema"."table_name"')}
+}}
+
+\item{fields}{Either a character vector or a data frame.
+
+A named character vector: Names are column names, values are types.
+Names are escaped with \code{\link[DBI:dbQuoteIdentifier]{dbQuoteIdentifier()}}.
+Field types are unescaped.
+
+A data frame: field types are generated using
+\code{\link[DBI:dbDataType]{dbDataType()}}.}
+
+\item{row.names}{Either \code{TRUE}, \code{FALSE}, \code{NA} or a string.
+
+If \code{TRUE}, always translate row names to a column called "row_names".
+If \code{FALSE}, never translate row names. If \code{NA}, translate
+rownames only if they're a character vector.
+
+A string is equivalent to \code{TRUE}, but allows you to override the
+default name.
+
+For backward compatibility, \code{NULL} is equivalent to \code{FALSE}.}
+
+\item{temporary}{If \code{TRUE}, will generate a temporary table statement.}
 }
 \value{
 \code{dbExistsTable()} returns a logical scalar, \code{TRUE} if the table or view
@@ -33,7 +68,7 @@ specified by the \code{name} argument exists, \code{FALSE} otherwise.
 This includes temporary tables if supported by the database.
 }
 \description{
-For SQL Server, conn@quote will return the quotation mark, however
+For SQL Server, \code{conn@quote} will return the quotation mark, however
 both quotation marks as well as square bracket are used interchangeably for
 delimited identifiers.  See:
 \url{https://learn.microsoft.com/en-us/sql/relational-databases/databases/database-identifiers?view=sql-server-ver16}
@@ -47,6 +82,10 @@ Local temp tables are stored as
 
 If we can identify that the name is that of a local temp table
 then adjust the identifier and query appropriately.
+
+Will warn user if \code{temporary} is set to TRUE but table name does not conform
+to local temp table naming conventions.  If writing to a global temp table, user
+should not set the temporary flag to TRUE.
 }
 \details{
 True if:
@@ -65,6 +104,9 @@ the table correctly unless name is adjusted ( allowed trailing wildcards to
 accomodate trailing underscores and postfix ).
 
 Therefore, in all cases query for \code{name___\%}.
+
+In both cases a simple CREATE TABLE statement is used / the table identifier is
+is the differentiator ( viz-a-viz creating a non-temp table ).
 }
 \section{Failure modes}{
 
