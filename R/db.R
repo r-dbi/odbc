@@ -8,7 +8,37 @@
 #' @param conn OdbcConnection
 #' @param name Table name
 #' @param ... additional parameters to methods
-isTempTable <- function(conn, name, ...) UseMethod("isTempTable")
+#' @rdname isTempTable
+#' @export
+setGeneric(
+  "isTempTable",
+  valueClass = "logical",
+  function(conn, name, ...) {
+    standardGeneric("isTempTable")
+  }
+)
+
+#' @rdname isTempTable
+setMethod(
+  "isTempTable",
+  c("OdbcConnection", "Id"),
+  function(conn, name, ...) {
+    isTempTable(conn,
+      name = id_field(name, "table"),
+      catalog_name = id_field(name, "catalog"),
+      schema_name = id_field(name, "schema"),
+      ...)
+  }
+)
+
+#' @rdname isTempTable
+setMethod(
+  "isTempTable",
+  c("OdbcConnection", "SQL"),
+  function(conn, name, ...) {
+    isTempTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+  }
+)
 
 # Oracle --------------------------------------------------------------------
 
@@ -251,23 +281,20 @@ setMethod("dbUnquoteIdentifier", c("Microsoft SQL Server", "SQL"),
 #' - Name must start with "#" followd by a non-"#" character
 #' @rdname SQLServer
 #' @usage NULL
-`isTempTable.Microsoft SQL Server` <- function(conn, name, ...) {
-  args <- list(...)
-  if ( "catalog_name" %in% names(args) ) {
-    catalog_name <- args[["catalog_name"]]
+setMethod("isTempTable", c("Microsoft SQL Server", "character"),
+  function(conn, name, catalog_name = NULL, schema_name = NULL, ...) {
     if ( !is.null(catalog_name) &&
         catalog_name != "%" &&
         length(catalog_name ) > 0 &&
         catalog_name != "tempdb" ) {
       return(FALSE)
     }
-  }
 
-  if ( !grepl("^[#][^#]", name ) ) {
-    return(FALSE)
-  }
-  return(TRUE)
-}
+    if ( !grepl("^[#][^#]", name ) ) {
+      return(FALSE)
+    }
+    return(TRUE)
+})
 
 #' SQL server specific dbExistsTable implementation that accounts for
 #' local temp tables.

@@ -2,10 +2,16 @@
 % Please edit documentation in R/db.R
 \name{isTempTable}
 \alias{isTempTable}
+\alias{isTempTable,OdbcConnection,Id-method}
+\alias{isTempTable,OdbcConnection,SQL-method}
 \title{Helper method used to determine if a table identifier is that
 of a temporary table.}
 \usage{
 isTempTable(conn, name, ...)
+
+\S4method{isTempTable}{OdbcConnection,Id}(conn, name, ...)
+
+\S4method{isTempTable}{OdbcConnection,SQL}(conn, name, ...)
 }
 \arguments{
 \item{conn}{OdbcConnection}
