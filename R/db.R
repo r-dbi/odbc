@@ -252,7 +252,7 @@ setClass("Microsoft SQL Server", where = class_cache)
 
 #' SQL Server specific implementation.
 #'
-#' For SQL Server, conn@quote will return the quotation mark, however
+#' For SQL Server, `conn@quote` will return the quotation mark, however
 #' both quotation marks as well as square bracket are used interchangeably for
 #' delimited identifiers.  See:
 #' \url{https://learn.microsoft.com/en-us/sql/relational-databases/databases/database-identifiers?view=sql-server-ver16}
