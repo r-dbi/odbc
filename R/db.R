@@ -338,7 +338,7 @@ setMethod(
 #' to local temp table naming conventions.  If writing to a global temp table, user
 #' should not set the temporary flag to TRUE.
 #'
-#' In both cases a simple CREATE TABLE statement is used / the table identifier is
+#' In both cases a simple CREATE TABLE statement is used / the table identifier
 #' is the differentiator ( viz-a-viz creating a non-temp table ).
 #' @inheritParams DBI::sqlCreateTable
 #' @rdname SQLServer
@@ -349,11 +349,6 @@ setMethod("sqlCreateTable", "Microsoft SQL Server",
     {
       warning("Temporary flag is set to true, but table name doesn't use # prefix")
     }
-    table <- dbQuoteIdentifier(con, table)
-    fields <- createFields(con, fields, field.types, row.names)
-
-    SQL(paste0(
-      "CREATE TABLE ", table, " (\n",
-      "  ", paste(fields, collapse = ",\n  "), "\n)\n"
-    ))
+    temporary <- FALSE
+    callNextMethod()
 })
