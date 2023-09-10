@@ -264,6 +264,7 @@ test_that("SQLServer", {
   })
 
   test_that("Create / write to temp table", {
+    testthat::local_edition(3)
     con <- DBItest:::connect(DBItest:::get_default_context())
     locTblName <- "#myloctmp"
     globTblName <- "##myglobtmp"
@@ -283,9 +284,9 @@ test_that("SQLServer", {
 
     expect_equal( ret1, expected )
     expect_equal( ret2, expected )
-    expect_warning(sqlCreateTable(con, globTblName, values, temporary = TRUE))
+    expect_snapshot_warning(sqlCreateTable(con, globTblName, values, temporary = TRUE))
     expect_no_warning(sqlCreateTable(con, globTblName, values, temporary = FALSE))
-    expect_warning(sqlCreateTable(con, notTempTblName, values, temporary = TRUE))
+    expect_snapshot_warning(sqlCreateTable(con, notTempTblName, values, temporary = TRUE))
     expect_no_warning(sqlCreateTable(con, notTempTblName, values, temporary = FALSE))
 
     # These tests need https://github.com/r-dbi/odbc/pull/600

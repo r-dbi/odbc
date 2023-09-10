@@ -347,8 +347,7 @@ setMethod("sqlCreateTable", "Microsoft SQL Server",
   function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     if ( temporary && !isTempTable( con, table ) )
     {
-      warning(paste0("Temporary flag is set to true, but name argument seems",
-                     " to point to non-local-temp table"))
+      warning("Temporary flag is set to true, but table name doesn't use # prefix")
     }
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
