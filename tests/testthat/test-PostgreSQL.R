@@ -27,14 +27,14 @@ test_that("PostgreSQL", {
     dbWriteTable(con_default, "test", data.frame(a = 1:10L), field.types = c(a = "BIGINT"))
     on.exit(dbRemoveTable(con_default, "test"))
 
-    expect_is(dbReadTable(con_default, "test")$a, "integer64")
-    expect_is(dbReadTable(con_integer64, "test")$a, "integer64")
+    expect_s3_class(dbReadTable(con_default, "test")$a, "integer64")
+    expect_s3_class(dbReadTable(con_integer64, "test")$a, "integer64")
 
-    expect_is(dbReadTable(con_integer, "test")$a, "integer")
+    expect_type(dbReadTable(con_integer, "test")$a, "integer")
 
-    expect_is(dbReadTable(con_numeric, "test")$a, "numeric")
+    expect_type(dbReadTable(con_numeric, "test")$a, "numeric")
 
-    expect_is(dbReadTable(con_character, "test")$a, "character")
+    expect_type(dbReadTable(con_character, "test")$a, "character")
   })
 
   # This test checks whether when writing to a table and using
