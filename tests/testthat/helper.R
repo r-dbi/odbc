@@ -56,7 +56,6 @@ skip_if_no_drivers <- function() {
 #' }
 test_roundtrip <- function(con = DBItest:::connect(DBItest::get_default_context()), columns = "", invert = TRUE, force_sorted = FALSE) {
   dbms <- dbGetInfo(con)$dbms.name
-  testthat::context(paste0("roundtrip[", dbms, "]"))
   res <- list()
   testthat::test_that(paste0("[", dbms, "] round tripping data.frames works"), {
     #on.exit(try(DBI::dbRemoveTable(con, "test_table"), silent = TRUE))

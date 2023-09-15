@@ -4,7 +4,6 @@ test_that("PostgreSQL", {
       tweaks = DBItest::tweaks(temporary_tables = FALSE, placeholder_pattern = "?"), name = "PostgreSQL")
   })
 
-  context("custom tests")
   test_that("show method works as expected with real connection", {
     skip_on_os("windows")
     con <- DBItest:::connect(DBItest:::get_default_context())
@@ -74,7 +73,6 @@ test_that("PostgreSQL", {
     expect_equal(nrow(res), 3)
   })
 
-  context("DBI tests")
   DBItest::test_getting_started(c(
       "package_name", # Not an error
       NULL))

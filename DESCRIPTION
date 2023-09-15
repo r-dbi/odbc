@@ -31,7 +31,7 @@ Suggests:
     DBItest,
     magrittr,
     RSQLite,
-    testthat,
+    testthat (>= 3.0.0),
     tibble
 LinkingTo: 
     Rcpp
@@ -56,3 +56,4 @@ Collate:
     'hidden.R'
     'utils.R'
     'zzz.R'
+Config/testthat/edition: 3

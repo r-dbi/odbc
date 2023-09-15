@@ -118,7 +118,6 @@ test_that("SQLite", {
       NULL))
 
 
-  context("custom tests")
   local({
     ## Test that trying to write unsupported types (like complex numbers) throws an
     ## informative error message

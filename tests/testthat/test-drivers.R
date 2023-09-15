@@ -1,5 +1,3 @@
-context("drivers")
-
 test_that("odbcListDrivers() returns available drivers", {
   skip_on_cran()
   skip_if_no_drivers()
