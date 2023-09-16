@@ -1,3 +1,45 @@
+
+#' Helper method used to determine if a table identifier is that
+#' of a temporary table.
+#'
+#' Currently implemented only for select back-ends where
+#' we have a use for it (SQL Server, for example).  Generic, in case
+#' we develop a broader use case.
+#' @param conn OdbcConnection
+#' @param name Table name
+#' @param ... additional parameters to methods
+#' @rdname isTempTable
+#' @export
+setGeneric(
+  "isTempTable",
+  valueClass = "logical",
+  function(conn, name, ...) {
+    standardGeneric("isTempTable")
+  }
+)
+
+#' @rdname isTempTable
+setMethod(
+  "isTempTable",
+  c("OdbcConnection", "Id"),
+  function(conn, name, ...) {
+    isTempTable(conn,
+      name = id_field(name, "table"),
+      catalog_name = id_field(name, "catalog"),
+      schema_name = id_field(name, "schema"),
+      ...)
+  }
+)
+
+#' @rdname isTempTable
+setMethod(
+  "isTempTable",
+  c("OdbcConnection", "SQL"),
+  function(conn, name, ...) {
+    isTempTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+  }
+)
+
 # Oracle --------------------------------------------------------------------
 
 # Simple class prototype to avoid messages about unknown classes from setMethod
@@ -203,19 +245,89 @@ setMethod("sqlCreateTable", "DB2/AIX64",
 
 # Microsoft SQL Server ---------------------------------------------------------
 
-# Simple class prototype to avoid messages about unknown classes from setMethod
+#' Simple class prototype to avoid messages about unknown classes from setMethod
+#' @rdname SQLServer
+#' @usage NULL
 setClass("Microsoft SQL Server", where = class_cache)
 
-# For SQL Server, conn@quote will return the quotation mark, however
-# both quotation marks as well as square bracket are used interchangeably for
-# delimited identifiers.  See:
-# https://learn.microsoft.com/en-us/sql/relational-databases/databases/database-identifiers?view=sql-server-ver16
-# Therefore strip the brackets first, and then call the DBI method that strips
-# the quotation marks.
-# TODO: the generic implementation in DBI should take a quote char as
-# parameter.
+#' SQL Server specific implementation.
+#'
+#' For SQL Server, `conn@quote` will return the quotation mark, however
+#' both quotation marks as well as square bracket are used interchangeably for
+#' delimited identifiers.  See:
+#' \url{https://learn.microsoft.com/en-us/sql/relational-databases/databases/database-identifiers?view=sql-server-ver16}
+#' Therefore strip the brackets first, and then call the DBI method that strips
+#' the quotation marks.
+#' TODO: the generic implementation in DBI should take a quote char as
+#' parameter.
+#'
+#' @rdname SQLServer
+#' @docType methods
+#' @inheritParams DBI::dbUnquoteIdentifier
+#' @usage NULL
 setMethod("dbUnquoteIdentifier", c("Microsoft SQL Server", "SQL"),
   function(conn, x, ...) {
     x <- gsub("(\\[)([^\\.]+?)(\\])", "\\2", x)
     callNextMethod( conn, x, ... )
+  })
+
+#' SQL Server specific implementation.
+#'
+#' Local temp tables are stored as
+#' \code{ [tempdb].[dbo].[#name]________(padding using underscores)[numeric identifier] }
+#'
+#' True if:
+#' - If catalog_name is supplied it must equal "temdb" or "%" ( wildcard )
+#' - Name must start with "#" followd by a non-"#" character
+#' @rdname SQLServer
+#' @usage NULL
+setMethod("isTempTable", c("Microsoft SQL Server", "character"),
+  function(conn, name, catalog_name = NULL, schema_name = NULL, ...) {
+    if ( !is.null(catalog_name) &&
+        catalog_name != "%" &&
+        length(catalog_name ) > 0 &&
+        catalog_name != "tempdb" ) {
+      return(FALSE)
+    }
+
+    if ( !grepl("^[#][^#]", name ) ) {
+      return(FALSE)
+    }
+    return(TRUE)
+})
+
+#' SQL server specific dbExistsTable implementation that accounts for
+#' local temp tables.
+#'
+#' If we can identify that the name is that of a local temp table
+#' then adjust the identifier and query appropriately.
+#'
+#' Note, the implementation here is such that it assumes the metadata attribute is
+#' set such that catalog functions accept wildcard entries.
+#'
+#' Driver note.  OEM driver will return correctly for
+#' name, \code{catalog_name = "tempdb"} in some circumstances.  For exmaple
+#' if the name has no underscores to beginwith.  FreeTDS, will not index
+#' the table correctly unless name is adjusted ( allowed trailing wildcards to
+#' accomodate trailing underscores and postfix ).
+#'
+#' Therefore, in all cases query for \code{name___%}.
+#' @rdname SQLServer
+#' @docType methods
+#' @aliases dbExistsTable
+#' @inherit DBI::dbExistsTable
+#' @usage NULL
+setMethod(
+  "dbExistsTable", c("Microsoft SQL Server", "character"),
+  function(conn, name, ...) {
+    stopifnot(length(name) == 1)
+    if ( isTempTable( conn, name, ... ) )
+    {
+      name <- paste0(name, "\\_\\_\\_%");
+      df <- odbcConnectionTables(conn, name, catalog_name = "tempdb", schema_name = "dbo")
+    }
+    else {
+      df <- odbcConnectionTables(conn, name = name, ...)
+    }
+    NROW(df) > 0
   })
