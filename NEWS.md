@@ -1,4 +1,7 @@
 # odbc (development version)
+
+* SQL Server: Specialize syntax in sqlCreateTable to avoid failures when
+  writing to (new) local temp tables. (@detule, #601)
 * SQL Server: Improved handling for local temp tables in dbWrite, dbAppendTable,
   dbExistTable (@detule, #600)
 * Teradata: Improved handling for temp tables (@detule and @But2ene, #589, 590)
