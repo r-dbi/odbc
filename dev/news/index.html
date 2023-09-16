@@ -46,7 +46,10 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="odbc-development-version">odbc (development version)<a class="anchor" aria-label="anchor" href="#odbc-development-version"></a></h2>
-</div>
+<ul><li>SQL Server: Improved handling for local temp tables in dbWrite, dbAppendTable, dbExistTable (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/600" class="external-link">#600</a>)</li>
+<li>Teradata: Improved handling for temp tables (<a href="https://github.com/detule" class="external-link">@detule</a> and <a href="https://github.com/But2ene" class="external-link">@But2ene</a>, <a href="https://github.com/r-dbi/odbc/issues/589" class="external-link">#589</a>, 590)</li>
+<li>Oracle: Fix regression when falling back to odbcConnectionColumns to describe column data types (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/587" class="external-link">#587</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.3.5" id="odbc-135">odbc 1.3.5<a class="anchor" aria-label="anchor" href="#odbc-135"></a></h2><p class="text-muted">CRAN release: 2023-06-29</p>
 <ul><li><p>Various fixes for <code>R CMD check</code>.</p></li>
@@ -149,8 +152,8 @@
 <div class="section level3">
 <h3 id="bugfixes-1-2-0">Bugfixes<a class="anchor" aria-label="anchor" href="#bugfixes-1-2-0"></a></h3>
 <ul><li><p>SQL Server ODBC’s now supports the ‘-155’ data type, and its losing sub-second precision on timestamps; this still returns type <code>DATETIMEOFFSET</code> as a character, but it preserves sub-seconds and has a numeric timezone offset (<a href="https://github.com/r2evans" class="external-link">@r2evans</a>, <a href="https://github.com/r-dbi/odbc/issues/207" class="external-link">#207</a>).</p></li>
-<li><p><code><a href="https://dbi.r-dbi.org/reference/dbExistsTable.html" class="external-link">dbExistsTable()</a></code> now handles the case-sensitivity consistently as other methods (<a href="https://github.com/shrektan" class="external-link">@shrektan</a>, <a href="https://github.com/r-dbi/odbc/issues/285" class="external-link">#285</a>).</p></li>
-<li><p><code><a href="https://dbi.r-dbi.org/reference/dbExistsTable.html" class="external-link">dbExistsTable()</a></code> now works for SQL Server when specifying schemas but not catalogs using the freeTDS and Simba drivers. (<a href="https://github.com/r-dbi/odbc/issues/197" class="external-link">#197</a>)</p></li>
+<li><p><code><a href="../reference/SQLServer.html">dbExistsTable()</a></code> now handles the case-sensitivity consistently as other methods (<a href="https://github.com/shrektan" class="external-link">@shrektan</a>, <a href="https://github.com/r-dbi/odbc/issues/285" class="external-link">#285</a>).</p></li>
+<li><p><code><a href="../reference/SQLServer.html">dbExistsTable()</a></code> now works for SQL Server when specifying schemas but not catalogs using the freeTDS and Simba drivers. (<a href="https://github.com/r-dbi/odbc/issues/197" class="external-link">#197</a>)</p></li>
 <li><p><code><a href="https://dbi.r-dbi.org/reference/dbListFields.html" class="external-link">DBI::dbListFields()</a></code> no longer fails when used with a a qualified Id object (using both schema and table) (<a href="https://github.com/r-dbi/odbc/issues/226" class="external-link">#226</a>).</p></li>
 <li><p><code><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable()</a></code> now always writes <code>NA_character</code> as <code>NULL</code> for data.frame with only one row (<a href="https://github.com/shrektan" class="external-link">@shrektan</a>, <a href="https://github.com/r-dbi/odbc/issues/288" class="external-link">#288</a>).</p></li>
 <li><p>Fix an issue that the date value fetched from the database may be one day before its real value (<a href="https://github.com/shrektan" class="external-link">@shrektan</a>, <a href="https://github.com/r-dbi/odbc/issues/295" class="external-link">#295</a>).</p></li>

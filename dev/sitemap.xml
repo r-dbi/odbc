@@ -34,6 +34,9 @@
     <loc>https://r-dbi.github.io/odbc/dev/reference/OdbcResult.html</loc>
   </url>
   <url>
+    <loc>https://r-dbi.github.io/odbc/dev/reference/SQLServer.html</loc>
+  </url>
+  <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/dbConnect-OdbcDriver-method.html</loc>
   </url>
   <url>
@@ -50,6 +53,9 @@
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/dev/reference/isTempTable.html</loc>
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/odbc-package.html</loc>
