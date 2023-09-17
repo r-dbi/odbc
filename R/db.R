@@ -331,3 +331,24 @@ setMethod(
     }
     NROW(df) > 0
   })
+
+#' SQL Server specific implementation.
+#'
+#' Will warn user if `temporary` is set to TRUE but table name does not conform
+#' to local temp table naming conventions.  If writing to a global temp table, user
+#' should not set the temporary flag to TRUE.
+#'
+#' In both cases a simple CREATE TABLE statement is used / the table identifier
+#' is the differentiator ( viz-a-viz creating a non-temp table ).
+#' @inheritParams DBI::sqlCreateTable
+#' @rdname SQLServer
+#' @usage NULL
+setMethod("sqlCreateTable", "Microsoft SQL Server",
+  function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
+    if ( temporary && !isTempTable( con, table ) )
+    {
+      warning("Temporary flag is set to true, but table name doesn't use # prefix")
+    }
+    temporary <- FALSE
+    callNextMethod()
+})

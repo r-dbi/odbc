@@ -262,4 +262,40 @@ test_that("SQLServer", {
     # Fail because table not actually present
     expect_true( !dbExistsTable( con, tbl_name3, catalog_name = "tempdb" ) )
   })
+
+  test_that("Create / write to temp table", {
+    testthat::local_edition(3)
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    locTblName <- "#myloctmp"
+    globTblName <- "##myglobtmp"
+    notTempTblName <- "nottemp"
+
+    df <- data.frame( name = c("one", "two"), value = c(1, 2) )
+    values <- sqlData(con, row.names = FALSE, df[, , drop = FALSE])
+    ret1 <- sqlCreateTable(con, locTblName, values, temporary = TRUE)
+    ret2 <- sqlCreateTable(con, locTblName, values, temporary = FALSE)
+
+    nm <- dbQuoteIdentifier(con, locTblName)
+    fields <- createFields(con, values, row.names = FALSE, field.types = NULL)
+    expected <- DBI::SQL(paste0(
+      "CREATE TABLE ", nm, " (\n",
+      "  ", paste(fields, collapse = ",\n  "), "\n)\n"
+    ))
+
+    expect_equal( ret1, expected )
+    expect_equal( ret2, expected )
+    expect_snapshot_warning(sqlCreateTable(con, globTblName, values, temporary = TRUE))
+    expect_no_warning(sqlCreateTable(con, globTblName, values, temporary = FALSE))
+    expect_snapshot_warning(sqlCreateTable(con, notTempTblName, values, temporary = TRUE))
+    expect_no_warning(sqlCreateTable(con, notTempTblName, values, temporary = FALSE))
+
+    # These tests need https://github.com/r-dbi/odbc/pull/600
+    # Uncomment when both merged.
+    # dbWriteTable(con, locTblName, mtcars, row.names = TRUE)
+    # res <- dbGetQuery(con, paste0("SELECT * FROM ", locTblName))
+    # expect_equal( mtcars$mpg, res$mpg )
+    # dbAppendTable(con, locTblName, mtcars)
+    # res <- dbGetQuery(con, paste0("SELECT * FROM ", locTblName))
+    # expect_equal( nrow( res ), 2 * nrow( mtcars ) )
+  })
 })
