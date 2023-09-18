@@ -32,7 +32,7 @@ test_that("PostgreSQL", {
 
     expect_type(dbReadTable(con_integer, "test")$a, "integer")
 
-    expect_type(dbReadTable(con_numeric, "test")$a, "numeric")
+    expect_type(dbReadTable(con_numeric, "test")$a, "double")
 
     expect_type(dbReadTable(con_character, "test")$a, "character")
   })
