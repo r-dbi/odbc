@@ -46,7 +46,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="odbc-development-version">odbc (development version)<a class="anchor" aria-label="anchor" href="#odbc-development-version"></a></h2>
-<ul><li>SQL Server: Specialize syntax in sqlCreateTable to avoid failures when writing to (new) local temp tables. (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/601" class="external-link">#601</a>)</li>
+<ul><li>Modify <code>odbcDataType.Snowflake</code> to better reflect Snowflake Data Types documentation (<a href="https://github.com/meztez" class="external-link">@meztez</a>, <a href="https://github.com/r-dbi/odbc/issues/599" class="external-link">#599</a>).</li>
+<li>SQL Server: Specialize syntax in sqlCreateTable to avoid failures when writing to (new) local temp tables. (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/601" class="external-link">#601</a>)</li>
 <li>SQL Server: Improved handling for local temp tables in dbWrite, dbAppendTable, dbExistTable (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/600" class="external-link">#600</a>)</li>
 <li>Teradata: Improved handling for temp tables (<a href="https://github.com/detule" class="external-link">@detule</a> and <a href="https://github.com/But2ene" class="external-link">@But2ene</a>, <a href="https://github.com/r-dbi/odbc/issues/589" class="external-link">#589</a>, 590)</li>
 <li>Oracle: Fix regression when falling back to odbcConnectionColumns to describe column data types (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/587" class="external-link">#587</a>)</li>
