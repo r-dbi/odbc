@@ -234,4 +234,68 @@ test_that("SQLServer", {
     expect_equal(nrow(dbFetch(rs, n = 0)), 0)
     expect_equal(nrow(dbFetch(rs, n = 10)), 2)
   })
+
+  test_that("isTempTable tests", {
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    expect_true( isTempTable(con, "#myTmp"))
+    expect_true( isTempTable(con, "#myTmp", catalog_name = "tempdb" ))
+    expect_true( isTempTable(con, "#myTmp", catalog_name = "%" ))
+    expect_true( isTempTable(con, "#myTmp", catalog_name = NULL ))
+    expect_true( !isTempTable(con, "##myTmp"))
+    expect_true( !isTempTable(con, "#myTmp", catalog_name = "abc" ))
+  })
+
+  test_that("dbExistsTable accounts for local temp tables", {
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    tbl_name <- "#myTemp"
+    tbl_name2 <- "##myTemp"
+    tbl_name3 <- "#myTemp2"
+    DBI::dbExecute(con, paste0("CREATE TABLE ", tbl_name, " (
+      id int not null,
+      primary key (id) )"), immediate = TRUE)
+    expect_true( dbExistsTable( con, tbl_name) )
+    expect_true( dbExistsTable( con, tbl_name, catalog_name = "tempdb") )
+    # Fail because not recognized as temp table ( catalog not tempdb )
+    expect_true( !dbExistsTable( con, tbl_name, catalog_name = "abc") )
+    # Fail because not recognized as temp table ( second char "#" )
+    expect_true( !dbExistsTable( con, tbl_name2, catalog_name = "tempdb" ) )
+    # Fail because table not actually present
+    expect_true( !dbExistsTable( con, tbl_name3, catalog_name = "tempdb" ) )
+  })
+
+  test_that("Create / write to temp table", {
+    testthat::local_edition(3)
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    locTblName <- "#myloctmp"
+    globTblName <- "##myglobtmp"
+    notTempTblName <- "nottemp"
+
+    df <- data.frame( name = c("one", "two"), value = c(1, 2) )
+    values <- sqlData(con, row.names = FALSE, df[, , drop = FALSE])
+    ret1 <- sqlCreateTable(con, locTblName, values, temporary = TRUE)
+    ret2 <- sqlCreateTable(con, locTblName, values, temporary = FALSE)
+
+    nm <- dbQuoteIdentifier(con, locTblName)
+    fields <- createFields(con, values, row.names = FALSE, field.types = NULL)
+    expected <- DBI::SQL(paste0(
+      "CREATE TABLE ", nm, " (\n",
+      "  ", paste(fields, collapse = ",\n  "), "\n)\n"
+    ))
+
+    expect_equal( ret1, expected )
+    expect_equal( ret2, expected )
+    expect_snapshot_warning(sqlCreateTable(con, globTblName, values, temporary = TRUE))
+    expect_no_warning(sqlCreateTable(con, globTblName, values, temporary = FALSE))
+    expect_snapshot_warning(sqlCreateTable(con, notTempTblName, values, temporary = TRUE))
+    expect_no_warning(sqlCreateTable(con, notTempTblName, values, temporary = FALSE))
+
+    # These tests need https://github.com/r-dbi/odbc/pull/600
+    # Uncomment when both merged.
+    # dbWriteTable(con, locTblName, mtcars, row.names = TRUE)
+    # res <- dbGetQuery(con, paste0("SELECT * FROM ", locTblName))
+    # expect_equal( mtcars$mpg, res$mpg )
+    # dbAppendTable(con, locTblName, mtcars)
+    # res <- dbGetQuery(con, paste0("SELECT * FROM ", locTblName))
+    # expect_equal( nrow( res ), 2 * nrow( mtcars ) )
+  })
 })

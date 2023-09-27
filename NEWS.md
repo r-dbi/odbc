@@ -1,6 +1,13 @@
 # odbc (development version)
 
 * Modify `odbcDataType.Snowflake` to better reflect Snowflake Data Types documentation (@meztez, #599).
+* SQL Server: Specialize syntax in sqlCreateTable to avoid failures when
+  writing to (new) local temp tables. (@detule, #601)
+* SQL Server: Improved handling for local temp tables in dbWrite, dbAppendTable,
+  dbExistTable (@detule, #600)
+* Teradata: Improved handling for temp tables (@detule and @But2ene, #589, 590)
+* Oracle: Fix regression when falling back to odbcConnectionColumns to
+  describe column data types (@detule, #587)
 
 # odbc 1.3.5
 

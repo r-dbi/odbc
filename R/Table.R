@@ -208,7 +208,8 @@ createFields <- function(con, fields, field.types, row.names) {
 setMethod(
   "dbExistsTable", c("OdbcConnection", "Id"),
   function(conn, name, ...) {
-    name@name[["table"]] %in% odbcConnectionTables(conn,
+    dbExistsTable(
+      conn,
       name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
       schema_name = id_field(name, "schema")
@@ -231,6 +232,6 @@ setMethod(
   "dbExistsTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     stopifnot(length(name) == 1)
-    df <- odbcConnectionTables(conn, name = name)
+    df <- odbcConnectionTables(conn, name = name, ...)
     NROW(df) > 0
   })
