@@ -208,7 +208,7 @@ bool odbc_result::complete() {
 bool odbc_result::active() { return c_->is_current_result(this); }
 
 odbc_result::~odbc_result() {
-  if (c_ != nullptr) {
+  if (c_ != nullptr && active()) {
     try {
       c_->set_current_result(nullptr);
     } catch (...) {

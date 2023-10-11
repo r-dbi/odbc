@@ -2,6 +2,7 @@
 % Please edit documentation in R/odbc.R
 \docType{package}
 \name{odbc-package}
+\alias{odbc-package}
 \title{odbc: Connect to ODBC Compatible Databases (using the DBI Interface)}
 \description{
 A DBI-compatible interface to ODBC databases.

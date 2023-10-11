@@ -105,7 +105,7 @@ accomodate trailing underscores and postfix ).
 
 Therefore, in all cases query for \code{name___\%}.
 
-In both cases a simple CREATE TABLE statement is used / the table identifier is
+In both cases a simple CREATE TABLE statement is used / the table identifier
 is the differentiator ( viz-a-viz creating a non-temp table ).
 }
 \section{Failure modes}{

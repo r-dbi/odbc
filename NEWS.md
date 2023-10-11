@@ -1,5 +1,7 @@
 # odbc (development version)
 
+
+* Modify `odbcDataType.Snowflake` to better reflect Snowflake Data Types documentation (@meztez, #599).
 * SQL Server: Specialize syntax in sqlCreateTable to avoid failures when
   writing to (new) local temp tables. (@detule, #601)
 * SQL Server: Improved handling for local temp tables in dbWrite, dbAppendTable,
