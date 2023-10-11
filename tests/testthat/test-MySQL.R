@@ -74,7 +74,6 @@ test_that("MySQL", {
       NULL))
 
   test_roundtrip(columns = "logical")
-  context("custom tests")
   test_that("odbcPreviewObject", {
     tblName <- "test_preview"
     con <- DBItest:::connect(DBItest:::get_default_context())
