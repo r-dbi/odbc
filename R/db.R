@@ -227,6 +227,9 @@ setMethod(
 
 # Spark SQL ----------------------------------------------------------------
 
+# Simple class prototype to avoid messages about unknown classes from setMethod
+setClass("Spark SQL", where = class_cache)
+
 #' @details Databricks supports multiple catalogs.  On the other hand,
 #' the default implementation of `odbcConnectionSchemas` which routes through
 #' `SQLTables` is likely to enumerate the schemas in the currently active
@@ -234,6 +237,7 @@ setMethod(
 #'
 #' This implementation will respect the `catalog_name` arrgument.
 #' @rdname odbcConnectionSchemas
+#' @usage NULL
 setMethod(
   "odbcConnectionSchemas",
   c("Spark SQL", "character"),

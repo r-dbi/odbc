@@ -12,8 +12,6 @@ odbcConnectionSchemas(conn, catalog_name)
 \S4method{odbcConnectionSchemas}{OdbcConnection,ANY}(conn, catalog_name = NULL)
 
 \S4method{odbcConnectionSchemas}{OdbcConnection,character}(conn, catalog_name)
-
-\S4method{odbcConnectionSchemas}{`Spark SQL`,character}(conn, catalog_name)
 }
 \arguments{
 \item{conn}{OdbcConnection}
