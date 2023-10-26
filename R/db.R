@@ -227,7 +227,7 @@ setMethod(
 
 # Spark SQL ----------------------------------------------------------------
 
-#' @details Databricks supports multiple catalogs.  On the other hand
+#' @details Databricks supports multiple catalogs.  On the other hand,
 #' the default implementation of `odbcConnectionSchemas` which routes through
 #' `SQLTables` is likely to enumerate the schemas in the currently active
 #' catalog only.
