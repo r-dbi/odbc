@@ -43,7 +43,7 @@ schemas."><meta name="robots" content="noindex"><!-- mathjax --><script src="htt
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>odbcConnectionSchemas</h1>
-      <small class="dont-index">Source: <a href="https://github.com/r-dbi/odbc/blob/HEAD/R/Connection.R" class="external-link"><code>R/Connection.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/r-dbi/odbc/blob/HEAD/R/Connection.R" class="external-link"><code>R/Connection.R</code></a>, <a href="https://github.com/r-dbi/odbc/blob/HEAD/R/db.R" class="external-link"><code>R/db.R</code></a></small>
       <div class="d-none name"><code>odbcConnectionSchemas.Rd</code></div>
     </div>
 
@@ -78,6 +78,11 @@ we are looking to list schemas.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Currently, for a generic connection the
 catalog_name argument is ignored.</p>
+<p>Databricks supports multiple catalogs.  On the other hand,
+the default implementation of <code>odbcConnectionSchemas</code> which routes through
+<code>SQLTables</code> is likely to enumerate the schemas in the currently active
+catalog only.</p>
+<p>This implementation will respect the <code>catalog_name</code> arrgument.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
