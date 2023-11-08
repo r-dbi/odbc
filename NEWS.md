@@ -10,6 +10,9 @@
 * Oracle: Fix regression when falling back to odbcConnectionColumns to
   describe column data types (@detule, #587)
 
+* Add a new, specialised `odbc::databricks()` class with its own `dbConnect()`
+  method to make using Databricks's ODBC driver easier (@atheriel, #615).
+
 # odbc 1.3.5
 
 * Various fixes for `R CMD check`.

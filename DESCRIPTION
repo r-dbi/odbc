@@ -52,6 +52,7 @@ Collate:
     'Result.R'
     'Table.R'
     'Viewer.R'
+    'databricks.R'
     'db.R'
     'hidden.R'
     'utils.R'
