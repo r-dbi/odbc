@@ -37,6 +37,9 @@
     <loc>https://r-dbi.github.io/odbc/dev/reference/SQLServer.html</loc>
   </url>
   <url>
+    <loc>https://r-dbi.github.io/odbc/dev/reference/databricks.html</loc>
+  </url>
+  <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/dbConnect-OdbcDriver-method.html</loc>
   </url>
   <url>
