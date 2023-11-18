@@ -22,6 +22,9 @@
 * Add support for searching multiple paths for the default location of the
   Databricks driver (@bschwedler, #621).
 
+* Snowflake: performance improvements when writing to tables with underscores
+  in their identifier (schema, table name). (@detule and @fh-afrachioni, #618)
+
 # odbc 1.3.5
 
 * Various fixes for `R CMD check`.
