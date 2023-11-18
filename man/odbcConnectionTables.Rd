@@ -6,19 +6,21 @@
 \alias{odbcConnectionTables,OdbcConnection,character-method}
 \alias{odbcConnectionTables,OdbcConnection,ANY-method}
 \alias{odbcConnectionTables,OdbcConnection,SQL-method}
+\alias{odbcConnectionTables,Snowflake,character-method}
 \alias{odbcConnectionTables,Oracle,character-method}
 \title{odbcConnectionTables}
 \usage{
 odbcConnectionTables(conn, name, ...)
 
-\S4method{odbcConnectionTables}{OdbcConnection,Id}(conn, name, table_type = NULL)
+\S4method{odbcConnectionTables}{OdbcConnection,Id}(conn, name, table_type = NULL, exact = FALSE)
 
 \S4method{odbcConnectionTables}{OdbcConnection,character}(
   conn,
   name,
   catalog_name = NULL,
   schema_name = NULL,
-  table_type = NULL
+  table_type = NULL,
+  exact = FALSE
 )
 
 \S4method{odbcConnectionTables}{OdbcConnection,ANY}(
@@ -26,17 +28,28 @@ odbcConnectionTables(conn, name, ...)
   name = NULL,
   catalog_name = NULL,
   schema_name = NULL,
-  table_type = NULL
+  table_type = NULL,
+  exact = FALSE
 )
 
-\S4method{odbcConnectionTables}{OdbcConnection,SQL}(conn, name, table_type = NULL)
+\S4method{odbcConnectionTables}{OdbcConnection,SQL}(conn, name, table_type = NULL, exact = FALSE)
+
+\S4method{odbcConnectionTables}{Snowflake,character}(
+  conn,
+  name,
+  catalog_name = NULL,
+  schema_name = NULL,
+  table_type = NULL,
+  exact = FALSE
+)
 
 \S4method{odbcConnectionTables}{Oracle,character}(
   conn,
   name,
   catalog_name = NULL,
   schema_name = NULL,
-  table_type = NULL
+  table_type = NULL,
+  exact = FALSE
 )
 }
 \arguments{
@@ -49,6 +62,10 @@ odbcConnectionTables(conn, name, ...)
 \item{table_type}{List tables of this type, for example 'VIEW'.
 See odbcConnectionTableTypes for a listing of available table
 types for your connection.}
+
+\item{exact}{If TRUE the intention is to match the identifier arguments exactly,
+rather than allow pattern-based-matching / wildcards.  Note, this is implemented
+only for select back-ends / not supported across the board.}
 
 \item{catalog_name}{character catalog where we wish to query for
 available tables}
@@ -81,6 +98,9 @@ If extending this method, be aware that \code{package:odbc}
 internally uses this method to satisfy both
 DBI::dbListTables and DBI::dbExistsTable methods.
 ( The former also advertises pattern value arguments )
+
+If \code{exact} is set to TRUE, then escape underscores in the catalog, schema,
+and table names.  There is empirical evidence that this leads to performance improvements.
 
 Query, rather than use SQLTables ODBC API for performance reasons on Oracle.
 Main functional difference between the implementation of SQLTables ( OEM driver )

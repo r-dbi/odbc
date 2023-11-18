@@ -81,9 +81,13 @@ convertWildCards <- function(val) {
   gsub("_", "(.)", val)
 }
 
-getSelector <- function(key, value) {
+getSelector <- function(key, value, exact) {
+  if ( is.null(value ) ) {
+    return("")
+  }
   comp <- " = "
-  if (isPatternValue(value)) {
+  if (( value == "%" || !exact ) &&
+      isPatternValue(value)) {
     comp <- " LIKE "
   }
   value <- paste0("'", value, "'")

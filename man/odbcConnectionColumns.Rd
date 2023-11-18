@@ -5,29 +5,41 @@
 \alias{odbcConnectionColumns,OdbcConnection,Id-method}
 \alias{odbcConnectionColumns,OdbcConnection,character-method}
 \alias{odbcConnectionColumns,OdbcConnection,SQL-method}
+\alias{odbcConnectionColumns,Snowflake,character-method}
 \alias{odbcConnectionColumns,Oracle,character-method}
 \title{odbcConnectionColumns}
 \usage{
 odbcConnectionColumns(conn, name, ...)
 
-\S4method{odbcConnectionColumns}{OdbcConnection,Id}(conn, name, column_name = NULL)
+\S4method{odbcConnectionColumns}{OdbcConnection,Id}(conn, name, column_name = NULL, exact = FALSE)
 
 \S4method{odbcConnectionColumns}{OdbcConnection,character}(
   conn,
   name,
   catalog_name = NULL,
   schema_name = NULL,
-  column_name = NULL
+  column_name = NULL,
+  exact = FALSE
 )
 
 \S4method{odbcConnectionColumns}{OdbcConnection,SQL}(conn, name, ...)
+
+\S4method{odbcConnectionColumns}{Snowflake,character}(
+  conn,
+  name,
+  catalog_name = NULL,
+  schema_name = NULL,
+  column_name = NULL,
+  exact = FALSE
+)
 
 \S4method{odbcConnectionColumns}{Oracle,character}(
   conn,
   name,
   catalog_name = NULL,
   schema_name = NULL,
-  column_name = NULL
+  column_name = NULL,
+  exact = FALSE
 )
 }
 \arguments{
@@ -38,6 +50,10 @@ odbcConnectionColumns(conn, name, ...)
 \item{...}{additional parameters to methods}
 
 \item{column_name}{The name of the column to return, the default returns all columns.}
+
+\item{exact}{If TRUE the intention is to match the identifier arguments exactly,
+rather than allow pattern-based-matching / wildcards.  Note, this is implemented
+only for select back-ends / not supported across the board.}
 
 \item{catalog_name}{character catalog where the table is located}
 
@@ -82,6 +98,9 @@ method.  This function, together with remaining catalog functions
 either ordinary arguments (OA) in the case of the catalog, or pattern value
 arguments (PV) in the case of schema/table name.  For these, quoted
 identifiers do not make sense, so we unquote identifiers prior to the call.
+
+If \code{exact} is set to TRUE, then escape underscores in the schema, table, and
+column names.  There is empirical evidence that this leads to performance improvements.
 
 Query, rather than use SQLColumns ODBC API for ORACLE since when using the API
 we bind a BIGINT to one of the column results.  Oracle's OEM driver is unable to handle.

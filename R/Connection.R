@@ -187,28 +187,36 @@ setGeneric(
 
 #' @rdname odbcConnectionColumns
 #' @param column_name The name of the column to return, the default returns all columns.
+#' @param exact If TRUE the intention is to match the identifier arguments exactly,
+#' rather than allow pattern-based-matching / wildcards.  Note, this is implemented
+#' only for select back-ends / not supported across the board.
 #' @export
 setMethod(
   "odbcConnectionColumns",
   c("OdbcConnection", "Id"),
-  function(conn, name, column_name = NULL) {
+  function(conn, name, column_name = NULL, exact = FALSE) {
 
     odbcConnectionColumns(conn,
       name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
       schema_name = id_field(name, "schema"),
-      column_name = column_name)
+      column_name = column_name,
+      exact = exact
+    )
   }
 )
 
 #' @rdname odbcConnectionColumns
 #' @param catalog_name character catalog where the table is located
 #' @param schema_name character schema where the table is located
+#' @param exact If TRUE the intention is to match the identifier arguments exactly,
+#' rather than allow pattern-based-matching / wildcards.  Note, this is implemented
+#' only for select back-ends / not supported across the board.
 #' @export
 setMethod(
   "odbcConnectionColumns",
   c("OdbcConnection", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL) {
+  function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL, exact = FALSE) {
 
     connection_sql_columns(conn@ptr,
       table_name = name,
@@ -275,16 +283,20 @@ setGeneric(
 #' @param table_type List tables of this type, for example 'VIEW'.
 #' See odbcConnectionTableTypes for a listing of available table
 #' types for your connection.
+#' @param exact If TRUE the intention is to match the identifier arguments exactly,
+#' rather than allow pattern-based-matching / wildcards.  Note, this is implemented
+#' only for select back-ends / not supported across the board.
 setMethod(
   "odbcConnectionTables",
   c("OdbcConnection", "Id"),
-  function(conn, name, table_type = NULL) {
+  function(conn, name, table_type = NULL, exact = FALSE) {
 
     odbcConnectionTables(conn,
       name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
       schema_name = id_field(name, "schema"),
-      table_type = table_type)
+      table_type = table_type,
+      exact = exact)
   }
 )
 
@@ -293,10 +305,13 @@ setMethod(
 #' available tables
 #' @param schema_name character schema where we wish to query for
 #' available tables.
+#' @param exact If TRUE the intention is to match the identifier arguments exactly,
+#' rather than allow pattern-based-matching / wildcards.  Note, this is implemented
+#' only for select back-ends / not supported across the board.
 setMethod(
   "odbcConnectionTables",
   c("OdbcConnection", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL) {
+  function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL, exact = FALSE) {
 
     connection_sql_tables(conn@ptr,
       catalog_name = catalog_name,
@@ -311,13 +326,14 @@ setMethod(
 setMethod(
   "odbcConnectionTables",
   c("OdbcConnection"),
-  function(conn, name = NULL, catalog_name = NULL, schema_name = NULL, table_type = NULL) {
+  function(conn, name = NULL, catalog_name = NULL, schema_name = NULL, table_type = NULL, exact = FALSE) {
 
     odbcConnectionTables(conn,
       name = "%",
       catalog_name = catalog_name,
       schema_name = schema_name,
-      table_type = table_type)
+      table_type = table_type,
+      exact = exact)
 
   }
 )
@@ -325,8 +341,8 @@ setMethod(
 #' @rdname odbcConnectionTables
 setMethod(
   "odbcConnectionTables", c("OdbcConnection", "SQL"),
-  function(conn, name, table_type = NULL) {
-    odbcConnectionTables(conn, dbUnquoteIdentifier(conn, name)[[1]], table_type = table_type)
+  function(conn, name, table_type = NULL, exact = FALSE) {
+    odbcConnectionTables(conn, dbUnquoteIdentifier(conn, name)[[1]], table_type = table_type, exact = exact)
   })
 
 #' odbcConnectionCatalogs
