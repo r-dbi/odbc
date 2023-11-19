@@ -54,11 +54,11 @@
 
 \S4method{dbRollback}{OdbcConnection}(conn, ...)
 
-\S4method{dbExistsTable}{OdbcConnection,Id}(conn, name, ..., exact = FALSE)
+\S4method{dbExistsTable}{OdbcConnection,Id}(conn, name, ...)
 
-\S4method{dbExistsTable}{OdbcConnection,SQL}(conn, name, ..., exact = FALSE)
+\S4method{dbExistsTable}{OdbcConnection,SQL}(conn, name, ...)
 
-\S4method{dbExistsTable}{OdbcConnection,character}(conn, name, ..., exact = FALSE)
+\S4method{dbExistsTable}{OdbcConnection,character}(conn, name, ...)
 }
 \arguments{
 \item{object}{Any R object}
@@ -97,10 +97,6 @@ given verbatim, e.g. \code{SQL('"my_schema"."table_name"')}
 or \code{n = Inf}
 to retrieve all pending records.  Some implementations may recognize other
 special values.}
-
-\item{exact}{If TRUE the intention is to match the identifier arguments exactly,
-rather than allow pattern-based-matching / wildcards.  Note, this is implemented
-only for select back-ends / not supported across the board.}
 }
 \description{
 Implementations of pure virtual functions defined in the \code{DBI} package

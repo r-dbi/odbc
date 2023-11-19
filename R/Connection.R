@@ -150,8 +150,13 @@ setClass(
 #' the columns `data_type`, `column_size`, and `decimal_digits` are used.  An
 #' implementation is not necessary for [dbWriteTable()] to work.
 #' @param conn OdbcConnection
-#' @param name table we wish to get information on
+#' @param name Identifier for table we wish to get information on.  Interpreted
+#' as a SQL search pattern: underscores and percent signs are interpreted as
+#' wild cards.  Related to `exact` parameter.
 #' @param ... additional parameters to methods
+#' @param exact If TRUE the intention is to match the identifier arguments exactly,
+#' rather than allow pattern-based-matching / wildcards.  Note, this is implemented
+#' only for select back-ends / not supported across the board.
 #'
 #' @seealso The ODBC documentation on [SQLColumns](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
 #' for further details.
@@ -180,16 +185,13 @@ setClass(
 setGeneric(
   "odbcConnectionColumns",
   valueClass = "data.frame",
-  function(conn, name, ...) {
+  function(conn, name, ..., exact = FALSE) {
     standardGeneric("odbcConnectionColumns")
   }
 )
 
 #' @rdname odbcConnectionColumns
 #' @param column_name The name of the column to return, the default returns all columns.
-#' @param exact If TRUE the intention is to match the identifier arguments exactly,
-#' rather than allow pattern-based-matching / wildcards.  Note, this is implemented
-#' only for select back-ends / not supported across the board.
 #' @export
 setMethod(
   "odbcConnectionColumns",
@@ -209,9 +211,6 @@ setMethod(
 #' @rdname odbcConnectionColumns
 #' @param catalog_name character catalog where the table is located
 #' @param schema_name character schema where the table is located
-#' @param exact If TRUE the intention is to match the identifier arguments exactly,
-#' rather than allow pattern-based-matching / wildcards.  Note, this is implemented
-#' only for select back-ends / not supported across the board.
 #' @export
 setMethod(
   "odbcConnectionColumns",
@@ -260,8 +259,13 @@ setMethod(
 #' ( The former also advertises pattern value arguments )
 #'
 #' @param conn OdbcConnection
-#' @param name table we wish to search for
+#' @param name Identifier for table we wish to search for.  Interpreted
+#' as a SQL search pattern: underscores and percent signs are interpreted as
+#' wild cards.  Related to `exact` parameter.
 #' @param ... additional parameters to methods
+#' @param exact If TRUE the intention is to match the identifier arguments exactly,
+#' rather than allow pattern-based-matching / wildcards.  Note, this is implemented
+#' only for select back-ends / not supported across the board.
 #'
 #' @seealso The ODBC documentation on [SQLTables](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
 #' for further details.
@@ -271,6 +275,7 @@ setMethod(
 #' - table_schema
 #' - table_name
 #' - table_remarks
+#' @rdname odbcConnectionTables
 setGeneric(
   "odbcConnectionTables",
   valueClass = "data.frame",
@@ -283,9 +288,6 @@ setGeneric(
 #' @param table_type List tables of this type, for example 'VIEW'.
 #' See odbcConnectionTableTypes for a listing of available table
 #' types for your connection.
-#' @param exact If TRUE the intention is to match the identifier arguments exactly,
-#' rather than allow pattern-based-matching / wildcards.  Note, this is implemented
-#' only for select back-ends / not supported across the board.
 setMethod(
   "odbcConnectionTables",
   c("OdbcConnection", "Id"),
@@ -305,9 +307,6 @@ setMethod(
 #' available tables
 #' @param schema_name character schema where we wish to query for
 #' available tables.
-#' @param exact If TRUE the intention is to match the identifier arguments exactly,
-#' rather than allow pattern-based-matching / wildcards.  Note, this is implemented
-#' only for select back-ends / not supported across the board.
 setMethod(
   "odbcConnectionTables",
   c("OdbcConnection", "character"),

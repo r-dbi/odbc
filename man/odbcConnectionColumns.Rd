@@ -9,7 +9,7 @@
 \alias{odbcConnectionColumns,Oracle,character-method}
 \title{odbcConnectionColumns}
 \usage{
-odbcConnectionColumns(conn, name, ...)
+odbcConnectionColumns(conn, name, ..., exact = FALSE)
 
 \S4method{odbcConnectionColumns}{OdbcConnection,Id}(conn, name, column_name = NULL, exact = FALSE)
 
@@ -22,7 +22,7 @@ odbcConnectionColumns(conn, name, ...)
   exact = FALSE
 )
 
-\S4method{odbcConnectionColumns}{OdbcConnection,SQL}(conn, name, ...)
+\S4method{odbcConnectionColumns}{OdbcConnection,SQL}(conn, name, ..., exact = FALSE)
 
 \S4method{odbcConnectionColumns}{Snowflake,character}(
   conn,
@@ -45,15 +45,17 @@ odbcConnectionColumns(conn, name, ...)
 \arguments{
 \item{conn}{OdbcConnection}
 
-\item{name}{table we wish to get information on}
+\item{name}{Identifier for table we wish to get information on.  Interpreted
+as a SQL search pattern: underscores and percent signs are interpreted as
+wild cards.  Related to \code{exact} parameter.}
 
 \item{...}{additional parameters to methods}
-
-\item{column_name}{The name of the column to return, the default returns all columns.}
 
 \item{exact}{If TRUE the intention is to match the identifier arguments exactly,
 rather than allow pattern-based-matching / wildcards.  Note, this is implemented
 only for select back-ends / not supported across the board.}
+
+\item{column_name}{The name of the column to return, the default returns all columns.}
 
 \item{catalog_name}{character catalog where the table is located}
 

@@ -94,3 +94,15 @@ getSelector <- function(key, value, exact) {
 
   paste0(" AND ", key, comp, value)
 }
+
+# Will iterate over charsToEsc argument and for each:
+# will escape any un-escaped occurance in `x`.
+escapeChars <- function(x, charsToEsc = c("_"), escChar ="\\\\") {
+  if(is.null(x)) return(x)
+  for (ch in charsToEsc) {
+    pattern <- paste0("([^", escChar, "])(", ch,")")
+    replace <- paste0("\\1", escChar, ch)
+    x <- gsub(pattern, replace, x)
+  }
+  return (x)
+}

@@ -55,7 +55,9 @@ odbcConnectionTables(conn, name, ...)
 \arguments{
 \item{conn}{OdbcConnection}
 
-\item{name}{table we wish to search for}
+\item{name}{Identifier for table we wish to search for.  Interpreted
+as a SQL search pattern: underscores and percent signs are interpreted as
+wild cards.  Related to \code{exact} parameter.}
 
 \item{...}{additional parameters to methods}
 

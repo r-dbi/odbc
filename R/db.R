@@ -55,9 +55,9 @@ setMethod(
 
     if ( !exact ) return(callNextMethod())
 
-    if(!is.null(catalog_name)) catalog_name <- gsub("([^\\\\])(_)", "\\1\\\\_", catalog_name)
-    if(!is.null(schema_name)) schema_name <- gsub("([^\\\\])(_)", "\\1\\\\_", schema_name)
-    if(!is.null(name)) name <- gsub("([^\\\\])(_)", "\\1\\\\_", name)
+    catalog_name <- escapeChars(catalog_name)
+    schema_name <- escapeChars(schema_name)
+    name <- escapeChars(name)
     callNextMethod()
     # getMethod("odbcConnectionTables", c("OdbcConnection", "character"))(
     #  conn, name = name, catalog_name = catalog_name, schema_name = schema_name, table_type = table_type, exact = exact )
@@ -73,9 +73,9 @@ setMethod(
 
     if ( !exact ) return(callNextMethod())
 
-    if(!is.null(schema_name)) schema_name <- gsub("([^\\\\])(_)", "\\1\\\\_", schema_name)
-    if(!is.null(name)) name <- gsub("([^\\\\])(_)", "\\1\\\\_", name)
-    if(!is.null(column_name)) column_name <- gsub("([^\\\\])(_)", "\\1\\\\_", column_name)
+    schema_name <- escapeChars(schema_name)
+    name <- escapeChars(name)
+    column_name <- escapeChars(column_name)
     callNextMethod()
     # getMethod("odbcConnectionColumns", c("OdbcConnection", "character"))(
     #  conn, name = name, catalog_name = catalog_name, schema_name = schema_name, column_name = column_name, exact = exact )

@@ -51,7 +51,7 @@ odbc_write_table <-
     if (overwrite && append)
       stop("overwrite and append cannot both be TRUE", call. = FALSE)
 
-    found <- dbExistsTable(conn, name, exact = TRUE)
+    found <- dbExistsTable(conn, name)
     if (found && !overwrite && !append) {
       stop("Table ", toString(name), " exists in database, and both overwrite and",
         " append are FALSE", call. = FALSE)
@@ -132,7 +132,7 @@ setMethod(
 #' @export
 setMethod("dbAppendTable", "OdbcConnection", function(conn, name, value, ..., row.names = NULL) {
   stopifnot(is.null(row.names))
-  stopifnot(dbExistsTable(conn, name, exact = TRUE))
+  stopifnot(dbExistsTable(conn, name))
   dbWriteTable(conn, name, value, ..., row.names = row.names, append = TRUE)
   invisible(NA_real_)
 })
@@ -204,44 +204,34 @@ createFields <- function(con, fields, field.types, row.names) {
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbExistsTable
-#' @param exact If TRUE the intention is to match the identifier arguments exactly,
-#' rather than allow pattern-based-matching / wildcards.  Note, this is implemented
-#' only for select back-ends / not supported across the board.
 #' @export
 setMethod(
   "dbExistsTable", c("OdbcConnection", "Id"),
-  function(conn, name, ..., exact = FALSE) {
+  function(conn, name, ...) {
     dbExistsTable(
       conn,
       name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
-      schema_name = id_field(name, "schema"),
-      exact = exact
+      schema_name = id_field(name, "schema")
     )
   })
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbExistsTable
-#' @param exact If TRUE the intention is to match the identifier arguments exactly,
-#' rather than allow pattern-based-matching / wildcards.  Note, this is implemented
-#' only for select back-ends / not supported across the board.
 #' @export
 setMethod(
   "dbExistsTable", c("OdbcConnection", "SQL"),
-  function(conn, name, ..., exact = FALSE) {
-    dbExistsTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ..., exact = exact)
+  function(conn, name, ...) {
+    dbExistsTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   })
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbExistsTable
-#' @param exact If TRUE the intention is to match the identifier arguments exactly,
-#' rather than allow pattern-based-matching / wildcards.  Note, this is implemented
-#' only for select back-ends / not supported across the board.
 #' @export
 setMethod(
   "dbExistsTable", c("OdbcConnection", "character"),
-  function(conn, name, ..., exact = FALSE) {
+  function(conn, name, ...) {
     stopifnot(length(name) == 1)
-    df <- odbcConnectionTables(conn, name = name, ..., exact = exact)
+    df <- odbcConnectionTables(conn, name = name, ..., exact = TRUE)
     NROW(df) > 0
   })
