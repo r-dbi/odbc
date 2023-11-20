@@ -12,6 +12,10 @@ $(SHLIB): $(OBJECTS)
 
 $(OBJECTS): cctz/libcctz.a
 
+# Makefile of libcctz has correct flags, but they are not picked, since Makevars overrides them.
+# Alternatively, ranlib should be run after ar. Otherwise the archive may have no ToC, and build fails.
+ARFLAGS = rcs
+
 cctz/libcctz.a:
 	(cd cctz && \
 $(MAKE) libcctz.a CC="$(CC)" CXX="$(CXX)" CXXFLAGS="$(CXXFLAGS)" AR="$(AR)" ARFLAGS=$(ARFLAGS) CXXPICFLAGS="$(CXXPICFLAGS)")
