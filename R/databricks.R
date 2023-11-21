@@ -153,14 +153,18 @@ is_hosted_session <- function() {
 # Returns a sensible driver name even if odbc.ini and odbcinst.ini do not
 # contain an entry for the Databricks ODBC driver.
 default_databricks_driver <- function() {
-  # For Linux and macOS we can default to the shared library paths used by the
+  # For Linux and macOS we can default to known shared library paths used by the
   # official installers. On Windows we use the official driver name instead.
-  default_path <- ""
+  default_paths <- ""
   if (Sys.info()["sysname"] == "Linux") {
-    default_path <- "/opt/simba/spark/lib/64/libsparkodbc_sb64.so"
+    default_paths <- c(
+      "/opt/rstudio-drivers/spark/bin/lib/libsparkodbc_sb64.so",
+      "/opt/simba/spark/lib/64/libsparkodbc_sb64.so"
+    )
   } else if (Sys.info()["sysname"] == "Darwin") {
-    default_path <- "/Library/simba/spark/lib/libsparkodbc_sbu.dylib"
+    default_paths <- "/Library/simba/spark/lib/libsparkodbc_sbu.dylib"
   }
+  default_paths <- default_paths[file.exists(default_paths)]
 
-  if (file.exists(default_path)) default_path else "Simba Spark ODBC Driver"
+  if (length(default_paths) > 0) default_paths[1] else "Simba Spark ODBC Driver"
 }

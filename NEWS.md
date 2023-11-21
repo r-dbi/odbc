@@ -13,6 +13,8 @@
 * Add a new, specialised `odbc::databricks()` class with its own `dbConnect()`
   method to make using Databricks's ODBC driver easier (@atheriel, #615).
 * Increased the minimum required R version from 3.2.0 to 3.6.0 (@simonpcouch, #629).
+* Add support for searching multiple paths for the default location of the
+  Databricks driver (@bschwedler, #621).
 
 # odbc 1.3.5
 
