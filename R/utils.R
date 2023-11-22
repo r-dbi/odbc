@@ -67,10 +67,6 @@ check_n <- function(n) {
   n
 }
 
-isPatternValue <- function(val) {
-  grepl("[%|_]", val)
-}
-
 # Per ODBC spec, "%" is synonymous with
 # zero or more of any characters. "_" is
 # any one character.  Here we convert

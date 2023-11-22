@@ -1,5 +1,11 @@
 # odbc (development version)
 
+* `dbListTables()`, `dbListFields()`, `odbcConnectionTables()`, and
+  `odbcConnectionColumns()` now automatically escape the `schema_name`,
+  `name`/`table_name`, and `column_name` fields to ensure that ODBC wildcards
+  `_` and `%` don't trigger multiple matches (#618). This leads to substantial 
+  performance improvements for large databases on some backends.
+
 * Spark SQL: Correctly enumerate schemas away from the current catalog (@detule, #614)
 * Modify `odbcDataType.Snowflake` to better reflect Snowflake Data Types documentation (@meztez, #599).
 * SQL Server: Specialize syntax in sqlCreateTable to avoid failures when

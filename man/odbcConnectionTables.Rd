@@ -42,19 +42,19 @@ odbcConnectionTables(conn, name, ...)
 \arguments{
 \item{conn}{OdbcConnection}
 
-\item{name}{table we wish to search for}
-
 \item{...}{additional parameters to methods}
 
 \item{table_type}{List tables of this type, for example 'VIEW'.
 See odbcConnectionTableTypes for a listing of available table
 types for your connection.}
 
-\item{catalog_name}{character catalog where we wish to query for
-available tables}
+\item{catalog_name, schema_name, name}{Catalog, schema, and table names.
 
-\item{schema_name}{character schema where we wish to query for
-available tables.}
+By default, \code{schema_name} and \code{name} will automatically escape the pattern
+matching characters \verb{_} and \verb{\%} to ensure that you match exactly one table.
+If you want to match multiple tables, wrap the name in \code{I()}.
+
+\code{catalog_name} is always a name, not a pattern.}
 }
 \value{
 data.frame with columns

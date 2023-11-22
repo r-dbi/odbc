@@ -164,10 +164,9 @@ setMethod(
     # If a name argument is supplied, subset the temp table names vector
     # to either an exact match, or if pattern value, to an approximate match
     if ( !is.null( name ) ) {
-      if ( isPatternValue( name ) ) {
+      if ( inherits(name, "AsIs")) {
         name <- convertWildCards( name )
-      }
-      else {
+      } else {
         name <- paste0("^", name, "$")
       }
       tempTableNames <- tempTableNames[ grepl(name, tempTableNames) ]

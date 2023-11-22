@@ -3,7 +3,9 @@
 \name{dbListTables,OdbcConnection-method}
 \alias{dbListTables,OdbcConnection-method}
 \alias{dbListTables}
-\title{List remote tables}
+\alias{dbListFields,OdbcConnection,character-method}
+\alias{dbListFields}
+\title{List remote tables and fields for an ODBC connection}
 \usage{
 \S4method{dbListTables}{OdbcConnection}(
   conn,
@@ -13,20 +15,43 @@
   table_type = NULL,
   ...
 )
+
+\S4method{dbListFields}{OdbcConnection,character}(
+  conn,
+  name,
+  catalog_name = NULL,
+  schema_name = NULL,
+  column_name = NULL,
+  ...
+)
 }
 \arguments{
 \item{conn}{A \linkS4class{DBIConnection} object, as returned by
 \code{\link[DBI:dbConnect]{dbConnect()}}.}
 
-\item{catalog_name}{The name of the catalog to return, the default returns all catalogs.}
+\item{catalog_name, schema_name, table_name}{Catalog, schema, and table names.
 
-\item{schema_name}{The name of the schema to return, the default returns all schemas.}
+By default, \code{schema_name} and \code{name} will automatically escape the pattern
+matching characters \verb{_} and \verb{\%} to ensure that you match exactly one table.
+If you want to match multiple tables, wrap the name in \code{I()}.
 
-\item{table_name}{The name of the table to return, the default returns all tables.}
+\code{catalog_name} is always a name, not a pattern.}
 
 \item{table_type}{The type of the table to return, the default returns all table types.}
 
 \item{...}{Other parameters passed on to methods.}
+
+\item{name}{The table name, passed on to \code{\link[DBI:dbQuoteIdentifier]{dbQuoteIdentifier()}}. Options are:
+\itemize{
+\item a character string with the unquoted DBMS table name,
+e.g. \code{"table_name"},
+\item a call to \code{\link[DBI:Id]{Id()}} with components to the fully qualified table name,
+e.g. \code{Id(schema = "my_schema", table = "table_name")}
+\item a call to \code{\link[DBI:SQL]{SQL()}} with the quoted and fully qualified table name
+given verbatim, e.g. \code{SQL('"my_schema"."table_name"')}
+}}
+
+\item{column_name}{The name of the column to return, the default returns all columns.}
 }
 \value{
 \code{dbListTables()}
@@ -44,37 +69,6 @@ The same applies to temporary tables if supported by the database.
 The returned names are suitable for quoting with \code{dbQuoteIdentifier()}.
 }
 \description{
-Returns the unquoted names of remote tables accessible through this
-connection.
-This should include views and temporary objects, but not all database backends
-(in particular \pkg{RMariaDB} and \pkg{RMySQL}) support this.
-
-\Sexpr[results=rd,stage=render]{DBI:::methods_as_rd("dbListTables")}
-}
-\details{
-\code{\%} can be used as a wildcard in any of the search parameters to
-match 0 or more characters. \verb{_} can be used to match any single character.
-}
-\section{Failure modes}{
-
-
-
-An error is raised when calling this method for a closed
-or invalid connection.
-
-
-}
-
-\examples{
-con <- dbConnect(RSQLite::SQLite(), ":memory:")
-
-dbListTables(con)
-dbWriteTable(con, "mtcars", mtcars)
-dbListTables(con)
-
-dbDisconnect(con)
-}
-\seealso{
-The ODBC documentation on \href{https://docs.microsoft.com/en-us/sql/odbc/reference/develop-app/pattern-value-arguments}{Pattern Value Arguments}
-for further details on the supported syntax.
+\code{dbListTables()} provides names of remote tables accessible through this
+connection; \code{dbListFields()} provides names of columns within a table.
 }

@@ -33,15 +33,17 @@ odbcConnectionColumns(conn, name, ...)
 \arguments{
 \item{conn}{OdbcConnection}
 
-\item{name}{table we wish to get information on}
-
 \item{...}{additional parameters to methods}
 
 \item{column_name}{The name of the column to return, the default returns all columns.}
 
-\item{catalog_name}{character catalog where the table is located}
+\item{catalog_name, schema_name, name}{Catalog, schema, and table names.
 
-\item{schema_name}{character schema where the table is located}
+By default, \code{schema_name} and \code{name} will automatically escape the pattern
+matching characters \verb{_} and \verb{\%} to ensure that you match exactly one table.
+If you want to match multiple tables, wrap the name in \code{I()}.
+
+\code{catalog_name} is always a name, not a pattern.}
 }
 \value{
 data.frame with columns

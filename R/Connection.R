@@ -109,7 +109,14 @@ setClass(
 #' the columns `data_type`, `column_size`, and `decimal_digits` are used.  An
 #' implementation is not necessary for [dbWriteTable()] to work.
 #' @param conn OdbcConnection
-#' @param name table we wish to get information on
+#' @param catalog_name,schema_name,name Catalog, schema, and table names.
+#'
+#'   By default, `schema_name` and `name` will automatically escape the pattern
+#'   matching characters `_` and `%` to ensure that you match exactly one table.
+#'   If you want to match multiple tables, wrap the name in `I()`.
+#'
+#'   `catalog_name` is always a name, not a pattern.
+#'
 #' @param ... additional parameters to methods
 #'
 #' @seealso The ODBC documentation on [SQLColumns](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
@@ -161,20 +168,22 @@ setMethod(
 )
 
 #' @rdname odbcConnectionColumns
-#' @param catalog_name character catalog where the table is located
-#' @param schema_name character schema where the table is located
 #' @export
 setMethod(
   "odbcConnectionColumns",
   c("OdbcConnection", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL) {
+    schema_name <- escapePattern(schema_name)
+    name <- escapePattern(name)
+    column_name <- escapePattern(column_name)
 
-    connection_sql_columns(conn@ptr,
+    connection_sql_columns(
+      conn@ptr,
       table_name = name,
       catalog_name = catalog_name,
       schema_name = schema_name,
-      column_name = column_name)
-
+      column_name = column_name
+    )
   }
 )
 
@@ -211,7 +220,7 @@ setMethod(
 #' ( The former also advertises pattern value arguments )
 #'
 #' @param conn OdbcConnection
-#' @param name table we wish to search for
+#' @inheritParams odbcConnectionColumns
 #' @param ... additional parameters to methods
 #'
 #' @seealso The ODBC documentation on [SQLTables](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
@@ -248,21 +257,20 @@ setMethod(
 )
 
 #' @rdname odbcConnectionTables
-#' @param catalog_name character catalog where we wish to query for
-#' available tables
-#' @param schema_name character schema where we wish to query for
-#' available tables.
 setMethod(
   "odbcConnectionTables",
   c("OdbcConnection", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL) {
+    schema_name <- escapePattern(schema_name)
+    name <- escapePattern(name)
 
-    connection_sql_tables(conn@ptr,
+    connection_sql_tables(
+      conn@ptr,
       catalog_name = catalog_name,
       schema_name = schema_name,
       table_name = name,
-      table_type = table_type)
-
+      table_type = table_type
+    )
   }
 )
 
@@ -273,7 +281,7 @@ setMethod(
   function(conn, name = NULL, catalog_name = NULL, schema_name = NULL, table_type = NULL) {
 
     odbcConnectionTables(conn,
-      name = "%",
+      name = I("%"),
       catalog_name = catalog_name,
       schema_name = schema_name,
       table_type = table_type)
@@ -494,17 +502,22 @@ setMethod(
   "dbQuoteIdentifier", c("OdbcConnection", "SQL"),
   getMethod("dbQuoteIdentifier", c("DBIConnection", "SQL"), asNamespace("DBI")))
 
-#' @inherit DBI::dbListTables
-#' @param catalog_name The name of the catalog to return, the default returns all catalogs.
-#' @param schema_name The name of the schema to return, the default returns all schemas.
-#' @param table_name The name of the table to return, the default returns all tables.
+
+#' List remote tables and fields for an ODBC connection
+#'
+#' `dbListTables()` provides names of remote tables accessible through this
+#' connection; `dbListFields()` provides names of columns within a table.
+#'
+#' @inherit DBI::dbListTables params return
+#' @param catalog_name,schema_name,table_name Catalog, schema, and table names.
+#'
+#'   By default, `schema_name` and `name` will automatically escape the pattern
+#'   matching characters `_` and `%` to ensure that you match exactly one table.
+#'   If you want to match multiple tables, wrap the name in `I()`.
+#'
+#'   `catalog_name` is always a name, not a pattern.
 #' @param table_type The type of the table to return, the default returns all table types.
 #' @aliases dbListTables
-#' @details
-#' \code{\%} can be used as a wildcard in any of the search parameters to
-#'   match 0 or more characters. `_` can be used to match any single character.
-#' @seealso The ODBC documentation on [Pattern Value Arguments](https://docs.microsoft.com/en-us/sql/odbc/reference/develop-app/pattern-value-arguments)
-#'   for further details on the supported syntax.
 #' @export
 setMethod(
   "dbListTables", "OdbcConnection",
@@ -518,12 +531,10 @@ setMethod(
       table_type = table_type)$table_name
   })
 
-#' @inherit DBI::dbListFields
+#' @rdname dbListTables-OdbcConnection-method
 #' @inheritParams DBI::dbListFields
 #' @aliases dbListFields
-#' @inheritParams dbListTables,OdbcConnection-method
 #' @param column_name The name of the column to return, the default returns all columns.
-#' @inherit dbListTables,OdbcConnection-method details
 #' @export
 setMethod(
   "dbListFields", c("OdbcConnection", "character"),
@@ -685,4 +696,17 @@ odbcSetTransactionIsolationLevel <- function(conn, levels) {
   levels <- match.arg(tolower(levels), names(transactionLevels()), several.ok = TRUE)
 
   set_transaction_isolation(conn@ptr, transactionLevels()[levels])
+}
+
+escapePattern <- function(x) {
+  if (is.null(x)) {
+    NULL
+  } else if (inherits(x, "AsIs")) {
+    x
+  } else {
+    # https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/pattern-value-arguments
+    x <- gsub("%", "\\%", x, fixed = TRUE)
+    x <- gsub("_", "\\_", x, fixed = TRUE)
+    I(x)
+  }
 }
