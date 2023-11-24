@@ -22,8 +22,9 @@
 * Add support for searching multiple paths for the default location of the
   Databricks driver (@bschwedler, #621).
 
-* Snowflake: performance improvements when writing to tables with underscores
-  in their identifier (schema, table name). (@detule, @fh-afrachioni, @hadley, #618)
+* `dbListTables(), `dbListFields()` and `dbExistsTable()` now automatically
+  escape underscores in identifier arguments.  This leads to substantial performance
+  improvements when writing to large databases on some backends. (@detule, @fh-afrachioni, @hadley, #618)
 
 # odbc 1.3.5
 

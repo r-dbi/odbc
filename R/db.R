@@ -40,47 +40,6 @@ setMethod(
   }
 )
 
-# Snowflake --------------------------------------------------------------------
-
-# Simple class prototype to avoid messages about unknown classes from setMethod
-setClass("Snowflake", where = class_cache)
-
-#' @rdname odbcConnectionTables
-#' @details If `exact` is set to TRUE, then escape underscores in the catalog, schema,
-#' and table names.  There is empirical evidence that this leads to performance improvements.
-setMethod(
-  "odbcConnectionTables",
-  c("Snowflake", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL, exact = FALSE) {
-
-    if ( !exact ) return(callNextMethod())
-
-    catalog_name <- escapeChars(catalog_name)
-    schema_name <- escapeChars(schema_name)
-    name <- escapeChars(name)
-    callNextMethod()
-    # getMethod("odbcConnectionTables", c("OdbcConnection", "character"))(
-    #  conn, name = name, catalog_name = catalog_name, schema_name = schema_name, table_type = table_type, exact = exact )
-  })
-
-#' @rdname odbcConnectionColumns
-#' @details If `exact` is set to TRUE, then escape underscores in the schema, table, and
-#' column names.  There is empirical evidence that this leads to performance improvements.
-setMethod(
-  "odbcConnectionColumns",
-  c("Snowflake", "character"),
-   function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL, exact = FALSE) {
-
-    if ( !exact ) return(callNextMethod())
-
-    schema_name <- escapeChars(schema_name)
-    name <- escapeChars(name)
-    column_name <- escapeChars(column_name)
-    callNextMethod()
-    # getMethod("odbcConnectionColumns", c("OdbcConnection", "character"))(
-    #  conn, name = name, catalog_name = catalog_name, schema_name = schema_name, column_name = column_name, exact = exact )
-  })
-
 # Oracle --------------------------------------------------------------------
 
 # Simple class prototype to avoid messages about unknown classes from setMethod

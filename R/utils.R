@@ -90,6 +90,8 @@ getSelector <- function(key, value, exact) {
       isPatternValue(value)) {
     comp <- " LIKE "
   }
+  if (exact && (value != "%"))
+    value <- escapeChars(value)
   value <- paste0("'", value, "'")
 
   paste0(" AND ", key, comp, value)
@@ -98,11 +100,11 @@ getSelector <- function(key, value, exact) {
 # Will iterate over charsToEsc argument and for each:
 # will escape any un-escaped occurance in `x`.
 escapeChars <- function(x, charsToEsc = c("_"), escChar ="\\\\") {
-  if(is.null(x)) return(x)
+  if(is.null(x) || inherits(x, "AsIs")) return(x)
   for (ch in charsToEsc) {
     pattern <- paste0("([^", escChar, "])(", ch,")")
     replace <- paste0("\\1", escChar, ch)
     x <- gsub(pattern, replace, x)
   }
-  return (x)
+  I(x)
 }

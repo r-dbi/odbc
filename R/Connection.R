@@ -154,9 +154,9 @@ setClass(
 #' as a SQL search pattern: underscores and percent signs are interpreted as
 #' wild cards.  Related to `exact` parameter.
 #' @param ... additional parameters to methods
-#' @param exact If TRUE the intention is to match the identifier arguments exactly,
-#' rather than allow pattern-based-matching / wildcards.  Note, this is implemented
-#' only for select back-ends / not supported across the board.
+#' @param exact Se to TRUE if any non-null identifier arguments are to be interpreted
+#' exactly.  When TRUE underscores in schema, table, and column name arguments
+#' are escaped.  Otherwise, they are interepted as wild cards.
 #'
 #' @seealso The ODBC documentation on [SQLColumns](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
 #' for further details.
@@ -217,6 +217,11 @@ setMethod(
   c("OdbcConnection", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL, exact = FALSE) {
 
+    if (exact) {
+      schema_name <- escapeChars(schema_name)
+      name <- escapeChars(name)
+      column_name <- escapeChars(column_name)
+    }
     connection_sql_columns(conn@ptr,
       table_name = name,
       catalog_name = catalog_name,
@@ -263,9 +268,9 @@ setMethod(
 #' as a SQL search pattern: underscores and percent signs are interpreted as
 #' wild cards.  Related to `exact` parameter.
 #' @param ... additional parameters to methods
-#' @param exact If TRUE the intention is to match the identifier arguments exactly,
-#' rather than allow pattern-based-matching / wildcards.  Note, this is implemented
-#' only for select back-ends / not supported across the board.
+#' @param exact Se to TRUE if any non-null identifier arguments are to be interpreted
+#' exactly.  When TRUE underscores in catalog, schema, and table name arguments
+#' are escaped.  Otherwise, they are interepted as wild cards.
 #'
 #' @seealso The ODBC documentation on [SQLTables](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
 #' for further details.
@@ -312,6 +317,11 @@ setMethod(
   c("OdbcConnection", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL, exact = FALSE) {
 
+    if (exact) {
+      catalog_name <- escapeChars(catalog_name)
+      schema_name <- escapeChars(schema_name)
+      name <- escapeChars(name)
+    }
     connection_sql_tables(conn@ptr,
       catalog_name = catalog_name,
       schema_name = schema_name,
@@ -556,12 +566,16 @@ setMethod(
 #' `dbListTables()` provides names of remote tables accessible through this
 #' connection; `dbListFields()` provides names of columns within a table.
 #'
-#' @inheritParams DBI::dbListTables
+#' @inherit DBI::dbListTables params return
 #' @param catalog_name,schema_name,table_name Catalog, schema, and table names.
 #'
-#'   Use `%` as a wildcard to match any name; use `_` to any any character.
+#'   By default, `catalog_name`, `schema_name` and `table_name` will automatically escape
+#'   underscores to ensure that you match exactly one table.
+#'   If you want to use underscores as wild cards, wrap the name in `I()`.
+#'
 #' @param table_type The type of the table to return, the default returns all table types.
 #' @returns A character vector of table or field names respectively.
+#' @aliases dbListTables
 #' @export
 setMethod(
   "dbListTables", "OdbcConnection",
@@ -577,12 +591,13 @@ setMethod(
       name = table_name,
       catalog_name = catalog_name,
       schema_name = schema_name,
-      table_type = table_type
-    )$table_name
+      table_type = table_type,
+      exact = TRUE)$table_name
   })
 
 #' @rdname dbListTables-OdbcConnection-method
 #' @inheritParams DBI::dbListFields
+#' @aliases dbListFields
 #' @param column_name The name of the column to return, the default returns all columns.
 #' @export
 setMethod(
@@ -600,8 +615,8 @@ setMethod(
       name = name,
       catalog_name = catalog_name,
       schema_name = schema_name,
-      column_name = column_name
-    )[["name"]]
+      column_name = column_name,
+      exact = TRUE)[["name"]]
   })
 
 #' @rdname OdbcConnection

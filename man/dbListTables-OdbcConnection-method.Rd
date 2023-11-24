@@ -2,7 +2,9 @@
 % Please edit documentation in R/Connection.R
 \name{dbListTables,OdbcConnection-method}
 \alias{dbListTables,OdbcConnection-method}
+\alias{dbListTables}
 \alias{dbListFields,OdbcConnection,character-method}
+\alias{dbListFields}
 \title{List remote tables and fields for an ODBC connection}
 \usage{
 \S4method{dbListTables}{OdbcConnection}(
@@ -29,7 +31,9 @@
 
 \item{catalog_name, schema_name, table_name}{Catalog, schema, and table names.
 
-Use \verb{\%} as a wildcard to match any name; use \verb{_} to any any character.}
+By default, \code{catalog_name}, \code{schema_name} and \code{table_name} will automatically escape
+underscores to ensure that you match exactly one table.
+If you want to use underscores as wild cards, wrap the name in \code{I()}.}
 
 \item{table_type}{The type of the table to return, the default returns all table types.}
 
@@ -49,6 +53,19 @@ given verbatim, e.g. \code{SQL('"my_schema"."table_name"')}
 }
 \value{
 A character vector of table or field names respectively.
+\code{dbListTables()}
+returns a character vector
+that enumerates all tables
+and views
+in the database.
+Tables added with \code{\link[DBI:dbWriteTable]{dbWriteTable()}}
+are part of the list.
+As soon a table is removed from the database,
+it is also removed from the list of database tables.
+
+The same applies to temporary tables if supported by the database.
+
+The returned names are suitable for quoting with \code{dbQuoteIdentifier()}.
 }
 \description{
 \code{dbListTables()} provides names of remote tables accessible through this

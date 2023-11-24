@@ -5,7 +5,6 @@
 \alias{odbcConnectionColumns,OdbcConnection,Id-method}
 \alias{odbcConnectionColumns,OdbcConnection,character-method}
 \alias{odbcConnectionColumns,OdbcConnection,SQL-method}
-\alias{odbcConnectionColumns,Snowflake,character-method}
 \alias{odbcConnectionColumns,Oracle,character-method}
 \title{odbcConnectionColumns}
 \usage{
@@ -23,15 +22,6 @@ odbcConnectionColumns(conn, name, ..., exact = FALSE)
 )
 
 \S4method{odbcConnectionColumns}{OdbcConnection,SQL}(conn, name, ..., exact = FALSE)
-
-\S4method{odbcConnectionColumns}{Snowflake,character}(
-  conn,
-  name,
-  catalog_name = NULL,
-  schema_name = NULL,
-  column_name = NULL,
-  exact = FALSE
-)
 
 \S4method{odbcConnectionColumns}{Oracle,character}(
   conn,
@@ -51,9 +41,9 @@ wild cards.  Related to \code{exact} parameter.}
 
 \item{...}{additional parameters to methods}
 
-\item{exact}{If TRUE the intention is to match the identifier arguments exactly,
-rather than allow pattern-based-matching / wildcards.  Note, this is implemented
-only for select back-ends / not supported across the board.}
+\item{exact}{Se to TRUE if any non-null identifier arguments are to be interpreted
+exactly.  When TRUE underscores in schema, table, and column name arguments
+are escaped.  Otherwise, they are interepted as wild cards.}
 
 \item{column_name}{The name of the column to return, the default returns all columns.}
 
@@ -100,9 +90,6 @@ method.  This function, together with remaining catalog functions
 either ordinary arguments (OA) in the case of the catalog, or pattern value
 arguments (PV) in the case of schema/table name.  For these, quoted
 identifiers do not make sense, so we unquote identifiers prior to the call.
-
-If \code{exact} is set to TRUE, then escape underscores in the schema, table, and
-column names.  There is empirical evidence that this leads to performance improvements.
 
 Query, rather than use SQLColumns ODBC API for ORACLE since when using the API
 we bind a BIGINT to one of the column results.  Oracle's OEM driver is unable to handle.
