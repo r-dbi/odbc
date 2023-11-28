@@ -12,7 +12,7 @@ Useful links:
 \itemize{
   \item \url{https://r-dbi.github.io/odbc/}
   \item \url{https://github.com/r-dbi/odbc}
-  \item \url{https://db.rstudio.com}
+  \item \url{https://solutions.posit.co/connections/db/}
   \item Report bugs at \url{https://github.com/r-dbi/odbc/issues}
 }
 
