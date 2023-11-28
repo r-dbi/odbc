@@ -10,8 +10,8 @@ state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/odbc)](https://cran.r-project.org/package=odbc)
 [![R-CMD-check](https://github.com/r-dbi/odbc/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-dbi/odbc/actions/workflows/R-CMD-check.yaml)
-[![Coverage
-Status](https://img.shields.io/codecov/c/github/r-dbi/odbc/master.svg)](https://app.codecov.io/github/r-dbi/odbc?branch=main)
+[![Codecov test
+coverage](https://codecov.io/gh/r-dbi/odbc/branch/main/graph/badge.svg)](https://app.codecov.io/gh/r-dbi/odbc?branch=main)
 <!-- badges: end -->
 
 The goal of the odbc package is to provide a DBI-compliant interface to
