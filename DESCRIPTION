@@ -3,13 +3,13 @@ Title: Connect to ODBC Compatible Databases (using the DBI Interface)
 Version: 1.3.5.9000
 Authors@R: c(
     person("Jim", "Hester", role = "aut"),
-    person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut", "cre")),
+    person("Hadley", "Wickham", , "hadley@posit.co", role = c("aut", "cre")),
     person("Oliver", "Gjoneski", role = "aut"),
     person("lexicalunit", role = "cph",
            comment = "nanodbc library"),
     person("Google Inc.", role = "cph",
            comment = "cctz library"),
-    person("RStudio", role = c("cph", "fnd"))
+    person("Posit Software, PBC", role = c("cph", "fnd"))
   )
 Description: A DBI-compatible interface to ODBC databases.
 License: MIT + file LICENSE
@@ -17,7 +17,7 @@ URL: https://r-dbi.github.io/odbc/, https://github.com/r-dbi/odbc,
     https://db.rstudio.com
 BugReports: https://github.com/r-dbi/odbc/issues
 Depends: 
-    R (>= 3.2.0)
+    R (>= 3.6.0)
 Imports:
     bit64,
     blob (>= 1.2.0),
@@ -36,9 +36,9 @@ Suggests:
 LinkingTo: 
     Rcpp
 ByteCompile: true
+Config/Needs/check: pkgbuild
 Config/Needs/website: tidyverse/tidytemplate
-Config/Needs/check:
-    pkgbuild
+Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
@@ -57,4 +57,3 @@ Collate:
     'hidden.R'
     'utils.R'
     'zzz.R'
-Config/testthat/edition: 3
