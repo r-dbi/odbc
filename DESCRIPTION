@@ -36,9 +36,9 @@ Suggests:
 LinkingTo: 
     Rcpp
 ByteCompile: true
+Config/Needs/check:pkgbuild
 Config/Needs/website: tidyverse/tidytemplate
-Config/Needs/check:
-    pkgbuild
+Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
@@ -57,4 +57,3 @@ Collate:
     'hidden.R'
     'utils.R'
     'zzz.R'
-Config/testthat/edition: 3
