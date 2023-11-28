@@ -3,13 +3,13 @@ Title: Connect to ODBC Compatible Databases (using the DBI Interface)
 Version: 1.3.5.9000
 Authors@R: c(
     person("Jim", "Hester", role = "aut"),
-    person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut", "cre")),
+    person("Hadley", "Wickham", , "hadley@posit.co", role = c("aut", "cre")),
     person("Oliver", "Gjoneski", role = "aut"),
     person("lexicalunit", role = "cph",
            comment = "nanodbc library"),
     person("Google Inc.", role = "cph",
            comment = "cctz library"),
-    person("RStudio", role = c("cph", "fnd"))
+    person("Posit Software, PBC", role = c("cph", "fnd"))
   )
 Description: A DBI-compatible interface to ODBC databases.
 License: MIT + file LICENSE

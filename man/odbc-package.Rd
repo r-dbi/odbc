@@ -18,7 +18,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Hadley Wickham \email{hadley@rstudio.com}
+\strong{Maintainer}: Hadley Wickham \email{hadley@posit.co}
 
 Authors:
 \itemize{
@@ -30,7 +30,7 @@ Other contributors:
 \itemize{
   \item lexicalunit (nanodbc library) [copyright holder]
   \item Google Inc. (cctz library) [copyright holder]
-  \item RStudio [copyright holder, funder]
+  \item Posit Software, PBC [copyright holder, funder]
 }
 
 }
