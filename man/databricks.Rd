@@ -46,9 +46,11 @@ implements a subset of the \href{https://docs.databricks.com/en/dev-tools/auth.h
 model, with support for personal access tokens, OAuth machine-to-machine
 credentials, and OAuth user-to-machine credentials supplied via Posit
 Workbench or the Databricks CLI on desktop.
-
 All of these credentials are detected automatically if present using
 \href{https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication}{standard environment variables}.
+
+It also suppresses the default translation of ANSI SQL to HiveQL to
+maximise performance.
 }
 \examples{
 \dontrun{

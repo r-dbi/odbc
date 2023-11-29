@@ -10,9 +10,11 @@
 #' model, with support for personal access tokens, OAuth machine-to-machine
 #' credentials, and OAuth user-to-machine credentials supplied via Posit
 #' Workbench or the Databricks CLI on desktop.
-#'
 #' All of these credentials are detected automatically if present using
 #' [standard environment variables](https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication).
+#'
+#' It also suppresses the default translation of ANSI SQL to HiveQL to
+#' maximise performance.
 #'
 #' @inheritParams DBI::dbConnect
 #' @param http_path To query a cluster, use the HTTP Path value found under
@@ -89,6 +91,8 @@ databricks_args <- function(http_path,
     HTTPPath = http_path,
     ThriftTransport = 2,
     UserAgentEntry = user_agent,
+    # don't translate queries from ANSI SQL to HiveSQL
+    UseNativeQuery = 1,
     # Connections to Databricks are always over HTTPS.
     Port = 443,
     Protocol = "https",
