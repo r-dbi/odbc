@@ -60,7 +60,7 @@ odbc and its dependencies use C++11 features. Therefore you need
 
 ### Windows
 
-Windows is bundled with ODBC libraries however drivers for each database
+Windows is bundled with ODBC libraries. However, drivers for each database
 need to be installed separately. Windows ODBC drivers typically include
 an installer that needs to be run and will install the driver to the
 proper locations.
