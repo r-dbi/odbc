@@ -344,7 +344,7 @@ The *odbc* package is often much faster than the existing
 
 Reading a table from a SQL Server database with the ‘flights’ dataset
 (336,776 rows, 19 columns) of the package
-[nytflights13](https://github.com/tidyverse/nycflights13).
+[nycflights13](https://github.com/tidyverse/nycflights13).
 
 ``` r
 # First using RODBC / RODBCDBI
