@@ -314,7 +314,7 @@ data <- dbReadTable(con, "flights")
 `dbWriteTable()` will write an R `data.frame()` to an SQL table.
 
 ``` r
-data <- dbWriteTable(con, "iris", iris)
+dbWriteTable(con, "iris", iris)
 ```
 
 ### Querying
