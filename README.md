@@ -54,7 +54,7 @@ After installation of the driver manager and driver, you will have to
 register the driver in a [odbcinst.ini](#dsn-configuration-files) file
 for it to appear in `odbc::odbcListDrivers()`.
 
-**odbc** and its dependencies use C++11 features. Therefore you need
+odbc and its dependencies use C++11 features. Therefore you need
 [gcc 4.8](https://gcc.gnu.org/), [clang 3.3](https://clang.llvm.org) or
 [Rtools 3.3](https://CRAN.R-project.org/bin/windows/Rtools/) or later.
 
