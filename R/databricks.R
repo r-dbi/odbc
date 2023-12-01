@@ -67,33 +67,15 @@ databricks_args <- function(HTTPPath,
                             workspace = Sys.getenv("DATABRICKS_HOST"),
                             useNativeQuery = FALSE,
                             driver = NULL) {
-  if (nchar(workspace) == 0) {
-    stop("No Databricks workspace URL provided")
-  }
-  hostname <- gsub("https://", "", workspace)
-  driver <- driver %||% default_databricks_driver()
-
-  # Check some standard Databricks environment variables. This is used to
-  # implement a subset of the "Databricks client unified authentication" model.
-  token <- Sys.getenv("DATABRICKS_TOKEN")
-  client_id <- Sys.getenv("DATABRICKS_CLIENT_ID")
-  client_secret <- Sys.getenv("DATABRICKS_CLIENT_SECRET")
-  cli_path <- Sys.getenv("DATABRICKS_CLI_PATH", "databricks")
-
-  user_agent <- paste0("r-odbc/", utils::packageVersion("odbc"))
-  if (nchar(Sys.getenv("SPARK_CONNECT_USER_AGENT")) != 0) {
-    # Respect the existing user-agent if present. Normally we'd append, but the
-    # Databricks ODBC driver does not yet support space-separated entries in
-    # this field.
-    user_agent <- Sys.getenv("SPARK_CONNECT_USER_AGENT")
-  }
+  host <- databricks_host(workspace)
+  driver <- driver %||% databricks_default_driver()
 
   args <- list(
     driver = driver,
-    Host = hostname,
+    Host = host,
     HTTPPath = HTTPPath,
     ThriftTransport = 2,
-    UserAgentEntry = user_agent,
+    UserAgentEntry = databricks_user_agent(),
     useNativeQuery = as.integer(useNativeQuery),
     # Connections to Databricks are always over HTTPS.
     Port = 443,
@@ -101,64 +83,12 @@ databricks_args <- function(HTTPPath,
     SSL = 1
   )
 
-  # Check for Workbench-provided credentials.
-  wb_token <- NULL
-  if (exists(".rs.api.getDatabricksToken")) {
-    getDatabricksToken <- get(".rs.api.getDatabricksToken")
-    wb_token <- getDatabricksToken(workspace)
-  }
-
-  if (nchar(token) != 0) {
-    # An explicit PAT takes precedence over everything else.
-    args <- c(args, AuthMech = 3, uid = "token", pwd = token)
-  } else if (nchar(client_id) != 0) {
-    # Next up are explicit OAuth2 M2M credentials.
-    args <- c(
-      args,
-      AuthMech = 11,
-      Auth_Flow = 1,
-      Auth_Client_ID = client_id,
-      Auth_Client_Secret = client_secret
-    )
-  } else if (!is.null(wb_token)) {
-    # Next up are Workbench-provided credentials.
-    args <- c(args, AuthMech = 11, Auth_Flow = 0, Auth_AccessToken = wb_token)
-  } else if (!is_hosted_session() && nchar(Sys.which(cli_path)) != 0) {
-    # When on desktop, try using the Databricks CLI for auth.
-    output <- suppressWarnings(
-      system2(
-        cli_path,
-        c("auth", "token", "--host", workspace),
-        stdout = TRUE,
-        stderr = TRUE
-      )
-    )
-    output <- paste(output, collapse = "\n")
-    # If we don't get an error message, try to extract the token from the JSON-
-    # formatted output.
-    if (grepl("access_token", output, fixed = TRUE)) {
-      token <- gsub(".*access_token\":\\s?\"([^\"]+).*", "\\1", output)
-      args <- c(args, AuthMech = 11, Auth_Flow = 0, Auth_AccessToken = token)
-    }
-  }
-
-  args
-}
-
-# Try to determine whether we can redirect the user's browser to a server on
-# localhost, which isn't possible if we are running on a hosted platform.
-#
-# This is based on the strategy pioneered by the {gargle} package and {httr2}.
-is_hosted_session <- function() {
-  # If RStudio Server or Posit Workbench is running locally (which is possible,
-  # though unusual), it's not acting as a hosted environment.
-  Sys.getenv("RSTUDIO_PROGRAM_MODE") == "server" &&
-    !grepl("localhost", Sys.getenv("RSTUDIO_HTTP_REFERER"), fixed = TRUE)
+  c(args, databricks_auth_args())
 }
 
 # Returns a sensible driver name even if odbc.ini and odbcinst.ini do not
 # contain an entry for the Databricks ODBC driver.
-default_databricks_driver <- function() {
+databricks_default_driver <- function() {
   # For Linux and macOS we can default to known shared library paths used by the
   # official installers. On Windows we use the official driver name instead.
   default_paths <- ""
@@ -174,3 +104,84 @@ default_databricks_driver <- function() {
 
   if (length(default_paths) > 0) default_paths[1] else "Simba Spark ODBC Driver"
 }
+
+databricks_host <- function(workspace = Sys.getenv("DATABRICKS_HOST")) {
+  if (nchar(workspace) == 0) {
+    stop("No Databricks workspace URL provided")
+  }
+  gsub("https://", "", workspace)
+}
+
+databricks_user_agent <- function() {
+  user_agent <- paste0("r-odbc/", utils::packageVersion("odbc"))
+  if (nchar(Sys.getenv("SPARK_CONNECT_USER_AGENT")) != 0) {
+    # Respect the existing user-agent if present. Normally we'd append, but the
+    # Databricks ODBC driver does not yet support space-separated entries in
+    # this field.
+    user_agent <- Sys.getenv("SPARK_CONNECT_USER_AGENT")
+  }
+  user_agent
+}
+
+databricks_auth_args <- function() {
+
+  # Check some standard Databricks environment variables. This is used to
+  # implement a subset of the "Databricks client unified authentication" model.
+  token <- Sys.getenv("DATABRICKS_TOKEN")
+  client_id <- Sys.getenv("DATABRICKS_CLIENT_ID")
+  client_secret <- Sys.getenv("DATABRICKS_CLIENT_SECRET")
+  cli_path <- Sys.getenv("DATABRICKS_CLI_PATH", "databricks")
+
+  # Check for Workbench-provided credentials.
+  wb_token <- NULL
+  if (exists(".rs.api.getDatabricksToken")) {
+    getDatabricksToken <- get(".rs.api.getDatabricksToken")
+    wb_token <- getDatabricksToken(workspace)
+  }
+
+  if (nchar(token) != 0) {
+    # An explicit PAT takes precedence over everything else.
+    c(AuthMech = 3, uid = "token", pwd = token)
+  } else if (nchar(client_id) != 0) {
+    # Next up are explicit OAuth2 M2M credentials.
+    c(
+      args,
+      AuthMech = 11,
+      Auth_Flow = 1,
+      Auth_Client_ID = client_id,
+      Auth_Client_Secret = client_secret
+    )
+  } else if (!is.null(wb_token)) {
+    # Next up are Workbench-provided credentials.
+    c(AuthMech = 11, Auth_Flow = 0, Auth_AccessToken = wb_token)
+  } else if (!is_hosted_session() && nchar(Sys.which(cli_path)) != 0) {
+    # When on desktop, try using the Databricks CLI for auth.
+    output <- suppressWarnings(
+      system2(
+        cli_path,
+        c("auth", "token", "--host", workspace),
+        stdout = TRUE,
+        stderr = TRUE
+      )
+    )
+    output <- paste(output, collapse = "\n")
+    # If we don't get an error message, try to extract the token from the JSON-
+    # formatted output.
+    if (grepl("access_token", output, fixed = TRUE)) {
+      token <- gsub(".*access_token\":\\s?\"([^\"]+).*", "\\1", output)
+      c(AuthMech = 11, Auth_Flow = 0, Auth_AccessToken = token)
+    }
+  }
+}
+
+# Try to determine whether we can redirect the user's browser to a server on
+# localhost, which isn't possible if we are running on a hosted platform.
+#
+# This is based on the strategy pioneered by the {gargle} package and {httr2}.
+is_hosted_session <- function() {
+  # If RStudio Server or Posit Workbench is running locally (which is possible,
+  # though unusual), it's not acting as a hosted environment.
+  Sys.getenv("RSTUDIO_PROGRAM_MODE") == "server" &&
+    !grepl("localhost", Sys.getenv("RSTUDIO_HTTP_REFERER"), fixed = TRUE)
+}
+
