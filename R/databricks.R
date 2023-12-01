@@ -105,15 +105,22 @@ databricks_default_driver <- function() {
   if (length(default_paths) > 0) default_paths[1] else "Simba Spark ODBC Driver"
 }
 
-databricks_host <- function(workspace = Sys.getenv("DATABRICKS_HOST")) {
+databricks_host <- function(workspace) {
   if (nchar(workspace) == 0) {
-    stop("No Databricks workspace URL provided")
+    abort(
+      c(
+        "No Databricks workspace URL provided.",
+        i = "Either supply `workspace` argument or set env var `DATABRICKS_HOST`."
+      ),
+      call = NULL
+    )
   }
   gsub("https://", "", workspace)
 }
 
+#' @importFrom utils packageVersion
 databricks_user_agent <- function() {
-  user_agent <- paste0("r-odbc/", utils::packageVersion("odbc"))
+  user_agent <- paste0("r-odbc/", packageVersion("odbc"))
   if (nchar(Sys.getenv("SPARK_CONNECT_USER_AGENT")) != 0) {
     # Respect the existing user-agent if present. Normally we'd append, but the
     # Databricks ODBC driver does not yet support space-separated entries in
