@@ -14,7 +14,7 @@
 #' [standard environment variables](https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication).
 #'
 #' @inheritParams DBI::dbConnect
-#' @param http_path To query a cluster, use the HTTP Path value found under
+#' @param HTTPPath To query a cluster, use the HTTP Path value found under
 #'   `Advanced Options > JDBC/ODBC` in the Databricks UI. For SQL warehouses,
 #'   this is found under `Connection Details` instead.
 #' @param useNativeQuery Suppress the driver's conversion from ANSI SQL 92 to
@@ -33,7 +33,7 @@
 #' \dontrun{
 #' DBI::dbConnect(
 #'   odbc::databricks(),
-#'   http_path = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
+#'   HTTPPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
 #' )
 #' }
 #' @export
@@ -50,13 +50,13 @@ setClass("DatabricksOdbcDriver", contains = "OdbcDriver")
 setMethod(
   "dbConnect", "DatabricksOdbcDriver",
   function(drv,
-           http_path,
+           HTTPPath,
            workspace = Sys.getenv("DATABRICKS_HOST"),
            useNativeQuery = TRUE,
            driver = NULL,
            ...) {
     args <- databricks_args(
-      http_path = http_path,
+      HTTPPath = HTTPPath,
       workspace = workspace,
       useNativeQuery = useNativeQuery,
       driver = driver
@@ -66,7 +66,7 @@ setMethod(
   }
 )
 
-databricks_args <- function(http_path,
+databricks_args <- function(HTTPPath,
                             workspace = Sys.getenv("DATABRICKS_HOST"),
                             useNativeQuery = FALSE,
                             driver = NULL) {
@@ -94,7 +94,7 @@ databricks_args <- function(http_path,
   args <- list(
     driver = driver,
     Host = hostname,
-    HTTPPath = http_path,
+    HTTPPath = HTTPPath,
     ThriftTransport = 2,
     UserAgentEntry = user_agent,
     useNativeQuery = as.integer(useNativeQuery),
@@ -162,14 +162,18 @@ is_hosted_session <- function() {
 # Returns a sensible driver name even if odbc.ini and odbcinst.ini do not
 # contain an entry for the Databricks ODBC driver.
 default_databricks_driver <- function() {
-  # For Linux and macOS we can default to the shared library paths used by the
+  # For Linux and macOS we can default to known shared library paths used by the
   # official installers. On Windows we use the official driver name instead.
-  default_path <- ""
+  default_paths <- ""
   if (Sys.info()["sysname"] == "Linux") {
-    default_path <- "/opt/simba/spark/lib/64/libsparkodbc_sb64.so"
+    default_paths <- Sys.glob(c(
+      "/opt/rstudio-drivers/spark/bin/lib/libsparkodbc_sb*.so",
+      "/opt/simba/spark/lib/64/libsparkodbc_sb*.so"
+    ))
   } else if (Sys.info()["sysname"] == "Darwin") {
-    default_path <- "/Library/simba/spark/lib/libsparkodbc_sbu.dylib"
+    default_paths <- Sys.glob("/Library/simba/spark/lib/libsparkodbc_sb*.dylib")
   }
+  default_paths <- default_paths[file.exists(default_paths)]
 
-  if (file.exists(default_path)) default_path else "Simba Spark ODBC Driver"
+  if (length(default_paths) > 0) default_paths[1] else "Simba Spark ODBC Driver"
 }

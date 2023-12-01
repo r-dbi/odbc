@@ -137,8 +137,8 @@ apt-get install libsqliteodbc
 install.packages("odbc")
 
 # Or the the development version from GitHub:
-# install.packages(devtools)
-devtools::install_github("r-dbi/odbc")
+# install.packages("pak")
+pak::pak("r-dbi/odbc")
 ```
 
 ## Connecting to a Database
