@@ -218,9 +218,9 @@ setMethod(
   function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL, exact = FALSE) {
 
     if (exact) {
-      schema_name <- escapeChars(schema_name)
-      name <- escapeChars(name)
-      column_name <- escapeChars(column_name)
+      schema_name <- escapePattern(schema_name)
+      name <- escapePattern(name)
+      column_name <- escapePattern(column_name)
     }
     connection_sql_columns(conn@ptr,
       table_name = name,
@@ -318,9 +318,9 @@ setMethod(
   function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL, exact = FALSE) {
 
     if (exact) {
-      catalog_name <- escapeChars(catalog_name)
-      schema_name <- escapeChars(schema_name)
-      name <- escapeChars(name)
+      catalog_name <- escapePattern(catalog_name)
+      schema_name <- escapePattern(schema_name)
+      name <- escapePattern(name)
     }
     connection_sql_tables(conn@ptr,
       catalog_name = catalog_name,
