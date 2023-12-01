@@ -14,7 +14,7 @@
 #' [standard environment variables](https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication).
 #'
 #' @inheritParams DBI::dbConnect
-#' @param HTTPPath To query a cluster, use the HTTP Path value found under
+#' @param httpPath To query a cluster, use the HTTP Path value found under
 #'   `Advanced Options > JDBC/ODBC` in the Databricks UI. For SQL warehouses,
 #'   this is found under `Connection Details` instead.
 #' @param useNativeQuery Suppress the driver's conversion from ANSI SQL 92 to
@@ -33,7 +33,7 @@
 #' \dontrun{
 #' DBI::dbConnect(
 #'   odbc::databricks(),
-#'   HTTPPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
+#'   httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
 #' )
 #' }
 #' @export
@@ -48,13 +48,13 @@ setClass("DatabricksOdbcDriver", contains = "OdbcDriver")
 setMethod(
   "dbConnect", "DatabricksOdbcDriver",
   function(drv,
-           HTTPPath,
+           httpPath,
            workspace = Sys.getenv("DATABRICKS_HOST"),
            useNativeQuery = TRUE,
            driver = NULL,
            ...) {
     args <- databricks_args(
-      HTTPPath = HTTPPath,
+      httpPath = httpPath,
       workspace = workspace,
       useNativeQuery = useNativeQuery,
       driver = driver
@@ -63,7 +63,7 @@ setMethod(
   }
 )
 
-databricks_args <- function(HTTPPath,
+databricks_args <- function(httpPath,
                             workspace = Sys.getenv("DATABRICKS_HOST"),
                             useNativeQuery = FALSE,
                             driver = NULL) {
@@ -72,15 +72,15 @@ databricks_args <- function(HTTPPath,
 
   args <- list(
     driver = driver,
-    Host = host,
-    HTTPPath = HTTPPath,
-    ThriftTransport = 2,
-    UserAgentEntry = databricks_user_agent(),
+    host = host,
+    httpPath = httpPath,
+    thriftTransport = 2,
+    userAgentEntry = databricks_user_agent(),
     useNativeQuery = as.integer(useNativeQuery),
     # Connections to Databricks are always over HTTPS.
-    Port = 443,
-    Protocol = "https",
-    SSL = 1
+    port = 443,
+    protocol = "https",
+    ssl = 1
   )
 
   c(args, databricks_auth_args())
@@ -148,19 +148,26 @@ databricks_auth_args <- function() {
 
   if (nchar(token) != 0) {
     # An explicit PAT takes precedence over everything else.
-    c(AuthMech = 3, uid = "token", pwd = token)
+    list(
+      authMech = 3,
+      uid = "token",
+      pwd = token
+    )
   } else if (nchar(client_id) != 0) {
     # Next up are explicit OAuth2 M2M credentials.
-    c(
-      args,
-      AuthMech = 11,
-      Auth_Flow = 1,
-      Auth_Client_ID = client_id,
-      Auth_Client_Secret = client_secret
+    list(
+      authMech = 11,
+      auth_flow = 1,
+      auth_client_id = client_id,
+      auth_client_secret = client_secret
     )
   } else if (!is.null(wb_token)) {
     # Next up are Workbench-provided credentials.
-    c(AuthMech = 11, Auth_Flow = 0, Auth_AccessToken = wb_token)
+    list(
+      authech = 11,
+      auth_flow = 0,
+      auth_accesstoken = wb_token
+    )
   } else if (!is_hosted_session() && nchar(Sys.which(cli_path)) != 0) {
     # When on desktop, try using the Databricks CLI for auth.
     output <- suppressWarnings(
@@ -176,7 +183,11 @@ databricks_auth_args <- function() {
     # formatted output.
     if (grepl("access_token", output, fixed = TRUE)) {
       token <- gsub(".*access_token\":\\s?\"([^\"]+).*", "\\1", output)
-      c(AuthMech = 11, Auth_Flow = 0, Auth_AccessToken = token)
+      list(
+        authMech = 11,
+        auth_flow = 0,
+        auth_accesstoken = token
+      )
     }
   }
 }
@@ -192,3 +203,7 @@ is_hosted_session <- function() {
     !grepl("localhost", Sys.getenv("RSTUDIO_HTTP_REFERER"), fixed = TRUE)
 }
 
+
+is_camel_case <- function(x) {
+  grepl("^[a-z]+([A-Z_][a-z]+)*$", x)
+}
