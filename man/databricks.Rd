@@ -11,7 +11,7 @@ databricks()
 
 \S4method{dbConnect}{DatabricksOdbcDriver}(
   drv,
-  http_path,
+  HTTPPath,
   workspace = Sys.getenv("DATABRICKS_HOST"),
   driver = NULL,
   ...
@@ -22,7 +22,7 @@ databricks()
 or an existing \linkS4class{DBIConnection}
 object (in order to clone an existing connection).}
 
-\item{http_path}{To query a cluster, use the HTTP Path value found under
+\item{HTTPPath}{To query a cluster, use the HTTP Path value found under
 \verb{Advanced Options > JDBC/ODBC} in the Databricks UI. For SQL warehouses,
 this is found under \verb{Connection Details} instead.}
 
@@ -54,7 +54,7 @@ All of these credentials are detected automatically if present using
 \dontrun{
 DBI::dbConnect(
   odbc::databricks(),
-  http_path = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
+  HTTPPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
 )
 }
 }
