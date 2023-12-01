@@ -83,7 +83,7 @@ databricks_args <- function(httpPath,
     ssl = 1
   )
 
-  c(args, databricks_auth_args())
+  c(args, databricks_auth_args(host))
 }
 
 # Returns a sensible driver name even if odbc.ini and odbcinst.ini do not
@@ -130,7 +130,7 @@ databricks_user_agent <- function() {
   user_agent
 }
 
-databricks_auth_args <- function() {
+databricks_auth_args <- function(host) {
 
   # Check some standard Databricks environment variables. This is used to
   # implement a subset of the "Databricks client unified authentication" model.
@@ -143,7 +143,7 @@ databricks_auth_args <- function() {
   wb_token <- NULL
   if (exists(".rs.api.getDatabricksToken")) {
     getDatabricksToken <- get(".rs.api.getDatabricksToken")
-    wb_token <- getDatabricksToken(workspace)
+    wb_token <- getDatabricksToken(host)
   }
 
   if (nchar(token) != 0) {
@@ -173,7 +173,7 @@ databricks_auth_args <- function() {
     output <- suppressWarnings(
       system2(
         cli_path,
-        c("auth", "token", "--host", workspace),
+        c("auth", "token", "--host", host),
         stdout = TRUE,
         stderr = TRUE
       )
