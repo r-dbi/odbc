@@ -59,8 +59,7 @@ setMethod(
       useNativeQuery = useNativeQuery,
       driver = driver
     )
-    args <- c(args, ...)
-    inject(dbConnect(odbc(), !!!args))
+    inject(dbConnect(odbc(), !!!args, ...))
   }
 )
 
