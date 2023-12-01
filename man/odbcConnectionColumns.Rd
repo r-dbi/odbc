@@ -41,7 +41,7 @@ wild cards.  Related to \code{exact} parameter.}
 
 \item{...}{additional parameters to methods}
 
-\item{exact}{Se to TRUE if any non-null identifier arguments are to be interpreted
+\item{exact}{Set to TRUE if any non-null identifier arguments are to be interpreted
 exactly.  When TRUE underscores in schema, table, and column name arguments
 are escaped.  Otherwise, they are interepted as wild cards.}
 

@@ -101,10 +101,9 @@ getSelector <- function(key, value, exact) {
 # will escape any un-escaped occurance in `x`.
 escapeChars <- function(x, charsToEsc = c("_"), escChar ="\\\\") {
   if(is.null(x) || inherits(x, "AsIs")) return(x)
-  for (ch in charsToEsc) {
-    pattern <- paste0("([^", escChar, "])(", ch,")")
-    replace <- paste0("\\1", escChar, ch)
-    x <- gsub(pattern, replace, x)
-  }
+  matchGroup <- paste( charsToEsc, collapse = "|" )
+  pattern <- paste0("([^", escChar, "])(", matchGroup, ")")
+  replace <- paste0("\\1", escChar, "\\2")
+  x <- gsub(pattern, replace, x)
   I(x)
 }

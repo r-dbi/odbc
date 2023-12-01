@@ -154,7 +154,7 @@ setClass(
 #' as a SQL search pattern: underscores and percent signs are interpreted as
 #' wild cards.  Related to `exact` parameter.
 #' @param ... additional parameters to methods
-#' @param exact Se to TRUE if any non-null identifier arguments are to be interpreted
+#' @param exact Set to TRUE if any non-null identifier arguments are to be interpreted
 #' exactly.  When TRUE underscores in schema, table, and column name arguments
 #' are escaped.  Otherwise, they are interepted as wild cards.
 #'
@@ -268,7 +268,7 @@ setMethod(
 #' as a SQL search pattern: underscores and percent signs are interpreted as
 #' wild cards.  Related to `exact` parameter.
 #' @param ... additional parameters to methods
-#' @param exact Se to TRUE if any non-null identifier arguments are to be interpreted
+#' @param exact Set to TRUE if any non-null identifier arguments are to be interpreted
 #' exactly.  When TRUE underscores in catalog, schema, and table name arguments
 #' are escaped.  Otherwise, they are interepted as wild cards.
 #'
@@ -566,7 +566,7 @@ setMethod(
 #' `dbListTables()` provides names of remote tables accessible through this
 #' connection; `dbListFields()` provides names of columns within a table.
 #'
-#' @inherit DBI::dbListTables params return
+#' @inheritParams DBI::dbListTables
 #' @param catalog_name,schema_name,table_name Catalog, schema, and table names.
 #'
 #'   By default, `catalog_name`, `schema_name` and `table_name` will automatically escape
@@ -575,7 +575,6 @@ setMethod(
 #'
 #' @param table_type The type of the table to return, the default returns all table types.
 #' @returns A character vector of table or field names respectively.
-#' @aliases dbListTables
 #' @export
 setMethod(
   "dbListTables", "OdbcConnection",
@@ -597,7 +596,6 @@ setMethod(
 
 #' @rdname dbListTables-OdbcConnection-method
 #' @inheritParams DBI::dbListFields
-#' @aliases dbListFields
 #' @param column_name The name of the column to return, the default returns all columns.
 #' @export
 setMethod(

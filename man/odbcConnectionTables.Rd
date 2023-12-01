@@ -55,7 +55,7 @@ wild cards.  Related to \code{exact} parameter.}
 See odbcConnectionTableTypes for a listing of available table
 types for your connection.}
 
-\item{exact}{Se to TRUE if any non-null identifier arguments are to be interpreted
+\item{exact}{Set to TRUE if any non-null identifier arguments are to be interpreted
 exactly.  When TRUE underscores in catalog, schema, and table name arguments
 are escaped.  Otherwise, they are interepted as wild cards.}
 
