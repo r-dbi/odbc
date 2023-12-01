@@ -10,7 +10,6 @@
 #' model, with support for personal access tokens, OAuth machine-to-machine
 #' credentials, and OAuth user-to-machine credentials supplied via Posit
 #' Workbench or the Databricks CLI on desktop.
-#'
 #' All of these credentials are detected automatically if present using
 #' [standard environment variables](https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication).
 #'
@@ -18,6 +17,9 @@
 #' @param HTTPPath To query a cluster, use the HTTP Path value found under
 #'   `Advanced Options > JDBC/ODBC` in the Databricks UI. For SQL warehouses,
 #'   this is found under `Connection Details` instead.
+#' @param useNativeQuery Suppress the driver's conversion from ANSI SQL 92 to
+#'   HiveSQL? The default (`TRUE`), gives greater performance but means that
+#'   paramterised queries (and hence `dbWriteTable()`) do not work.
 #' @param workspace The URL of a Databricks workspace, e.g.
 #'   `"https://example.cloud.databricks.com"`.
 #' @param driver The name of the Databricks ODBC driver, or `NULL` to use the
@@ -47,11 +49,16 @@ setClass("DatabricksOdbcDriver", contains = "OdbcDriver")
 #' @export
 setMethod(
   "dbConnect", "DatabricksOdbcDriver",
-  function(drv, HTTPPath, workspace = Sys.getenv("DATABRICKS_HOST"),
-           driver = NULL, ...) {
+  function(drv,
+           HTTPPath,
+           workspace = Sys.getenv("DATABRICKS_HOST"),
+           useNativeQuery = TRUE,
+           driver = NULL,
+           ...) {
     args <- databricks_args(
       HTTPPath = HTTPPath,
       workspace = workspace,
+      useNativeQuery = useNativeQuery,
       driver = driver
     )
     args <- c(args, ...)
@@ -61,6 +68,7 @@ setMethod(
 
 databricks_args <- function(HTTPPath,
                             workspace = Sys.getenv("DATABRICKS_HOST"),
+                            useNativeQuery = FALSE,
                             driver = NULL) {
   if (nchar(workspace) == 0) {
     stop("No Databricks workspace URL provided")
@@ -89,6 +97,7 @@ databricks_args <- function(HTTPPath,
     HTTPPath = HTTPPath,
     ThriftTransport = 2,
     UserAgentEntry = user_agent,
+    useNativeQuery = as.integer(useNativeQuery),
     # Connections to Databricks are always over HTTPS.
     Port = 443,
     Protocol = "https",

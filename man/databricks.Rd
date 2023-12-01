@@ -13,6 +13,7 @@ databricks()
   drv,
   HTTPPath,
   workspace = Sys.getenv("DATABRICKS_HOST"),
+  useNativeQuery = TRUE,
   driver = NULL,
   ...
 )
@@ -28,6 +29,10 @@ this is found under \verb{Connection Details} instead.}
 
 \item{workspace}{The URL of a Databricks workspace, e.g.
 \code{"https://example.cloud.databricks.com"}.}
+
+\item{useNativeQuery}{Suppress the driver's conversion from ANSI SQL 92 to
+HiveSQL? The default (\code{TRUE}), gives greater performance but means that
+paramterised queries (and hence \code{dbWriteTable()}) do not work.}
 
 \item{driver}{The name of the Databricks ODBC driver, or \code{NULL} to use the
 default name.}
@@ -46,7 +51,6 @@ implements a subset of the \href{https://docs.databricks.com/en/dev-tools/auth.h
 model, with support for personal access tokens, OAuth machine-to-machine
 credentials, and OAuth user-to-machine credentials supplied via Posit
 Workbench or the Databricks CLI on desktop.
-
 All of these credentials are detected automatically if present using
 \href{https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication}{standard environment variables}.
 }
