@@ -13,13 +13,13 @@
 #' All of these credentials are detected automatically if present using
 #' [standard environment variables](https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication).
 #'
-#' It also suppresses the default translation of ANSI SQL to HiveQL to
-#' maximise performance.
-#'
 #' @inheritParams DBI::dbConnect
 #' @param http_path To query a cluster, use the HTTP Path value found under
 #'   `Advanced Options > JDBC/ODBC` in the Databricks UI. For SQL warehouses,
 #'   this is found under `Connection Details` instead.
+#' @param useNativeQuery Suppress the driver's conversion from ANSI SQL 92 to
+#'   HiveSQL? The default (`TRUE`), gives greater performance but means that
+#'   paramterised queries (and hence `dbWriteTable()`) do not work.
 #' @param workspace The URL of a Databricks workspace, e.g.
 #'   `"https://example.cloud.databricks.com"`.
 #' @param driver The name of the Databricks ODBC driver, or `NULL` to use the
@@ -49,11 +49,16 @@ setClass("DatabricksOdbcDriver", contains = "OdbcDriver")
 #' @export
 setMethod(
   "dbConnect", "DatabricksOdbcDriver",
-  function(drv, http_path, workspace = Sys.getenv("DATABRICKS_HOST"),
-           driver = NULL, ...) {
+  function(drv,
+           http_path,
+           workspace = Sys.getenv("DATABRICKS_HOST"),
+           useNativeQuery = TRUE,
+           driver = NULL,
+           ...) {
     args <- databricks_args(
       http_path = http_path,
       workspace = workspace,
+      useNativeQuery = useNativeQuery,
       driver = driver
     )
     args <- c(args, ...)
@@ -63,6 +68,7 @@ setMethod(
 
 databricks_args <- function(http_path,
                             workspace = Sys.getenv("DATABRICKS_HOST"),
+                            useNativeQuery = FALSE,
                             driver = NULL) {
   if (nchar(workspace) == 0) {
     stop("No Databricks workspace URL provided")
@@ -91,8 +97,7 @@ databricks_args <- function(http_path,
     HTTPPath = http_path,
     ThriftTransport = 2,
     UserAgentEntry = user_agent,
-    # don't translate queries from ANSI SQL to HiveSQL
-    UseNativeQuery = 1,
+    useNativeQuery = as.integer(useNativeQuery),
     # Connections to Databricks are always over HTTPS.
     Port = 443,
     Protocol = "https",
