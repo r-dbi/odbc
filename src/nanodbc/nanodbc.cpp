@@ -411,7 +411,7 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
     state = std::string(&sql_state[0], &sql_state[arrlen(sql_state) - 1]);
     native = native_error;
     std::string status = state;
-    status += ": ";
+    status += "\n";
     status += rvalue;
 
     // some drivers insert \0 into error messages for unknown reasons
