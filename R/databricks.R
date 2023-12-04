@@ -111,21 +111,8 @@ databricks_default_args <- function(driver, host, httpPath, useNativeQuery) {
 
 # Returns a sensible driver name even if odbc.ini and odbcinst.ini do not
 # contain an entry for the Databricks ODBC driver.
-file.exists <- NULL # for mocking
 databricks_default_driver <- function() {
-  # For Linux and macOS we can default to known shared library paths used by the
-  # official installers. On Windows we use the official driver name instead.
-  default_paths <- ""
-  if (Sys.info()["sysname"] == "Linux") {
-    default_paths <- Sys.glob(c(
-      "/opt/rstudio-drivers/spark/bin/lib/libsparkodbc_sb*.so",
-      "/opt/simba/spark/lib/64/libsparkodbc_sb*.so"
-    ))
-  } else if (Sys.info()["sysname"] == "Darwin") {
-    default_paths <- Sys.glob("/Library/simba/spark/lib/libsparkodbc_sb*.dylib")
-  }
-  default_paths <- default_paths[file.exists(default_paths)]
-
+  default_paths <- databricks_default_driver_paths()
   if (length(default_paths) > 0) {
     return(default_paths[1])
   }
@@ -142,6 +129,22 @@ databricks_default_driver <- function() {
     ),
     call = quote(DBI::dbConnect())
   )
+}
+
+databricks_default_driver_paths <- function() {
+  # For Linux and macOS we can default to known shared library paths used by the
+  # official installers. On Windows we use the official driver name instead.
+  if (Sys.info()["sysname"] == "Linux") {
+    paths <- Sys.glob(c(
+      "/opt/rstudio-drivers/spark/bin/lib/libsparkodbc_sb*.so",
+      "/opt/simba/spark/lib/64/libsparkodbc_sb*.so"
+    ))
+  } else if (Sys.info()["sysname"] == "Darwin") {
+    paths <- Sys.glob("/Library/simba/spark/lib/libsparkodbc_sb*.dylib")
+  } else {
+    paths <- character()
+  }
+  paths[file.exists(paths)]
 }
 
 databricks_host <- function(workspace) {

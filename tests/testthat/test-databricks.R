@@ -7,7 +7,7 @@ test_that("databricks arguments use camelcase", {
 
 test_that("errors if can't find driver", {
   local_mocked_bindings(
-    file.exists = function(x, ...) rep(FALSE, length(x)),
+    databricks_default_driver_paths = function() character(),
     odbcListDrivers = function() list()
   )
   expect_snapshot(databricks_default_driver(), error = TRUE)
