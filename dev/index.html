@@ -106,11 +106,11 @@
 </h2>
 <p>For Unix and MacOS ODBC drivers should be compiled against <a href="https://www.unixodbc.org/" class="external-link">unixODBC</a>. Drivers compiled against <a href="https://www.iodbc.org/" class="external-link">iODBC</a> <em>may</em> also work, but are not fully supported.</p>
 <p>After installation of the driver manager and driver, you will have to register the driver in a <a href="#dsn-configuration-files">odbcinst.ini</a> file for it to appear in <code><a href="reference/odbcListDrivers.html">odbc::odbcListDrivers()</a></code>.</p>
-<p><strong>odbc</strong> and it’s dependencies use C++11 features. Therefore you need <a href="https://gcc.gnu.org/" class="external-link">gcc 4.8</a>, <a href="https://clang.llvm.org" class="external-link">clang 3.3</a> or <a href="https://CRAN.R-project.org/bin/windows/Rtools/" class="external-link">Rtools 3.3</a> or later.</p>
+<p>odbc and its dependencies use C++11 features. Therefore you need <a href="https://gcc.gnu.org/" class="external-link">gcc 4.8</a>, <a href="https://clang.llvm.org" class="external-link">clang 3.3</a> or <a href="https://CRAN.R-project.org/bin/windows/Rtools/" class="external-link">Rtools 3.3</a> or later.</p>
 <div class="section level3">
 <h3 id="windows">Windows<a class="anchor" aria-label="anchor" href="#windows"></a>
 </h3>
-<p>Windows is bundled with ODBC libraries however drivers for each database need to be installed separately. Windows ODBC drivers typically include an installer that needs to be run and will install the driver to the proper locations.</p>
+<p>Windows is bundled with ODBC libraries. However, drivers for each database need to be installed separately. Windows ODBC drivers typically include an installer that needs to be run and will install the driver to the proper locations.</p>
 </div>
 <div class="section level3">
 <h3 id="macos">MacOS<a class="anchor" aria-label="anchor" href="#macos"></a>
@@ -317,7 +317,7 @@ apt-get install libsqliteodbc</code></pre>
 </h3>
 <p><code><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable()</a></code> will write an R <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code> to an SQL table.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"iris"</span>, <span class="va">iris</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"iris"</span>, <span class="va">iris</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="querying">Querying<a class="anchor" aria-label="anchor" href="#querying"></a>
@@ -340,7 +340,7 @@ apt-get install libsqliteodbc</code></pre>
 <div class="section level3">
 <h3 id="reading-1">Reading<a class="anchor" aria-label="anchor" href="#reading-1"></a>
 </h3>
-<p>Reading a table from a SQL Server database with the ‘flights’ dataset (336,776 rows, 19 columns) of the package <a href="https://github.com/tidyverse/nycflights13" class="external-link">nytflights13</a>.</p>
+<p>Reading a table from a SQL Server database with the ‘flights’ dataset (336,776 rows, 19 columns) of the package <a href="https://github.com/tidyverse/nycflights13" class="external-link">nycflights13</a>.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># First using RODBC / RODBCDBI</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dbi.r-dbi.org" class="external-link">DBI</a></span><span class="op">)</span></span>
