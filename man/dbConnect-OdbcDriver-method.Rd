@@ -3,7 +3,7 @@
 \name{dbConnect,OdbcDriver-method}
 \alias{dbConnect,OdbcDriver-method}
 \alias{dbConnect}
-\title{Connect to an ODBC compliant database}
+\title{Connect to a database via an ODBC driver}
 \usage{
 \S4method{dbConnect}{OdbcDriver}(
   drv,
@@ -25,26 +25,31 @@
 )
 }
 \arguments{
-\item{drv}{An \code{OdbcDriver} object, likely outputted from \code{\link[=odbc]{odbc()}}.}
+\item{drv}{An \code{OdbcDriver}, from \code{\link[=odbc]{odbc()}}.}
 
 \item{dsn}{The data source name. For currently available options, see the
 \code{name} column of \code{\link[=odbcListDataSources]{odbcListDataSources()}} output.}
 
 \item{...}{Additional ODBC keywords. These will be joined with the other
-arguments to form the final connection string.}
+arguments to form the final connection string.
+
+Note that all generic ODBC parameter names, and the values of \code{drv} and
+\code{dsn}, are case-insensitive. The case-sensitivity of the values of generic
+arguments, as well as the names and values of driver-specific arguments,
+are determined by the driver \code{drv}.}
 
 \item{timezone}{The server time zone. Useful if the database has an internal
-timezone that is \emph{not} 'UTC'. If the database is in your local timezone, set
-this argument to \code{\link[=Sys.timezone]{Sys.timezone()}}. See \code{\link[=OlsonNames]{OlsonNames()}} for a complete list of
-available timezones on your system.}
+timezone that is \emph{not} 'UTC'. If the database is in your local timezone,
+set this argument to \code{\link[=Sys.timezone]{Sys.timezone()}}. See \code{\link[=OlsonNames]{OlsonNames()}} for a complete
+list of available time zones on your system.}
 
 \item{timezone_out}{The time zone returned to R. If you want to display
 datetime values in the local timezone, set to \code{\link[=Sys.timezone]{Sys.timezone()}}.}
 
 \item{encoding}{The text encoding used on the Database. If the database is
-not using UTF-8 you will need to set the encoding to get accurate re-encoding.
-See \code{\link[=iconvlist]{iconvlist()}} for a complete list of available encodings on your system.
-Note strings are always returned \code{UTF-8} encoded.}
+not using UTF-8 you will need to set the encoding to get accurate
+re-encoding. See \code{\link[=iconvlist]{iconvlist()}} for a complete list of available encodings
+on your system. Note strings are always returned \code{UTF-8} encoded.}
 
 \item{bigint}{The R type that \code{SQL_BIGINT} types should be mapped to.
 Default is \link[bit64:bit64-package]{bit64::integer64}, which allows the full range of 64 bit
@@ -53,8 +58,8 @@ integers.}
 \item{timeout}{Time in seconds to timeout the connection attempt. Setting a
 timeout of \code{Inf} indicates no timeout. Defaults to 10 seconds.}
 
-\item{driver}{The ODBC driver name. For currently available options, see the
-\code{name} column of \code{\link[=odbcListDrivers]{odbcListDrivers()}} output.}
+\item{driver}{The ODBC driver name or a path to a driver. For currently
+available options, see the \code{name} column of \code{\link[=odbcListDrivers]{odbcListDrivers()}} output.}
 
 \item{server}{The server hostname. Some drivers use \code{Servername} as the name
 for this argument. Not required when configured for the supplied \code{dsn}.}
@@ -78,8 +83,8 @@ parameter.}
 prior to the connection being established. See \link{ConnectionAttributes}.}
 
 \item{.connection_string}{A complete connection string, useful if you are
-copy pasting it from another source. If this argument is used, any additional
-arguments will be appended to this string.}
+copy pasting it from another source. If this argument is used, any
+additional arguments will be appended to this string.}
 }
 \description{
 This method is invoked when \code{\link[DBI:dbConnect]{DBI::dbConnect()}} is called with the first argument
@@ -91,9 +96,4 @@ documented here are common, but some drivers may not accept them. Please see
 the specific driver documentation for allowed parameters;
 \url{https://www.connectionstrings.com} is also a useful resource of example
 connection strings for a variety of databases.
-
-Note that all generic ODBC parameter names, and the values of \code{drv} and
-\code{dsn}, are case-insensitive. The case-sensitivity of the values of generic
-arguments, as well as the names and values of driver-specific arguments,
-are determined by the driver \code{drv}.
 }

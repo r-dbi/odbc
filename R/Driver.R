@@ -37,62 +37,62 @@ setMethod(
     # TODO: Print more details
   })
 
-#' Connect to an ODBC compliant database
+#' Connect to a database via an ODBC driver
 #'
 #' This method is invoked when [DBI::dbConnect()] is called with the first argument
 #' [odbc::odbc()].
 #'
-#' @param drv An `OdbcDriver` object, likely outputted from [odbc::odbc()].
+#' @param drv An `OdbcDriver`, from [odbc::odbc()].
 #' @param dsn The data source name. For currently available options, see the
-#' `name` column of [odbcListDataSources()] output.
+#'   `name` column of [odbcListDataSources()] output.
 #' @param timezone The server time zone. Useful if the database has an internal
-#' timezone that is _not_ 'UTC'. If the database is in your local timezone, set
-#' this argument to [Sys.timezone()]. See [OlsonNames()] for a complete list of
-#' available timezones on your system.
+#'   timezone that is _not_ 'UTC'. If the database is in your local timezone,
+#'   set this argument to [Sys.timezone()]. See [OlsonNames()] for a complete
+#'   list of available time zones on your system.
 #' @param timezone_out The time zone returned to R. If you want to display
-#' datetime values in the local timezone, set to [Sys.timezone()].
+#'   datetime values in the local timezone, set to [Sys.timezone()].
 #' @param encoding The text encoding used on the Database. If the database is
-#' not using UTF-8 you will need to set the encoding to get accurate re-encoding.
-#' See [iconvlist()] for a complete list of available encodings on your system.
-#' Note strings are always returned `UTF-8` encoded.
-#' @param driver The ODBC driver name. For currently available options, see the
-#' `name` column of [odbcListDrivers()] output.
+#'   not using UTF-8 you will need to set the encoding to get accurate
+#'   re-encoding. See [iconvlist()] for a complete list of available encodings
+#'   on your system. Note strings are always returned `UTF-8` encoded.
+#' @param driver The ODBC driver name or a path to a driver. For currently
+#'   available options, see the `name` column of [odbcListDrivers()] output.
 #' @param server The server hostname. Some drivers use `Servername` as the name
-#' for this argument. Not required when configured for the supplied `dsn`.
+#'   for this argument. Not required when configured for the supplied `dsn`.
 #' @param database The database on the server. Not required when configured for
-#' the supplied `dsn`.
+#'   the supplied `dsn`.
 #' @param uid The user identifier. Some drivers use `username` as the name
-#' for this argument. Not required when configured for the supplied `dsn`.
+#'   for this argument. Not required when configured for the supplied `dsn`.
 #' @param pwd The password. Some drivers use `password` as the name
-#' for this argument. Not required when configured for the supplied `dsn`.
+#'   for this argument. Not required when configured for the supplied `dsn`.
 #' @param dbms.name The database management system name. This should normally
-#' be queried automatically by the ODBC driver. This name is used as the class
-#' name for the OdbcConnection object returned from [dbConnect()]. However, if
-#' the driver does not return a valid value, it can be set manually with this
-#' parameter.
+#'   be queried automatically by the ODBC driver. This name is used as the class
+#'   name for the OdbcConnection object returned from [dbConnect()]. However, if
+#'   the driver does not return a valid value, it can be set manually with this
+#'   parameter.
 #' @param attributes An S4 object of connection attributes that are passed
-#' prior to the connection being established. See \link{ConnectionAttributes}.
+#'   prior to the connection being established. See \link{ConnectionAttributes}.
 #' @param ... Additional ODBC keywords. These will be joined with the other
-#' arguments to form the final connection string.
+#'   arguments to form the final connection string.
+#'
+#'   Note that all generic ODBC parameter names, and the values of `drv` and
+#'   `dsn`, are case-insensitive. The case-sensitivity of the values of generic
+#'   arguments, as well as the names and values of driver-specific arguments,
+#'   are determined by the driver `drv`.
 #' @param .connection_string A complete connection string, useful if you are
-#' copy pasting it from another source. If this argument is used, any additional
-#' arguments will be appended to this string.
+#'   copy pasting it from another source. If this argument is used, any
+#'   additional arguments will be appended to this string.
 #' @param bigint The R type that `SQL_BIGINT` types should be mapped to.
-#' Default is [bit64::integer64], which allows the full range of 64 bit
-#' integers.
+#'   Default is [bit64::integer64], which allows the full range of 64 bit
+#'   integers.
 #' @param timeout Time in seconds to timeout the connection attempt. Setting a
-#' timeout of `Inf` indicates no timeout. Defaults to 10 seconds.
+#'   timeout of `Inf` indicates no timeout. Defaults to 10 seconds.
 #' @details
 #' The connection string keywords are driver dependent. The parameters
 #' documented here are common, but some drivers may not accept them. Please see
 #' the specific driver documentation for allowed parameters;
 #' \url{https://www.connectionstrings.com} is also a useful resource of example
 #' connection strings for a variety of databases.
-#'
-#' Note that all generic ODBC parameter names, and the values of `drv` and
-#' `dsn`, are case-insensitive. The case-sensitivity of the values of generic
-#' arguments, as well as the names and values of driver-specific arguments,
-#' are determined by the driver `drv`.
 #'
 #' @aliases dbConnect
 #' @import rlang
