@@ -5,6 +5,14 @@ test_that("databricks arguments use camelcase", {
   expect_true(all(is_camel_case(names(args))))
 })
 
+test_that("errors if can't find driver", {
+  local_mocked_bindings(
+    file.exists = function(x, ...) rep(FALSE, length(x)),
+    odbcListDrivers = function() list()
+  )
+  expect_snapshot(databricks_default_driver(), error = TRUE)
+})
+
 test_that("databricks host validates inputs", {
   expect_equal(databricks_host("https://my-host.com"), "my-host.com")
   expect_snapshot(databricks_host(""), error = TRUE)

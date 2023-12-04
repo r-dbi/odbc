@@ -1,3 +1,12 @@
+# errors if can't find driver
+
+    Code
+      databricks_default_driver()
+    Condition
+      Error in `DBI::dbConnect()`:
+      ! Failed to automatically find Spark ODBC driver.
+      i Set `driver` to known driver name or path.
+
 # databricks host validates inputs
 
     Code

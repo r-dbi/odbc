@@ -111,6 +111,7 @@ databricks_default_args <- function(driver, host, httpPath, useNativeQuery) {
 
 # Returns a sensible driver name even if odbc.ini and odbcinst.ini do not
 # contain an entry for the Databricks ODBC driver.
+file.exists <- NULL # for mocking
 databricks_default_driver <- function() {
   # For Linux and macOS we can default to known shared library paths used by the
   # official installers. On Windows we use the official driver name instead.
@@ -125,7 +126,22 @@ databricks_default_driver <- function() {
   }
   default_paths <- default_paths[file.exists(default_paths)]
 
-  if (length(default_paths) > 0) default_paths[1] else "Simba Spark ODBC Driver"
+  if (length(default_paths) > 0) {
+    return(default_paths[1])
+  }
+
+  fallback <- "Simba Spark ODBC Driver"
+  if (fallback %in% odbcListDrivers()$name) {
+    return(fallback)
+  }
+
+  abort(
+    c(
+      "Failed to automatically find Spark ODBC driver.",
+      i = "Set `driver` to known driver name or path."
+    ),
+    call = quote(DBI::dbConnect())
+  )
 }
 
 databricks_host <- function(workspace) {
