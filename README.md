@@ -54,13 +54,13 @@ After installation of the driver manager and driver, you will have to
 register the driver in a [odbcinst.ini](#dsn-configuration-files) file
 for it to appear in `odbc::odbcListDrivers()`.
 
-**odbc** and it’s dependencies use C++11 features. Therefore you need
+odbc and its dependencies use C++11 features. Therefore you need
 [gcc 4.8](https://gcc.gnu.org/), [clang 3.3](https://clang.llvm.org) or
 [Rtools 3.3](https://CRAN.R-project.org/bin/windows/Rtools/) or later.
 
 ### Windows
 
-Windows is bundled with ODBC libraries however drivers for each database
+Windows is bundled with ODBC libraries. However, drivers for each database
 need to be installed separately. Windows ODBC drivers typically include
 an installer that needs to be run and will install the driver to the
 proper locations.
@@ -314,7 +314,7 @@ data <- dbReadTable(con, "flights")
 `dbWriteTable()` will write an R `data.frame()` to an SQL table.
 
 ``` r
-data <- dbWriteTable(con, "iris", iris)
+dbWriteTable(con, "iris", iris)
 ```
 
 ### Querying
@@ -344,7 +344,7 @@ The *odbc* package is often much faster than the existing
 
 Reading a table from a SQL Server database with the ‘flights’ dataset
 (336,776 rows, 19 columns) of the package
-[nytflights13](https://github.com/tidyverse/nycflights13).
+[nycflights13](https://github.com/tidyverse/nycflights13).
 
 ``` r
 # First using RODBC / RODBCDBI
