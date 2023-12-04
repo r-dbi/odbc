@@ -135,7 +135,7 @@ databricks_host <- function(workspace) {
         "No Databricks workspace URL provided.",
         i = "Either supply `workspace` argument or set env var `DATABRICKS_HOST`."
       ),
-      call = NULL
+      call = quote(DBI::dbConnect())
     )
   }
   gsub("https://", "", workspace)

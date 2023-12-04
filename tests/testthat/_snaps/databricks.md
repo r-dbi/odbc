@@ -3,7 +3,7 @@
     Code
       databricks_host("")
     Condition
-      Error:
+      Error in `DBI::dbConnect()`:
       ! No Databricks workspace URL provided.
       i Either supply `workspace` argument or set env var `DATABRICKS_HOST`.
 
