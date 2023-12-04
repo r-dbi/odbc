@@ -109,8 +109,12 @@ databricks_default_args <- function(driver, host, httpPath, useNativeQuery) {
   )
 }
 
+
+
 # Returns a sensible driver name even if odbc.ini and odbcinst.ini do not
-# contain an entry for the Databricks ODBC driver.
+# contain an entry for the Databricks ODBC driver. For Linux and macOS we
+# default to known shared library paths used by the official installers.
+# On Windows we use the official driver name.
 databricks_default_driver <- function() {
   default_paths <- databricks_default_driver_paths()
   if (length(default_paths) > 0) {
@@ -132,8 +136,6 @@ databricks_default_driver <- function() {
 }
 
 databricks_default_driver_paths <- function() {
-  # For Linux and macOS we can default to known shared library paths used by the
-  # official installers. On Windows we use the official driver name instead.
   if (Sys.info()["sysname"] == "Linux") {
     paths <- Sys.glob(c(
       "/opt/rstudio-drivers/spark/bin/lib/libsparkodbc_sb*.so",
