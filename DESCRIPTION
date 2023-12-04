@@ -54,6 +54,5 @@ Collate:
     'Viewer.R'
     'databricks.R'
     'db.R'
-    'hidden.R'
     'utils.R'
     'zzz.R'
