@@ -57,7 +57,8 @@ setMethod(
       httpPath = httpPath,
       workspace = workspace,
       useNativeQuery = useNativeQuery,
-      driver = driver
+      driver = driver,
+      arg_names = dot_names(...)
     )
     inject(dbConnect(odbc(), !!!args, ...))
   }
@@ -66,7 +67,8 @@ setMethod(
 databricks_args <- function(httpPath,
                             workspace = Sys.getenv("DATABRICKS_HOST"),
                             useNativeQuery = FALSE,
-                            driver = NULL) {
+                            driver = NULL,
+                            arg_names = character()) {
   host <- databricks_host(workspace)
   driver <- driver %||% databricks_default_driver()
 
@@ -83,7 +85,21 @@ databricks_args <- function(httpPath,
     ssl = 1
   )
 
-  c(args, databricks_auth_args(host))
+  auth <- databricks_auth_args(host)
+  if (is.null(auth)) {
+    arg_names <- tolower(arg_names)
+    if (!"authmech" %in% arg_names && !all(c("uid", "pwd") %in% arg_names)) {
+      warn(
+        c(
+          "x" = "Failed to detect ambient Databricks credentials.",
+          "i" = "Supply `uid` or `pwd` to authenticate manually."
+        ),
+        call = quote(DBI::dbConnect())
+      )
+    }
+  }
+
+  c(args, auth)
 }
 
 # Returns a sensible driver name even if odbc.ini and odbcinst.ini do not
@@ -164,7 +180,7 @@ databricks_auth_args <- function(host) {
   } else if (!is.null(wb_token)) {
     # Next up are Workbench-provided credentials.
     list(
-      authech = 11,
+      authMech = 11,
       auth_flow = 0,
       auth_accesstoken = wb_token
     )
@@ -207,3 +223,5 @@ is_hosted_session <- function() {
 is_camel_case <- function(x) {
   grepl("^[a-z]+([A-Z_][a-z]+)*$", x)
 }
+
+dot_names <- function(...) names(substitute(...()))

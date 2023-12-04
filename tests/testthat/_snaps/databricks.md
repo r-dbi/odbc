@@ -7,3 +7,12 @@
       ! No Databricks workspace URL provided.
       i Either supply `workspace` argument or set env var `DATABRICKS_HOST`.
 
+# warns if auth fails
+
+    Code
+      . <- databricks_args("path", "host")
+    Condition
+      Warning in `DBI::dbConnect()`:
+      x Failed to detect ambient Databricks credentials.
+      i Supply `uid` or `pwd` to authenticate manually.
+
