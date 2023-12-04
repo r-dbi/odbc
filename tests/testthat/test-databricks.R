@@ -1,7 +1,7 @@
 test_that("databricks arguments use camelcase", {
   withr::local_envvar(DATABRICKS_TOKEN = "")
 
-  args <- databricks_args("foo", "bar", arg_names = c("pwd", "uid"))
+  args <- databricks_args("foo", "bar", pwd = "pwd", uid = "user")
   expect_true(all(is_camel_case(names(args))))
 })
 
@@ -23,8 +23,8 @@ test_that("warns if auth fails", {
 
   expect_snapshot(. <- databricks_args("path", "host"))
 
-  expect_silent(databricks_args("path", "host", arg_names = c("uid", "pwd")))
-  expect_silent(databricks_args("path", "host", arg_names = "authmech"))
+  expect_silent(databricks_args("path", "host", uid = "uid", pwd = "pwd"))
+  expect_silent(databricks_args("path", "host", authMech = 10))
 })
 
 test_that("supports PAT in env var", {

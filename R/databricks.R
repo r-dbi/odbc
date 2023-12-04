@@ -58,9 +58,9 @@ setMethod(
       workspace = workspace,
       useNativeQuery = useNativeQuery,
       driver = driver,
-      arg_names = dot_names(...)
+      ...
     )
-    inject(dbConnect(odbc(), !!!args, ...))
+    inject(dbConnect(odbc(), !!!args))
   }
 )
 
@@ -68,12 +68,35 @@ databricks_args <- function(httpPath,
                             workspace = Sys.getenv("DATABRICKS_HOST"),
                             useNativeQuery = FALSE,
                             driver = NULL,
-                            arg_names = character()) {
+                            ...) {
   host <- databricks_host(workspace)
-  driver <- driver %||% databricks_default_driver()
 
-  args <- list(
+  args <- databricks_default_args(
     driver = driver,
+    host = host,
+    httpPath = httpPath,
+    useNativeQuery = useNativeQuery
+  )
+  auth <- databricks_auth_args(host)
+  all <- c(args, auth, ...)
+
+  arg_names <- tolower(names(all))
+  if (!"authmech" %in% arg_names && !all(c("uid", "pwd") %in% arg_names)) {
+    warn(
+      c(
+        "x" = "Failed to detect ambient Databricks credentials.",
+        "i" = "Supply `uid` or `pwd` to authenticate manually."
+      ),
+      call = quote(DBI::dbConnect())
+    )
+  }
+
+  all
+}
+
+databricks_default_args <- function(driver, host, httpPath, useNativeQuery) {
+  list(
+    driver = driver %||% databricks_default_driver(),
     host = host,
     httpPath = httpPath,
     thriftTransport = 2,
@@ -84,22 +107,6 @@ databricks_args <- function(httpPath,
     protocol = "https",
     ssl = 1
   )
-
-  auth <- databricks_auth_args(host)
-  if (is.null(auth)) {
-    arg_names <- tolower(arg_names)
-    if (!"authmech" %in% arg_names && !all(c("uid", "pwd") %in% arg_names)) {
-      warn(
-        c(
-          "x" = "Failed to detect ambient Databricks credentials.",
-          "i" = "Supply `uid` or `pwd` to authenticate manually."
-        ),
-        call = quote(DBI::dbConnect())
-      )
-    }
-  }
-
-  c(args, auth)
 }
 
 # Returns a sensible driver name even if odbc.ini and odbcinst.ini do not
