@@ -1,7 +1,13 @@
 test_that("databricks arguments use camelcase", {
   withr::local_envvar(DATABRICKS_TOKEN = "")
 
-  args <- databricks_args("foo", "bar", pwd = "pwd", uid = "user")
+  args <- databricks_args(
+    "foo",
+    "bar",
+    pwd = "pwd",
+    uid = "user",
+    driver = "driver"
+  )
   expect_true(all(is_camel_case(names(args))))
 })
 
@@ -29,7 +35,7 @@ test_that("user agent respects envvar", {
 test_that("warns if auth fails", {
   withr::local_envvar(DATABRICKS_TOKEN = "")
 
-  expect_snapshot(. <- databricks_args("path", "host"))
+  expect_snapshot(. <- databricks_args("path", "host", driver = "driver"))
 
   expect_silent(databricks_args("path", "host", uid = "uid", pwd = "pwd"))
   expect_silent(databricks_args("path", "host", authMech = 10))

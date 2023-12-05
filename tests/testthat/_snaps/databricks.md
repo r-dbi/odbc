@@ -19,7 +19,7 @@
 # warns if auth fails
 
     Code
-      . <- databricks_args("path", "host")
+      . <- databricks_args("path", "host", driver = "driver")
     Condition
       Warning in `DBI::dbConnect()`:
       x Failed to detect ambient Databricks credentials.
