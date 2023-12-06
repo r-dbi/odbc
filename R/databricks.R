@@ -121,9 +121,10 @@ databricks_default_driver <- function() {
     return(default_paths[1])
   }
 
-  fallback <- "Simba Spark ODBC Driver"
-  if (fallback %in% odbcListDrivers()$name) {
-    return(fallback)
+  fallbacks <- c("Databricks", "Simba Spark ODBC Driver")
+  fallbacks <- intersect(fallbacks, odbcListDrivers()$name)
+  if (length(fallbacks) > 1) {
+    return(fallbacks[1])
   }
 
   abort(
