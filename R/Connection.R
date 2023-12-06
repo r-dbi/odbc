@@ -612,9 +612,8 @@ setMethod(
 #'
 #' Collect information about the configured driver names. A driver must be both
 #' installed and configured with the driver manager to be included in this list.
-#' Configuring a driver name just sets up a lookup table to allow users to
-#' pass only the driver name to [dbConnect()], which will then retrieve the
-#' driver information from the driver manager.
+#' Configuring a driver name just sets up a lookup table (e.g. in
+#' `odbcinst.ini`) to allow users to pass only the driver name to [dbConnect()].
 #'
 #' Driver names that are not configured with the driver manager (and thus
 #' do not appear in this function's output) can still be
@@ -709,9 +708,8 @@ odbcListDrivers <- function(keep = getOption("odbc.drivers_keep"), filter = getO
 #'
 #' Collect information about the available data source names (DSNs). A DSN must
 #' be both installed and configured with the driver manager to be included in
-#' this list. Configuring a DSN just sets up a lookup table to allow users to
-#' pass only the DSN to [dbConnect()], which will then retrieve the
-#' data source information from the driver manager.
+#' this list. Configuring a DSN just sets up a lookup table (e.g. in
+#' `odbc.ini`) to allow users to pass only the DSN to [dbConnect()].
 #'
 #' DSNs that are not configured with the driver manager can still be
 #' connected to with [dbConnect()] by providing DSN metadata directly.

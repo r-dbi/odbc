@@ -17,9 +17,8 @@ passed to the \code{dsn} argument of \code{\link[=dbConnect]{dbConnect()}}.}
 \description{
 Collect information about the available data source names (DSNs). A DSN must
 be both installed and configured with the driver manager to be included in
-this list. Configuring a DSN just sets up a lookup table to allow users to
-pass only the DSN to \code{\link[=dbConnect]{dbConnect()}}, which will then retrieve the
-data source information from the driver manager.
+this list. Configuring a DSN just sets up a lookup table (e.g. in
+\code{odbc.ini}) to allow users to pass only the DSN to \code{\link[=dbConnect]{dbConnect()}}.
 
 DSNs that are not configured with the driver manager can still be
 connected to with \code{\link[=dbConnect]{dbConnect()}} by providing DSN metadata directly.

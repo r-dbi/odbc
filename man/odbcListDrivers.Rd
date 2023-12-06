@@ -37,9 +37,8 @@ the last two columns will be \code{NA}.
 \description{
 Collect information about the configured driver names. A driver must be both
 installed and configured with the driver manager to be included in this list.
-Configuring a driver name just sets up a lookup table to allow users to
-pass only the driver name to \code{\link[=dbConnect]{dbConnect()}}, which will then retrieve the
-driver information from the driver manager.
+Configuring a driver name just sets up a lookup table (e.g. in
+\code{odbcinst.ini}) to allow users to pass only the driver name to \code{\link[=dbConnect]{dbConnect()}}.
 
 Driver names that are not configured with the driver manager (and thus
 do not appear in this function's output) can still be
