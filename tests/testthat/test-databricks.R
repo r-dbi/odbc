@@ -44,10 +44,14 @@ test_that("user agent respects envvar", {
 test_that("warns if auth fails", {
   withr::local_envvar(DATABRICKS_TOKEN = "")
 
-  expect_snapshot(. <- databricks_args("path", "host", driver = "driver"))
+  databricks_args1 <- function(...) {
+    databricks_args("path", "host", driver = "driver", ...)
+  }
 
-  expect_silent(databricks_args("path", "host", uid = "uid", pwd = "pwd"))
-  expect_silent(databricks_args("path", "host", authMech = 10))
+  expect_snapshot(. <- databricks_args1())
+
+  expect_silent(databricks_args1(uid = "uid", pwd = "pwd"))
+  expect_silent(databricks_args1(authMech = 10))
 })
 
 test_that("supports PAT in env var", {
