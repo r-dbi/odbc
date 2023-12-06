@@ -55,6 +55,7 @@ setMethod(
            HTTPPath,
            ...) {
 
+    # For backward compatibility with RStudio connection string
     check_exclusive(httpPath, HTTPPath)
 
     args <- databricks_args(
