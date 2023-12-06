@@ -608,9 +608,16 @@ setMethod(
 
 #' List Configured ODBC Drivers
 #'
+#' @description
+#'
 #' Collect information about the configured driver names. A driver must be both
 #' installed and configured with the driver manager to be included in this list.
-#' Driver names that are not configured with the driver manager can still be
+#' Configuring a driver name just sets up a lookup table to allow users to
+#' pass only the driver name to [dbConnect()], which will then retrieve the
+#' driver information from the driver manager.
+#'
+#' Driver names that are not configured with the driver manager (and thus
+#' do not appear in this function's output) can still be
 #' used in [dbConnect()] by providing a path to a driver directly.
 #'
 #' @param keep,filter A character vector of driver names to keep in or remove
@@ -702,7 +709,11 @@ odbcListDrivers <- function(keep = getOption("odbc.drivers_keep"), filter = getO
 #'
 #' Collect information about the available data source names (DSNs). A DSN must
 #' be both installed and configured with the driver manager to be included in
-#' this list. DSNs that are not configured with the driver manager can still be
+#' this list. Configuring a DSN just sets up a lookup table to allow users to
+#' pass only the DSN to [dbConnect()], which will then retrieve the
+#' data source information from the driver manager.
+#'
+#' DSNs that are not configured with the driver manager can still be
 #' connected to with [dbConnect()] by providing DSN metadata directly.
 #'
 #' @return A data frame with two columns:
@@ -766,6 +777,10 @@ odbcListDrivers <- function(keep = getOption("odbc.drivers_keep"), filter = getO
 #' ```
 #' con <- dbConnect(odbc::odbc(), dsn = "MySQL")
 #' ```
+#'
+#' In this case, `dbConnect()` will look up the information defined for `MySQL`
+#' in the driver manager (in our example, `odbc.ini`) and automatically
+#' pass the needed arguments.
 #'
 #' @seealso
 #'

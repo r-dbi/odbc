@@ -17,7 +17,11 @@ passed to the \code{dsn} argument of \code{\link[=dbConnect]{dbConnect()}}.}
 \description{
 Collect information about the available data source names (DSNs). A DSN must
 be both installed and configured with the driver manager to be included in
-this list. DSNs that are not configured with the driver manager can still be
+this list. Configuring a DSN just sets up a lookup table to allow users to
+pass only the DSN to \code{\link[=dbConnect]{dbConnect()}}, which will then retrieve the
+data source information from the driver manager.
+
+DSNs that are not configured with the driver manager can still be
 connected to with \code{\link[=dbConnect]{dbConnect()}} by providing DSN metadata directly.
 }
 \section{Configuration}{
@@ -72,6 +76,10 @@ name \verb{MySQL Driver} appearing in \code{\link[=odbcListDrivers]{odbcListDriv
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{con <- dbConnect(odbc::odbc(), dsn = "MySQL")
 }\if{html}{\out{</div>}}
+
+In this case, \code{dbConnect()} will look up the information defined for \code{MySQL}
+in the driver manager (in our example, \code{odbc.ini}) and automatically
+pass the needed arguments.
 }
 
 \seealso{
