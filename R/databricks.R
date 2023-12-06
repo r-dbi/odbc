@@ -129,7 +129,7 @@ databricks_default_driver <- function() {
 
   abort(
     c(
-      "Failed to automatically find Spark ODBC driver.",
+      "Failed to automatically find Databricks/Spark ODBC driver.",
       i = "Set `driver` to known driver name or path."
     ),
     call = quote(DBI::dbConnect())
