@@ -56,7 +56,6 @@ setMethod(
            ...) {
 
     check_exclusive(httpPath, HTTPPath)
-    browser()
 
     args <- databricks_args(
       httpPath = if (missing(httpPath)) HTTPPath else httpPath,
