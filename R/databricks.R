@@ -14,7 +14,7 @@
 #' [standard environment variables](https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication).
 #'
 #' @inheritParams DBI::dbConnect
-#' @param httpPath To query a cluster, use the HTTP Path value found under
+#' @param httpPath,HTTPPath To query a cluster, use the HTTP Path value found under
 #'   `Advanced Options > JDBC/ODBC` in the Databricks UI. For SQL warehouses,
 #'   this is found under `Connection Details` instead.
 #' @param useNativeQuery Suppress the driver's conversion from ANSI SQL 92 to
@@ -52,9 +52,14 @@ setMethod(
            workspace = Sys.getenv("DATABRICKS_HOST"),
            useNativeQuery = TRUE,
            driver = NULL,
+           HTTPPath,
            ...) {
+
+    # For backward compatibility with RStudio connection string
+    check_exclusive(httpPath, HTTPPath)
+
     args <- databricks_args(
-      httpPath = httpPath,
+      httpPath = if (missing(httpPath)) HTTPPath else httpPath,
       workspace = workspace,
       useNativeQuery = useNativeQuery,
       driver = driver,
