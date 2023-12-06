@@ -94,6 +94,17 @@ setMethod(
 #' \url{https://www.connectionstrings.com} is also a useful resource of example
 #' connection strings for a variety of databases.
 #'
+#' @section Learn more:
+#'
+#' To learn more about databases:
+#'
+#' * ["Best Practices in Working with Databases"](https://solutions.posit.co/connections/db/)
+#'   documents how to use the odbc package with various popular databases.
+#' * [The pyodbc "Drivers and Driver Managers" Wiki](https://github.com/mkleehammer/pyodbc/wiki/Drivers-and-Driver-Managers)
+#'   provides further context on drivers and driver managers.
+#' * [Microsoft's "Introduction to ODBC"](https://learn.microsoft.com/en-us/sql/odbc/reference)
+#'   is a thorough resource on the ODBC interface.
+#'
 #' @aliases dbConnect
 #' @import rlang
 #' @export
