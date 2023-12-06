@@ -2,12 +2,58 @@
 % Please edit documentation in R/Driver.R
 \name{odbc}
 \alias{odbc}
-\title{Odbc driver}
+\title{ODBC Driver}
 \usage{
 odbc()
 }
 \description{
-Driver for an ODBC database.
+This function creates a driver for an ODBC database. Its output
+is intended to be passed to \code{\link[=dbConnect]{dbConnect()}}.
+}
+\details{
+The odbc package is one piece of the R interface to databases with support
+for ODBC:
+
+\figure{whole-game.png}{options: width=95\%}
+
+The package supports any \strong{database} with ODBC support, including
+\itemize{
+\item \href{https://www.microsoft.com/en-us/sql-server/}{SQL Server},
+\item \href{https://www.oracle.com/database}{Oracle},
+\item \href{https://www.mysql.com/}{MySQL},
+\item \href{https://www.postgresql.org/}{PostgreSQL},
+\item \href{https://sqlite.org/index.html}{SQLite},
+}
+
+and others.
+
+Support for a given database is provided by an \strong{ODBC driver}, which defines
+how to interact with that database using the standardized syntax of ODBC and SQL.
+
+One of the central benefits of ODBC is its interoperability; any database
+with drivers available is accessible through ODBC. To manage information
+about these drivers and the data sources they provide access to, our
+computers use a \strong{driver manager}. Windows is bundled with a driver manager,
+while MacOS and Linux require installation of one; this package supports
+the \href{https://www.unixodbc.org/}{unixODBC} driver manager.
+
+In the \strong{R interface}, the \href{https://dbi.r-dbi.org/}{DBI package} provides a
+front-end while odbc implements a back-end to communicate with the driver
+manager. The odbc package is built on top of the
+\href{https://nanodbc.github.io/nanodbc/}{nanodbc} C++ library.
+
+Interfacing with databases using R and odbc involves three high-level steps:
+\enumerate{
+\item \strong{Configure drivers and data sources}: the functions \code{\link[=odbcListDrivers]{odbcListDrivers()}}
+and \code{\link[=odbcListDataSources]{odbcListDataSources()}} help to interface with the driver manager.
+\item \strong{Connect to a database}: The \code{\link[=dbConnect]{dbConnect()}} function, called with the
+first argument odbc(), connects to a database using the specified ODBC
+driver to create a connection object.
+\item \strong{Interface with connections}: The resulting connection object can be
+passed to various functions to retrieve information on database
+structure (\code{\link[=dbListTables]{dbListTables()}}), iteratively develop queries (\code{\link[=dbSendQuery]{dbSendQuery()}},
+\code{\link[=dbColumnInfo]{dbColumnInfo()}}), and query data objects (\code{\link[=dbFetch]{dbFetch()}}).
+}
 }
 \examples{
 \dontrun{
