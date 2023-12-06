@@ -23,7 +23,6 @@
 ^src/\.clang-format$
 ^src/nanodbc/\.clang-format$
 ^\.vimrc$
-^vignettes$
 ^revdep$
 ^testing$
 ^CRAN-RELEASE$
