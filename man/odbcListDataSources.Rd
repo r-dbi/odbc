@@ -2,7 +2,7 @@
 % Please edit documentation in R/Connection.R
 \name{odbcListDataSources}
 \alias{odbcListDataSources}
-\title{List Available Data Source Names}
+\title{List Configured Data Source Names}
 \usage{
 odbcListDataSources()
 }
@@ -15,7 +15,10 @@ passed to the \code{dsn} argument of \code{\link[=dbConnect]{dbConnect()}}.}
 }
 }
 \description{
-Collect information about the available data source names (DSNs).
+Collect information about the available data source names (DSNs). A DSN must
+be both installed and configured with the driver manager to be included in
+this list. DSNs that are not configured with the driver manager can still be
+connected to with \code{\link[=dbConnect]{dbConnect()}} by providing DSN metadata directly.
 }
 \section{Configuration}{
 
@@ -25,8 +28,7 @@ about the available data source names.
 
 For \strong{MacOS and Linux}, the odbc package supports the unixODBC driver
 manager. unixODBC looks to the \code{odbc.ini} \emph{configuration file} for information
-on DSNs. Install unixODBC with \verb{brew install unixodbc}, and find the
-location(s) of your \code{odbc.ini} file(s) with \code{odbcinst -j}.
+on DSNs. Find the location(s) of your \code{odbc.ini} file(s) with \code{odbcinst -j}.
 
 In this example \code{odbc.ini} file:
 
@@ -57,7 +59,6 @@ name \verb{MySQL Driver} appearing in \code{\link[=odbcListDrivers]{odbcListDriv
 \if{html}{\out{<div class="sourceCode">}}\preformatted{con <-
   dbConnect(
     odbc::odbc(),
-    "MySQL",
     Driver = "MySQL Driver",
     Database = "test",
     Server = "127.0.0.1",
@@ -69,26 +70,10 @@ name \verb{MySQL Driver} appearing in \code{\link[=odbcListDrivers]{odbcListDriv
 
 ...can be written:
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{con <- dbConnect(odbc::odbc(), "MySQL")
+\if{html}{\out{<div class="sourceCode">}}\preformatted{con <- dbConnect(odbc::odbc(), dsn = "MySQL")
 }\if{html}{\out{</div>}}
 }
 
-\section{Learn more}{
-
-
-To learn more about databases:
-\itemize{
-\item \href{https://solutions.posit.co/connections/db/}{"Best Practices in Working with Databases"}
-documents how to use the odbc package with various popular databases.
-\item \href{https://github.com/mkleehammer/pyodbc/wiki/Drivers-and-Driver-Managers}{The pyodbc "Drivers and Driver Managers" Wiki}
-provides further context on drivers and driver managers.
-\item \href{https://learn.microsoft.com/en-us/sql/odbc/reference}{Microsoft's "Introduction to ODBC"}
-is a thorough resource on the ODBC interface.
-}
-}
-
 \seealso{
-\code{\link[=odbcListDrivers]{odbcListDrivers()}} collects information on the available \emph{drivers}. On MacOS
-and Linux, the analogous configuration file to \code{odbc.ini} for drivers is
-\code{odbcinst.ini}.
+\code{\link[=odbcListDrivers]{odbcListDrivers()}}
 }

@@ -97,3 +97,17 @@ the specific driver documentation for allowed parameters;
 \url{https://www.connectionstrings.com} is also a useful resource of example
 connection strings for a variety of databases.
 }
+\section{Learn more}{
+
+
+To learn more about databases:
+\itemize{
+\item \href{https://solutions.posit.co/connections/db/}{"Best Practices in Working with Databases"}
+documents how to use the odbc package with various popular databases.
+\item \href{https://github.com/mkleehammer/pyodbc/wiki/Drivers-and-Driver-Managers}{The pyodbc "Drivers and Driver Managers" Wiki}
+provides further context on drivers and driver managers.
+\item \href{https://learn.microsoft.com/en-us/sql/odbc/reference}{Microsoft's "Introduction to ODBC"}
+is a thorough resource on the ODBC interface.
+}
+}
+

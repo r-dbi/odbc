@@ -2,7 +2,7 @@
 % Please edit documentation in R/Connection.R
 \name{odbcListDrivers}
 \alias{odbcListDrivers}
-\title{List Available ODBC Drivers}
+\title{List Configured ODBC Drivers}
 \usage{
 odbcListDrivers(
   keep = getOption("odbc.drivers_keep"),
@@ -10,13 +10,13 @@ odbcListDrivers(
 )
 }
 \arguments{
-\item{keep}{A character vector of driver names to keep in the results.
-If \code{NULL}, all driver names will be kept.
-Set the \code{odbc.drivers_keep} option to always keep a set of driver names.}
+\item{keep, filter}{A character vector of driver names to keep in or remove
+from the results, respectively. If \code{NULL}, all driver names will be kept,
+or none will be removed, respectively. The \code{odbc.drivers_keep} and
+\code{odbc.drivers_filter} options control the argument defaults.
 
-\item{filter}{A character vector of driver names to remove from the results.
-If \code{NULL}, no driver names will be removed.
-Set the \code{odbc.drivers_remove} option to always remove a set of driver names.}
+Driver names are first processed with \code{keep}, then \code{filter}. Thus, if a
+driver name is in both \code{keep} and \code{filter}, it won't appear in output.}
 }
 \value{
 A data frame with three columns.
@@ -28,18 +28,17 @@ driver accepts the argument).}
 \item{attribute}{Driver attribute name.}
 \item{value}{Driver attribute value.}
 }
-}
-\description{
-Collect information about the available driver names.
-}
-\details{
-Driver names are first processed with \code{keep}, then \code{filter}. Thus, if a
-driver name is in both \code{keep} and \code{filter}, it won't appear in output.
 
 If a driver has multiple attributes, there will be one row per attribute,
 each with the same driver \code{name}. If a given driver name does not have any
 attributes, the function will return one row with the driver \code{name}, but
 the last two columns will be \code{NA}.
+}
+\description{
+Collect information about the configured driver names. A driver must be both
+installed and configured with the driver manager to be included in this list.
+Driver names that are not configured with the driver manager can still be
+used in \code{\link[=dbConnect]{dbConnect()}} by providing a path to a driver directly.
 }
 \section{Configuration}{
 
@@ -49,8 +48,8 @@ about the available driver names.
 
 For \strong{MacOS and Linux}, the odbc package supports the unixODBC driver
 manager. unixODBC looks to the \code{odbcinst.ini} \emph{configuration file} for
-information on driver names. Install unixODBC with \verb{brew install unixodbc},
-and find the location(s) of your \code{odbcinst.ini} file(s) with \code{odbcinst -j}.
+information on driver names. Find the location(s) of your \code{odbcinst.ini}
+file(s) with \code{odbcinst -j}.
 
 In this example \code{odbcinst.ini} file:
 
@@ -58,7 +57,7 @@ In this example \code{odbcinst.ini} file:
 Driver=/opt/homebrew/Cellar/mysql/8.2.0_1/lib/libmysqlclient.dylib
 }\if{html}{\out{</div>}}
 
-...the driver name is \verb{MySQL Driver}, which will appear in the \code{name}
+Then the driver name is \verb{MySQL Driver}, which will appear in the \code{name}
 column of this function's output. To pass the driver name as the \code{driver}
 argument to \code{\link[=dbConnect]{dbConnect()}}, pass it as a string, like \code{"MySQL Driver"}.
 
@@ -72,47 +71,16 @@ under the driver name would add additional rows with the same \code{name} entry.
 
 When a driver is configured with a driver manager, information on the driver
 will be automatically passed on to \code{\link[=dbConnect]{dbConnect()}} when its \code{driver} argument
-is set. Further, if a data source name (DSN) is configured with a driver,
-information on the driver will automatically passed on to to \code{\link[=dbConnect]{dbConnect()}}
-without needing to pass the \code{driver} argument. For an example, see the same
-section in the \code{\link[=odbcListDataSources]{odbcListDataSources()}} help-file.
-}
-
-\section{Learn more}{
-
-
-To learn more about databases:
-\itemize{
-\item \href{https://solutions.posit.co/connections/db/}{"Best Practices in Working with Databases"}
-documents how to use the odbc package with various popular databases.
-\item \href{https://github.com/mkleehammer/pyodbc/wiki/Drivers-and-Driver-Managers}{The pyodbc "Drivers and Driver Managers" Wiki}
-provides further context on drivers and driver managers.
-\item \href{https://learn.microsoft.com/en-us/sql/odbc/reference}{Microsoft's "Introduction to ODBC"}
-is a thorough resource on the ODBC interface.
-}
+is set. For an example, see the same section in the \code{\link[=odbcListDataSources]{odbcListDataSources()}}
+help-file. Instead of configuring driver information with a driver manager,
+it is also possible to provide a path to a driver directly to \code{\link[=dbConnect]{dbConnect()}}.
 }
 
 \examples{
 \dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 odbcListDrivers()
-
-# retain only attributes on the SQLite Driver
-odbcListDrivers(keep = "SQLite Driver")
-
-# remove results pertaining to the SQLite Driver
-odbcListDrivers(filter = "SQLite Driver")
-
-# to always keep or remove only results for a given driver,
-# use the odbc.drivers_keep and odbc.drivers_filter options
-options(odbc.drivers_keep = "SQLite Driver")
-odbcListDrivers()
-
-# to set that option back to its default:
-options(odbc.drivers_keep = NULL)
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-\code{\link[=odbcListDataSources]{odbcListDataSources()}} collects information on the available data source
-names (DSNs). On MacOS and Linux, the analogous configuration file to
-\code{odbcinst.ini} for DSNs is \code{odbc.ini}.
+\code{\link[=odbcListDataSources]{odbcListDataSources()}}
 }

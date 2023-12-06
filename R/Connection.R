@@ -606,16 +606,20 @@ setMethod(
     invisible(TRUE)
   })
 
-#' List Available ODBC Drivers
+#' List Configured ODBC Drivers
 #'
-#' Collect information about the available driver names.
+#' Collect information about the configured driver names. A driver must be both
+#' installed and configured with the driver manager to be included in this list.
+#' Driver names that are not configured with the driver manager can still be
+#' used in [dbConnect()] by providing a path to a driver directly.
 #'
-#' @param keep A character vector of driver names to keep in the results.
-#'   If `NULL`, all driver names will be kept.
-#'   Set the `odbc.drivers_keep` option to always keep a set of driver names.
-#' @param filter A character vector of driver names to remove from the results.
-#'   If `NULL`, no driver names will be removed.
-#'   Set the `odbc.drivers_remove` option to always remove a set of driver names.
+#' @param keep,filter A character vector of driver names to keep in or remove
+#'   from the results, respectively. If `NULL`, all driver names will be kept,
+#'   or none will be removed, respectively. The `odbc.drivers_keep` and
+#'   `odbc.drivers_filter` options control the argument defaults.
+#'
+#'   Driver names are first processed with `keep`, then `filter`. Thus, if a
+#'   driver name is in both `keep` and `filter`, it won't appear in output.
 #'
 #' @return A data frame with three columns.
 #'
@@ -626,10 +630,6 @@ setMethod(
 #'   \item{attribute}{Driver attribute name.}
 #'   \item{value}{Driver attribute value.}
 #' }
-#'
-#' @details
-#' Driver names are first processed with `keep`, then `filter`. Thus, if a
-#' driver name is in both `keep` and `filter`, it won't appear in output.
 #'
 #' If a driver has multiple attributes, there will be one row per attribute,
 #' each with the same driver `name`. If a given driver name does not have any
@@ -643,8 +643,8 @@ setMethod(
 #'
 #' For **MacOS and Linux**, the odbc package supports the unixODBC driver
 #' manager. unixODBC looks to the `odbcinst.ini` _configuration file_ for
-#' information on driver names. Install unixODBC with `brew install unixodbc`,
-#' and find the location(s) of your `odbcinst.ini` file(s) with `odbcinst -j`.
+#' information on driver names. Find the location(s) of your `odbcinst.ini`
+#' file(s) with `odbcinst -j`.
 #'
 #' In this example `odbcinst.ini` file:
 #'
@@ -653,7 +653,7 @@ setMethod(
 #' Driver=/opt/homebrew/Cellar/mysql/8.2.0_1/lib/libmysqlclient.dylib
 #' ```
 #'
-#' ...the driver name is `MySQL Driver`, which will appear in the `name`
+#' Then the driver name is `MySQL Driver`, which will appear in the `name`
 #' column of this function's output. To pass the driver name as the `driver`
 #' argument to [dbConnect()], pass it as a string, like `"MySQL Driver"`.
 #'
@@ -667,34 +667,15 @@ setMethod(
 #'
 #' When a driver is configured with a driver manager, information on the driver
 #' will be automatically passed on to [dbConnect()] when its `driver` argument
-#' is set. Further, if a data source name (DSN) is configured with a driver,
-#' information on the driver will automatically passed on to to [dbConnect()]
-#' without needing to pass the `driver` argument. For an example, see the same
-#' section in the [odbcListDataSources()] help-file.
-#'
-#' @inheritSection odbcListDataSources Learn more
+#' is set. For an example, see the same section in the [odbcListDataSources()]
+#' help-file. Instead of configuring driver information with a driver manager,
+#' it is also possible to provide a path to a driver directly to [dbConnect()].
 #'
 #' @seealso
-#' [odbcListDataSources()] collects information on the available data source
-#' names (DSNs). On MacOS and Linux, the analogous configuration file to
-#' `odbcinst.ini` for DSNs is `odbc.ini`.
+#' [odbcListDataSources()]
 #'
 #' @examplesIf FALSE
 #' odbcListDrivers()
-#'
-#' # retain only attributes on the SQLite Driver
-#' odbcListDrivers(keep = "SQLite Driver")
-#'
-#' # remove results pertaining to the SQLite Driver
-#' odbcListDrivers(filter = "SQLite Driver")
-#'
-#' # to always keep or remove only results for a given driver,
-#' # use the odbc.drivers_keep and odbc.drivers_filter options
-#' options(odbc.drivers_keep = "SQLite Driver")
-#' odbcListDrivers()
-#'
-#' # to set that option back to its default:
-#' options(odbc.drivers_keep = NULL)
 #'
 #' @export
 odbcListDrivers <- function(keep = getOption("odbc.drivers_keep"), filter = getOption("odbc.drivers_filter")) {
@@ -715,11 +696,14 @@ odbcListDrivers <- function(keep = getOption("odbc.drivers_keep"), filter = getO
   res
 }
 
-#' List Available Data Source Names
+#' List Configured Data Source Names
 #'
 #' @description
 #'
-#' Collect information about the available data source names (DSNs).
+#' Collect information about the available data source names (DSNs). A DSN must
+#' be both installed and configured with the driver manager to be included in
+#' this list. DSNs that are not configured with the driver manager can still be
+#' connected to with [dbConnect()] by providing DSN metadata directly.
 #'
 #' @return A data frame with two columns:
 #' \describe{
@@ -735,8 +719,7 @@ odbcListDrivers <- function(keep = getOption("odbc.drivers_keep"), filter = getO
 #'
 #' For **MacOS and Linux**, the odbc package supports the unixODBC driver
 #' manager. unixODBC looks to the `odbc.ini` _configuration file_ for information
-#' on DSNs. Install unixODBC with `brew install unixodbc`, and find the
-#' location(s) of your `odbc.ini` file(s) with `odbcinst -j`.
+#' on DSNs. Find the location(s) of your `odbc.ini` file(s) with `odbcinst -j`.
 #'
 #' In this example `odbc.ini` file:
 #'
@@ -769,7 +752,6 @@ odbcListDrivers <- function(keep = getOption("odbc.drivers_keep"), filter = getO
 #' con <-
 #'   dbConnect(
 #'     odbc::odbc(),
-#'     "MySQL",
 #'     Driver = "MySQL Driver",
 #'     Database = "test",
 #'     Server = "127.0.0.1",
@@ -782,24 +764,12 @@ odbcListDrivers <- function(keep = getOption("odbc.drivers_keep"), filter = getO
 #' ...can be written:
 #'
 #' ```
-#' con <- dbConnect(odbc::odbc(), "MySQL")
+#' con <- dbConnect(odbc::odbc(), dsn = "MySQL")
 #' ```
 #'
-#' @section Learn more:
-#'
-#' To learn more about databases:
-#'
-#' * ["Best Practices in Working with Databases"](https://solutions.posit.co/connections/db/)
-#'   documents how to use the odbc package with various popular databases.
-#' * [The pyodbc "Drivers and Driver Managers" Wiki](https://github.com/mkleehammer/pyodbc/wiki/Drivers-and-Driver-Managers)
-#'   provides further context on drivers and driver managers.
-#' * [Microsoft's "Introduction to ODBC"](https://learn.microsoft.com/en-us/sql/odbc/reference)
-#'   is a thorough resource on the ODBC interface.
-#'
 #' @seealso
-#' [odbcListDrivers()] collects information on the available _drivers_. On MacOS
-#' and Linux, the analogous configuration file to `odbc.ini` for drivers is
-#' `odbcinst.ini`.
+#'
+#' [odbcListDrivers()]
 #'
 #' @export
 odbcListDataSources <- function() {
