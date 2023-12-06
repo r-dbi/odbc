@@ -123,7 +123,7 @@ databricks_default_driver <- function() {
 
   fallbacks <- c("Databricks", "Simba Spark ODBC Driver")
   fallbacks <- intersect(fallbacks, odbcListDrivers()$name)
-  if (length(fallbacks) > 1) {
+  if (length(fallbacks) > 0) {
     return(fallbacks[1])
   }
 

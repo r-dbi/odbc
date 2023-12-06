@@ -11,6 +11,15 @@ test_that("databricks arguments use camelcase", {
   expect_true(all(is_camel_case(names(args))))
 })
 
+
+test_that("fallbacks to driver name", {
+  local_mocked_bindings(
+    databricks_default_driver_paths = function() character(),
+    odbcListDrivers = function() list(name = c("bar", "Databricks"))
+  )
+  expect_equal(databricks_default_driver(), "Databricks")
+})
+
 test_that("errors if can't find driver", {
   local_mocked_bindings(
     databricks_default_driver_paths = function() character(),
