@@ -14,17 +14,49 @@ developed.](http://www.repostatus.org/badges/latest/active.svg)](https://www.rep
 coverage](https://codecov.io/gh/r-dbi/odbc/branch/main/graph/badge.svg)](https://app.codecov.io/gh/r-dbi/odbc?branch=main)
 <!-- badges: end -->
 
-The goal of the odbc package is to provide a DBI-compliant interface to
-[Open Database
+The goal of the odbc package is to provide a
+[DBI](https://dbi.r-dbi.org/)-compliant interface to [Open Database
 Connectivity](https://learn.microsoft.com/en-us/sql/odbc/microsoft-open-database-connectivity-odbc?view=sql-server-ver15)
 (ODBC) drivers. This allows for an efficient, easy to setup connection
-to any database with ODBC drivers available, including [SQL
+to any database with support for ODBC.
+
+## Overview
+
+The odbc package is one piece of the R interface to databases with
+support for ODBC:
+
+<img src="man/figures/whole-game.png" alt="A diagram containing four boxes with arrows linking each pointing left to right. The boxes read, in order, &quot;R interface,&quot; &quot;driver manager,&quot; &quot;ODBC driver,&quot; and &quot;database.&quot; The left-most box, R interface, contains three smaller components, labeled &quot;dbplyr,&quot; &quot;DBI,&quot; and &quot;odbc.&quot;" width="1527" />
+
+The package supports any **database** with ODBC support, including [SQL
 Server](https://www.microsoft.com/en-us/sql-server/),
 [Oracle](https://www.oracle.com/database),
 [MySQL](https://www.mysql.com/),
 [PostgreSQL](https://www.postgresql.org/),
-[SQLite](https://sqlite.org/index.html) and others. The implementation
-builds on the [nanodbc](https://nanodbc.github.io/nanodbc/) C++ library.
+[SQLite](https://sqlite.org/index.html), and others.
+
+Support for a given database is provided by an **ODBC driver**, which
+defines how to interact with that database using the standardized syntax
+of ODBC and SQL.
+
+One of the central benefits of ODBC is its interoperability; any
+database with drivers available is accessible through ODBC. To manage
+information about these drivers and the data sources they provide access
+to, our computers use a **driver manager**. Windows is bundled with a
+driver manager, while MacOS and Linux require installation of one; this
+package supports the [unixODBC](https://www.unixodbc.org/) driver
+manager.
+
+In the **R interface**, the [DBI package](https://dbi.r-dbi.org/)
+provides a front-end while odbc implements a back-end to communicate
+with the driver manager. The odbc package is built on top of the
+[nanodbc](https://nanodbc.github.io/nanodbc/) C++ library. To interface
+with databases using R and odbc:
+
+<img src="man/figures/r-interface.png" alt="A diagram showing a high-level workflow for using the R interface in 3 steps. In step 1, configure drivers and data sources, the functions odbcListDrivers() and odbcListDataSources() help to interface with the driver manager. In step 2, the dbConnect() function, called with the first argument odbc(), connects to a database using the specified ODBC driver to create a connection object &quot;con.&quot; Finally, in step 3, that connection object can be passed to various functions to retrieve information on database structure, iteratively develop queries, and query data objects." width="1824" />
+
+The “Installing and Configuring Drivers” vignette gives example code for
+establishing a connection `con` for several different databases. See the
+[Usage section](#usage) below for example code.
 
 ## Installation
 
@@ -78,13 +110,17 @@ data <- dbReadTable(con, "flights")
 dbWriteTable(con, "iris", iris)
 ```
 
-`dbGetQuery()` will submit a query and fetch the results. It is also
+`dbGetQuery()` will submit a SQL query and fetch the results. It is also
 possible to submit the query and fetch separately with `dbSendQuery()`
 and `dbFetch()`. The `n` argument to `dbFetch()` can be used to fetch
-only the part of a query result (the next *n* rows).
+only part of a query result (the next *n* rows).
 
 ``` r
-result <- dbSendQuery(con, "SELECT flight, tailnum, origin FROM flights ORDER BY origin")
+result <- 
+  dbSendQuery(
+    con, 
+    "SELECT flight, tailnum, origin FROM flights ORDER BY origin"
+  )
 
 # Retrieve the first 100 results
 first_100 <- dbFetch(result, n = 100)
@@ -93,28 +129,44 @@ first_100 <- dbFetch(result, n = 100)
 rest <- dbFetch(result)
 ```
 
+To generate SQL code using dplyr syntax, see the [dbplyr
+package](https://dbplyr.tidyverse.org/).
+
 ## Benchmarks
 
 The odbc package is often much faster than the existing
 [RODBC](https://cran.r-project.org/package=RODBC) and DBI compatible
 [RODBCDBI](https://cran.r-project.org/package=RODBCDBI) packages.
 
-### Reading
-
 Reading a table from a SQL Server database with the ‘flights’ dataset
 (336,776 rows, 19 columns) of the package
-[nycflights13](https://github.com/tidyverse/nycflights13).
+[nycflights13](https://github.com/tidyverse/nycflights13):
 
 ``` r
 # First using RODBC / RODBCDBI
 library(DBI)
-rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "MicrosoftSQLServer", user = Sys.getenv("SQLSERVER_UID"), password = Sys.getenv("SQLSERVER_PWD"))
+
+rodbc <- 
+  dbConnect(
+    RODBCDBI::ODBC(), 
+    dsn = "MicrosoftSQLServer", 
+    user = Sys.getenv("SQLSERVER_UID"), 
+    password = Sys.getenv("SQLSERVER_PWD")
+  )
+
 system.time(rodbc_result <- dbReadTable(rodbc, "flights"))
 #>    user  system elapsed 
 #>  13.986   1.173  15.192
 
 # Now using odbc
-odbc <- dbConnect(odbc::odbc(), dsn = "MicrosoftSQLServer", UID = Sys.getenv("SQLSERVER_UID"), PWD = Sys.getenv("SQLSERVER_PWD"))
+odbc <- 
+  dbConnect(
+    odbc::odbc(), 
+    dsn = "MicrosoftSQLServer", 
+    UID = Sys.getenv("SQLSERVER_UID"), 
+    PWD = Sys.getenv("SQLSERVER_PWD")
+  )
+
 system.time(odbc_result <- dbReadTable(odbc, "flights"))
 #>    user  system elapsed 
 #>   1.334   0.065   1.406
@@ -145,21 +197,34 @@ rm(rodbc_result, odbc_result, odbc, rodbc)
 gc(verbose = FALSE)
 ```
 
-### Writing
-
-Writing the same dataset to the database.
+Writing the same dataset to the database:
 
 ``` r
 library(nycflights13)
 # rodbc does not support writing timestamps natively, so we remove that column
 flights2 <- as.data.frame(flights[, names(flights) != "time_hour"])
-rodbc <- dbConnect(RODBCDBI::ODBC(), dsn = "MicrosoftSQLServer", user = Sys.getenv("SQLSERVER_UID"), password = Sys.getenv("SQLSERVER_PWD"))
+
+rodbc <- 
+  dbConnect(
+    RODBCDBI::ODBC(), 
+    dsn = "MicrosoftSQLServer", 
+    user = Sys.getenv("SQLSERVER_UID"), 
+    password = Sys.getenv("SQLSERVER_PWD")
+  )
+
 system.time(dbWriteTable(rodbc, "flights2", flights2))
 #>    user  system elapsed
 #>  11.891   6.269 765.269
 
 # Now using odbc
-odbc <- dbConnect(odbc::odbc(), dsn = "MicrosoftSQLServer", UID = Sys.getenv("SQLSERVER_UID"), PWD = Sys.getenv("SQLSERVER_PWD"))
+odbc <- 
+  dbConnect(
+    odbc::odbc(), 
+    dsn = "MicrosoftSQLServer", 
+    UID = Sys.getenv("SQLSERVER_UID"), 
+    PWD = Sys.getenv("SQLSERVER_PWD")
+  )
+
 flights3 <- as.data.frame(flights)
 system.time(dbWriteTable(odbc, "flights3", flights3))
 #>    user  system elapsed
