@@ -44,7 +44,7 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="dbi-methods">DBI methods<a class="anchor" aria-label="anchor" href="#dbi-methods"></a></h2>
       
       
 
@@ -55,36 +55,6 @@
       
 
       <dl><dt>
-          
-          <code><a href="ConnectionAttributes.html">SUPPORTED_CONNECTION_ATTRIBUTES</a></code> <code><a href="ConnectionAttributes.html">ConnectionAttributes</a></code> 
-        </dt>
-        <dd>Supported Connection Attributes</dd>
-      </dl><dl><dt>
-          
-          <code><a href="OdbcConnection.html">show(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbIsValid(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbDisconnect(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbSendQuery(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbSendStatement(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbDataType(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbDataType(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbQuoteIdentifier(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbQuoteIdentifier(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;SQL&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbRemoveTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbGetInfo(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbGetQuery(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbBegin(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbCommit(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbRollback(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbExistsTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;Id&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbExistsTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;SQL&gt;</i>)</a></code> <code><a href="OdbcConnection.html">dbExistsTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code> 
-        </dt>
-        <dd>Odbc Connection Methods</dd>
-      </dl><dl><dt>
-          
-          <code><a href="OdbcDriver.html">show(<i>&lt;OdbcDriver&gt;</i>)</a></code> <code><a href="OdbcDriver.html">dbDataType(<i>&lt;OdbcDriver&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="OdbcDriver.html">dbDataType(<i>&lt;OdbcDriver&gt;</i>,<i>&lt;list&gt;</i>)</a></code> <code><a href="OdbcDriver.html">dbDataType(<i>&lt;OdbcDriver&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code> <code><a href="OdbcDriver.html">dbIsValid(<i>&lt;OdbcDriver&gt;</i>)</a></code> <code><a href="OdbcDriver.html">dbGetInfo(<i>&lt;OdbcDriver&gt;</i>)</a></code> 
-        </dt>
-        <dd>Odbc Driver Methods</dd>
-      </dl><dl><dt>
-          
-          <code><a href="OdbcResult.html">dbClearResult(<i>&lt;OdbcResult&gt;</i>)</a></code> <code><a href="OdbcResult.html">dbFetch(<i>&lt;OdbcResult&gt;</i>)</a></code> <code><a href="OdbcResult.html">dbHasCompleted(<i>&lt;OdbcResult&gt;</i>)</a></code> <code><a href="OdbcResult.html">dbIsValid(<i>&lt;OdbcResult&gt;</i>)</a></code> <code><a href="OdbcResult.html">dbGetStatement(<i>&lt;OdbcResult&gt;</i>)</a></code> <code><a href="OdbcResult.html">dbColumnInfo(<i>&lt;OdbcResult&gt;</i>)</a></code> <code><a href="OdbcResult.html">dbGetRowCount(<i>&lt;OdbcResult&gt;</i>)</a></code> <code><a href="OdbcResult.html">dbGetRowsAffected(<i>&lt;OdbcResult&gt;</i>)</a></code> <code><a href="OdbcResult.html">dbBind(<i>&lt;OdbcResult&gt;</i>)</a></code> 
-        </dt>
-        <dd>Odbc Result Methods</dd>
-      </dl><dl><dt>
-          
-          <code><a href="SQLServer.html">Microsoft SQL Server-class</a></code> <code><a href="SQLServer.html">dbUnquoteIdentifier,Microsoft SQL Server,SQL-method</a></code> <code><a href="SQLServer.html">isTempTable,Microsoft SQL Server,character-method</a></code> <code><a href="SQLServer.html">dbExistsTable,Microsoft SQL Server,character-method</a></code> <code><a href="SQLServer.html">dbExistsTable</a></code> <code><a href="SQLServer.html">sqlCreateTable,Microsoft SQL Server-method</a></code> 
-        </dt>
-        <dd>Simple class prototype to avoid messages about unknown classes from setMethod</dd>
-      </dl><dl><dt>
-          
-          <code><a href="databricks.html">databricks()</a></code> <code><a href="databricks.html">dbConnect(<i>&lt;DatabricksOdbcDriver&gt;</i>)</a></code> 
-        </dt>
-        <dd>Helper for Connecting to Databricks via ODBC</dd>
-      </dl><dl><dt>
           
           <code><a href="dbConnect-OdbcDriver-method.html">dbConnect(<i>&lt;OdbcDriver&gt;</i>)</a></code> 
         </dt>
@@ -101,40 +71,46 @@
         <dd>List remote tables</dd>
       </dl><dl><dt>
           
-          <code><a href="dbListTables-methods.html">dbListTables-methods</a></code> <code><a href="dbListTables-methods.html">dbListTables,Teradata-method</a></code> 
-        </dt>
-        <dd>~~ Methods for Function <code>dbListTables</code> in Package <span class="pkg">DBI</span> ~~</dd>
-      </dl><dl><dt>
-          
-          <code><a href="dbQuoteString-methods.html">dbQuoteString-methods</a></code> <code><a href="dbQuoteString-methods.html">dbQuoteString,DBIConnection,ANY-method</a></code> <code><a href="dbQuoteString-methods.html">dbQuoteString,DBIConnection,character-method</a></code> <code><a href="dbQuoteString-methods.html">dbQuoteString,DBIConnection,SQL-method</a></code> <code><a href="dbQuoteString-methods.html">dbQuoteString,Hive,character-method</a></code> 
-        </dt>
-        <dd>~~ Methods for Function <code>dbQuoteString</code> in Package <span class="pkg">DBI</span> ~~</dd>
-      </dl><dl><dt>
-          
-          <code><a href="isTempTable.html">isTempTable()</a></code> 
-        </dt>
-        <dd>Helper method used to determine if a table identifier is that
-of a temporary table.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="odbc-package.html">odbc-package</a></code> 
-        </dt>
-        <dd>odbc: Connect to ODBC Compatible Databases (using the DBI Interface)</dd>
-      </dl><dl><dt>
-          
-          <code><a href="odbc-tables.html">dbWriteTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code> <code><a href="odbc-tables.html">dbWriteTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;Id&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code> <code><a href="odbc-tables.html">dbWriteTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;SQL&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code> <code><a href="odbc-tables.html">dbAppendTable(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="odbc-tables.html">sqlData(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="odbc-tables.html">sqlCreateTable(<i>&lt;OdbcConnection&gt;</i>)</a></code> 
+          <code><a href="DBI-tables.html">dbWriteTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;character&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code> <code><a href="DBI-tables.html">dbWriteTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;Id&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code> <code><a href="DBI-tables.html">dbWriteTable(<i>&lt;OdbcConnection&gt;</i>,<i>&lt;SQL&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code> <code><a href="DBI-tables.html">dbAppendTable(<i>&lt;OdbcConnection&gt;</i>)</a></code> <code><a href="DBI-tables.html">sqlCreateTable(<i>&lt;OdbcConnection&gt;</i>)</a></code> 
         </dt>
         <dd>Convenience functions for reading/writing DBMS tables</dd>
+      </dl></div><div class="section level2">
+      <h2 id="database-specific-helpers">Database-specific helpers<a class="anchor" aria-label="anchor" href="#database-specific-helpers"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="databricks.html">databricks()</a></code> <code><a href="databricks.html">dbConnect(<i>&lt;DatabricksOdbcDriver&gt;</i>)</a></code> 
+        </dt>
+        <dd>Helper for Connecting to Databricks via ODBC</dd>
       </dl><dl><dt>
+          
+          <code><a href="SQLServer.html">Microsoft SQL Server-class</a></code> <code><a href="SQLServer.html">dbUnquoteIdentifier,Microsoft SQL Server,SQL-method</a></code> <code><a href="SQLServer.html">isTempTable,Microsoft SQL Server,character-method</a></code> <code><a href="SQLServer.html">dbExistsTable,Microsoft SQL Server,character-method</a></code> <code><a href="SQLServer.html">dbExistsTable</a></code> <code><a href="SQLServer.html">sqlCreateTable,Microsoft SQL Server-method</a></code> 
+        </dt>
+        <dd>SQL Server specific implementation.</dd>
+      </dl></div><div class="section level2">
+      <h2 id="odbc-configuration">ODBC configuration<a class="anchor" aria-label="anchor" href="#odbc-configuration"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
           <code><a href="odbc.html">odbc()</a></code> 
         </dt>
         <dd>Odbc driver</dd>
-      </dl><dl><dt>
-          
-          <code><a href="odbcConnectionActions.html">odbcConnectionActions()</a></code> 
-        </dt>
-        <dd>List the actions supported for the connection</dd>
       </dl><dl><dt>
           
           <code><a href="odbcConnectionCatalogs.html">odbcConnectionCatalogs()</a></code> 
@@ -145,16 +121,6 @@ of a temporary table.</dd>
           <code><a href="odbcConnectionColumns.html">odbcConnectionColumns()</a></code> 
         </dt>
         <dd>odbcConnectionColumns</dd>
-      </dl><dl><dt>
-          
-          <code><a href="odbcConnectionIcon.html">odbcConnectionIcon()</a></code> 
-        </dt>
-        <dd>Get an icon representing a connection.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="odbcConnectionSchemas.html">odbcConnectionSchemas()</a></code> 
-        </dt>
-        <dd>odbcConnectionSchemas</dd>
       </dl><dl><dt>
           
           <code><a href="odbcConnectionTableTypes.html">odbcConnectionTableTypes()</a></code> 
@@ -202,21 +168,18 @@ of a temporary table.</dd>
         <dd>Preview the data in an object.</dd>
       </dl><dl><dt>
           
-          <code><a href="odbcPreviewQuery.html">odbcPreviewQuery</a></code> <code><a href="odbcPreviewQuery.html">odbcPreviewQuery.OdbcConnection</a></code> <code><a href="odbcPreviewQuery.html">odbcPreviewQuery.Microsoft SQL Server</a></code> <code><a href="odbcPreviewQuery.html">odbcPreviewQuery.Oracle</a></code> 
-        </dt>
-        <dd>Create a preview query.</dd>
-      </dl><dl><dt>
-          
           <code><a href="odbcSetTransactionIsolationLevel.html">odbcSetTransactionIsolationLevel()</a></code> 
         </dt>
         <dd>Set the Transaction Isolation Level for a Connection</dd>
       </dl><dl><dt>
           
-          <code><a href="sqlCreateTable-methods.html">sqlCreateTable-methods</a></code> <code><a href="sqlCreateTable-methods.html">sqlCreateTable,DB2/AIX64-method</a></code> <code><a href="sqlCreateTable-methods.html">sqlCreateTable,DBIConnection-method</a></code> <code><a href="sqlCreateTable-methods.html">sqlCreateTable,HDB-method</a></code> <code><a href="sqlCreateTable-methods.html">sqlCreateTable,Oracle-method</a></code> <code><a href="sqlCreateTable-methods.html">sqlCreateTable,Teradata-method</a></code> 
+          <code><a href="isTempTable.html">isTempTable()</a></code> 
         </dt>
-        <dd>~~ Methods for Function <code>sqlCreateTable</code> in Package <span class="pkg">DBI</span> ~~</dd>
+        <dd>Helper method used to determine if a table identifier is that
+of a temporary table.</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

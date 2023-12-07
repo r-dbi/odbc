@@ -28,6 +28,12 @@
     <loc>https://r-dbi.github.io/odbc/dev/reference/ConnectionAttributes.html</loc>
   </url>
   <url>
+    <loc>https://r-dbi.github.io/odbc/dev/reference/DBI-methods.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/dev/reference/DBI-tables.html</loc>
+  </url>
+  <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/OdbcConnection.html</loc>
   </url>
   <url>
@@ -52,12 +58,6 @@
     <loc>https://r-dbi.github.io/odbc/dev/reference/dbListTables-OdbcConnection-method.html</loc>
   </url>
   <url>
-    <loc>https://r-dbi.github.io/odbc/dev/reference/dbListTables-methods.html</loc>
-  </url>
-  <url>
-    <loc>https://r-dbi.github.io/odbc/dev/reference/dbQuoteString-methods.html</loc>
-  </url>
-  <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/index.html</loc>
   </url>
   <url>
@@ -65,9 +65,6 @@
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/odbc-package.html</loc>
-  </url>
-  <url>
-    <loc>https://r-dbi.github.io/odbc/dev/reference/odbc-tables.html</loc>
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/odbc.html</loc>
@@ -119,9 +116,6 @@
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/odbcSetTransactionIsolationLevel.html</loc>
-  </url>
-  <url>
-    <loc>https://r-dbi.github.io/odbc/dev/reference/sqlCreateTable-methods.html</loc>
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/dev/setup.html</loc>
