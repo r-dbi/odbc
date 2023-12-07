@@ -34,3 +34,4 @@ catalog only.
 
 This implementation will respect the \code{catalog_name} arrgument.
 }
+\keyword{internal}
