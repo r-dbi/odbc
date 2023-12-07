@@ -43,8 +43,6 @@
 )
 
 \S4method{dbQuoteString}{Hive,character}(conn, x, ...)
-
-\S4method{sqlCreateTable}{`DB2/AIX64`}
 }
 \arguments{
 \item{...}{Other parameters passed on to methods.}

@@ -259,7 +259,10 @@ setMethod(
 setClass("DB2/AIX64", where = class_cache)
 
 #' @rdname DBI-methods
-#' @usage \S4method{sqlCreateTable}{`DB2/AIX64`}
+# Don't generate a usage because there's some buglet in R CMD check
+# (probably because of the `/` in the class name) which flags a usage
+# without corresponding alias
+#' @usage NULL
 setMethod("sqlCreateTable", "DB2/AIX64",
   function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
