@@ -55,7 +55,7 @@ OdbcConnection <- function(
   stopifnot(all(has_names(attributes)))
   stopifnot(all(names(attributes) %in% SUPPORTED_CONNECTION_ATTRIBUTES))
 
-  connection_string <- paste0(.connection_string, connection_string(args))
+  connection_string <- paste0(.connection_string, build_connection_string(args))
 
   bigint <- bigint_mappings()[match.arg(bigint, names(bigint_mappings()))]
 

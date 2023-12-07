@@ -8,6 +8,6 @@ test_that("build_connection_string automatically escapes if needed", {
   expect_equal(build_connection_string(list(foo = "*")), "foo={*}")
   # Already wrapped
   expect_equal(build_connection_string(list(foo = "{*}")), "foo={*}")
-  #
+  # Respects AsIs
   expect_equal(build_connection_string(list(foo = I("*"))), "foo=*")
 })
