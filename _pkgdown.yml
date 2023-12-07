@@ -9,3 +9,21 @@ development:
 authors:
   Oliver Gjoneski:
     href: https://github.com/detule
+
+reference:
+- title: DBI wrappers
+  contents:
+  - 'dbConnect,OdbcDriver-method'
+  - 'dbListFields,OdbcConnection,character-method'
+  - 'dbListTables,OdbcConnection-method'
+  - 'DBI-tables'
+
+- title: Database specific helpers
+  contents:
+  - databricks
+  - 'Microsoft SQL Server-class'
+
+- title: ODBC config
+  contents:
+  - starts_with("odbc")
+  - isTempTable

@@ -254,6 +254,7 @@ odbcPreviewObject.OdbcConnection <- function(connection, rowLimit, table = NULL,
 #' @param connection A connection object, as returned by `dbConnect()`.
 #' @param rowLimit The maximum number of rows to display.
 #' @param name Name of the object to be previewed
+#' @keywords internal
 odbcPreviewQuery <- function(connection, rowLimit, name) {
   UseMethod("odbcPreviewQuery")
 }
@@ -284,6 +285,7 @@ odbcPreviewQuery.Oracle <- function(connection, rowLimit, name) {
 #'
 #' @param connection A connection object, as returned by `dbConnect()`.
 #' @return The path to an icon file on disk.
+#' @keywords internal
 #' @export
 odbcConnectionIcon <- function(connection) {
   UseMethod("odbcConnectionIcon")
@@ -309,6 +311,7 @@ odbcConnectionIcon.default <- function(connection) {
 #'
 #' @param connection A connection object, as returned by `dbConnect()`.
 #' @return A named list of actions that can be performed on the connection.
+#' @keywords internal
 #' @export
 odbcConnectionActions <- function(connection) {
   UseMethod("odbcConnectionActions")

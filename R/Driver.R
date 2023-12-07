@@ -6,6 +6,7 @@ NULL
 #' Implementations of pure virtual functions defined in the `DBI` package
 #' for OdbcDriver objects.
 #' @name OdbcDriver
+#' @keywords internal
 NULL
 
 #' Odbc driver
@@ -229,3 +230,10 @@ setMethod(
   function(dbObj, ...) {
     list(max.connections = NULL, driver.version = NULL, client.version = NULL)
   })
+
+
+#' Unimportant DBI methods
+#'
+#' @name DBI-methods
+#' @keywords internal
+NULL

@@ -10,6 +10,7 @@ NULL
 #'   Directory authentication token.  Only for use with Microsoft SQL Server and
 #'   with limited support away from the OEM Microsoft driver.
 #' @rdname ConnectionAttributes
+#' @keywords internal
 #' @aliases ConnectionAttributes
 #' @usage NULL
 #' @format NULL
@@ -85,6 +86,7 @@ OdbcConnection <- function(
 }
 
 #' @rdname OdbcConnection
+#' @keywords internal
 #' @export
 setClass(
   "OdbcConnection",
@@ -322,6 +324,7 @@ setMethod(
 #' @param conn OdbcConnection
 #' @param catalog_name Catalog where
 #' we are looking to list schemas.
+#' @keywords internal
 #' @rdname odbcConnectionSchemas
 setGeneric(
   "odbcConnectionSchemas",

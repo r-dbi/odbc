@@ -45,6 +45,7 @@ setMethod(
 # Simple class prototype to avoid messages about unknown classes from setMethod
 setClass("Oracle", where = class_cache)
 
+#' @rdname DBI-methods
 setMethod("sqlCreateTable", "Oracle",
   function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
@@ -136,6 +137,7 @@ setMethod(
 
 setClass("Teradata", where = class_cache)
 
+#' @rdname DBI-methods
 setMethod("sqlCreateTable", "Teradata",
   function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
@@ -191,6 +193,7 @@ setMethod(
 
 setClass("HDB", where = class_cache)
 
+#' @rdname DBI-methods
 setMethod("sqlCreateTable", "HDB",
   function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
@@ -209,6 +212,7 @@ setMethod("sqlCreateTable", "HDB",
 
 setClass("Hive", where = class_cache)
 
+#' @rdname DBI-methods
 setMethod(
   # only need to override dbQuteString when x is character.
   # DBI:::quote_string just returns x when it is of class SQL, so no need to override that.
@@ -254,6 +258,8 @@ setMethod(
 
 setClass("DB2/AIX64", where = class_cache)
 
+#' @rdname DBI-methods
+#' @usage \S4method{sqlCreateTable}{`DB2/AIX64`}
 setMethod("sqlCreateTable", "DB2/AIX64",
   function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
@@ -270,7 +276,6 @@ setMethod("sqlCreateTable", "DB2/AIX64",
 
 # Microsoft SQL Server ---------------------------------------------------------
 
-#' Simple class prototype to avoid messages about unknown classes from setMethod
 #' @rdname SQLServer
 #' @usage NULL
 setClass("Microsoft SQL Server", where = class_cache)
@@ -290,6 +295,7 @@ setClass("Microsoft SQL Server", where = class_cache)
 #' @docType methods
 #' @inheritParams DBI::dbUnquoteIdentifier
 #' @usage NULL
+#' @keywords internal
 setMethod("dbUnquoteIdentifier", c("Microsoft SQL Server", "SQL"),
   function(conn, x, ...) {
     x <- gsub("(\\[)([^\\.]+?)(\\])", "\\2", x)
