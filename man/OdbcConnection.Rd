@@ -30,7 +30,7 @@
 
 \S4method{dbDisconnect}{OdbcConnection}(conn, ...)
 
-\S4method{dbSendQuery}{OdbcConnection,character}(conn, statement, params = NULL, ..., immediate = FALSE)
+\S4method{dbSendQuery}{OdbcConnection,character}(conn, statement, params = NULL, ..., immediate = is.null(params))
 
 \S4method{dbSendStatement}{OdbcConnection,character}(conn, statement, params = NULL, ..., immediate = FALSE)
 
@@ -46,7 +46,14 @@
 
 \S4method{dbGetInfo}{OdbcConnection}(dbObj, ...)
 
-\S4method{dbGetQuery}{OdbcConnection,character}(conn, statement, n = -1, params = NULL, ...)
+\S4method{dbGetQuery}{OdbcConnection,character}(
+  conn,
+  statement,
+  n = -1,
+  params = NULL,
+  immediate = is.null(params),
+  ...
+)
 
 \S4method{dbBegin}{OdbcConnection}(conn, ...)
 

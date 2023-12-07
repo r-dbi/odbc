@@ -1,5 +1,9 @@
 # odbc (development version)
 
+* `dbGetQuery()` and `dbSendQuery()` now set `immediate = TRUE` if you are 
+  not using a parameterised query. That should yield a small speed boost in 
+  many cases (#633).
+
 * Spark SQL: Correctly enumerate schemas away from the current catalog (@detule, #614)
 * Modify `odbcDataType.Snowflake` to better reflect Snowflake Data Types documentation (@meztez, #599).
 * SQL Server: Specialize syntax in sqlCreateTable to avoid failures when
