@@ -494,45 +494,57 @@ setMethod(
   "dbQuoteIdentifier", c("OdbcConnection", "SQL"),
   getMethod("dbQuoteIdentifier", c("DBIConnection", "SQL"), asNamespace("DBI")))
 
-#' @inherit DBI::dbListTables
-#' @param catalog_name The name of the catalog to return, the default returns all catalogs.
-#' @param schema_name The name of the schema to return, the default returns all schemas.
-#' @param table_name The name of the table to return, the default returns all tables.
+#' List remote tables and fields for an ODBC connection
+#'
+#' `dbListTables()` provides names of remote tables accessible through this
+#' connection; `dbListFields()` provides names of columns within a table.
+#'
+#' @inheritParams DBI::dbListTables
+#' @param catalog_name,schema_name,table_name Catalog, schema, and table names.
+#'
+#'   Use `%` as a wildcard to match any name; use `_` to any any character.
 #' @param table_type The type of the table to return, the default returns all table types.
-#' @aliases dbListTables
-#' @details
-#' \code{\%} can be used as a wildcard in any of the search parameters to
-#'   match 0 or more characters. `_` can be used to match any single character.
-#' @seealso The ODBC documentation on [Pattern Value Arguments](https://docs.microsoft.com/en-us/sql/odbc/reference/develop-app/pattern-value-arguments)
-#'   for further details on the supported syntax.
+#' @returns A character vector of table or field names respectively.
 #' @export
 setMethod(
   "dbListTables", "OdbcConnection",
-  function(conn, catalog_name = NULL, schema_name = NULL, table_name = NULL,
-    table_type = NULL, ...) {
+  function(conn,
+           catalog_name = NULL,
+           schema_name = NULL,
+           table_name = NULL,
+           table_type = NULL,
+           ...) {
 
-    odbcConnectionTables(conn,
+    odbcConnectionTables(
+      conn,
       name = table_name,
       catalog_name = catalog_name,
       schema_name = schema_name,
-      table_type = table_type)$table_name
+      table_type = table_type
+    )$table_name
   })
 
-#' @inherit DBI::dbListFields
+#' @rdname dbListTables-OdbcConnection-method
 #' @inheritParams DBI::dbListFields
-#' @aliases dbListFields
-#' @inheritParams dbListTables,OdbcConnection-method
 #' @param column_name The name of the column to return, the default returns all columns.
-#' @inherit dbListTables,OdbcConnection-method details
 #' @export
 setMethod(
   "dbListFields", c("OdbcConnection", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL, ...) {
-    odbcConnectionColumns(conn,
+  function(
+      conn,
+      name,
+      catalog_name = NULL,
+      schema_name = NULL,
+      column_name = NULL,
+      ...
+  ) {
+    odbcConnectionColumns(
+      conn,
       name = name,
       catalog_name = catalog_name,
       schema_name = schema_name,
-      column_name = column_name)[["name"]]
+      column_name = column_name
+    )[["name"]]
   })
 
 #' @rdname OdbcConnection
