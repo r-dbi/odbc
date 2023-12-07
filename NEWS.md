@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* `dbConnect(odbc::odbc())` now automatically quotes argument values that need 
+  it (#616).
+
 * Spark SQL: Correctly enumerate schemas away from the current catalog (@detule, #614)
 * Modify `odbcDataType.Snowflake` to better reflect Snowflake Data Types documentation (@meztez, #599).
 * SQL Server: Specialize syntax in sqlCreateTable to avoid failures when
