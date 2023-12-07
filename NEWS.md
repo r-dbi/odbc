@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* `DBI::dbConnect(odbc::odbc())` now gives a clear error if you supply multiple
+  arguments with the same name when case is ignored (#641).
+
 * Spark SQL: Correctly enumerate schemas away from the current catalog (@detule, #614)
 * Modify `odbcDataType.Snowflake` to better reflect Snowflake Data Types documentation (@meztez, #599).
 * SQL Server: Specialize syntax in sqlCreateTable to avoid failures when
