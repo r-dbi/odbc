@@ -75,10 +75,10 @@ setMethod(
 #' @param ... Additional ODBC keywords. These will be joined with the other
 #'   arguments to form the final connection string.
 #'
-#'   Note that ODBC parameter names are generally case-insensitive so that
-#'   (e.g.) `DRV` and `drv` are equivalent. Since this is different to R and
-#'   a possible source of confusion, odbc will error if you supply multiple
-#'   arguments that have the same name when case is ignored.
+#'   Note that ODBC parameter names are case-insensitive so that (e.g.) `DRV`
+#'   and `drv` are equivalent. Since this is different to R and a possible
+#'   source of confusion, odbc will error if you supply multiple arguments that
+#'   have the same name when case is ignored.
 #' @param .connection_string A complete connection string, useful if you are
 #'   copy pasting it from another source. If this argument is used, any
 #'   additional arguments will be appended to this string.
