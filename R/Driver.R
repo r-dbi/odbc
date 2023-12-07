@@ -22,20 +22,23 @@ NULL
 #'
 #' ![A diagram containing four boxes with arrows linking each pointing left to right. The boxes read, in order, R interface, driver manager, ODBC driver, and database. The left-most box, R interface, contains three smaller components, labeled dbplyr, DBI, and odbc.](whole-game.png){options: width=95%}
 #'
-#' The package supports any **database** with ODBC support, including
+#' The package supports any **Database Management System (DBMS)** with ODBC
+#' support, including:
 #'
 #' * [SQL Server](https://www.microsoft.com/en-us/sql-server/),
 #' * [Oracle](https://www.oracle.com/database),
 #' * [MySQL](https://www.mysql.com/),
-#' * [PostgreSQL](https://www.postgresql.org/),
-#' * [SQLite](https://sqlite.org/index.html),
+#' * [Databricks](https://www.databricks.com/),
+#' * [Snowflake](https://www.snowflake.com/)
 #'
 #' and others.
 #'
-#' Support for a given database is provided by an **ODBC driver**, which defines
-#' how to interact with that database using the standardized syntax of ODBC and SQL.
+#' Support for a given DBMS is provided by an **ODBC driver**, which defines
+#' how to interact with that DBMS using the standardized syntax of ODBC and SQL.
+#' Drivers can be downloaded from the DBMS vendor or, if you're a Posit
+#' customer, using the [professional drivers](https://docs.posit.co/pro-drivers/).
 #'
-#' One of the central benefits of ODBC is its interoperability; any database
+#' One of the central benefits of ODBC is its interoperability; any DBMS
 #' with drivers available is accessible through ODBC. To manage information
 #' about these drivers and the data sources they provide access to, our
 #' computers use a **driver manager**. Windows is bundled with a driver manager,
@@ -47,7 +50,7 @@ NULL
 #' manager. The odbc package is built on top of the
 #' [nanodbc](https://nanodbc.github.io/nanodbc/) C++ library.
 #'
-#' Interfacing with databases using R and odbc involves three high-level steps:
+#' Interfacing with DBMSs using R and odbc involves three high-level steps:
 #'
 #' 1) **Configure drivers and data sources**: the functions [odbcListDrivers()]
 #'   and [odbcListDataSources()] help to interface with the driver manager.

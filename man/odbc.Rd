@@ -16,21 +16,24 @@ for ODBC:
 
 \figure{whole-game.png}{options: width=95\%}
 
-The package supports any \strong{database} with ODBC support, including
+The package supports any \strong{Database Management System (DBMS)} with ODBC
+support, including:
 \itemize{
 \item \href{https://www.microsoft.com/en-us/sql-server/}{SQL Server},
 \item \href{https://www.oracle.com/database}{Oracle},
 \item \href{https://www.mysql.com/}{MySQL},
-\item \href{https://www.postgresql.org/}{PostgreSQL},
-\item \href{https://sqlite.org/index.html}{SQLite},
+\item \href{https://www.databricks.com/}{Databricks},
+\item \href{https://www.snowflake.com/}{Snowflake}
 }
 
 and others.
 
-Support for a given database is provided by an \strong{ODBC driver}, which defines
-how to interact with that database using the standardized syntax of ODBC and SQL.
+Support for a given DBMS is provided by an \strong{ODBC driver}, which defines
+how to interact with that DBMS using the standardized syntax of ODBC and SQL.
+Drivers can be downloaded from the DBMS vendor or, if you're a Posit
+customer, using the \href{https://docs.posit.co/pro-drivers/}{professional drivers}.
 
-One of the central benefits of ODBC is its interoperability; any database
+One of the central benefits of ODBC is its interoperability; any DBMS
 with drivers available is accessible through ODBC. To manage information
 about these drivers and the data sources they provide access to, our
 computers use a \strong{driver manager}. Windows is bundled with a driver manager,
@@ -42,7 +45,7 @@ front-end while odbc implements a back-end to communicate with the driver
 manager. The odbc package is built on top of the
 \href{https://nanodbc.github.io/nanodbc/}{nanodbc} C++ library.
 
-Interfacing with databases using R and odbc involves three high-level steps:
+Interfacing with DBMSs using R and odbc involves three high-level steps:
 \enumerate{
 \item \strong{Configure drivers and data sources}: the functions \code{\link[=odbcListDrivers]{odbcListDrivers()}}
 and \code{\link[=odbcListDataSources]{odbcListDataSources()}} help to interface with the driver manager.
