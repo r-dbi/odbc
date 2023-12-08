@@ -102,3 +102,4 @@ special values.}
 Implementations of pure virtual functions defined in the \code{DBI} package
 for OdbcConnection objects.
 }
+\keyword{internal}

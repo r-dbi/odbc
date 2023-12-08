@@ -6,6 +6,7 @@ NULL
 #' Implementations of pure virtual functions defined in the `DBI` package
 #' for OdbcDriver objects.
 #' @name OdbcDriver
+#' @keywords internal
 NULL
 
 #' Odbc driver
@@ -79,6 +80,10 @@ setMethod(
 #'   and `drv` are equivalent. Since this is different to R and a possible
 #'   source of confusion, odbc will error if you supply multiple arguments that
 #'   have the same name when case is ignored.
+#'
+#'   Any argument values that contain `[]{}(),;?*=!@` will be "quoted" by
+#'   wrapping in `{}`. You can opt-out of this behaviour by wrapping the
+#'   value with `I()`.
 #' @param .connection_string A complete connection string, useful if you are
 #'   copy pasting it from another source. If this argument is used, any
 #'   additional arguments will be appended to this string.
@@ -229,3 +234,10 @@ setMethod(
   function(dbObj, ...) {
     list(max.connections = NULL, driver.version = NULL, client.version = NULL)
   })
+
+
+#' Unimportant DBI methods
+#'
+#' @name DBI-methods
+#' @keywords internal
+NULL

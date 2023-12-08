@@ -5,4 +5,5 @@
 #' @importFrom bit64 integer64
 #' @importFrom hms hms
 #' @useDynLib odbc, .registration = TRUE
+#' @keywords internal
 "_PACKAGE"
