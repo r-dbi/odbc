@@ -1,8 +1,10 @@
 test_that("MySQL", {
-  skip_unless_has_test_db({
-    DBItest::make_context(odbc(), list(.connection_string = Sys.getenv("ODBC_CS")),
-      tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "MySQL")
-  })
+  DBItest::make_context(
+    odbc(),
+    test_connection_string("MYSQL"),
+    tweaks = DBItest::tweaks(temporary_tables = FALSE),
+    name = "MySQL"
+  )
 
   DBItest::test_getting_started(c(
       "package_name",                    # Not an error
@@ -73,7 +75,7 @@ test_that("MySQL", {
       "reexport",
       NULL))
 
-  test_roundtrip(columns = "logical")
+  test_roundtrip(columns = c("logical", "binary"))
   test_that("odbcPreviewObject", {
     tblName <- "test_preview"
     con <- DBItest:::connect(DBItest:::get_default_context())
