@@ -1,4 +1,5 @@
 test_that("warn about case-insensitve arguments", {
+  expect_no_error(check_args(list()))
   expect_no_error(check_args(list(x = 1, y = 1)))
 
   expect_snapshot(error = TRUE, {

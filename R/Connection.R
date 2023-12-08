@@ -96,6 +96,9 @@ OdbcConnection <- function(
 
 check_args <- function(args) {
   stopifnot(all(has_names(args)))
+  if (length(args) == 0) {
+    return(args)
+  }
 
   name_groups <- split(names(args), tolower(names(args)))
   bad_names <- name_groups[lengths(name_groups) > 1]
