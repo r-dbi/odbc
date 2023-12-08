@@ -2,7 +2,6 @@
 % Please edit documentation in R/Driver.R
 \name{dbConnect,OdbcDriver-method}
 \alias{dbConnect,OdbcDriver-method}
-\alias{dbConnect}
 \title{Connect to a database via an ODBC driver}
 \usage{
 \S4method{dbConnect}{OdbcDriver}(
