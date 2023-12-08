@@ -11,7 +11,7 @@ on:
 name: DBs (Linux)
 
 jobs:
-  testthat:
+  database:
     runs-on: ubuntu-latest
 
     services:
@@ -32,7 +32,7 @@ jobs:
           ACCEPT_EULA: Y
           SA_PASSWORD: Password12
 
-    name: ${{ matrix.database }}
+    # name: ${{ matrix.database }}
 
     strategy:
       fail-fast: false
