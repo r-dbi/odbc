@@ -41,11 +41,22 @@ jobs:
           sa-password: Password12
           show-log: true
 
+      - name: Install SQL Server Driver
+        if: matrix.database == 'SQLServer'
+        run: |
+          echo "ODBC_CS_SQLSERVER=Driver={ODBC Driver 17 for SQL Server};Server=localhost;Uid=sa;Pwd=Password12" >> $env:GITHUB_ENV
+
       - name: Install MySQL
         if: matrix.database == 'MySQL'
         uses: ankane/setup-mysql@v1
         with:
           database: test
+
+      - name: Install MySQL Driver
+        if: matrix.database == 'MySQL'
+        run: |
+          choco install mysql-odbc
+          echo "ODBC_CS_MYSQL=Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=test;User=root;Password=" >> $env:GITHUB_ENV
 
       - name: Install PostgreSQL
         if: matrix.database == 'PostgreSQL'
@@ -53,30 +64,19 @@ jobs:
         with:
           database: test
 
+      - name: Install PostgreSQL Driver
+        if: matrix.database == 'PostgreSQL'
+        run: |
+          choco install psqlodbc
+          echo "ODBC_CS_POSTGRES=Driver={PostgreSQL ANSI(x64)};Server=localhost;Port=5432;BoolsAsChar=0;LFConversion=0;Database=test;UID=postgres;PWD=" >> $env:GITHUB_ENV
+
       - name: Install SQLite
         if: matrix.database == 'SQLite'
         run: |
           (New-Object Net.WebClient).DownloadFile('http://www.ch-werner.de/sqliteodbc/sqliteodbc_w64.exe', 'sqliteodbc_w64.exe')
            ./sqliteodbc_w64.exe /S
 
-      - name: Install Driver Support
-        if: matrix.database == 'SQLServer'
-        run: |
-          echo "ODBC_CS_SQLSERVER=Driver={ODBC Driver 17 for SQL Server};Server=localhost;Uid=sa;Pwd=Password12" >> $env:GITHUB_ENV
-
-      - name: Install Driver Support
-        if: matrix.database == 'MySQL'
-        run: |
-          choco install mysql-odbc
-          echo "ODBC_CS_MYSQL=Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=test;User=root;Password=" >> $env:GITHUB_ENV
-
-      - name: Install Driver Support
-        if: matrix.database == 'PostgreSQL'
-        run: |
-          choco install psqlodbc
-          echo "ODBC_CS_POSTGRES=Driver={PostgreSQL ANSI(x64)};Server=localhost;Port=5432;BoolsAsChar=0;LFConversion=0;Database=test;UID=postgres;PWD=" >> $env:GITHUB_ENV
-
-      - name: Install Driver Support
+      - name: Install SQLite Driver
         if: matrix.database == 'SQLite'
         run: |
           echo "ODBC_CS_SQLITE=Driver={SQLite3 ODBC Driver};Database=${{ runner.temp }}\test;Timeout=2000" >> $env:GITHUB_ENV
