@@ -51,12 +51,21 @@ OdbcConnection <- function(
   attributes = NULL,
   .connection_string = NULL) {
 
-  args <- c(dsn = dsn, driver = driver, server = server, database = database, uid = uid, pwd = pwd, list(...))
-  stopifnot(all(has_names(args)))
+  args <- c(
+    dsn = dsn,
+    driver = driver,
+    server = server,
+    database = database,
+    uid = uid,
+    pwd = pwd,
+    list(...)
+  )
+  check_args(args)
+
   stopifnot(all(has_names(attributes)))
   stopifnot(all(names(attributes) %in% SUPPORTED_CONNECTION_ATTRIBUTES))
 
-  connection_string <- paste0(.connection_string, paste(collapse = ";", sep = "=", names(args), args))
+  connection_string <- paste0(.connection_string, build_connection_string(args))
 
   bigint <- bigint_mappings()[match.arg(bigint, names(bigint_mappings()))]
 
@@ -83,6 +92,36 @@ OdbcConnection <- function(
       contains = "OdbcConnection", where = class_cache)
   }
   res <- new(info$dbms.name, ptr = ptr, quote = quote, info = info, encoding = encoding)
+}
+
+check_args <- function(args) {
+  stopifnot(all(has_names(args)))
+  if (length(args) == 0) {
+    return(args)
+  }
+
+  name_groups <- split(names(args), tolower(names(args)))
+  bad_names <- name_groups[lengths(name_groups) > 1]
+  if (length(bad_names) > 0) {
+    bullets <- vapply(bad_names, paste0, collapse = ", ", FUN.VALUE = character(1))
+
+    abort(
+      c(
+        "After ignoring case, some arguments have the same name:",
+        set_names(bullets, "*")
+      ),
+      call = quote(DBI::dbConnect())
+    )
+  }
+}
+
+build_connection_string <- function(args) {
+  needs_escape <- grepl("[{}(),;?*=!@]", args) &
+    !grepl("^\\{.*\\}$", args) &
+    !vapply(args, inherits, "AsIs", FUN.VALUE = logical(1))
+
+  args[needs_escape] <- paste0("{", args[needs_escape], "}")
+  paste(names(args), args, sep = "=", collapse = ";")
 }
 
 #' @rdname OdbcConnection
@@ -497,45 +536,57 @@ setMethod(
   "dbQuoteIdentifier", c("OdbcConnection", "SQL"),
   getMethod("dbQuoteIdentifier", c("DBIConnection", "SQL"), asNamespace("DBI")))
 
-#' @inherit DBI::dbListTables
-#' @param catalog_name The name of the catalog to return, the default returns all catalogs.
-#' @param schema_name The name of the schema to return, the default returns all schemas.
-#' @param table_name The name of the table to return, the default returns all tables.
+#' List remote tables and fields for an ODBC connection
+#'
+#' `dbListTables()` provides names of remote tables accessible through this
+#' connection; `dbListFields()` provides names of columns within a table.
+#'
+#' @inheritParams DBI::dbListTables
+#' @param catalog_name,schema_name,table_name Catalog, schema, and table names.
+#'
+#'   Use `%` as a wildcard to match any name; use `_` to any any character.
 #' @param table_type The type of the table to return, the default returns all table types.
-#' @aliases dbListTables
-#' @details
-#' \code{\%} can be used as a wildcard in any of the search parameters to
-#'   match 0 or more characters. `_` can be used to match any single character.
-#' @seealso The ODBC documentation on [Pattern Value Arguments](https://docs.microsoft.com/en-us/sql/odbc/reference/develop-app/pattern-value-arguments)
-#'   for further details on the supported syntax.
+#' @returns A character vector of table or field names respectively.
 #' @export
 setMethod(
   "dbListTables", "OdbcConnection",
-  function(conn, catalog_name = NULL, schema_name = NULL, table_name = NULL,
-    table_type = NULL, ...) {
+  function(conn,
+           catalog_name = NULL,
+           schema_name = NULL,
+           table_name = NULL,
+           table_type = NULL,
+           ...) {
 
-    odbcConnectionTables(conn,
+    odbcConnectionTables(
+      conn,
       name = table_name,
       catalog_name = catalog_name,
       schema_name = schema_name,
-      table_type = table_type)$table_name
+      table_type = table_type
+    )$table_name
   })
 
-#' @inherit DBI::dbListFields
+#' @rdname dbListTables-OdbcConnection-method
 #' @inheritParams DBI::dbListFields
-#' @aliases dbListFields
-#' @inheritParams dbListTables,OdbcConnection-method
 #' @param column_name The name of the column to return, the default returns all columns.
-#' @inherit dbListTables,OdbcConnection-method details
 #' @export
 setMethod(
   "dbListFields", c("OdbcConnection", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL, ...) {
-    odbcConnectionColumns(conn,
+  function(
+      conn,
+      name,
+      catalog_name = NULL,
+      schema_name = NULL,
+      column_name = NULL,
+      ...
+  ) {
+    odbcConnectionColumns(
+      conn,
       name = name,
       catalog_name = catalog_name,
       schema_name = schema_name,
-      column_name = column_name)[["name"]]
+      column_name = column_name
+    )[["name"]]
   })
 
 #' @rdname OdbcConnection

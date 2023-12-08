@@ -14,7 +14,6 @@ reference:
 - title: DBI methods
   contents:
   - 'dbConnect,OdbcDriver-method'
-  - 'dbListFields,OdbcConnection,character-method'
   - 'dbListTables,OdbcConnection-method'
   - 'DBI-tables'
 

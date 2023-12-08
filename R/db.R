@@ -348,7 +348,6 @@ setMethod("isTempTable", c("Microsoft SQL Server", "character"),
 #' Therefore, in all cases query for \code{name___%}.
 #' @rdname SQLServer
 #' @docType methods
-#' @aliases dbExistsTable
 #' @inherit DBI::dbExistsTable
 #' @usage NULL
 setMethod(

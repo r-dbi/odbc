@@ -1,8 +1,10 @@
 test_that("PostgreSQL", {
-  skip_unless_has_test_db({
-    DBItest::make_context(odbc(), list(.connection_string = Sys.getenv("ODBC_CS")),
-      tweaks = DBItest::tweaks(temporary_tables = FALSE, placeholder_pattern = "?"), name = "PostgreSQL")
-  })
+  DBItest::make_context(
+    odbc(),
+    test_connection_string("POSTGRES"),
+    tweaks = DBItest::tweaks(temporary_tables = FALSE, placeholder_pattern = "?"),
+    name = "PostgreSQL"
+  )
 
   test_that("show method works as expected with real connection", {
     skip_on_os("windows")

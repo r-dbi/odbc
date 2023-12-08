@@ -76,10 +76,14 @@ setMethod(
 #' @param ... Additional ODBC keywords. These will be joined with the other
 #'   arguments to form the final connection string.
 #'
-#'   Note that all generic ODBC parameter names, and the values of `drv` and
-#'   `dsn`, are case-insensitive. The case-sensitivity of the values of generic
-#'   arguments, as well as the names and values of driver-specific arguments,
-#'   are determined by the driver `drv`.
+#'   Note that ODBC parameter names are case-insensitive so that (e.g.) `DRV`
+#'   and `drv` are equivalent. Since this is different to R and a possible
+#'   source of confusion, odbc will error if you supply multiple arguments that
+#'   have the same name when case is ignored.
+#'
+#'   Any argument values that contain `[]{}(),;?*=!@` will be "quoted" by
+#'   wrapping in `{}`. You can opt-out of this behaviour by wrapping the
+#'   value with `I()`.
 #' @param .connection_string A complete connection string, useful if you are
 #'   copy pasting it from another source. If this argument is used, any
 #'   additional arguments will be appended to this string.
@@ -106,7 +110,6 @@ setMethod(
 #' * [Microsoft's "Introduction to ODBC"](https://learn.microsoft.com/en-us/sql/odbc/reference)
 #'   is a thorough resource on the ODBC interface.
 #'
-#' @aliases dbConnect
 #' @import rlang
 #' @export
 setMethod(

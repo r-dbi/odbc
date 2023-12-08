@@ -4,6 +4,12 @@
   not using a parameterised query. That should yield a small speed boost in 
   many cases (#633).
 
+* `DBI::dbConnect(odbc::odbc())` now gives a clear error if you supply multiple
+  arguments with the same name when case is ignored (#641).
+
+* `dbConnect(odbc::odbc())` now automatically quotes argument values that need 
+  it (#616).
+
 * Spark SQL: Correctly enumerate schemas away from the current catalog (@detule, #614)
 * Modify `odbcDataType.Snowflake` to better reflect Snowflake Data Types documentation (@meztez, #599).
 * SQL Server: Specialize syntax in sqlCreateTable to avoid failures when
