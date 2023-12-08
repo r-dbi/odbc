@@ -10,6 +10,7 @@ NULL
 #'   Directory authentication token.  Only for use with Microsoft SQL Server and
 #'   with limited support away from the OEM Microsoft driver.
 #' @rdname ConnectionAttributes
+#' @keywords internal
 #' @aliases ConnectionAttributes
 #' @usage NULL
 #' @format NULL
@@ -55,7 +56,7 @@ OdbcConnection <- function(
   stopifnot(all(has_names(attributes)))
   stopifnot(all(names(attributes) %in% SUPPORTED_CONNECTION_ATTRIBUTES))
 
-  connection_string <- paste0(.connection_string, paste(collapse = ";", sep = "=", names(args), args))
+  connection_string <- paste0(.connection_string, build_connection_string(args))
 
   bigint <- bigint_mappings()[match.arg(bigint, names(bigint_mappings()))]
 
@@ -84,7 +85,17 @@ OdbcConnection <- function(
   res <- new(info$dbms.name, ptr = ptr, quote = quote, info = info, encoding = encoding)
 }
 
+build_connection_string <- function(args) {
+  needs_escape <- grepl("[{}(),;?*=!@]", args) &
+    !grepl("^\\{.*\\}$", args) &
+    !vapply(args, inherits, "AsIs", FUN.VALUE = logical(1))
+
+  args[needs_escape] <- paste0("{", args[needs_escape], "}")
+  paste(names(args), args, sep = "=", collapse = ";")
+}
+
 #' @rdname OdbcConnection
+#' @keywords internal
 #' @export
 setClass(
   "OdbcConnection",
@@ -322,6 +333,7 @@ setMethod(
 #' @param conn OdbcConnection
 #' @param catalog_name Catalog where
 #' we are looking to list schemas.
+#' @keywords internal
 #' @rdname odbcConnectionSchemas
 setGeneric(
   "odbcConnectionSchemas",

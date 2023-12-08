@@ -25,6 +25,7 @@ OdbcResult <- function(connection, statement, params = NULL, immediate = FALSE) 
 }
 
 #' @rdname OdbcResult
+#' @keywords internal
 #' @export
 setClass(
   "OdbcResult",
@@ -118,7 +119,7 @@ setMethod(
 
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbBind
-#' @inheritParams odbc-tables
+#' @inheritParams DBI-tables
 #' @export
 setMethod(
   "dbBind", "OdbcResult",

@@ -27,3 +27,4 @@ Optimize against the rowLimit argument.  S3 since some
 back-ends do not parse the LIMIT syntax.  Internal, not expected that
 users would interact with this method.
 }
+\keyword{internal}
