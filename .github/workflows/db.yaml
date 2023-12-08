@@ -36,12 +36,12 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix:
-        database:
-          - SQLServer
-          - MySQL
-          - PostgreSQL
-          - SQLite
+      # matrix:
+      #   database:
+      #     - SQLServer
+      #     - MySQL
+      #     - PostgreSQL
+      #     - SQLite
 
     env:
       CRAN: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest"
@@ -54,7 +54,7 @@ jobs:
       - uses: r-lib/actions/setup-r@v2
 
       - name: Install MySQL Driver
-        if: matrix.database == 'MySQL'
+        # if: matrix.database == 'MySQL'
         run: |
           sudo systemctl start mysql.service
           mysql -uroot -h127.0.0.1 -proot -e 'CREATE DATABASE `test`;'
@@ -62,19 +62,19 @@ jobs:
           echo "ODBC_CS_MYSQL=dsn=MySQL" >> $GITHUB_ENV
 
       - name: Install SQLite Driver
-        if: matrix.database == 'SQLite'
+        # if: matrix.database == 'SQLite'
         run: |
           sudo apt-get install -y libsqliteodbc
           echo "ODBC_CS_SQLITE=dsn=SQLite" >> $GITHUB_ENV
 
       - name: Install PostgreSQL Driver
-        if: matrix.database == 'PostgreSQL'
+        # if: matrix.database == 'PostgreSQL'
         run: |
           sudo apt-get install -y unixodbc-dev odbc-postgresql devscripts
           echo "ODBC_CS_POSTGRES=dsn=PostgreSQL" >> $GITHUB_ENV
 
       - name: Install SQL Server Driver
-        if: matrix.database == 'SQLServer'
+        # if: matrix.database == 'SQLServer'
         run: |
           echo "ODBC_CS_SQLSERVER=dsn=MicrosoftSQLServer;UID=SA;PWD=Password12" >> $GITHUB_ENV
           sudo bash -c "
