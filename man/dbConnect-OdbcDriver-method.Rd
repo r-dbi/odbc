@@ -36,7 +36,11 @@ arguments to form the final connection string.
 Note that all generic ODBC parameter names, and the values of \code{drv} and
 \code{dsn}, are case-insensitive. The case-sensitivity of the values of generic
 arguments, as well as the names and values of driver-specific arguments,
-are determined by the driver \code{drv}.}
+are determined by the driver \code{drv}.
+
+Any argument values that contain \verb{[]\{\}(),;?*=!@} will be "quoted" by
+wrapping in \code{{}}. You can opt-out of this behaviour by wrapping the
+value with \code{I()}.}
 
 \item{timezone}{The server time zone. Useful if the database has an internal
 timezone that is \emph{not} 'UTC'. If the database is in your local timezone,

@@ -56,7 +56,7 @@ OdbcConnection <- function(
   stopifnot(all(has_names(attributes)))
   stopifnot(all(names(attributes) %in% SUPPORTED_CONNECTION_ATTRIBUTES))
 
-  connection_string <- paste0(.connection_string, paste(collapse = ";", sep = "=", names(args), args))
+  connection_string <- paste0(.connection_string, build_connection_string(args))
 
   bigint <- bigint_mappings()[match.arg(bigint, names(bigint_mappings()))]
 
@@ -83,6 +83,15 @@ OdbcConnection <- function(
       contains = "OdbcConnection", where = class_cache)
   }
   res <- new(info$dbms.name, ptr = ptr, quote = quote, info = info, encoding = encoding)
+}
+
+build_connection_string <- function(args) {
+  needs_escape <- grepl("[{}(),;?*=!@]", args) &
+    !grepl("^\\{.*\\}$", args) &
+    !vapply(args, inherits, "AsIs", FUN.VALUE = logical(1))
+
+  args[needs_escape] <- paste0("{", args[needs_escape], "}")
+  paste(names(args), args, sep = "=", collapse = ";")
 }
 
 #' @rdname OdbcConnection
