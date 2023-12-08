@@ -75,7 +75,7 @@ test_that("MySQL", {
       "reexport",
       NULL))
 
-  test_roundtrip(columns = "logical")
+  test_roundtrip(columns = c("logical", "binary"))
   test_that("odbcPreviewObject", {
     tblName <- "test_preview"
     con <- DBItest:::connect(DBItest:::get_default_context())
