@@ -55,7 +55,7 @@ jobs:
       - name: Install MySQL Driver
         if: matrix.database == 'MySQL'
         run: |
-          choco install mysql-odbc
+          choco install mysql.odbc
           echo "ODBC_CS_MYSQL=Driver={MySQL ODBC 5.3 ANSI Driver};Server=127.0.0.1;Database=test;User=root;Password=" >> $env:GITHUB_ENV
 
       - name: Install PostgreSQL
@@ -93,5 +93,5 @@ jobs:
 
       - name: Test
         run: |
-          testthat::test_local(filter = "${{ matrix.database }}", reporter = testthat::ProgressReporter$new(max_failures = Inf, update_interval = Inf))
+          testthat::test_local(reporter = testthat::ProgressReporter$new(max_failures = Inf, update_interval = Inf))
         shell: Rscript {0}
