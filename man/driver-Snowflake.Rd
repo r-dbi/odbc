@@ -5,7 +5,7 @@
 \alias{dbExistsTableForWrite,Snowflake,character-method}
 \title{Connecting to Snowflake via ODBC}
 \usage{
-\S4method{dbExistsTableForWrite}{Snowflake,character}(conn, name, ...)
+\S4method{dbExistsTableForWrite}{Snowflake,character}(conn, name, ..., catalog_name = NULL, schema_name = NULL)
 }
 \arguments{
 \item{conn}{A \linkS4class{DBIConnection} object, as returned by

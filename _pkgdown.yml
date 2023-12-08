@@ -23,6 +23,7 @@ reference:
   - databricks
   - 'Microsoft SQL Server-class'
   - 'Oracle-class'
+  - snowflake
 
 - title: ODBC configuration
   contents:
