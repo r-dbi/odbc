@@ -6,7 +6,6 @@
 \alias{dbUnquoteIdentifier,Microsoft SQL Server,SQL-method}
 \alias{isTempTable,Microsoft SQL Server,character-method}
 \alias{dbExistsTable,Microsoft SQL Server,character-method}
-\alias{dbExistsTable}
 \alias{sqlCreateTable,Microsoft SQL Server-method}
 \title{Simple class prototype to avoid messages about unknown classes from setMethod}
 \arguments{

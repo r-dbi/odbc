@@ -105,7 +105,6 @@ setMethod(
 #' * [Microsoft's "Introduction to ODBC"](https://learn.microsoft.com/en-us/sql/odbc/reference)
 #'   is a thorough resource on the ODBC interface.
 #'
-#' @aliases dbConnect
 #' @import rlang
 #' @export
 setMethod(
