@@ -61,10 +61,10 @@ used in dbConnect() by providing a path to a driver directly."><meta name="robot
     <p>Collect information about the configured driver names. A driver must be both
 installed and configured with the driver manager to be included in this list.
 Configuring a driver name just sets up a lookup table (e.g. in
-<code>odbcinst.ini</code>) to allow users to pass only the driver name to <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code>.</p>
+<code>odbcinst.ini</code>) to allow users to pass only the driver name to <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect()</a></code>.</p>
 <p>Driver names that are not configured with the driver manager (and thus
 do not appear in this function's output) can still be
-used in <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code> by providing a path to a driver directly.</p>
+used in <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect()</a></code> by providing a path to a driver directly.</p>
     </div>
 
     <div class="section level2">
@@ -95,7 +95,7 @@ driver name is in both <code>keep</code> and <code>filter</code>, it won't appea
 
 <dl><dt>name</dt>
 <dd><p>Name of the driver. The entries in this column can be
-passed to the <code>driver</code> argument of <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code> (as long as the
+passed to the <code>driver</code> argument of <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect()</a></code> (as long as the
 driver accepts the argument).</p></dd>
 
 <dt>attribute</dt>
@@ -126,7 +126,7 @@ file(s) with <code>odbcinst -j</code>.</p>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>Driver<span class="ot">=</span><span class="er">/</span>opt<span class="sc">/</span>homebrew<span class="sc">/</span>Cellar<span class="sc">/</span>mysql<span class="sc">/</span><span class="dv">8</span>.<span class="fl">2.0</span>_1<span class="sc">/</span>lib<span class="sc">/</span>libmysqlclient.dylib</span></code></pre><p></p></div>
 <p>Then the driver name is <code>MySQL Driver</code>, which will appear in the <code>name</code>
 column of this function's output. To pass the driver name as the <code>driver</code>
-argument to <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code>, pass it as a string, like <code>"MySQL Driver"</code>.</p>
+argument to <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect()</a></code>, pass it as a string, like <code>"MySQL Driver"</code>.</p>
 <p><strong>Windows</strong> is <a href="https://learn.microsoft.com/en-us/sql/odbc/admin/odbc-data-source-administrator" class="external-link">bundled</a>
 with an ODBC driver manager.</p>
 <p>In this example, function output would include 1 row: the <code>name</code> column
@@ -134,10 +134,10 @@ would read <code>"MySQL Driver"</code>, <code>attribute</code> would be <code>"D
 would give the file path to the driver. Additional key-value pairs
 under the driver name would add additional rows with the same <code>name</code> entry.</p>
 <p>When a driver is configured with a driver manager, information on the driver
-will be automatically passed on to <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code> when its <code>driver</code> argument
+will be automatically passed on to <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect()</a></code> when its <code>driver</code> argument
 is set. For an example, see the same section in the <code><a href="odbcListDataSources.html">odbcListDataSources()</a></code>
 help-file. Instead of configuring driver information with a driver manager,
-it is also possible to provide a path to a driver directly to <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code>.</p>
+it is also possible to provide a path to a driver directly to <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect()</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

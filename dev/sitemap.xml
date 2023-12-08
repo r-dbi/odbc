@@ -52,9 +52,6 @@
     <loc>https://r-dbi.github.io/odbc/dev/reference/dbConnect-OdbcDriver-method.html</loc>
   </url>
   <url>
-    <loc>https://r-dbi.github.io/odbc/dev/reference/dbListFields-OdbcConnection-character-method.html</loc>
-  </url>
-  <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/dbListTables-OdbcConnection-method.html</loc>
   </url>
   <url>
