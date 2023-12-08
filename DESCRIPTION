@@ -55,5 +55,6 @@ Collate:
     'Viewer.R'
     'databricks.R'
     'db.R'
+    'snowflake.R'
     'utils.R'
     'zzz.R'
