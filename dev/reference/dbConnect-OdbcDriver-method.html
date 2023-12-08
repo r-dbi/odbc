@@ -89,10 +89,10 @@ odbc()."><meta name="robots" content="noindex"><!-- mathjax --><script src="http
 <dt>...</dt>
 <dd><p>Additional ODBC keywords. These will be joined with the other
 arguments to form the final connection string.</p>
-<p>Note that all generic ODBC parameter names, and the values of <code>drv</code> and
-<code>dsn</code>, are case-insensitive. The case-sensitivity of the values of generic
-arguments, as well as the names and values of driver-specific arguments,
-are determined by the driver <code>drv</code>.</p>
+<p>Note that ODBC parameter names are case-insensitive so that (e.g.) <code>DRV</code>
+and <code>drv</code> are equivalent. Since this is different to R and a possible
+source of confusion, odbc will error if you supply multiple arguments that
+have the same name when case is ignored.</p>
 <p>Any argument values that contain <code>[]{}(),;?*=!@</code> will be "quoted" by
 wrapping in <code><a href="https://rdrr.io/r/base/Paren.html" class="external-link">{}</a></code>. You can opt-out of this behaviour by wrapping the
 value with <code><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I()</a></code>.</p></dd>
