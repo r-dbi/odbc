@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* `DBI::dbConnect(odbc::odbc())` now gives a clear error if you supply multiple
+  arguments with the same name when case is ignored (#641).
+
 * `dbConnect(odbc::odbc())` now automatically quotes argument values that need 
   it (#616).
 

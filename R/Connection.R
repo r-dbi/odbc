@@ -51,8 +51,17 @@ OdbcConnection <- function(
   attributes = NULL,
   .connection_string = NULL) {
 
-  args <- c(dsn = dsn, driver = driver, server = server, database = database, uid = uid, pwd = pwd, list(...))
-  stopifnot(all(has_names(args)))
+  args <- c(
+    dsn = dsn,
+    driver = driver,
+    server = server,
+    database = database,
+    uid = uid,
+    pwd = pwd,
+    list(...)
+  )
+  check_args(args)
+
   stopifnot(all(has_names(attributes)))
   stopifnot(all(names(attributes) %in% SUPPORTED_CONNECTION_ATTRIBUTES))
 
@@ -83,6 +92,27 @@ OdbcConnection <- function(
       contains = "OdbcConnection", where = class_cache)
   }
   res <- new(info$dbms.name, ptr = ptr, quote = quote, info = info, encoding = encoding)
+}
+
+check_args <- function(args) {
+  stopifnot(all(has_names(args)))
+  if (length(args) == 0) {
+    return(args)
+  }
+
+  name_groups <- split(names(args), tolower(names(args)))
+  bad_names <- name_groups[lengths(name_groups) > 1]
+  if (length(bad_names) > 0) {
+    bullets <- vapply(bad_names, paste0, collapse = ", ", FUN.VALUE = character(1))
+
+    abort(
+      c(
+        "After ignoring case, some arguments have the same name:",
+        set_names(bullets, "*")
+      ),
+      call = quote(DBI::dbConnect())
+    )
+  }
 }
 
 build_connection_string <- function(args) {
