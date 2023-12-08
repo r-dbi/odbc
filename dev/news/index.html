@@ -46,7 +46,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="odbc-development-version">odbc (development version)<a class="anchor" aria-label="anchor" href="#odbc-development-version"></a></h2>
-<ul><li><p>Spark SQL: Correctly enumerate schemas away from the current catalog (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/614" class="external-link">#614</a>)</p></li>
+<ul><li><p><code>dbConnect(odbc::odbc())</code> now automatically quotes argument values that need it (<a href="https://github.com/r-dbi/odbc/issues/616" class="external-link">#616</a>).</p></li>
+<li><p>Spark SQL: Correctly enumerate schemas away from the current catalog (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/614" class="external-link">#614</a>)</p></li>
 <li><p>Modify <code>odbcDataType.Snowflake</code> to better reflect Snowflake Data Types documentation (<a href="https://github.com/meztez" class="external-link">@meztez</a>, <a href="https://github.com/r-dbi/odbc/issues/599" class="external-link">#599</a>).</p></li>
 <li><p>SQL Server: Specialize syntax in sqlCreateTable to avoid failures when writing to (new) local temp tables. (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/601" class="external-link">#601</a>)</p></li>
 <li><p>SQL Server: Improved handling for local temp tables in dbWrite, dbAppendTable, dbExistTable (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/600" class="external-link">#600</a>)</p></li>
