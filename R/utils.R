@@ -81,12 +81,29 @@ convertWildCards <- function(val) {
   gsub("_", "(.)", val)
 }
 
-getSelector <- function(key, value) {
+getSelector <- function(key, value, exact) {
+  if ( is.null(value ) ) {
+    return("")
+  }
   comp <- " = "
-  if (isPatternValue(value)) {
+  if (( value == "%" || !exact ) &&
+      isPatternValue(value)) {
     comp <- " LIKE "
   }
+  if (exact && (value != "%"))
+    value <- escapePattern(value)
   value <- paste0("'", value, "'")
 
   paste0(" AND ", key, comp, value)
+}
+
+# Will iterate over charsToEsc argument and for each:
+# will escape any un-escaped occurance in `x`.
+escapePattern <- function(x, charsToEsc = c("_"), escChar ="\\\\") {
+  if(is.null(x) || inherits(x, "AsIs")) return(x)
+  matchGroup <- paste( charsToEsc, collapse = "|" )
+  pattern <- paste0("([^", escChar, "])(", matchGroup, ")")
+  replace <- paste0("\\1", escChar, "\\2")
+  x <- gsub(pattern, replace, x)
+  I(x)
 }

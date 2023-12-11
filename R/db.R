@@ -66,9 +66,9 @@ setMethod("sqlCreateTable", "Oracle",
 setMethod(
   "odbcConnectionTables",
   c("Oracle", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL) {
+  function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL, exact = FALSE) {
 
-    qTable <- getSelector("object_name", name)
+    qTable <- getSelector("object_name", name, exact)
     if (is.null(schema_name)) {
       query <- paste0(
         " SELECT null AS \"table_catalog\", '", conn@info$username ,"' AS \"table_schema\", object_name AS \"table_name\", object_type AS \"table_type\", null AS \"table_remarks\"",
@@ -76,7 +76,7 @@ setMethod(
         " WHERE 1 = 1 ", qTable,
         " AND ( object_type = 'TABLE' OR object_type = 'VIEW' ) ")
     } else {
-      qSchema <- getSelector("owner", schema_name)
+      qSchema <- getSelector("owner", schema_name, exact)
       query <- paste0(
         " SELECT null AS \"table_catalog\", owner AS \"table_schema\", object_name AS \"table_name\", object_type AS \"table_type\", null AS \"table_remarks\"",
         " FROM all_objects ",
@@ -93,7 +93,7 @@ setMethod(
 setMethod(
   "odbcConnectionColumns",
   c("Oracle", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL) {
+  function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL, exact = FALSE) {
 
     query <- ""
     baseSelect <- paste0(
@@ -115,7 +115,7 @@ setMethod(
       decode(data_type,'CHAR',data_length,'VARCHAR2',data_length,'NVARCHAR2',data_length,'NCHAR',data_length, 0) AS \"char_octet_length\",
       column_id AS \"ordinal_position\",
       decode(nullable, 'Y', 1, 'N', 0) AS \"nullable\"")
-    qTable <- getSelector("table_name", name)
+    qTable <- getSelector("table_name", name, exact)
     if (is.null(schema_name)) {
       baseSelect <- gsub("owner AS \"schema_name\"", paste0("'", conn@info$username, "' AS \"schema_name\""), baseSelect);
       query <- paste0(
@@ -123,7 +123,7 @@ setMethod(
          " FROM user_tab_columns ",
          " WHERE 1 = 1 ", qTable );
     } else {
-      qSchema <- getSelector("owner", schema_name)
+      qSchema <- getSelector("owner", schema_name, exact)
       query <- paste0(
         baseSelect,
         " FROM all_tab_columns ",
