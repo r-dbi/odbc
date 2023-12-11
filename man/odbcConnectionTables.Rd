@@ -45,9 +45,9 @@ odbcConnectionTables(conn, name, ...)
 \arguments{
 \item{conn}{OdbcConnection}
 
-\item{name}{Identifier for table we wish to search for.  Interpreted
-as a SQL search pattern: underscores and percent signs are interpreted as
-wild cards.  Related to \code{exact} parameter.}
+\item{name}{Table identifier. By default, is interpreted as a ODBC search
+pattern: where \verb{_} and \verb{\%} are wild cards. Set \code{exact = TRUE} to match
+\verb{_} exactly.}
 
 \item{...}{additional parameters to methods}
 
@@ -55,9 +55,10 @@ wild cards.  Related to \code{exact} parameter.}
 See odbcConnectionTableTypes for a listing of available table
 types for your connection.}
 
-\item{exact}{Set to TRUE if any non-null identifier arguments are to be interpreted
-exactly.  When TRUE underscores in catalog, schema, and table name arguments
-are escaped.  Otherwise, they are interepted as wild cards.}
+\item{exact}{Set to \code{TRUE} to escape \verb{_} in identifier names so that it
+matches exactly, rather than matching any single character. \verb{\%} always
+matches any number of characters as this is unlikely to appear in a
+table name.}
 
 \item{catalog_name}{character catalog where we wish to query for
 available tables}

@@ -35,15 +35,16 @@ odbcConnectionColumns(conn, name, ..., exact = FALSE)
 \arguments{
 \item{conn}{OdbcConnection}
 
-\item{name}{Identifier for table we wish to get information on.  Interpreted
-as a SQL search pattern: underscores and percent signs are interpreted as
-wild cards.  Related to \code{exact} parameter.}
+\item{name}{Table identifier. By default, is interpreted as a ODBC search
+pattern: where \verb{_} and \verb{\%} are wild cards. Set \code{exact = TRUE} to match
+\verb{_} exactly.}
 
 \item{...}{additional parameters to methods}
 
-\item{exact}{Set to TRUE if any non-null identifier arguments are to be interpreted
-exactly.  When TRUE underscores in schema, table, and column name arguments
-are escaped.  Otherwise, they are interepted as wild cards.}
+\item{exact}{Set to \code{TRUE} to escape \verb{_} in identifier names so that it
+matches exactly, rather than matching any single character. \verb{\%} always
+matches any number of characters as this is unlikely to appear in a
+table name.}
 
 \item{column_name}{The name of the column to return, the default returns all columns.}
 

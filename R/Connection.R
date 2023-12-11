@@ -149,14 +149,7 @@ setClass(
 #' to get details on the fields of the table we are writing to.  In particular
 #' the columns `data_type`, `column_size`, and `decimal_digits` are used.  An
 #' implementation is not necessary for [dbWriteTable()] to work.
-#' @param conn OdbcConnection
-#' @param name Identifier for table we wish to get information on.  Interpreted
-#' as a SQL search pattern: underscores and percent signs are interpreted as
-#' wild cards.  Related to `exact` parameter.
-#' @param ... additional parameters to methods
-#' @param exact Set to TRUE if any non-null identifier arguments are to be interpreted
-#' exactly.  When TRUE underscores in schema, table, and column name arguments
-#' are escaped.  Otherwise, they are interepted as wild cards.
+#' @inheritParams odbcConnectionTables
 #'
 #' @seealso The ODBC documentation on [SQLColumns](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
 #' for further details.
@@ -197,7 +190,6 @@ setMethod(
   "odbcConnectionColumns",
   c("OdbcConnection", "Id"),
   function(conn, name, column_name = NULL, exact = FALSE) {
-
     odbcConnectionColumns(conn,
       name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
@@ -215,19 +207,25 @@ setMethod(
 setMethod(
   "odbcConnectionColumns",
   c("OdbcConnection", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL, exact = FALSE) {
+  function(conn,
+           name,
+           catalog_name = NULL,
+           schema_name = NULL,
+           column_name = NULL,
+           exact = FALSE) {
 
     if (exact) {
       schema_name <- escapePattern(schema_name)
       name <- escapePattern(name)
       column_name <- escapePattern(column_name)
     }
-    connection_sql_columns(conn@ptr,
+    connection_sql_columns(
+      conn@ptr,
       table_name = name,
       catalog_name = catalog_name,
       schema_name = schema_name,
-      column_name = column_name)
-
+      column_name = column_name
+    )
   }
 )
 
@@ -264,13 +262,14 @@ setMethod(
 #' ( The former also advertises pattern value arguments )
 #'
 #' @param conn OdbcConnection
-#' @param name Identifier for table we wish to search for.  Interpreted
-#' as a SQL search pattern: underscores and percent signs are interpreted as
-#' wild cards.  Related to `exact` parameter.
+#' @param name Table identifier. By default, is interpreted as a ODBC search
+#'   pattern: where `_` and `%` are wild cards. Set `exact = TRUE` to match
+#'   `_` exactly.
 #' @param ... additional parameters to methods
-#' @param exact Set to TRUE if any non-null identifier arguments are to be interpreted
-#' exactly.  When TRUE underscores in catalog, schema, and table name arguments
-#' are escaped.  Otherwise, they are interepted as wild cards.
+#' @param exact Set to `TRUE` to escape `_` in identifier names so that it
+#'   matches exactly, rather than matching any single character. `%` always
+#'   matches any number of characters as this is unlikely to appear in a
+#'   table name.
 #'
 #' @seealso The ODBC documentation on [SQLTables](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
 #' for further details.
@@ -298,12 +297,14 @@ setMethod(
   c("OdbcConnection", "Id"),
   function(conn, name, table_type = NULL, exact = FALSE) {
 
-    odbcConnectionTables(conn,
+    odbcConnectionTables(
+      conn,
       name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
       schema_name = id_field(name, "schema"),
       table_type = table_type,
-      exact = exact)
+      exact = exact
+    )
   }
 )
 
@@ -315,19 +316,24 @@ setMethod(
 setMethod(
   "odbcConnectionTables",
   c("OdbcConnection", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL, exact = FALSE) {
-
+  function(conn,
+           name,
+           catalog_name = NULL,
+           schema_name = NULL,
+           table_type = NULL,
+           exact = FALSE) {
     if (exact) {
       catalog_name <- escapePattern(catalog_name)
       schema_name <- escapePattern(schema_name)
       name <- escapePattern(name)
     }
-    connection_sql_tables(conn@ptr,
+    connection_sql_tables(
+      conn@ptr,
       catalog_name = catalog_name,
       schema_name = schema_name,
       table_name = name,
-      table_type = table_type)
-
+      table_type = table_type
+    )
   }
 )
 
@@ -335,15 +341,21 @@ setMethod(
 setMethod(
   "odbcConnectionTables",
   c("OdbcConnection"),
-  function(conn, name = NULL, catalog_name = NULL, schema_name = NULL, table_type = NULL, exact = FALSE) {
+  function(conn,
+           name = NULL,
+           catalog_name = NULL,
+           schema_name = NULL,
+           table_type = NULL,
+           exact = FALSE) {
 
-    odbcConnectionTables(conn,
+    odbcConnectionTables(
+      conn,
       name = "%",
       catalog_name = catalog_name,
       schema_name = schema_name,
       table_type = table_type,
-      exact = exact)
-
+      exact = exact
+    )
   }
 )
 
@@ -351,7 +363,12 @@ setMethod(
 setMethod(
   "odbcConnectionTables", c("OdbcConnection", "SQL"),
   function(conn, name, table_type = NULL, exact = FALSE) {
-    odbcConnectionTables(conn, dbUnquoteIdentifier(conn, name)[[1]], table_type = table_type, exact = exact)
+    odbcConnectionTables(
+      conn,
+      dbUnquoteIdentifier(conn, name)[[1]],
+      table_type = table_type,
+      exact = exact
+    )
   })
 
 #' odbcConnectionCatalogs
