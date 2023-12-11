@@ -1,5 +1,10 @@
 # odbc (development version)
 
+* `dbListTables()`, `dbListFields()` and `dbExistsTable()` automatically
+  escape underscores in identifier arguments. This leads to substantial 
+  performance improvements for some backends (e.g. snowflake) 
+  (@detule, @fh-afrachioni, #618).
+
 * `DBI::dbConnect(odbc::odbc())` now gives a clear error if you supply multiple
   arguments with the same name when case is ignored (#641).
 
@@ -21,10 +26,6 @@
 * Increased the minimum required R version from 3.2.0 to 3.6.0 (@simonpcouch, #629).
 * Add support for searching multiple paths for the default location of the
   Databricks driver (@bschwedler, #621).
-
-* `dbListTables(), `dbListFields()` and `dbExistsTable()` now automatically
-  escape underscores in identifier arguments.  This leads to substantial performance
-  improvements when writing to large databases on some backends. (@detule, @fh-afrachioni, @hadley, #618)
 
 # odbc 1.3.5
 
