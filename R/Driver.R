@@ -8,67 +8,9 @@ NULL
 #' @name OdbcDriver
 NULL
 
-#' ODBC Driver
-#'
-#' @description
-#'
-#' This function creates a driver for an ODBC database. Its output
-#' is intended to be passed to [dbConnect()].
-#'
-#' @details
-#'
-#' The odbc package is one piece of the R interface to databases with support
-#' for ODBC:
-#'
-#' ![A diagram containing four boxes with arrows linking each pointing left to right. The boxes read, in order, R interface, driver manager, ODBC driver, and database. The left-most box, R interface, contains three smaller components, labeled dbplyr, DBI, and odbc.](whole-game.png){options: width=95%}
-#'
-#' The package supports any **Database Management System (DBMS)** with ODBC
-#' support, including:
-#'
-#' * [SQL Server](https://www.microsoft.com/en-us/sql-server/),
-#' * [Oracle](https://www.oracle.com/database),
-#' * [MySQL](https://www.mysql.com/),
-#' * [Databricks](https://www.databricks.com/),
-#' * [Snowflake](https://www.snowflake.com/)
-#'
-#' and others.
-#'
-#' Support for a given DBMS is provided by an **ODBC driver**, which defines
-#' how to interact with that DBMS using the standardized syntax of ODBC and SQL.
-#' Drivers can be downloaded from the DBMS vendor or, if you're a Posit
-#' customer, using the [professional drivers](https://docs.posit.co/pro-drivers/).
-#'
-#' One of the central benefits of ODBC is its interoperability; any DBMS
-#' with drivers available is accessible through ODBC. To manage information
-#' about these drivers and the data sources they provide access to, our
-#' computers use a **driver manager**. Windows is bundled with a driver manager,
-#' while MacOS and Linux require installation of one; this package supports
-#' the [unixODBC](https://www.unixodbc.org/) driver manager.
-#'
-#' In the **R interface**, the [DBI package](https://dbi.r-dbi.org/) provides a
-#' front-end while odbc implements a back-end to communicate with the driver
-#' manager. The odbc package is built on top of the
-#' [nanodbc](https://nanodbc.github.io/nanodbc/) C++ library.
-#'
-#' Interfacing with DBMSs using R and odbc involves three high-level steps:
-#'
-#' 1) **Configure drivers and data sources**: the functions [odbcListDrivers()]
-#'   and [odbcListDataSources()] help to interface with the driver manager.
-#' 2)  **Connect to a database**: The [dbConnect()] function, called with the
-#'   first argument odbc(), connects to a database using the specified ODBC
-#'   driver to create a connection object.
-#' 3) **Interface with connections**: The resulting connection object can be
-#'   passed to various functions to retrieve information on database
-#'   structure ([dbListTables()]), iteratively develop queries ([dbSendQuery()],
-#'   [dbColumnInfo()]), and query data objects ([dbFetch()]).
-#'
+#' @rdname dbConnect-OdbcDriver-method
 #' @export
 #' @import methods DBI
-#' @examples
-#' \dontrun{
-#' #' library(DBI)
-#' odbc::odbc()
-#' }
 odbc <- function() {
   new("OdbcDriver")
 }
@@ -89,10 +31,13 @@ setMethod(
 
 #' Connect to a database via an ODBC driver
 #'
-#' This method is invoked when [DBI::dbConnect()] is called with the first argument
-#' [odbc::odbc()].
+#' The `dbConnect()` method documented here is invoked when [DBI::dbConnect()]
+#' is called with the first argument `odbc()`. Connecting to a database via
+#' an ODBC driver is likely the first step in analyzing data using the odbc
+#' package; for an overview of package concepts, see the *Overview* section
+#' below.
 #'
-#' @param drv An `OdbcDriver`, from [odbc::odbc()].
+#' @param drv An `OdbcDriver`, from `odbc()`.
 #' @param dsn The data source name. For currently available options, see the
 #'   `name` column of [odbcListDataSources()] output.
 #' @param timezone The server time zone. Useful if the database has an internal
@@ -151,7 +96,41 @@ setMethod(
 #' useful resource that has example connection strings for a large variety of
 #' databases.
 #'
-#' @aliases dbConnect
+#' @section Overview:
+#'
+#' The odbc package is one piece of the R interface to databases with support
+#' for ODBC:
+#'
+#' ![A diagram containing four boxes with arrows linking each pointing left to right. The boxes read, in order, R interface, driver manager, ODBC driver, and database. The left-most box, R interface, contains three smaller components, labeled dbplyr, DBI, and odbc.](whole-game.png){options: width=95%}
+#'
+#' The package supports any **Database Management System (DBMS)** with ODBC
+#' support. Support for a given DBMS is provided by an **ODBC driver**, which
+#' defines how to interact with that DBMS using the standardized syntax of ODBC
+#' and SQL. Drivers can be downloaded from the DBMS vendor or, if you're a Posit
+#' customer, using the [professional drivers](https://docs.posit.co/pro-drivers/).
+#' To manage information about each driver and the data sources they provide
+#' access to, our computers use a **driver manager**. Windows is bundled with
+#' a driver manager, while MacOS and Linux require installation of one; this
+#' package supports the [unixODBC](https://www.unixodbc.org/) driver manager.
+#'
+#' In the **R interface**, the [DBI package](https://dbi.r-dbi.org/) provides a
+#' front-end while odbc implements a back-end to communicate with the driver
+#' manager. The odbc package is built on top of the
+#' [nanodbc](https://nanodbc.github.io/nanodbc/) C++ library.
+#'
+#' Interfacing with DBMSs using R and odbc involves three high-level steps:
+#'
+#' 1) *Configure drivers and data sources*: the functions [odbcListDrivers()]
+#'   and [odbcListDataSources()] help to interface with the driver manager.
+#' 2) *Connect to a database*: The [dbConnect()] function, called with the
+#'   first argument odbc(), connects to a database using the specified ODBC
+#'   driver to create a connection object.
+#' 3) *Interface with connections*: The resulting connection object can be
+#'   passed to various functions to retrieve information on database
+#'   structure ([dbListTables()]), iteratively develop queries ([dbSendQuery()],
+#'   [dbColumnInfo()]), and query data objects ([dbFetch()]).
+#'
+#' @aliases dbConnect odbc
 #' @import rlang
 #' @export
 setMethod(
