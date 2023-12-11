@@ -29,9 +29,10 @@
 
 \item{catalog_name, schema_name, table_name}{Catalog, schema, and table names.
 
-By default, \code{catalog_name}, \code{schema_name} and \code{table_name} will automatically escape
-underscores to ensure that you match exactly one table.
-If you want to use underscores as wild cards, wrap the name in \code{I()}.}
+By default, \code{catalog_name}, \code{schema_name} and \code{table_name} will
+automatically escape underscores to ensure that you match exactly one
+table. If you want to search for multiple tables using wild cards, you
+will need to use \code{odbcConnectionTables()} directly instead.}
 
 \item{table_type}{The type of the table to return, the default returns all table types.}
 

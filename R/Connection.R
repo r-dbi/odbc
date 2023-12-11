@@ -569,9 +569,10 @@ setMethod(
 #' @inheritParams DBI::dbListTables
 #' @param catalog_name,schema_name,table_name Catalog, schema, and table names.
 #'
-#'   By default, `catalog_name`, `schema_name` and `table_name` will automatically escape
-#'   underscores to ensure that you match exactly one table.
-#'   If you want to use underscores as wild cards, wrap the name in `I()`.
+#'   By default, `catalog_name`, `schema_name` and `table_name` will
+#'   automatically escape underscores to ensure that you match exactly one
+#'   table. If you want to search for multiple tables using wild cards, you
+#'   will need to use `odbcConnectionTables()` directly instead.
 #'
 #' @param table_type The type of the table to return, the default returns all table types.
 #' @returns A character vector of table or field names respectively.
@@ -585,13 +586,15 @@ setMethod(
            table_type = NULL,
            ...) {
 
-    odbcConnectionTables(
+    tables <- odbcConnectionTables(
       conn,
       name = table_name,
       catalog_name = catalog_name,
       schema_name = schema_name,
       table_type = table_type,
-      exact = TRUE)$table_name
+      exact = TRUE
+    )
+    tables[["table_name"]]
   })
 
 #' @rdname dbListTables-OdbcConnection-method
@@ -608,13 +611,14 @@ setMethod(
       column_name = NULL,
       ...
   ) {
-    odbcConnectionColumns(
+    cols <- odbcConnectionColumns(
       conn,
       name = name,
       catalog_name = catalog_name,
       schema_name = schema_name,
       column_name = column_name,
-      exact = TRUE)[["name"]]
+      exact = TRUE)
+    cols[["name"]]
   })
 
 #' @rdname OdbcConnection
