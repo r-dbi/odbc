@@ -38,3 +38,4 @@ or \linkS4class{DBIConnection}}
 Implementations of pure virtual functions defined in the \code{DBI} package
 for OdbcDriver objects.
 }
+\keyword{internal}

@@ -32,7 +32,8 @@ Suggests:
     magrittr,
     RSQLite,
     testthat (>= 3.0.0),
-    tibble
+    tibble,
+    withr
 LinkingTo: 
     Rcpp
 ByteCompile: true
@@ -54,6 +55,5 @@ Collate:
     'Viewer.R'
     'databricks.R'
     'db.R'
-    'hidden.R'
     'utils.R'
     'zzz.R'

@@ -6,9 +6,8 @@
 \alias{dbUnquoteIdentifier,Microsoft SQL Server,SQL-method}
 \alias{isTempTable,Microsoft SQL Server,character-method}
 \alias{dbExistsTable,Microsoft SQL Server,character-method}
-\alias{dbExistsTable}
 \alias{sqlCreateTable,Microsoft SQL Server-method}
-\title{Simple class prototype to avoid messages about unknown classes from setMethod}
+\title{SQL Server specific implementation.}
 \arguments{
 \item{conn}{A \linkS4class{DBIConnection} object, as returned by
 \code{\link[DBI:dbConnect]{dbConnect()}}.}
@@ -171,3 +170,4 @@ Other DBIConnection generics:
 \code{\link[DBI]{dbSendStatement}()},
 \code{\link[DBI]{dbWriteTable}()}
 }
+\keyword{internal}

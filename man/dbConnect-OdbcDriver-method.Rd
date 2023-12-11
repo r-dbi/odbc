@@ -2,8 +2,7 @@
 % Please edit documentation in R/Driver.R
 \name{dbConnect,OdbcDriver-method}
 \alias{dbConnect,OdbcDriver-method}
-\alias{dbConnect}
-\title{Connect to a ODBC compatible database}
+\title{Connect to a database via an ODBC driver}
 \usage{
 \S4method{dbConnect}{OdbcDriver}(
   drv,
@@ -25,65 +24,93 @@
 )
 }
 \arguments{
-\item{drv}{an object that inherits from \linkS4class{DBIDriver},
-or an existing \linkS4class{DBIConnection}
-object (in order to clone an existing connection).}
+\item{drv}{An \code{OdbcDriver}, from \code{\link[=odbc]{odbc()}}.}
 
-\item{dsn}{The Data Source Name.}
+\item{dsn}{The data source name. For currently available options, see the
+\code{name} column of \code{\link[=odbcListDataSources]{odbcListDataSources()}} output.}
 
-\item{...}{Additional ODBC keywords, these will be joined with the other
-arguments to form the final connection string.}
+\item{...}{Additional ODBC keywords. These will be joined with the other
+arguments to form the final connection string.
 
-\item{timezone}{The Server time zone. Useful if the database has an internal
-timezone that is \emph{not} 'UTC'. If the database is in your local timezone set
-to \code{\link[=Sys.timezone]{Sys.timezone()}}. See \code{\link[=OlsonNames]{OlsonNames()}} for a complete list of available
-timezones on your system.}
+Note that ODBC parameter names are case-insensitive so that (e.g.) \code{DRV}
+and \code{drv} are equivalent. Since this is different to R and a possible
+source of confusion, odbc will error if you supply multiple arguments that
+have the same name when case is ignored.
+
+Any argument values that contain \verb{[]\{\}(),;?*=!@} will be "quoted" by
+wrapping in \code{{}}. You can opt-out of this behaviour by wrapping the
+value with \code{I()}.}
+
+\item{timezone}{The server time zone. Useful if the database has an internal
+timezone that is \emph{not} 'UTC'. If the database is in your local timezone,
+set this argument to \code{\link[=Sys.timezone]{Sys.timezone()}}. See \code{\link[=OlsonNames]{OlsonNames()}} for a complete
+list of available time zones on your system.}
 
 \item{timezone_out}{The time zone returned to R. If you want to display
-datetime values in the local timezone, set to \code{Sys.timezone()}.}
+datetime values in the local timezone, set to \code{\link[=Sys.timezone]{Sys.timezone()}}.}
 
 \item{encoding}{The text encoding used on the Database. If the database is
-not using UTF-8 you will need to set the encoding to get accurate re-encoding.
-See \code{\link[=iconvlist]{iconvlist()}} for a complete list of available encodings on your system.
-Note strings are always returned \code{UTF-8} encoded.}
+not using UTF-8 you will need to set the encoding to get accurate
+re-encoding. See \code{\link[=iconvlist]{iconvlist()}} for a complete list of available encodings
+on your system. Note strings are always returned \code{UTF-8} encoded.}
 
-\item{bigint}{The R type that \code{SQL_BIGINT} types should be mapped to,
-default is \link[bit64:bit64-package]{bit64::integer64}, which allows the full range of 64 bit
+\item{bigint}{The R type that \code{SQL_BIGINT} types should be mapped to.
+Default is \link[bit64:bit64-package]{bit64::integer64}, which allows the full range of 64 bit
 integers.}
 
 \item{timeout}{Time in seconds to timeout the connection attempt. Setting a
-timeout of \code{Inf} indicates no timeout. (defaults to 10 seconds).}
+timeout of \code{Inf} indicates no timeout. Defaults to 10 seconds.}
 
-\item{driver}{The ODBC driver name.}
+\item{driver}{The ODBC driver name or a path to a driver. For currently
+available options, see the \code{name} column of \code{\link[=odbcListDrivers]{odbcListDrivers()}} output.}
 
-\item{server}{The server hostname.}
+\item{server}{The server hostname. Some drivers use \code{Servername} as the name
+for this argument. Not required when configured for the supplied \code{dsn}.}
 
-\item{database}{The database on the server.}
+\item{database}{The database on the server. Not required when configured for
+the supplied \code{dsn}.}
 
-\item{uid}{The user identifier.}
+\item{uid}{The user identifier. Some drivers use \code{username} as the name
+for this argument. Not required when configured for the supplied \code{dsn}.}
 
-\item{pwd}{The password to use.}
+\item{pwd}{The password. Some drivers use \code{password} as the name
+for this argument. Not required when configured for the supplied \code{dsn}.}
 
 \item{dbms.name}{The database management system name. This should normally
 be queried automatically by the ODBC driver. This name is used as the class
-name for the OdbcConnect object returned from \code{dbConnect()}. However if the
-driver does not return a valid value it can be set manually with this
+name for the OdbcConnection object returned from \code{\link[=dbConnect]{dbConnect()}}. However, if
+the driver does not return a valid value, it can be set manually with this
 parameter.}
 
 \item{attributes}{An S4 object of connection attributes that are passed
-prior to the connection being established.  See \link{ConnectionAttributes}.}
+prior to the connection being established. See \link{ConnectionAttributes}.}
 
 \item{.connection_string}{A complete connection string, useful if you are
-copy pasting it from another source. If this argument is used any additional
-arguments will be appended to this string.}
+copy pasting it from another source. If this argument is used, any
+additional arguments will be appended to this string.}
 }
 \description{
-Connect to a ODBC compatible database
+This method is invoked when \code{\link[DBI:dbConnect]{DBI::dbConnect()}} is called with the first argument
+\code{\link[=odbc]{odbc()}}.
 }
 \details{
 The connection string keywords are driver dependent. The parameters
 documented here are common, but some drivers may not accept them. Please see
-the specific driver documentation for allowed parameters,
+the specific driver documentation for allowed parameters;
 \url{https://www.connectionstrings.com} is also a useful resource of example
 connection strings for a variety of databases.
 }
+\section{Learn more}{
+
+
+To learn more about databases:
+\itemize{
+\item \href{https://solutions.posit.co/connections/db/}{"Best Practices in Working with Databases"}
+documents how to use the odbc package with various popular databases.
+\item \href{https://github.com/mkleehammer/pyodbc/wiki/Drivers-and-Driver-Managers}{The pyodbc "Drivers and Driver Managers" Wiki}
+provides further context on drivers and driver managers.
+\item \href{https://learn.microsoft.com/en-us/sql/odbc/reference}{Microsoft's "Introduction to ODBC"}
+is a thorough resource on the ODBC interface.
+}
+}
+

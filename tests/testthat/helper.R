@@ -1,22 +1,14 @@
-skip_unless_has_test_db <- function(expr) {
+test_connection_string <- function(db) {
   if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
-    return(skip("On CRAN"))
+    skip("On CRAN")
   }
 
-  # Failing database connection should fail the test in DBItest backends
-  if (nzchar(Sys.getenv("DBITEST_BACKENDS"))) {
-    con <- DBItest:::connect(expr)
-    DBI::dbDisconnect(con)
-    TRUE
-  } else {
-    tryCatch({
-      con <- DBItest:::connect(expr)
-      DBI::dbDisconnect(con)
-      TRUE
-    }, error = function(e) {
-      skip(paste0("Test database not available:\n'", conditionMessage(e), "'"))
-    })
+  var <- paste0("ODBC_CS_", db)
+  cs <- Sys.getenv(var)
+  if (cs == "") {
+    skip(paste0("env var '", var, "' not set"))
   }
+  list(.connection_string = cs)
 }
 
 skip_if_no_drivers <- function() {

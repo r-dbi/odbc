@@ -1,8 +1,10 @@
 test_that("SQLServer", {
-  skip_unless_has_test_db({
-    DBItest::make_context(odbc(), list(.connection_string = Sys.getenv("ODBC_CS")),
-      tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "SQLServer")
-  })
+  DBItest::make_context(
+    odbc(),
+    test_connection_string("SQLSERVER"),
+    tweaks = DBItest::tweaks(temporary_tables = FALSE),
+    name = "SQLServer"
+  )
 
   DBItest::test_getting_started(c(
       "package_name", # Not an error
