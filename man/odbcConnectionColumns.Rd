@@ -35,9 +35,9 @@ odbcConnectionColumns(conn, name, ..., exact = FALSE)
 \arguments{
 \item{conn}{OdbcConnection}
 
-\item{name}{Table identifier. By default, is interpreted as a ODBC search
-pattern: where \verb{_} and \verb{\%} are wild cards. Set \code{exact = TRUE} to match
-\verb{_} exactly.}
+\item{name, catalog_name, schema_name}{Catalog, schema, and table identifiers.
+By default, are interpreted as a ODBC search pattern where \verb{_} and \verb{\%} are
+wild cards. Set \code{exact = TRUE} to match \verb{_} exactly.}
 
 \item{...}{additional parameters to methods}
 
@@ -47,10 +47,6 @@ matches any number of characters as this is unlikely to appear in a
 table name.}
 
 \item{column_name}{The name of the column to return, the default returns all columns.}
-
-\item{catalog_name}{character catalog where the table is located}
-
-\item{schema_name}{character schema where the table is located}
 }
 \value{
 data.frame with columns

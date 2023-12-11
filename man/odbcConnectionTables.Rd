@@ -45,9 +45,9 @@ odbcConnectionTables(conn, name, ...)
 \arguments{
 \item{conn}{OdbcConnection}
 
-\item{name}{Table identifier. By default, is interpreted as a ODBC search
-pattern: where \verb{_} and \verb{\%} are wild cards. Set \code{exact = TRUE} to match
-\verb{_} exactly.}
+\item{name, catalog_name, schema_name}{Catalog, schema, and table identifiers.
+By default, are interpreted as a ODBC search pattern where \verb{_} and \verb{\%} are
+wild cards. Set \code{exact = TRUE} to match \verb{_} exactly.}
 
 \item{...}{additional parameters to methods}
 
@@ -59,12 +59,6 @@ types for your connection.}
 matches exactly, rather than matching any single character. \verb{\%} always
 matches any number of characters as this is unlikely to appear in a
 table name.}
-
-\item{catalog_name}{character catalog where we wish to query for
-available tables}
-
-\item{schema_name}{character schema where we wish to query for
-available tables.}
 }
 \value{
 data.frame with columns

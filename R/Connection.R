@@ -201,8 +201,6 @@ setMethod(
 )
 
 #' @rdname odbcConnectionColumns
-#' @param catalog_name character catalog where the table is located
-#' @param schema_name character schema where the table is located
 #' @export
 setMethod(
   "odbcConnectionColumns",
@@ -262,9 +260,9 @@ setMethod(
 #' ( The former also advertises pattern value arguments )
 #'
 #' @param conn OdbcConnection
-#' @param name Table identifier. By default, is interpreted as a ODBC search
-#'   pattern: where `_` and `%` are wild cards. Set `exact = TRUE` to match
-#'   `_` exactly.
+#' @param name,catalog_name,schema_name Catalog, schema, and table identifiers.
+#'   By default, are interpreted as a ODBC search pattern where `_` and `%` are
+#'   wild cards. Set `exact = TRUE` to match `_` exactly.
 #' @param ... additional parameters to methods
 #' @param exact Set to `TRUE` to escape `_` in identifier names so that it
 #'   matches exactly, rather than matching any single character. `%` always
@@ -309,10 +307,6 @@ setMethod(
 )
 
 #' @rdname odbcConnectionTables
-#' @param catalog_name character catalog where we wish to query for
-#' available tables
-#' @param schema_name character schema where we wish to query for
-#' available tables.
 setMethod(
   "odbcConnectionTables",
   c("OdbcConnection", "character"),
