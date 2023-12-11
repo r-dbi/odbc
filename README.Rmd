@@ -29,7 +29,8 @@ database with support for ODBC.
 
 The odbc package is one piece of the R interface to databases with support for ODBC:
 
-```{r whole-game, eval = TRUE, echo = FALSE, fig.alt = 'A diagram containing four boxes with arrows linking each pointing left to right. The boxes read, in order, "R interface," "driver manager," "ODBC driver," and "DBMS." The left-most box, R interface, contains three smaller components, labeled "dbplyr," "DBI," and "odbc."'}
+```{r whole-game, eval = TRUE, echo = FALSE}
+#| fig.alt: 'A diagram containing four boxes with arrows linking each pointing left to right. The boxes read, in order, "R interface," "driver manager," "ODBC driver," and "DBMS." The left-most box, R interface, contains three smaller components, labeled "dbplyr," "DBI," and "odbc."'
 knitr::include_graphics("man/figures/whole-game.png")
 ```
 
@@ -42,7 +43,8 @@ One of the central benefits of ODBC is its interoperability; any DBMS with drive
 In the **R interface**, the [DBI package](https://dbi.r-dbi.org/) provides a front-end while odbc implements a back-end to communicate with the driver manager. The odbc package is built on top of the
 [nanodbc](https://nanodbc.github.io/nanodbc/) C++ library. To interface with DBMSs using R and odbc:
 
-```{r r-interface, eval = TRUE, echo = FALSE, fig.alt = 'A diagram showing a high-level workflow for using the R interface in 3 steps. In step 1, configure drivers and data sources, the functions odbcListDrivers() and odbcListDataSources() help to interface with the driver manager. In step 2, the dbConnect() function, called with the first argument odbc(), connects to a database using the specified ODBC driver to create a connection object "con." Finally, in step 3, that connection object can be passed to various functions to retrieve information on database structure, iteratively develop queries, and query data objects.'}
+```{r r-interface, eval = TRUE, echo = FALSE}
+#| fig-alt: 'A diagram showing a high-level workflow for using the R interface in 3 steps. In step 1, configure drivers and data sources, the functions odbcListDrivers() and odbcListDataSources() help to interface with the driver manager. In step 2, the dbConnect() function, called with the first argument odbc(), connects to a database using the specified ODBC driver to create a connection object "con." Finally, in step 3, that connection object can be passed to various functions to retrieve information on database structure, iteratively develop queries, and query data objects.'
 knitr::include_graphics("man/figures/r-interface.png")
 ```
 
