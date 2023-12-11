@@ -1,8 +1,10 @@
 test_that("SQLServer", {
-  skip_unless_has_test_db({
-    DBItest::make_context(odbc(), list(.connection_string = Sys.getenv("ODBC_CS")),
-      tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "SQLServer")
-  })
+  DBItest::make_context(
+    odbc(),
+    test_connection_string("SQLSERVER"),
+    tweaks = DBItest::tweaks(temporary_tables = FALSE),
+    name = "SQLServer"
+  )
 
   DBItest::test_getting_started(c(
       "package_name", # Not an error
@@ -297,5 +299,15 @@ test_that("SQLServer", {
     # dbAppendTable(con, locTblName, mtcars)
     # res <- dbGetQuery(con, paste0("SELECT * FROM ", locTblName))
     # expect_equal( nrow( res ), 2 * nrow( mtcars ) )
+  })
+
+  test_that("Multiline error message", {
+    tryCatch({
+      DBI::dbConnect(odbc::odbc(), dsn = "does_not_exist_db")
+    }, error = function(e) {
+      # Expect to see at least one newline character in message
+      # ( previously one long string, #643 )
+      expect_true(grepl("\n", e$message))
+    })
   })
 })

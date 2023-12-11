@@ -11,14 +11,15 @@
 \usage{
 odbcConnectionTables(conn, name, ...)
 
-\S4method{odbcConnectionTables}{OdbcConnection,Id}(conn, name, table_type = NULL)
+\S4method{odbcConnectionTables}{OdbcConnection,Id}(conn, name, table_type = NULL, exact = FALSE)
 
 \S4method{odbcConnectionTables}{OdbcConnection,character}(
   conn,
   name,
   catalog_name = NULL,
   schema_name = NULL,
-  table_type = NULL
+  table_type = NULL,
+  exact = FALSE
 )
 
 \S4method{odbcConnectionTables}{OdbcConnection,ANY}(
@@ -26,23 +27,27 @@ odbcConnectionTables(conn, name, ...)
   name = NULL,
   catalog_name = NULL,
   schema_name = NULL,
-  table_type = NULL
+  table_type = NULL,
+  exact = FALSE
 )
 
-\S4method{odbcConnectionTables}{OdbcConnection,SQL}(conn, name, table_type = NULL)
+\S4method{odbcConnectionTables}{OdbcConnection,SQL}(conn, name, table_type = NULL, exact = FALSE)
 
 \S4method{odbcConnectionTables}{Oracle,character}(
   conn,
   name,
   catalog_name = NULL,
   schema_name = NULL,
-  table_type = NULL
+  table_type = NULL,
+  exact = FALSE
 )
 }
 \arguments{
 \item{conn}{OdbcConnection}
 
-\item{name}{table we wish to search for}
+\item{name, catalog_name, schema_name}{Catalog, schema, and table identifiers.
+By default, are interpreted as a ODBC search pattern where \verb{_} and \verb{\%} are
+wild cards. Set \code{exact = TRUE} to match \verb{_} exactly.}
 
 \item{...}{additional parameters to methods}
 
@@ -50,11 +55,10 @@ odbcConnectionTables(conn, name, ...)
 See odbcConnectionTableTypes for a listing of available table
 types for your connection.}
 
-\item{catalog_name}{character catalog where we wish to query for
-available tables}
-
-\item{schema_name}{character schema where we wish to query for
-available tables.}
+\item{exact}{Set to \code{TRUE} to escape \verb{_} in identifier names so that it
+matches exactly, rather than matching any single character. \verb{\%} always
+matches any number of characters as this is unlikely to appear in a
+table name.}
 }
 \value{
 data.frame with columns

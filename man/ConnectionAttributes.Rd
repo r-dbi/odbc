@@ -25,4 +25,4 @@ conn <- dbConnect(
   attributes = list("azure_token" = .token)
 }
 }
-\keyword{datasets}
+\keyword{internal}

@@ -8,40 +8,45 @@
 \alias{odbcConnectionColumns,Oracle,character-method}
 \title{odbcConnectionColumns}
 \usage{
-odbcConnectionColumns(conn, name, ...)
+odbcConnectionColumns(conn, name, ..., exact = FALSE)
 
-\S4method{odbcConnectionColumns}{OdbcConnection,Id}(conn, name, column_name = NULL)
+\S4method{odbcConnectionColumns}{OdbcConnection,Id}(conn, name, column_name = NULL, exact = FALSE)
 
 \S4method{odbcConnectionColumns}{OdbcConnection,character}(
   conn,
   name,
   catalog_name = NULL,
   schema_name = NULL,
-  column_name = NULL
+  column_name = NULL,
+  exact = FALSE
 )
 
-\S4method{odbcConnectionColumns}{OdbcConnection,SQL}(conn, name, ...)
+\S4method{odbcConnectionColumns}{OdbcConnection,SQL}(conn, name, ..., exact = FALSE)
 
 \S4method{odbcConnectionColumns}{Oracle,character}(
   conn,
   name,
   catalog_name = NULL,
   schema_name = NULL,
-  column_name = NULL
+  column_name = NULL,
+  exact = FALSE
 )
 }
 \arguments{
 \item{conn}{OdbcConnection}
 
-\item{name}{table we wish to get information on}
+\item{name, catalog_name, schema_name}{Catalog, schema, and table identifiers.
+By default, are interpreted as a ODBC search pattern where \verb{_} and \verb{\%} are
+wild cards. Set \code{exact = TRUE} to match \verb{_} exactly.}
 
 \item{...}{additional parameters to methods}
 
+\item{exact}{Set to \code{TRUE} to escape \verb{_} in identifier names so that it
+matches exactly, rather than matching any single character. \verb{\%} always
+matches any number of characters as this is unlikely to appear in a
+table name.}
+
 \item{column_name}{The name of the column to return, the default returns all columns.}
-
-\item{catalog_name}{character catalog where the table is located}
-
-\item{schema_name}{character schema where the table is located}
 }
 \value{
 data.frame with columns
