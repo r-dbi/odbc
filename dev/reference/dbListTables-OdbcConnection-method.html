@@ -84,7 +84,10 @@ connection; <code><a href="https://dbi.r-dbi.org/reference/dbListFields.html" cl
 
 <dt>catalog_name, schema_name, table_name</dt>
 <dd><p>Catalog, schema, and table names.</p>
-<p>Use <code>%</code> as a wildcard to match any name; use <code>_</code> to any any character.</p></dd>
+<p>By default, <code>catalog_name</code>, <code>schema_name</code> and <code>table_name</code> will
+automatically escape underscores to ensure that you match exactly one
+table. If you want to search for multiple tables using wild cards, you
+will need to use <code><a href="odbcConnectionTables.html">odbcConnectionTables()</a></code> directly instead.</p></dd>
 
 
 <dt>table_type</dt>
