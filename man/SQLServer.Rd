@@ -5,7 +5,9 @@
 \alias{Microsoft SQL Server-class}
 \alias{dbUnquoteIdentifier,Microsoft SQL Server,SQL-method}
 \alias{isTempTable,Microsoft SQL Server,character-method}
+\alias{isTempTable,Microsoft SQL Server,SQL-method}
 \alias{dbExistsTable,Microsoft SQL Server,character-method}
+\alias{dbExistsTable,Microsoft SQL Server,SQL-method}
 \alias{sqlCreateTable,Microsoft SQL Server-method}
 \title{SQL Server specific implementation.}
 \arguments{

@@ -330,6 +330,17 @@ setMethod("isTempTable", c("Microsoft SQL Server", "character"),
     return(TRUE)
 })
 
+#' @rdname SQLServer
+#' @usage NULL
+setMethod(
+  "isTempTable",
+  c("Microsoft SQL Server", "SQL"),
+  function(conn, name, ...) {
+    isTempTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+  }
+)
+
+
 #' SQL server specific dbExistsTable implementation that accounts for
 #' local temp tables.
 #'
@@ -364,6 +375,20 @@ setMethod(
     }
     NROW(df) > 0
   })
+
+#' @rdname SQLServer
+#' @usage NULL
+setMethod(
+  "dbExistsTable", c("Microsoft SQL Server", "SQL"),
+  function(conn, name, ...) {
+    dbExistsTable(
+      conn,
+      name = id_field(name, "table"),
+      catalog_name = id_field(name, "catalog"),
+      schema_name = id_field(name, "schema")
+    )
+  })
+
 
 #' SQL Server specific implementation.
 #'

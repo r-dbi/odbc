@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Using odbc with SQL Server no longer leads to warnings about ambiguous
+  method dispatch (#661).
+
 * ODBC errors are now spread across multiple lines, making them easier to 
   read (@detule, #564).
 
