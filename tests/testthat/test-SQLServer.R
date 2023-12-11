@@ -1,7 +1,7 @@
 test_that("SQLServer", {
   DBItest::make_context(
     odbc(),
-    list(dsn = "MicrosoftSQLServer", uid = "SA", pwd = "BoopBop123"),
+    test_connection_string("SQLSERVER"),
     tweaks = DBItest::tweaks(temporary_tables = FALSE),
     name = "SQLServer"
   )
