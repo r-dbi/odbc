@@ -90,10 +90,18 @@ additional arguments will be appended to this string.}
 This method is invoked when \code{\link[DBI:dbConnect]{DBI::dbConnect()}} is called with the first argument
 \code{\link[=odbc]{odbc()}}.
 }
-\details{
-The connection string keywords are driver dependent. The parameters
-documented here are common, but some drivers may not accept them. Please see
-the specific driver documentation for allowed parameters;
-\url{https://www.connectionstrings.com} is also a useful resource of example
-connection strings for a variety of databases.
+\section{Connection strings}{
+
+
+Internally, \code{dbConnect()} creates a connection string using the supplied
+arguments. Connection string keywords are driver-dependent; the arguments
+documented here are common, but some drivers may not accept them.
+
+Alternatively to configuring DSNs and driver names with the driver manager,
+you can pass a complete connection string directly as the
+\code{.connection_string} argument.
+\href{https://www.connectionstrings.com}{The Connection Strings Reference} is a
+useful resource that has example connection strings for a large variety of
+databases.
 }
+

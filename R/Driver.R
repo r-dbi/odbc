@@ -137,12 +137,19 @@ setMethod(
 #'   integers.
 #' @param timeout Time in seconds to timeout the connection attempt. Setting a
 #'   timeout of `Inf` indicates no timeout. Defaults to 10 seconds.
-#' @details
-#' The connection string keywords are driver dependent. The parameters
-#' documented here are common, but some drivers may not accept them. Please see
-#' the specific driver documentation for allowed parameters;
-#' \url{https://www.connectionstrings.com} is also a useful resource of example
-#' connection strings for a variety of databases.
+#'
+#' @section Connection strings:
+#'
+#' Internally, `dbConnect()` creates a connection string using the supplied
+#' arguments. Connection string keywords are driver-dependent; the arguments
+#' documented here are common, but some drivers may not accept them.
+#'
+#' Alternatively to configuring DSNs and driver names with the driver manager,
+#' you can pass a complete connection string directly as the
+#' `.connection_string` argument.
+#' [The Connection Strings Reference](https://www.connectionstrings.com) is a
+#' useful resource that has example connection strings for a large variety of
+#' databases.
 #'
 #' @aliases dbConnect
 #' @import rlang
