@@ -400,7 +400,7 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
         }
 
         if (!result.empty())
-            result += ' ';
+            result += '\n';
 
         result += nanodbc::string_type(sql_message.begin(), sql_message.end());
         i++;
