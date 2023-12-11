@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* ODBC errors are now spread across multiple lines, making them easier to 
+  read (@detule, #564).
+
 * `dbListTables()`, `dbListFields()` and `dbExistsTable()` automatically
   escape underscores in identifier arguments. This leads to substantial 
   performance improvements for some backends (e.g. snowflake) 
