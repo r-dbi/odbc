@@ -18,8 +18,8 @@ bool result_completed(result_ptr const& r) { return r->complete(); }
 
 // [[Rcpp::export]]
 result_ptr new_result(
-    connection_ptr const& p, std::string const& sql, const bool immediate, long query_timeout) {
-  return result_ptr(new odbc::odbc_result(*p, sql, immediate, query_timeout));
+    connection_ptr const& p, std::string const& sql, const bool immediate, long timeout) {
+  return result_ptr(new odbc::odbc_result(*p, sql, immediate, timeout));
 }
 
 // [[Rcpp::export]]

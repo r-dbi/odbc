@@ -248,16 +248,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // new_result
-result_ptr new_result(connection_ptr const& p, std::string const& sql, const bool immediate, long query_timeout);
-RcppExport SEXP _odbc_new_result(SEXP pSEXP, SEXP sqlSEXP, SEXP immediateSEXP, SEXP query_timeoutSEXP) {
+result_ptr new_result(connection_ptr const& p, std::string const& sql, const bool immediate, long timeout);
+RcppExport SEXP _odbc_new_result(SEXP pSEXP, SEXP sqlSEXP, SEXP immediateSEXP, SEXP timeoutSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< connection_ptr const& >::type p(pSEXP);
     Rcpp::traits::input_parameter< std::string const& >::type sql(sqlSEXP);
     Rcpp::traits::input_parameter< const bool >::type immediate(immediateSEXP);
-    Rcpp::traits::input_parameter< long >::type query_timeout(query_timeoutSEXP);
-    rcpp_result_gen = Rcpp::wrap(new_result(p, sql, immediate, query_timeout));
+    Rcpp::traits::input_parameter< long >::type timeout(timeoutSEXP);
+    rcpp_result_gen = Rcpp::wrap(new_result(p, sql, immediate, timeout));
     return rcpp_result_gen;
 END_RCPP
 }
