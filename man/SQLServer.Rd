@@ -9,14 +9,14 @@
 \alias{sqlCreateTable,Microsoft SQL Server-method}
 \title{SQL Server}
 \description{
-Details of SQL Server specific variations for odbc and DBI generics.
+Details of SQL Server methods for odbc and DBI generics.
 
 \subsection{\code{dbUnquoteIdentifier()}}{
 
 \code{conn@quote} returns the quotation mark, but quotation marks and square
-brackets can be interchangeably for delimited identifiers.
+brackets can be used interchangeably for delimited identifiers.
 (\url{https://learn.microsoft.com/en-us/sql/relational-databases/databases/database-identifiers}).
-So this function strips the brackets first, and then calls the DBI method to
+This function strips the brackets first and then calls the DBI method to
 strip the quotation marks.
 }
 
