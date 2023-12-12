@@ -274,22 +274,6 @@ first_100 <- dbFetch(result, n = 100)
 rest <- dbFetch(result)
 ```
 
-`dbGetQuery()`, `dbSendStatement()` and `dbSendQuery()` provide a `query_timeout` option (internally sets `SQL_ATTR_QUERY_TIMEOUT`).
-
-`query_timeout`: The number in seconds before query timeout (can be used to stop long running queries). Default is 0 indicating no timeout. 
-
-``` r
-# long running query stops after 60 seconds
-# provided statement is a placeholder
-
-dbGetQuery(con, "SELECT flight, tailnum, origin FROM flights ORDER BY origin", query_timeout = 60)
-
-dbSendStatement(con, "SELECT flight, tailnum, origin FROM flights ORDER BY origin", query_timeout = 60)
-
-dbSendQuery(con, "SELECT flight, tailnum, origin FROM flights ORDER BY origin", query_timeout = 60)
-
-```
-
 ## Benchmarks
 
 The *odbc* package is often much faster than the existing
