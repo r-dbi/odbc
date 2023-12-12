@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   benchmarks: benchmarks.html
   setup: setup.html
-last_built: 2023-12-12T13:42Z
+last_built: 2023-12-12T14:01Z
 urls:
   reference: https://r-dbi.github.io/odbc/reference
   article: https://r-dbi.github.io/odbc/articles
