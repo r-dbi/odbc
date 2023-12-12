@@ -368,7 +368,7 @@ setMethod(
 #' @rdname SQLServer
 #' @usage NULL
 setMethod(
-  "dbExistsTable", c("Microsoft SQL Server", "SQL"),
+  "dbExistsTable", c("Microsoft SQL Server", "Id"),
   function(conn, name, ...) {
     dbExistsTable(
       conn,
@@ -378,6 +378,13 @@ setMethod(
     )
   })
 
+#' @rdname SQLServer
+#' @usage NULL
+setMethod(
+  "dbExistsTable", c("Microsoft SQL Server", "SQL"),
+  function(conn, name, ...) {
+    dbExistsTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+  })
 
 #' @rdname SQLServer
 #' @description
