@@ -1,7 +1,10 @@
 test_that("SQLite", {
-  skip_unless_has_test_db({
-    ctx <- DBItest::make_context(odbc(), list(dsn = "SQLite"), tweaks = DBItest::tweaks(placeholder_pattern = "?", strict_identifier = TRUE), name = "SQLite")
-  })
+  DBItest::make_context(
+    odbc(),
+    test_connection_string("SQLITE"),
+    tweaks = DBItest::tweaks(placeholder_pattern = "?", strict_identifier = TRUE),
+    name = "SQLite"
+  )
 
   DBItest::test_getting_started(c(
       "package_name", # Not an error
@@ -117,7 +120,6 @@ test_that("SQLite", {
       NULL))
 
 
-  context("custom tests")
   local({
     ## Test that trying to write unsupported types (like complex numbers) throws an
     ## informative error message

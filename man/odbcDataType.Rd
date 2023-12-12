@@ -46,7 +46,9 @@ a new method.
 The object type for your connection will be the database name retrieved by
 \code{dbGetInfo(con)$dbms.name}. Use the documentation provided with your
 database to determine appropriate values for each R data type. An example
-method definition of a fictional \code{foo} database follows.\preformatted{con <- dbConnect(odbc::odbc(), "FooConnection")
+method definition of a fictional \code{foo} database follows.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{con <- dbConnect(odbc::odbc(), "FooConnection")
 dbGetInfo(con)$dbms.name
 #> [1] "foo"
 
@@ -64,6 +66,6 @@ dbGetInfo(con)$dbms.name
     stop("Unsupported type", call. = FALSE)
   )
 \}
-}
+}\if{html}{\out{</div>}}
 }
 

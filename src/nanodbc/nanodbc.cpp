@@ -102,6 +102,16 @@
 #endif
 #endif
 
+#if defined(NANODBC_OVERALLOCATE_CHAR)
+// If enabled, when auto-binding buffers to N/VAR/CHAR
+// columns, overallocate assuming each code-point
+// takes up MAX_CODE_POINT_SIZE bytes
+#define MAX_CODE_POINT_SIZE 4
+#define NBYTES(nchars, chartype) (nchars + 1) * MAX_CODE_POINT_SIZE
+#else
+#define NBYTES(nchars, chartype) (nchars + 1) * sizeof(chartype)
+#endif
+
 // clang-format off
 // 888     888          d8b                       888
 // 888     888          Y8P                       888
@@ -390,7 +400,7 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
         }
 
         if (!result.empty())
-            result += ' ';
+            result += '\n';
 
         result += nanodbc::string_type(sql_message.begin(), sql_message.end());
         i++;
@@ -401,7 +411,7 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
     state = std::string(&sql_state[0], &sql_state[arrlen(sql_state) - 1]);
     native = native_error;
     std::string status = state;
-    status += ": ";
+    status += "\n";
     status += rvalue;
 
     // some drivers insert \0 into error messages for unknown reasons
@@ -902,7 +912,14 @@ public:
         {
             // ignore exceptions thrown during disconnect
         }
-        deallocate();
+        try
+        {
+             deallocate();
+        }
+        catch (...)
+        {
+            // ignore exceptions thrown during disconnect
+        }
     }
 
     void allocate()
@@ -2832,24 +2849,6 @@ private:
             if (!success(rc))
                 NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
 
-            // Adjust the sqlsize parameter in case of "unlimited" data (varchar(max),
-            // nvarchar(max)).
-            bool is_blob = false;
-
-            if (sqlsize == 0)
-            {
-                switch (sqltype)
-                {
-                case SQL_VARCHAR:
-                case SQL_WVARCHAR:
-                {
-                    // Divide in half, due to sqlsize being 32-bit in Win32 (and 64-bit in x64)
-                    // sqlsize = std::numeric_limits<int32_t>::max() / 2 - 1;
-                    is_blob = true;
-                }
-                }
-            }
-
             bound_column& col = bound_columns_[i];
             col.name_ = reinterpret_cast<string_type::value_type*>(column_name);
             col.column_ = i;
@@ -2896,8 +2895,8 @@ private:
             case SQL_CHAR:
             case SQL_VARCHAR:
                 col.ctype_ = SQL_C_CHAR;
-                col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLCHAR);
-                if (is_blob)
+                col.clen_ = NBYTES(col.sqlsize_, SQLCHAR);
+                if (col.sqlsize_ == 0)
                 {
                     col.clen_ = 0;
                     col.blob_ = true;
@@ -2905,14 +2904,17 @@ private:
                 break;
             case SQL_WCHAR:
             case SQL_WVARCHAR:
-            case SQL_SS_TIMESTAMPOFFSET:
                 col.ctype_ = SQL_C_WCHAR;
-                col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLWCHAR);
-                if (is_blob)
+                col.clen_ = NBYTES(col.sqlsize_, SQLWCHAR);
+                if (col.sqlsize_ == 0)
                 {
                     col.clen_ = 0;
                     col.blob_ = true;
                 }
+                break;
+            case SQL_SS_TIMESTAMPOFFSET:
+                col.ctype_ = SQL_C_WCHAR;
+                col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLWCHAR);
                 break;
             case SQL_LONGVARCHAR:
                 col.ctype_ = SQL_C_CHAR;
@@ -3419,7 +3421,6 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
         col.cbdata_[static_cast<size_t>(rowset_position_)] = (SQLINTEGER)SQL_NULL_DATA;
     if (!success(rc))
         NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
-    NANODBC_ASSERT(ValueLenOrInd == (SQLLEN)buffer_size);
 
     // Return a traditional unique_ptr since we just allocated this buffer, and
     // we most certainly want this memory returned to the heap when the result
@@ -4762,6 +4763,35 @@ std::list<string_type> catalog::list_schemas()
     std::list<string_type> names;
     while (schemas.next())
         names.push_back(schemas.table_schema());
+    return names;
+}
+
+std::list<string_type> catalog::list_table_types()
+{
+
+    statement stmt(conn_);
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLTables),
+        rc,
+        stmt.native_statement_handle(),
+        (NANODBC_SQLCHAR*)NANODBC_TEXT(""),
+        0,
+        (NANODBC_SQLCHAR*)NANODBC_TEXT(""),
+        0,
+        (NANODBC_SQLCHAR*)NANODBC_TEXT(""),
+        0,
+        (NANODBC_SQLCHAR*)SQL_ALL_TABLE_TYPES,
+        1);
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
+
+    result find_result(stmt, 1);
+    catalog::tables table_types(find_result);
+
+    std::list<string_type> names;
+    while (table_types.next())
+        names.push_back(table_types.table_type());
     return names;
 }
 

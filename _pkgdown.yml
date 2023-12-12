@@ -5,3 +5,24 @@ template:
 
 development:
   mode: auto
+
+authors:
+  Oliver Gjoneski:
+    href: https://github.com/detule
+
+reference:
+- title: DBI methods
+  contents:
+  - 'dbConnect,OdbcDriver-method'
+  - 'dbListTables,OdbcConnection-method'
+  - 'DBI-tables'
+
+- title: Database-specific helpers
+  contents:
+  - databricks
+  - 'Microsoft SQL Server-class'
+
+- title: ODBC configuration
+  contents:
+  - starts_with("odbc")
+  - isTempTable

@@ -1,12 +1,14 @@
 test_that("PostgreSQL", {
-  skip_unless_has_test_db({
-    DBItest::make_context(odbc(), list(dsn = "PostgreSQL"), tweaks = DBItest::tweaks(temporary_tables = FALSE, placeholder_pattern = "?"), name = "PostgreSQL")
-  })
+  DBItest::make_context(
+    odbc(),
+    test_connection_string("POSTGRES"),
+    tweaks = DBItest::tweaks(temporary_tables = FALSE, placeholder_pattern = "?"),
+    name = "PostgreSQL"
+  )
 
-  context("custom tests")
   test_that("show method works as expected with real connection", {
     skip_on_os("windows")
-    con <- dbConnect(odbc(), "PostgreSQL")
+    con <- DBItest:::connect(DBItest:::get_default_context())
 
     expect_output(show(con), "@localhost")
     expect_output(show(con), "Database: [a-z]+")
@@ -14,23 +16,27 @@ test_that("PostgreSQL", {
   })
 
   test_that("64 bit integers work with alternate mappings", {
-    con_default <- dbConnect(odbc(), "PostgreSQL")
-    con_integer64 <- dbConnect(odbc(), "PostgreSQL", bigint = "integer64")
-    con_integer <- dbConnect(odbc(), "PostgreSQL", bigint = "integer")
-    con_numeric <- dbConnect(odbc(), "PostgreSQL", bigint = "numeric")
-    con_character <- dbConnect(odbc(), "PostgreSQL", bigint = "character")
+    con_default <- DBItest:::connect(DBItest:::get_default_context())
+    con_integer64 <-
+      DBItest:::connect(DBItest:::get_default_context(), bigint = "integer64")
+    con_integer <-
+      DBItest:::connect(DBItest:::get_default_context(), bigint = "integer")
+    con_numeric <-
+      DBItest:::connect(DBItest:::get_default_context(), bigint = "numeric")
+    con_character <-
+      DBItest:::connect(DBItest:::get_default_context(), bigint = "character")
 
     dbWriteTable(con_default, "test", data.frame(a = 1:10L), field.types = c(a = "BIGINT"))
     on.exit(dbRemoveTable(con_default, "test"))
 
-    expect_is(dbReadTable(con_default, "test")$a, "integer64")
-    expect_is(dbReadTable(con_integer64, "test")$a, "integer64")
+    expect_s3_class(dbReadTable(con_default, "test")$a, "integer64")
+    expect_s3_class(dbReadTable(con_integer64, "test")$a, "integer64")
 
-    expect_is(dbReadTable(con_integer, "test")$a, "integer")
+    expect_type(dbReadTable(con_integer, "test")$a, "integer")
 
-    expect_is(dbReadTable(con_numeric, "test")$a, "numeric")
+    expect_type(dbReadTable(con_numeric, "test")$a, "double")
 
-    expect_is(dbReadTable(con_character, "test")$a, "character")
+    expect_type(dbReadTable(con_character, "test")$a, "character")
   })
 
   # This test checks whether when writing to a table and using
@@ -40,7 +46,7 @@ test_that("PostgreSQL", {
   # differently than the table we are targetting.
   test_that("Writing data.frame with column ordering different than target table", {
     tblName <- "test_order_write"
-    con <- dbConnect(odbc(), "PostgreSQL")
+    con <- DBItest:::connect(DBItest:::get_default_context())
     values <- data.frame(
       datetime = as.POSIXct(c(14, 15), origin = "2016-01-01", tz = "UTC"),
       name = c("one", "two"),
@@ -69,7 +75,6 @@ test_that("PostgreSQL", {
     expect_equal(nrow(res), 3)
   })
 
-  context("DBI tests")
   DBItest::test_getting_started(c(
       "package_name", # Not an error
       NULL))
@@ -93,6 +98,7 @@ test_that("PostgreSQL", {
       "^data_timestamp.*", # We explicitly want to set tzone to UTC
       "data_64_bit_numeric_warning", # TODO
       "data_64_bit_lossless", # TODO
+      "data_integer", # Fails, unreliably on Windows
       "send_query_syntax_error", # TODO
       "get_query_syntax_error", # TODO
       "send_query_params", # TODO

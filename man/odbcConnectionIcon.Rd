@@ -18,3 +18,4 @@ Return the path on disk to an icon representing a connection.
 \details{
 The icon returned should be a 32x32 square image file.
 }
+\keyword{internal}

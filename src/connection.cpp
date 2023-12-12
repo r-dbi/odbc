@@ -160,11 +160,53 @@ Rcpp::DataFrame connection_sql_tables(
   }
   return Rcpp::DataFrame::create(
       Rcpp::_["table_catalog"] = catalog,
+      Rcpp::_["table_schema"] = schemas,
       Rcpp::_["table_name"] = names,
       Rcpp::_["table_type"] = types,
-      Rcpp::_["table_schema"] = schemas,
       Rcpp::_["table_remarks"] = remarks,
       Rcpp::_["stringsAsFactors"] = false);
+}
+
+// [[Rcpp::export]]
+Rcpp::StringVector connection_sql_catalogs(
+    connection_ptr const& p ) {
+  auto c = nanodbc::catalog(*(*p)->connection());
+  auto res = c.list_catalogs();
+  Rcpp::StringVector ret;
+  for ( const auto& val : res )
+  {
+    ret.push_back( val );
+  }
+
+  return ret;
+}
+
+// [[Rcpp::export]]
+Rcpp::StringVector connection_sql_schemas(
+    connection_ptr const& p ) {
+  auto c = nanodbc::catalog(*(*p)->connection());
+  auto res = c.list_schemas();
+  Rcpp::StringVector ret;
+  for ( const auto& val : res )
+  {
+    ret.push_back( val );
+  }
+
+  return ret;
+}
+
+// [[Rcpp::export]]
+Rcpp::StringVector connection_sql_table_types(
+    connection_ptr const& p ) {
+  auto c = nanodbc::catalog(*(*p)->connection());
+  auto res = c.list_table_types();
+  Rcpp::StringVector ret;
+  for ( const auto& val : res )
+  {
+    ret.push_back( val );
+  }
+
+  return ret;
 }
 
 // "%" is a wildcard for all possible values

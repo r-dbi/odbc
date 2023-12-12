@@ -47,7 +47,7 @@ else
       PKG_LIBS="-L$BREWDIR/lib $PKG_LIBS"
     else
       curl -sfL "https://autobrew.github.io/scripts/unixodbc" > autobrew
-      . autobrew
+      . ./autobrew
     fi
   fi
 fi

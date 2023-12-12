@@ -13,7 +13,6 @@
 \alias{dbDataType,OdbcConnection,data.frame-method}
 \alias{dbQuoteIdentifier,OdbcConnection,character-method}
 \alias{dbQuoteIdentifier,OdbcConnection,SQL-method}
-\alias{dbExistsTable,OdbcConnection,character-method}
 \alias{dbRemoveTable,OdbcConnection,character-method}
 \alias{dbGetInfo,OdbcConnection-method}
 \alias{dbGetQuery,OdbcConnection,character-method}
@@ -22,6 +21,7 @@
 \alias{dbRollback,OdbcConnection-method}
 \alias{dbExistsTable,OdbcConnection,Id-method}
 \alias{dbExistsTable,OdbcConnection,SQL-method}
+\alias{dbExistsTable,OdbcConnection,character-method}
 \title{Odbc Connection Methods}
 \usage{
 \S4method{show}{OdbcConnection}(object)
@@ -42,8 +42,6 @@
 
 \S4method{dbQuoteIdentifier}{OdbcConnection,SQL}(conn, x, ...)
 
-\S4method{dbExistsTable}{OdbcConnection,character}(conn, name, ...)
-
 \S4method{dbRemoveTable}{OdbcConnection,character}(conn, name, ...)
 
 \S4method{dbGetInfo}{OdbcConnection}(dbObj, ...)
@@ -59,6 +57,8 @@
 \S4method{dbExistsTable}{OdbcConnection,Id}(conn, name, ...)
 
 \S4method{dbExistsTable}{OdbcConnection,SQL}(conn, name, ...)
+
+\S4method{dbExistsTable}{OdbcConnection,character}(conn, name, ...)
 }
 \arguments{
 \item{object}{Any R object}
@@ -83,7 +83,15 @@ SQLPrepare, and the \code{params} argument is ignored}
 
 \item{x}{A character vector, \link[DBI]{SQL} or \link[DBI]{Id} object to quote as identifier.}
 
-\item{name}{A character string specifying a DBMS table name.}
+\item{name}{The table name, passed on to \code{\link[DBI:dbQuoteIdentifier]{dbQuoteIdentifier()}}. Options are:
+\itemize{
+\item a character string with the unquoted DBMS table name,
+e.g. \code{"table_name"},
+\item a call to \code{\link[DBI:Id]{Id()}} with components to the fully qualified table name,
+e.g. \code{Id(schema = "my_schema", table = "table_name")}
+\item a call to \code{\link[DBI:SQL]{SQL()}} with the quoted and fully qualified table name
+given verbatim, e.g. \code{SQL('"my_schema"."table_name"')}
+}}
 
 \item{n}{maximum number of records to retrieve per fetch. Use \code{n = -1}
 or \code{n = Inf}
@@ -94,3 +102,4 @@ special values.}
 Implementations of pure virtual functions defined in the \code{DBI} package
 for OdbcConnection objects.
 }
+\keyword{internal}

@@ -1,7 +1,10 @@
 test_that("SQLServer", {
-  skip_unless_has_test_db({
-      DBItest::make_context(odbc(), list(dsn = "MicrosoftSQLServer", UID="SA", PWD="Password12"), tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "SQLServer")
-  })
+  DBItest::make_context(
+    odbc(),
+    test_connection_string("SQLSERVER"),
+    tweaks = DBItest::tweaks(temporary_tables = FALSE),
+    name = "SQLServer"
+  )
 
   DBItest::test_getting_started(c(
       "package_name", # Not an error
@@ -214,5 +217,97 @@ test_that("SQLServer", {
     con <- DBItest:::connect(DBItest:::get_default_context(), timezone = "America/Chicago")
     res <- dbGetQuery(con, "SELECT CAST(? AS date)", params = as.Date("2019-01-01"))
     expect_equal(res[[1]], as.Date("2019-01-01"))
+  })
+
+  test_that("UTF in VARCHAR is not truncated", {
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    value <- "grün"
+    res <- dbGetQuery(con,
+      paste0("SELECT '", value, "' AS colone"))
+    expect_equal(value, res[[1]])
+  })
+
+  test_that("Zero-row-fetch does not move cursor", {
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    tblName <- "test_zero_row_fetch"
+    dbWriteTable(con, tblName, mtcars[1:2,])
+    on.exit(dbRemoveTable(con, tblName))
+    rs = dbSendStatement(con, paste0("SELECT * FROM ", tblName))
+    expect_equal(nrow(dbFetch(rs, n = 0)), 0)
+    expect_equal(nrow(dbFetch(rs, n = 10)), 2)
+  })
+
+  test_that("isTempTable tests", {
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    expect_true( isTempTable(con, "#myTmp"))
+    expect_true( isTempTable(con, "#myTmp", catalog_name = "tempdb" ))
+    expect_true( isTempTable(con, "#myTmp", catalog_name = "%" ))
+    expect_true( isTempTable(con, "#myTmp", catalog_name = NULL ))
+    expect_true( !isTempTable(con, "##myTmp"))
+    expect_true( !isTempTable(con, "#myTmp", catalog_name = "abc" ))
+  })
+
+  test_that("dbExistsTable accounts for local temp tables", {
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    tbl_name <- "#myTemp"
+    tbl_name2 <- "##myTemp"
+    tbl_name3 <- "#myTemp2"
+    DBI::dbExecute(con, paste0("CREATE TABLE ", tbl_name, " (
+      id int not null,
+      primary key (id) )"), immediate = TRUE)
+    expect_true( dbExistsTable( con, tbl_name) )
+    expect_true( dbExistsTable( con, tbl_name, catalog_name = "tempdb") )
+    # Fail because not recognized as temp table ( catalog not tempdb )
+    expect_true( !dbExistsTable( con, tbl_name, catalog_name = "abc") )
+    # Fail because not recognized as temp table ( second char "#" )
+    expect_true( !dbExistsTable( con, tbl_name2, catalog_name = "tempdb" ) )
+    # Fail because table not actually present
+    expect_true( !dbExistsTable( con, tbl_name3, catalog_name = "tempdb" ) )
+  })
+
+  test_that("Create / write to temp table", {
+    testthat::local_edition(3)
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    locTblName <- "#myloctmp"
+    globTblName <- "##myglobtmp"
+    notTempTblName <- "nottemp"
+
+    df <- data.frame( name = c("one", "two"), value = c(1, 2) )
+    values <- sqlData(con, row.names = FALSE, df[, , drop = FALSE])
+    ret1 <- sqlCreateTable(con, locTblName, values, temporary = TRUE)
+    ret2 <- sqlCreateTable(con, locTblName, values, temporary = FALSE)
+
+    nm <- dbQuoteIdentifier(con, locTblName)
+    fields <- createFields(con, values, row.names = FALSE, field.types = NULL)
+    expected <- DBI::SQL(paste0(
+      "CREATE TABLE ", nm, " (\n",
+      "  ", paste(fields, collapse = ",\n  "), "\n)\n"
+    ))
+
+    expect_equal( ret1, expected )
+    expect_equal( ret2, expected )
+    expect_snapshot_warning(sqlCreateTable(con, globTblName, values, temporary = TRUE))
+    expect_no_warning(sqlCreateTable(con, globTblName, values, temporary = FALSE))
+    expect_snapshot_warning(sqlCreateTable(con, notTempTblName, values, temporary = TRUE))
+    expect_no_warning(sqlCreateTable(con, notTempTblName, values, temporary = FALSE))
+
+    # These tests need https://github.com/r-dbi/odbc/pull/600
+    # Uncomment when both merged.
+    # dbWriteTable(con, locTblName, mtcars, row.names = TRUE)
+    # res <- dbGetQuery(con, paste0("SELECT * FROM ", locTblName))
+    # expect_equal( mtcars$mpg, res$mpg )
+    # dbAppendTable(con, locTblName, mtcars)
+    # res <- dbGetQuery(con, paste0("SELECT * FROM ", locTblName))
+    # expect_equal( nrow( res ), 2 * nrow( mtcars ) )
+  })
+
+  test_that("Multiline error message", {
+    tryCatch({
+      DBI::dbConnect(odbc::odbc(), dsn = "does_not_exist_db")
+    }, error = function(e) {
+      # Expect to see at least one newline character in message
+      # ( previously one long string, #643 )
+      expect_true(grepl("\n", e$message))
+    })
   })
 })

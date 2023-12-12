@@ -2,8 +2,58 @@
 
 * odbc now always converts the encoding of non-ASCII column names of the SQL
   results to UTF-8. (@shrektan, #430)
+
 * Fixed issue that odbc may throw errors with garbage letters when the encoding
   of client and db-server are different. (@shrektan, #432)
+
+* ODBC errors are now spread across multiple lines, making them easier to 
+  read (@detule, #564).
+
+* `dbListTables()`, `dbListFields()` and `dbExistsTable()` automatically
+  escape underscores in identifier arguments. This leads to substantial 
+  performance improvements for some backends (e.g. snowflake) 
+  (@detule, @fh-afrachioni, #618).
+
+* `DBI::dbConnect(odbc::odbc())` now gives a clear error if you supply multiple
+  arguments with the same name when case is ignored (#641).
+
+* `dbConnect(odbc::odbc())` now automatically quotes argument values that need 
+  it (#616).
+
+* Spark SQL: Correctly enumerate schemas away from the current catalog (@detule, #614)
+* Modify `odbcDataType.Snowflake` to better reflect Snowflake Data Types documentation (@meztez, #599).
+* SQL Server: Specialize syntax in sqlCreateTable to avoid failures when
+  writing to (new) local temp tables. (@detule, #601)
+* SQL Server: Improved handling for local temp tables in dbWrite, dbAppendTable,
+  dbExistTable (@detule, #600)
+* Teradata: Improved handling for temp tables (@detule and @But2ene, #589, 590)
+* Oracle: Fix regression when falling back to odbcConnectionColumns to
+  describe column data types (@detule, #587)
+
+* Add a new, specialised `odbc::databricks()` class with its own `dbConnect()`
+  method to make using Databricks's ODBC driver easier (@atheriel, #615).
+* Increased the minimum required R version from 3.2.0 to 3.6.0 (@simonpcouch, #629).
+* Add support for searching multiple paths for the default location of the
+  Databricks driver (@bschwedler, #621).
+
+# odbc 1.3.5
+
+* Various fixes for `R CMD check`.
+
+* The argument order for `sqlCreateTable()` methods avoiding weird argument 
+  mismatch problems (#448).
+
+* Fixed truncation when retrieving unicode data stored in
+  VAR/CHAR columns (@detule, #553).
+
+* Fixed issue related to fetching zero rows (@detule, #528).
+
+* Backend specific improvements:
+
+  * MYSQL: Fixed retrieving results from stored procedures (@detule, #435).
+  * Oracle: performance enhancements (#577)
+  * Spark: Changed data type for date-times from `DATE` to `TIMESTAMP` 
+    (@schuemie, #555).
 
 # odbc 1.3.4
 

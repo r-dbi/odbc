@@ -24,3 +24,4 @@ following properties:
 \item{icon}{An optional path to an icon representing the action}
 }
 }
+\keyword{internal}
