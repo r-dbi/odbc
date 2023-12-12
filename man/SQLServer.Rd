@@ -24,7 +24,7 @@ strip the quotation marks.
 
 Local temp tables are stored as
 \verb{[tempdb].[dbo].[#name]_____[numeric identifier]}, so \code{isTempTable()}
-returns \code{TRUE} if \code{catalog_name} is \code{"temdb"} or \code{"\%"}, or the
+returns \code{TRUE} if \code{catalog_name} is \code{"tempdb"} or \code{"\%"}, or the
 name starts with \code{"#"}.
 }
 
