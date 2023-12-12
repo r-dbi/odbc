@@ -3,6 +3,9 @@
 * Using odbc with SQL Server no longer leads to warnings about ambiguous
   method dispatch (#661).
 
+* S4 classes for the most database drivers are now exported, make it possible
+  to use in other packages (#558).
+
 * ODBC errors are now spread across multiple lines, making them easier to 
   read (@detule, #564).
 
