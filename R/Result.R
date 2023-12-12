@@ -13,12 +13,16 @@ OdbcResult <- function(connection, statement, params = NULL, immediate = FALSE, 
   if (nzchar(connection@encoding)) {
     statement <- enc2iconv(statement, connection@encoding)
   }
-
   if (is.infinite(timeout)) {
-    timeout <- 0
+    timeout <- 0L
   }
 
-  ptr <- new_result(connection@ptr, statement, immediate, timeout)
+  ptr <- new_result(
+    p = connection@ptr,
+    sql = statement,
+    immediate = immediate,
+    timeout = timeout
+  )
   res <- new("OdbcResult", connection = connection, statement = statement, ptr = ptr)
 
   if (!is.null(params)) {

@@ -671,7 +671,7 @@ setMethod(
 #' @inheritParams DBI::dbFetch
 #' @export
 setMethod("dbGetQuery", signature("OdbcConnection", "character"),
-  function(conn, statement, n = -1, params = NULL, timeout = Inf, ...) {
+  function(conn, statement, ..., n = -1, params = NULL, timeout = Inf) {
     rs <- dbSendQuery(conn, statement, params = params, timeout = timeout, ...)
     on.exit(dbClearResult(rs))
 
