@@ -128,11 +128,11 @@ port = 1433
 Database = test
 ```
 
-# Oracle
+## Oracle
 
 A huge pain.
 
-## Get the DB container
+Get the DB container:
 
 ```shell
 docker login
@@ -140,21 +140,22 @@ docker login
 docker pull store/oracle/database-enterprise:12.2.0.1
 ```
 
-## Start the container
-
-The -P is important to setup the port forwarding from the docker container
+Start the container:
 
 ```shell
 docker run -d -it --name oracle_db -P store/oracle/database-enterprise:12.2.0.1
 ```
 
-## Query the port and edit the ports in tnsnames.ora
+The `-P` is important to set up the port forwarding from the docker container.
+
+
+Then, query the port and edit the ports in `tnsnames.ora`:
 
 ```shell
 docker port oracle_db
 ```
 
-Contents of `snsnames.ora`
+The contents of `snsnames.ora` should look like:
 
 ```
 ORCLCDB=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=32769))
@@ -163,11 +164,13 @@ ORCLPDB1=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=32769))
     (CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCLPDB1.localdomain)))
 ```
 
-Set the current working directory as the 
+Ensure that the current working directly is [set appropriately](https://www.ibm.com/support/pages/how-configure-tnsnamesora-use-dedicated-server-process-datastage-connections-oracle-databases#:~:text=accessed%20via%20DataStage%3A-,The%20tnsnames.,specified%20by%20the%20TNS_ADMIN%20variable.). 
 
-## Add a new user to the DB
+Then, to add a new user to the database:
 
+```shell
 docker exec -it oracle_db bash -c "source /home/oracle/.bashrc; sqlplus SYS/Oradoc_db1 AS SYSDBA"
+```
 
 ```sql
 alter session set "_ORACLE_SCRIPT"=true;
@@ -176,6 +179,8 @@ create user test identified by 12345;
 
 GRANT ALL PRIVILEGES TO TEST;
 ```
+
+Finally, in R:
 
 ```r
 Sys.setenv("TNS_ADMIN" = getwd())
