@@ -312,7 +312,7 @@ setMethod("dbUnquoteIdentifier", c("Microsoft SQL Server", "SQL"),
 #'
 #' Local temp tables are stored as
 #' `[tempdb].[dbo].[#name]_____[numeric identifier]`, so `isTempTable()`
-#' returns `TRUE` if `catalog_name` is `"temdb"` or `"%"`, or the
+#' returns `TRUE` if `catalog_name` is `"tempdb"` or `"%"`, or the
 #' name starts with `"#"`.
 #' @rdname SQLServer
 #' @usage NULL
