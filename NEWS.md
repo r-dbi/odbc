@@ -4,6 +4,14 @@
   not using a parameterised query. That should yield a small speed boost in 
   many cases (#633).
 
+* ODBC errors are now spread across multiple lines, making them easier to 
+  read (@detule, #564).
+
+* `dbListTables()`, `dbListFields()` and `dbExistsTable()` automatically
+  escape underscores in identifier arguments. This leads to substantial 
+  performance improvements for some backends (e.g. snowflake) 
+  (@detule, @fh-afrachioni, #618).
+
 * `DBI::dbConnect(odbc::odbc())` now gives a clear error if you supply multiple
   arguments with the same name when case is ignored (#641).
 

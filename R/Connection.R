@@ -149,9 +149,7 @@ setClass(
 #' to get details on the fields of the table we are writing to.  In particular
 #' the columns `data_type`, `column_size`, and `decimal_digits` are used.  An
 #' implementation is not necessary for [dbWriteTable()] to work.
-#' @param conn OdbcConnection
-#' @param name table we wish to get information on
-#' @param ... additional parameters to methods
+#' @inheritParams odbcConnectionTables
 #'
 #' @seealso The ODBC documentation on [SQLColumns](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
 #' for further details.
@@ -180,7 +178,7 @@ setClass(
 setGeneric(
   "odbcConnectionColumns",
   valueClass = "data.frame",
-  function(conn, name, ...) {
+  function(conn, name, ..., exact = FALSE) {
     standardGeneric("odbcConnectionColumns")
   }
 )
@@ -191,31 +189,41 @@ setGeneric(
 setMethod(
   "odbcConnectionColumns",
   c("OdbcConnection", "Id"),
-  function(conn, name, column_name = NULL) {
-
+  function(conn, name, column_name = NULL, exact = FALSE) {
     odbcConnectionColumns(conn,
       name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
       schema_name = id_field(name, "schema"),
-      column_name = column_name)
+      column_name = column_name,
+      exact = exact
+    )
   }
 )
 
 #' @rdname odbcConnectionColumns
-#' @param catalog_name character catalog where the table is located
-#' @param schema_name character schema where the table is located
 #' @export
 setMethod(
   "odbcConnectionColumns",
   c("OdbcConnection", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL) {
+  function(conn,
+           name,
+           catalog_name = NULL,
+           schema_name = NULL,
+           column_name = NULL,
+           exact = FALSE) {
 
-    connection_sql_columns(conn@ptr,
+    if (exact) {
+      schema_name <- escapePattern(schema_name)
+      name <- escapePattern(name)
+      column_name <- escapePattern(column_name)
+    }
+    connection_sql_columns(
+      conn@ptr,
       table_name = name,
       catalog_name = catalog_name,
       schema_name = schema_name,
-      column_name = column_name)
-
+      column_name = column_name
+    )
   }
 )
 
@@ -252,8 +260,14 @@ setMethod(
 #' ( The former also advertises pattern value arguments )
 #'
 #' @param conn OdbcConnection
-#' @param name table we wish to search for
+#' @param name,catalog_name,schema_name Catalog, schema, and table identifiers.
+#'   By default, are interpreted as a ODBC search pattern where `_` and `%` are
+#'   wild cards. Set `exact = TRUE` to match `_` exactly.
 #' @param ... additional parameters to methods
+#' @param exact Set to `TRUE` to escape `_` in identifier names so that it
+#'   matches exactly, rather than matching any single character. `%` always
+#'   matches any number of characters as this is unlikely to appear in a
+#'   table name.
 #'
 #' @seealso The ODBC documentation on [SQLTables](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
 #' for further details.
@@ -263,6 +277,7 @@ setMethod(
 #' - table_schema
 #' - table_name
 #' - table_remarks
+#' @rdname odbcConnectionTables
 setGeneric(
   "odbcConnectionTables",
   valueClass = "data.frame",
@@ -278,32 +293,41 @@ setGeneric(
 setMethod(
   "odbcConnectionTables",
   c("OdbcConnection", "Id"),
-  function(conn, name, table_type = NULL) {
+  function(conn, name, table_type = NULL, exact = FALSE) {
 
-    odbcConnectionTables(conn,
+    odbcConnectionTables(
+      conn,
       name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
       schema_name = id_field(name, "schema"),
-      table_type = table_type)
+      table_type = table_type,
+      exact = exact
+    )
   }
 )
 
 #' @rdname odbcConnectionTables
-#' @param catalog_name character catalog where we wish to query for
-#' available tables
-#' @param schema_name character schema where we wish to query for
-#' available tables.
 setMethod(
   "odbcConnectionTables",
   c("OdbcConnection", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL) {
-
-    connection_sql_tables(conn@ptr,
+  function(conn,
+           name,
+           catalog_name = NULL,
+           schema_name = NULL,
+           table_type = NULL,
+           exact = FALSE) {
+    if (exact) {
+      catalog_name <- escapePattern(catalog_name)
+      schema_name <- escapePattern(schema_name)
+      name <- escapePattern(name)
+    }
+    connection_sql_tables(
+      conn@ptr,
       catalog_name = catalog_name,
       schema_name = schema_name,
       table_name = name,
-      table_type = table_type)
-
+      table_type = table_type
+    )
   }
 )
 
@@ -311,22 +335,34 @@ setMethod(
 setMethod(
   "odbcConnectionTables",
   c("OdbcConnection"),
-  function(conn, name = NULL, catalog_name = NULL, schema_name = NULL, table_type = NULL) {
+  function(conn,
+           name = NULL,
+           catalog_name = NULL,
+           schema_name = NULL,
+           table_type = NULL,
+           exact = FALSE) {
 
-    odbcConnectionTables(conn,
+    odbcConnectionTables(
+      conn,
       name = "%",
       catalog_name = catalog_name,
       schema_name = schema_name,
-      table_type = table_type)
-
+      table_type = table_type,
+      exact = exact
+    )
   }
 )
 
 #' @rdname odbcConnectionTables
 setMethod(
   "odbcConnectionTables", c("OdbcConnection", "SQL"),
-  function(conn, name, table_type = NULL) {
-    odbcConnectionTables(conn, dbUnquoteIdentifier(conn, name)[[1]], table_type = table_type)
+  function(conn, name, table_type = NULL, exact = FALSE) {
+    odbcConnectionTables(
+      conn,
+      dbUnquoteIdentifier(conn, name)[[1]],
+      table_type = table_type,
+      exact = exact
+    )
   })
 
 #' odbcConnectionCatalogs
@@ -544,7 +580,11 @@ setMethod(
 #' @inheritParams DBI::dbListTables
 #' @param catalog_name,schema_name,table_name Catalog, schema, and table names.
 #'
-#'   Use `%` as a wildcard to match any name; use `_` to any any character.
+#'   By default, `catalog_name`, `schema_name` and `table_name` will
+#'   automatically escape underscores to ensure that you match exactly one
+#'   table. If you want to search for multiple tables using wild cards, you
+#'   will need to use `odbcConnectionTables()` directly instead.
+#'
 #' @param table_type The type of the table to return, the default returns all table types.
 #' @returns A character vector of table or field names respectively.
 #' @export
@@ -557,13 +597,15 @@ setMethod(
            table_type = NULL,
            ...) {
 
-    odbcConnectionTables(
+    tables <- odbcConnectionTables(
       conn,
       name = table_name,
       catalog_name = catalog_name,
       schema_name = schema_name,
-      table_type = table_type
-    )$table_name
+      table_type = table_type,
+      exact = TRUE
+    )
+    tables[["table_name"]]
   })
 
 #' @rdname dbListTables-OdbcConnection-method
@@ -580,13 +622,14 @@ setMethod(
       column_name = NULL,
       ...
   ) {
-    odbcConnectionColumns(
+    cols <- odbcConnectionColumns(
       conn,
       name = name,
       catalog_name = catalog_name,
       schema_name = schema_name,
-      column_name = column_name
-    )[["name"]]
+      column_name = column_name,
+      exact = TRUE)
+    cols[["name"]]
   })
 
 #' @rdname OdbcConnection

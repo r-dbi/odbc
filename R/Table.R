@@ -68,7 +68,7 @@ odbc_write_table <-
     }
 
     fieldDetails <- tryCatch({
-      details <- odbcConnectionColumns(conn, name)
+      details <- odbcConnectionColumns(conn, name, exact = TRUE)
       details$param_index <- match(details$name, names(values))
       details[!is.na(details$param_index) & !is.na(details$data_type), ]
     }, error = function(e) {
@@ -232,6 +232,6 @@ setMethod(
   "dbExistsTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     stopifnot(length(name) == 1)
-    df <- odbcConnectionTables(conn, name = name, ...)
+    df <- odbcConnectionTables(conn, name = name, ..., exact = TRUE)
     NROW(df) > 0
   })
