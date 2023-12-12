@@ -279,55 +279,53 @@ setMethod("sqlCreateTable", "DB2/AIX64",
 
 # Microsoft SQL Server ---------------------------------------------------------
 
+#' SQL Server
+#'
+#' Details of SQL Server methods for odbc and DBI generics.
+#'
 #' @rdname SQLServer
 #' @usage NULL
 setClass("Microsoft SQL Server", where = class_cache)
 
-#' SQL Server specific implementation.
+#' @description
+#' ## `dbUnquoteIdentifier()`
 #'
-#' For SQL Server, `conn@quote` will return the quotation mark, however
-#' both quotation marks as well as square bracket are used interchangeably for
-#' delimited identifiers.  See:
-#' \url{https://learn.microsoft.com/en-us/sql/relational-databases/databases/database-identifiers?view=sql-server-ver16}
-#' Therefore strip the brackets first, and then call the DBI method that strips
-#' the quotation marks.
-#' TODO: the generic implementation in DBI should take a quote char as
-#' parameter.
-#'
+#' `conn@quote` returns the quotation mark, but quotation marks and square
+#' brackets can be used interchangeably for delimited identifiers.
+#' (<https://learn.microsoft.com/en-us/sql/relational-databases/databases/database-identifiers>).
+#' This function strips the brackets first and then calls the DBI method to
+#' strip the quotation marks.
 #' @rdname SQLServer
 #' @docType methods
-#' @inheritParams DBI::dbUnquoteIdentifier
 #' @usage NULL
 #' @keywords internal
 setMethod("dbUnquoteIdentifier", c("Microsoft SQL Server", "SQL"),
   function(conn, x, ...) {
     x <- gsub("(\\[)([^\\.]+?)(\\])", "\\2", x)
     callNextMethod( conn, x, ... )
-  })
+  }
+)
 
-#' SQL Server specific implementation.
+
+#' @description
+#' ## `isTempTable()`
 #'
 #' Local temp tables are stored as
-#' \code{ [tempdb].[dbo].[#name]________(padding using underscores)[numeric identifier] }
-#'
-#' True if:
-#' - If catalog_name is supplied it must equal "temdb" or "%" ( wildcard )
-#' - Name must start with "#" followd by a non-"#" character
+#' `[tempdb].[dbo].[#name]_____[numeric identifier]`, so `isTempTable()`
+#' returns `TRUE` if `catalog_name` is `"tempdb"` or `"%"`, or the
+#' name starts with `"#"`.
 #' @rdname SQLServer
 #' @usage NULL
 setMethod("isTempTable", c("Microsoft SQL Server", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, ...) {
-    if ( !is.null(catalog_name) &&
+    if (!is.null(catalog_name) &&
         catalog_name != "%" &&
-        length(catalog_name ) > 0 &&
-        catalog_name != "tempdb" ) {
+        length(catalog_name) > 0 &&
+        catalog_name != "tempdb") {
       return(FALSE)
     }
 
-    if ( !grepl("^[#][^#]", name ) ) {
-      return(FALSE)
-    }
-    return(TRUE)
+    grepl("^[#][^#]", name)
 })
 
 #' @rdname SQLServer
@@ -341,36 +339,27 @@ setMethod(
 )
 
 
-#' SQL server specific dbExistsTable implementation that accounts for
-#' local temp tables.
-#'
-#' If we can identify that the name is that of a local temp table
-#' then adjust the identifier and query appropriately.
-#'
-#' Note, the implementation here is such that it assumes the metadata attribute is
-#' set such that catalog functions accept wildcard entries.
-#'
-#' Driver note.  OEM driver will return correctly for
-#' name, \code{catalog_name = "tempdb"} in some circumstances.  For exmaple
-#' if the name has no underscores to beginwith.  FreeTDS, will not index
-#' the table correctly unless name is adjusted ( allowed trailing wildcards to
-#' accomodate trailing underscores and postfix ).
-#'
-#' Therefore, in all cases query for \code{name___%}.
+#' @description
+#' ## `dbExistsTable()`
+#' The default implementation reports temporary tables as non-existent
+#' since they live in a different catalog. This method provides a special
+#' case for temporary tables, as identified by `isTempTable()`.
 #' @rdname SQLServer
 #' @docType methods
-#' @inherit DBI::dbExistsTable
 #' @usage NULL
 setMethod(
   "dbExistsTable", c("Microsoft SQL Server", "character"),
   function(conn, name, ...) {
     stopifnot(length(name) == 1)
-    if ( isTempTable( conn, name, ... ) )
-    {
-      name <- paste0(name, "\\_\\_\\_%");
-      df <- odbcConnectionTables(conn, name, catalog_name = "tempdb", schema_name = "dbo")
-    }
-    else {
+    if (isTempTable(conn, name, ... )) {
+      name <- paste0(name, "\\_\\_\\_%")
+      df <- odbcConnectionTables(
+        conn,
+        name,
+        catalog_name = "tempdb",
+        schema_name = "dbo"
+      )
+    } else {
       df <- odbcConnectionTables(conn, name = name, ...)
     }
     NROW(df) > 0
@@ -390,21 +379,22 @@ setMethod(
   })
 
 
-#' SQL Server specific implementation.
-#'
-#' Will warn user if `temporary` is set to TRUE but table name does not conform
-#' to local temp table naming conventions.  If writing to a global temp table, user
-#' should not set the temporary flag to TRUE.
-#'
-#' In both cases a simple CREATE TABLE statement is used / the table identifier
-#' is the differentiator ( viz-a-viz creating a non-temp table ).
-#' @inheritParams DBI::sqlCreateTable
 #' @rdname SQLServer
+#' @description
+#' ## `sqlCreateTable()`
+#'
+#' Warns if `temporary = TRUE` but the `name` does not conform to temp table
+#' naming conventions (i.e. it doesn't start with `#`).
 #' @usage NULL
 setMethod("sqlCreateTable", "Microsoft SQL Server",
-  function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
-    if ( temporary && !isTempTable( con, table ) )
-    {
+  function(con,
+           table,
+           fields,
+           row.names = NA,
+           temporary = FALSE,
+           ...,
+           field.types = NULL) {
+    if (temporary && !isTempTable(con, table)) {
       warning("Temporary flag is set to true, but table name doesn't use # prefix")
     }
     temporary <- FALSE

@@ -23,11 +23,12 @@
 ^src/\.clang-format$
 ^src/nanodbc/\.clang-format$
 ^\.vimrc$
-^vignettes$
 ^revdep$
 ^testing$
 ^CRAN-RELEASE$
 ^setup.md$
+^inst/diagrams\.key$
+^man/figures/r-interface\.png$
 ^\.github/workflows/R-CMD-check\.yaml$
 ^\.covrignore$
 ^Makefile$
