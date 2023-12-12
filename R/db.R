@@ -281,7 +281,7 @@ setMethod("sqlCreateTable", "DB2/AIX64",
 
 #' SQL Server
 #'
-#' Details of SQL Server specific variations for odbc and DBI generics.
+#' Details of SQL Server methods for odbc and DBI generics.
 #'
 #' @rdname SQLServer
 #' @usage NULL
@@ -291,9 +291,9 @@ setClass("Microsoft SQL Server", where = class_cache)
 #' ## `dbUnquoteIdentifier()`
 #'
 #' `conn@quote` returns the quotation mark, but quotation marks and square
-#' brackets can be interchangeably for delimited identifiers.
+#' brackets can be used interchangeably for delimited identifiers.
 #' (<https://learn.microsoft.com/en-us/sql/relational-databases/databases/database-identifiers>).
-#' So this function strips the brackets first, and then calls the DBI method to
+#' This function strips the brackets first and then calls the DBI method to
 #' strip the quotation marks.
 #' @rdname SQLServer
 #' @docType methods
