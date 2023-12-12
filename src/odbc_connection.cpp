@@ -4,18 +4,24 @@
 
 namespace odbc {
 
+void odbc_connection::cancel_current_result(bool quiet) {
+  if (current_result_ == nullptr) {
+    return;
+  }
+
+  if (!quiet) {
+    Rcpp::warning("Cancelling previous query");
+  }
+  current_result_->statement()->cancel();
+  current_result_ = nullptr;
+}
+
 void odbc_connection::set_current_result(odbc_result* r) {
   if (r == current_result_) {
     return;
   }
 
-  if (current_result_ != nullptr) {
-    if (r != nullptr) {
-      Rcpp::warning("Cancelling previous query");
-      current_result_->statement()->cancel();
-    }
-  }
-
+  cancel_current_result(r == nullptr);
   current_result_ = r;
 }
 
