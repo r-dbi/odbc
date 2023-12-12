@@ -1,7 +1,10 @@
 test_that("SQLite", {
-  skip_unless_has_test_db({
-    ctx <- DBItest::make_context(odbc(), list(dsn = "SQLite"), tweaks = DBItest::tweaks(placeholder_pattern = "?", strict_identifier = TRUE), name = "SQLite")
-  })
+  DBItest::make_context(
+    odbc(),
+    test_connection_string("SQLITE"),
+    tweaks = DBItest::tweaks(placeholder_pattern = "?", strict_identifier = TRUE),
+    name = "SQLite"
+  )
 
   DBItest::test_getting_started(c(
       "package_name", # Not an error
@@ -124,5 +127,16 @@ test_that("SQLite", {
 
     df <- data.frame(foo = complex(1))
     expect_error(dbWriteTable(con, "df", df), "Column 'foo' is of unsupported type: 'complex'")
+  })
+  test_that("odbcPreviewObject", {
+    tblName <- "test_preview"
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    dbWriteTable(con, tblName, data.frame(a = 1:10L))
+    on.exit(dbRemoveTable(con, tblName))
+    # There should be no "Pending rows" warning
+    expect_no_warning({
+      res <- odbcPreviewObject(con, rowLimit = 3, table = tblName)
+    })
+    expect_equal(nrow(res), 3)
   })
 })

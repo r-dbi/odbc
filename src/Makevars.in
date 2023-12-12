@@ -4,7 +4,7 @@ PKG_CPPFLAGS=@PKG_CFLAGS@
 PKG_CXXFLAGS=-Icctz/include -Inanodbc -I. -DBUILD_REAL_64_BIT_MODE -DNANODBC_ODBC_VERSION=SQL_OV_ODBC3 $(CXXPICFLAGS)
 PKG_LIBS=@PKG_LIBS@ -Lcctz -lcctz
 
-OBJECTS = odbc_result.o connection.o nanodbc.o result.o odbc_connection.o RcppExports.o Iconv.o
+OBJECTS = odbc_result.o connection.o nanodbc.o result.o odbc_connection.o RcppExports.o Iconv.o utils.o
 
 all: $(SHLIB)
 
@@ -12,12 +12,16 @@ $(SHLIB): $(OBJECTS)
 
 $(OBJECTS): cctz/libcctz.a
 
+# Makefile of libcctz has correct flags, but they are not picked, since Makevars overrides them.
+# Alternatively, ranlib should be run after ar. Otherwise the archive may have no ToC, and build fails.
+ARFLAGS = rcs
+
 cctz/libcctz.a:
 	(cd cctz && \
 $(MAKE) libcctz.a CC="$(CC)" CXX="$(CXX)" CXXFLAGS="$(CXXFLAGS)" AR="$(AR)" ARFLAGS=$(ARFLAGS) CXXPICFLAGS="$(CXXPICFLAGS)")
 
 nanodbc.o: nanodbc/nanodbc.cpp
-	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
+	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -DNANODBC_OVERALLOCATE_CHAR -c $< -o $@
 
 clean:
 	(cd cctz; $(MAKE) clean)

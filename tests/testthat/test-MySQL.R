@@ -1,7 +1,10 @@
 test_that("MySQL", {
-  skip_unless_has_test_db({
-    DBItest::make_context(odbc(), list(dsn = "MySQL"), tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "MySQL")
-  })
+  DBItest::make_context(
+    odbc(),
+    test_connection_string("MYSQL"),
+    tweaks = DBItest::tweaks(temporary_tables = FALSE),
+    name = "MySQL"
+  )
 
   DBItest::test_getting_started(c(
       "package_name",                    # Not an error
@@ -23,7 +26,8 @@ test_that("MySQL", {
       "data_logical($|_.+)",             # Not an error, PostgreSQL has a logical data type
       "data_raw.*",                      # cast(1 bytea) is not valid `cannot cast type integer to bytea`
       "^data_timestamp.*",               # MySQL converts the timestamps from local times, so they roundtrip unexpectedly
-      "data_character", # Strange MySQL Error only reproducible on travis
+      "data_character",                  # Strange MySQL Error only reproducible on travis
+      "data_type_create_table",          # 2023/6/23: Strange MySQL Error (warning/Result already cleared) only reproducible on GHA
       NULL))
   DBItest::test_sql(c(
       "quote_identifier_vectorized", # Can't implement until https://github.com/rstats-db/DBI/issues/71 is closed
@@ -71,5 +75,28 @@ test_that("MySQL", {
       "reexport",
       NULL))
 
-  test_roundtrip(columns = "logical")
+  test_roundtrip(columns = c("logical", "binary"))
+  test_that("odbcPreviewObject", {
+    tblName <- "test_preview"
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    dbWriteTable(con, tblName, data.frame(a = 1:10L))
+    on.exit(dbRemoveTable(con, tblName))
+    # There should be no "Pending rows" warning
+    expect_no_warning({
+      res <- odbcPreviewObject(con, rowLimit = 3, table = tblName)
+    })
+    expect_equal(nrow(res), 3)
+  })
+  test_that("sproc result retrieval", {
+    sprocName <- "testSproc"
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    DBI::dbExecute(con,
+      paste0("CREATE PROCEDURE ", sprocName, "(IN arg INT) BEGIN SELECT 'abc' as TestCol; END"))
+    on.exit(DBI::dbExecute(con, paste0("DROP PROCEDURE ", sprocName)))
+    expect_no_error({
+      res <- dbGetQuery(con, paste0("CALL ", sprocName, "(1)"))
+    })
+    expect_identical(res,
+       data.frame("TestCol" = "abc", stringsAsFactors = FALSE))
+  })
 })

@@ -9,8 +9,8 @@ list_data_sources_ <- function() {
     .Call(`_odbc_list_data_sources_`)
 }
 
-odbc_connect <- function(connection_string, timezone = "", timezone_out = "", encoding = "", bigint = 0L, timeout = 0L) {
-    .Call(`_odbc_odbc_connect`, connection_string, timezone, timezone_out, encoding, bigint, timeout)
+odbc_connect <- function(connection_string, timezone = "", timezone_out = "", encoding = "", bigint = 0L, timeout = 0L, r_attributes_ = NULL) {
+    .Call(`_odbc_odbc_connect`, connection_string, timezone, timezone_out, encoding, bigint, timeout, r_attributes_)
 }
 
 connection_info <- function(p) {
@@ -43,6 +43,18 @@ connection_valid <- function(p) {
 
 connection_sql_tables <- function(p, catalog_name = NULL, schema_name = NULL, table_name = NULL, table_type = NULL) {
     .Call(`_odbc_connection_sql_tables`, p, catalog_name, schema_name, table_name, table_type)
+}
+
+connection_sql_catalogs <- function(p) {
+    .Call(`_odbc_connection_sql_catalogs`, p)
+}
+
+connection_sql_schemas <- function(p) {
+    .Call(`_odbc_connection_sql_schemas`, p)
+}
+
+connection_sql_table_types <- function(p) {
+    .Call(`_odbc_connection_sql_table_types`, p)
 }
 
 connection_sql_columns <- function(p, column_name = NULL, catalog_name = NULL, schema_name = NULL, table_name = NULL) {

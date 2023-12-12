@@ -102,6 +102,16 @@
 #endif
 #endif
 
+#if defined(NANODBC_OVERALLOCATE_CHAR)
+// If enabled, when auto-binding buffers to N/VAR/CHAR
+// columns, overallocate assuming each code-point
+// takes up MAX_CODE_POINT_SIZE bytes
+#define MAX_CODE_POINT_SIZE 4
+#define NBYTES(nchars, chartype) (nchars + 1) * MAX_CODE_POINT_SIZE
+#else
+#define NBYTES(nchars, chartype) (nchars + 1) * sizeof(chartype)
+#endif
+
 // clang-format off
 // 888     888          d8b                       888
 // 888     888          Y8P                       888
@@ -390,7 +400,7 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
         }
 
         if (!result.empty())
-            result += ' ';
+            result += '\n';
 
         result += nanodbc::string_type(sql_message.begin(), sql_message.end());
         i++;
@@ -401,7 +411,7 @@ recent_error(SQLHANDLE handle, SQLSMALLINT handle_type, long& native, std::strin
     state = std::string(&sql_state[0], &sql_state[arrlen(sql_state) - 1]);
     native = native_error;
     std::string status = state;
-    status += ": ";
+    status += "\n";
     status += rvalue;
 
     // some drivers insert \0 into error messages for unknown reasons
@@ -831,6 +841,29 @@ public:
         }
     }
 
+    connection_impl(
+        const string_type& dsn,
+        const string_type& user,
+        const string_type& pass,
+        const std::list<attribute>& attributes)
+        : env_(nullptr)
+        , dbc_(nullptr)
+        , connected_(false)
+        , transactions_(0)
+        , rollback_(false)
+    {
+        allocate();
+        try
+        {
+            connect(dsn, user, pass, attributes);
+        }
+        catch (...)
+        {
+            deallocate();
+            throw;
+        }
+    }
+
     connection_impl(const string_type& connection_string, long timeout)
         : env_(nullptr)
         , dbc_(nullptr)
@@ -850,6 +883,25 @@ public:
         }
     }
 
+    connection_impl(string const& connection_string, std::list<attribute> attributes)
+        : env_(nullptr)
+        , dbc_(nullptr)
+        , connected_(false)
+        , transactions_(0)
+        , rollback_(false)
+    {
+        allocate();
+        try
+        {
+            connect(connection_string, attributes);
+        }
+        catch (...)
+        {
+            deallocate();
+            throw;
+        }
+    }
+
     ~connection_impl() NANODBC_NOEXCEPT
     {
         try
@@ -860,7 +912,14 @@ public:
         {
             // ignore exceptions thrown during disconnect
         }
-        deallocate();
+        try
+        {
+             deallocate();
+        }
+        catch (...)
+        {
+            // ignore exceptions thrown during disconnect
+        }
     }
 
     void allocate()
@@ -873,6 +932,15 @@ public:
     {
         deallocate_handle(dbc_, SQL_HANDLE_DBC);
         deallocate_handle(env_, SQL_HANDLE_ENV);
+    }
+
+    void set_attribute(long const& attr, long const& size, const void* buffer)
+    {
+        RETCODE rc;
+
+        NANODBC_CALL_RC(SQLSetConnectAttr, rc, dbc_, attr, (SQLPOINTER)(buffer), size);
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
     }
 
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
@@ -927,34 +995,58 @@ public:
         long timeout,
         void* event_handle = nullptr)
     {
+        std::list<attribute> attributes;
+        // Avoid to set the timeout to 0 (no timeout).
+        // This is a workaround for the Oracle ODBC Driver (11.1), as this
+        // operation is not supported by the Driver.
+        if (timeout != 0)
+        {
+            attributes.push_back(
+                attribute(SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, (void*)(std::intptr_t)timeout));
+        }
+#if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
+        if (event_handle != nullptr)
+        {
+            attributes.push_back(
+                attribute(SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE,
+                 SQL_IS_UINTEGER,
+                 (void*)(std::intptr_t)SQL_ASYNC_DBC_ENABLE_ON));
+            attributes.push_back(attribute(SQL_ATTR_ASYNC_DBC_EVENT, SQL_IS_POINTER, event_handle));
+        }
+#endif
+        return this->connect(dsn, user, pass, attributes);
+    }
+
+    RETCODE connect(
+        const string_type& dsn,
+        const string_type& user,
+        const string_type& pass,
+        std::list<attribute> const& attributes)
+    {
         allocate_env_handle(env_);
         disconnect();
 
         deallocate_handle(dbc_, SQL_HANDLE_DBC);
         allocate_dbc_handle(dbc_, env_);
 
-        RETCODE rc;
-
-        if (timeout != 0)
+        bool is_async = false;
+        for (const attribute& attr : attributes)
         {
-            // Avoid to set the timeout to 0 (no timeout).
-            // This is a workaround for the Oracle ODBC Driver (11.1), as this
-            // operation is not supported by the Driver.
-            NANODBC_CALL_RC(
-                SQLSetConnectAttr,
-                rc,
-                dbc_,
-                SQL_LOGIN_TIMEOUT,
-                (SQLPOINTER)(std::intptr_t)timeout,
-                0);
-            if (!success(rc))
-                NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
+            if (std::get<2>(attr) == nullptr)
+            {
+                continue;
+            }
+#if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE)
+            if (std::get<0>(attr) == SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE &&
+                std::get<2>(attr) == (void*)(std::intptr_t)SQL_ASYNC_DBC_ENABLE_ON)
+            {
+                is_async = true;
+            }
+#endif
+            this->set_attribute(std::get<0>(attr), std::get<1>(attr), std::get<2>(attr));
         }
 
-#if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
-        if (event_handle != nullptr)
-            enable_async(event_handle);
-#endif
+        RETCODE rc;
 
         NANODBC_CALL_RC(
             NANODBC_FUNC(SQLConnect),
@@ -966,7 +1058,7 @@ public:
             SQL_NTS,
             !pass.empty() ? (NANODBC_SQLCHAR*)pass.c_str() : 0,
             SQL_NTS);
-        if (!success(rc) && (event_handle == nullptr || rc != SQL_STILL_EXECUTING))
+        if (!success(rc) && (!is_async || rc != SQL_STILL_EXECUTING))
             NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
 
         connected_ = success(rc);
@@ -975,7 +1067,33 @@ public:
     }
 
     RETCODE
-    connect(const string_type& connection_string, long timeout, void* event_handle = nullptr)
+    connect(string const& connection_string, long timeout, void* event_handle = nullptr)
+    {
+        std::list<attribute> attributes;
+        // Avoid to set the timeout to 0 (no timeout).
+        // This is a workaround for the Oracle ODBC Driver (11.1), as this
+        // operation is not supported by the Driver.
+        if (timeout != 0)
+        {
+            attributes.push_back(
+                attribute(SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, (void*)(std::intptr_t)timeout));
+        }
+#if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
+        if (event_handle != nullptr)
+        {
+            attributes.push_back(
+                attribute(SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE,
+                 SQL_IS_UINTEGER,
+                 (void*)(std::intptr_t)SQL_ASYNC_DBC_ENABLE_ON));
+            attributes.push_back(
+                attribute(SQL_ATTR_ASYNC_DBC_EVENT, SQL_IS_POINTER, event_handle));
+        }
+#endif
+        return this->connect(connection_string, attributes);
+    }
+
+    RETCODE
+    connect(const string_type& connection_string, std::list<attribute> const& attributes)
     {
 
         allocate_env_handle(env_);
@@ -983,28 +1101,24 @@ public:
         deallocate_handle(dbc_, SQL_HANDLE_DBC);
         allocate_dbc_handle(dbc_, env_);
 
-        RETCODE rc;
-
-        if (timeout != 0)
+        bool is_async = false;
+        for (const attribute& attr : attributes)
         {
-            // Avoid to set the timeout to 0 (no timeout).
-            // This is a workaround for the Oracle ODBC Driver (11.1), as this
-            // operation is not supported by the Driver.
-            NANODBC_CALL_RC(
-                SQLSetConnectAttr,
-                rc,
-                dbc_,
-                SQL_LOGIN_TIMEOUT,
-                (SQLPOINTER)(std::intptr_t)timeout,
-                0);
-            if (!success(rc))
-                NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
+            if (std::get<2>(attr) == nullptr)
+            {
+                continue;
+            }
+#if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE)
+            if (std::get<0>(attr) == SQL_ATTR_ASYNC_DBC_FUNCTIONS_ENABLE &&
+                std::get<2>(attr) == (void*)(std::intptr_t)SQL_ASYNC_DBC_ENABLE_ON)
+            {
+                is_async = true;
+            }
+#endif
+            this->set_attribute(std::get<0>(attr), std::get<1>(attr), std::get<2>(attr));
         }
 
-#if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
-        if (event_handle != nullptr)
-            enable_async(event_handle);
-#endif
+        RETCODE rc;
 
         NANODBC_CALL_RC(
             NANODBC_FUNC(SQLDriverConnect),
@@ -1017,7 +1131,7 @@ public:
             0,
             nullptr,
             SQL_DRIVER_NOPROMPT);
-        if (!success(rc) && (event_handle == nullptr || rc != SQL_STILL_EXECUTING))
+        if (!success(rc) && (!is_async || rc != SQL_STILL_EXECUTING))
             NANODBC_THROW_DATABASE_ERROR(dbc_, SQL_HANDLE_DBC);
 
         connected_ = success(rc);
@@ -2627,7 +2741,7 @@ public:
 
 private:
     template <typename T>
-    T* ensure_pdata(short column) const;
+    std::unique_ptr<T, std::function<void(T*)>> ensure_pdata(short column) const;
 
     template <class T>
     void get_ref_impl(short column, T& result) const;
@@ -2735,24 +2849,6 @@ private:
             if (!success(rc))
                 NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
 
-            // Adjust the sqlsize parameter in case of "unlimited" data (varchar(max),
-            // nvarchar(max)).
-            bool is_blob = false;
-
-            if (sqlsize == 0)
-            {
-                switch (sqltype)
-                {
-                case SQL_VARCHAR:
-                case SQL_WVARCHAR:
-                {
-                    // Divide in half, due to sqlsize being 32-bit in Win32 (and 64-bit in x64)
-                    // sqlsize = std::numeric_limits<int32_t>::max() / 2 - 1;
-                    is_blob = true;
-                }
-                }
-            }
-
             bound_column& col = bound_columns_[i];
             col.name_ = reinterpret_cast<string_type::value_type*>(column_name);
             col.column_ = i;
@@ -2799,8 +2895,8 @@ private:
             case SQL_CHAR:
             case SQL_VARCHAR:
                 col.ctype_ = SQL_C_CHAR;
-                col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLCHAR);
-                if (is_blob)
+                col.clen_ = NBYTES(col.sqlsize_, SQLCHAR);
+                if (col.sqlsize_ == 0)
                 {
                     col.clen_ = 0;
                     col.blob_ = true;
@@ -2808,14 +2904,17 @@ private:
                 break;
             case SQL_WCHAR:
             case SQL_WVARCHAR:
-            case SQL_SS_TIMESTAMPOFFSET:
                 col.ctype_ = SQL_C_WCHAR;
-                col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLWCHAR);
-                if (is_blob)
+                col.clen_ = NBYTES(col.sqlsize_, SQLWCHAR);
+                if (col.sqlsize_ == 0)
                 {
                     col.clen_ = 0;
                     col.blob_ = true;
                 }
+                break;
+            case SQL_SS_TIMESTAMPOFFSET:
+                col.ctype_ = SQL_C_WCHAR;
+                col.clen_ = (col.sqlsize_ + 1) * sizeof(SQLWCHAR);
                 break;
             case SQL_LONGVARCHAR:
                 col.ctype_ = SQL_C_CHAR;
@@ -3292,14 +3391,17 @@ inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
 }
 
 template <typename T>
-T* result::result_impl::ensure_pdata(short column) const
+std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(short column) const
 {
     bound_column& col = bound_columns_[column];
     SQLLEN ValueLenOrInd;
     SQLRETURN rc;
     if (is_bound(column))
     {
-        return (T*)(col.pdata_ + rowset_position_ * col.clen_);
+        // Return a unique_ptr with a no-op deleter as this memory allocation
+        // is managed (allocated and released) elsewhere.
+        return std::unique_ptr<T, std::function<void(T*)>>(
+            (T*)(col.pdata_ + rowset_position_ * col.clen_), [](T* ptr) {});
     }
 
     T* buffer = new T;
@@ -3319,9 +3421,11 @@ T* result::result_impl::ensure_pdata(short column) const
         col.cbdata_[static_cast<size_t>(rowset_position_)] = (SQLINTEGER)SQL_NULL_DATA;
     if (!success(rc))
         NANODBC_THROW_DATABASE_ERROR(stmt_.native_statement_handle(), SQL_HANDLE_STMT);
-    NANODBC_ASSERT(ValueLenOrInd == (SQLLEN)buffer_size);
 
-    return buffer;
+    // Return a traditional unique_ptr since we just allocated this buffer, and
+    // we most certainly want this memory returned to the heap when the result
+    // goes out of scope.
+    return std::unique_ptr<T>(buffer);
 }
 
 template <class T>
@@ -3464,7 +3568,7 @@ std::list<data_source> list_data_sources()
     RETCODE rc{SQL_SUCCESS};
     do
     {
-        NANODBC_ASSERT(env);
+        NANODBC_ASSERT(env.native_env_handle());
         NANODBC_CALL_RC(
             NANODBC_FUNC(SQLDataSources),
             rc,
@@ -3596,8 +3700,22 @@ connection::connection(
 {
 }
 
+connection::connection(
+    const string_type& dsn,
+    const string_type& user,
+    const string_type& pass,
+    const std::list<attribute>& attributes)
+    : impl_(new connection_impl(dsn, user, pass, attributes))
+{
+}
+
 connection::connection(const string_type& connection_string, long timeout)
     : impl_(new connection_impl(connection_string, timeout))
+{
+}
+
+connection::connection(const string_type& connection_string, const std::list<attribute>& attributes)
+    : impl_(new connection_impl(connection_string, attributes))
 {
 }
 
@@ -3622,9 +3740,23 @@ void connection::connect(
     impl_->connect(dsn, user, pass, timeout);
 }
 
+void connection::connect(
+    const string_type& dsn,
+    const string_type& user,
+    const string_type& pass,
+    const std::list<attribute>& attributes)
+{
+    impl_->connect(dsn, user, pass, attributes);
+}
+
 void connection::connect(const string_type& connection_string, long timeout)
 {
     impl_->connect(connection_string, timeout);
+}
+
+void connection::connect(const string_type& connection_string, const std::list<attribute>& attributes)
+{
+    impl_->connect(connection_string, attributes);
 }
 
 #if !defined(NANODBC_DISABLE_ASYNC) && defined(SQL_ATTR_ASYNC_DBC_EVENT)
@@ -4631,6 +4763,35 @@ std::list<string_type> catalog::list_schemas()
     std::list<string_type> names;
     while (schemas.next())
         names.push_back(schemas.table_schema());
+    return names;
+}
+
+std::list<string_type> catalog::list_table_types()
+{
+
+    statement stmt(conn_);
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLTables),
+        rc,
+        stmt.native_statement_handle(),
+        (NANODBC_SQLCHAR*)NANODBC_TEXT(""),
+        0,
+        (NANODBC_SQLCHAR*)NANODBC_TEXT(""),
+        0,
+        (NANODBC_SQLCHAR*)NANODBC_TEXT(""),
+        0,
+        (NANODBC_SQLCHAR*)SQL_ALL_TABLE_TYPES,
+        1);
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
+
+    result find_result(stmt, 1);
+    catalog::tables table_types(find_result);
+
+    std::list<string_type> names;
+    while (table_types.next())
+        names.push_back(table_types.table_type());
     return names;
 }
 

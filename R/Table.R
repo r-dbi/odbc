@@ -24,7 +24,7 @@
 #'
 #' dbDisconnect(con)
 #' }
-#' @name odbc-tables
+#' @name DBI-tables
 NULL
 
 odbc_write_table <-
@@ -68,9 +68,9 @@ odbc_write_table <-
     }
 
     fieldDetails <- tryCatch({
-      details <- odbcConnectionColumns(conn, name)
+      details <- odbcConnectionColumns(conn, name, exact = TRUE)
       details$param_index <- match(details$name, names(values))
-      details[!is.na(details$param_index), ]
+      details[!is.na(details$param_index) & !is.na(details$data_type), ]
     }, error = function(e) {
       return(NULL)
     })
@@ -79,7 +79,8 @@ odbc_write_table <-
 
       name <- dbQuoteIdentifier(conn, name)
       fields <- dbQuoteIdentifier(conn, names(values))
-      params <- rep("?", length(fields))
+      nparam <- length(fields)
+      params <- rep("?", nparam)
 
       sql <- paste0(
         "INSERT INTO ", name, " (", paste0(fields, collapse = ", "), ")\n",
@@ -87,7 +88,7 @@ odbc_write_table <-
         )
       rs <- OdbcResult(conn, sql)
 
-      if (!is.null(fieldDetails) && nrow(fieldDetails)) {
+      if (!is.null(fieldDetails) && nrow(fieldDetails) == nparam) {
         result_describe_parameters(rs@ptr, fieldDetails)
       }
 
@@ -100,7 +101,7 @@ odbc_write_table <-
     invisible(TRUE)
   }
 
-#' @rdname odbc-tables
+#' @rdname DBI-tables
 #' @inheritParams DBI::dbWriteTable
 #' @param overwrite Allow overwriting the destination table. Cannot be
 #'   `TRUE` if `append` is also `TRUE`.
@@ -114,19 +115,19 @@ setMethod(
   "dbWriteTable", c("OdbcConnection", "character", "data.frame"),
   odbc_write_table)
 
-#' @rdname odbc-tables
+#' @rdname DBI-tables
 #' @export
 setMethod(
   "dbWriteTable", c("OdbcConnection", "Id", "data.frame"),
   odbc_write_table)
 
-#' @rdname odbc-tables
+#' @rdname DBI-tables
 #' @export
 setMethod(
   "dbWriteTable", c("OdbcConnection", "SQL", "data.frame"),
   odbc_write_table)
 
-#' @rdname odbc-tables
+#' @rdname DBI-tables
 #' @inheritParams DBI::dbAppendTable
 #' @export
 setMethod("dbAppendTable", "OdbcConnection", function(conn, name, value, ..., row.names = NULL) {
@@ -136,7 +137,7 @@ setMethod("dbAppendTable", "OdbcConnection", function(conn, name, value, ..., ro
   invisible(NA_real_)
 })
 
-#' @rdname odbc-tables
+#' @rdname DBI-methods
 #' @inheritParams DBI::dbReadTable
 #' @export
 setMethod("sqlData", "OdbcConnection", function(con, value, row.names = NA, ...) {
@@ -162,12 +163,12 @@ setMethod("sqlData", "OdbcConnection", function(con, value, row.names = NA, ...)
   value
 })
 
-#' @rdname odbc-tables
+#' @rdname DBI-tables
 #' @inheritParams DBI::sqlCreateTable
 #' @param field.types Additional field types used to override derived types.
 #' @export
 setMethod("sqlCreateTable", "OdbcConnection",
-  function(con, table, fields, field.types = NULL, row.names = NA, temporary = FALSE, ...) {
+  function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
@@ -207,10 +208,11 @@ createFields <- function(con, fields, field.types, row.names) {
 setMethod(
   "dbExistsTable", c("OdbcConnection", "Id"),
   function(conn, name, ...) {
-    name@name[["table"]] %in% connection_sql_tables(conn@ptr,
+    dbExistsTable(
+      conn,
+      name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
-      schema_name = id_field(name, "schema"),
-      table_name = id_field(name, "table")
+      schema_name = id_field(name, "schema")
     )
   })
 
@@ -221,4 +223,15 @@ setMethod(
   "dbExistsTable", c("OdbcConnection", "SQL"),
   function(conn, name, ...) {
     dbExistsTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+  })
+
+#' @rdname OdbcConnection
+#' @inheritParams DBI::dbExistsTable
+#' @export
+setMethod(
+  "dbExistsTable", c("OdbcConnection", "character"),
+  function(conn, name, ...) {
+    stopifnot(length(name) == 1)
+    df <- odbcConnectionTables(conn, name = name, ..., exact = TRUE)
+    NROW(df) > 0
   })

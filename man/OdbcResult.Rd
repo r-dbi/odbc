@@ -57,3 +57,4 @@ performance.}
 Implementations of pure virtual functions defined in the \code{DBI} package
 for OdbcResult objects.
 }
+\keyword{internal}

@@ -209,7 +209,7 @@ bool odbc_result::complete() {
 bool odbc_result::active() { return c_->is_current_result(this); }
 
 odbc_result::~odbc_result() {
-  if (c_ != nullptr) {
+  if (c_ != nullptr && active()) {
     try {
       c_->set_current_result(nullptr);
     } catch (...) {
@@ -690,7 +690,7 @@ Rcpp::List odbc_result::result_to_dataframe(nanodbc::result& r, int n_max) {
   Rcpp::List out = create_dataframe(types, column_names(r), n);
   int row = 0;
 
-  if (rows_fetched_ == 0) {
+  if (rows_fetched_ == 0 && n > 0) {
     complete_ = !r.next();
   }
 
@@ -738,8 +738,8 @@ Rcpp::List odbc_result::result_to_dataframe(nanodbc::result& r, int n_max) {
       default:
         signal_unknown_field_type(types[col], r.column_name(col));
         break;
-      }
-    }
+      } // switch (types[col])
+    } // for (size_t col = 0,... )
 
     complete_ = !r.next();
     ++row;
@@ -750,13 +750,20 @@ Rcpp::List odbc_result::result_to_dataframe(nanodbc::result& r, int n_max) {
 
     if (complete_) {
       while (r.next_result()) {
-        if (r.next()) {
+        // MYSQL, when returning from a CALL [proc]
+        // returns a final result set containing a
+        // status flag.  Protect against trying to
+        // process/fetch this result set by checking
+        // the number of columns.  This is
+        // consistent with
+        // https://dev.mysql.com/doc/c-api/8.0/en/c-api-prepared-call-statements.html
+        if (r.columns() && r.next()) {
           complete_ = false;
           break;
         }
       };
     }
-  }
+  } // while ( !complete_ )
 
   // Resize if needed
   if (row < n) {

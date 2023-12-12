@@ -52,7 +52,8 @@ connection_ptr odbc_connect(
     std::string const& timezone_out = "",
     std::string const& encoding = "",
     int bigint = 0,
-    long timeout = 0) {
+    long timeout = 0,
+    Rcpp::Nullable<Rcpp::List> const& r_attributes_ = R_NilValue) {
   return connection_ptr(
       new std::shared_ptr<odbc_connection>(new odbc_connection(
           connection_string,
@@ -60,7 +61,8 @@ connection_ptr odbc_connect(
           timezone_out,
           encoding,
           static_cast<bigint_map_t>(bigint),
-          timeout)));
+          timeout,
+          r_attributes_)));
 }
 
 std::string get_info_or_empty(connection_ptr const& p, short type) {
@@ -158,11 +160,53 @@ Rcpp::DataFrame connection_sql_tables(
   }
   return Rcpp::DataFrame::create(
       Rcpp::_["table_catalog"] = catalog,
+      Rcpp::_["table_schema"] = schemas,
       Rcpp::_["table_name"] = names,
       Rcpp::_["table_type"] = types,
-      Rcpp::_["table_schema"] = schemas,
       Rcpp::_["table_remarks"] = remarks,
       Rcpp::_["stringsAsFactors"] = false);
+}
+
+// [[Rcpp::export]]
+Rcpp::StringVector connection_sql_catalogs(
+    connection_ptr const& p ) {
+  auto c = nanodbc::catalog(*(*p)->connection());
+  auto res = c.list_catalogs();
+  Rcpp::StringVector ret;
+  for ( const auto& val : res )
+  {
+    ret.push_back( val );
+  }
+
+  return ret;
+}
+
+// [[Rcpp::export]]
+Rcpp::StringVector connection_sql_schemas(
+    connection_ptr const& p ) {
+  auto c = nanodbc::catalog(*(*p)->connection());
+  auto res = c.list_schemas();
+  Rcpp::StringVector ret;
+  for ( const auto& val : res )
+  {
+    ret.push_back( val );
+  }
+
+  return ret;
+}
+
+// [[Rcpp::export]]
+Rcpp::StringVector connection_sql_table_types(
+    connection_ptr const& p ) {
+  auto c = nanodbc::catalog(*(*p)->connection());
+  auto res = c.list_table_types();
+  Rcpp::StringVector ret;
+  for ( const auto& val : res )
+  {
+    ret.push_back( val );
+  }
+
+  return ret;
 }
 
 // "%" is a wildcard for all possible values

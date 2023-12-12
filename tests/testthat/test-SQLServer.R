@@ -1,7 +1,10 @@
 test_that("SQLServer", {
-  skip_unless_has_test_db({
-      DBItest::make_context(odbc(), list(dsn = "MicrosoftSQLServer", UID="SA", PWD="Password12"), tweaks = DBItest::tweaks(temporary_tables = FALSE), name = "SQLServer")
-  })
+  DBItest::make_context(
+    odbc(),
+    test_connection_string("SQLSERVER"),
+    tweaks = DBItest::tweaks(temporary_tables = FALSE),
+    name = "SQLServer"
+  )
 
   DBItest::test_getting_started(c(
       "package_name", # Not an error
@@ -173,87 +176,149 @@ test_that("SQLServer", {
     expect_equal(as.double(values[[6]]), as.double(received[[6]]))
   })
 
+  local({
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    input <- DBI::SQL(c(
+      "testtable",
+      "[testtable]",
+      "[\"testtable\"]",
+      "testta[ble",
+      "testta]ble",
+      "[testschema].[testtable]",
+      "[testschema].testtable",
+      "[testdb].[testschema].[testtable]",
+      "[testdb].[testschema].testtable" ))
+    expected <- c(
+      DBI::Id(table = "testtable"),
+      DBI::Id(table = "testtable"),
+      DBI::Id(table = "testtable"),
+      DBI::Id(table = "testta[ble"),
+      DBI::Id(table = "testta]ble"),
+      DBI::Id(schema = "testschema", table = "testtable"),
+      DBI::Id(schema = "testschema", table = "testtable"),
+      DBI::Id(catalog = "testdb", schema = "testschema", table = "testtable"),
+      DBI::Id(catalog = "testdb", schema = "testschema", table = "testtable"))
+    expect_identical(DBI::dbUnquoteIdentifier(con, input), expected)
+  })
+
+  test_that("odbcPreviewObject", {
+    tblName <- "test_preview"
+    con <- DBItest:::connect(DBItest:::get_default_context())
+    dbWriteTable(con, tblName, data.frame(a = 1:10L))
+    on.exit(dbRemoveTable(con, tblName))
+    # There should be no "Pending rows" warning
+    expect_no_warning({
+      res <- odbcPreviewObject(con, rowLimit = 3, table = tblName)
+    })
+    expect_equal(nrow(res), 3)
+  })
+
   test_that("dates should always be interpreted in the system time zone (#398)", {
     con <- DBItest:::connect(DBItest:::get_default_context(), timezone = "America/Chicago")
     res <- dbGetQuery(con, "SELECT CAST(? AS date)", params = as.Date("2019-01-01"))
     expect_equal(res[[1]], as.Date("2019-01-01"))
   })
 
-  test_that("query_timeout - dbGetQuery - short query", {
+  test_that("UTF in VARCHAR is not truncated", {
     con <- DBItest:::connect(DBItest:::get_default_context())
-    res <- dbGetQuery(con, "WaitFor Delay '00:00:02'; SELECT 'HELLO' as world", query_timeout = 3)
-    expect_equal(res[[1]], "HELLO")
-  })
-  
-  test_that("query_timeout - dbGetQuery - short query with parameters", {
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    par <- data.frame('HELLO')
-    res <- dbGetQuery(con, "WaitFor Delay '00:00:02'; SELECT ? as world", params = par, query_timeout = 3)
-    expect_equal(res[[1]], "HELLO")
+    value <- "grün"
+    res <- dbGetQuery(con,
+      paste0("SELECT '", value, "' AS colone"))
+    expect_equal(value, res[[1]])
   })
 
-  test_that("query_timeout - dbGetQuery - long running query", {
+  test_that("Zero-row-fetch does not move cursor", {
     con <- DBItest:::connect(DBItest:::get_default_context())
-    expect_error(dbGetQuery(con, "WaitFor Delay '00:00:02'; SELECT 'HELLO' as world", query_timeout = 1), "timeout expired")
+    tblName <- "test_zero_row_fetch"
+    dbWriteTable(con, tblName, mtcars[1:2,])
+    on.exit(dbRemoveTable(con, tblName))
+    rs = dbSendStatement(con, paste0("SELECT * FROM ", tblName))
+    expect_equal(nrow(dbFetch(rs, n = 0)), 0)
+    expect_equal(nrow(dbFetch(rs, n = 10)), 2)
   })
 
-  test_that("query_timeout - dbGetQuery - long running query with parameters", {
+  test_that("isTempTable tests", {
     con <- DBItest:::connect(DBItest:::get_default_context())
-    par <- data.frame('HELLO')
-    expect_error(dbGetQuery(con, "WaitFor Delay '00:00:02'; SELECT ? as world", params = par, query_timeout = 1), "timeout expired")
+    expect_true( isTempTable(con, "#myTmp"))
+    expect_true( isTempTable(con, "#myTmp", catalog_name = "tempdb" ))
+    expect_true( isTempTable(con, "#myTmp", catalog_name = "%" ))
+    expect_true( isTempTable(con, "#myTmp", catalog_name = NULL ))
+    expect_true( !isTempTable(con, "##myTmp"))
+    expect_true( !isTempTable(con, "#myTmp", catalog_name = "abc" ))
   })
 
-  test_that("query_timeout - dbSendQuery - short query", {
+  test_that("dbExistsTable accounts for local temp tables", {
     con <- DBItest:::connect(DBItest:::get_default_context())
-    res <- dbSendQuery(con, "WaitFor Delay '00:00:02'; SELECT 'HELLO' as world", query_timeout = 3)
-    result <- dbFetch(res)
-    expect_equal(result[[1]], "HELLO")
-  })
-  
-  test_that("query_timeout - dbSendQuery - short query with parameters", {
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    par <- data.frame('HELLO')
-    res <- dbSendQuery(con, "WaitFor Delay '00:00:02'; SELECT ? as world", params = par, query_timeout = 3)
-    result <- dbFetch(res)
-    expect_equal(result[[1]], "HELLO")
-  })
-
-  test_that("query_timeout - dbSendQuery - long running query", {
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    expect_error(dbSendQuery(con, "WaitFor Delay '00:00:02'; SELECT 'HELLO' as world", query_timeout = 1), "timeout expired")
-  })
-  
-  test_that("query_timeout - dbSendQuery - long running query with parameters", {
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    par <- data.frame('HELLO')
-    expect_error(dbSendQuery(con, "WaitFor Delay '00:00:02'; SELECT ? as world", params = par, query_timeout = 1), "timeout expired")
+    tbl_name <- "#myTemp"
+    tbl_name2 <- "##myTemp"
+    tbl_name3 <- "#myTemp2"
+    DBI::dbExecute(con, paste0("CREATE TABLE ", tbl_name, " (
+      id int not null,
+      primary key (id) )"), immediate = TRUE)
+    expect_true( dbExistsTable( con, tbl_name) )
+    expect_true( dbExistsTable( con, tbl_name, catalog_name = "tempdb") )
+    # Fail because not recognized as temp table ( catalog not tempdb )
+    expect_true( !dbExistsTable( con, tbl_name, catalog_name = "abc") )
+    # Fail because not recognized as temp table ( second char "#" )
+    expect_true( !dbExistsTable( con, tbl_name2, catalog_name = "tempdb" ) )
+    # Fail because table not actually present
+    expect_true( !dbExistsTable( con, tbl_name3, catalog_name = "tempdb" ) )
   })
 
-  test_that("query_timeout - dbSendStatement - short query", {
+  test_that("Create / write to temp table", {
+    testthat::local_edition(3)
     con <- DBItest:::connect(DBItest:::get_default_context())
-    res <- dbSendStatement(con, "WaitFor Delay '00:00:02';", query_timeout = 3)
-    result <- dbGetRowsAffected(res)
-    # if the test reaches this line of code, the query is not stopped (as expected)
-    expect_equal(result, 0)
-  })
-  
-  test_that("query_timeout - dbSendStatement - short query with parameters", {
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    par <- data.frame('HELLO')
-    res <- dbSendStatement(con, "WaitFor Delay '00:00:02'; SELECT ? as world", params = par, query_timeout = 3)
-    result <- dbGetRowsAffected(res)
-    # if the test reaches this line of code, the query is not stopped (as expected)
-    expect_equal(result, 0)
+    locTblName <- "#myloctmp"
+    globTblName <- "##myglobtmp"
+    notTempTblName <- "nottemp"
+
+    df <- data.frame( name = c("one", "two"), value = c(1, 2) )
+    values <- sqlData(con, row.names = FALSE, df[, , drop = FALSE])
+    ret1 <- sqlCreateTable(con, locTblName, values, temporary = TRUE)
+    ret2 <- sqlCreateTable(con, locTblName, values, temporary = FALSE)
+
+    nm <- dbQuoteIdentifier(con, locTblName)
+    fields <- createFields(con, values, row.names = FALSE, field.types = NULL)
+    expected <- DBI::SQL(paste0(
+      "CREATE TABLE ", nm, " (\n",
+      "  ", paste(fields, collapse = ",\n  "), "\n)\n"
+    ))
+
+    expect_equal( ret1, expected )
+    expect_equal( ret2, expected )
+    expect_snapshot_warning(sqlCreateTable(con, globTblName, values, temporary = TRUE))
+    expect_no_warning(sqlCreateTable(con, globTblName, values, temporary = FALSE))
+    expect_snapshot_warning(sqlCreateTable(con, notTempTblName, values, temporary = TRUE))
+    expect_no_warning(sqlCreateTable(con, notTempTblName, values, temporary = FALSE))
+
+    # These tests need https://github.com/r-dbi/odbc/pull/600
+    # Uncomment when both merged.
+    # dbWriteTable(con, locTblName, mtcars, row.names = TRUE)
+    # res <- dbGetQuery(con, paste0("SELECT * FROM ", locTblName))
+    # expect_equal( mtcars$mpg, res$mpg )
+    # dbAppendTable(con, locTblName, mtcars)
+    # res <- dbGetQuery(con, paste0("SELECT * FROM ", locTblName))
+    # expect_equal( nrow( res ), 2 * nrow( mtcars ) )
   })
 
-  test_that("query_timeout - dbSendStatement - long running query", {
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    expect_error(dbSendStatement(con, "WaitFor Delay '00:00:02';", query_timeout = 1), "timeout expired")
+  test_that("Multiline error message", {
+    tryCatch({
+      DBI::dbConnect(odbc::odbc(), dsn = "does_not_exist_db")
+    }, error = function(e) {
+      # Expect to see at least one newline character in message
+      # ( previously one long string, #643 )
+      expect_true(grepl("\n", e$message))
+    })
   })
-  
-  test_that("query_timeout - dbSendStatement - long running query with parameters", {
+
+  test_that("query_timeout is respected", {
     con <- DBItest:::connect(DBItest:::get_default_context())
-    par <- data.frame('HELLO')
-    expect_error(dbSendStatement(con, "WaitFor Delay '00:00:02'; SELECT ? as world", params = par, query_timeout = 1), "timeout expired")
+    res <- dbGetQuery(con, "WaitFor Delay '00:00:01'; SELECT 1 as x", query_timeout = 2)
+    expect_equal(res, data.frame(x = 1))
+
+    expect_snapshot(
+      dbGetQuery(con, "WaitFor Delay '00:00:03'; SELECT 1 as x", query_timeout = 1),
+      error = TRUE
+    )
   })
 })

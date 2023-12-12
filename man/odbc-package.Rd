@@ -2,6 +2,7 @@
 % Please edit documentation in R/odbc.R
 \docType{package}
 \name{odbc-package}
+\alias{odbc-package}
 \title{odbc: Connect to ODBC Compatible Databases (using the DBI Interface)}
 \description{
 A DBI-compatible interface to ODBC databases.
@@ -9,26 +10,28 @@ A DBI-compatible interface to ODBC databases.
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://r-dbi.github.io/odbc/}
   \item \url{https://github.com/r-dbi/odbc}
-  \item \url{https://db.rstudio.com}
+  \item \url{https://solutions.posit.co/connections/db/}
   \item Report bugs at \url{https://github.com/r-dbi/odbc/issues}
 }
 
 }
 \author{
-\strong{Maintainer}: Hadley Wickham \email{hadley@rstudio.com}
+\strong{Maintainer}: Hadley Wickham \email{hadley@posit.co}
 
 Authors:
 \itemize{
   \item Jim Hester
+  \item Oliver Gjoneski
 }
 
 Other contributors:
 \itemize{
-  \item Oliver Gjoneski (detule) [contributor]
   \item lexicalunit (nanodbc library) [copyright holder]
   \item Google Inc. (cctz library) [copyright holder]
-  \item RStudio [copyright holder, funder]
+  \item Posit Software, PBC [copyright holder, funder]
 }
 
 }
+\keyword{internal}
