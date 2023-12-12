@@ -7,7 +7,7 @@
 namespace odbc {
 
 odbc_result::odbc_result(
-    std::shared_ptr<odbc_connection> c, std::string sql, bool immediate, long query_timeout)
+    std::shared_ptr<odbc_connection> c, std::string sql, bool immediate, long timeout)
     : c_(c),
       sql_(sql),
       rows_fetched_(0),
@@ -15,13 +15,13 @@ odbc_result::odbc_result(
       complete_(0),
       bound_(false),
       output_encoder_(Iconv(c_->encoding(), "UTF-8")),
-      query_timeout_(query_timeout) {
+      timeout_(timeout) {
 
   if (immediate) {
     s_ = std::make_shared<nanodbc::statement>();
     bound_ = true;
     r_ = std::make_shared<nanodbc::result>(
-        s_->execute_direct(*c_->connection(), sql_, query_timeout_));
+        s_->execute_direct(*c_->connection(), sql_, timeout_));
     num_columns_ = r_->columns();
     c_->set_current_result(this);
   } else {
@@ -43,12 +43,12 @@ std::shared_ptr<nanodbc::result> odbc_result::result() const {
   return std::shared_ptr<nanodbc::result>(r_);
 }
 void odbc_result::prepare() {
-  s_ = std::make_shared<nanodbc::statement>(*c_->connection(), sql_, query_timeout_);
+  s_ = std::make_shared<nanodbc::statement>(*c_->connection(), sql_, timeout_);
 }
 void odbc_result::execute() {
   if (!r_) {
     try {
-      r_ = std::make_shared<nanodbc::result>(s_->execute(1L, query_timeout_));
+      r_ = std::make_shared<nanodbc::result>(s_->execute(1L, timeout_));
       num_columns_ = r_->columns();
     } catch (const nanodbc::database_error& e) {
       c_->set_current_result(nullptr);
@@ -152,7 +152,7 @@ void odbc_result::bind_list(
     for (short col = 0; col < ncols; ++col) {
       bind_columns(*s_, types[col], x, col, start, size);
     }
-    r_ = std::make_shared<nanodbc::result>(s_->execute(size, query_timeout_));
+    r_ = std::make_shared<nanodbc::result>(s_->execute(size, timeout_));
     num_columns_ = r_->columns();
     start += batch_rows;
 

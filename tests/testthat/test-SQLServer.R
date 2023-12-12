@@ -311,13 +311,13 @@ test_that("SQLServer", {
     })
   })
 
-  test_that("query_timeout is respected", {
+  test_that("timeout is respected", {
     con <- DBItest:::connect(DBItest:::get_default_context())
-    res <- dbGetQuery(con, "WaitFor Delay '00:00:01'; SELECT 1 as x", query_timeout = 2)
+    res <- dbGetQuery(con, "WaitFor Delay '00:00:01'; SELECT 1 as x", timeout = 2)
     expect_equal(res, data.frame(x = 1))
 
     expect_snapshot(
-      dbGetQuery(con, "WaitFor Delay '00:00:03'; SELECT 1 as x", query_timeout = 1),
+      dbGetQuery(con, "WaitFor Delay '00:00:03'; SELECT 1 as x", timeout = 1),
       error = TRUE
     )
   })

@@ -9,11 +9,16 @@ NULL
 #' @docType methods
 NULL
 
-OdbcResult <- function(connection, statement, params = NULL, immediate = FALSE, query_timeout = 0) {
+OdbcResult <- function(connection, statement, params = NULL, immediate = FALSE, timeout = Inf) {
   if (nzchar(connection@encoding)) {
     statement <- enc2iconv(statement, connection@encoding)
   }
-  ptr <- new_result(connection@ptr, statement, immediate, query_timeout)
+
+  if (is.infinite(timeout)) {
+    timeout <- 0
+  }
+
+  ptr <- new_result(connection@ptr, statement, immediate, timeout)
   res <- new("OdbcResult", connection = connection, statement = statement, ptr = ptr)
 
   if (!is.null(params)) {

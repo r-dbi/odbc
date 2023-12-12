@@ -30,9 +30,23 @@
 
 \S4method{dbDisconnect}{OdbcConnection}(conn, ...)
 
-\S4method{dbSendQuery}{OdbcConnection,character}(conn, statement, params = NULL, ..., immediate = FALSE)
+\S4method{dbSendQuery}{OdbcConnection,character}(
+  conn,
+  statement,
+  params = NULL,
+  ...,
+  immediate = FALSE,
+  timeout = Inf
+)
 
-\S4method{dbSendStatement}{OdbcConnection,character}(conn, statement, params = NULL, ..., immediate = FALSE)
+\S4method{dbSendStatement}{OdbcConnection,character}(
+  conn,
+  statement,
+  params = NULL,
+  ...,
+  immediate = FALSE,
+  timeout = Inf
+)
 
 \S4method{dbDataType}{OdbcConnection,ANY}(dbObj, obj, ...)
 
@@ -46,7 +60,7 @@
 
 \S4method{dbGetInfo}{OdbcConnection}(dbObj, ...)
 
-\S4method{dbGetQuery}{OdbcConnection,character}(conn, statement, n = -1, params = NULL, ...)
+\S4method{dbGetQuery}{OdbcConnection,character}(conn, statement, n = -1, params = NULL, timeout = Inf, ...)
 
 \S4method{dbBegin}{OdbcConnection}(conn, ...)
 
@@ -78,6 +92,9 @@ or a \linkS4class{DBIResult}}
 
 \item{immediate}{If \code{TRUE}, SQLExecDirect will be used instead of
 SQLPrepare, and the \code{params} argument is ignored}
+
+\item{timeout}{Number of seconds to wait before aborting the query.
+The default, \code{Inf}, will never timeout.}
 
 \item{obj}{An R object whose SQL type we want to determine.}
 
