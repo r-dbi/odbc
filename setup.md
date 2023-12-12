@@ -1,6 +1,16 @@
 ## Test Setup
 
-While the odbc package contains some documentation on how to install and configure database drivers in `vignette("setup")`, the documentation assumes that users are connecting to databases that have already been set up. In order to test package functionality, though, odbc sets up small example database deployments. This file documents how to set up the needed dependencies to host these databases locally and is intended for developers of the R package.
+This file is intended to help developers of the R package install needed dependencies.
+
+While the odbc package contains some documentation on how to install and configure database drivers in `vignette("setup")`, the documentation assumes that users are connecting to databases that have already been set up. In order to test package functionality, though, odbc sets up small example database deployments.
+
+## RODBC
+
+We need to install the RODBC package for benchmarking in the vignette `vignette("benchmarks")`. The CRAN version of RODBC uses iODBC, so to use unixODBC we need to recompile it from source, specifying the odbc manager explicitly:
+
+```r
+install.packages("RODBC", type = "source", INSTALL_opts="--configure-args='--with-odbc-manager=odbc'")
+```
 
 ## PostgreSQL and MySQL
 
@@ -11,45 +21,78 @@ See the configuration files in .github/odbc for examples.
 
 ## SQL Server test setup
 
-Install the [microsoft drivers](https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15#macos)
+To run Microsoft SQL Server on **aarch64 (e.g. M1 or M2) MacOS**, you will need: 
+
+* Docker 4.16 or higher
+* MacOS 13 Ventura (or higher)
+
+If needed, install Docker with:
+
+```shell
+brew install --cask docker
+```
+
+The Docker Desktop app provides a GUI to monitor deployed Docker containers and lives in `Docker.app > Show Package Contents > Contents > MacOS > Docker Desktop.app`.
+
+To [install the SQL Server ODBC driver and (optional) command line tool](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/install-microsoft-odbc-driver-sql-server-macos?view=sql-server-ver15), use:
 
 ```shell
 brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
-brew update
-brew install msodbcsql17 mssql-tools
+brew install msodbcsql18 mssql-tools18
 ```
 
-### ini files
+The `odbc.ini` entry should look something like:
 
-First we need to install the drivers and setup the ini files
-
-`odbc.ini`
 ```ini
 [MicrosoftSQLServer]
-driver = ODBC Driver 17 for SQL Server
+driver = SQL Server Driver
 Server = 127.0.0.1
 port = 1433
+Encrypt = no
 ```
 
-Then we need to start an instance of SQL Server in a docker container.
+Note the `Encrypt = no` entry. In  `odbcinst.ini`:
+
+```ini
+[SQL Server Driver]
+Description=Microsoft ODBC Driver 18 for SQL Server
+Driver=/opt/homebrew/lib/libmsodbcsql.18.dylib
+UsageCount=1
+```
+
+With docker and the needed driver installed, deploy the container with:
 
 ```shell
-docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Password12" \
-   -p 1433:1433 --name sql1 \
-   -d mcr.microsoft.com/mssql/server:2017-latest
+sudo docker run --platform linux/amd64 -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=BoopBop123!" \
+   -p 1433:1433 --name sql1 --hostname sql1 \
+   -d \
+   mcr.microsoft.com/mssql/server:2022-latest
+```
+
+The `--platform` tag is correct for M1; if you see `Status: Exited (1)` in Docker Desktop or a warning about incompatible architectures, navigate to `Settings > General` and ensure that `Use Rosetta for x86/amd64 emulation on Apple Silicon` is checked.
+
+To connect via odbc, we need to pass the UID and PWD via the connection string; configuring those arguments via `odbc.ini` is [not permitted](https://stackoverflow.com/questions/42387084/sql-server-odbc-driver-linux-username). With the container deployed as above, the connection arguments would be:
+
+```r
+con <- dbConnect(
+         odbc::odbc(), 
+         dsn = "MicrosoftSQLServer", 
+         uid = "SA", 
+         pwd = "BoopBop123!"
+       )
 ```
 
 Then do some configuration of the server to add a testuser and create the test database
 
-```r
-library(DBI); con <- dbConnect(odbc::odbc(), "SQLServer", UID = 'SA', PWD = 'Password12')
+To configure a server to add a testing user and create a test database:
 
+```r
 # Add a test user, but currently unused
 dbExecute(con, "USE test")
 dbExecute(con, "EXEC sp_configure 'contained database authentication', 1")
 dbExecute(con, "RECONFIGURE")
 dbExecute(con, "alter database test set containment = partial")
-dbExecute(con, "CREATE USER testuser with password = 'Password12'")
+dbExecute(con, "CREATE USER testuser with password = 'BoopBop123!'")
 dbExecute(con, "GRANT CONTROL TO testuser")
 dbExecute(con, "DROP USER testuser")
 
@@ -57,26 +100,14 @@ dbExecute(con, "DROP USER testuser")
 dbExecute(con, "CREATE DATABASE test")
 ```
 
-### RODBC
-
-We need to install RODBC for benchmarking in the README. The CRAN version of RODBC uses
-iODBC, so to use unixODBC we need to recompile it from source, specifying the
-odbc manager explicitly.
-
-```r
-
-install.packages("RODBC", type = "source", INSTALL_opts="--configure-args='--with-odbc-manager=odbc'")
-```
-
-## Linux
-
-Create docker container
+On **Linux**, create a docker container with:
 
 ```shell
 docker run -v "$(pwd)":"/opt/$(basename $(pwd))":delegated --security-opt=seccomp:unconfined --link sql1 -it rstudio/r-base:3.6.1-bionic /bin/bash
 ```
 
-In docker
+Then run:
+
 ```shell
 curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 #Ubuntu 18.04
@@ -86,6 +117,8 @@ apt-get update
 ACCEPT_EULA=Y apt-get install -y msodbcsql17
 apt-get install -y unixodbc-dev
 ```
+
+The resulting `odbc.ini` file will look something like:
 
 ```ini
 [MicrosoftSQLServer]
