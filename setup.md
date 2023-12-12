@@ -1,8 +1,6 @@
 ## Test Setup
 
-This file contains settings needed to setup local testing of odbc. It is most
-useful for someone trying to develop the R package, so they can run the unit
-tests locally.
+While the odbc package contains some documentation on how to install and configure database drivers in `vignette("setup")`, the documentation assumes that users are connecting to databases that have already been set up. In order to test package functionality, though, odbc sets up small example database deployments. This file documents how to set up the needed dependencies to host these databases locally and is intended for developers of the R package.
 
 ## PostgreSQL and MySQL
 
