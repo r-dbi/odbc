@@ -29,7 +29,9 @@ Imports:
 Suggests:
     covr,
     DBItest,
+    knitr,
     magrittr,
+    rmarkdown,
     RSQLite,
     testthat (>= 3.0.0),
     tibble,
@@ -57,3 +59,4 @@ Collate:
     'db.R'
     'utils.R'
     'zzz.R'
+VignetteBuilder: knitr
