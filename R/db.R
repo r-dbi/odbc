@@ -42,8 +42,9 @@ setMethod(
 
 # Oracle --------------------------------------------------------------------
 
-# Simple class prototype to avoid messages about unknown classes from setMethod
-setClass("Oracle", where = class_cache)
+#' @export
+#' @rdname DBI-classes
+setClass("Oracle", contains = "OdbcDriver")
 
 #' @rdname DBI-methods
 setMethod("sqlCreateTable", "Oracle",
@@ -135,7 +136,9 @@ setMethod(
 
 # Teradata --------------------------------------------------------------------
 
-setClass("Teradata", where = class_cache)
+#' @export
+#' @rdname DBI-classes
+setClass("Teradata", contains = "OdbcConnection")
 
 #' @rdname DBI-methods
 setMethod("sqlCreateTable", "Teradata",
@@ -191,7 +194,9 @@ setMethod(
 
 # SAP HANA ----------------------------------------------------------------
 
-setClass("HDB", where = class_cache)
+#' @export
+#' @rdname DBI-classes
+setClass("HDB", contains = "OdbcConnection")
 
 #' @rdname DBI-methods
 setMethod("sqlCreateTable", "HDB",
@@ -210,7 +215,9 @@ setMethod("sqlCreateTable", "HDB",
 
 # Hive --------------------------------------------------------------------
 
-setClass("Hive", where = class_cache)
+#' @export
+#' @rdname DBI-classes
+setClass("Hive", contains = "OdbcConnection")
 
 #' @rdname DBI-methods
 setMethod(
@@ -231,8 +238,9 @@ setMethod(
 
 # Spark SQL ----------------------------------------------------------------
 
-# Simple class prototype to avoid messages about unknown classes from setMethod
-setClass("Spark SQL", where = class_cache)
+#' @export
+#' @rdname DBI-classes
+setClass("Spark SQL", contains = "OdbcConnection")
 
 #' @details Databricks supports multiple catalogs.  On the other hand,
 #' the default implementation of `odbcConnectionSchemas` which routes through
@@ -256,7 +264,9 @@ setMethod(
 
 # DB2 ----------------------------------------------------------------
 
-setClass("DB2/AIX64", where = class_cache)
+#' @export
+#' @rdname DBI-classes
+setClass("DB2/AIX64", contains = "OdbcConnection")
 
 #' @rdname DBI-methods
 # Don't generate a usage because there's some buglet in R CMD check
@@ -284,8 +294,8 @@ setMethod("sqlCreateTable", "DB2/AIX64",
 #' Details of SQL Server methods for odbc and DBI generics.
 #'
 #' @rdname SQLServer
-#' @usage NULL
-setClass("Microsoft SQL Server", where = class_cache)
+#' @export
+setClass("Microsoft SQL Server", contains = "OdbcConnection")
 
 #' @description
 #' ## `dbUnquoteIdentifier()`
