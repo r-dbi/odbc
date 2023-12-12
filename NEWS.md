@@ -4,6 +4,9 @@
   not using a parameterised query. That should yield a small speed boost in 
   many cases (#633).
 
+* S4 classes for the most database drivers are now exported, make it possible
+  to use in other packages (#558).
+
 * ODBC errors are now spread across multiple lines, making them easier to 
   read (@detule, #564).
 
