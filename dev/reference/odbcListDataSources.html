@@ -31,6 +31,13 @@ connected to with dbConnect() by providing DSN metadata directly."><meta name="r
       <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/benchmarks.html">Benchmarks</a>
+    <a class="dropdown-item" href="../articles/setup.html">Installing and Configuring Drivers</a>
+  </div>
+</li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
@@ -59,9 +66,9 @@ connected to with dbConnect() by providing DSN metadata directly."><meta name="r
     <p>Collect information about the available data source names (DSNs). A DSN must
 be both installed and configured with the driver manager to be included in
 this list. Configuring a DSN just sets up a lookup table (e.g. in
-<code>odbc.ini</code>) to allow users to pass only the DSN to <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect()</a></code>.</p>
+<code>odbc.ini</code>) to allow users to pass only the DSN to <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code>.</p>
 <p>DSNs that are not configured with the driver manager can still be
-connected to with <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect()</a></code> by providing DSN metadata directly.</p>
+connected to with <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code> by providing DSN metadata directly.</p>
     </div>
 
     <div class="section level2">
@@ -75,7 +82,7 @@ connected to with <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html"
 
 <p>A data frame with two columns:</p><dl><dt>name</dt>
 <dd><p>Name of the data source. The entries in this column can be
-passed to the <code>dsn</code> argument of <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect()</a></code>.</p></dd>
+passed to the <code>dsn</code> argument of <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code>.</p></dd>
 
 <dt>description</dt>
 <dd><p>Data source description.</p></dd>
@@ -102,13 +109,13 @@ on DSNs. Find the location(s) of your <code>odbc.ini</code> file(s) with <code>o
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>Port <span class="ot">=</span> <span class="dv">3306</span></span></code></pre><p></p></div>
 <p>...the data source name is <code>MySQL</code>, which will appear in the <code>name</code>
 column of this function's output. To pass the DSN as the <code>dsn</code> argument to
-<code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect()</a></code>, pass it as a string, like <code>"MySQL"</code>.
+<code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code>, pass it as a string, like <code>"MySQL"</code>.
 <code>Driver = MySQL Driver</code> references the driver <code>name</code> in <code><a href="odbcListDrivers.html">odbcListDrivers()</a></code>
 output.</p>
 <p><strong>Windows</strong> is <a href="https://learn.microsoft.com/en-us/sql/odbc/admin/odbc-data-source-administrator" class="external-link">bundled</a>
 with an ODBC driver manager.</p>
 <p>When a DSN is configured with a driver manager, information on the DSN will
-be automatically passed on to <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect()</a></code> when its <code>dsn</code> argument is set.</p>
+be automatically passed on to <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code> when its <code>dsn</code> argument is set.</p>
 <p>For example, with the <code>MySQL</code> data source name configured, and the driver
 name <code>MySQL Driver</code> appearing in <code><a href="odbcListDrivers.html">odbcListDrivers()</a></code> output, the code:</p>
 <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span></span>
@@ -123,7 +130,7 @@ name <code>MySQL Driver</code> appearing in <code><a href="odbcListDrivers.html"
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre><p></p></div>
 <p>...can be written:</p>
 <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(odbc<span class="sc">::</span><span class="fu">odbc</span>(), <span class="at">dsn =</span> <span class="st">"MySQL"</span>)</span></code></pre><p></p></div>
-<p>In this case, <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect()</a></code> will look up the information defined for <code>MySQL</code>
+<p>In this case, <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code> will look up the information defined for <code>MySQL</code>
 in the driver manager (in our example, <code>odbc.ini</code>) and automatically
 pass the needed arguments.</p>
     </div>

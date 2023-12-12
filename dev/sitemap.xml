@@ -16,6 +16,15 @@
     <loc>https://r-dbi.github.io/odbc/dev/MAINTENANCE.html</loc>
   </url>
   <url>
+    <loc>https://r-dbi.github.io/odbc/dev/articles/benchmarks.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/dev/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/dev/articles/setup.html</loc>
+  </url>
+  <url>
     <loc>https://r-dbi.github.io/odbc/dev/authors.html</loc>
   </url>
   <url>
@@ -62,9 +71,6 @@
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/odbc-package.html</loc>
-  </url>
-  <url>
-    <loc>https://r-dbi.github.io/odbc/dev/reference/odbc.html</loc>
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/odbcConnectionActions.html</loc>

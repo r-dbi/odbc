@@ -35,6 +35,13 @@ standard environment variables."><meta name="robots" content="noindex"><!-- math
       <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/benchmarks.html">Benchmarks</a>
+    <a class="dropdown-item" href="../articles/setup.html">Installing and Configuring Drivers</a>
+  </div>
+</li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
@@ -61,7 +68,7 @@ standard environment variables."><meta name="robots" content="noindex"><!-- math
 
     <div class="ref-description section level2">
     <p>Connect to Databricks clusters and SQL warehouses via the <a href="https://www.databricks.com/spark/odbc-drivers-download" class="external-link">Databricks ODBC driver</a>.</p>
-<p>In particular, the custom <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect()</a></code> method for the Databricks ODBC driver
+<p>In particular, the custom <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code> method for the Databricks ODBC driver
 implements a subset of the <a href="https://docs.databricks.com/en/dev-tools/auth.html#databricks-client-unified-authentication" class="external-link">Databricks client unified authentication</a>
 model, with support for personal access tokens, OAuth machine-to-machine
 credentials, and OAuth user-to-machine credentials supplied via Posit
@@ -75,7 +82,7 @@ All of these credentials are detected automatically if present using
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">databricks</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for DatabricksOdbcDriver</span></span>
-<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="dbConnect-OdbcDriver-method.html">dbConnect</a></span><span class="op">(</span></span>
 <span>  <span class="va">drv</span>,</span>
 <span>  <span class="va">httpPath</span>,</span>
 <span>  workspace <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"DATABRICKS_HOST"</span><span class="op">)</span>,</span>
@@ -117,7 +124,7 @@ default name.</p></dd>
 
 
 <dt>...</dt>
-<dd><p>Further arguments passed on to <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect()</a></code>.</p></dd>
+<dd><p>Further arguments passed on to <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

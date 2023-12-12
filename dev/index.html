@@ -39,6 +39,13 @@
 <li class="nav-item">
   <a class="nav-link" href="reference/index.html">Reference</a>
 </li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="articles/benchmarks.html">Benchmarks</a>
+    <a class="dropdown-item" href="articles/setup.html">Installing and Configuring Drivers</a>
+  </div>
+</li>
 <li class="nav-item">
   <a class="nav-link" href="news/index.html">Changelog</a>
 </li>
@@ -66,340 +73,62 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>The goal of the odbc package is to provide a DBI-compliant interface to <a href="https://learn.microsoft.com/en-us/sql/odbc/microsoft-open-database-connectivity-odbc?view=sql-server-ver15" class="external-link">Open Database Connectivity</a> (ODBC) drivers. This allows for an efficient, easy to setup connection to any database with ODBC drivers available, including <a href="https://www.microsoft.com/en-us/sql-server/" class="external-link">SQL Server</a>, <a href="https://www.oracle.com/database" class="external-link">Oracle</a>, <a href="https://www.mysql.com/" class="external-link">MySQL</a>, <a href="https://www.postgresql.org/" class="external-link">PostgreSQL</a>, <a href="https://sqlite.org/index.html" class="external-link">SQLite</a> and others. The implementation builds on the <a href="https://nanodbc.github.io/nanodbc/" class="external-link">nanodbc</a> C++ library.</p>
-<ul>
-<li>
-<a href="#installation">Installation</a>
-<ul>
-<li><a href="#windows">Windows</a></li>
-<li><a href="#macos">MacOS</a></li>
-<li><a href="#linux---debian-ubuntu">Linux - Debian / Ubuntu</a></li>
-<li><a href="#r">R</a></li>
-</ul>
-</li>
-<li>
-<a href="#connecting-to-a-database">Connecting to a Database</a>
-<ul>
-<li><a href="#connection-strings">Connection Strings</a></li>
-<li><a href="#dsn-configuration-files">DSN Configuration files</a></li>
-</ul>
-</li>
-<li>
-<a href="#usage">Usage</a>
-<ul>
-<li><a href="#table-and-field-information">Table and Field information</a></li>
-<li><a href="#reading">Reading</a></li>
-<li><a href="#writing">Writing</a></li>
-<li><a href="#querying">Querying</a></li>
-</ul>
-</li>
-<li>
-<a href="#benchmarks">Benchmarks</a>
-<ul>
-<li><a href="#reading-1">Reading</a></li>
-<li><a href="#writing-1">Writing</a></li>
-</ul>
-</li>
-</ul>
+<p>The goal of the odbc package is to provide a <a href="https://dbi.r-dbi.org/" class="external-link">DBI</a>-compliant interface to <a href="https://learn.microsoft.com/en-us/sql/odbc/microsoft-open-database-connectivity-odbc" class="external-link">ODBC</a> drivers. This makes it easy to connect databases such as <a href="https://www.microsoft.com/en-us/sql-server/" class="external-link">SQL Server</a>, <a href="https://www.oracle.com/database" class="external-link">Oracle</a>, <a href="https://www.databricks.com/" class="external-link">Databricks</a>, and <a href="https://www.snowflake.com/" class="external-link">Snowflake</a>.</p>
+<p>The odbc package is an alternative to <a href="https://cran.r-project.org/package=RODBC" class="external-link">RODBC</a> and <a href="https://cran.r-project.org/package=RODBCDBI" class="external-link">RODBCDBI</a> packages, and is typically much faster. See <code><a href="articles/benchmarks.html">vignette("benchmarks")</a></code> to learn more.</p>
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
+<p>The odbc package is one piece of the R interface to databases with support for ODBC:</p>
+<p><img src="reference/figures/whole-game.png" alt='A diagram containing four boxes with arrows linking each pointing left to right. The boxes read, in order, "R interface," "driver manager," "ODBC driver," and "DBMS." The left-most box, R interface, contains three smaller components, labeled "dbplyr," "DBI," and "odbc."' width="1527"></p>
+<p>Support for a given DBMS is provided by an <strong>ODBC driver</strong>, which defines how to interact with that DBMS using the standardized syntax of ODBC and SQL. Drivers can be downloaded from the DBMS vendor or, if you’re a Posit customer, using the <a href="https://docs.posit.co/pro-drivers/" class="external-link">professional drivers</a>.</p>
+<p>Drivers are managed by a <strong>driver manager</strong>, which is responsible for configuring driver locations, and optionally named <strong>data sources</strong> that describe how to connect to a specific database. Windows is bundled with a driver manager, while MacOS and Linux require installation of <a href="https://www.unixodbc.org/" class="external-link">unixODBC</a>. Drivers often require some manual configuration; see <code><a href="articles/setup.html">vignette("setup")</a></code> for details.</p>
+<p>In the <strong>R interface</strong>, the <a href="https://dbi.r-dbi.org/" class="external-link">DBI package</a> provides a front-end while odbc implements a back-end to communicate with the driver manager. The odbc package is built on top of the <a href="https://nanodbc.github.io/nanodbc/" class="external-link">nanodbc</a> C++ library. To interface with DBMSs using R and odbc:</p>
+<p><img src="reference/figures/r-interface.png" alt='A high-level workflow for using the R interface in 3 steps. In step 1, configure drivers and data sources, the functions odbcListDrivers() and odbcListDataSources() help to interface with the driver manager. In step 2, the dbConnect() function, called with the first argument odbc(), connects to a database using the specified ODBC driver to create a connection object "con." Finally, in step 3, that connection object can be passed to various functions to retrieve information on database structure, iteratively develop queries, and query data objects.' width="1824"></p>
+<p>You might also use the <a href="https://dbplyr.tidyverse.org/" class="external-link">dbplyr package</a> to automatically generate SQL from your dplyr code.</p>
+</div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>For Unix and MacOS ODBC drivers should be compiled against <a href="https://www.unixodbc.org/" class="external-link">unixODBC</a>. Drivers compiled against <a href="https://www.iodbc.org/" class="external-link">iODBC</a> <em>may</em> also work, but are not fully supported.</p>
-<p>After installation of the driver manager and driver, you will have to register the driver in a <a href="#dsn-configuration-files">odbcinst.ini</a> file for it to appear in <code><a href="reference/odbcListDrivers.html">odbc::odbcListDrivers()</a></code>.</p>
-<p>odbc and its dependencies use C++11 features. Therefore you need <a href="https://gcc.gnu.org/" class="external-link">gcc 4.8</a>, <a href="https://clang.llvm.org" class="external-link">clang 3.3</a> or <a href="https://CRAN.R-project.org/bin/windows/Rtools/" class="external-link">Rtools 3.3</a> or later.</p>
-<div class="section level3">
-<h3 id="windows">Windows<a class="anchor" aria-label="anchor" href="#windows"></a>
-</h3>
-<p>Windows is bundled with ODBC libraries. However, drivers for each database need to be installed separately. Windows ODBC drivers typically include an installer that needs to be run and will install the driver to the proper locations.</p>
-</div>
-<div class="section level3">
-<h3 id="macos">MacOS<a class="anchor" aria-label="anchor" href="#macos"></a>
-</h3>
-<p><a href="https://brew.sh/" class="external-link">homebrew</a> can be used to easily install database drivers on MacOS.</p>
-<div class="section level4">
-<h4 id="unixodbc---required-for-all-databases">UnixODBC - Required for all databases<a class="anchor" aria-label="anchor" href="#unixodbc---required-for-all-databases"></a>
-</h4>
-<pre class="shell"><code># Install the unixODBC library
-brew install unixodbc</code></pre>
-</div>
-<div class="section level4">
-<h4 id="common-db-drivers">Common DB drivers<a class="anchor" aria-label="anchor" href="#common-db-drivers"></a>
-</h4>
-<pre class="shell"><code># Microsoft SQL Server ODBC Drivers (Recommended)
-brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
-brew update
-brew install msodbcsql17 mssql-tools
-
-# SQL Server ODBC Drivers (Free TDS)
-brew install freetds
-
-# PostgreSQL ODBC ODBC Drivers
-brew install psqlodbc
-
-# MySQL ODBC Drivers (and database)
-brew install mysql
-
-# SQLite ODBC Drivers
-brew install sqliteodbc</code></pre>
-</div>
-</div>
-<div class="section level3">
-<h3 id="linux---debian--ubuntu">Linux - Debian / Ubuntu<a class="anchor" aria-label="anchor" href="#linux---debian--ubuntu"></a>
-</h3>
-<p><a href="https://wiki.debian.org/Apt" class="external-link">apt-get</a> can be used to easily install database drivers on Linux distributions which support it, such as Debian and Ubuntu.</p>
-<div class="section level4">
-<h4 id="unixodbc---required-for-all-databases-1">UnixODBC - Required for all databases<a class="anchor" aria-label="anchor" href="#unixodbc---required-for-all-databases-1"></a>
-</h4>
-<pre class="shell"><code># Install the unixODBC library
-apt-get install unixodbc unixodbc-dev</code></pre>
-</div>
-<div class="section level4">
-<h4 id="common-db-drivers-1">Common DB drivers<a class="anchor" aria-label="anchor" href="#common-db-drivers-1"></a>
-</h4>
-<p>For SQL Server on Linux it is recommended you use the <a href="https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver15#ubuntu18" class="external-link">Microsoft Drivers</a>.</p>
-<pre class="shell"><code># SQL Server ODBC Drivers (Free TDS)
-apt-get install tdsodbc
-
-# PostgreSQL ODBC ODBC Drivers
-apt-get install odbc-postgresql
-
-# MySQL ODBC Drivers
-apt-get install libmyodbc
-
-# SQLite ODBC Drivers
-apt-get install libsqliteodbc</code></pre>
-</div>
-</div>
-<div class="section level3">
-<h3 id="r">R<a class="anchor" aria-label="anchor" href="#r"></a>
-</h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Install the latest odbc release from CRAN:</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"odbc"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Or the the development version from GitHub:</span></span>
-<span><span class="co"># install.packages("pak")</span></span>
+<p>Install the latest release of odbc from CRAN with the following code:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"odbc"</span><span class="op">)</span></span></code></pre></div>
+<p>To get a bug fix or to use a feature from the development version, you can install the development version of odbc from GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"r-dbi/odbc"</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="connecting-to-a-database">Connecting to a Database<a class="anchor" aria-label="anchor" href="#connecting-to-a-database"></a>
-</h2>
-<p>Databases can be connected by specifying a connection string directly, or with DSN configuration files.</p>
-<div class="section level3">
-<h3 id="connection-strings">Connection Strings<a class="anchor" aria-label="anchor" href="#connection-strings"></a>
-</h3>
-<p>Specify a connection string as named arguments directly in the <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect()</a></code> method.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dbi.r-dbi.org" class="external-link">DBI</a></span><span class="op">)</span></span>
-<span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">odbc</span><span class="fu">::</span><span class="fu"><a href="reference/odbc.html">odbc</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  driver <span class="op">=</span> <span class="st">"PostgreSQL Driver"</span>,</span>
-<span>  database <span class="op">=</span> <span class="st">"test_db"</span>,</span>
-<span>  uid <span class="op">=</span> <span class="st">"postgres"</span>,</span>
-<span>  pwd <span class="op">=</span> <span class="st">"password"</span>,</span>
-<span>  host <span class="op">=</span> <span class="st">"localhost"</span>,</span>
-<span>  port <span class="op">=</span> <span class="fl">5432</span><span class="op">)</span></span></code></pre></div>
-<p>Alternatively you can pass a complete connection string as the <code>.connection_string</code> argument. <a href="https://www.connectionstrings.com" class="external-link">The Connection Strings Reference</a> is a useful resource that has example connection strings for a large variety of databases.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dbi.r-dbi.org" class="external-link">DBI</a></span><span class="op">)</span></span>
-<span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">odbc</span><span class="fu">::</span><span class="fu"><a href="reference/odbc.html">odbc</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  .connection_string <span class="op">=</span> <span class="st">"Driver={PostgreSQL Driver};Uid=postgres;Pwd=password;Host=localhost;Port=5432;Database=test_db;"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="dsn-configuration-files">DSN Configuration files<a class="anchor" aria-label="anchor" href="#dsn-configuration-files"></a>
-</h3>
-<p>ODBC configuration files are another option to specify connection parameters and allow one to use a Data Source Name (DSN) to make it easier to connect to a database.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">odbc</span><span class="fu">::</span><span class="fu"><a href="reference/odbc.html">odbc</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"PostgreSQL"</span><span class="op">)</span></span></code></pre></div>
-<div class="section level4">
-<h4 id="windows-1">Windows<a class="anchor" aria-label="anchor" href="#windows-1"></a>
-</h4>
-<p>The <a href="https://learn.microsoft.com/en-us/sql/odbc/admin/odbc-data-source-administrator?view=sql-server-ver15" class="external-link">ODBC Data Source Administrator</a> application is used to manage ODBC data sources on Windows.</p>
-</div>
-<div class="section level4">
-<h4 id="macos--linux">MacOS / Linux<a class="anchor" aria-label="anchor" href="#macos--linux"></a>
-</h4>
-<p>On MacOS and Linux there are two separate text files that need to be edited. UnixODBC includes a command line executable <code>odbcinst</code> which can be used to query and modify the DSN files. However these are plain text files you can also edit by hand if desired.</p>
-<p>There are two different files used to setup the DSN information.</p>
-<ul>
-<li>
-<code>odbcinst.ini</code> - which defines driver options</li>
-<li>
-<code>odbc.ini</code> - which defines connection options</li>
-</ul>
-<p>The DSN configuration files can be defined globally for all users of the system, often at <code>/etc/odbc.ini</code>, <code>/opt/local/etc/odbc.ini</code> or <code>/opt/homebrew/etc/odbc.ini</code>, the exact location depends on what option was used when compiling unixODBC. <code>odbcinst -j</code> can be used to find the exact location. Alternatively the <code>ODBCSYSINI</code> environment variable can be used to specify the location of the configuration files. Ex. <code>ODBCSYSINI=~/ODBC</code></p>
-<p>A local DSN file can also be used with the files <code>~/.odbc.ini</code> and <code>~/.odbcinst.ini</code>.</p>
-<div class="section level5">
-<h5 id="macos-aarch64">MacOS aarch64<a class="anchor" aria-label="anchor" href="#macos-aarch64"></a>
-</h5>
-<p>If ODBC has trouble locating your system data source names, you may need to override the default location where ODBC looks for your configuration files. You can use either of the options below to specify the location of your DSN configuration files.</p>
-<div class="section level6">
-<h6 id="option-1-save-setting-to-renviron">Option 1: Save Setting to <code>~/.Renviron</code>
-<a class="anchor" aria-label="anchor" href="#option-1-save-setting-to-renviron"></a>
-</h6>
-<ol style="list-style-type: decimal">
-<li>Create or open the <code>~/.Renviron</code> file.</li>
-<li>Add <code>ODBCSYSINI=/opt/homebrew/etc</code> to your <code>~/.Renviron</code> file and save your changes.</li>
-<li>Restart any open R sessions before connecting to a database.</li>
-</ol>
-</div>
-<div class="section level6">
-<h6 id="option-2-set-odbcsysini-environment-variable">Option 2: Set <code>ODBCSYSINI</code> Environment Variable<a class="anchor" aria-label="anchor" href="#option-2-set-odbcsysini-environment-variable"></a>
-</h6>
-<ol style="list-style-type: decimal">
-<li>Set the <code>ODBCSYSINI</code> environment variable, eg. <code>ODBCSYSINI=/opt/homebrew/etc</code>.</li>
-<li>Restart any open R sessions before connecting to a database.</li>
-</ol>
-</div>
-</div>
-<div class="section level5">
-<h5 id="odbcinstini">odbcinst.ini<a class="anchor" aria-label="anchor" href="#odbcinstini"></a>
-</h5>
-<p>Contains driver information, particularly the name of the driver library. Multiple drivers can be specified in the same file.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[PostgreSQL Driver]</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Driver          </span><span class="ot">=</span><span class="st"> /usr/local/lib/psqlodbcw.so</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="kw">[SQLite Driver]</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="dt">Driver          </span><span class="ot">=</span><span class="st"> /usr/local/lib/libsqlite3odbc.dylib</span></span></code></pre></div>
-<p>On MacOS aarch64 machines, drivers installed via homebrew are in a different location, as seen below.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[PostgreSQL Driver]</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Driver          </span><span class="ot">=</span><span class="st"> /opt/homebrew/lib/psqlodbcw.so</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="kw">[SQLite Driver]</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="dt">Driver          </span><span class="ot">=</span><span class="st"> /opt/homebrew/lib/libsqlite3odbc.dylib</span></span></code></pre></div>
-</div>
-<div class="section level5">
-<h5 id="odbcini">odbc.ini<a class="anchor" aria-label="anchor" href="#odbcini"></a>
-</h5>
-<p>Contains connection information, particularly the username, password, database and host information. The Driver line corresponds to the driver defined in <code>odbcinst.ini</code>.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[PostgreSQL]</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Driver              </span><span class="ot">=</span><span class="st"> PostgreSQL Driver</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="dt">Database            </span><span class="ot">=</span><span class="st"> test_db</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="dt">Servername          </span><span class="ot">=</span><span class="st"> </span><span class="kw">localhost</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="dt">UserName            </span><span class="ot">=</span><span class="st"> postgres</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="dt">Password            </span><span class="ot">=</span><span class="st"> password</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="dt">Port                </span><span class="ot">=</span><span class="st"> </span><span class="dv">5432</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="kw">[SQLite]</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="dt">Driver              </span><span class="ot">=</span><span class="st"> SQLite Driver</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="dt">Database            </span><span class="ot">=</span><span class="st"> /tmp/testing</span></span></code></pre></div>
-<p>See also: <a href="https://www.unixodbc.org/odbcinst.html" class="external-link">unixODBC without the GUI</a> for more information and examples.</p>
-</div>
-</div>
-</div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
-<p>All of the following examples assume you have already created a connection <code>con</code>. See <a href="#connecting-to-a-database">Connecting to a database</a> for more information on establishing a connection.</p>
-<div class="section level3">
-<h3 id="table-and-field-information">Table and Field information<a class="anchor" aria-label="anchor" href="#table-and-field-information"></a>
-</h3>
+<p>To use odbc, begin by creating a database connection, which might look something like this:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dbi.r-dbi.org" class="external-link">DBI</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dbConnect-OdbcDriver-method.html">dbConnect</a></span><span class="op">(</span></span>
+<span>  <span class="fu">odbc</span><span class="fu">::</span><span class="fu"><a href="reference/dbConnect-OdbcDriver-method.html">odbc</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  driver <span class="op">=</span> <span class="st">"SQL Server"</span>,</span>
+<span>  server <span class="op">=</span> <span class="st">"my-server"</span>,</span>
+<span>  database <span class="op">=</span> <span class="st">"my-database"</span>,</span>
+<span>  uid <span class="op">=</span> <span class="st">"my-username"</span>,</span>
+<span>  pwd <span class="op">=</span> <span class="fu">rstudioapi</span><span class="fu">::</span><span class="fu">askForPassword</span><span class="op">(</span><span class="st">"Database password"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>(See <code><a href="articles/setup.html">vignette("setup")</a></code> for examples of connecting to a variety of databases.)</p>
 <p><code><a href="https://dbi.r-dbi.org/reference/dbListTables.html" class="external-link">dbListTables()</a></code> is used for listing all existing tables in a database.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbListTables.html" class="external-link">dbListTables</a></span><span class="op">(</span><span class="va">con</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># List tables beginning with f</span></span>
-<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbListTables.html" class="external-link">dbListTables</a></span><span class="op">(</span><span class="va">con</span>, table_name <span class="op">=</span> <span class="st">"f%"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># List all fields in the 'flights' database</span></span>
-<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbListFields.html" class="external-link">dbListFields</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"flights"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="reading">Reading<a class="anchor" aria-label="anchor" href="#reading"></a>
-</h3>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbListTables.html" class="external-link">dbListTables</a></span><span class="op">(</span><span class="va">con</span><span class="op">)</span></span></code></pre></div>
 <p><code><a href="https://dbi.r-dbi.org/reference/dbReadTable.html" class="external-link">dbReadTable()</a></code> will read a full table into an R <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code>.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbReadTable.html" class="external-link">dbReadTable</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"flights"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="writing">Writing<a class="anchor" aria-label="anchor" href="#writing"></a>
-</h3>
 <p><code><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable()</a></code> will write an R <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code> to an SQL table.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"iris"</span>, <span class="va">iris</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="querying">Querying<a class="anchor" aria-label="anchor" href="#querying"></a>
-</h3>
-<p><code><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery()</a></code> will submit a query and fetch the results. It is also possible to submit the query and fetch separately with <code><a href="https://dbi.r-dbi.org/reference/dbSendQuery.html" class="external-link">dbSendQuery()</a></code> and <code><a href="https://dbi.r-dbi.org/reference/dbFetch.html" class="external-link">dbFetch()</a></code>. The <code>n=</code> argument to <code><a href="https://dbi.r-dbi.org/reference/dbFetch.html" class="external-link">dbFetch()</a></code> can be used to fetch only the part of a query result (the next <em>n</em> rows).</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbSendQuery.html" class="external-link">dbSendQuery</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"SELECT flight, tailnum, origin FROM flights ORDER BY origin"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Retrieve the first 100 results</span></span>
-<span><span class="va">first_100</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbFetch.html" class="external-link">dbFetch</a></span><span class="op">(</span><span class="va">result</span>, n <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Retrieve the rest of the results</span></span>
-<span><span class="va">rest</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbFetch.html" class="external-link">dbFetch</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="benchmarks">Benchmarks<a class="anchor" aria-label="anchor" href="#benchmarks"></a>
-</h2>
-<p>The <em>odbc</em> package is often much faster than the existing <a href="https://cran.r-project.org/package=RODBC" class="external-link">RODBC</a> and DBI compatible <a href="https://cran.r-project.org/package=RODBCDBI" class="external-link">RODBCDBI</a> packages.</p>
-<div class="section level3">
-<h3 id="reading-1">Reading<a class="anchor" aria-label="anchor" href="#reading-1"></a>
-</h3>
-<p>Reading a table from a SQL Server database with the ‘flights’ dataset (336,776 rows, 19 columns) of the package <a href="https://github.com/tidyverse/nycflights13" class="external-link">nycflights13</a>.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># First using RODBC / RODBCDBI</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dbi.r-dbi.org" class="external-link">DBI</a></span><span class="op">)</span></span>
-<span><span class="va">rodbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RODBCDBI</span><span class="fu">::</span><span class="fu">ODBC</span><span class="op">(</span><span class="op">)</span>, dsn <span class="op">=</span> <span class="st">"MicrosoftSQLServer"</span>, user <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SQLSERVER_UID"</span><span class="op">)</span>, password <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SQLSERVER_PWD"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">rodbc_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbReadTable.html" class="external-link">dbReadTable</a></span><span class="op">(</span><span class="va">rodbc</span>, <span class="st">"flights"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  13.986   1.173  15.192</span></span>
-<span></span>
-<span><span class="co"># Now using odbc</span></span>
-<span><span class="va">odbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">odbc</span><span class="fu">::</span><span class="fu"><a href="reference/odbc.html">odbc</a></span><span class="op">(</span><span class="op">)</span>, dsn <span class="op">=</span> <span class="st">"MicrosoftSQLServer"</span>, UID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SQLSERVER_UID"</span><span class="op">)</span>, PWD <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SQLSERVER_PWD"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">odbc_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbReadTable.html" class="external-link">dbReadTable</a></span><span class="op">(</span><span class="va">odbc</span>, <span class="st">"flights"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   1.334   0.065   1.406</span></span>
-<span></span>
-<span><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="va">odbc_result</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 336,776 x 19</span></span>
-<span><span class="co">#&gt;     year month   day dep_time sched_dep_time dep_delay arr_time</span></span>
-<span><span class="co">#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;</span></span>
-<span><span class="co">#&gt;  1  2013     1     1      517            515         2      830</span></span>
-<span><span class="co">#&gt;  2  2013     1     1      533            529         4      850</span></span>
-<span><span class="co">#&gt;  3  2013     1     1      542            540         2      923</span></span>
-<span><span class="co">#&gt;  4  2013     1     1      544            545        -1     1004</span></span>
-<span><span class="co">#&gt;  5  2013     1     1      554            600        -6      812</span></span>
-<span><span class="co">#&gt;  6  2013     1     1      554            558        -4      740</span></span>
-<span><span class="co">#&gt;  7  2013     1     1      555            600        -5      913</span></span>
-<span><span class="co">#&gt;  8  2013     1     1      557            600        -3      709</span></span>
-<span><span class="co">#&gt;  9  2013     1     1      557            600        -3      838</span></span>
-<span><span class="co">#&gt; 10  2013     1     1      558            600        -2      753</span></span>
-<span><span class="co">#&gt; # … with 336,766 more rows, and 12 more variables: sched_arr_time &lt;int&gt;,</span></span>
-<span><span class="co">#&gt; #   arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;,</span></span>
-<span><span class="co">#&gt; #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">rodbc_result</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">odbc_result</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] TRUE</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">rodbc_result</span>, <span class="va">odbc_result</span>, <span class="va">odbc</span>, <span class="va">rodbc</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span>verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="writing-1">Writing<a class="anchor" aria-label="anchor" href="#writing-1"></a>
-</h3>
-<p>Writing the same dataset to the database.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/hadley/nycflights13" class="external-link">nycflights13</a></span><span class="op">)</span></span>
-<span><span class="co"># rodbc does not support writing timestamps natively, so we remove that column</span></span>
-<span><span class="va">flights2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">flights</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">flights</span><span class="op">)</span> <span class="op">!=</span> <span class="st">"time_hour"</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="va">rodbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RODBCDBI</span><span class="fu">::</span><span class="fu">ODBC</span><span class="op">(</span><span class="op">)</span>, dsn <span class="op">=</span> <span class="st">"MicrosoftSQLServer"</span>, user <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SQLSERVER_UID"</span><span class="op">)</span>, password <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SQLSERVER_PWD"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span><span class="va">rodbc</span>, <span class="st">"flights2"</span>, <span class="va">flights2</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;  11.891   6.269 765.269</span></span>
-<span></span>
-<span><span class="co"># Now using odbc</span></span>
-<span><span class="va">odbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">odbc</span><span class="fu">::</span><span class="fu"><a href="reference/odbc.html">odbc</a></span><span class="op">(</span><span class="op">)</span>, dsn <span class="op">=</span> <span class="st">"MicrosoftSQLServer"</span>, UID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SQLSERVER_UID"</span><span class="op">)</span>, PWD <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"SQLSERVER_PWD"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">flights3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">flights</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span><span class="va">odbc</span>, <span class="st">"flights3"</span>, <span class="va">flights3</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed</span></span>
-<span><span class="co">#&gt;   2.617   0.275   9.649</span></span></code></pre></div>
-</div>
+<p><code><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery()</a></code> will submit a SQL query and fetch the results:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span></span>
+<span>  <span class="va">con</span>,</span>
+<span>  <span class="st">"SELECT flight, tailnum, origin FROM flights ORDER BY origin"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>It is also possible to submit the query and fetch separately with <code><a href="https://dbi.r-dbi.org/reference/dbSendQuery.html" class="external-link">dbSendQuery()</a></code> and <code><a href="https://dbi.r-dbi.org/reference/dbFetch.html" class="external-link">dbFetch()</a></code>. This allows you to use the <code>n</code> argument to <code><a href="https://dbi.r-dbi.org/reference/dbFetch.html" class="external-link">dbFetch()</a></code> to iterate over results that would otherwise be too large to fit in memory.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
