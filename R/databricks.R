@@ -41,6 +41,8 @@ databricks <- function() {
   new("DatabricksOdbcDriver")
 }
 
+#' @rdname databricks
+#' @export
 setClass("DatabricksOdbcDriver", contains = "OdbcDriver")
 
 #' @rdname databricks
