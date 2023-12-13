@@ -245,6 +245,17 @@ port = 1433
 Database = test
 ```
 
+## SQLite
+
+MacOS provides SQLite natively. With the SQLite odbc driver installed (see `vignette("setup")` if needed), run:
+
+```
+library(odbc)
+dbConnect(odbc(), "SQLite")
+```
+
+The above example assumes the configured SQLite DSN is called `"SQLite"`.
+
 ## Oracle
 
 A huge pain.
@@ -303,6 +314,7 @@ Finally, in R:
 Sys.setenv("TNS_ADMIN" = getwd())
 con <- dbConnect(odbc::odbc(), "OracleODBC-19")
 ```
+
 
 ## RODBC
 
