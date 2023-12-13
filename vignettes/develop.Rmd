@@ -1,6 +1,20 @@
-## Test Setup
+---
+title: "Developing odbc"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Developing odbc}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 
-This file is intended to help developers of the R package install needed dependencies.
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette is intended to help developers of the R package install needed dependencies.
 
 While the odbc package contains some documentation on how to install and configure database drivers in `vignette("setup")`, the documentation assumes that users are connecting to databases that have already been set up. In order to test package functionality, though, odbc sets up small example database deployments.
 
