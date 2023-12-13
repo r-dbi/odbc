@@ -338,6 +338,17 @@ setMethod("isTempTable", c("Microsoft SQL Server", "character"),
     grepl("^[#][^#]", name)
 })
 
+#' @rdname SQLServer
+#' @usage NULL
+setMethod(
+  "isTempTable",
+  c("Microsoft SQL Server", "SQL"),
+  function(conn, name, ...) {
+    isTempTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+  }
+)
+
+
 #' @description
 #' ## `dbExistsTable()`
 #' The default implementation reports temporary tables as non-existent
@@ -362,6 +373,27 @@ setMethod(
       df <- odbcConnectionTables(conn, name = name, ...)
     }
     NROW(df) > 0
+  })
+
+#' @rdname SQLServer
+#' @usage NULL
+setMethod(
+  "dbExistsTable", c("Microsoft SQL Server", "Id"),
+  function(conn, name, ...) {
+    dbExistsTable(
+      conn,
+      name = id_field(name, "table"),
+      catalog_name = id_field(name, "catalog"),
+      schema_name = id_field(name, "schema")
+    )
+  })
+
+#' @rdname SQLServer
+#' @usage NULL
+setMethod(
+  "dbExistsTable", c("Microsoft SQL Server", "SQL"),
+  function(conn, name, ...) {
+    dbExistsTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   })
 
 #' @rdname SQLServer
