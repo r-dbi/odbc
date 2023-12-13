@@ -80,12 +80,11 @@ odbcListObjects <- function(connection, ...) {
 
 #' @export
 odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = NULL, name = NULL, type = NULL, ...) {
-
   # if no catalog was supplied but this database has catalogs, return a list of
   # catalogs
   if (is.null(catalog)) {
     catalogs <- tryCatch(
-      string_values(odbcConnectionCatalogs(connection)), 
+      string_values(odbcConnectionCatalogs(connection)),
       error = function(err) character()
     )
     if (length(catalogs) > 0) {
@@ -94,7 +93,8 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
           name = catalogs,
           type = rep("catalog", times = length(catalogs)),
           stringsAsFactors = FALSE
-      ))
+        )
+      )
     }
   }
 
@@ -108,7 +108,8 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
           name = schemas,
           type = rep("schema", times = length(schemas)),
           stringsAsFactors = FALSE
-      ))
+        )
+      )
     }
   }
 
@@ -141,16 +142,17 @@ odbcListColumns <- function(connection, ...) {
 
 # given a connection, returns its "host name" (a unique string which identifies it)
 computeHostName <- function(connection) {
-  paste(collapse = "_",
-        string_values(c(
-          connection@info$username,
-          connection@info$dbname,
-          if (!identical(connection@info$servername, connection@info$dbname)) connection@info$servername
-        )))
+  paste(
+    collapse = "_",
+    string_values(c(
+      connection@info$username,
+      connection@info$dbname,
+      if (!identical(connection@info$servername, connection@info$dbname)) connection@info$servername
+    ))
+  )
 }
 
 computeDisplayName <- function(connection) {
-
   # use DSN if present
   dsn <- connection@info$sourcename
   if (!is.null(dsn) & dsn != "") {
@@ -176,7 +178,6 @@ computeDisplayName <- function(connection) {
 
 # selects the table or view from arguments
 validateObjectName <- function(table, view) {
-
   # Error if both table and view are passed
   if (!is.null(table) && !is.null(view)) {
     stop("`table` and `view` can not both be used", call. = FALSE)
@@ -193,18 +194,19 @@ validateObjectName <- function(table, view) {
 #' @export
 odbcListColumns.OdbcConnection <- function(connection, table = NULL, view = NULL,
                                            catalog = NULL, schema = NULL, ...) {
-
   # specify schema or catalog if given
   cols <- odbcConnectionColumns(connection,
     name = validateObjectName(table, view),
     catalog_name = catalog,
-    schema_name = schema)
+    schema_name = schema
+  )
 
   # extract and name fields for observer
   data.frame(
     name = cols[["name"]],
     type = cols[["field.type"]],
-    stringsAsFactors = FALSE)
+    stringsAsFactors = FALSE
+  )
 }
 
 #' Preview the data in an object.
@@ -233,7 +235,9 @@ odbcPreviewObject.OdbcConnection <- function(connection, rowLimit, table = NULL,
   # prepend schema if specified
   if (!is.null(schema)) {
     name <- paste(dbQuoteIdentifier(connection, schema),
-                  dbQuoteIdentifier(connection, name), sep = ".")
+      dbQuoteIdentifier(connection, name),
+      sep = "."
+    )
   }
 
   # prepend catalog if specified
@@ -241,8 +245,9 @@ odbcPreviewObject.OdbcConnection <- function(connection, rowLimit, table = NULL,
     name <- paste(dbQuoteIdentifier(connection, catalog), name, sep = ".")
   }
 
-  dbGetQuery(connection, odbcPreviewQuery(connection, rowLimit, name ),
-    n = rowLimit)
+  dbGetQuery(connection, odbcPreviewQuery(connection, rowLimit, name),
+    n = rowLimit
+  )
 }
 
 #' Create a preview query.
@@ -329,10 +334,10 @@ odbcConnectionActions.default <- function(connection) {
         SQL = list(
           icon = system.file("icons/edit-sql.png", package = "odbc"),
           callback = function() {
-
             varname <- Filter(
               function(e) identical(get(e, envir = .GlobalEnv), connection),
-              ls(envir = .GlobalEnv))
+              ls(envir = .GlobalEnv)
+            )
 
             tables <- odbcConnectionTables(connection)
             columnPos <- 6
@@ -344,9 +349,7 @@ odbcConnectionActions.default <- function(connection) {
                 "",
                 sep = "\n"
               )
-            }
-            else
-            {
+            } else {
               firstTable <- tables[1, ]
 
               tableName <- dbQuoteIdentifier(connection, firstTable$table_name)
@@ -396,8 +399,9 @@ odbcConnectionActions.default <- function(connection) {
 on_connection_closed <- function(con) {
   # make sure we have an observer
   observer <- getOption("connectionObserver")
-  if (is.null(observer))
+  if (is.null(observer)) {
     return(invisible(NULL))
+  }
 
   type <- con@info$dbms.name
   host <- computeHostName(con)
@@ -407,8 +411,9 @@ on_connection_closed <- function(con) {
 on_connection_updated <- function(con, hint) {
   # make sure we have an observer
   observer <- getOption("connectionObserver")
-  if (is.null(observer))
+  if (is.null(observer)) {
     return(invisible(NULL))
+  }
 
   type <- con@info$dbms.name
   host <- computeHostName(con)
@@ -418,8 +423,9 @@ on_connection_updated <- function(con, hint) {
 on_connection_opened <- function(connection, code) {
   # make sure we have an observer
   observer <- getOption("connectionObserver")
-  if (is.null(observer))
+  if (is.null(observer)) {
     return(invisible(NULL))
+  }
 
   # find an icon for this DBMS
   icon <- odbcConnectionIcon(connection)
@@ -445,8 +451,7 @@ on_connection_opened <- function(connection, code) {
     disconnect = function() {
       dbDisconnect(connection)
     },
-
-    listObjectTypes = function () {
+    listObjectTypes = function() {
       odbcListObjectTypes(connection)
     },
 

@@ -28,7 +28,8 @@ setMethod(
   function(object) {
     cat("<OdbcDriver>\n")
     # TODO: Print more details
-  })
+  }
+)
 
 #' Connect to a database via an ODBC driver
 #'
@@ -152,23 +153,23 @@ setMethod(
 #' @export
 setMethod(
   "dbConnect", "OdbcDriver",
-  function(drv,
-    dsn = NULL,
-    ...,
-    timezone = "UTC",
-    timezone_out = "UTC",
-    encoding = "",
-    bigint = c("integer64", "integer", "numeric", "character"),
-    timeout = 10,
-    driver = NULL,
-    server = NULL,
-    database = NULL,
-    uid = NULL,
-    pwd = NULL,
-    dbms.name = NULL,
-    attributes = NULL,
-    .connection_string = NULL) {
-
+  function(
+      drv,
+      dsn = NULL,
+      ...,
+      timezone = "UTC",
+      timezone_out = "UTC",
+      encoding = "",
+      bigint = c("integer64", "integer", "numeric", "character"),
+      timeout = 10,
+      driver = NULL,
+      server = NULL,
+      database = NULL,
+      uid = NULL,
+      pwd = NULL,
+      dbms.name = NULL,
+      attributes = NULL,
+      .connection_string = NULL) {
     con <- OdbcConnection(
       dsn = dsn,
       ...,
@@ -184,24 +185,29 @@ setMethod(
       pwd = pwd,
       dbms.name = dbms.name,
       attributes = attributes,
-      .connection_string = .connection_string)
+      .connection_string = .connection_string
+    )
 
     # perform the connection notification at the top level, to ensure that it's had
     # a chance to get its external pointer connected, and so we can capture the
     # expression that created it
     if (!is.null(getOption("connectionObserver"))) { # nocov start
       addTaskCallback(function(expr, ...) {
-        tryCatch({
-          if (rlang::is_call(x = expr, name = c("<-", "=")) &&
+        tryCatch(
+          {
+            if (rlang::is_call(x = expr, name = c("<-", "=")) &&
               "dbConnect" %in% as.character(expr[[3]][[1]])) {
-
-            # notify if this is an assignment we can replay
-            on_connection_opened(eval(expr[[2]]), paste(
-              c("library(DBI)", deparse(expr)), collapse = "\n"))
+              # notify if this is an assignment we can replay
+              on_connection_opened(eval(expr[[2]]), paste(
+                c("library(DBI)", deparse(expr)),
+                collapse = "\n"
+              ))
+            }
+          },
+          error = function(e) {
+            warning("Could not notify connection observer. ", e$message, call. = FALSE)
           }
-        }, error = function(e) {
-          warning("Could not notify connection observer. ", e$message, call. = FALSE)
-        })
+        )
 
         # always return false so the task callback is run at most once
         FALSE
@@ -219,7 +225,8 @@ setMethod(
   "dbDataType", "OdbcDriver",
   function(dbObj, obj, ...) {
     odbcDataType(dbObj, obj, ...)
-  })
+  }
+)
 
 #' @rdname OdbcDriver
 #' @inheritParams DBI::dbDataType
@@ -228,7 +235,8 @@ setMethod(
   "dbDataType", c("OdbcDriver", "list"),
   function(dbObj, obj, ...) {
     odbcDataType(dbObj, obj, ...)
-  })
+  }
+)
 
 odbc_data_type_df <- function(dbObj, obj, ...) {
   res <- character(NCOL(obj))
@@ -261,7 +269,8 @@ setMethod(
   "dbIsValid", "OdbcDriver",
   function(dbObj, ...) {
     TRUE
-  })
+  }
+)
 
 #' @rdname OdbcDriver
 #' @inheritParams DBI::dbGetInfo
@@ -270,7 +279,8 @@ setMethod(
   "dbGetInfo", "OdbcDriver",
   function(dbObj, ...) {
     list(max.connections = NULL, driver.version = NULL, client.version = NULL)
-  })
+  }
+)
 
 
 #' Unimportant DBI methods

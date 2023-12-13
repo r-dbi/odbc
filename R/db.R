@@ -1,4 +1,3 @@
-
 #' Helper method used to determine if a table identifier is that
 #' of a temporary table.
 #'
@@ -27,7 +26,8 @@ setMethod(
       name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
       schema_name = id_field(name, "schema"),
-      ...)
+      ...
+    )
   }
 )
 
@@ -47,16 +47,18 @@ setMethod(
 setClass("Oracle", contains = "OdbcDriver")
 
 #' @rdname DBI-methods
-setMethod("sqlCreateTable", "Oracle",
+setMethod(
+  "sqlCreateTable", "Oracle",
   function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
     SQL(paste0(
-        "CREATE ", if (temporary) " GLOBAL TEMPORARY ", "TABLE ", table, " (\n",
-        "  ", paste(fields, collapse = ",\n  "), "\n)\n", if (temporary) " ON COMMIT PRESERVE ROWS"
-        ))
-  })
+      "CREATE ", if (temporary) " GLOBAL TEMPORARY ", "TABLE ", table, " (\n",
+      "  ", paste(fields, collapse = ",\n  "), "\n)\n", if (temporary) " ON COMMIT PRESERVE ROWS"
+    ))
+  }
+)
 
 #' @rdname odbcConnectionTables
 #' @details Query, rather than use SQLTables ODBC API for performance reasons on Oracle.
@@ -68,25 +70,27 @@ setMethod(
   "odbcConnectionTables",
   c("Oracle", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL, exact = FALSE) {
-
     qTable <- getSelector("object_name", name, exact)
     if (is.null(schema_name)) {
       query <- paste0(
-        " SELECT null AS \"table_catalog\", '", conn@info$username ,"' AS \"table_schema\", object_name AS \"table_name\", object_type AS \"table_type\", null AS \"table_remarks\"",
+        " SELECT null AS \"table_catalog\", '", conn@info$username, "' AS \"table_schema\", object_name AS \"table_name\", object_type AS \"table_type\", null AS \"table_remarks\"",
         " FROM user_objects ",
         " WHERE 1 = 1 ", qTable,
-        " AND ( object_type = 'TABLE' OR object_type = 'VIEW' ) ")
+        " AND ( object_type = 'TABLE' OR object_type = 'VIEW' ) "
+      )
     } else {
       qSchema <- getSelector("owner", schema_name, exact)
       query <- paste0(
         " SELECT null AS \"table_catalog\", owner AS \"table_schema\", object_name AS \"table_name\", object_type AS \"table_type\", null AS \"table_remarks\"",
         " FROM all_objects ",
         " WHERE 1 = 1 ", qSchema, qTable,
-        " AND ( object_type = 'TABLE' OR object_type = 'VIEW' ) ")
+        " AND ( object_type = 'TABLE' OR object_type = 'VIEW' ) "
+      )
     }
 
     dbGetQuery(conn, query)
-  })
+  }
+)
 
 #' @rdname odbcConnectionColumns
 #' @details Query, rather than use SQLColumns ODBC API for ORACLE since when using the API
@@ -95,7 +99,6 @@ setMethod(
   "odbcConnectionColumns",
   c("Oracle", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL, exact = FALSE) {
-
     query <- ""
     baseSelect <- paste0(
       "SELECT
@@ -115,24 +118,28 @@ setMethod(
       null AS \"sql_datetime_subtype\",
       decode(data_type,'CHAR',data_length,'VARCHAR2',data_length,'NVARCHAR2',data_length,'NCHAR',data_length, 0) AS \"char_octet_length\",
       column_id AS \"ordinal_position\",
-      decode(nullable, 'Y', 1, 'N', 0) AS \"nullable\"")
+      decode(nullable, 'Y', 1, 'N', 0) AS \"nullable\""
+    )
     qTable <- getSelector("table_name", name, exact)
     if (is.null(schema_name)) {
-      baseSelect <- gsub("owner AS \"schema_name\"", paste0("'", conn@info$username, "' AS \"schema_name\""), baseSelect);
+      baseSelect <- gsub("owner AS \"schema_name\"", paste0("'", conn@info$username, "' AS \"schema_name\""), baseSelect)
       query <- paste0(
-         baseSelect,
-         " FROM user_tab_columns ",
-         " WHERE 1 = 1 ", qTable );
+        baseSelect,
+        " FROM user_tab_columns ",
+        " WHERE 1 = 1 ", qTable
+      )
     } else {
       qSchema <- getSelector("owner", schema_name, exact)
       query <- paste0(
         baseSelect,
         " FROM all_tab_columns ",
-        " WHERE 1 = 1 ", qSchema, qTable )
+        " WHERE 1 = 1 ", qSchema, qTable
+      )
     }
 
-    dbGetQuery(conn, query);
-  })
+    dbGetQuery(conn, query)
+  }
+)
 
 # Teradata --------------------------------------------------------------------
 
@@ -141,25 +148,26 @@ setMethod(
 setClass("Teradata", contains = "OdbcConnection")
 
 #' @rdname DBI-methods
-setMethod("sqlCreateTable", "Teradata",
+setMethod(
+  "sqlCreateTable", "Teradata",
   function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
     SQL(paste0(
-        "CREATE ", if (temporary) " MULTISET VOLATILE ", "TABLE ", table, " (\n",
-        "  ", paste(fields, collapse = ",\n  "), "\n)\n", if (temporary) " ON COMMIT PRESERVE ROWS"
-        ))
-  })
+      "CREATE ", if (temporary) " MULTISET VOLATILE ", "TABLE ", table, " (\n",
+      "  ", paste(fields, collapse = ",\n  "), "\n)\n", if (temporary) " ON COMMIT PRESERVE ROWS"
+    ))
+  }
+)
 
 
 setMethod(
   "odbcConnectionTables",
   c("Teradata", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL) {
-
     res <- callNextMethod()
-    if ( !is.null(schema_name) ) {
+    if (!is.null(schema_name)) {
       return(res)
     }
 
@@ -168,17 +176,16 @@ setMethod(
     tempTableNames <- dbGetQuery(conn, "HELP VOLATILE TABLE")[["Table SQL Name"]]
     # If a name argument is supplied, subset the temp table names vector
     # to either an exact match, or if pattern value, to an approximate match
-    if ( !is.null( name ) ) {
-      if ( isPatternValue( name ) ) {
-        name <- convertWildCards( name )
-      }
-      else {
+    if (!is.null(name)) {
+      if (isPatternValue(name)) {
+        name <- convertWildCards(name)
+      } else {
         name <- paste0("^", name, "$")
       }
-      tempTableNames <- tempTableNames[ grepl(name, tempTableNames) ]
+      tempTableNames <- tempTableNames[grepl(name, tempTableNames)]
     }
 
-    navec <- rep( NA_character_, length( tempTableNames ) )
+    navec <- rep(NA_character_, length(tempTableNames))
     rbind(
       res,
       data.frame(
@@ -199,7 +206,8 @@ setMethod(
 setClass("HDB", contains = "OdbcConnection")
 
 #' @rdname DBI-methods
-setMethod("sqlCreateTable", "HDB",
+setMethod(
+  "sqlCreateTable", "HDB",
   function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
@@ -225,7 +233,9 @@ setMethod(
   # DBI:::quote_string just returns x when it is of class SQL, so no need to override that.
   "dbQuoteString", signature("Hive", "character"),
   function(conn, x, ...) {
-    if (is(x, "SQL")) return(x)
+    if (is(x, "SQL")) {
+      return(x)
+    }
     x <- gsub("'", "\\\\'", enc2utf8(x))
     if (length(x) == 0L) {
       DBI::SQL(character())
@@ -234,7 +244,8 @@ setMethod(
       str[is.na(x)] <- "NULL"
       DBI::SQL(str)
     }
-  })
+  }
+)
 
 # Spark SQL ----------------------------------------------------------------
 
@@ -273,7 +284,8 @@ setClass("DB2/AIX64", contains = "OdbcConnection")
 # (probably because of the `/` in the class name) which flags a usage
 # without corresponding alias
 #' @usage NULL
-setMethod("sqlCreateTable", "DB2/AIX64",
+setMethod(
+  "sqlCreateTable", "DB2/AIX64",
   function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
@@ -309,10 +321,11 @@ setClass("Microsoft SQL Server", contains = "OdbcConnection")
 #' @docType methods
 #' @usage NULL
 #' @keywords internal
-setMethod("dbUnquoteIdentifier", c("Microsoft SQL Server", "SQL"),
+setMethod(
+  "dbUnquoteIdentifier", c("Microsoft SQL Server", "SQL"),
   function(conn, x, ...) {
     x <- gsub("(\\[)([^\\.]+?)(\\])", "\\2", x)
-    callNextMethod( conn, x, ... )
+    callNextMethod(conn, x, ...)
   }
 )
 
@@ -326,17 +339,19 @@ setMethod("dbUnquoteIdentifier", c("Microsoft SQL Server", "SQL"),
 #' name starts with `"#"`.
 #' @rdname SQLServer
 #' @usage NULL
-setMethod("isTempTable", c("Microsoft SQL Server", "character"),
+setMethod(
+  "isTempTable", c("Microsoft SQL Server", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, ...) {
     if (!is.null(catalog_name) &&
-        catalog_name != "%" &&
-        length(catalog_name) > 0 &&
-        catalog_name != "tempdb") {
+      catalog_name != "%" &&
+      length(catalog_name) > 0 &&
+      catalog_name != "tempdb") {
       return(FALSE)
     }
 
     grepl("^[#][^#]", name)
-})
+  }
+)
 
 #' @rdname SQLServer
 #' @usage NULL
@@ -361,7 +376,7 @@ setMethod(
   "dbExistsTable", c("Microsoft SQL Server", "character"),
   function(conn, name, ...) {
     stopifnot(length(name) == 1)
-    if (isTempTable(conn, name, ... )) {
+    if (isTempTable(conn, name, ...)) {
       name <- paste0(name, "\\_\\_\\_%")
       df <- odbcConnectionTables(
         conn,
@@ -373,7 +388,8 @@ setMethod(
       df <- odbcConnectionTables(conn, name = name, ...)
     }
     NROW(df) > 0
-  })
+  }
+)
 
 #' @rdname SQLServer
 #' @usage NULL
@@ -386,7 +402,8 @@ setMethod(
       catalog_name = id_field(name, "catalog"),
       schema_name = id_field(name, "schema")
     )
-  })
+  }
+)
 
 #' @rdname SQLServer
 #' @usage NULL
@@ -394,7 +411,8 @@ setMethod(
   "dbExistsTable", c("Microsoft SQL Server", "SQL"),
   function(conn, name, ...) {
     dbExistsTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
-  })
+  }
+)
 
 #' @rdname SQLServer
 #' @description
@@ -403,7 +421,8 @@ setMethod(
 #' Warns if `temporary = TRUE` but the `name` does not conform to temp table
 #' naming conventions (i.e. it doesn't start with `#`).
 #' @usage NULL
-setMethod("sqlCreateTable", "Microsoft SQL Server",
+setMethod(
+  "sqlCreateTable", "Microsoft SQL Server",
   function(con,
            table,
            fields,
@@ -416,4 +435,5 @@ setMethod("sqlCreateTable", "Microsoft SQL Server",
     }
     temporary <- FALSE
     callNextMethod()
-})
+  }
+)

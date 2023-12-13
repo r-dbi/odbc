@@ -28,8 +28,9 @@
 NULL
 
 odbc_write_table <-
-  function(conn, name, value, overwrite=FALSE, append=FALSE, temporary = FALSE,
-    row.names = NA, field.types = NULL, batch_rows = getOption("odbc.batch_rows", NA), ...) {
+  function(
+      conn, name, value, overwrite = FALSE, append = FALSE, temporary = FALSE,
+      row.names = NA, field.types = NULL, batch_rows = getOption("odbc.batch_rows", NA), ...) {
     stopifnot(
       rlang::is_scalar_logical(overwrite) && !is.na(overwrite),
       rlang::is_scalar_logical(append) && !is.na(append),
@@ -48,13 +49,16 @@ odbc_write_table <-
     }
     batch_rows <- parse_size(batch_rows)
 
-    if (overwrite && append)
+    if (overwrite && append) {
       stop("overwrite and append cannot both be TRUE", call. = FALSE)
+    }
 
     found <- dbExistsTable(conn, name)
     if (found && !overwrite && !append) {
       stop("Table ", toString(name), " exists in database, and both overwrite and",
-        " append are FALSE", call. = FALSE)
+        " append are FALSE",
+        call. = FALSE
+      )
     }
     if (found && overwrite) {
       dbRemoveTable(conn, name)
@@ -67,16 +71,18 @@ odbc_write_table <-
       dbExecute(conn, sql, immediate = TRUE)
     }
 
-    fieldDetails <- tryCatch({
-      details <- odbcConnectionColumns(conn, name, exact = TRUE)
-      details$param_index <- match(details$name, names(values))
-      details[!is.na(details$param_index) & !is.na(details$data_type), ]
-    }, error = function(e) {
-      return(NULL)
-    })
+    fieldDetails <- tryCatch(
+      {
+        details <- odbcConnectionColumns(conn, name, exact = TRUE)
+        details$param_index <- match(details$name, names(values))
+        details[!is.na(details$param_index) & !is.na(details$data_type), ]
+      },
+      error = function(e) {
+        return(NULL)
+      }
+    )
 
     if (nrow(value) > 0) {
-
       name <- dbQuoteIdentifier(conn, name)
       fields <- dbQuoteIdentifier(conn, names(values))
       nparam <- length(fields)
@@ -85,7 +91,7 @@ odbc_write_table <-
       sql <- paste0(
         "INSERT INTO ", name, " (", paste0(fields, collapse = ", "), ")\n",
         "VALUES (", paste0(params, collapse = ", "), ")"
-        )
+      )
       rs <- OdbcResult(conn, sql)
 
       if (!is.null(fieldDetails) && nrow(fieldDetails) == nparam) {
@@ -95,7 +101,7 @@ odbc_write_table <-
       tryCatch(
         result_insert_dataframe(rs@ptr, values, batch_rows),
         finally = dbClearResult(rs)
-        )
+      )
     }
 
     invisible(TRUE)
@@ -113,19 +119,22 @@ odbc_write_table <-
 #' @export
 setMethod(
   "dbWriteTable", c("OdbcConnection", "character", "data.frame"),
-  odbc_write_table)
+  odbc_write_table
+)
 
 #' @rdname DBI-tables
 #' @export
 setMethod(
   "dbWriteTable", c("OdbcConnection", "Id", "data.frame"),
-  odbc_write_table)
+  odbc_write_table
+)
 
 #' @rdname DBI-tables
 #' @export
 setMethod(
   "dbWriteTable", c("OdbcConnection", "SQL", "data.frame"),
-  odbc_write_table)
+  odbc_write_table
+)
 
 #' @rdname DBI-tables
 #' @inheritParams DBI::dbAppendTable
@@ -167,7 +176,8 @@ setMethod("sqlData", "OdbcConnection", function(con, value, row.names = NA, ...)
 #' @inheritParams DBI::sqlCreateTable
 #' @param field.types Additional field types used to override derived types.
 #' @export
-setMethod("sqlCreateTable", "OdbcConnection",
+setMethod(
+  "sqlCreateTable", "OdbcConnection",
   function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
@@ -176,7 +186,8 @@ setMethod("sqlCreateTable", "OdbcConnection",
       "CREATE ", if (temporary) "TEMPORARY ", "TABLE ", table, " (\n",
       "  ", paste(fields, collapse = ",\n  "), "\n)\n"
     ))
-})
+  }
+)
 
 # Helper function useful for defining custom sqlCreateTable methods.
 createFields <- function(con, fields, field.types, row.names) {
@@ -188,10 +199,12 @@ createFields <- function(con, fields, field.types, row.names) {
     is_field <- names(field.types) %in% names(fields)
     if (!all(is_field)) {
       warning(
-        sprintf("Some columns in `field.types` not in the input, missing columns:\n%s",
+        sprintf(
+          "Some columns in `field.types` not in the input, missing columns:\n%s",
           paste0("  - '", names(field.types)[!is_field], "'", collapse = "\n")
         ),
-      call. = FALSE, immediate. = TRUE)
+        call. = FALSE, immediate. = TRUE
+      )
     }
 
     fields[names(field.types)] <- field.types
@@ -214,7 +227,8 @@ setMethod(
       catalog_name = id_field(name, "catalog"),
       schema_name = id_field(name, "schema")
     )
-  })
+  }
+)
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbExistsTable
@@ -223,7 +237,8 @@ setMethod(
   "dbExistsTable", c("OdbcConnection", "SQL"),
   function(conn, name, ...) {
     dbExistsTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
-  })
+  }
+)
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbExistsTable
@@ -234,4 +249,5 @@ setMethod(
     stopifnot(length(name) == 1)
     df <- odbcConnectionTables(conn, name = name, ..., exact = TRUE)
     NROW(df) > 0
-  })
+  }
+)

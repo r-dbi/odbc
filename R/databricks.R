@@ -56,7 +56,6 @@ setMethod(
            driver = NULL,
            HTTPPath,
            ...) {
-
     # For backward compatibility with RStudio connection string
     check_exclusive(httpPath, HTTPPath)
 
@@ -183,7 +182,6 @@ databricks_user_agent <- function() {
 }
 
 databricks_auth_args <- function(host) {
-
   # Check some standard Databricks environment variables. This is used to
   # implement a subset of the "Databricks client unified authentication" model.
   token <- Sys.getenv("DATABRICKS_TOKEN")

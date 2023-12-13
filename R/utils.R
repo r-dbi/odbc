@@ -10,7 +10,6 @@ has_names <- function(x) {
 `%||%` <- function(x, y) if (is.null(x)) y else x
 
 string_values <- function(x) {
-
   # TODO: Throw a condition object that can be caught for debugging purposes
   x <- tryCatch(x, error = function(x) "")
   unique(x[nzchar(x)])
@@ -82,16 +81,17 @@ convertWildCards <- function(val) {
 }
 
 getSelector <- function(key, value, exact) {
-  if ( is.null(value ) ) {
+  if (is.null(value)) {
     return("")
   }
   comp <- " = "
-  if (( value == "%" || !exact ) &&
-      isPatternValue(value)) {
+  if ((value == "%" || !exact) &&
+    isPatternValue(value)) {
     comp <- " LIKE "
   }
-  if (exact && (value != "%"))
+  if (exact && (value != "%")) {
     value <- escapePattern(value)
+  }
   value <- paste0("'", value, "'")
 
   paste0(" AND ", key, comp, value)
@@ -99,9 +99,11 @@ getSelector <- function(key, value, exact) {
 
 # Will iterate over charsToEsc argument and for each:
 # will escape any un-escaped occurance in `x`.
-escapePattern <- function(x, charsToEsc = c("_"), escChar ="\\\\") {
-  if(is.null(x) || inherits(x, "AsIs")) return(x)
-  matchGroup <- paste( charsToEsc, collapse = "|" )
+escapePattern <- function(x, charsToEsc = c("_"), escChar = "\\\\") {
+  if (is.null(x) || inherits(x, "AsIs")) {
+    return(x)
+  }
+  matchGroup <- paste(charsToEsc, collapse = "|")
   pattern <- paste0("([^", escChar, "])(", matchGroup, ")")
   replace <- paste0("\\1", escChar, "\\2")
   x <- gsub(pattern, replace, x)

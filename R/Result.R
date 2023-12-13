@@ -48,7 +48,8 @@ setMethod(
     }
     result_release(res@ptr)
     invisible(TRUE)
-  })
+  }
+)
 
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbFetch
@@ -58,7 +59,8 @@ setMethod(
   function(res, n = -1, ...) {
     n <- check_n(n)
     result_fetch(res@ptr, n)
-  })
+  }
+)
 
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbHasCompleted
@@ -67,7 +69,8 @@ setMethod(
   "dbHasCompleted", "OdbcResult",
   function(res, ...) {
     result_completed(res@ptr)
-  })
+  }
+)
 
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbIsValid
@@ -76,7 +79,8 @@ setMethod(
   "dbIsValid", "OdbcResult",
   function(dbObj, ...) {
     result_active(dbObj@ptr)
-  })
+  }
+)
 
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbGetStatement
@@ -88,7 +92,8 @@ setMethod(
       stop("Result already cleared", call. = FALSE)
     }
     res@statement
-  })
+  }
+)
 
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbColumnInfo
@@ -97,7 +102,8 @@ setMethod(
   "dbColumnInfo", "OdbcResult",
   function(res, ...) {
     result_column_info(res@ptr)
-  })
+  }
+)
 
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbGetRowCount
@@ -106,7 +112,8 @@ setMethod(
   "dbGetRowCount", "OdbcResult",
   function(res, ...) {
     result_row_count(res@ptr)
-  })
+  }
+)
 
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbGetRowsAffected
@@ -115,7 +122,8 @@ setMethod(
   "dbGetRowsAffected", "OdbcResult",
   function(res, ...) {
     result_rows_affected(res@ptr)
-  })
+  }
+)
 
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbBind
@@ -137,4 +145,5 @@ setMethod(
 
     result_bind(res@ptr, params, batch_rows)
     invisible(res)
-  })
+  }
+)
