@@ -4,14 +4,6 @@ This file is intended to help developers of the R package install needed depende
 
 While the odbc package contains some documentation on how to install and configure database drivers in `vignette("setup")`, the documentation assumes that users are connecting to databases that have already been set up. In order to test package functionality, though, odbc sets up small example database deployments.
 
-## RODBC
-
-We need to install the RODBC package for benchmarking in the vignette `vignette("benchmarks")`. The CRAN version of RODBC uses iODBC, so to use unixODBC we need to recompile it from source, specifying the odbc manager explicitly:
-
-```r
-install.packages("RODBC", type = "source", INSTALL_opts="--configure-args='--with-odbc-manager=odbc'")
-```
-
 ## PostgreSQL
 
 On MacOS, install PostgreSQL and the PostgreSQL drivers with:
@@ -21,7 +13,7 @@ brew install postgresql@14
 brew install psqlodbc
 ```
 
-Then, ensure that the `obdc.ini` and `odbcinst.ini` configuration files note an entry for PostgreSQL. For example entries in those files, see `.github/odbc`. To locate the driver on your system, see the output of `brew info psqlodbc`.
+Then, ensure that the `obdc.ini` and `odbcinst.ini` configuration files note an entry for PostgreSQL. For example entries in those files, see `.github/odbc`. To locate the driver on your system, see the output of `psqlodbc | grep -E '.(dylib|so)$'`.
 
 To launch a PostgreSQL server locally, run:
 
@@ -29,7 +21,7 @@ To launch a PostgreSQL server locally, run:
 brew services start postgresql@14
 ```
 
-Next, create a database called "test" (or by whatever name is in the entry `Database` in your `odbc.ini` file:
+Next, create a database called "test" (or by whatever name is in the entry `Database` in your `odbc.ini` file):
 
 ```shell
 createdb test
@@ -40,6 +32,9 @@ At this point, you should be able to connect to PostgreSQL through the R interfa
 ```r
 postgres <- dbConnect(odbc(), "PostgreSQL")
 ```
+
+where `"PostgreSQL"` is replaced with whatever DSN you've configured.
+
 
 ## MySQL
 
@@ -143,23 +138,23 @@ To [install the SQL Server ODBC driver and (optional) command line tool](https:/
 
 ```shell
 brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
-brew install msodbcsql18 mssql-tools18
+brew install microsoft/mssql-release/msodbcsql18 microsoft/mssql-release/mssql-tools18
 ```
 
 The `odbc.ini` entry should look something like:
 
 ```ini
 [MicrosoftSQLServer]
-driver = SQL Server Driver
+driver = ODBC Driver 18 for SQL Server
 Server = 127.0.0.1
 port = 1433
 Encrypt = no
 ```
 
-Note the `Encrypt = no` entry. In  `odbcinst.ini`:
+In  `odbcinst.ini`:
 
 ```ini
-[SQL Server Driver]
+[ODBC Driver 18 for SQL Server]
 Description=Microsoft ODBC Driver 18 for SQL Server
 Driver=/opt/homebrew/lib/libmsodbcsql.18.dylib
 UsageCount=1
@@ -168,10 +163,14 @@ UsageCount=1
 With docker and the needed driver installed, deploy the container with:
 
 ```shell
-sudo docker run --platform linux/amd64 -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=BoopBop123!" \
-   -p 1433:1433 --name sql1 --hostname sql1 \
-   -d \
-   mcr.microsoft.com/mssql/server:2022-latest
+sudo docker run \
+  --platform linux/amd64 \
+  -e "ACCEPT_EULA=Y" \
+  -e "MSSQL_SA_PASSWORD=BoopBop123!" \
+  -p 1433:1433 \
+   --name sql1 \
+   --hostname sql1 \
+   -d mcr.microsoft.com/mssql/server:2022-latest
 ```
 
 The `--platform` tag is correct for M1; if you see `Status: Exited (1)` in Docker Desktop or a warning about incompatible architectures, navigate to `Settings > General` and ensure that `Use Rosetta for x86/amd64 emulation on Apple Silicon` is checked.
@@ -179,12 +178,11 @@ The `--platform` tag is correct for M1; if you see `Status: Exited (1)` in Docke
 To connect via odbc, we need to pass the UID and PWD via the connection string; configuring those arguments via `odbc.ini` is [not permitted](https://stackoverflow.com/questions/42387084/sql-server-odbc-driver-linux-username). With the container deployed as above, the connection arguments would be:
 
 ```r
-con <- dbConnect(
-         odbc::odbc(), 
-         dsn = "MicrosoftSQLServer", 
-         uid = "SA", 
-         pwd = "BoopBop123!"
-       )
+con <- dbConnect(odbc::odbc(), 
+                 dsn = "MicrosoftSQLServer", 
+                 uid = "SA", 
+                 pwd = "BoopBop123!"
+                 )
 ```
 
 Then do some configuration of the server to add a testuser and create the test database
@@ -290,4 +288,12 @@ Finally, in R:
 ```r
 Sys.setenv("TNS_ADMIN" = getwd())
 con <- dbConnect(odbc::odbc(), "OracleODBC-19")
+```
+
+## RODBC
+
+We need to install the RODBC package for benchmarking in the vignette `vignette("benchmarks")`. The CRAN version of RODBC uses iODBC, so to use unixODBC we need to recompile it from source, specifying the odbc manager explicitly:
+
+```r
+install.packages("RODBC", type = "source", INSTALL_opts="--configure-args='--with-odbc-manager=odbc'")
 ```
