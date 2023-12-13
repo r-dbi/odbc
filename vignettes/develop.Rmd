@@ -22,14 +22,14 @@ For the most part, this vignette assumes a MacOS system with aarch64 (e.g. M1 or
 
 ## PostgreSQL
 
-On MacOS, install PostgreSQL and the PostgreSQL drivers with:
+On MacOS, install PostgreSQL with:
 
 ```shell
 brew install postgresql@14
-brew install psqlodbc
+
 ```
 
-Then, ensure that the `obdc.ini` and `odbcinst.ini` configuration files note an entry for PostgreSQL. For example entries in those files, see `.github/odbc`. To locate the driver on your system, see the output of `psqlodbc | grep -E '.(dylib|so)$'`.
+You'll also need to install and configure the PostgreSQL driver `psqlodbc`; see `vignette("setup")` to learn more.
 
 To launch a PostgreSQL server locally, run:
 
