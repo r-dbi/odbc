@@ -13,8 +13,16 @@ OdbcResult <- function(connection, statement, params = NULL, immediate = FALSE) 
   if (nzchar(connection@encoding)) {
     statement <- enc2iconv(statement, connection@encoding)
   }
-  ptr <- new_result(connection@ptr, statement, immediate)
-  res <- new("OdbcResult", connection = connection, statement = statement, ptr = ptr)
+  ptr <- new_result(
+    p = connection@ptr,
+    sql = statement, immediate = immediate
+  )
+  res <- new(
+    "OdbcResult",
+    connection = connection,
+    statement = statement,
+    ptr = ptr
+  )
 
   if (!is.null(params)) {
     on.exit(dbClearResult(res))

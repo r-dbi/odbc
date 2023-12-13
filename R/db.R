@@ -44,13 +44,20 @@ setClass("Oracle", contains = "OdbcDriver")
 
 #' @rdname DBI-methods
 setMethod("sqlCreateTable", "Oracle",
-  function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
+  function(con,
+           table,
+           fields,
+           row.names = NA,
+           temporary = FALSE,
+           ...,
+           field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
     SQL(paste0(
       "CREATE ", if (temporary) " GLOBAL TEMPORARY ", "TABLE ", table, " (\n",
-      "  ", paste(fields, collapse = ",\n  "), "\n)\n", if (temporary) " ON COMMIT PRESERVE ROWS"
+      "  ", paste(fields, collapse = ",\n  "), "\n)\n",
+      if (temporary) " ON COMMIT PRESERVE ROWS"
     ))
   }
 )
@@ -62,7 +69,12 @@ setMethod("sqlCreateTable", "Oracle",
 #' Given the performance reports, we sacrifice the synonym look-through for
 #' better execution time.
 setMethod("odbcConnectionTables", c("Oracle", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL, exact = FALSE) {
+  function(conn,
+           name,
+           catalog_name = NULL,
+           schema_name = NULL,
+           table_type = NULL,
+           exact = FALSE) {
     qTable <- getSelector("object_name", name, exact)
     if (is.null(schema_name)) {
       query <- paste0(
@@ -89,7 +101,12 @@ setMethod("odbcConnectionTables", c("Oracle", "character"),
 #' @details Query, rather than use SQLColumns ODBC API for ORACLE since when using the API
 #' we bind a BIGINT to one of the column results.  Oracle's OEM driver is unable to handle.
 setMethod("odbcConnectionColumns", c("Oracle", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL, exact = FALSE) {
+  function(conn,
+           name,
+           catalog_name = NULL,
+           schema_name = NULL,
+           column_name = NULL,
+           exact = FALSE) {
     query <- ""
     baseSelect <- paste0(
       "SELECT
@@ -140,7 +157,13 @@ setClass("Teradata", contains = "OdbcConnection")
 
 #' @rdname DBI-methods
 setMethod("sqlCreateTable", "Teradata",
-  function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
+  function(con,
+           table,
+           fields,
+           row.names = NA,
+           temporary = FALSE,
+           ...,
+           field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
@@ -153,7 +176,11 @@ setMethod("sqlCreateTable", "Teradata",
 
 
 setMethod("odbcConnectionTables", c("Teradata", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL) {
+  function(conn,
+           name,
+           catalog_name = NULL,
+           schema_name = NULL,
+           table_type = NULL) {
     res <- callNextMethod()
     if (!is.null(schema_name)) {
       return(res)
@@ -195,7 +222,13 @@ setClass("HDB", contains = "OdbcConnection")
 
 #' @rdname DBI-methods
 setMethod("sqlCreateTable", "HDB",
-  function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
+  function(con,
+           table,
+           fields,
+           row.names = NA,
+           temporary = FALSE,
+           ...,
+           field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
@@ -269,7 +302,13 @@ setClass("DB2/AIX64", contains = "OdbcConnection")
 # without corresponding alias
 #' @usage NULL
 setMethod("sqlCreateTable", "DB2/AIX64",
-  function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
+  function(con,
+           table,
+           fields,
+           row.names = NA,
+           temporary = FALSE,
+           ...,
+           field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 

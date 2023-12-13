@@ -47,7 +47,10 @@ parse_size <- function(x) {
     return(as.numeric(x))
   }
 
-  stop(sprintf("`%s` is not a valid size:\n  Must be a positive integer.", as.character(nme)), call. = FALSE)
+  stop(
+    sprintf("`%s` is not a valid size:\n  Must be a positive integer.", as.character(nme)),
+    call. = FALSE
+  )
 }
 
 id_field <- function(id, field, default = NULL) {

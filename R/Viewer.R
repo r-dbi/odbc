@@ -79,7 +79,12 @@ odbcListObjects <- function(connection, ...) {
 }
 
 #' @export
-odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = NULL, name = NULL, type = NULL, ...) {
+odbcListObjects.OdbcConnection <- function(connection,
+                                           catalog = NULL,
+                                           schema = NULL,
+                                           name = NULL,
+                                           type = NULL,
+                                           ...) {
   # if no catalog was supplied but this database has catalogs, return a list of
   # catalogs
   if (is.null(catalog)) {
@@ -113,7 +118,10 @@ odbcListObjects.OdbcConnection <- function(connection, catalog = NULL, schema = 
     }
   }
 
-  objs <- tryCatch(odbcConnectionTables(connection, name, catalog, schema, table_type = type), error = function(e) NULL)
+  objs <- tryCatch(
+    odbcConnectionTables(connection, name, catalog, schema, table_type = type),
+    error = function(e) NULL
+  )
   # just return a list of the objects and their types, possibly filtered by the
   # options above
   data.frame(
@@ -192,8 +200,12 @@ validateObjectName <- function(table, view) {
 }
 
 #' @export
-odbcListColumns.OdbcConnection <- function(connection, table = NULL, view = NULL,
-                                           catalog = NULL, schema = NULL, ...) {
+odbcListColumns.OdbcConnection <- function(connection,
+                                           table = NULL,
+                                           view = NULL,
+                                           catalog = NULL,
+                                           schema = NULL,
+                                           ...) {
   # specify schema or catalog if given
   cols <- odbcConnectionColumns(connection,
     name = validateObjectName(table, view),
@@ -227,8 +239,13 @@ odbcPreviewObject <- function(connection, rowLimit, ...) {
 }
 
 #' @export
-odbcPreviewObject.OdbcConnection <- function(connection, rowLimit, table = NULL, view = NULL,
-                                             schema = NULL, catalog = NULL, ...) {
+odbcPreviewObject.OdbcConnection <- function(connection,
+                                             rowLimit,
+                                             table = NULL,
+                                             view = NULL,
+                                             schema = NULL,
+                                             catalog = NULL,
+                                             ...) {
   # extract object name from arguments
   name <- validateObjectName(table, view)
 

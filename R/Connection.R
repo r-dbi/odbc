@@ -72,7 +72,15 @@ OdbcConnection <- function(
     timeout <- 0
   }
 
-  ptr <- odbc_connect(connection_string, timezone = timezone, timezone_out = timezone_out, encoding = encoding, bigint = bigint, timeout = timeout, r_attributes_ = attributes)
+  ptr <- odbc_connect(
+    connection_string,
+    timezone = timezone,
+    timezone_out = timezone_out,
+    encoding = encoding,
+    bigint = bigint,
+    timeout = timeout,
+    r_attributes_ = attributes
+  )
   quote <- connection_quote(ptr)
 
   info <- connection_info(ptr)
@@ -93,7 +101,13 @@ OdbcConnection <- function(
       setClass(info$dbms.name, contains = "OdbcConnection", where = class_cache)
     }
   }
-  res <- new(info$dbms.name, ptr = ptr, quote = quote, info = info, encoding = encoding)
+  new(
+    info$dbms.name,
+    ptr = ptr,
+    quote = quote,
+    info = info,
+    encoding = encoding
+  )
 }
 
 check_args <- function(args) {
@@ -144,7 +158,8 @@ setClass(
 #'
 #' For a given table this function returns detailed information on
 #' all fields / columns.  The expectation is that this is a relatively thin
-#' wrapper around the ODBC `SQLColumns` function call, with some of the field names
+#' wrapper around the ODBC `SQLColumns` function call, with some of the field
+#' names
 #' renamed / re-ordered according to the return specifications below.
 #'
 #' In [dbWriteTable()] we make a call to this method
@@ -498,8 +513,12 @@ setMethod("dbDisconnect", "OdbcConnection",
 #' @export
 setMethod("dbSendQuery", c("OdbcConnection", "character"),
   function(conn, statement, params = NULL, ..., immediate = is.null(params)) {
-    res <- OdbcResult(connection = conn, statement = statement, params = params, immediate = immediate)
-    res
+    OdbcResult(
+      connection = conn,
+      statement = statement,
+      params = params,
+      immediate = immediate
+    )
   }
 )
 
@@ -509,8 +528,12 @@ setMethod("dbSendQuery", c("OdbcConnection", "character"),
 #' @export
 setMethod("dbSendStatement", c("OdbcConnection", "character"),
   function(conn, statement, params = NULL, ..., immediate = FALSE) {
-    res <- OdbcResult(connection = conn, statement = statement, params = params, immediate = immediate)
-    res
+    OdbcResult(
+      connection = conn,
+      statement = statement,
+      params = params,
+      immediate = immediate
+    )
   }
 )
 
@@ -644,7 +667,12 @@ setMethod("dbGetInfo", "OdbcConnection",
 #' @inheritParams DBI::dbFetch
 #' @export
 setMethod("dbGetQuery", c("OdbcConnection", "character"),
-  function(conn, statement, n = -1, params = NULL, immediate = is.null(params), ...) {
+  function(conn,
+           statement,
+           n = -1,
+           params = NULL,
+           immediate = is.null(params),
+           ...) {
     rs <- dbSendQuery(
       conn,
       statement,

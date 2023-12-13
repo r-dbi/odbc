@@ -27,85 +27,98 @@
 #' @name DBI-tables
 NULL
 
-odbc_write_table <-
-  function(
-      conn, name, value, overwrite = FALSE, append = FALSE, temporary = FALSE,
-      row.names = NA, field.types = NULL, batch_rows = getOption("odbc.batch_rows", NA), ...) {
-    stopifnot(
-      rlang::is_scalar_logical(overwrite) && !is.na(overwrite),
-      rlang::is_scalar_logical(append) && !is.na(append),
-      rlang::is_scalar_logical(temporary) && !is.na(temporary),
-      rlang::is_null(field.types) || (rlang::is_named(field.types))
-    )
-    if (append && !is.null(field.types)) {
-      stop("Cannot specify field.types with append = TRUE", call. = FALSE)
-    }
-
-    if (is.na(batch_rows)) {
-      batch_rows <- NROW(value)
-      if (batch_rows == 0) {
-        batch_rows <- 1
-      }
-    }
-    batch_rows <- parse_size(batch_rows)
-
-    if (overwrite && append) {
-      stop("overwrite and append cannot both be TRUE", call. = FALSE)
-    }
-
-    found <- dbExistsTable(conn, name)
-    if (found && !overwrite && !append) {
-      stop("Table ", toString(name), " exists in database, and both overwrite and",
-        " append are FALSE",
-        call. = FALSE
-      )
-    }
-    if (found && overwrite) {
-      dbRemoveTable(conn, name)
-    }
-
-    values <- sqlData(conn, row.names = row.names, value[, , drop = FALSE])
-
-    if (!found || overwrite) {
-      sql <- sqlCreateTable(conn, name, values, field.types = field.types, row.names = FALSE, temporary = temporary)
-      dbExecute(conn, sql, immediate = TRUE)
-    }
-
-    fieldDetails <- tryCatch(
-      {
-        details <- odbcConnectionColumns(conn, name, exact = TRUE)
-        details$param_index <- match(details$name, names(values))
-        details[!is.na(details$param_index) & !is.na(details$data_type), ]
-      },
-      error = function(e) {
-        return(NULL)
-      }
-    )
-
-    if (nrow(value) > 0) {
-      name <- dbQuoteIdentifier(conn, name)
-      fields <- dbQuoteIdentifier(conn, names(values))
-      nparam <- length(fields)
-      params <- rep("?", nparam)
-
-      sql <- paste0(
-        "INSERT INTO ", name, " (", paste0(fields, collapse = ", "), ")\n",
-        "VALUES (", paste0(params, collapse = ", "), ")"
-      )
-      rs <- OdbcResult(conn, sql)
-
-      if (!is.null(fieldDetails) && nrow(fieldDetails) == nparam) {
-        result_describe_parameters(rs@ptr, fieldDetails)
-      }
-
-      tryCatch(
-        result_insert_dataframe(rs@ptr, values, batch_rows),
-        finally = dbClearResult(rs)
-      )
-    }
-
-    invisible(TRUE)
+odbc_write_table <- function(conn,
+                             name,
+                             value,
+                             overwrite = FALSE,
+                             append = FALSE,
+                             temporary = FALSE,
+                             row.names = NA,
+                             field.types = NULL,
+                             batch_rows = getOption("odbc.batch_rows", NA),
+                             ...) {
+  stopifnot(
+    rlang::is_scalar_logical(overwrite) && !is.na(overwrite),
+    rlang::is_scalar_logical(append) && !is.na(append),
+    rlang::is_scalar_logical(temporary) && !is.na(temporary),
+    rlang::is_null(field.types) || (rlang::is_named(field.types))
+  )
+  if (append && !is.null(field.types)) {
+    stop("Cannot specify field.types with append = TRUE", call. = FALSE)
   }
+
+  if (is.na(batch_rows)) {
+    batch_rows <- NROW(value)
+    if (batch_rows == 0) {
+      batch_rows <- 1
+    }
+  }
+  batch_rows <- parse_size(batch_rows)
+
+  if (overwrite && append) {
+    stop("overwrite and append cannot both be TRUE", call. = FALSE)
+  }
+
+  found <- dbExistsTable(conn, name)
+  if (found && !overwrite && !append) {
+    stop("Table ", toString(name), " exists in database, and both overwrite and",
+      " append are FALSE",
+      call. = FALSE
+    )
+  }
+  if (found && overwrite) {
+    dbRemoveTable(conn, name)
+  }
+
+  values <- sqlData(conn, row.names = row.names, value[, , drop = FALSE])
+
+  if (!found || overwrite) {
+    sql <- sqlCreateTable(
+      conn,
+      name,
+      values,
+      field.types = field.types,
+      row.names = FALSE,
+      temporary = temporary
+    )
+    dbExecute(conn, sql, immediate = TRUE)
+  }
+
+  fieldDetails <- tryCatch(
+    {
+      details <- odbcConnectionColumns(conn, name, exact = TRUE)
+      details$param_index <- match(details$name, names(values))
+      details[!is.na(details$param_index) & !is.na(details$data_type), ]
+    },
+    error = function(e) {
+      return(NULL)
+    }
+  )
+
+  if (nrow(value) > 0) {
+    name <- dbQuoteIdentifier(conn, name)
+    fields <- dbQuoteIdentifier(conn, names(values))
+    nparam <- length(fields)
+    params <- rep("?", nparam)
+
+    sql <- paste0(
+      "INSERT INTO ", name, " (", paste0(fields, collapse = ", "), ")\n",
+      "VALUES (", paste0(params, collapse = ", "), ")"
+    )
+    rs <- OdbcResult(conn, sql)
+
+    if (!is.null(fieldDetails) && nrow(fieldDetails) == nparam) {
+      result_describe_parameters(rs@ptr, fieldDetails)
+    }
+
+    tryCatch(
+      result_insert_dataframe(rs@ptr, values, batch_rows),
+      finally = dbClearResult(rs)
+    )
+  }
+
+  invisible(TRUE)
+}
 
 #' @rdname DBI-tables
 #' @inheritParams DBI::dbWriteTable
@@ -178,7 +191,13 @@ setMethod("sqlData", "OdbcConnection",
 #' @param field.types Additional field types used to override derived types.
 #' @export
 setMethod("sqlCreateTable", "OdbcConnection",
-  function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
+  function(con,
+           table,
+           fields,
+           row.names = NA,
+           temporary = FALSE,
+           ...,
+           field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
