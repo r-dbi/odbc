@@ -188,9 +188,7 @@ setGeneric(
 #' @rdname odbcConnectionColumns
 #' @param column_name The name of the column to return, the default returns all columns.
 #' @export
-setMethod(
-  "odbcConnectionColumns",
-  c("OdbcConnection", "Id"),
+setMethod("odbcConnectionColumns", c("OdbcConnection", "Id"),
   function(conn, name, column_name = NULL, exact = FALSE) {
     odbcConnectionColumns(conn,
       name = id_field(name, "table"),
@@ -204,9 +202,7 @@ setMethod(
 
 #' @rdname odbcConnectionColumns
 #' @export
-setMethod(
-  "odbcConnectionColumns",
-  c("OdbcConnection", "character"),
+setMethod("odbcConnectionColumns", c("OdbcConnection", "character"),
   function(conn,
            name,
            catalog_name = NULL,
@@ -237,8 +233,7 @@ setMethod(
 #' @seealso The ODBC documentation on [Arguments to catalog functions](https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/arguments-in-catalog-functions?view=sql-server-ver16).
 #' @rdname odbcConnectionColumns
 #' @export
-setMethod(
-  "odbcConnectionColumns", c("OdbcConnection", "SQL"),
+setMethod("odbcConnectionColumns", c("OdbcConnection", "SQL"),
   function(conn, name, ...) {
     odbcConnectionColumns(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   }
@@ -292,9 +287,7 @@ setGeneric(
 #' @param table_type List tables of this type, for example 'VIEW'.
 #' See odbcConnectionTableTypes for a listing of available table
 #' types for your connection.
-setMethod(
-  "odbcConnectionTables",
-  c("OdbcConnection", "Id"),
+setMethod("odbcConnectionTables", c("OdbcConnection", "Id"),
   function(conn, name, table_type = NULL, exact = FALSE) {
     odbcConnectionTables(
       conn,
@@ -308,9 +301,7 @@ setMethod(
 )
 
 #' @rdname odbcConnectionTables
-setMethod(
-  "odbcConnectionTables",
-  c("OdbcConnection", "character"),
+setMethod("odbcConnectionTables", c("OdbcConnection", "character"),
   function(conn,
            name,
            catalog_name = NULL,
@@ -333,9 +324,7 @@ setMethod(
 )
 
 #' @rdname odbcConnectionTables
-setMethod(
-  "odbcConnectionTables",
-  c("OdbcConnection"),
+setMethod("odbcConnectionTables", "OdbcConnection",
   function(conn,
            name = NULL,
            catalog_name = NULL,
@@ -354,8 +343,7 @@ setMethod(
 )
 
 #' @rdname odbcConnectionTables
-setMethod(
-  "odbcConnectionTables", c("OdbcConnection", "SQL"),
+setMethod("odbcConnectionTables", c("OdbcConnection", "SQL"),
   function(conn, name, table_type = NULL, exact = FALSE) {
     odbcConnectionTables(
       conn,
@@ -381,9 +369,7 @@ setGeneric(
 )
 
 #' @rdname odbcConnectionCatalogs
-setMethod(
-  "odbcConnectionCatalogs",
-  c("OdbcConnection"),
+setMethod("odbcConnectionCatalogs", "OdbcConnection",
   function(conn) {
     connection_sql_catalogs(conn@ptr)
   }
@@ -411,18 +397,14 @@ setGeneric(
 )
 
 #' @rdname odbcConnectionSchemas
-setMethod(
-  "odbcConnectionSchemas",
-  c("OdbcConnection"),
+setMethod("odbcConnectionSchemas", "OdbcConnection",
   function(conn, catalog_name = NULL) {
     connection_sql_schemas(conn@ptr)
   }
 )
 
 #' @rdname odbcConnectionSchemas
-setMethod(
-  "odbcConnectionSchemas",
-  c("OdbcConnection", "character"),
+setMethod("odbcConnectionSchemas", c("OdbcConnection", "character"),
   function(conn, catalog_name) {
     connection_sql_schemas(conn@ptr)
   }
@@ -443,9 +425,7 @@ setGeneric(
 )
 
 #' @rdname odbcConnectionTableTypes
-setMethod(
-  "odbcConnectionTableTypes",
-  "OdbcConnection",
+setMethod("odbcConnectionTableTypes", "OdbcConnection",
   function(conn) {
     connection_sql_table_types(conn@ptr)
   }
@@ -455,8 +435,7 @@ setMethod(
 #' @rdname OdbcConnection
 #' @inheritParams methods::show
 #' @export
-setMethod(
-  "show", "OdbcConnection",
+setMethod("show", "OdbcConnection",
   function(object) {
     info <- dbGetInfo(object)
 
@@ -490,8 +469,7 @@ setMethod(
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbIsValid
 #' @export
-setMethod(
-  "dbIsValid", "OdbcConnection",
+setMethod("dbIsValid", "OdbcConnection",
   function(dbObj, ...) {
     connection_valid(dbObj@ptr)
   }
@@ -500,8 +478,7 @@ setMethod(
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbDisconnect
 #' @export
-setMethod(
-  "dbDisconnect", "OdbcConnection",
+setMethod("dbDisconnect", "OdbcConnection",
   function(conn, ...) {
     if (!dbIsValid(conn)) {
       warning("Connection already closed.", call. = FALSE)
@@ -519,8 +496,7 @@ setMethod(
 #' @param immediate If `TRUE`, SQLExecDirect will be used instead of
 #'   SQLPrepare, and the `params` argument is ignored
 #' @export
-setMethod(
-  "dbSendQuery", c("OdbcConnection", "character"),
+setMethod("dbSendQuery", c("OdbcConnection", "character"),
   function(conn, statement, params = NULL, ..., immediate = is.null(params)) {
     res <- OdbcResult(connection = conn, statement = statement, params = params, immediate = immediate)
     res
@@ -531,8 +507,7 @@ setMethod(
 #' @inheritParams DBI::dbSendStatement
 #' @param params Query parameters to pass to [dbBind()], See [dbBind()] for details.
 #' @export
-setMethod(
-  "dbSendStatement", c("OdbcConnection", "character"),
+setMethod("dbSendStatement", c("OdbcConnection", "character"),
   function(conn, statement, params = NULL, ..., immediate = FALSE) {
     res <- OdbcResult(connection = conn, statement = statement, params = params, immediate = immediate)
     res
@@ -542,8 +517,7 @@ setMethod(
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbDataType
 #' @export
-setMethod(
-  "dbDataType", "OdbcConnection",
+setMethod("dbDataType", "OdbcConnection",
   function(dbObj, obj, ...) {
     odbcDataType(dbObj, obj)
   }
@@ -560,8 +534,7 @@ NULL
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbQuoteIdentifier
 #' @export
-setMethod(
-  "dbQuoteIdentifier", c("OdbcConnection", "character"),
+setMethod("dbQuoteIdentifier", c("OdbcConnection", "character"),
   function(conn, x, ...) {
     if (length(x) == 0L) {
       return(DBI::SQL(character()))
@@ -582,8 +555,7 @@ setMethod(
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbQuoteIdentifier
 #' @export
-setMethod(
-  "dbQuoteIdentifier", c("OdbcConnection", "SQL"),
+setMethod("dbQuoteIdentifier", c("OdbcConnection", "SQL"),
   getMethod("dbQuoteIdentifier", c("DBIConnection", "SQL"), asNamespace("DBI"))
 )
 
@@ -603,8 +575,7 @@ setMethod(
 #' @param table_type The type of the table to return, the default returns all table types.
 #' @returns A character vector of table or field names respectively.
 #' @export
-setMethod(
-  "dbListTables", "OdbcConnection",
+setMethod("dbListTables", "OdbcConnection",
   function(conn,
            catalog_name = NULL,
            schema_name = NULL,
@@ -627,8 +598,7 @@ setMethod(
 #' @inheritParams DBI::dbListFields
 #' @param column_name The name of the column to return, the default returns all columns.
 #' @export
-setMethod(
-  "dbListFields", c("OdbcConnection", "character"),
+setMethod("dbListFields", c("OdbcConnection", "character"),
   function(conn,
            name,
            catalog_name = NULL,
@@ -650,8 +620,7 @@ setMethod(
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbRemoveTable
 #' @export
-setMethod(
-  "dbRemoveTable", c("OdbcConnection", "character"),
+setMethod("dbRemoveTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     name <- dbQuoteIdentifier(conn, name)
     dbExecute(conn, paste("DROP TABLE ", name))
@@ -663,8 +632,7 @@ setMethod(
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbGetInfo
 #' @export
-setMethod(
-  "dbGetInfo", "OdbcConnection",
+setMethod("dbGetInfo", "OdbcConnection",
   function(dbObj, ...) {
     info <- connection_info(dbObj@ptr)
     structure(info, class = c(info$dbms.name, "driver_info", "list"))
@@ -675,8 +643,7 @@ setMethod(
 #' @inheritParams DBI::dbGetQuery
 #' @inheritParams DBI::dbFetch
 #' @export
-setMethod(
-  "dbGetQuery", signature("OdbcConnection", "character"),
+setMethod("dbGetQuery", c("OdbcConnection", "character"),
   function(conn, statement, n = -1, params = NULL, immediate = is.null(params), ...) {
     rs <- dbSendQuery(
       conn,
@@ -700,8 +667,7 @@ setMethod(
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbBegin
 #' @export
-setMethod(
-  "dbBegin", "OdbcConnection",
+setMethod("dbBegin", "OdbcConnection",
   function(conn, ...) {
     connection_begin(conn@ptr)
     invisible(TRUE)
@@ -711,8 +677,7 @@ setMethod(
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbCommit
 #' @export
-setMethod(
-  "dbCommit", "OdbcConnection",
+setMethod("dbCommit", "OdbcConnection",
   function(conn, ...) {
     connection_commit(conn@ptr)
     invisible(TRUE)
@@ -722,8 +687,7 @@ setMethod(
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbRollback
 #' @export
-setMethod(
-  "dbRollback", "OdbcConnection",
+setMethod("dbRollback", "OdbcConnection",
   function(conn, ...) {
     connection_rollback(conn@ptr)
     invisible(TRUE)

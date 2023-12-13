@@ -40,8 +40,7 @@ setClass(
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbClearResult
 #' @export
-setMethod(
-  "dbClearResult", "OdbcResult",
+setMethod("dbClearResult", "OdbcResult",
   function(res, ...) {
     if (!dbIsValid(res)) {
       warning("Result already cleared")
@@ -54,8 +53,7 @@ setMethod(
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbFetch
 #' @export
-setMethod(
-  "dbFetch", "OdbcResult",
+setMethod("dbFetch", "OdbcResult",
   function(res, n = -1, ...) {
     n <- check_n(n)
     result_fetch(res@ptr, n)
@@ -65,8 +63,7 @@ setMethod(
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbHasCompleted
 #' @export
-setMethod(
-  "dbHasCompleted", "OdbcResult",
+setMethod("dbHasCompleted", "OdbcResult",
   function(res, ...) {
     result_completed(res@ptr)
   }
@@ -75,8 +72,7 @@ setMethod(
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbIsValid
 #' @export
-setMethod(
-  "dbIsValid", "OdbcResult",
+setMethod("dbIsValid", "OdbcResult",
   function(dbObj, ...) {
     result_active(dbObj@ptr)
   }
@@ -85,8 +81,7 @@ setMethod(
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbGetStatement
 #' @export
-setMethod(
-  "dbGetStatement", "OdbcResult",
+setMethod("dbGetStatement", "OdbcResult",
   function(res, ...) {
     if (!dbIsValid(res)) {
       stop("Result already cleared", call. = FALSE)
@@ -98,8 +93,7 @@ setMethod(
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbColumnInfo
 #' @export
-setMethod(
-  "dbColumnInfo", "OdbcResult",
+setMethod("dbColumnInfo", "OdbcResult",
   function(res, ...) {
     result_column_info(res@ptr)
   }
@@ -108,8 +102,7 @@ setMethod(
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbGetRowCount
 #' @export
-setMethod(
-  "dbGetRowCount", "OdbcResult",
+setMethod("dbGetRowCount", "OdbcResult",
   function(res, ...) {
     result_row_count(res@ptr)
   }
@@ -118,8 +111,7 @@ setMethod(
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbGetRowsAffected
 #' @export
-setMethod(
-  "dbGetRowsAffected", "OdbcResult",
+setMethod("dbGetRowsAffected", "OdbcResult",
   function(res, ...) {
     result_rows_affected(res@ptr)
   }
@@ -129,8 +121,7 @@ setMethod(
 #' @inheritParams DBI::dbBind
 #' @inheritParams DBI-tables
 #' @export
-setMethod(
-  "dbBind", "OdbcResult",
+setMethod("dbBind", "OdbcResult",
   function(res, params, ..., batch_rows = getOption("odbc.batch_rows", NA)) {
     params <- as.list(params)
     if (length(params) == 0) {

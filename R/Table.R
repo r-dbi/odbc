@@ -117,67 +117,67 @@ odbc_write_table <-
 #'   the database, driver, dataset and free memory setting this to a lower value may improve
 #'   performance.
 #' @export
-setMethod(
-  "dbWriteTable", c("OdbcConnection", "character", "data.frame"),
+setMethod("dbWriteTable", c("OdbcConnection", "character", "data.frame"),
   odbc_write_table
 )
 
 #' @rdname DBI-tables
 #' @export
-setMethod(
-  "dbWriteTable", c("OdbcConnection", "Id", "data.frame"),
+setMethod("dbWriteTable", c("OdbcConnection", "Id", "data.frame"),
   odbc_write_table
 )
 
 #' @rdname DBI-tables
 #' @export
-setMethod(
-  "dbWriteTable", c("OdbcConnection", "SQL", "data.frame"),
+setMethod("dbWriteTable", c("OdbcConnection", "SQL", "data.frame"),
   odbc_write_table
 )
 
 #' @rdname DBI-tables
 #' @inheritParams DBI::dbAppendTable
 #' @export
-setMethod("dbAppendTable", "OdbcConnection", function(conn, name, value, ..., row.names = NULL) {
-  stopifnot(is.null(row.names))
-  stopifnot(dbExistsTable(conn, name))
-  dbWriteTable(conn, name, value, ..., row.names = row.names, append = TRUE)
-  invisible(NA_real_)
-})
+setMethod("dbAppendTable", "OdbcConnection",
+  function(conn, name, value, ..., row.names = NULL) {
+    stopifnot(is.null(row.names))
+    stopifnot(dbExistsTable(conn, name))
+    dbWriteTable(conn, name, value, ..., row.names = row.names, append = TRUE)
+    invisible(NA_real_)
+  }
+)
 
 #' @rdname DBI-methods
 #' @inheritParams DBI::dbReadTable
 #' @export
-setMethod("sqlData", "OdbcConnection", function(con, value, row.names = NA, ...) {
-  value <- sqlRownamesToColumn(value, row.names)
+setMethod("sqlData", "OdbcConnection",
+  function(con, value, row.names = NA, ...) {
+    value <- sqlRownamesToColumn(value, row.names)
 
-  # Convert POSIXlt to POSIXct
-  is_POSIXlt <- vapply(value, function(x) is.object(x) && (is(x, "POSIXlt")), logical(1))
-  value[is_POSIXlt] <- lapply(value[is_POSIXlt], as.POSIXct)
+    # Convert POSIXlt to POSIXct
+    is_POSIXlt <- vapply(value, function(x) is.object(x) && (is(x, "POSIXlt")), logical(1))
+    value[is_POSIXlt] <- lapply(value[is_POSIXlt], as.POSIXct)
 
-  # Convert data.table::IDate to Date
-  is_IDate <- vapply(value, function(x) is.object(x) && (is(x, "IDate")), logical(1))
-  value[is_IDate] <- lapply(value[is_IDate], as.Date)
+    # Convert data.table::IDate to Date
+    is_IDate <- vapply(value, function(x) is.object(x) && (is(x, "IDate")), logical(1))
+    value[is_IDate] <- lapply(value[is_IDate], as.Date)
 
-  # C code takes care of atomic vectors, dates, date times, and blobs just need to coerce other objects
-  is_object <- vapply(value, function(x) is.object(x) && !(is(x, "POSIXct") || is(x, "Date") || is_blob(x) || is(x, "difftime")), logical(1))
-  value[is_object] <- lapply(value[is_object], as.character)
+    # C code takes care of atomic vectors, dates, date times, and blobs just need to coerce other objects
+    is_object <- vapply(value, function(x) is.object(x) && !(is(x, "POSIXct") || is(x, "Date") || is_blob(x) || is(x, "difftime")), logical(1))
+    value[is_object] <- lapply(value[is_object], as.character)
 
-  if (nzchar(con@encoding)) {
-    is_character <- vapply(value, is.character, logical(1))
-    value[is_character] <- lapply(value[is_character], enc2iconv, to = con@encoding)
+    if (nzchar(con@encoding)) {
+      is_character <- vapply(value, is.character, logical(1))
+      value[is_character] <- lapply(value[is_character], enc2iconv, to = con@encoding)
+    }
+
+    value
   }
-
-  value
-})
+)
 
 #' @rdname DBI-tables
 #' @inheritParams DBI::sqlCreateTable
 #' @param field.types Additional field types used to override derived types.
 #' @export
-setMethod(
-  "sqlCreateTable", "OdbcConnection",
+setMethod("sqlCreateTable", "OdbcConnection",
   function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
@@ -218,8 +218,7 @@ createFields <- function(con, fields, field.types, row.names) {
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbExistsTable
 #' @export
-setMethod(
-  "dbExistsTable", c("OdbcConnection", "Id"),
+setMethod("dbExistsTable", c("OdbcConnection", "Id"),
   function(conn, name, ...) {
     dbExistsTable(
       conn,
@@ -233,8 +232,7 @@ setMethod(
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbExistsTable
 #' @export
-setMethod(
-  "dbExistsTable", c("OdbcConnection", "SQL"),
+setMethod("dbExistsTable", c("OdbcConnection", "SQL"),
   function(conn, name, ...) {
     dbExistsTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   }
@@ -243,8 +241,7 @@ setMethod(
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbExistsTable
 #' @export
-setMethod(
-  "dbExistsTable", c("OdbcConnection", "character"),
+setMethod("dbExistsTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     stopifnot(length(name) == 1)
     df <- odbcConnectionTables(conn, name = name, ..., exact = TRUE)

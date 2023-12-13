@@ -18,9 +18,7 @@ setGeneric(
 )
 
 #' @rdname isTempTable
-setMethod(
-  "isTempTable",
-  c("OdbcConnection", "Id"),
+setMethod("isTempTable", c("OdbcConnection", "Id"),
   function(conn, name, ...) {
     isTempTable(conn,
       name = id_field(name, "table"),
@@ -32,9 +30,7 @@ setMethod(
 )
 
 #' @rdname isTempTable
-setMethod(
-  "isTempTable",
-  c("OdbcConnection", "SQL"),
+setMethod("isTempTable", c("OdbcConnection", "SQL"),
   function(conn, name, ...) {
     isTempTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   }
@@ -47,8 +43,7 @@ setMethod(
 setClass("Oracle", contains = "OdbcDriver")
 
 #' @rdname DBI-methods
-setMethod(
-  "sqlCreateTable", "Oracle",
+setMethod("sqlCreateTable", "Oracle",
   function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
@@ -66,9 +61,7 @@ setMethod(
 #' and the query below is that the OEM implementation also looks through the synonyms.
 #' Given the performance reports, we sacrifice the synonym look-through for
 #' better execution time.
-setMethod(
-  "odbcConnectionTables",
-  c("Oracle", "character"),
+setMethod("odbcConnectionTables", c("Oracle", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL, exact = FALSE) {
     qTable <- getSelector("object_name", name, exact)
     if (is.null(schema_name)) {
@@ -95,9 +88,7 @@ setMethod(
 #' @rdname odbcConnectionColumns
 #' @details Query, rather than use SQLColumns ODBC API for ORACLE since when using the API
 #' we bind a BIGINT to one of the column results.  Oracle's OEM driver is unable to handle.
-setMethod(
-  "odbcConnectionColumns",
-  c("Oracle", "character"),
+setMethod("odbcConnectionColumns", c("Oracle", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL, exact = FALSE) {
     query <- ""
     baseSelect <- paste0(
@@ -148,8 +139,7 @@ setMethod(
 setClass("Teradata", contains = "OdbcConnection")
 
 #' @rdname DBI-methods
-setMethod(
-  "sqlCreateTable", "Teradata",
+setMethod("sqlCreateTable", "Teradata",
   function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
@@ -162,9 +152,7 @@ setMethod(
 )
 
 
-setMethod(
-  "odbcConnectionTables",
-  c("Teradata", "character"),
+setMethod("odbcConnectionTables", c("Teradata", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL) {
     res <- callNextMethod()
     if (!is.null(schema_name)) {
@@ -206,8 +194,7 @@ setMethod(
 setClass("HDB", contains = "OdbcConnection")
 
 #' @rdname DBI-methods
-setMethod(
-  "sqlCreateTable", "HDB",
+setMethod("sqlCreateTable", "HDB",
   function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
@@ -227,11 +214,10 @@ setMethod(
 #' @rdname DBI-classes
 setClass("Hive", contains = "OdbcConnection")
 
+# only need to override dbQuteString when x is character.
+# DBI:::quote_string just returns x when it is of class SQL, so no need to override that.
 #' @rdname DBI-methods
-setMethod(
-  # only need to override dbQuteString when x is character.
-  # DBI:::quote_string just returns x when it is of class SQL, so no need to override that.
-  "dbQuoteString", signature("Hive", "character"),
+setMethod("dbQuoteString", c("Hive", "character"),
   function(conn, x, ...) {
     if (is(x, "SQL")) {
       return(x)
@@ -261,9 +247,7 @@ setClass("Spark SQL", contains = "OdbcConnection")
 #' This implementation will respect the `catalog_name` arrgument.
 #' @rdname odbcConnectionSchemas
 #' @usage NULL
-setMethod(
-  "odbcConnectionSchemas",
-  c("Spark SQL", "character"),
+setMethod("odbcConnectionSchemas", c("Spark SQL", "character"),
   function(conn, catalog_name) {
     res <- dbGetQuery(conn, paste0("SHOW SCHEMAS IN ", catalog_name))
     if (nrow(res)) {
@@ -284,8 +268,7 @@ setClass("DB2/AIX64", contains = "OdbcConnection")
 # (probably because of the `/` in the class name) which flags a usage
 # without corresponding alias
 #' @usage NULL
-setMethod(
-  "sqlCreateTable", "DB2/AIX64",
+setMethod("sqlCreateTable", "DB2/AIX64",
   function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
@@ -321,8 +304,7 @@ setClass("Microsoft SQL Server", contains = "OdbcConnection")
 #' @docType methods
 #' @usage NULL
 #' @keywords internal
-setMethod(
-  "dbUnquoteIdentifier", c("Microsoft SQL Server", "SQL"),
+setMethod("dbUnquoteIdentifier", c("Microsoft SQL Server", "SQL"),
   function(conn, x, ...) {
     x <- gsub("(\\[)([^\\.]+?)(\\])", "\\2", x)
     callNextMethod(conn, x, ...)
@@ -339,8 +321,7 @@ setMethod(
 #' name starts with `"#"`.
 #' @rdname SQLServer
 #' @usage NULL
-setMethod(
-  "isTempTable", c("Microsoft SQL Server", "character"),
+setMethod("isTempTable", c("Microsoft SQL Server", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, ...) {
     if (!is.null(catalog_name) &&
       catalog_name != "%" &&
@@ -355,9 +336,7 @@ setMethod(
 
 #' @rdname SQLServer
 #' @usage NULL
-setMethod(
-  "isTempTable",
-  c("Microsoft SQL Server", "SQL"),
+setMethod("isTempTable", c("Microsoft SQL Server", "SQL"),
   function(conn, name, ...) {
     isTempTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   }
@@ -372,8 +351,7 @@ setMethod(
 #' @rdname SQLServer
 #' @docType methods
 #' @usage NULL
-setMethod(
-  "dbExistsTable", c("Microsoft SQL Server", "character"),
+setMethod("dbExistsTable", c("Microsoft SQL Server", "character"),
   function(conn, name, ...) {
     stopifnot(length(name) == 1)
     if (isTempTable(conn, name, ...)) {
@@ -393,8 +371,7 @@ setMethod(
 
 #' @rdname SQLServer
 #' @usage NULL
-setMethod(
-  "dbExistsTable", c("Microsoft SQL Server", "Id"),
+setMethod("dbExistsTable", c("Microsoft SQL Server", "Id"),
   function(conn, name, ...) {
     dbExistsTable(
       conn,
@@ -407,8 +384,7 @@ setMethod(
 
 #' @rdname SQLServer
 #' @usage NULL
-setMethod(
-  "dbExistsTable", c("Microsoft SQL Server", "SQL"),
+setMethod("dbExistsTable", c("Microsoft SQL Server", "SQL"),
   function(conn, name, ...) {
     dbExistsTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   }
@@ -421,8 +397,7 @@ setMethod(
 #' Warns if `temporary = TRUE` but the `name` does not conform to temp table
 #' naming conventions (i.e. it doesn't start with `#`).
 #' @usage NULL
-setMethod(
-  "sqlCreateTable", "Microsoft SQL Server",
+setMethod("sqlCreateTable", "Microsoft SQL Server",
   function(con,
            table,
            fields,

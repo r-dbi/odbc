@@ -23,8 +23,7 @@ setClass("OdbcDriver", contains = "DBIDriver")
 #' @rdname OdbcDriver
 #' @inheritParams methods::show
 #' @export
-setMethod(
-  "show", "OdbcDriver",
+setMethod("show", "OdbcDriver",
   function(object) {
     cat("<OdbcDriver>\n")
     # TODO: Print more details
@@ -151,8 +150,7 @@ setMethod(
 #'
 #' @import rlang
 #' @export
-setMethod(
-  "dbConnect", "OdbcDriver",
+setMethod("dbConnect", "OdbcDriver",
   function(
       drv,
       dsn = NULL,
@@ -221,8 +219,7 @@ setMethod(
 #' @rdname OdbcDriver
 #' @inheritParams DBI::dbDataType
 #' @export
-setMethod(
-  "dbDataType", "OdbcDriver",
+setMethod("dbDataType", "OdbcDriver",
   function(dbObj, obj, ...) {
     odbcDataType(dbObj, obj, ...)
   }
@@ -231,8 +228,7 @@ setMethod(
 #' @rdname OdbcDriver
 #' @inheritParams DBI::dbDataType
 #' @export
-setMethod(
-  "dbDataType", c("OdbcDriver", "list"),
+setMethod("dbDataType", c("OdbcDriver", "list"),
   function(dbObj, obj, ...) {
     odbcDataType(dbObj, obj, ...)
   }
@@ -265,8 +261,7 @@ setMethod("dbDataType", c("OdbcDriver", "data.frame"), odbc_data_type_df)
 #' @rdname OdbcDriver
 #' @inheritParams DBI::dbIsValid
 #' @export
-setMethod(
-  "dbIsValid", "OdbcDriver",
+setMethod("dbIsValid", "OdbcDriver",
   function(dbObj, ...) {
     TRUE
   }
@@ -275,8 +270,7 @@ setMethod(
 #' @rdname OdbcDriver
 #' @inheritParams DBI::dbGetInfo
 #' @export
-setMethod(
-  "dbGetInfo", "OdbcDriver",
+setMethod("dbGetInfo", "OdbcDriver",
   function(dbObj, ...) {
     list(max.connections = NULL, driver.version = NULL, client.version = NULL)
   }

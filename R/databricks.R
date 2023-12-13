@@ -47,8 +47,7 @@ setClass("DatabricksOdbcDriver", contains = "OdbcDriver")
 
 #' @rdname databricks
 #' @export
-setMethod(
-  "dbConnect", "DatabricksOdbcDriver",
+setMethod("dbConnect", "DatabricksOdbcDriver",
   function(drv,
            httpPath,
            workspace = Sys.getenv("DATABRICKS_HOST"),
