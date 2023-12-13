@@ -81,7 +81,8 @@ or a \linkS4class{DBIResult}}
 
 \item{statement}{a character string containing SQL.}
 
-\item{params}{Query parameters to pass to \code{\link[=dbBind]{dbBind()}}, See \code{\link[=dbBind]{dbBind()}} for details.}
+\item{params}{Query parameters to pass to \code{\link[=dbBind]{dbBind()}}.
+See \code{\link[=dbBind]{dbBind()}} for details.}
 
 \item{immediate}{If \code{TRUE}, SQLExecDirect will be used instead of
 SQLPrepare, and the \code{params} argument is ignored}

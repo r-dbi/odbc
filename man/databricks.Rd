@@ -24,9 +24,9 @@ databricks()
 or an existing \linkS4class{DBIConnection}
 object (in order to clone an existing connection).}
 
-\item{httpPath, HTTPPath}{To query a cluster, use the HTTP Path value found under
-\verb{Advanced Options > JDBC/ODBC} in the Databricks UI. For SQL warehouses,
-this is found under \verb{Connection Details} instead.}
+\item{httpPath, HTTPPath}{To query a cluster, use the HTTP Path value found
+under \verb{Advanced Options > JDBC/ODBC} in the Databricks UI. For SQL
+warehouses, this is found under \verb{Connection Details} instead.}
 
 \item{workspace}{The URL of a Databricks workspace, e.g.
 \code{"https://example.cloud.databricks.com"}.}

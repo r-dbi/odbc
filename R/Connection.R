@@ -159,8 +159,7 @@ setClass(
 #' For a given table this function returns detailed information on
 #' all fields / columns.  The expectation is that this is a relatively thin
 #' wrapper around the ODBC `SQLColumns` function call, with some of the field
-#' names
-#' renamed / re-ordered according to the return specifications below.
+#' names renamed / re-ordered according to the return specifications below.
 #'
 #' In [dbWriteTable()] we make a call to this method
 #' to get details on the fields of the table we are writing to.  In particular
@@ -168,7 +167,8 @@ setClass(
 #' implementation is not necessary for [dbWriteTable()] to work.
 #' @inheritParams odbcConnectionTables
 #'
-#' @seealso The ODBC documentation on [SQLColumns](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
+#' @seealso The ODBC documentation on
+#' [SQLColumns](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
 #' for further details.
 #'
 #' @return data.frame with columns
@@ -201,7 +201,8 @@ setGeneric(
 )
 
 #' @rdname odbcConnectionColumns
-#' @param column_name The name of the column to return, the default returns all columns.
+#' @param column_name The name of the column to return, the default returns
+#'   all columns.
 #' @export
 setMethod("odbcConnectionColumns", c("OdbcConnection", "Id"),
   function(conn, name, column_name = NULL, exact = FALSE) {
@@ -245,7 +246,8 @@ setMethod("odbcConnectionColumns", c("OdbcConnection", "character"),
 #'  either ordinary arguments (OA) in the case of the catalog, or pattern value
 #'  arguments (PV) in the case of schema/table name.  For these, quoted
 #'  identifiers do not make sense, so we unquote identifiers prior to the call.
-#' @seealso The ODBC documentation on [Arguments to catalog functions](https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/arguments-in-catalog-functions?view=sql-server-ver16).
+#' @seealso The ODBC documentation on
+#' [Arguments to catalog functions](https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/arguments-in-catalog-functions).
 #' @rdname odbcConnectionColumns
 #' @export
 setMethod("odbcConnectionColumns", c("OdbcConnection", "SQL"),
@@ -281,7 +283,8 @@ setMethod("odbcConnectionColumns", c("OdbcConnection", "SQL"),
 #'   matches any number of characters as this is unlikely to appear in a
 #'   table name.
 #'
-#' @seealso The ODBC documentation on [SQLTables](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
+#' @seealso The ODBC documentation on
+#' [SQLTables](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
 #' for further details.
 #'
 #' @return data.frame with columns
@@ -524,7 +527,8 @@ setMethod("dbSendQuery", c("OdbcConnection", "character"),
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbSendStatement
-#' @param params Query parameters to pass to [dbBind()], See [dbBind()] for details.
+#' @param params Query parameters to pass to [dbBind()].
+#'   See [dbBind()] for details.
 #' @export
 setMethod("dbSendStatement", c("OdbcConnection", "character"),
   function(conn, statement, params = NULL, ..., immediate = FALSE) {
@@ -595,7 +599,8 @@ setMethod("dbQuoteIdentifier", c("OdbcConnection", "SQL"),
 #'   table. If you want to search for multiple tables using wild cards, you
 #'   will need to use `odbcConnectionTables()` directly instead.
 #'
-#' @param table_type The type of the table to return, the default returns all table types.
+#' @param table_type The type of the table to return, the default returns
+#'   all table types.
 #' @returns A character vector of table or field names respectively.
 #' @export
 setMethod("dbListTables", "OdbcConnection",

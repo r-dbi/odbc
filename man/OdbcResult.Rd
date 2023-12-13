@@ -49,8 +49,9 @@ or a \linkS4class{DBIResult}}
 
 \item{params}{A list of bindings, named or unnamed.}
 
-\item{batch_rows}{The number of rows to retrieve. Defaults to \code{NA}, which is set dynamically to the size of the input. Depending on
-the database, driver, dataset and free memory setting this to a lower value may improve
+\item{batch_rows}{The number of rows to retrieve. Defaults to \code{NA}, which
+is set dynamically to the size of the input. Depending on the database,
+driver, dataset and free memory setting this to a lower value may improve
 performance.}
 }
 \description{

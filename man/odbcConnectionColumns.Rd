@@ -46,7 +46,8 @@ matches exactly, rather than matching any single character. \verb{\%} always
 matches any number of characters as this is unlikely to appear in a
 table name.}
 
-\item{column_name}{The name of the column to return, the default returns all columns.}
+\item{column_name}{The name of the column to return, the default returns
+all columns.}
 }
 \value{
 data.frame with columns
@@ -72,8 +73,8 @@ data.frame with columns
 \description{
 For a given table this function returns detailed information on
 all fields / columns.  The expectation is that this is a relatively thin
-wrapper around the ODBC \code{SQLColumns} function call, with some of the field names
-renamed / re-ordered according to the return specifications below.
+wrapper around the ODBC \code{SQLColumns} function call, with some of the field
+names renamed / re-ordered according to the return specifications below.
 }
 \details{
 In \code{\link[=dbWriteTable]{dbWriteTable()}} we make a call to this method
@@ -88,12 +89,15 @@ either ordinary arguments (OA) in the case of the catalog, or pattern value
 arguments (PV) in the case of schema/table name.  For these, quoted
 identifiers do not make sense, so we unquote identifiers prior to the call.
 
-Query, rather than use SQLColumns ODBC API for ORACLE since when using the API
-we bind a BIGINT to one of the column results.  Oracle's OEM driver is unable to handle.
+Query, rather than use SQLColumns ODBC API for ORACLE since when
+using the API we bind a BIGINT to one of the column results.  Oracle's OEM
+driver is unable to handle.
 }
 \seealso{
-The ODBC documentation on \href{https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function}{SQLColumns}
+The ODBC documentation on
+\href{https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function}{SQLColumns}
 for further details.
 
-The ODBC documentation on \href{https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/arguments-in-catalog-functions?view=sql-server-ver16}{Arguments to catalog functions}.
+The ODBC documentation on
+\href{https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/arguments-in-catalog-functions}{Arguments to catalog functions}.
 }

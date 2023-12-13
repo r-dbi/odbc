@@ -14,9 +14,9 @@
 #' [standard environment variables](https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication).
 #'
 #' @inheritParams DBI::dbConnect
-#' @param httpPath,HTTPPath To query a cluster, use the HTTP Path value found under
-#'   `Advanced Options > JDBC/ODBC` in the Databricks UI. For SQL warehouses,
-#'   this is found under `Connection Details` instead.
+#' @param httpPath,HTTPPath To query a cluster, use the HTTP Path value found
+#'   under `Advanced Options > JDBC/ODBC` in the Databricks UI. For SQL
+#'   warehouses, this is found under `Connection Details` instead.
 #' @param useNativeQuery Suppress the driver's conversion from ANSI SQL 92 to
 #'   HiveSQL? The default (`TRUE`), gives greater performance but means that
 #'   paramterised queries (and hence `dbWriteTable()`) do not work.

@@ -126,8 +126,9 @@ odbc_write_table <- function(conn,
 #'   `TRUE` if `append` is also `TRUE`.
 #' @param append Allow appending to the destination table. Cannot be
 #'   `TRUE` if `overwrite` is also `TRUE`.
-#' @param batch_rows The number of rows to retrieve. Defaults to `NA`, which is set dynamically to the size of the input. Depending on
-#'   the database, driver, dataset and free memory setting this to a lower value may improve
+#' @param batch_rows The number of rows to retrieve. Defaults to `NA`, which
+#'   is set dynamically to the size of the input. Depending on the database,
+#'   driver, dataset and free memory setting this to a lower value may improve
 #'   performance.
 #' @export
 setMethod("dbWriteTable", c("OdbcConnection", "character", "data.frame"),
