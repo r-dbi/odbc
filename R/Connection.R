@@ -182,7 +182,7 @@ setClass(
 #' - buffer_length
 #' - decimal_digits
 #' - numeric_precision_radix
-# " - remarks
+#' - remarks
 #' - column_default
 #' - sql_data_type
 #' - sql_datetime_subtype
