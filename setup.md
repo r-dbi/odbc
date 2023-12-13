@@ -49,25 +49,80 @@ First, installing MySQL with Homebrew:
 brew install mysql@8.2
 ```
 
-Ensure that the `obdc.ini` and `odbcinst.ini` configuration files note an entry for MySQL. For example entries in those files, see `.github/odbc`. To locate the driver on your system, see the output of `brew info mysql`.
+Available installers of the MySQL drivers (called the Connector/ODBC for MySQL) on Unix systems assume the iODBC driver manager. The driver thus needs to be installed from source.
 
-To launch a MySQL server locally, run:
+Clone the [mysql-connector-odbc source](https://github.com/mysql/mysql-connector-odbc).
 
+Edit the source of `dltest/dltest.c` to include:
+
+```c
+#include <string.h>
 ```
-brew services start mysql
+
+in the first few lines, and similarly for `test/odbctap.h`:
+
+```c
+#include <wchar.h>
+#include <stdio.h>
 ```
 
-Confirm that MySQL ran successfully with `brew services info mysql`. (If the server is not running, see [these instructions](https://stackoverflow.com/a/72984717/14038605).) Next, create a database called "test" (or by whatever name is in the entry `Database` in your `odbc.ini` file:
+Set the working directory to the source project (this will already be done if you've opened the repository as an RStudio project). Then, run:
 
 ```shell
-createdb test
+brew install openssl@3
 ```
 
-At this point, you should be able to connect to MySQL through the R interface. Connect with:
+We'll tell the MySQL connection to compile with unixODBC and a homebrew install of openssl. Use `brew info openssl@3` to locate your install of openssl. Substitute `2.3.12` below with the version of your unixODBC install appropriately by navigating to `/opt/homebrew/Cellar/unixodbc/` and choosing the most recent installation.
 
-```r
-mysql <- dbConnect(odbc(), "MySQL")
+Then:
+
+```shell
+cmake -G "Unix Makefiles" -DWITH_UNIXODBC=1 -DWITH_SSL=/opt/homebrew/opt/openssl@3 -DODBC_INCLUDES=/opt/homebrew/Cellar/unixodbc/2.3.12/include -DODBC_LIB_DIR=/opt/homebrew/Cellar/unixodbc/2.3.12/lib
 ```
+
+Towards the end of log outputs, you should see:
+
+```
+-- OpenSSL library: /opt/homebrew/opt/openssl@3/lib/libssl.dylib
+```
+
+or similar. If you see "not found," you will need to [troubleshoot your SSL library path](https://dev.mysql.com/doc/refman/8.0/en/source-ssl-library-configuration.html). 
+
+Finally:
+
+```
+make
+
+sudo make install
+```
+
+For more information on the above, see [MySQL's docs](https://dev.mysql.com/doc/connector-odbc/en/connector-odbc-installation-source-unix.html) and the arguments noted on the [installation documentation](https://dev.mysql.com/doc/connector-odbc/en/connector-odbc-installation-source-unix.html); you will likely need to set additional arguments.
+
+At the `make` step, you may see an error related to missing libraries.  If so, you'll need to (re)install the noted library with brew, clear the results of `cmake` from the source directory (I used `usethis:::git_clean()` to do so), and start again from the `cmake` step.
+
+```
+is a symlink belonging to openssl@3. You can unlink it:
+  brew unlink openssl@3
+
+To force the link and overwrite all conflicting files:
+  brew link --overwrite openssl@1.1
+```
+
+Once the driver is correctly installed, find the sample `.ini` files linked in the `sudo make install` output and add them to your configuration files noted in `odbcinst -j`. Remove the `DATABASE` key entry and set:
+
+```
+UID             = root
+PASSWORD        =
+```
+
+After running `brew services start mysql` if needed, and confirming that the database is running with `brew services info mysql`, you should be able to:
+
+```
+library(odbc)
+dbConnect(odbc(), "myodbc8w")
+```
+
+Where `"myodbc8w"` is substituted with the DSN you've configured.
 
 ## SQL Server test setup
 
