@@ -75,10 +75,10 @@ std::string get_info_or_empty(connection_ptr const& p, short type) {
 
 // [[Rcpp::export]]
 Rcpp::List connection_info(connection_ptr const& p) {
-  unsigned short getdata_ext;
+  SQLINTEGER getdata_ext;
   try {
     getdata_ext =
-        (*p)->connection()->get_info<unsigned short>(SQL_GETDATA_EXTENSIONS);
+        (*p)->connection()->get_info<SQLINTEGER>(SQL_GETDATA_EXTENSIONS);
   } catch (const nanodbc::database_error& c) {
     getdata_ext = 0;
   }
