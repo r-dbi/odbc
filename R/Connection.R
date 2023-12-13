@@ -189,7 +189,7 @@ setGeneric(
 setMethod(
   "odbcConnectionColumns",
   c("OdbcConnection", "Id"),
-  function(conn, name, column_name = NULL, exact = FALSE) {
+  function(conn, name, ..., column_name = NULL, exact = FALSE) {
     odbcConnectionColumns(conn,
       name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
@@ -207,6 +207,7 @@ setMethod(
   c("OdbcConnection", "character"),
   function(conn,
            name,
+           ...,
            catalog_name = NULL,
            schema_name = NULL,
            column_name = NULL,
