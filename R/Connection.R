@@ -86,10 +86,13 @@ OdbcConnection <- function(
 
   class(info) <- c(info$dbms.name, "driver_info", "list")
 
-  class <- getClassDef(info$dbms.name, where = class_cache, inherits = FALSE)
-  if (is.null(class) || methods::isVirtualClass(class)) {
-    setClass(info$dbms.name,
-      contains = "OdbcConnection", where = class_cache)
+
+  class <- getClassDef(info$dbms.name, inherits = FALSE)
+  if (is.null(class)) {
+    class <- getClassDef(info$dbms.name, where = class_cache, inherits = FALSE)
+    if (is.null(class) || methods::isVirtualClass(class)) {
+      setClass(info$dbms.name, contains = "OdbcConnection", where = class_cache)
+    }
   }
   res <- new(info$dbms.name, ptr = ptr, quote = quote, info = info, encoding = encoding)
 }
@@ -511,7 +514,7 @@ setMethod(
 #' @export
 setMethod(
   "dbSendQuery", c("OdbcConnection", "character"),
-  function(conn, statement, params = NULL, ..., immediate = FALSE) {
+  function(conn, statement, params = NULL, ..., immediate = is.null(params)) {
     res <- OdbcResult(connection = conn, statement = statement, params = params, immediate = immediate)
     res
   })
@@ -659,8 +662,14 @@ setMethod(
 #' @inheritParams DBI::dbFetch
 #' @export
 setMethod("dbGetQuery", signature("OdbcConnection", "character"),
-  function(conn, statement, n = -1, params = NULL, ...) {
-    rs <- dbSendQuery(conn, statement, params = params, ...)
+  function(conn, statement, n = -1, params = NULL, immediate = is.null(params), ...) {
+    rs <- dbSendQuery(
+      conn,
+      statement,
+      params = params,
+      immediate = immediate,
+      ...
+    )
     on.exit(dbClearResult(rs))
 
     df <- dbFetch(rs, n = n, ...)
