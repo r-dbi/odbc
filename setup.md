@@ -12,12 +12,62 @@ We need to install the RODBC package for benchmarking in the vignette `vignette(
 install.packages("RODBC", type = "source", INSTALL_opts="--configure-args='--with-odbc-manager=odbc'")
 ```
 
-## PostgreSQL and MySQL
+## PostgreSQL
 
-Run them locally with `brew services start mysql` `brew services start postgres`
-Create a 'test' database and a 'postgres' user with 'password' as the password.
+On MacOS, install PostgreSQL and the PostgreSQL drivers with:
 
-See the configuration files in .github/odbc for examples.
+```shell
+brew install postgresql@14
+brew install psqlodbc
+```
+
+Then, ensure that the `obdc.ini` and `odbcinst.ini` configuration files note an entry for PostgreSQL. For example entries in those files, see `.github/odbc`. To locate the driver on your system, see the output of `brew info psqlodbc`.
+
+To launch a PostgreSQL server locally, run:
+
+```
+brew services start postgresql@14
+```
+
+Next, create a database called "test" (or by whatever name is in the entry `Database` in your `odbc.ini` file:
+
+```shell
+createdb test
+```
+
+At this point, you should be able to connect to PostgreSQL through the R interface. Connect with:
+
+```r
+postgres <- dbConnect(odbc(), "PostgreSQL")
+```
+
+## MySQL
+
+First, installing MySQL with Homebrew:
+
+```shell
+brew install mysql@8.2
+```
+
+Ensure that the `obdc.ini` and `odbcinst.ini` configuration files note an entry for MySQL. For example entries in those files, see `.github/odbc`. To locate the driver on your system, see the output of `brew info mysql`.
+
+To launch a MySQL server locally, run:
+
+```
+brew services start mysql
+```
+
+Confirm that MySQL ran successfully with `brew services info mysql`. (If the server is not running, see [these instructions](https://stackoverflow.com/a/72984717/14038605).) Next, create a database called "test" (or by whatever name is in the entry `Database` in your `odbc.ini` file:
+
+```shell
+createdb test
+```
+
+At this point, you should be able to connect to MySQL through the R interface. Connect with:
+
+```r
+mysql <- dbConnect(odbc(), "MySQL")
+```
 
 ## SQL Server test setup
 
