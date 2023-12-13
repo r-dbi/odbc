@@ -511,12 +511,19 @@ setMethod(
 #' @param params Optional query parameters, passed on to [dbBind()]
 #' @param immediate If `TRUE`, SQLExecDirect will be used instead of
 #'   SQLPrepare, and the `params` argument is ignored
+#' @param timeout Number of seconds to wait before aborting the query.
+#'   The default, `Inf`, will never timeout.
 #' @export
 setMethod(
   "dbSendQuery", c("OdbcConnection", "character"),
-  function(conn, statement, params = NULL, ..., immediate = FALSE) {
-    res <- OdbcResult(connection = conn, statement = statement, params = params, immediate = immediate)
-    res
+  function(conn, statement, params = NULL, ..., immediate = FALSE, timeout = Inf) {
+    OdbcResult(
+      connection = conn,
+      statement = statement,
+      params = params,
+      immediate = immediate,
+      timeout = timeout
+    )
   })
 
 #' @rdname OdbcConnection
@@ -525,9 +532,14 @@ setMethod(
 #' @export
 setMethod(
   "dbSendStatement", c("OdbcConnection", "character"),
-  function(conn, statement, params = NULL, ..., immediate = FALSE) {
-    res <- OdbcResult(connection = conn, statement = statement, params = params, immediate = immediate)
-    res
+  function(conn, statement, params = NULL, ..., immediate = FALSE, timeout = Inf) {
+    OdbcResult(
+      connection = conn,
+      statement = statement,
+      params = params,
+      immediate = immediate,
+      timeout = timeout
+    )
   })
 
 #' @rdname OdbcConnection
@@ -662,8 +674,8 @@ setMethod(
 #' @inheritParams DBI::dbFetch
 #' @export
 setMethod("dbGetQuery", signature("OdbcConnection", "character"),
-  function(conn, statement, n = -1, params = NULL, ...) {
-    rs <- dbSendQuery(conn, statement, params = params, ...)
+  function(conn, statement, ..., n = -1, params = NULL, timeout = Inf) {
+    rs <- dbSendQuery(conn, statement, params = params, timeout = timeout, ...)
     on.exit(dbClearResult(rs))
 
     df <- dbFetch(rs, n = n, ...)

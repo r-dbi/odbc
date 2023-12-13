@@ -32,7 +32,7 @@ private:
 class odbc_result {
 public:
   odbc_result(
-      std::shared_ptr<odbc_connection> c, std::string sql, bool immediate);
+      std::shared_ptr<odbc_connection> c, std::string sql, bool immediate, long timeout);
   std::shared_ptr<odbc_connection> connection() const;
   std::shared_ptr<nanodbc::statement> statement() const;
   std::shared_ptr<nanodbc::result> result() const;
@@ -63,6 +63,7 @@ private:
   bool complete_;
   bool bound_;
   Iconv output_encoder_;
+  long timeout_;
 
   std::map<short, std::vector<std::string>> strings_;
   std::map<short, std::vector<std::vector<uint8_t>>> raws_;
