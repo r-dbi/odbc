@@ -88,7 +88,7 @@ apt-get install libmyodbc
 apt-get install libsqliteodbc
 ```
 
-## Driver config
+## Driver configuration
 
 On Windows, driver config is managed by the operating system, and you don't generally need to edit any configuration files directly. On MacOS and Linux, however, the driver config is managed by unixODBC, and depending on how the driver is installed, it may or may not be automatically configured. 
 
@@ -116,25 +116,7 @@ con2 <- dbConnect(odbc::odbc(), driver = "SQLite Driver")
 
 If installing the driver did not automatically update this file, you'll need to update it yourself. You'll need to figure out where the driver library was installed, using something like `brew list {drivername}` or `dpkg-query -L {drivername}`.
 
-## Datasource config
-
-It's also possible to setup named 
-
-#### odbcinst.ini
-
-`odbcinst.ini` contains driver information, particularly the _driver name_ and the location of the installed driver file. Multiple drivers can be specified in the same file. For example:
-
-On MacOS aarch64 machines, drivers installed via homebrew are in a different location. Those might look something like:
-
-```ini
-[PostgreSQL Driver]
-Driver          = /opt/homebrew/lib/psqlodbcw.so
-
-[SQLite Driver]
-Driver          = /opt/homebrew/lib/libsqlite3odbc.dylib
-```
-
-### Data sources
+## Data source configuration
 
 It's also possible to configure named data sources, so instead of typing this:
 
@@ -173,4 +155,4 @@ host       = localhost
 port       = 5432
 ```
 
-You can see all currently defined data sources by running `odbcListDataSources()`.
+The `driver` entry represents the name of the driver defined in `odbcinst.ini`. You can see all currently defined data sources by running `odbcListDataSources()`.
