@@ -19,6 +19,9 @@
     <loc>https://r-dbi.github.io/odbc/dev/articles/benchmarks.html</loc>
   </url>
   <url>
+    <loc>https://r-dbi.github.io/odbc/dev/articles/develop.html</loc>
+  </url>
+  <url>
     <loc>https://r-dbi.github.io/odbc/dev/articles/index.html</loc>
   </url>
   <url>
@@ -122,8 +125,5 @@
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/odbcSetTransactionIsolationLevel.html</loc>
-  </url>
-  <url>
-    <loc>https://r-dbi.github.io/odbc/dev/setup.html</loc>
   </url>
 </urlset>
