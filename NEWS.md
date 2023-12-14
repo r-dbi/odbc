@@ -1,11 +1,23 @@
 # odbc (development version)
 
+## Major changes
+
+* New `odbc::databricks()` makes it easier to connect to Databricks, 
+  automatically handling many common authentication scenarios (@atheriel, #615).
+
+* `dbListTables()`, `dbListFields()` and `dbExistsTable()` automatically
+  escape underscores in identifier arguments. This leads to substantial 
+  performance improvements for some backends (e.g. snowflake) 
+  (@detule, @fh-afrachioni, #618).
+
 * `dbGetQuery()` and `dbSendQuery()` now set `immediate = TRUE` if you are 
   not using a parameterised query. That should yield a small speed boost in 
   many cases (#633).
 
-* Using odbc with SQL Server no longer leads to warnings about ambiguous
-  method dispatch (#661).
+## Minor improvements and bug fixes
+
+* Increased the minimum required R version from 3.2.0 to 3.6.0 
+  (@simonpcouch, #629).
 
 * S4 classes for the most database drivers are now exported, make it possible
   to use in other packages (#558).
@@ -13,32 +25,31 @@
 * ODBC errors are now spread across multiple lines, making them easier to 
   read (@detule, #564).
 
-* `dbListTables()`, `dbListFields()` and `dbExistsTable()` automatically
-  escape underscores in identifier arguments. This leads to substantial 
-  performance improvements for some backends (e.g. snowflake) 
-  (@detule, @fh-afrachioni, #618).
-
 * `DBI::dbConnect(odbc::odbc())` now gives a clear error if you supply multiple
   arguments with the same name when case is ignored (#641).
 
-* `dbConnect(odbc::odbc())` now automatically quotes argument values that need 
+* `DBI::dbConnect(odbc::odbc())` now automatically quotes argument values that need 
   it (#616).
 
-* Spark SQL: Correctly enumerate schemas away from the current catalog (@detule, #614)
-* Modify `odbcDataType.Snowflake` to better reflect Snowflake Data Types documentation (@meztez, #599).
-* SQL Server: Specialize syntax in sqlCreateTable to avoid failures when
-  writing to (new) local temp tables. (@detule, #601)
-* SQL Server: Improved handling for local temp tables in dbWrite, dbAppendTable,
-  dbExistTable (@detule, #600)
-* Teradata: Improved handling for temp tables (@detule and @But2ene, #589, 590)
-* Oracle: Fix regression when falling back to odbcConnectionColumns to
+## Driver specific changes
+
+* Oracle: Fix regression when falling back to `odbcConnectionColumns()` to
   describe column data types (@detule, #587)
 
-* Add a new, specialised `odbc::databricks()` class with its own `dbConnect()`
-  method to make using Databricks's ODBC driver easier (@atheriel, #615).
-* Increased the minimum required R version from 3.2.0 to 3.6.0 (@simonpcouch, #629).
-* Add support for searching multiple paths for the default location of the
-  Databricks driver (@bschwedler, #621).
+* Spark SQL: Correctly enumerate schemas away from the current catalog 
+  (@detule, #614)
+
+* Snowflake: improved translation from R to snowflake types (@meztez, #599).
+
+* SQL Server
+
+  * Improved handling for local temp tables in `dbWrite()`, `dbAppendTable()`,
+    and `dbExistTable()` (@detule, #600)
+
+  * Specialize syntax in `sqlCreateTable` to avoid failures when
+    writing to (new) local temp tables. (@detule, #601)
+
+* Teradata: Improved handling for temp tables (@detule and @But2ene, #589, 590)
 
 # odbc 1.3.5
 
