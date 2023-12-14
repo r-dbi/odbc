@@ -2,7 +2,7 @@
 % Please edit documentation in R/Connection.R
 \name{odbcListConfig}
 \alias{odbcListConfig}
-\title{List Locations of ODBC Configuration Files}
+\title{List locations of ODBC configuration files}
 \usage{
 odbcListConfig()
 }
@@ -10,12 +10,10 @@ odbcListConfig()
 On MacOS and Linux, odbc uses the unixODBC driver manager to manage
 information about driver and data sources. This helper returns the filepaths
 where the driver manager will look for that information.
-}
-\details{
+
 This function is a wrapper around the command line call \code{odbcinst -j}.
 
-Windows now uses the ODBC Data Source Administrator application to manage
-drivers and thus does not use \code{.ini} files; this function will return a
+Windows does not use \code{.ini} configuration files; this function will return a
 0-row data frame on Windows.
 }
 \examples{
