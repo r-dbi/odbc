@@ -59,7 +59,7 @@ First, installing MySQL with Homebrew:
 brew install mysql@8.2
 ```
 
-Available installers of the MySQL drivers (called the Connector/ODBC for MySQL) on Unix systems assume the iODBC driver manager. The driver thus needs to be installed from source.
+Available installers of the MySQL drivers (called the Connector/ODBC for MySQL) on macOS assume the iODBC driver manager. The driver thus needs to be installed from source.
 
 Clone the [mysql-connector-odbc source](https://github.com/mysql/mysql-connector-odbc).
 
