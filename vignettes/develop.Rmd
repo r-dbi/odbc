@@ -59,80 +59,27 @@ First, installing MySQL with Homebrew:
 brew install mysql@8.2
 ```
 
-Available installers of the MySQL drivers (called the Connector/ODBC for MySQL) on macOS assume the iODBC driver manager. The driver thus needs to be installed from source.
-
-Clone the [mysql-connector-odbc source](https://github.com/mysql/mysql-connector-odbc).
-
-Edit the source of `dltest/dltest.c` to include:
-
-```c
-#include <string.h>
-```
-
-in the first few lines, and similarly for `test/odbctap.h`:
-
-```c
-#include <wchar.h>
-#include <stdio.h>
-```
-
-Set the working directory to the source project (this will already be done if you've opened the repository as an RStudio project). Then, run:
+MariaDB drivers are compatible with MySQL and are more easily installed than MySQL drivers themselves in most cases. To install the MariaDB driver:
 
 ```shell
-brew install openssl@3
+brew install mariadb-connector-odbc
 ```
 
-We'll tell the MySQL connection to compile with unixODBC and a homebrew install of openssl. Use `brew info openssl@3` to locate your install of openssl. Substitute `2.3.12` below with the version of your unixODBC install appropriately by navigating to `/opt/homebrew/Cellar/unixodbc/` and choosing the most recent installation.
+Then, link the MariaDB driver with your MySQL data source name. That is, with the driver name `[MariaDB]` configuring your MariaDB install in `odbcinst.ini`, the first lines of your `odbc.ini` entry should look something like:
 
-Then:
-
-```shell
-cmake -G "Unix Makefiles" -DWITH_UNIXODBC=1 -DWITH_SSL=/opt/homebrew/opt/openssl@3 -DODBC_INCLUDES=/opt/homebrew/Cellar/unixodbc/2.3.12/include -DODBC_LIB_DIR=/opt/homebrew/Cellar/unixodbc/2.3.12/lib
-```
-
-Towards the end of log outputs, you should see:
-
-```
--- OpenSSL library: /opt/homebrew/opt/openssl@3/lib/libssl.dylib
-```
-
-or similar. If you see "not found," you will need to [troubleshoot your SSL library path](https://dev.mysql.com/doc/refman/8.0/en/source-ssl-library-configuration.html). 
-
-Finally:
-
-```
-make
-
-sudo make install
-```
-
-For more information on the above, see [MySQL's docs](https://dev.mysql.com/doc/connector-odbc/en/connector-odbc-installation-source-unix.html) and the arguments noted on the [installation documentation](https://dev.mysql.com/doc/connector-odbc/en/connector-odbc-installation-source-unix.html); you will likely need to set additional arguments.
-
-At the `make` step, you may see an error related to missing libraries.  If so, you'll need to (re)install the noted library with brew, clear the results of `cmake` from the source directory (I used `usethis:::git_clean()` to do so), and start again from the `cmake` step.
-
-```
-is a symlink belonging to openssl@3. You can unlink it:
-  brew unlink openssl@3
-
-To force the link and overwrite all conflicting files:
-  brew link --overwrite openssl@1.1
-```
-
-Once the driver is correctly installed, find the sample `.ini` files linked in the `sudo make install` output and add them to your configuration files noted in `odbcinst -j`. Remove the `DATABASE` key entry and set:
-
-```
-UID             = root
-PASSWORD        =
+```ini
+[MySQL]
+Driver = MariaDB
 ```
 
 After running `brew services start mysql` if needed, and confirming that the database is running with `brew services info mysql`, you should be able to:
 
 ```
 library(odbc)
-dbConnect(odbc(), "myodbc8w")
+dbConnect(odbc(), "MySQL")
 ```
 
-Where `"myodbc8w"` is substituted with the DSN you've configured.
+The second argument `"MySQL"` refers to the data source name configured above.
 
 ## SQL Server test setup
 
