@@ -26,6 +26,15 @@ The odbc package is often much faster than the existing
 [RODBC](https://cran.r-project.org/package=RODBC) and DBI compatible
 [RODBCDBI](https://cran.r-project.org/package=RODBCDBI) packages. We'll benchmark writing and reading data from the [nycflights13](https://github.com/tidyverse/nycflights13) package using the three packages.
 
+```{r, include = FALSE}
+# The CRAN version of RODBC uses iODBC, so to use unixODBC we need to 
+# recompile it from source, specifying the odbc manager explicitly:
+#
+# install.packages("RODBC", type = "source", INSTALL_opts="--configure-args='--with-odbc-manager=odbc'")
+#
+# see `vignette("develop")` for more details.
+```
+
 ```{r setup}
 library(odbc)
 library(RODBC)
