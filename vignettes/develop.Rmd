@@ -26,7 +26,6 @@ On MacOS, install PostgreSQL with:
 
 ```shell
 brew install postgresql@14
-
 ```
 
 You'll also need to install and configure the PostgreSQL driver `psqlodbc`; see `vignette("setup")` to learn more.
@@ -167,14 +166,7 @@ port = 1433
 Encrypt = no
 ```
 
-In  `odbcinst.ini`:
-
-```ini
-[ODBC Driver 18 for SQL Server]
-Description=Microsoft ODBC Driver 18 for SQL Server
-Driver=/opt/homebrew/lib/libmsodbcsql.18.dylib
-UsageCount=1
-```
+With the driver name in `odbcinst.ini` being `[ODBC Driver 18 for SQL Server]`.
 
 With docker and the needed driver installed, deploy the container with:
 
@@ -194,11 +186,12 @@ The `--platform` tag is correct for M1; if you see `Status: Exited (1)` in Docke
 To connect via odbc, we need to pass the UID and PWD via the connection string; configuring those arguments via `odbc.ini` is [not permitted](https://stackoverflow.com/questions/42387084/sql-server-odbc-driver-linux-username). With the container deployed as above, the connection arguments would be:
 
 ```r
-con <- dbConnect(odbc::odbc(), 
-                 dsn = "MicrosoftSQLServer", 
-                 uid = "SA", 
-                 pwd = "BoopBop123!"
-                 )
+con <- dbConnect(
+  odbc::odbc(), 
+  dsn = "MicrosoftSQLServer", 
+  uid = "SA", 
+  pwd = "BoopBop123!"
+)
 ```
 
 Then do some configuration of the server to add a testuser and create the test database
