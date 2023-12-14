@@ -1266,7 +1266,6 @@ string_type connection::connection_impl::database_name() const
 
 template string_type connection::get_info(short info_type) const;
 template unsigned short connection::get_info(short info_type) const;
-template SQLINTEGER connection::get_info(short info_type) const;
 template uint32_t connection::get_info(short info_type) const;
 template uint64_t connection::get_info(short info_type) const;
 
