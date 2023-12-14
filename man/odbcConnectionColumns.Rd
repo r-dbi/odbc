@@ -10,11 +10,12 @@
 \usage{
 odbcConnectionColumns(conn, name, ..., exact = FALSE)
 
-\S4method{odbcConnectionColumns}{OdbcConnection,Id}(conn, name, column_name = NULL, exact = FALSE)
+\S4method{odbcConnectionColumns}{OdbcConnection,Id}(conn, name, ..., column_name = NULL, exact = FALSE)
 
 \S4method{odbcConnectionColumns}{OdbcConnection,character}(
   conn,
   name,
+  ...,
   catalog_name = NULL,
   schema_name = NULL,
   column_name = NULL,
