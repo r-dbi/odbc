@@ -22,3 +22,35 @@ test_that("build_connection_string automatically escapes if needed", {
   # Respects AsIs
   expect_equal(build_connection_string(list(foo = I("*"))), "foo=*")
 })
+
+test_that("odbcListConfig returns appropriate data frame", {
+  skip_on_os(c("windows", "solaris"))
+  skip_if(identical(unname(Sys.which("odbcinst")), ""), "odbcinst not available.")
+
+  res <- odbcListConfig()
+
+  expect_s3_class(res, "data.frame")
+  expect_length(res, 2)
+  expect_named(res, c("name", "location"))
+  expect_contains(res$name, c("DRIVERS", "SYSTEM DATA SOURCES"))
+  expect_match(res$location, "\\.ini")
+})
+
+test_that("odbcListConfig returns a 0-row data frame on Windows", {
+  skip_on_os(c("mac", "linux", "solaris"))
+  skip_if(identical(unname(Sys.which("odbcinst")), ""), "odbcinst not available.")
+
+  res <- odbcListConfig()
+
+  expect_equal(res, data.frame(name = character(0), location = character(0)))
+})
+
+test_that("odbcListConfig errors informatively when unixODBC isn't available", {
+  skip_on_os(c("windows", "solaris"))
+  skip_if(!identical(unname(Sys.which("odbcinst")), ""), "odbcinst is available")
+
+  expect_error(
+    odbcListConfig(),
+    "driver manager is not available"
+  )
+})

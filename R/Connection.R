@@ -712,6 +712,56 @@ setMethod(
     invisible(TRUE)
   })
 
+#' List Locations of ODBC Configuration Files
+#'
+#' @description
+#' On MacOS and Linux, odbc uses the unixODBC driver manager to manage
+#' information about driver and data sources. This helper returns the filepaths
+#' where the driver manager will look for that information.
+#'
+#' @details
+#' This function is a wrapper around the command line call `odbcinst -j`.
+#'
+#' Windows now uses the ODBC Data Source Administrator application to manage
+#' drivers and thus does not use `.ini` files; this function will return a
+#' 0-row data frame on Windows.
+#'
+#' @seealso
+#' The [odbcListDrivers()] and [odbcListDataSources()] helpers return
+#' information on the contents of `odbcinst.ini` and `odbc.ini` files,
+#' respectively.
+#'
+#' Learn more about unixODBC and the `odbcinst` utility
+#' [here](https://www.unixodbc.org/odbcinst.html).
+#'
+#' @examplesIf FALSE
+#' configs <- odbcListConfig()
+#'
+#' file.edit(configs$location[1])
+#' @export
+odbcListConfig <- function() {
+  if (identical(.Platform$OS.type, "windows")) {
+    return(data.frame(name = character(0), location = character(0)))
+  }
+
+  if (identical(unname(Sys.which("odbcinst")), "")) {
+    stop(
+      c("The unixODBC driver manager is not available. ",
+        "Please install and try again.")
+    )
+  }
+
+  res <- system("odbcinst -j", intern = TRUE)
+  res <- res[grepl("\\.ini", res)]
+  res <- strsplit(res, "\\:")
+  res <- data.frame(name = vapply(res, `[[`, character(1), 1),
+                    location = vapply(res, `[[`, character(1), 2))
+  res$name <- gsub("\\.", "", res$name)
+  res$location <- trimws(res$location)
+
+  res
+}
+
 #' List Configured ODBC Drivers
 #'
 #' @description

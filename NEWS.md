@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Added a function `odbcListConfig()` to help locate configuration files on
+  macOS and Linux (@simonpcouch, #565).
+
 * `dbGetQuery()` and `dbSendQuery()` now set `immediate = TRUE` if you are 
   not using a parameterised query. That should yield a small speed boost in 
   many cases (#633).
