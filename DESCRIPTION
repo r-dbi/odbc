@@ -70,7 +70,7 @@ Collate:
     'driver-spark.R'
     'driver-sql-server.R'
     'driver-sqlite.R'
-    'driver-terdata.R'
+    'driver-teradata.R'
     'driver-vertica.R'
     'odbc-data-sources.R'
     'odbc-data-type.R'
