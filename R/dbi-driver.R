@@ -1,6 +1,3 @@
-#' @include odbc.R
-NULL
-
 #' Odbc Driver Methods
 #'
 #' Implementations of pure virtual functions defined in the `DBI` package
@@ -278,16 +275,3 @@ setMethod("dbGetInfo", "OdbcDriver",
     list(max.connections = NULL, driver.version = NULL, client.version = NULL)
   }
 )
-
-
-#' Unimportant DBI methods
-#'
-#' @name DBI-methods
-#' @keywords internal
-NULL
-
-#' DBI classes
-#'
-#' @name DBI-classes
-#' @keywords internal
-NULL

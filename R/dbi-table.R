@@ -1,3 +1,6 @@
+#' @include dbi-connection.R
+NULL
+
 #' Convenience functions for reading/writing DBMS tables
 #'
 #' @param conn a \code{\linkS4class{OdbcConnection}} object, produced by
@@ -266,5 +269,18 @@ setMethod("dbExistsTable", c("OdbcConnection", "character"),
     stopifnot(length(name) == 1)
     df <- odbcConnectionTables(conn, name = name, ..., exact = TRUE)
     NROW(df) > 0
+  }
+)
+
+
+#' @rdname OdbcConnection
+#' @inheritParams DBI::dbRemoveTable
+#' @export
+setMethod("dbRemoveTable", c("OdbcConnection", "character"),
+  function(conn, name, ...) {
+    name <- dbQuoteIdentifier(conn, name)
+    dbExecute(conn, paste("DROP TABLE ", name))
+    on_connection_updated(conn, name)
+    invisible(TRUE)
   }
 )

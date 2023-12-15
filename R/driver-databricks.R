@@ -1,3 +1,8 @@
+#' @include dbi-connection.R
+#' @include dbi-driver.R
+NULL
+
+
 #' Helper for Connecting to Databricks via ODBC
 #'
 #' @description
