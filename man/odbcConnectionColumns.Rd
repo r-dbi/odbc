@@ -10,11 +10,12 @@
 \usage{
 odbcConnectionColumns(conn, name, ..., exact = FALSE)
 
-\S4method{odbcConnectionColumns}{OdbcConnection,Id}(conn, name, column_name = NULL, exact = FALSE)
+\S4method{odbcConnectionColumns}{OdbcConnection,Id}(conn, name, ..., column_name = NULL, exact = FALSE)
 
 \S4method{odbcConnectionColumns}{OdbcConnection,character}(
   conn,
   name,
+  ...,
   catalog_name = NULL,
   schema_name = NULL,
   column_name = NULL,
@@ -62,6 +63,7 @@ data.frame with columns
 \item buffer_length
 \item decimal_digits
 \item numeric_precision_radix
+\item remarks
 \item column_default
 \item sql_data_type
 \item sql_datetime_subtype

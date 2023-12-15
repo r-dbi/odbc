@@ -1,0 +1,267 @@
+---
+title: "Developing odbc"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Developing odbc}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette is intended to help developers of the R package install needed dependencies.
+
+While the odbc package contains some documentation on how to install and configure database drivers in `vignette("setup")`, the documentation assumes that users are connecting to databases that have already been set up. In order to test package functionality, though, odbc sets up small example database deployments.
+
+For the most part, this vignette assumes a MacOS system with aarch64 (e.g. M1 or M2) architecture. For Linux example code, see [`.github/workflows/db.yaml`](https://github.com/r-dbi/odbc/blob/main/.github/workflows/db.yaml), and for Windows, see [`.github/workflows/db-windows.yml`](https://github.com/r-dbi/odbc/blob/main/.github/workflows/db-windows.yml).
+
+## PostgreSQL
+
+On MacOS, install PostgreSQL with:
+
+```shell
+brew install postgresql@14
+```
+
+You'll also need to install and configure the PostgreSQL driver `psqlodbc`; see `vignette("setup")` to learn more.
+
+To launch a PostgreSQL server locally, run:
+
+```
+brew services start postgresql@14
+```
+
+Next, create a database called "test" (or by whatever name is in the entry `Database` in your `odbc.ini` file):
+
+```shell
+createdb test
+```
+
+At this point, you should be able to connect to PostgreSQL through the R interface. Connect with:
+
+```r
+postgres <- dbConnect(odbc(), "PostgreSQL")
+```
+
+where `"PostgreSQL"` is replaced with whatever DSN you've configured.
+
+
+## MySQL
+
+First, installing MySQL with Homebrew:
+
+```shell
+brew install mysql@8.2
+```
+
+MariaDB drivers are compatible with MySQL and are more easily installed than MySQL drivers themselves in most cases. To install the MariaDB driver:
+
+```shell
+brew install mariadb-connector-odbc
+```
+
+Then, link the MariaDB driver with your MySQL data source name. That is, with the driver name `[MariaDB]` configuring your MariaDB install in `odbcinst.ini`, the first lines of your `odbc.ini` entry should look something like:
+
+```ini
+[MySQL]
+Driver = MariaDB
+```
+
+After running `brew services start mysql` if needed, and confirming that the database is running with `brew services info mysql`, you should be able to:
+
+```
+library(odbc)
+dbConnect(odbc(), "MySQL")
+```
+
+The second argument `"MySQL"` refers to the data source name configured above.
+
+## SQL Server test setup
+
+To run Microsoft SQL Server on **aarch64 (e.g. M1 or M2) MacOS**, you will need: 
+
+* Docker 4.16 or higher
+* MacOS 13 Ventura (or higher)
+
+If needed, install Docker with:
+
+```shell
+brew install --cask docker
+```
+
+The Docker Desktop app provides a GUI to monitor deployed Docker containers and lives in `Docker.app > Show Package Contents > Contents > MacOS > Docker Desktop.app`.
+
+To [install the SQL Server ODBC driver and (optional) command line tool](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/install-microsoft-odbc-driver-sql-server-macos?view=sql-server-ver15), use:
+
+```shell
+brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
+brew install microsoft/mssql-release/msodbcsql18 microsoft/mssql-release/mssql-tools18
+```
+
+The `odbc.ini` entry should look something like:
+
+```ini
+[MicrosoftSQLServer]
+driver = ODBC Driver 18 for SQL Server
+Server = 127.0.0.1
+port = 1433
+Encrypt = no
+```
+
+With the driver name in `odbcinst.ini` being `[ODBC Driver 18 for SQL Server]`.
+
+With docker and the needed driver installed, deploy the container with:
+
+```shell
+sudo docker run \
+  --platform linux/amd64 \
+  -e "ACCEPT_EULA=Y" \
+  -e "MSSQL_SA_PASSWORD=BoopBop123!" \
+  -p 1433:1433 \
+   --name sql1 \
+   --hostname sql1 \
+   -d mcr.microsoft.com/mssql/server:2022-latest
+```
+
+The `--platform` tag is correct for M1; if you see `Status: Exited (1)` in Docker Desktop or a warning about incompatible architectures, navigate to `Settings > General` and ensure that `Use Rosetta for x86/amd64 emulation on Apple Silicon` is checked.
+
+To connect via odbc, we need to pass the UID and PWD via the connection string; configuring those arguments via `odbc.ini` is [not permitted](https://stackoverflow.com/questions/42387084/sql-server-odbc-driver-linux-username). With the container deployed as above, the connection arguments would be:
+
+```r
+con <- dbConnect(
+  odbc::odbc(), 
+  dsn = "MicrosoftSQLServer", 
+  uid = "SA", 
+  pwd = "BoopBop123!"
+)
+```
+
+Then do some configuration of the server to add a testuser and create the test database
+
+To configure a server to add a testing user and create a test database:
+
+```r
+# Add a test user, but currently unused
+dbExecute(con, "USE test")
+dbExecute(con, "EXEC sp_configure 'contained database authentication', 1")
+dbExecute(con, "RECONFIGURE")
+dbExecute(con, "alter database test set containment = partial")
+dbExecute(con, "CREATE USER testuser with password = 'BoopBop123!'")
+dbExecute(con, "GRANT CONTROL TO testuser")
+dbExecute(con, "DROP USER testuser")
+
+# Create a test database
+dbExecute(con, "CREATE DATABASE test")
+```
+
+On **Linux**, create a docker container with:
+
+```shell
+docker run -v "$(pwd)":"/opt/$(basename $(pwd))":delegated --security-opt=seccomp:unconfined --link sql1 -it rstudio/r-base:3.6.1-bionic /bin/bash
+```
+
+Then run:
+
+```shell
+curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+#Ubuntu 18.04
+curl https://packages.microsoft.com/config/ubuntu/18.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
+
+apt-get update
+ACCEPT_EULA=Y apt-get install -y msodbcsql17
+apt-get install -y unixodbc-dev
+```
+
+The resulting `odbc.ini` file will look something like:
+
+```ini
+[MicrosoftSQLServer]
+driver = ODBC Driver 17 for SQL Server
+Server = sql1
+port = 1433
+Database = test
+```
+
+## SQLite
+
+MacOS provides SQLite natively. With the SQLite odbc driver installed (see `vignette("setup")` if needed), run:
+
+```
+library(odbc)
+dbConnect(odbc(), "SQLite")
+```
+
+The above example assumes the configured SQLite DSN is called `"SQLite"`.
+
+## Oracle
+
+A huge pain.
+
+Get the DB container:
+
+```shell
+docker login
+
+docker pull store/oracle/database-enterprise:12.2.0.1
+```
+
+Start the container:
+
+```shell
+docker run -d -it --name oracle_db -P store/oracle/database-enterprise:12.2.0.1
+```
+
+The `-P` is important to set up the port forwarding from the docker container.
+
+
+Then, query the port and edit the ports in `tnsnames.ora`:
+
+```shell
+docker port oracle_db
+```
+
+The contents of `snsnames.ora` should look like:
+
+```
+ORCLCDB=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=32769))
+    (CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCLCDB.localdomain)))
+ORCLPDB1=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=32769))
+    (CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCLPDB1.localdomain)))
+```
+
+Ensure that the current working directly is [set appropriately](https://www.ibm.com/support/pages/how-configure-tnsnamesora-use-dedicated-server-process-datastage-connections-oracle-databases#:~:text=accessed%20via%20DataStage%3A-,The%20tnsnames.,specified%20by%20the%20TNS_ADMIN%20variable.). 
+
+Then, to add a new user to the database:
+
+```shell
+docker exec -it oracle_db bash -c "source /home/oracle/.bashrc; sqlplus SYS/Oradoc_db1 AS SYSDBA"
+```
+
+```sql
+alter session set "_ORACLE_SCRIPT"=true;
+
+create user test identified by 12345;
+
+GRANT ALL PRIVILEGES TO TEST;
+```
+
+Finally, in R:
+
+```r
+Sys.setenv("TNS_ADMIN" = getwd())
+con <- dbConnect(odbc::odbc(), "OracleODBC-19")
+```
+
+
+## RODBC
+
+We need to install the RODBC package for benchmarking in the vignette `vignette("benchmarks")`. The CRAN version of RODBC uses iODBC, so to use unixODBC we need to recompile it from source, specifying the odbc manager explicitly:
+
+```r
+install.packages("RODBC", type = "source", INSTALL_opts="--configure-args='--with-odbc-manager=odbc'")
+```
