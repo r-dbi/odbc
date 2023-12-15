@@ -50,7 +50,6 @@ Collate:
     'odbc.R'
     'Driver.R'
     'Connection.R'
-    'DataTypes.R'
     'RcppExports.R'
     'Result.R'
     'Table.R'
@@ -72,6 +71,7 @@ Collate:
     'driver-sqlite.R'
     'driver-terdata.R'
     'driver-vertica.R'
+    'odbc-data-type.R'
     'utils.R'
     'zzz.R'
 VignetteBuilder: knitr
