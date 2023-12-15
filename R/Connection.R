@@ -722,7 +722,7 @@ setMethod(
 #' This function is a wrapper around the command line call `odbcinst -j`.
 #'
 #' Windows does not use `.ini` configuration files; this function will return a
-#' 0-row data frame on Windows.
+#' 0-length vector on Windows.
 #'
 #' @seealso
 #' The [odbcListDrivers()] and [odbcListDataSources()] helpers return
@@ -735,11 +735,11 @@ setMethod(
 #' @examplesIf FALSE
 #' configs <- odbcListConfig()
 #'
-#' file.edit(configs$location[1])
+#' file.edit(configs[1])
 #' @export
 odbcListConfig <- function() {
   if (identical(.Platform$OS.type, "windows")) {
-    return(data.frame(name = character(0), location = character(0)))
+    return(character(0))
   }
 
   if (identical(unname(Sys.which("odbcinst")), "")) {
@@ -752,10 +752,9 @@ odbcListConfig <- function() {
   res <- system("odbcinst -j", intern = TRUE)
   res <- res[grepl("\\.ini", res)]
   res <- strsplit(res, "\\:")
-  res <- data.frame(name = vapply(res, `[[`, character(1), 1),
-                    location = vapply(res, `[[`, character(1), 2))
-  res$name <- gsub("\\.", "", res$name)
-  res$location <- trimws(res$location)
+  res <- vapply(res, `[[`, character(1), 2)
+  res <- trimws(res)
+  names(res) <- c("drivers", "system_dsn", "user_dsn")
 
   res
 }

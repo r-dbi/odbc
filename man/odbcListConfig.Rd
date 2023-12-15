@@ -14,13 +14,13 @@ where the driver manager will look for that information.
 This function is a wrapper around the command line call \code{odbcinst -j}.
 
 Windows does not use \code{.ini} configuration files; this function will return a
-0-row data frame on Windows.
+0-length vector on Windows.
 }
 \examples{
 \dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 configs <- odbcListConfig()
 
-file.edit(configs$location[1])
+file.edit(configs[1])
 \dontshow{\}) # examplesIf}
 }
 \seealso{
