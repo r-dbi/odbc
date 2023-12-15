@@ -66,6 +66,7 @@ Collate:
     'driver-mysql.R'
     'driver-oracle.R'
     'driver-postgres.R'
+    'driver-redshift.R'
     'driver-snowflake.R'
     'driver-spark.R'
     'driver-sql-server.R'
