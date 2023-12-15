@@ -57,7 +57,7 @@ albeit returning a subset of the fields."><meta name="robots" content="noindex">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>odbcConnectionTables</h1>
-      <small class="dont-index">Source: <a href="https://github.com/r-dbi/odbc/blob/HEAD/R/Connection.R" class="external-link"><code>R/Connection.R</code></a>, <a href="https://github.com/r-dbi/odbc/blob/HEAD/R/db.R" class="external-link"><code>R/db.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/r-dbi/odbc/blob/HEAD/R/odbc-connection.R" class="external-link"><code>R/odbc-connection.R</code></a></small>
       <div class="d-none name"><code>odbcConnectionTables.Rd</code></div>
     </div>
 
@@ -97,17 +97,7 @@ albeit returning a subset of the fields.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for OdbcConnection,SQL</span></span>
-<span><span class="fu">odbcConnectionTables</span><span class="op">(</span><span class="va">conn</span>, <span class="va">name</span>, table_type <span class="op">=</span> <span class="cn">NULL</span>, exact <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for Oracle,character</span></span>
-<span><span class="fu">odbcConnectionTables</span><span class="op">(</span></span>
-<span>  <span class="va">conn</span>,</span>
-<span>  <span class="va">name</span>,</span>
-<span>  catalog_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  schema_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  table_type <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  exact <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">odbcConnectionTables</span><span class="op">(</span><span class="va">conn</span>, <span class="va">name</span>, table_type <span class="op">=</span> <span class="cn">NULL</span>, exact <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -157,11 +147,6 @@ for the catalog, schema, and table name arguments.</p>
 internally uses this method to satisfy both
 DBI::dbListTables and DBI::dbExistsTable methods.
 ( The former also advertises pattern value arguments )</p>
-<p>Query, rather than use SQLTables ODBC API for performance reasons on Oracle.
-Main functional difference between the implementation of SQLTables
-( OEM driver ) and the query below is that the OEM implementation also looks
-through the synonyms. Given the performance reports, we sacrifice the
-synonym look-through for better execution time.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
