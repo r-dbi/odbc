@@ -1,13 +1,16 @@
 #' @include dbi-connection.R
-#' @include odbc-connection-tables.R
-#' @include odbc-connection-columns.R
+#' @include odbc-connection.R
 NULL
 
+#' Oracle
+#'
+#' Details of Oracle methods for odbc and DBI generics.
+#'
 #' @export
-#' @rdname DBI-classes
+#' @rdname Oracle
 setClass("Oracle", contains = "OdbcDriver")
 
-#' @rdname DBI-methods
+#' @rdname Oracle
 setMethod("sqlCreateTable", "Oracle",
   function(con,
            table,
@@ -27,11 +30,13 @@ setMethod("sqlCreateTable", "Oracle",
   }
 )
 
-#' @rdname odbcConnectionTables
-#' @details
-#' Query, rather than use SQLTables ODBC API for performance reasons on Oracle.
-#' Main functional difference between the implementation of SQLTables
-#' ( OEM driver ) and the query below is that the OEM implementation also looks
+#' @rdname Oracle
+#' @description
+#' ## `odbcConnectionTables()`
+#'
+#' Query, rather than use `SQLTables` ODBC API for performance reasons.
+#' Main functional difference between the implementation of `SQLTables` in the
+#' OEM driver and the query below is that the OEM implementation also looks
 #' through the synonyms. Given the performance reports, we sacrifice the
 #' synonym look-through for better execution time.
 setMethod("odbcConnectionTables", c("Oracle", "character"),
@@ -63,10 +68,12 @@ setMethod("odbcConnectionTables", c("Oracle", "character"),
   }
 )
 
-#' @rdname odbcConnectionColumns
-#' @details Query, rather than use SQLColumns ODBC API for ORACLE since when
-#' using the API we bind a BIGINT to one of the column results.  Oracle's OEM
-#' driver is unable to handle.
+#' @rdname Oracle
+#' @description
+#' ## `odbcConnectionColumns()`
+#'
+#' Query, rather than use `SQLColumns` ODBC API, since we bind a `BIGINT` to
+#' one of the column results and Oracle's OEM driver can't handle it.
 setMethod("odbcConnectionColumns", c("Oracle", "character"),
   function(conn,
            name,

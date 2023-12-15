@@ -64,8 +64,6 @@ Collate:
     'driver-hive.R'
     'driver-impala.R'
     'driver-mysql.R'
-    'odbc-connection-columns.R'
-    'odbc-connection-tables.R'
     'driver-oracle.R'
     'driver-postgres.R'
     'driver-snowflake.R'
