@@ -1,6 +1,3 @@
-#' @include odbc.R
-NULL
-
 #' Odbc Driver Methods
 #'
 #' Implementations of pure virtual functions defined in the `DBI` package

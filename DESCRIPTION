@@ -47,7 +47,6 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 SystemRequirements: GNU make, An ODBC3 driver manager and drivers.
 Collate: 
-    'odbc.R'
     'Driver.R'
     'Connection.R'
     'RcppExports.R'
@@ -72,6 +71,7 @@ Collate:
     'driver-terdata.R'
     'driver-vertica.R'
     'odbc-data-type.R'
+    'odbc-package.R'
     'utils.R'
     'zzz.R'
 VignetteBuilder: knitr
