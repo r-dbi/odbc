@@ -1,4 +1,3 @@
-
 #' Helper method used to determine if a table identifier is that
 #' of a temporary table.
 #'
@@ -19,22 +18,19 @@ setGeneric(
 )
 
 #' @rdname isTempTable
-setMethod(
-  "isTempTable",
-  c("OdbcConnection", "Id"),
+setMethod("isTempTable", c("OdbcConnection", "Id"),
   function(conn, name, ...) {
     isTempTable(conn,
       name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
       schema_name = id_field(name, "schema"),
-      ...)
+      ...
+    )
   }
 )
 
 #' @rdname isTempTable
-setMethod(
-  "isTempTable",
-  c("OdbcConnection", "SQL"),
+setMethod("isTempTable", c("OdbcConnection", "SQL"),
   function(conn, name, ...) {
     isTempTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   }
@@ -48,54 +44,71 @@ setClass("Oracle", contains = "OdbcDriver")
 
 #' @rdname DBI-methods
 setMethod("sqlCreateTable", "Oracle",
-  function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
+  function(con,
+           table,
+           fields,
+           row.names = NA,
+           temporary = FALSE,
+           ...,
+           field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
     SQL(paste0(
-        "CREATE ", if (temporary) " GLOBAL TEMPORARY ", "TABLE ", table, " (\n",
-        "  ", paste(fields, collapse = ",\n  "), "\n)\n", if (temporary) " ON COMMIT PRESERVE ROWS"
-        ))
-  })
+      "CREATE ", if (temporary) " GLOBAL TEMPORARY ", "TABLE ", table, " (\n",
+      "  ", paste(fields, collapse = ",\n  "), "\n)\n",
+      if (temporary) " ON COMMIT PRESERVE ROWS"
+    ))
+  }
+)
 
 #' @rdname odbcConnectionTables
-#' @details Query, rather than use SQLTables ODBC API for performance reasons on Oracle.
-#' Main functional difference between the implementation of SQLTables ( OEM driver )
-#' and the query below is that the OEM implementation also looks through the synonyms.
-#' Given the performance reports, we sacrifice the synonym look-through for
-#' better execution time.
-setMethod(
-  "odbcConnectionTables",
-  c("Oracle", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL, exact = FALSE) {
-
+#' @details
+#' Query, rather than use SQLTables ODBC API for performance reasons on Oracle.
+#' Main functional difference between the implementation of SQLTables
+#' ( OEM driver ) and the query below is that the OEM implementation also looks
+#' through the synonyms. Given the performance reports, we sacrifice the
+#' synonym look-through for better execution time.
+setMethod("odbcConnectionTables", c("Oracle", "character"),
+  function(conn,
+           name,
+           catalog_name = NULL,
+           schema_name = NULL,
+           table_type = NULL,
+           exact = FALSE) {
     qTable <- getSelector("object_name", name, exact)
     if (is.null(schema_name)) {
       query <- paste0(
-        " SELECT null AS \"table_catalog\", '", conn@info$username ,"' AS \"table_schema\", object_name AS \"table_name\", object_type AS \"table_type\", null AS \"table_remarks\"",
+        " SELECT null AS \"table_catalog\", '", conn@info$username, "' AS \"table_schema\", object_name AS \"table_name\", object_type AS \"table_type\", null AS \"table_remarks\"",
         " FROM user_objects ",
         " WHERE 1 = 1 ", qTable,
-        " AND ( object_type = 'TABLE' OR object_type = 'VIEW' ) ")
+        " AND ( object_type = 'TABLE' OR object_type = 'VIEW' ) "
+      )
     } else {
       qSchema <- getSelector("owner", schema_name, exact)
       query <- paste0(
         " SELECT null AS \"table_catalog\", owner AS \"table_schema\", object_name AS \"table_name\", object_type AS \"table_type\", null AS \"table_remarks\"",
         " FROM all_objects ",
         " WHERE 1 = 1 ", qSchema, qTable,
-        " AND ( object_type = 'TABLE' OR object_type = 'VIEW' ) ")
+        " AND ( object_type = 'TABLE' OR object_type = 'VIEW' ) "
+      )
     }
 
     dbGetQuery(conn, query)
-  })
+  }
+)
 
 #' @rdname odbcConnectionColumns
-#' @details Query, rather than use SQLColumns ODBC API for ORACLE since when using the API
-#' we bind a BIGINT to one of the column results.  Oracle's OEM driver is unable to handle.
-setMethod(
-  "odbcConnectionColumns",
-  c("Oracle", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, column_name = NULL, exact = FALSE) {
-
+#' @details Query, rather than use SQLColumns ODBC API for ORACLE since when
+#' using the API we bind a BIGINT to one of the column results.  Oracle's OEM
+#' driver is unable to handle.
+setMethod("odbcConnectionColumns", c("Oracle", "character"),
+  function(conn,
+           name,
+           catalog_name = NULL,
+           schema_name = NULL,
+           column_name = NULL,
+           exact = FALSE) {
     query <- ""
     baseSelect <- paste0(
       "SELECT
@@ -115,24 +128,28 @@ setMethod(
       null AS \"sql_datetime_subtype\",
       decode(data_type,'CHAR',data_length,'VARCHAR2',data_length,'NVARCHAR2',data_length,'NCHAR',data_length, 0) AS \"char_octet_length\",
       column_id AS \"ordinal_position\",
-      decode(nullable, 'Y', 1, 'N', 0) AS \"nullable\"")
+      decode(nullable, 'Y', 1, 'N', 0) AS \"nullable\""
+    )
     qTable <- getSelector("table_name", name, exact)
     if (is.null(schema_name)) {
-      baseSelect <- gsub("owner AS \"schema_name\"", paste0("'", conn@info$username, "' AS \"schema_name\""), baseSelect);
+      baseSelect <- gsub("owner AS \"schema_name\"", paste0("'", conn@info$username, "' AS \"schema_name\""), baseSelect)
       query <- paste0(
-         baseSelect,
-         " FROM user_tab_columns ",
-         " WHERE 1 = 1 ", qTable );
+        baseSelect,
+        " FROM user_tab_columns ",
+        " WHERE 1 = 1 ", qTable
+      )
     } else {
       qSchema <- getSelector("owner", schema_name, exact)
       query <- paste0(
         baseSelect,
         " FROM all_tab_columns ",
-        " WHERE 1 = 1 ", qSchema, qTable )
+        " WHERE 1 = 1 ", qSchema, qTable
+      )
     }
 
-    dbGetQuery(conn, query);
-  })
+    dbGetQuery(conn, query)
+  }
+)
 
 # Teradata --------------------------------------------------------------------
 
@@ -142,24 +159,32 @@ setClass("Teradata", contains = "OdbcConnection")
 
 #' @rdname DBI-methods
 setMethod("sqlCreateTable", "Teradata",
-  function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
+  function(con,
+           table,
+           fields,
+           row.names = NA,
+           temporary = FALSE,
+           ...,
+           field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
     SQL(paste0(
-        "CREATE ", if (temporary) " MULTISET VOLATILE ", "TABLE ", table, " (\n",
-        "  ", paste(fields, collapse = ",\n  "), "\n)\n", if (temporary) " ON COMMIT PRESERVE ROWS"
-        ))
-  })
+      "CREATE ", if (temporary) " MULTISET VOLATILE ", "TABLE ", table, " (\n",
+      "  ", paste(fields, collapse = ",\n  "), "\n)\n", if (temporary) " ON COMMIT PRESERVE ROWS"
+    ))
+  }
+)
 
 
-setMethod(
-  "odbcConnectionTables",
-  c("Teradata", "character"),
-  function(conn, name, catalog_name = NULL, schema_name = NULL, table_type = NULL) {
-
+setMethod("odbcConnectionTables", c("Teradata", "character"),
+  function(conn,
+           name,
+           catalog_name = NULL,
+           schema_name = NULL,
+           table_type = NULL) {
     res <- callNextMethod()
-    if ( !is.null(schema_name) ) {
+    if (!is.null(schema_name)) {
       return(res)
     }
 
@@ -168,17 +193,16 @@ setMethod(
     tempTableNames <- dbGetQuery(conn, "HELP VOLATILE TABLE")[["Table SQL Name"]]
     # If a name argument is supplied, subset the temp table names vector
     # to either an exact match, or if pattern value, to an approximate match
-    if ( !is.null( name ) ) {
-      if ( isPatternValue( name ) ) {
-        name <- convertWildCards( name )
-      }
-      else {
+    if (!is.null(name)) {
+      if (isPatternValue(name)) {
+        name <- convertWildCards(name)
+      } else {
         name <- paste0("^", name, "$")
       }
-      tempTableNames <- tempTableNames[ grepl(name, tempTableNames) ]
+      tempTableNames <- tempTableNames[grepl(name, tempTableNames)]
     }
 
-    navec <- rep( NA_character_, length( tempTableNames ) )
+    navec <- rep(NA_character_, length(tempTableNames))
     rbind(
       res,
       data.frame(
@@ -200,7 +224,13 @@ setClass("HDB", contains = "OdbcConnection")
 
 #' @rdname DBI-methods
 setMethod("sqlCreateTable", "HDB",
-  function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
+  function(con,
+           table,
+           fields,
+           row.names = NA,
+           temporary = FALSE,
+           ...,
+           field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
@@ -219,13 +249,14 @@ setMethod("sqlCreateTable", "HDB",
 #' @rdname DBI-classes
 setClass("Hive", contains = "OdbcConnection")
 
+# only need to override dbQuteString when x is character.
+# DBI:::quote_string just returns x when it is of class SQL, so no need to override that.
 #' @rdname DBI-methods
-setMethod(
-  # only need to override dbQuteString when x is character.
-  # DBI:::quote_string just returns x when it is of class SQL, so no need to override that.
-  "dbQuoteString", signature("Hive", "character"),
+setMethod("dbQuoteString", c("Hive", "character"),
   function(conn, x, ...) {
-    if (is(x, "SQL")) return(x)
+    if (is(x, "SQL")) {
+      return(x)
+    }
     x <- gsub("'", "\\\\'", enc2utf8(x))
     if (length(x) == 0L) {
       DBI::SQL(character())
@@ -234,7 +265,8 @@ setMethod(
       str[is.na(x)] <- "NULL"
       DBI::SQL(str)
     }
-  })
+  }
+)
 
 # Spark SQL ----------------------------------------------------------------
 
@@ -250,9 +282,7 @@ setClass("Spark SQL", contains = "OdbcConnection")
 #' This implementation will respect the `catalog_name` arrgument.
 #' @rdname odbcConnectionSchemas
 #' @usage NULL
-setMethod(
-  "odbcConnectionSchemas",
-  c("Spark SQL", "character"),
+setMethod("odbcConnectionSchemas", c("Spark SQL", "character"),
   function(conn, catalog_name) {
     res <- dbGetQuery(conn, paste0("SHOW SCHEMAS IN ", catalog_name))
     if (nrow(res)) {
@@ -274,7 +304,13 @@ setClass("DB2/AIX64", contains = "OdbcConnection")
 # without corresponding alias
 #' @usage NULL
 setMethod("sqlCreateTable", "DB2/AIX64",
-  function(con, table, fields, row.names = NA, temporary = FALSE, ..., field.types = NULL) {
+  function(con,
+           table,
+           fields,
+           row.names = NA,
+           temporary = FALSE,
+           ...,
+           field.types = NULL) {
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
@@ -312,7 +348,7 @@ setClass("Microsoft SQL Server", contains = "OdbcConnection")
 setMethod("dbUnquoteIdentifier", c("Microsoft SQL Server", "SQL"),
   function(conn, x, ...) {
     x <- gsub("(\\[)([^\\.]+?)(\\])", "\\2", x)
-    callNextMethod( conn, x, ... )
+    callNextMethod(conn, x, ...)
   }
 )
 
@@ -329,20 +365,19 @@ setMethod("dbUnquoteIdentifier", c("Microsoft SQL Server", "SQL"),
 setMethod("isTempTable", c("Microsoft SQL Server", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, ...) {
     if (!is.null(catalog_name) &&
-        catalog_name != "%" &&
-        length(catalog_name) > 0 &&
-        catalog_name != "tempdb") {
+      catalog_name != "%" &&
+      length(catalog_name) > 0 &&
+      catalog_name != "tempdb") {
       return(FALSE)
     }
 
     grepl("^[#][^#]", name)
-})
+  }
+)
 
 #' @rdname SQLServer
 #' @usage NULL
-setMethod(
-  "isTempTable",
-  c("Microsoft SQL Server", "SQL"),
+setMethod("isTempTable", c("Microsoft SQL Server", "SQL"),
   function(conn, name, ...) {
     isTempTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   }
@@ -357,11 +392,10 @@ setMethod(
 #' @rdname SQLServer
 #' @docType methods
 #' @usage NULL
-setMethod(
-  "dbExistsTable", c("Microsoft SQL Server", "character"),
+setMethod("dbExistsTable", c("Microsoft SQL Server", "character"),
   function(conn, name, ...) {
     stopifnot(length(name) == 1)
-    if (isTempTable(conn, name, ... )) {
+    if (isTempTable(conn, name, ...)) {
       name <- paste0(name, "\\_\\_\\_%")
       df <- odbcConnectionTables(
         conn,
@@ -373,12 +407,12 @@ setMethod(
       df <- odbcConnectionTables(conn, name = name, ...)
     }
     NROW(df) > 0
-  })
+  }
+)
 
 #' @rdname SQLServer
 #' @usage NULL
-setMethod(
-  "dbExistsTable", c("Microsoft SQL Server", "Id"),
+setMethod("dbExistsTable", c("Microsoft SQL Server", "Id"),
   function(conn, name, ...) {
     dbExistsTable(
       conn,
@@ -386,15 +420,16 @@ setMethod(
       catalog_name = id_field(name, "catalog"),
       schema_name = id_field(name, "schema")
     )
-  })
+  }
+)
 
 #' @rdname SQLServer
 #' @usage NULL
-setMethod(
-  "dbExistsTable", c("Microsoft SQL Server", "SQL"),
+setMethod("dbExistsTable", c("Microsoft SQL Server", "SQL"),
   function(conn, name, ...) {
     dbExistsTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
-  })
+  }
+)
 
 #' @rdname SQLServer
 #' @description
@@ -416,4 +451,5 @@ setMethod("sqlCreateTable", "Microsoft SQL Server",
     }
     temporary <- FALSE
     callNextMethod()
-})
+  }
+)

@@ -34,7 +34,8 @@ automatically escape underscores to ensure that you match exactly one
 table. If you want to search for multiple tables using wild cards, you
 will need to use \code{odbcConnectionTables()} directly instead.}
 
-\item{table_type}{The type of the table to return, the default returns all table types.}
+\item{table_type}{The type of the table to return, the default returns
+all table types.}
 
 \item{...}{Other parameters passed on to methods.}
 

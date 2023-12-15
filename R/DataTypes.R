@@ -83,7 +83,7 @@ odbcDataType.default <- function(con, obj, ...) {
     logical = "BOOLEAN",
     list = "VARCHAR(255)",
     time = ,
-    binary =,
+    binary = ,
     stop("Unsupported type", call. = FALSE)
   )
 }
@@ -136,7 +136,7 @@ odbcDataType.default <- function(con, obj, ...) {
     list = "STRING",
     time = ,
     stop("Unsupported type", call. = FALSE)
-    )
+  )
 }
 
 #' @export
@@ -229,21 +229,19 @@ odbcDataType.default <- function(con, obj, ...) {
 #' @export
 odbcDataType.Oracle <- function(con, obj, ...) {
   switch_type(obj,
-     factor = "VARCHAR2(255)",
+    factor = "VARCHAR2(255)",
 
-     # No native oracle type for time
-     time = "VARCHAR2(255)",
-
-     date = "DATE",
-     datetime = "TIMESTAMP",
-
-     binary = "BLOB",
-     integer = "INTEGER",
-     double = "BINARY_DOUBLE",
-     character = "VARCHAR2(255)",
-     logical = "DECIMAL",
-     list = "VARCHAR2(255)",
-     stop("Unsupported type", call. = FALSE)
+    # No native oracle type for time
+    time = "VARCHAR2(255)",
+    date = "DATE",
+    datetime = "TIMESTAMP",
+    binary = "BLOB",
+    integer = "INTEGER",
+    double = "BINARY_DOUBLE",
+    character = "VARCHAR2(255)",
+    logical = "DECIMAL",
+    list = "VARCHAR2(255)",
+    stop("Unsupported type", call. = FALSE)
   )
 }
 
@@ -315,23 +313,41 @@ odbcDataType.Oracle <- function(con, obj, ...) {
 }
 
 switch_type <- function(obj, ...) {
-  switch(object_type(obj), ...)
+  switch(object_type(obj),
+    ...
+  )
 }
 
 object_type <- function(obj) {
-  if (is.factor(obj)) return("factor")
-  if (is(obj, "POSIXct")) return("datetime")
-  if (is(obj, "Date")) return("date")
-  if (is_blob(obj)) return("binary")
-  if (is(obj, "difftime")) return("time")
+  if (is.factor(obj)) {
+    return("factor")
+  }
+  if (is(obj, "POSIXct")) {
+    return("datetime")
+  }
+  if (is(obj, "Date")) {
+    return("date")
+  }
+  if (is_blob(obj)) {
+    return("binary")
+  }
+  if (is(obj, "difftime")) {
+    return("time")
+  }
 
   return(typeof(obj))
 }
 
 is_blob <- function(obj) {
-  if (is(obj, "blob")) return(TRUE)
-  if (is.object(obj) && any(class(obj) != "AsIs")) return(FALSE)
-  if (!is.list(obj)) return(FALSE)
+  if (is(obj, "blob")) {
+    return(TRUE)
+  }
+  if (is.object(obj) && any(class(obj) != "AsIs")) {
+    return(FALSE)
+  }
+  if (!is.list(obj)) {
+    return(FALSE)
+  }
 
   # Assuming raw inside naked lists if the first non-NULL element is raw,
   # not checking the other elements
@@ -366,4 +382,3 @@ varbinary <- function(x, type = "varbinary") {
 
   paste0(type, "(", max_length, ")")
 }
-

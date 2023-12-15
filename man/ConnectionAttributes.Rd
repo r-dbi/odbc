@@ -23,6 +23,7 @@ conn <- dbConnect(
   dsn = "my_azure_mssql_db",
   Encrypt = "yes",
   attributes = list("azure_token" = .token)
+)
 }
 }
 \keyword{internal}

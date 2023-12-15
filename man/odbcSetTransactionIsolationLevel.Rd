@@ -17,11 +17,11 @@ Set the Transaction Isolation Level for a Connection
 }
 \examples{
 \dontrun{
-  # Can use spaces or underscores in between words.
-  odbcSetTransactionIsolationLevel(con, "read uncommitted")
+# Can use spaces or underscores in between words.
+odbcSetTransactionIsolationLevel(con, "read uncommitted")
 
-  # Can also use the full constant name.
-  odbcSetTransactionIsolationLevel(con, "SQL_TXN_READ_UNCOMMITTED")
+# Can also use the full constant name.
+odbcSetTransactionIsolationLevel(con, "SQL_TXN_READ_UNCOMMITTED")
 }
 }
 \seealso{

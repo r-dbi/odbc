@@ -50,7 +50,7 @@ test_roundtrip <- function(con = DBItest:::connect(DBItest::get_default_context(
   dbms <- dbGetInfo(con)$dbms.name
   res <- list()
   testthat::test_that(paste0("[", dbms, "] round tripping data.frames works"), {
-    #on.exit(try(DBI::dbRemoveTable(con, "test_table"), silent = TRUE))
+    # on.exit(try(DBI::dbRemoveTable(con, "test_table"), silent = TRUE))
     set.seed(42)
 
     iris <- datasets::iris
@@ -59,8 +59,7 @@ test_roundtrip <- function(con = DBItest:::connect(DBItest::get_default_context(
     sent <- list(
 
       # We always return strings as factors
-      #factor = iris$Species,
-
+      # factor = iris$Species,
       datetime = as.POSIXct(as.numeric(iris$Petal.Length * 10), origin = "2016-01-01", tz = "UTC"),
       date = as.Date(iris$Sepal.Width * 100, origin = Sys.time()),
       time = hms::hms(seconds = sample.int(24 * 60 * 60, NROW(iris))),
@@ -73,7 +72,10 @@ test_roundtrip <- function(con = DBItest:::connect(DBItest::get_default_context(
     attributes(sent) <- list(names = names(sent), row.names = c(NA_integer_, -length(sent[[1]])), class = "data.frame")
 
     # Add a proportion of NA values to a data frame
-    add_na <- function(x, p = .1) { is.na(x) <- stats::runif(length(x)) < p; x}
+    add_na <- function(x, p = .1) {
+      is.na(x) <- stats::runif(length(x)) < p
+      x
+    }
     sent[] <- lapply(sent, add_na, p = .1)
     if (isTRUE(invert)) {
       sent <- sent[, !names(sent) %in% columns]
@@ -84,7 +86,7 @@ test_roundtrip <- function(con = DBItest:::connect(DBItest::get_default_context(
 
     DBI::dbWriteTable(con, "test_table", sent, overwrite = TRUE)
     received <- DBI::dbReadTable(con, "test_table")
-    if (force_sorted) received <- received[order(received$id),]
+    if (force_sorted) received <- received[order(received$id), ]
     row.names(received) <- NULL
     testthat::expect_equal(sent, received)
     res <<- list(sent = sent, received = received)

@@ -87,12 +87,13 @@ DBI::dbListTables and DBI::dbExistsTable methods.
 ( The former also advertises pattern value arguments )
 
 Query, rather than use SQLTables ODBC API for performance reasons on Oracle.
-Main functional difference between the implementation of SQLTables ( OEM driver )
-and the query below is that the OEM implementation also looks through the synonyms.
-Given the performance reports, we sacrifice the synonym look-through for
-better execution time.
+Main functional difference between the implementation of SQLTables
+( OEM driver ) and the query below is that the OEM implementation also looks
+through the synonyms. Given the performance reports, we sacrifice the
+synonym look-through for better execution time.
 }
 \seealso{
-The ODBC documentation on \href{https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function}{SQLTables}
+The ODBC documentation on
+\href{https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function}{SQLTables}
 for further details.
 }
