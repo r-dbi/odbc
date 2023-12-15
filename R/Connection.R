@@ -742,8 +742,8 @@ odbcListConfig <- function() {
     return(character(0))
   }
 
-  if (identical(unname(Sys.which("odbcinst")), "")) {
-    stop(
+  if (!has_odbc()) {
+    abort(
       c("The unixODBC driver manager is not available. ",
         "Please install and try again.")
     )
@@ -752,11 +752,22 @@ odbcListConfig <- function() {
   res <- system("odbcinst -j", intern = TRUE)
   res <- res[grepl("\\.ini", res)]
   res <- strsplit(res, "\\:")
+
+  if (!identical(vapply(res, length, numeric(1)), c(2, 2, 2))) {
+    abort("Failed to parse output from odbcinst.", .internal = TRUE)
+  }
+
   res <- vapply(res, `[[`, character(1), 2)
   res <- trimws(res)
   names(res) <- c("drivers", "system_dsn", "user_dsn")
 
   res
+}
+
+system <- NULL
+
+has_odbc <- function() {
+  !identical(unname(Sys.which("odbcinst")), "")
 }
 
 #' List Configured ODBC Drivers
