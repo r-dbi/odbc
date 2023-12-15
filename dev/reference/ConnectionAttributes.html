@@ -71,7 +71,15 @@ with limited support away from the OEM Microsoft driver.</p></li>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="dbConnect-OdbcDriver-method.html">dbConnect</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu">odbc</span><span class="fu">::</span><span class="fu"><a href="dbConnect-OdbcDriver-method.html">odbc</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  dsn <span class="op">=</span> <span class="st">"my_azure_mssql_db"</span>,</span></span>
+<span class="r-in"><span>  Encrypt <span class="op">=</span> <span class="st">"yes"</span>,</span></span>
+<span class="r-in"><span>  attributes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"azure_token"</span> <span class="op">=</span> <span class="va">.token</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>

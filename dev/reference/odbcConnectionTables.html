@@ -158,14 +158,15 @@ internally uses this method to satisfy both
 DBI::dbListTables and DBI::dbExistsTable methods.
 ( The former also advertises pattern value arguments )</p>
 <p>Query, rather than use SQLTables ODBC API for performance reasons on Oracle.
-Main functional difference between the implementation of SQLTables ( OEM driver )
-and the query below is that the OEM implementation also looks through the synonyms.
-Given the performance reports, we sacrifice the synonym look-through for
-better execution time.</p>
+Main functional difference between the implementation of SQLTables
+( OEM driver ) and the query below is that the OEM implementation also looks
+through the synonyms. Given the performance reports, we sacrifice the
+synonym look-through for better execution time.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>The ODBC documentation on <a href="https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function" class="external-link">SQLTables</a>
+    <div class="dont-index"><p>The ODBC documentation on
+<a href="https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function" class="external-link">SQLTables</a>
 for further details.</p></div>
     </div>
 
