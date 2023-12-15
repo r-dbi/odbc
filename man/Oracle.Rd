@@ -54,3 +54,4 @@ Query, rather than use \code{SQLColumns} ODBC API, since we bind a \code{BIGINT}
 one of the column results and Oracle's OEM driver can't handle it.
 }
 }
+\keyword{internal}

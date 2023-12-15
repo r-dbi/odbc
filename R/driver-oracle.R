@@ -8,6 +8,7 @@ NULL
 #'
 #' @export
 #' @rdname Oracle
+#' @keywords internal
 setClass("Oracle", contains = "OdbcDriver")
 
 #' @rdname Oracle
