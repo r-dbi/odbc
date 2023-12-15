@@ -57,6 +57,7 @@ Collate:
     'Viewer.R'
     'db.R'
     'driver-databricks.R'
+    'driver-db2.R'
     'driver-sql-server.R'
     'utils.R'
     'zzz.R'
