@@ -29,6 +29,8 @@ test_that("odbcListConfig errors informatively without unixODBC", {
 })
 
 test_that("odbcListConfig errors informatively without unixODBC (mocked)", {
+  skip_on_os(c("windows", "solaris"))
+
   local_mocked_bindings(
     has_odbc = function() {FALSE}
   )
@@ -40,6 +42,8 @@ test_that("odbcListConfig errors informatively without unixODBC (mocked)", {
 })
 
 test_that("odbcListConfig errors informatively with unexpected odbcinst output", {
+  skip_on_os(c("windows", "solaris"))
+
   local_mocked_bindings(
     system = function(...) {c("beep", "bop")}
   )
