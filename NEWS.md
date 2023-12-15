@@ -1,4 +1,4 @@
-# odbc (development version)
+# odbc 1.4.0
 
 ## Major changes
 
