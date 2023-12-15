@@ -4,7 +4,7 @@ odbc is stable, though there are still corner cases where it could have issues w
 
 ## Known outstanding issues
 
-https://github.com/r-dbi/odbc/blob/main/setup.md contains instructions on running the tests locally, which is important to make the feedback loop shorter.
+The "Developing odbc" vignette at `vignette("develop")` contains instructions on running the tests locally, which is important to make the feedback loop shorter.
 
 The hardest part of maintaining odbc is often an issue only occurs with a specific database, and setting up the environment for that database usually takes a non-trivial amount of time.
 

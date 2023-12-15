@@ -21,7 +21,7 @@ drivers. This makes it easy to connect databases such as [SQL
 Server](https://www.microsoft.com/en-us/sql-server/),
 [Oracle](https://www.oracle.com/database),
 [Databricks](https://www.databricks.com/), and
-[Snowflake](https://www.snowflake.com/).
+[Snowflake](https://www.snowflake.com/en/).
 
 The odbc package is an alternative to
 [RODBC](https://cran.r-project.org/package=RODBC) and
@@ -33,7 +33,7 @@ typically much faster. See `vignette("benchmarks")` to learn more.
 The odbc package is one piece of the R interface to databases with
 support for ODBC:
 
-<img src="man/figures/whole-game.png" alt="A diagram containing four boxes with arrows linking each pointing left to right. The boxes read, in order, &quot;R interface,&quot; &quot;driver manager,&quot; &quot;ODBC driver,&quot; and &quot;DBMS.&quot; The left-most box, R interface, contains three smaller components, labeled &quot;dbplyr,&quot; &quot;DBI,&quot; and &quot;odbc.&quot;" width="1527" />
+<img src="man/figures/whole-game.png" alt="A diagram containing four boxes with arrows linking each pointing left to right. The boxes read, in order, &quot;R interface,&quot; &quot;driver manager,&quot; &quot;ODBC driver,&quot; and &quot;DBMS.&quot; The left-most box, R interface, contains three smaller components, labeled &quot;dbplyr,&quot; &quot;DBI,&quot; and &quot;odbc.&quot;" width="1489" />
 
 Support for a given DBMS is provided by an **ODBC driver**, which
 defines how to interact with that DBMS using the standardized syntax of

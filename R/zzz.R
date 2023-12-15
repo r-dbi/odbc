@@ -1,5 +1,5 @@
- # nocov start
-.onUnload <- function (libpath) {
+# nocov start
+.onUnload <- function(libpath) {
   gc() # Force garbage collection of connections
   library.dynam.unload("odbc", libpath)
 }

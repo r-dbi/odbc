@@ -1,3 +1,8 @@
+#' @include dbi-connection.R
+#' @include dbi-driver.R
+NULL
+
+
 #' Helper for Connecting to Databricks via ODBC
 #'
 #' @description
@@ -14,9 +19,9 @@
 #' [standard environment variables](https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication).
 #'
 #' @inheritParams DBI::dbConnect
-#' @param httpPath,HTTPPath To query a cluster, use the HTTP Path value found under
-#'   `Advanced Options > JDBC/ODBC` in the Databricks UI. For SQL warehouses,
-#'   this is found under `Connection Details` instead.
+#' @param httpPath,HTTPPath To query a cluster, use the HTTP Path value found
+#'   under `Advanced Options > JDBC/ODBC` in the Databricks UI. For SQL
+#'   warehouses, this is found under `Connection Details` instead.
 #' @param useNativeQuery Suppress the driver's conversion from ANSI SQL 92 to
 #'   HiveSQL? The default (`TRUE`), gives greater performance but means that
 #'   paramterised queries (and hence `dbWriteTable()`) do not work.
@@ -47,8 +52,7 @@ setClass("DatabricksOdbcDriver", contains = "OdbcDriver")
 
 #' @rdname databricks
 #' @export
-setMethod(
-  "dbConnect", "DatabricksOdbcDriver",
+setMethod("dbConnect", "DatabricksOdbcDriver",
   function(drv,
            httpPath,
            workspace = Sys.getenv("DATABRICKS_HOST"),
@@ -56,7 +60,6 @@ setMethod(
            driver = NULL,
            HTTPPath,
            ...) {
-
     # For backward compatibility with RStudio connection string
     check_exclusive(httpPath, HTTPPath)
 
@@ -183,7 +186,6 @@ databricks_user_agent <- function() {
 }
 
 databricks_auth_args <- function(host) {
-
   # Check some standard Databricks environment variables. This is used to
   # implement a subset of the "Databricks client unified authentication" model.
   token <- Sys.getenv("DATABRICKS_TOKEN")

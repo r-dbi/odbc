@@ -18,7 +18,6 @@ test_that("show method prints DISCONNECTED if not valid", {
 })
 
 test_that("show method does not print server if it is not available", {
-
   con <- new("OdbcConnection")
   local_mocked_bindings(
     dbGetInfo = function(x) c(servername = "", username = "", dbname = "", dbms.name = "", db.version = ""),

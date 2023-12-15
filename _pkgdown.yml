@@ -21,6 +21,7 @@ reference:
   contents:
   - databricks
   - 'Microsoft SQL Server-class'
+  - 'Oracle-class'
 
 - title: ODBC configuration
   contents:
