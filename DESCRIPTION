@@ -58,7 +58,12 @@ Collate:
     'db.R'
     'driver-databricks.R'
     'driver-db2.R'
+    'driver-hana.R'
+    'driver-hive.R'
+    'driver-oracle.R'
+    'driver-spark.R'
     'driver-sql-server.R'
+    'driver-terdata.R'
     'utils.R'
     'zzz.R'
 VignetteBuilder: knitr
