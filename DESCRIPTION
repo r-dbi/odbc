@@ -55,8 +55,9 @@ Collate:
     'Result.R'
     'Table.R'
     'Viewer.R'
-    'databricks.R'
     'db.R'
+    'driver-databricks.R'
+    'driver-sql-server.R'
     'utils.R'
     'zzz.R'
 VignetteBuilder: knitr
