@@ -129,3 +129,20 @@ setMethod("sqlCreateTable", "Microsoft SQL Server",
     callNextMethod()
   }
 )
+
+#' @export
+`odbcDataType.Microsoft SQL Server` <- function(con, obj, ...) {
+  switch_type(obj,
+    factor = varchar(obj),
+    datetime = "DATETIME",
+    date = "DATE",
+    time = "TIME",
+    binary = varbinary(obj),
+    integer = "INT",
+    double = "FLOAT",
+    character = varchar(obj),
+    logical = "BIT",
+    list = varchar(obj),
+    stop("Unsupported type", call. = FALSE)
+  )
+}
