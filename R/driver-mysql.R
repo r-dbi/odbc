@@ -1,3 +1,5 @@
+#' @include dbi-connection.R
+NULL
 
 #' @export
 `odbcDataType.MySQL` <- function(con, obj, ...) {

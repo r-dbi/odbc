@@ -1,3 +1,8 @@
+#' @include dbi-connection.R
+#' @include odbc-connection-tables.R
+#' @include odbc-connection-columns.R
+NULL
+
 #' @export
 #' @rdname DBI-classes
 setClass("Oracle", contains = "OdbcDriver")

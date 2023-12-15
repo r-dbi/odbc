@@ -1,3 +1,6 @@
+#' @include dbi-connection.R
+NULL
+
 #' Convenience functions for reading/writing DBMS tables
 #'
 #' @param conn a \code{\linkS4class{OdbcConnection}} object, produced by

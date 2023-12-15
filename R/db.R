@@ -1,3 +1,6 @@
+#' @include odbc-connection.R
+NULL
+
 #' Helper method used to determine if a table identifier is that
 #' of a temporary table.
 #'

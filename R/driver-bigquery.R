@@ -1,3 +1,6 @@
+#' @include dbi-connection.R
+NULL
+
 #' @export
 `odbcDataType.BigQuery` <- function(con, obj, ...) {
   switch_type(obj,

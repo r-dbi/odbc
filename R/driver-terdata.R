@@ -1,3 +1,6 @@
+#' @include dbi-connection.R
+NULL
+
 #' @export
 #' @rdname DBI-classes
 setClass("Teradata", contains = "OdbcConnection")

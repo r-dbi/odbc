@@ -1,3 +1,6 @@
+#' @include dbi-connection.R
+NULL
+
 #' @export
 `odbcDataType.ACCESS` <- function(con, obj, ...) {
   switch_type(

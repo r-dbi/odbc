@@ -1,4 +1,4 @@
-#' @include Connection.R
+#' @include dbi-connection.R
 NULL
 
 #' Odbc Result Methods

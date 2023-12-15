@@ -1,3 +1,5 @@
+#' @include dbi-connection.R
+NULL
 
 # TODO: Revisit binary type (Impala)
 #' @export
