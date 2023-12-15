@@ -271,3 +271,16 @@ setMethod("dbExistsTable", c("OdbcConnection", "character"),
     NROW(df) > 0
   }
 )
+
+
+#' @rdname OdbcConnection
+#' @inheritParams DBI::dbRemoveTable
+#' @export
+setMethod("dbRemoveTable", c("OdbcConnection", "character"),
+  function(conn, name, ...) {
+    name <- dbQuoteIdentifier(conn, name)
+    dbExecute(conn, paste("DROP TABLE ", name))
+    on_connection_updated(conn, name)
+    invisible(TRUE)
+  }
+)

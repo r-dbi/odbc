@@ -1,4 +1,3 @@
-
 #' @rdname OdbcConnection
 #' @keywords internal
 #' @export
@@ -212,18 +211,6 @@ setMethod("dbListFields", c("OdbcConnection", "character"),
       exact = TRUE
     )
     cols[["name"]]
-  }
-)
-
-#' @rdname OdbcConnection
-#' @inheritParams DBI::dbRemoveTable
-#' @export
-setMethod("dbRemoveTable", c("OdbcConnection", "character"),
-  function(conn, name, ...) {
-    name <- dbQuoteIdentifier(conn, name)
-    dbExecute(conn, paste("DROP TABLE ", name))
-    on_connection_updated(conn, name)
-    invisible(TRUE)
   }
 )
 
