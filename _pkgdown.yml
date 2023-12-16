@@ -1,4 +1,5 @@
-url: https://r-dbi.github.io/odbc/
+url: https://odbc.r-dbi.org
+
 template:
   bootstrap: 5
   template: tidytemplate
