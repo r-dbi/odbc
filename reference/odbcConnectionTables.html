@@ -3,7 +3,7 @@
 to the connected user.
 The expectation is that this is a relatively thin
 wrapper around the ODBC SQLTables function call,
-albeit returning a subset of the fields."><title>odbcConnectionTables — odbcConnectionTables • odbc</title><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="odbcConnectionTables — odbcConnectionTables"><meta property="og:description" content="This function returns a listing of tables accessible
+albeit returning a subset of the fields."><title>odbcConnectionTables — odbcConnectionTables • odbc</title><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="odbcConnectionTables — odbcConnectionTables"><meta property="og:description" content="This function returns a listing of tables accessible
 to the connected user.
 The expectation is that this is a relatively thin
 wrapper around the ODBC SQLTables function call,
@@ -18,7 +18,7 @@ albeit returning a subset of the fields."><!-- mathjax --><script src="https://c
     
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.3.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,6 +28,14 @@ albeit returning a subset of the fields."><!-- mathjax --><script src="https://c
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/benchmarks.html">Benchmarks</a>
+    <a class="dropdown-item" href="../articles/develop.html">Developing odbc</a>
+    <a class="dropdown-item" href="../articles/setup.html">Installing and Configuring Drivers</a>
+  </div>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -49,7 +57,7 @@ albeit returning a subset of the fields."><!-- mathjax --><script src="https://c
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>odbcConnectionTables</h1>
-      <small class="dont-index">Source: <a href="https://github.com/r-dbi/odbc/blob/HEAD/R/Connection.R" class="external-link"><code>R/Connection.R</code></a>, <a href="https://github.com/r-dbi/odbc/blob/HEAD/R/db.R" class="external-link"><code>R/db.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/r-dbi/odbc/blob/HEAD/R/odbc-connection.R" class="external-link"><code>R/odbc-connection.R</code></a></small>
       <div class="d-none name"><code>odbcConnectionTables.Rd</code></div>
     </div>
 
@@ -66,7 +74,7 @@ albeit returning a subset of the fields.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">odbcConnectionTables</span><span class="op">(</span><span class="va">conn</span>, <span class="va">name</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for OdbcConnection,Id</span></span>
-<span><span class="fu">odbcConnectionTables</span><span class="op">(</span><span class="va">conn</span>, <span class="va">name</span>, table_type <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="fu">odbcConnectionTables</span><span class="op">(</span><span class="va">conn</span>, <span class="va">name</span>, table_type <span class="op">=</span> <span class="cn">NULL</span>, exact <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for OdbcConnection,character</span></span>
 <span><span class="fu">odbcConnectionTables</span><span class="op">(</span></span>
@@ -74,7 +82,8 @@ albeit returning a subset of the fields.</p>
 <span>  <span class="va">name</span>,</span>
 <span>  catalog_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  schema_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  table_type <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  table_type <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  exact <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for OdbcConnection,ANY</span></span>
@@ -83,20 +92,12 @@ albeit returning a subset of the fields.</p>
 <span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  catalog_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  schema_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  table_type <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  table_type <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  exact <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for OdbcConnection,SQL</span></span>
-<span><span class="fu">odbcConnectionTables</span><span class="op">(</span><span class="va">conn</span>, <span class="va">name</span>, table_type <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for Oracle,character</span></span>
-<span><span class="fu">odbcConnectionTables</span><span class="op">(</span></span>
-<span>  <span class="va">conn</span>,</span>
-<span>  <span class="va">name</span>,</span>
-<span>  catalog_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  schema_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  table_type <span class="op">=</span> <span class="cn">NULL</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">odbcConnectionTables</span><span class="op">(</span><span class="va">conn</span>, <span class="va">name</span>, table_type <span class="op">=</span> <span class="cn">NULL</span>, exact <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -105,8 +106,10 @@ albeit returning a subset of the fields.</p>
 <dd><p>OdbcConnection</p></dd>
 
 
-<dt>name</dt>
-<dd><p>table we wish to search for</p></dd>
+<dt>name, catalog_name, schema_name</dt>
+<dd><p>Catalog, schema, and table identifiers.
+By default, are interpreted as a ODBC search pattern where <code>_</code> and <code>%</code> are
+wild cards. Set <code>exact = TRUE</code> to match <code>_</code> exactly.</p></dd>
 
 
 <dt>...</dt>
@@ -119,14 +122,11 @@ See odbcConnectionTableTypes for a listing of available table
 types for your connection.</p></dd>
 
 
-<dt>catalog_name</dt>
-<dd><p>character catalog where we wish to query for
-available tables</p></dd>
-
-
-<dt>schema_name</dt>
-<dd><p>character schema where we wish to query for
-available tables.</p></dd>
+<dt>exact</dt>
+<dd><p>Set to <code>TRUE</code> to escape <code>_</code> in identifier names so that it
+matches exactly, rather than matching any single character. <code>%</code> always
+matches any number of characters as this is unlikely to appear in a
+table name.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -147,15 +147,11 @@ for the catalog, schema, and table name arguments.</p>
 internally uses this method to satisfy both
 DBI::dbListTables and DBI::dbExistsTable methods.
 ( The former also advertises pattern value arguments )</p>
-<p>Query, rather than use SQLTables ODBC API for performance reasons on Oracle.
-Main functional difference between the implementation of SQLTables ( OEM driver )
-and the query below is that the OEM implementation also looks through the synonyms.
-Given the performance reports, we sacrifice the synonym look-through for
-better execution time.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>The ODBC documentation on <a href="https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function" class="external-link">SQLTables</a>
+    <div class="dont-index"><p>The ODBC documentation on
+<a href="https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function" class="external-link">SQLTables</a>
 for further details.</p></div>
     </div>
 
@@ -164,7 +160,7 @@ for further details.</p></div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Jim Hester, Hadley Wickham, <a href="https://github.com/detule" class="external-link">Oliver Gjoneski</a>, RStudio.</p>
+  <p></p><p>Developed by Jim Hester, Hadley Wickham, <a href="https://github.com/detule" class="external-link">Oliver Gjoneski</a>, Posit Software, PBC.</p>
 </div>
 
 <div class="pkgdown-footer-right">

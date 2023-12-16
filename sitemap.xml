@@ -4,6 +4,9 @@
     <loc>https://r-dbi.github.io/odbc/404.html</loc>
   </url>
   <url>
+    <loc>https://r-dbi.github.io/odbc/CODE_OF_CONDUCT.html</loc>
+  </url>
+  <url>
     <loc>https://r-dbi.github.io/odbc/ISSUE_TEMPLATE.html</loc>
   </url>
   <url>
@@ -14,6 +17,18 @@
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/MAINTENANCE.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/articles/benchmarks.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/articles/develop.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/articles/setup.html</loc>
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/authors.html</loc>
@@ -28,6 +43,15 @@
     <loc>https://r-dbi.github.io/odbc/reference/ConnectionAttributes.html</loc>
   </url>
   <url>
+    <loc>https://r-dbi.github.io/odbc/reference/DBI-classes.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/reference/DBI-methods.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/reference/DBI-tables.html</loc>
+  </url>
+  <url>
     <loc>https://r-dbi.github.io/odbc/reference/OdbcConnection.html</loc>
   </url>
   <url>
@@ -37,31 +61,28 @@
     <loc>https://r-dbi.github.io/odbc/reference/OdbcResult.html</loc>
   </url>
   <url>
-    <loc>https://r-dbi.github.io/odbc/reference/dbConnect-OdbcDriver-method.html</loc>
+    <loc>https://r-dbi.github.io/odbc/reference/Oracle.html</loc>
   </url>
   <url>
-    <loc>https://r-dbi.github.io/odbc/reference/dbListFields-OdbcConnection-character-method.html</loc>
+    <loc>https://r-dbi.github.io/odbc/reference/SQLServer.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/reference/databricks.html</loc>
+  </url>
+  <url>
+    <loc>https://r-dbi.github.io/odbc/reference/dbConnect-OdbcDriver-method.html</loc>
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/reference/dbListTables-OdbcConnection-method.html</loc>
   </url>
   <url>
-    <loc>https://r-dbi.github.io/odbc/reference/dbListTables-methods.html</loc>
-  </url>
-  <url>
-    <loc>https://r-dbi.github.io/odbc/reference/dbQuoteString-methods.html</loc>
-  </url>
-  <url>
     <loc>https://r-dbi.github.io/odbc/reference/index.html</loc>
   </url>
   <url>
+    <loc>https://r-dbi.github.io/odbc/reference/isTempTable.html</loc>
+  </url>
+  <url>
     <loc>https://r-dbi.github.io/odbc/reference/odbc-package.html</loc>
-  </url>
-  <url>
-    <loc>https://r-dbi.github.io/odbc/reference/odbc-tables.html</loc>
-  </url>
-  <url>
-    <loc>https://r-dbi.github.io/odbc/reference/odbc.html</loc>
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/reference/odbcConnectionActions.html</loc>
@@ -110,11 +131,5 @@
   </url>
   <url>
     <loc>https://r-dbi.github.io/odbc/reference/odbcSetTransactionIsolationLevel.html</loc>
-  </url>
-  <url>
-    <loc>https://r-dbi.github.io/odbc/reference/sqlCreateTable-methods.html</loc>
-  </url>
-  <url>
-    <loc>https://r-dbi.github.io/odbc/setup.html</loc>
   </url>
 </urlset>
