@@ -1,5 +1,10 @@
 # odbc (development version)
 
+* Added a function `odbcListConfig()` to help locate configuration files on
+  macOS and Linux (@simonpcouch, #565).
+
+# odbc 1.4.0
+
 ## Major changes
 
 * New `odbc::databricks()` makes it easier to connect to Databricks, 
@@ -15,9 +20,6 @@
   many cases (#633).
 
 ## Minor improvements and bug fixes
-
-* Added a function `odbcListConfig()` to help locate configuration files on
-  macOS and Linux (@simonpcouch, #565).
 
 * Increased the minimum required R version from 3.2.0 to 3.6.0 
   (@simonpcouch, #629).
