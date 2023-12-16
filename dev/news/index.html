@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.3.5.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.4.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,14 +54,17 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="odbc-development-version">odbc (development version)<a class="anchor" aria-label="anchor" href="#odbc-development-version"></a></h2>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.4.0" id="odbc-140">odbc 1.4.0<a class="anchor" aria-label="anchor" href="#odbc-140"></a></h2><p class="text-muted">CRAN release: 2023-12-15</p>
 <div class="section level3">
-<h3 id="major-changes-development-version">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-development-version"></a></h3>
+<h3 id="major-changes-1-4-0">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-1-4-0"></a></h3>
 <ul><li><p>New <code><a href="../reference/databricks.html">odbc::databricks()</a></code> makes it easier to connect to Databricks, automatically handling many common authentication scenarios (<a href="https://github.com/atheriel" class="external-link">@atheriel</a>, <a href="https://github.com/r-dbi/odbc/issues/615" class="external-link">#615</a>).</p></li>
 <li><p><code><a href="https://dbi.r-dbi.org/reference/dbListTables.html" class="external-link">dbListTables()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbListFields.html" class="external-link">dbListFields()</a></code> and <code><a href="https://dbi.r-dbi.org/reference/dbExistsTable.html" class="external-link">dbExistsTable()</a></code> automatically escape underscores in identifier arguments. This leads to substantial performance improvements for some backends (e.g. snowflake) (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/fh-afrachioni" class="external-link">@fh-afrachioni</a>, <a href="https://github.com/r-dbi/odbc/issues/618" class="external-link">#618</a>).</p></li>
 <li><p><code><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery()</a></code> and <code><a href="https://dbi.r-dbi.org/reference/dbSendQuery.html" class="external-link">dbSendQuery()</a></code> now set <code>immediate = TRUE</code> if you are not using a parameterised query. That should yield a small speed boost in many cases (<a href="https://github.com/r-dbi/odbc/issues/633" class="external-link">#633</a>).</p></li>
 </ul></div>
 <div class="section level3">
-<h3 id="minor-improvements-and-bug-fixes-development-version">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-development-version"></a></h3>
+<h3 id="minor-improvements-and-bug-fixes-1-4-0">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-1-4-0"></a></h3>
 <ul><li><p>Increased the minimum required R version from 3.2.0 to 3.6.0 (<a href="https://github.com/simonpcouch" class="external-link">@simonpcouch</a>, <a href="https://github.com/r-dbi/odbc/issues/629" class="external-link">#629</a>).</p></li>
 <li><p>S4 classes for the most database drivers are now exported, make it possible to use in other packages (<a href="https://github.com/r-dbi/odbc/issues/558" class="external-link">#558</a>).</p></li>
 <li><p>ODBC errors are now spread across multiple lines, making them easier to read (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/564" class="external-link">#564</a>).</p></li>
@@ -69,7 +72,7 @@
 <li><p><code>DBI::dbConnect(odbc::odbc())</code> now automatically quotes argument values that need it (<a href="https://github.com/r-dbi/odbc/issues/616" class="external-link">#616</a>).</p></li>
 </ul></div>
 <div class="section level3">
-<h3 id="driver-specific-changes-development-version">Driver specific changes<a class="anchor" aria-label="anchor" href="#driver-specific-changes-development-version"></a></h3>
+<h3 id="driver-specific-changes-1-4-0">Driver specific changes<a class="anchor" aria-label="anchor" href="#driver-specific-changes-1-4-0"></a></h3>
 <ul><li><p>Oracle: Fix regression when falling back to <code><a href="../reference/odbcConnectionColumns.html">odbcConnectionColumns()</a></code> to describe column data types (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/587" class="external-link">#587</a>)</p></li>
 <li><p>Spark SQL: Correctly enumerate schemas away from the current catalog (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/614" class="external-link">#614</a>)</p></li>
 <li><p>Snowflake: improved translation from R to snowflake types (<a href="https://github.com/meztez" class="external-link">@meztez</a>, <a href="https://github.com/r-dbi/odbc/issues/599" class="external-link">#599</a>).</p></li>
