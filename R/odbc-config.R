@@ -24,7 +24,7 @@
 #' file.edit(configs[1])
 #' @export
 odbcListConfig <- function() {
-  if (identical(.Platform$OS.type, "windows")) {
+  if (is_windows()) {
     return(character(0))
   }
 
