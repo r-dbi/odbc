@@ -9,7 +9,7 @@ NULL
 #' @export
 #' @rdname Oracle
 #' @keywords internal
-setClass("Oracle", contains = "OdbcDriver")
+setClass("Oracle", contains = "OdbcConnection")
 
 #' @rdname Oracle
 setMethod("sqlCreateTable", "Oracle",
