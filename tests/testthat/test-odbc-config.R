@@ -22,43 +22,22 @@ test_that("odbcListConfig errors informatively without unixODBC", {
   skip_on_os(c("windows", "solaris"))
   skip_if(has_odbc(), "odbcinst is available.")
 
-  expect_error(
-    odbcListConfig(),
-    "driver manager is not available"
-  )
+  expect_error(odbcListConfig(), "driver manager is not available")
 })
 
 test_that("odbcListConfig errors informatively without unixODBC (mocked)", {
   skip_on_os(c("windows", "solaris"))
 
-  local_mocked_bindings(
-    has_odbc = function() {FALSE}
-  )
-
-  expect_snapshot(
-    error = TRUE,
-    odbcListConfig()
-  )
+  local_mocked_bindings(has_odbc = function() {FALSE})
+  expect_snapshot(error = TRUE, odbcListConfig())
 })
 
 test_that("odbcListConfig errors informatively with unexpected odbcinst output", {
   skip_on_os(c("windows", "solaris"))
 
-  local_mocked_bindings(
-    system = function(...) {c("beep", "bop")}
-  )
+  local_mocked_bindings(system = function(...) {c("beep", "bop")})
+  expect_snapshot(error = TRUE, odbcListConfig())
 
-  expect_snapshot(
-    error = TRUE,
-    odbcListConfig()
-  )
-
-  local_mocked_bindings(
-    system = function(...) {""}
-  )
-
-  expect_snapshot(
-    error = TRUE,
-    odbcListConfig()
-  )
+  local_mocked_bindings(system = function(...) {""})
+  expect_snapshot(error = TRUE, odbcListConfig())
 })
