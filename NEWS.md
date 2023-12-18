@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* Use correct parent class for Oracle (#685).
+
 # odbc 1.4.0
 
 ## Major changes
