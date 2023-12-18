@@ -1,4 +1,4 @@
-# odbcListConfig errors informatively without unixODBC (mocked)
+# odbcListConfig errors informatively without unixODBC
 
     Code
       odbcListConfig()
