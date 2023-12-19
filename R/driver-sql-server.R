@@ -115,6 +115,9 @@ setMethod(
   "odbcConnectionSchemas", "Microsoft SQL Server",
   function(conn, catalog_name) {
 
+    if (is.null(catalog_name) || !nchar(catalog_name)) {
+      return(callNextMethod())
+    }
     sproc <- paste(
       dbQuoteIdentifier(conn, catalog_name),
       dbQuoteIdentifier(conn, "dbo"),
