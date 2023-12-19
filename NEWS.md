@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Added a function `odbcListConfig()` to help locate configuration files on
+  macOS and Linux (@simonpcouch, #565).
+
 * Use correct parent class for Oracle (#685).
 
 * Removed the `driver_info` class from `dbGetInfo()` output (@simonpcouch, #667).

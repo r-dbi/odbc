@@ -73,6 +73,7 @@ Collate:
     'driver-sqlite.R'
     'driver-teradata.R'
     'driver-vertica.R'
+    'odbc-config.R'
     'odbc-data-sources.R'
     'odbc-data-type.R'
     'odbc-drivers.R'

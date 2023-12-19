@@ -1,7 +1,5 @@
 test_connection_string <- function(db) {
-  if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
-    skip("On CRAN")
-  }
+  testthat::skip_on_cran()
 
   var <- paste0("ODBC_CS_", db)
   cs <- Sys.getenv(var)
