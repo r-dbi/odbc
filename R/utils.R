@@ -112,3 +112,7 @@ escapePattern <- function(x, charsToEsc = c("_"), escChar = "\\\\") {
   x <- gsub(pattern, replace, x)
   I(x)
 }
+
+is_windows <- function() {
+  identical(.Platform$OS.type, "windows")
+}
