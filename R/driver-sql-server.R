@@ -113,7 +113,7 @@ setMethod("dbExistsTable", c("Microsoft SQL Server", "SQL"),
 #' @usage NULL
 setMethod(
   "odbcConnectionSchemas", "Microsoft SQL Server",
-  function(conn, catalog_name) {
+  function(conn, catalog_name = NULL) {
 
     if (is.null(catalog_name) || !nchar(catalog_name)) {
       return(callNextMethod())

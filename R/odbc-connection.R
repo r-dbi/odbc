@@ -400,7 +400,7 @@ setMethod("odbcConnectionCatalogs", "OdbcConnection",
 setGeneric(
   "odbcConnectionSchemas",
   valueClass = "character",
-  function(conn, catalog_name) {
+  function(conn, catalog_name = NULL) {
     standardGeneric("odbcConnectionSchemas")
   }
 )
