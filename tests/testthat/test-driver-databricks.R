@@ -13,7 +13,11 @@ test_that("databricks arguments use camelcase", {
 
 test_that("manually supplied arguments override automatic", {
   withr::local_envvar(DATABRICKS_TOKEN = "abc")
-  expect_equal(databricks_args("x", "y", authMech = 123)$authMech, 123)
+  args <- databricks_args("x", "y", driver = "driver")
+  expect_equal(args$authMech, 3)
+
+  args <- databricks_args("x", "y", driver = "driver", authMech = 123)
+  expect_equal(args$authMech, 123)
 })
 
 test_that("fallbacks to driver name", {
