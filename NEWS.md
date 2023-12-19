@@ -2,6 +2,8 @@
 
 * Use correct parent class for Oracle (#685).
 
+* dbAppendTable: Improve performance by checking existence once (#691).
+
 # odbc 1.4.0
 
 ## Major changes
