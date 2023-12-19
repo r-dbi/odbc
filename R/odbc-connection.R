@@ -62,7 +62,7 @@ OdbcConnection <- function(
     stop("The ODBC driver returned an invalid `dbms.name`. Please provide one manually with the `dbms.name` parameter.", call. = FALSE)
   }
 
-  class(info) <- c(info$dbms.name, "driver_info", "list")
+  class(info) <- c(info$dbms.name, "list")
 
 
   class <- getClassDef(info$dbms.name, inherits = FALSE)

@@ -2,6 +2,8 @@
 
 * Use correct parent class for Oracle (#685).
 
+* Removed the `driver_info` class from `dbGetInfo()` output (@simonpcouch, #667).
+
 # odbc 1.4.0
 
 ## Major changes
