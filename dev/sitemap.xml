@@ -109,6 +109,9 @@
     <loc>https://r-dbi.github.io/odbc/dev/reference/odbcListColumns.html</loc>
   </url>
   <url>
+    <loc>https://r-dbi.github.io/odbc/dev/reference/odbcListConfig.html</loc>
+  </url>
+  <url>
     <loc>https://r-dbi.github.io/odbc/dev/reference/odbcListDataSources.html</loc>
   </url>
   <url>
