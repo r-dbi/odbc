@@ -139,11 +139,11 @@ setMethod("sqlCreateTable", "Microsoft SQL Server",
     time = "TIME",
     binary = varbinary(obj),
     integer = "INT",
+    int64 = "BIGINT",
     double = "FLOAT",
     character = varchar(obj),
     logical = "BIT",
     list = varchar(obj),
-    int64 = "BIGINT",
     stop("Unsupported type", call. = FALSE)
   )
 }

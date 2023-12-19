@@ -62,6 +62,7 @@ odbcDataType.default <- function(con, obj, ...) {
     time = "TIME",
     binary = "VARBINARY(255)",
     integer = "INTEGER",
+    int64 = "INTEGER",
     double = "DOUBLE PRECISION",
     character = "VARCHAR(255)",
     logical = "BIT", # only valid if DB supports Null fields
