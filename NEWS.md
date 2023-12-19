@@ -5,6 +5,8 @@
 
 * Use correct parent class for Oracle (#685).
 
+* The Microsoft SQL Server method for `odbcDataType()` will now return `"BIGINT"`
+  for integer64 objects rather than converting to `"FLOAT"`.
 
 # odbc 1.4.0
 

@@ -143,6 +143,7 @@ setMethod("sqlCreateTable", "Microsoft SQL Server",
     character = varchar(obj),
     logical = "BIT",
     list = varchar(obj),
+    int64 = "BIGINT",
     stop("Unsupported type", call. = FALSE)
   )
 }

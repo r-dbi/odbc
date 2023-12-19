@@ -92,6 +92,9 @@ object_type <- function(obj) {
   if (is(obj, "difftime")) {
     return("time")
   }
+  if (is(obj, "integer64")) {
+    return("int64")
+  }
 
   return(typeof(obj))
 }
