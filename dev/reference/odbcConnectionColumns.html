@@ -140,10 +140,10 @@ all columns.</p></dd>
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>In <code><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable()</a></code> we make a call to this method
+    <p>In <code><a href="https://rdrr.io/pkg/DBI/man/dbWriteTable.html" class="external-link">dbWriteTable()</a></code> we make a call to this method
 to get details on the fields of the table we are writing to.  In particular
 the columns <code>data_type</code>, <code>column_size</code>, and <code>decimal_digits</code> are used.  An
-implementation is not necessary for <code><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable()</a></code> to work.</p>
+implementation is not necessary for <code><a href="https://rdrr.io/pkg/DBI/man/dbWriteTable.html" class="external-link">dbWriteTable()</a></code> to work.</p>
 <p><code>odbcConnectionColumns</code> is routed through the <code>SQLColumns</code> ODBC
 method.  This function, together with remaining catalog functions
 (<code>SQLTables</code>, etc), by default ( <code>SQL_ATTR_METADATA_ID == false</code> ) expect

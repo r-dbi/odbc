@@ -131,7 +131,7 @@ install in <code>odbcinst.ini</code>, the first lines of your
 <p>After running <code>brew services start mysql</code> if needed, and
 confirming that the database is running with
 <code>brew services info mysql</code>, you should be able to:</p>
-<pre><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-dbi.github.io/odbc/">odbc</a></span><span class="op">)</span></span>
+<pre><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://odbc.r-dbi.org">odbc</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">dbConnect</a></span><span class="op">(</span><span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">odbc</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"MySQL"</span><span class="op">)</span></span></code></pre>
 <p>The second argument <code>"MySQL"</code> refers to the data source
 name configured above.</p>
@@ -197,16 +197,16 @@ the test database</p>
 database:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add a test user, but currently unused</span></span>
-<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"USE test"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"EXEC sp_configure 'contained database authentication', 1"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"RECONFIGURE"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"alter database test set containment = partial"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"CREATE USER testuser with password = 'BoopBop123!'"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"GRANT CONTROL TO testuser"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"DROP USER testuser"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"USE test"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"EXEC sp_configure 'contained database authentication', 1"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"RECONFIGURE"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"alter database test set containment = partial"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"CREATE USER testuser with password = 'BoopBop123!'"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"GRANT CONTROL TO testuser"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"DROP USER testuser"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create a test database</span></span>
-<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"CREATE DATABASE test"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"CREATE DATABASE test"</span><span class="op">)</span></span></code></pre></div>
 <p>On <strong>Linux</strong>, create a docker container with:</p>
 <pre class="shell"><code>docker run -v "$(pwd)":"/opt/$(basename $(pwd))":delegated --security-opt=seccomp:unconfined --link sql1 -it rstudio/r-base:3.6.1-bionic /bin/bash</code></pre>
 <p>Then run:</p>
@@ -230,7 +230,7 @@ like:</p>
 </h2>
 <p>MacOS provides SQLite natively. With the SQLite odbc driver installed
 (see <code><a href="../articles/setup.html">vignette("setup")</a></code> if needed), run:</p>
-<pre><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-dbi.github.io/odbc/">odbc</a></span><span class="op">)</span></span>
+<pre><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://odbc.r-dbi.org">odbc</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">dbConnect</a></span><span class="op">(</span><span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">odbc</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"SQLite"</span><span class="op">)</span></span></code></pre>
 <p>The above example assumes the configured SQLite DSN is called
 <code>"SQLite"</code>.</p>
