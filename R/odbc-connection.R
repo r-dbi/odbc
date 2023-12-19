@@ -412,13 +412,6 @@ setMethod("odbcConnectionSchemas", "OdbcConnection",
   }
 )
 
-#' @rdname odbcConnectionSchemas
-setMethod("odbcConnectionSchemas", c("OdbcConnection", "character"),
-  function(conn, catalog_name) {
-    connection_sql_schemas(conn@ptr)
-  }
-)
-
 #' odbcConnectionTableTypes
 #'
 #' This function returns a listing of table

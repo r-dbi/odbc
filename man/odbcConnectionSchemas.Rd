@@ -2,16 +2,13 @@
 % Please edit documentation in R/odbc-connection.R, R/driver-spark.R
 \name{odbcConnectionSchemas}
 \alias{odbcConnectionSchemas}
-\alias{odbcConnectionSchemas,OdbcConnection,ANY-method}
-\alias{odbcConnectionSchemas,OdbcConnection,character-method}
-\alias{odbcConnectionSchemas,Spark SQL,character-method}
+\alias{odbcConnectionSchemas,OdbcConnection-method}
+\alias{odbcConnectionSchemas,Spark SQL-method}
 \title{odbcConnectionSchemas}
 \usage{
 odbcConnectionSchemas(conn, catalog_name)
 
-\S4method{odbcConnectionSchemas}{OdbcConnection,ANY}(conn, catalog_name = NULL)
-
-\S4method{odbcConnectionSchemas}{OdbcConnection,character}(conn, catalog_name)
+\S4method{odbcConnectionSchemas}{OdbcConnection}(conn, catalog_name = NULL)
 }
 \arguments{
 \item{conn}{OdbcConnection}
