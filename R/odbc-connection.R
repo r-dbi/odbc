@@ -68,7 +68,7 @@ OdbcConnection <- function(
 
 build_connection_string <- function(.string = NULL, ...) {
   args <- compact(list(...))
-  # check_args(args)
+  check_args(args)
 
   needs_escape <- grepl("[{}(),;?*=!@]", args) &
     !grepl("^\\{.*\\}$", args) &
@@ -85,9 +85,12 @@ build_connection_string <- function(.string = NULL, ...) {
 }
 
 check_args <- function(args) {
-  stopifnot(all(has_names(args)))
   if (length(args) == 0) {
-    return(args)
+    return()
+  }
+
+  if (!all(has_names(args))) {
+    abort("All elements of ... must be named.", call = quote(DBI::dbConnect()))
   }
 
   name_groups <- split(names(args), tolower(names(args)))

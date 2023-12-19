@@ -1,21 +1,13 @@
-test_that("warn about case-insensitve arguments", {
-  expect_no_error(check_args(list()))
-  expect_no_error(check_args(list(x = 1, y = 1)))
 
-  expect_snapshot(error = TRUE, {
-    check_args(list(xa = 1, xA = 1))
-    check_args(list(xa = 1, xA = 1, XA = 1))
-    check_args(list(xa = 1, xA = 1, xb = 1, xB = 1))
-  })
-})
+# build_connection_string -------------------------------------------------
 
-test_that("build_connection_string handles simple inputs", {
+test_that("handles simple inputs", {
   expect_equal(build_connection_string(), "")
   expect_equal(build_connection_string(foo = "1"), "foo=1")
   expect_equal(build_connection_string(foo = "1", bar = "2"), "foo=1;bar=2")
 })
 
-test_that("build_connection_string automatically escapes if needed", {
+test_that("escapes if needed", {
   expect_equal(build_connection_string(foo = "*"), "foo={*}")
   # Already wrapped
   expect_equal(build_connection_string(foo = "{*}"), "foo={*}")
@@ -23,8 +15,23 @@ test_that("build_connection_string automatically escapes if needed", {
   expect_equal(build_connection_string(foo = I("*")), "foo=*")
 })
 
-test_that("build_connection_string combines with existing .connection string", {
+test_that("combines with existing .connection string", {
   expect_equal(build_connection_string("x=1"), "x=1")
   expect_equal(build_connection_string("x=1", foo = "1"), "x=1;foo=1")
   expect_equal(build_connection_string("x=1;", foo = "1"), "x=1;foo=1")
+})
+
+test_that("errors if unnamed arguments", {
+  expect_snapshot(build_connection_string(1, 2, 3), error = TRUE)
+})
+
+test_that("errors about case-insensitve arguments", {
+  expect_no_error(build_connection_string())
+  expect_no_error(build_connection_string(x = 1, y = 1))
+
+  expect_snapshot(error = TRUE, {
+    build_connection_string(xa = 1, xA = 1)
+    build_connection_string(xa = 1, xA = 1, XA = 1)
+    build_connection_string(xa = 1, xA = 1, xb = 1, xB = 1)
+  })
 })
