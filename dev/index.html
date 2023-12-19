@@ -114,22 +114,22 @@
 <span>  pwd <span class="op">=</span> <span class="fu">rstudioapi</span><span class="fu">::</span><span class="fu">askForPassword</span><span class="op">(</span><span class="st">"Database password"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>(See <code><a href="articles/setup.html">vignette("setup")</a></code> for examples of connecting to a variety of databases.)</p>
-<p><code><a href="https://rdrr.io/pkg/DBI/man/dbListTables.html" class="external-link">dbListTables()</a></code> is used for listing all existing tables in a database.</p>
+<p><code><a href="https://dbi.r-dbi.org/reference/dbListTables.html" class="external-link">dbListTables()</a></code> is used for listing all existing tables in a database.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbListTables.html" class="external-link">dbListTables</a></span><span class="op">(</span><span class="va">con</span><span class="op">)</span></span></code></pre></div>
-<p><code><a href="https://rdrr.io/pkg/DBI/man/dbReadTable.html" class="external-link">dbReadTable()</a></code> will read a full table into an R <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code>.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbListTables.html" class="external-link">dbListTables</a></span><span class="op">(</span><span class="va">con</span><span class="op">)</span></span></code></pre></div>
+<p><code><a href="https://dbi.r-dbi.org/reference/dbReadTable.html" class="external-link">dbReadTable()</a></code> will read a full table into an R <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbReadTable.html" class="external-link">dbReadTable</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"flights"</span><span class="op">)</span></span></code></pre></div>
-<p><code><a href="https://rdrr.io/pkg/DBI/man/dbWriteTable.html" class="external-link">dbWriteTable()</a></code> will write an R <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code> to an SQL table.</p>
+<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbReadTable.html" class="external-link">dbReadTable</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"flights"</span><span class="op">)</span></span></code></pre></div>
+<p><code><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable()</a></code> will write an R <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code> to an SQL table.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"iris"</span>, <span class="va">iris</span><span class="op">)</span></span></code></pre></div>
-<p><code><a href="https://rdrr.io/pkg/DBI/man/dbGetQuery.html" class="external-link">dbGetQuery()</a></code> will submit a SQL query and fetch the results:</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"iris"</span>, <span class="va">iris</span><span class="op">)</span></span></code></pre></div>
+<p><code><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery()</a></code> will submit a SQL query and fetch the results:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span></span>
 <span>  <span class="va">con</span>,</span>
 <span>  <span class="st">"SELECT flight, tailnum, origin FROM flights ORDER BY origin"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>It is also possible to submit the query and fetch separately with <code><a href="https://rdrr.io/pkg/DBI/man/dbSendQuery.html" class="external-link">dbSendQuery()</a></code> and <code><a href="https://rdrr.io/pkg/DBI/man/dbFetch.html" class="external-link">dbFetch()</a></code>. This allows you to use the <code>n</code> argument to <code><a href="https://rdrr.io/pkg/DBI/man/dbFetch.html" class="external-link">dbFetch()</a></code> to iterate over results that would otherwise be too large to fit in memory.</p>
+<p>It is also possible to submit the query and fetch separately with <code><a href="https://dbi.r-dbi.org/reference/dbSendQuery.html" class="external-link">dbSendQuery()</a></code> and <code><a href="https://dbi.r-dbi.org/reference/dbFetch.html" class="external-link">dbFetch()</a></code>. This allows you to use the <code>n</code> argument to <code><a href="https://dbi.r-dbi.org/reference/dbFetch.html" class="external-link">dbFetch()</a></code> to iterate over results that would otherwise be too large to fit in memory.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

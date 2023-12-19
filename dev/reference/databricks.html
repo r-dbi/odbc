@@ -97,8 +97,8 @@ All of these credentials are detected automatically if present using
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>drv</dt>
-<dd><p>an object that inherits from <a href="https://rdrr.io/pkg/DBI/man/DBIDriver-class.html" class="external-link">DBIDriver</a>,
-or an existing <a href="https://rdrr.io/pkg/DBI/man/DBIConnection-class.html" class="external-link">DBIConnection</a>
+<dd><p>an object that inherits from <a href="https://dbi.r-dbi.org/reference/DBIDriver-class.html" class="external-link">DBIDriver</a>,
+or an existing <a href="https://dbi.r-dbi.org/reference/DBIConnection-class.html" class="external-link">DBIConnection</a>
 object (in order to clone an existing connection).</p></dd>
 
 
@@ -116,7 +116,7 @@ warehouses, this is found under <code>Connection Details</code> instead.</p></dd
 <dt>useNativeQuery</dt>
 <dd><p>Suppress the driver's conversion from ANSI SQL 92 to
 HiveSQL? The default (<code>TRUE</code>), gives greater performance but means that
-paramterised queries (and hence <code><a href="https://rdrr.io/pkg/DBI/man/dbWriteTable.html" class="external-link">dbWriteTable()</a></code>) do not work.</p></dd>
+paramterised queries (and hence <code><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable()</a></code>) do not work.</p></dd>
 
 
 <dt>driver</dt>
@@ -139,7 +139,7 @@ cluster or SQL warehouse.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu">odbc</span><span class="fu">::</span><span class="fu">databricks</span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  httpPath <span class="op">=</span> <span class="st">"sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>

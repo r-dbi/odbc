@@ -197,16 +197,16 @@ the test database</p>
 database:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add a test user, but currently unused</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"USE test"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"EXEC sp_configure 'contained database authentication', 1"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"RECONFIGURE"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"alter database test set containment = partial"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"CREATE USER testuser with password = 'BoopBop123!'"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"GRANT CONTROL TO testuser"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"DROP USER testuser"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"USE test"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"EXEC sp_configure 'contained database authentication', 1"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"RECONFIGURE"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"alter database test set containment = partial"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"CREATE USER testuser with password = 'BoopBop123!'"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"GRANT CONTROL TO testuser"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"DROP USER testuser"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create a test database</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/DBI/man/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"CREATE DATABASE test"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"CREATE DATABASE test"</span><span class="op">)</span></span></code></pre></div>
 <p>On <strong>Linux</strong>, create a docker container with:</p>
 <pre class="shell"><code>docker run -v "$(pwd)":"/opt/$(basename $(pwd))":delegated --security-opt=seccomp:unconfined --link sql1 -it rstudio/r-base:3.6.1-bionic /bin/bash</code></pre>
 <p>Then run:</p>
