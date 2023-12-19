@@ -83,7 +83,7 @@ odbc_write_table <- function(conn,
 
   values <- sqlData(conn, row.names = row.names, value[, , drop = FALSE])
 
-  if (!found || overwrite) {
+  if ( (!found && createIfNotFound) || overwrite) {
     sql <- sqlCreateTable(
       conn,
       name,
