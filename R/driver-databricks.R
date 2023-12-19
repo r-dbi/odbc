@@ -29,6 +29,8 @@ NULL
 #'   `"https://example.cloud.databricks.com"`.
 #' @param driver The name of the Databricks ODBC driver, or `NULL` to use the
 #'   default name.
+#' @param uid,pwd Manually specific a username and password for authentication.
+#'   Specifying these options will disable automated credential discovery.
 #' @param ... Further arguments passed on to [`dbConnect()`].
 #'
 #' @returns An `OdbcConnection` object with an active connection to a Databricks
@@ -59,6 +61,8 @@ setMethod("dbConnect", "DatabricksOdbcDriver",
            useNativeQuery = TRUE,
            driver = NULL,
            HTTPPath,
+           uid = NULL,
+           pwd = NULL,
            ...) {
     # For backward compatibility with RStudio connection string
     check_exclusive(httpPath, HTTPPath)
@@ -68,6 +72,8 @@ setMethod("dbConnect", "DatabricksOdbcDriver",
       workspace = workspace,
       useNativeQuery = useNativeQuery,
       driver = driver,
+      uid = uid,
+      pwd = pwd,
       ...
     )
     inject(dbConnect(odbc(), !!!args))
@@ -78,6 +84,8 @@ databricks_args <- function(httpPath,
                             workspace = Sys.getenv("DATABRICKS_HOST"),
                             useNativeQuery = FALSE,
                             driver = NULL,
+                            uid = NULL,
+                            pwd = NULL,
                             ...) {
   host <- databricks_host(workspace)
 
@@ -87,15 +95,16 @@ databricks_args <- function(httpPath,
     httpPath = httpPath,
     useNativeQuery = useNativeQuery
   )
-  auth <- databricks_auth_args(host)
-  all <- c(args, auth, ...)
+
+  auth <- databricks_auth_args(host, uid = uid, pwd = pwd)
+  all <- utils::modifyList(c(args, auth), list(...))
 
   arg_names <- tolower(names(all))
   if (!"authmech" %in% arg_names && !all(c("uid", "pwd") %in% arg_names)) {
     warn(
       c(
         "x" = "Failed to detect ambient Databricks credentials.",
-        "i" = "Supply `uid` or `pwd` to authenticate manually."
+        "i" = "Supply `uid` and `pwd` to authenticate manually."
       ),
       call = quote(DBI::dbConnect())
     )
@@ -185,7 +194,19 @@ databricks_user_agent <- function() {
   user_agent
 }
 
-databricks_auth_args <- function(host) {
+databricks_auth_args <- function(host, uid = NULL, pwd = NULL) {
+  if (!is.null(uid) && !is.null(pwd)) {
+    return(list(uid = uid, pwd = pwd, authMech = 3))
+  } else if (xor(is.null(uid), is.null(pwd))) {
+    abort(
+      c(
+        "Both `uid` and `pwd` must be specified for manual authentication.",
+        i = "Or leave both unset for automated authentication."
+      ),
+      call = quote(DBI::dbConnect())
+    )
+  }
+
   # Check some standard Databricks environment variables. This is used to
   # implement a subset of the "Databricks client unified authentication" model.
   token <- Sys.getenv("DATABRICKS_TOKEN")
