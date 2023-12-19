@@ -1,12 +1,14 @@
 # odbc (development version)
 
+* The Microsoft SQL Server method for `odbcDataType()` will now return `"BIGINT"`
+  for integer64 objects rather than converting to `"FLOAT"` (@simonpcouch, #698).
+  
 * Added a function `odbcListConfig()` to help locate configuration files on
   macOS and Linux (@simonpcouch, #565).
 
 * Use correct parent class for Oracle (#685).
 
-* The Microsoft SQL Server method for `odbcDataType()` will now return `"BIGINT"`
-  for integer64 objects rather than converting to `"FLOAT"`.
+* Removed the `driver_info` class from `dbGetInfo()` output (@simonpcouch, #667).
 
 # odbc 1.4.0
 
