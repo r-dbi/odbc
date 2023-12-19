@@ -63,6 +63,9 @@ odbc_write_table <- function(conn,
   }
 
   found <- dbExistsTable(conn, name)
+  if (!found && append) {
+    stop("Asked to append to existing table, but table not found")
+  }
   if (found && !overwrite && !append) {
     stop("Table ", toString(name), " exists in database, and both overwrite and",
       " append are FALSE",
@@ -156,7 +159,6 @@ setMethod("dbWriteTable", c("OdbcConnection", "SQL", "data.frame"),
 setMethod("dbAppendTable", "OdbcConnection",
   function(conn, name, value, ..., row.names = NULL) {
     stopifnot(is.null(row.names))
-    stopifnot(dbExistsTable(conn, name))
     dbWriteTable(conn, name, value, ..., row.names = row.names, append = TRUE)
     invisible(NA_real_)
   }
