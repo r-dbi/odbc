@@ -19,7 +19,8 @@
   row.names = NA,
   field.types = NULL,
   batch_rows = getOption("odbc.batch_rows", NA),
-  ...
+  ...,
+  createIfNotFound = TRUE
 )
 
 \S4method{dbWriteTable}{OdbcConnection,Id,data.frame}(
@@ -32,7 +33,8 @@
   row.names = NA,
   field.types = NULL,
   batch_rows = getOption("odbc.batch_rows", NA),
-  ...
+  ...,
+  createIfNotFound = TRUE
 )
 
 \S4method{dbWriteTable}{OdbcConnection,SQL,data.frame}(
@@ -45,7 +47,8 @@
   row.names = NA,
   field.types = NULL,
   batch_rows = getOption("odbc.batch_rows", NA),
-  ...
+  ...,
+  createIfNotFound = TRUE
 )
 
 \S4method{dbAppendTable}{OdbcConnection}(conn, name, value, ..., row.names = NULL)
@@ -97,6 +100,11 @@ driver, dataset and free memory setting this to a lower value may improve
 performance.}
 
 \item{...}{Other arguments used by individual methods.}
+
+\item{createIfNotFound}{Whether to create the table if not found.
+Not intended that users interacting with the DBI API would be
+changing this argument.  Here to provide a convenient way of using
+the same method for both \code{dbWriteTable} as well as \code{dbAppendTable}.}
 
 \item{con}{A database connection.}
 

@@ -9,6 +9,10 @@ NULL
 #'   automatically quoted so you can use any sequence of characters, not
 #'   just any valid bare table name.
 #' @param value A data.frame to write to the database.
+#' @param createIfNotFound Whether to create the table if not found.
+#' Not intended that users interacting with the DBI API would be
+#' changing this argument.  Here to provide a convenient way of using
+#' the same method for both `dbWriteTable` as well as `dbAppendTable`.
 #' @inheritParams DBI::sqlCreateTable
 #' @examples
 #' \dontrun{
@@ -39,7 +43,8 @@ odbc_write_table <- function(conn,
                              row.names = NA,
                              field.types = NULL,
                              batch_rows = getOption("odbc.batch_rows", NA),
-                             ...) {
+                             ...,
+                             createIfNotFound = TRUE) {
   stopifnot(
     rlang::is_scalar_logical(overwrite) && !is.na(overwrite),
     rlang::is_scalar_logical(append) && !is.na(append),
@@ -63,7 +68,7 @@ odbc_write_table <- function(conn,
   }
 
   found <- dbExistsTable(conn, name)
-  if (!found && append) {
+  if (!found && !createIfNotFound) {
     stop("Asked to append to existing table, but table not found")
   }
   if (found && !overwrite && !append) {
@@ -159,7 +164,7 @@ setMethod("dbWriteTable", c("OdbcConnection", "SQL", "data.frame"),
 setMethod("dbAppendTable", "OdbcConnection",
   function(conn, name, value, ..., row.names = NULL) {
     stopifnot(is.null(row.names))
-    dbWriteTable(conn, name, value, ..., row.names = row.names, append = TRUE)
+    dbWriteTable(conn, name, value, ..., row.names = row.names, append = TRUE, createIfNotFound = FALSE)
     invisible(NA_real_)
   }
 )
