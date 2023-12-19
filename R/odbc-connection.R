@@ -21,15 +21,15 @@ OdbcConnection <- function(
     dbms.name = NULL,
     attributes = NULL,
     .connection_string = NULL) {
-  args <- c(
+  args <- compact(list(
     dsn = dsn,
     driver = driver,
     server = server,
     database = database,
     uid = uid,
     pwd = pwd,
-    list(...)
-  )
+    ...
+  ))
   check_args(args)
 
   stopifnot(all(has_names(attributes)))
