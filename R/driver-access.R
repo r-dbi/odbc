@@ -11,6 +11,7 @@ NULL
     time = "TIME",
     binary = "BINARY",
     integer = "INTEGER",
+    int64 = "INTEGER",
     double = "DOUBLE",
     character = varchar(obj),
     logical = "BIT",

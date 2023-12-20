@@ -5,6 +5,7 @@
     datetime = "TIMESTAMP",
     date = "DATE",
     integer = "INTEGER",
+    int64 = "INTEGER",
     double = "DOUBLE PRECISION",
     character = "VARCHAR(255)",
     logical = "BOOLEAN",
