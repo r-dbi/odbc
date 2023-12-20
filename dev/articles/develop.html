@@ -270,13 +270,57 @@ appropriately</a>.</p>
 <span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">dbConnect</a></span><span class="op">(</span><span class="fu">odbc</span><span class="fu">::</span><span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">odbc</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"OracleODBC-19"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="snowflake">Snowflake<a class="anchor" aria-label="anchor" href="#snowflake"></a>
+</h2>
+<p>To obtain a Snowflake account:</p>
+<ul>
+<li>If you’re a Posit employee, reach out to James Blair.</li>
+<li>If you’re not affiliated with Posit, sign up for a <a href="https://signup.snowflake.com/" class="external-link">free trial</a>.</li>
+</ul>
+<p>Install drivers using the <a href="https://docs.snowflake.com/en/developer-guide/odbc/odbc" class="external-link">instructions
+on the Snowflake documentation</a>. For MacOS, feel free to ignore
+sections noting that iODBC is required.</p>
+<p>On MacOS and Linux:</p>
+<ul>
+<li>Locate your <code>simba.snowflake.ini</code> file, likely in
+<code>opt/snowflake/</code>. You will need <code>sudo</code> access to
+edit it.
+<ul>
+<li>Change <code>DriverManagerEncoding</code> to
+<code>UTF-16</code>.</li>
+<li>Change the uncommented <code>ODBCInstLib</code> entry to the <a href="https://community.snowflake.com/s/article/R-Studio-to-Snowflake-fails-with-error-Unable-to-locate-SQLGetPrivateProfileString-function" class="external-link">path
+of your unixODBC install</a>.</li>
+</ul>
+</li>
+<li>In the Snowflake UI, navigate to Worksheets, make a new worksheet
+using the blue “+” button in the top right-hand corner, and run the line
+<code>SELECT SYSTEM$ALLOWLIST()</code>. In the output, copy the URL
+corresponding to <code>"type":"SNOWFLAKE_DEPLOYMENT"</code>. This
+Deployment URL should look like a random string, an AWS region, and the
+snowflake API URL,
+e.g. <code>wmc39401.us-east-1.snowflakecomputing.com</code>.</li>
+</ul>
+<p>The <code>odbc.ini</code> file should look like:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[Snowflake]</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Driver      </span><span class="ot">=</span><span class="st"> Snowflake</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="dt">Description </span><span class="ot">=</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="dt">uid         </span><span class="ot">=</span><span class="st"> &lt;uid&gt;</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="dt">server      </span><span class="ot">=</span><span class="st"> &lt;deployment-url&gt;</span></span></code></pre></div>
+<p>The above assumes <code>Driver = Snowflake</code> is configured in
+<code>odbcinst.ini</code>. Then, connect by supplying the password as an
+argument:</p>
+<pre><code><span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">dbConnect</a></span><span class="op">(</span><span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">odbc</a></span><span class="op">(</span><span class="op">)</span>, dsn <span class="op">=</span> <span class="st">"Snowflake"</span>, pwd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"snowflakePass"</span><span class="op">)</span><span class="op">)</span></span></code></pre>
+<p>In the above, the password has been set as
+<code>Sys.setenv(snowflakePass = "actualPass")</code>.</p>
+</div>
+<div class="section level2">
 <h2 id="rodbc">RODBC<a class="anchor" aria-label="anchor" href="#rodbc"></a>
 </h2>
 <p>We need to install the RODBC package for benchmarking in the vignette
 <code><a href="../articles/benchmarks.html">vignette("benchmarks")</a></code>. The CRAN version of RODBC uses
 iODBC, so to use unixODBC we need to recompile it from source,
 specifying the odbc manager explicitly:</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"RODBC"</span>, type <span class="op">=</span> <span class="st">"source"</span>, INSTALL_opts<span class="op">=</span><span class="st">"--configure-args='--with-odbc-manager=odbc'"</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
