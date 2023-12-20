@@ -40,7 +40,7 @@ paramterised queries (and hence \code{dbWriteTable()}) do not work.}
 \item{driver}{The name of the Databricks ODBC driver, or \code{NULL} to use the
 default name.}
 
-\item{uid, pwd}{Manually specific a username and password for authentication.
+\item{uid, pwd}{Manually specify a username and password for authentication.
 Specifying these options will disable automated credential discovery.}
 
 \item{...}{Further arguments passed on to \code{\link[=dbConnect]{dbConnect()}}.}

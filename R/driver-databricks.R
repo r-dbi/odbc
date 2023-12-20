@@ -29,7 +29,7 @@ NULL
 #'   `"https://example.cloud.databricks.com"`.
 #' @param driver The name of the Databricks ODBC driver, or `NULL` to use the
 #'   default name.
-#' @param uid,pwd Manually specific a username and password for authentication.
+#' @param uid,pwd Manually specify a username and password for authentication.
 #'   Specifying these options will disable automated credential discovery.
 #' @param ... Further arguments passed on to [`dbConnect()`].
 #'
