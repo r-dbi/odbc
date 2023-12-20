@@ -3,7 +3,7 @@
 * Use correct parent class for Oracle (#685).
 
 * SQL Server: correctly enumerate schemas across databases in connections pane
-  (@detule, #527)
+  (@detule, #527).
 
 # odbc 1.4.0
 
