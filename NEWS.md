@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* SQL Server: correctly enumerate schemas across databases in connections pane
+  (@detule, #527).
+
 * Added a function `odbcListConfig()` to help locate configuration files on
   macOS and Linux (@simonpcouch, #565).
 
