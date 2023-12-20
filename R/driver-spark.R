@@ -10,7 +10,7 @@ setClass("Spark SQL", contains = "OdbcConnection")
 #' This implementation will respect the `catalog_name` arrgument.
 #' @rdname odbcConnectionSchemas
 #' @usage NULL
-setMethod("odbcConnectionSchemas", c("Spark SQL", "character"),
+setMethod("odbcConnectionSchemas", "Spark SQL",
   function(conn, catalog_name) {
     res <- dbGetQuery(conn, paste0("SHOW SCHEMAS IN ", catalog_name))
     if (nrow(res)) {

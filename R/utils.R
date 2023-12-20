@@ -116,3 +116,5 @@ escapePattern <- function(x, charsToEsc = c("_"), escChar = "\\\\") {
 is_windows <- function() {
   identical(.Platform$OS.type, "windows")
 }
+
+compact <- function(x) x[!vapply(x, is.null, logical(1))]

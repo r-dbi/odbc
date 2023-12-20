@@ -219,8 +219,7 @@ setMethod("dbListFields", c("OdbcConnection", "character"),
 #' @export
 setMethod("dbGetInfo", "OdbcConnection",
   function(dbObj, ...) {
-    info <- connection_info(dbObj@ptr)
-    structure(info, class = c(info$dbms.name, "driver_info", "list"))
+    connection_info(dbObj@ptr)
   }
 )
 
