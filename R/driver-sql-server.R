@@ -107,7 +107,9 @@ setMethod("dbExistsTable", c("Microsoft SQL Server", "SQL"),
   }
 )
 
-#' @details Call catalog-specific sp_tables to make sure we list the schemas in the
+#' @description
+#' ## `odbcConnectionSchemas` 
+#' Call catalog-specific `sp_tables` to make sure we list the schemas in the
 #' appropriate database/catalog.
 #' @rdname SQLServer
 #' @usage NULL
