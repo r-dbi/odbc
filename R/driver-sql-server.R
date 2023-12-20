@@ -121,7 +121,9 @@ setMethod(
     sproc <- paste(
       dbQuoteIdentifier(conn, catalog_name),
       dbQuoteIdentifier(conn, "dbo"),
-      dbQuoteIdentifier(conn, "sp_tables"), sep = ".")
+      dbQuoteIdentifier(conn, "sp_tables"), 
+      sep = "."
+    )
 
     dbGetQuery(conn, paste0("
                EXEC ", sproc, "
