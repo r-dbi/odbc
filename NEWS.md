@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* `databricks()` now works with manually supplied `pwd` and `uid` (#690).
+
 * SQL Server: correctly enumerate schemas across databases in connections pane
   (@detule, #527).
 
