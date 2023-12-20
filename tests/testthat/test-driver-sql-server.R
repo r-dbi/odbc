@@ -113,7 +113,7 @@ test_that("SQLServer", {
     res <- odbcConnectionSchemas(con, catalog_name = "tempdb")
     # Should, at least, have INFORMATION_SCHEMA and sys
     expect_true( length(res) > 1 )
-    expect_true( !"testSchema" %in% res )
+    expect_false(testSchema" %in% res)
   })
 
   local({
