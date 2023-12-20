@@ -1,6 +1,7 @@
 # odbc (development version)
 
-* New `odbcListConfig()` lists configuration files on Mac and Linux (@simonpcouch, #565).
+* New `odbcListConfig()` lists configuration files on Mac and Linux 
+  (@simonpcouch, #565).
 
 * `databricks()` now works with manually supplied `pwd` and `uid` (#690).
 
@@ -9,7 +10,8 @@
 * SQL Server: correctly enumerate schemas across databases in connections pane
   (@detule, #527).
 
-* SQL Server: now uses column type `"BIGINT"` integer64 objects (@simonpcouch, #698).
+* SQL Server: now uses column type `"BIGINT"` integer64 objects 
+  (@simonpcouch, #698).
 
 # odbc 1.4.0
 
