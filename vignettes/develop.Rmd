@@ -271,7 +271,7 @@ On MacOS and Linux:
 * Locate your `simba.snowflake.ini` file, likely in `opt/snowflake/`. You will need `sudo` access to edit it.
   * Change `DriverManagerEncoding` to `UTF-16`.
   * Change the uncommented `ODBCInstLib` entry to the [path of your unixODBC install](https://community.snowflake.com/s/article/R-Studio-to-Snowflake-fails-with-error-Unable-to-locate-SQLGetPrivateProfileString-function).
-* In the Snowflake UI, navigate to Worksheets, make a new worksheet using the blue "+" button in the top right-hand corner, and run the line `SELECT SYSTEM$ALLOWLIST()`. In the output, select the URL corresponding to `"type":"SNOWFLAKE_DEPLOYMENT"`. This Deployment URL should look like a random string, an AWS region, and the snowflake API URL, e.g. `wmc39401.us-east-1.snowflakecomputing.com`.
+* In the Snowflake UI, navigate to Worksheets, make a new worksheet using the blue "+" button in the top right-hand corner, and run the line `SELECT SYSTEM$ALLOWLIST()`. In the output, copy the URL corresponding to `"type":"SNOWFLAKE_DEPLOYMENT"`. This Deployment URL should look like a random string, an AWS region, and the snowflake API URL, e.g. `wmc39401.us-east-1.snowflakecomputing.com`.
 
 The `odbc.ini` file should look like:
 
