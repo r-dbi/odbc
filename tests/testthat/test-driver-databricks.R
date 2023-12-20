@@ -11,6 +11,14 @@ test_that("databricks arguments use camelcase", {
   expect_true(all(is_camel_case(names(args))))
 })
 
+test_that("manually supplied arguments override automatic", {
+  withr::local_envvar(DATABRICKS_TOKEN = "abc")
+  args <- databricks_args("x", "y", driver = "driver")
+  expect_equal(args$authMech, 3)
+
+  args <- databricks_args("x", "y", driver = "driver", authMech = 123)
+  expect_equal(args$authMech, 123)
+})
 
 test_that("fallbacks to driver name", {
   local_mocked_bindings(
@@ -52,6 +60,15 @@ test_that("warns if auth fails", {
 
   expect_silent(databricks_args1(uid = "uid", pwd = "pwd"))
   expect_silent(databricks_args1(authMech = 10))
+})
+
+test_that("uid and pwd suppress automated auth", {
+  auth <- databricks_auth_args("host", uid = "uid", pwd = "pwd")
+  expect_equal(auth, list(uid = "uid", pwd = "pwd", authMech = 3))
+})
+
+test_that("must supply both uid and pwd", {
+  expect_snapshot(databricks_auth_args("host", uid = "uid"), error = TRUE)
 })
 
 test_that("supports PAT in env var", {

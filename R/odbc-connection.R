@@ -394,7 +394,7 @@ setMethod("odbcConnectionCatalogs", "OdbcConnection",
 setGeneric(
   "odbcConnectionSchemas",
   valueClass = "character",
-  function(conn, catalog_name) {
+  function(conn, catalog_name = NULL) {
     standardGeneric("odbcConnectionSchemas")
   }
 )
@@ -402,13 +402,6 @@ setGeneric(
 #' @rdname odbcConnectionSchemas
 setMethod("odbcConnectionSchemas", "OdbcConnection",
   function(conn, catalog_name = NULL) {
-    connection_sql_schemas(conn@ptr)
-  }
-)
-
-#' @rdname odbcConnectionSchemas
-setMethod("odbcConnectionSchemas", c("OdbcConnection", "character"),
-  function(conn, catalog_name) {
     connection_sql_schemas(conn@ptr)
   }
 )

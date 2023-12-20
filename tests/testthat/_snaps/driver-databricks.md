@@ -23,5 +23,14 @@
     Condition
       Warning in `DBI::dbConnect()`:
       x Failed to detect ambient Databricks credentials.
-      i Supply `uid` or `pwd` to authenticate manually.
+      i Supply `uid` and `pwd` to authenticate manually.
+
+# must supply both uid and pwd
+
+    Code
+      databricks_auth_args("host", uid = "uid")
+    Condition
+      Error in `DBI::dbConnect()`:
+      ! Both `uid` and `pwd` must be specified for manual authentication.
+      i Or leave both unset for automated authentication.
 

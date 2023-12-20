@@ -2,7 +2,12 @@
 
 * The Microsoft SQL Server method for `odbcDataType()` will now return `"BIGINT"`
   for integer64 objects rather than converting to `"FLOAT"` (@simonpcouch, #698).
-  
+
+* `databricks()` now works with manually supplied `pwd` and `uid` (#690).
+
+* SQL Server: correctly enumerate schemas across databases in connections pane
+  (@detule, #527).
+
 * Added a function `odbcListConfig()` to help locate configuration files on
   macOS and Linux (@simonpcouch, #565).
 
