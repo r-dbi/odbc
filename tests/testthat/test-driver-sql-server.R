@@ -107,12 +107,12 @@ test_that("SQLServer", {
     # Part 1: Make sure we can see the schema we created in the
     # current catalog.
     res <- odbcConnectionSchemas(con)
-    expect_true( "testSchema" %in% res )
+    expect_true("testSchema" %in% res)
     # Part 2: Make sure we don't see that schema in the tempdb
     # listing ( out of catalog schema listing )
     res <- odbcConnectionSchemas(con, catalog_name = "tempdb")
     # Should, at least, have INFORMATION_SCHEMA and sys
-    expect_true( length(res) > 1 )
+    expect_true(length(res) > 1)
     expect_false(testSchema" %in% res)
   })
 
