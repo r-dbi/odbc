@@ -127,11 +127,13 @@ setMethod(
       sep = "."
     )
 
-    dbGetQuery(conn, paste0("
-               EXEC ", sproc, "
-               @table_name = '',
-               @table_owner = '%',
-               @table_qualifier = ''"))$TABLE_OWNER
+res <- dbGetQuery(conn, paste0(
+    "EXEC ", sproc,
+    "@table_name = '', ",
+    "@table_owner = '%', ",
+    "@table_qualifier = ''", 
+  ))
+  res$TABLE_OWNER
   }
 )
 
