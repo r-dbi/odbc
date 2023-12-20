@@ -10,6 +10,7 @@ NULL
     time = "TIME",
     binary = "BLOB",
     integer = "INTEGER",
+    int64 = "INTEGER",
     double = "DOUBLE",
     character = "TEXT",
     logical = "TINYINT",

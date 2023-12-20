@@ -9,6 +9,7 @@ NULL
     date = "NUMERIC",
     binary = "BLOB",
     integer = "INTEGER",
+    int64 = "INTEGER",
     double = "REAL",
     character = "TEXT",
     logical = "NUMERIC",

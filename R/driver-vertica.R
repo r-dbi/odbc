@@ -8,6 +8,7 @@ NULL
     datetime = "TIMESTAMP",
     date = "DATE",
     integer = "INTEGER",
+    int64 = "INTEGER",
     double = "DOUBLE PRECISION",
     character = "VARCHAR",
     logical = "BOOLEAN",

@@ -107,6 +107,32 @@ setMethod("dbExistsTable", c("Microsoft SQL Server", "SQL"),
   }
 )
 
+#' @description
+#' ## `odbcConnectionSchemas` 
+#' Call catalog-specific `sp_tables` to make sure we list the schemas in the
+#' appropriate database/catalog.
+#' @rdname SQLServer
+#' @usage NULL
+setMethod(
+  "odbcConnectionSchemas", "Microsoft SQL Server",
+  function(conn, catalog_name = NULL) {
+
+    if (is.null(catalog_name) || !nchar(catalog_name)) {
+      return(callNextMethod())
+    }
+    sproc <- paste(
+      dbQuoteIdentifier(conn, catalog_name), "dbo.sp_tables", sep = ".")
+
+    res <- dbGetQuery(conn, paste0(
+        "EXEC ", sproc, " ",
+        "@table_name = '', ",
+        "@table_owner = '%', ",
+        "@table_qualifier = ''"
+    ))
+    res$TABLE_OWNER
+  }
+)
+
 #' @rdname SQLServer
 #' @description
 #' ## `sqlCreateTable()`
@@ -139,6 +165,7 @@ setMethod("sqlCreateTable", "Microsoft SQL Server",
     time = "TIME",
     binary = varbinary(obj),
     integer = "INT",
+    int64 = "BIGINT",
     double = "FLOAT",
     character = varchar(obj),
     logical = "BIT",

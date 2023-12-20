@@ -9,6 +9,7 @@
 \alias{dbExistsTable,Microsoft SQL Server,character-method}
 \alias{dbExistsTable,Microsoft SQL Server,Id-method}
 \alias{dbExistsTable,Microsoft SQL Server,SQL-method}
+\alias{odbcConnectionSchemas,Microsoft SQL Server-method}
 \alias{sqlCreateTable,Microsoft SQL Server-method}
 \title{SQL Server}
 \description{
@@ -43,5 +44,9 @@ case for temporary tables, as identified by \code{isTempTable()}.
 Warns if \code{temporary = TRUE} but the \code{name} does not conform to temp table
 naming conventions (i.e. it doesn't start with \verb{#}).
 }
+}
+\details{
+Call catalog-specific sp_tables to make sure we list the schemas in the
+appropriate database/catalog.
 }
 \keyword{internal}

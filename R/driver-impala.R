@@ -9,6 +9,7 @@ NULL
     datetime = "STRING",
     date = "VARCHAR(10)",
     integer = "INT",
+    int64 = "INT",
     double = "DOUBLE",
     character = "STRING",
     logical = "BOOLEAN",

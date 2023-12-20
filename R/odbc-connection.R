@@ -6,36 +6,21 @@ NULL
 class_cache <- new.env(parent = emptyenv())
 
 OdbcConnection <- function(
-    dsn = NULL,
     ...,
     timezone = "UTC",
     timezone_out = "UTC",
     encoding = "",
     bigint = c("integer64", "integer", "numeric", "character"),
     timeout = Inf,
-    driver = NULL,
-    server = NULL,
-    database = NULL,
-    uid = NULL,
-    pwd = NULL,
     dbms.name = NULL,
     attributes = NULL,
-    .connection_string = NULL) {
-  args <- c(
-    dsn = dsn,
-    driver = driver,
-    server = server,
-    database = database,
-    uid = uid,
-    pwd = pwd,
-    list(...)
-  )
-  check_args(args)
+    .connection_string = NULL
+) {
 
   stopifnot(all(has_names(attributes)))
   stopifnot(all(names(attributes) %in% SUPPORTED_CONNECTION_ATTRIBUTES))
 
-  connection_string <- paste0(.connection_string, build_connection_string(args))
+  connection_string <- build_connection_string(..., .string = .connection_string)
 
   bigint <- bigint_mappings()[match.arg(bigint, names(bigint_mappings()))]
 
@@ -62,9 +47,6 @@ OdbcConnection <- function(
     stop("The ODBC driver returned an invalid `dbms.name`. Please provide one manually with the `dbms.name` parameter.", call. = FALSE)
   }
 
-  class(info) <- c(info$dbms.name, "driver_info", "list")
-
-
   class <- getClassDef(info$dbms.name, inherits = FALSE)
   if (is.null(class)) {
     class <- getClassDef(info$dbms.name, where = class_cache, inherits = FALSE)
@@ -81,10 +63,31 @@ OdbcConnection <- function(
   )
 }
 
+build_connection_string <- function(.string = NULL, ...) {
+  args <- compact(list(...))
+  check_args(args)
+
+  needs_escape <- grepl("[{}(),;?*=!@]", args) &
+    !grepl("^\\{.*\\}$", args) &
+    !vapply(args, inherits, "AsIs", FUN.VALUE = logical(1))
+
+  args[needs_escape] <- paste0("{", args[needs_escape], "}")
+  args_string <- paste(names(args), args, sep = "=", collapse = ";")
+
+  if (!is.null(.string) && !grepl(";$", .string) && length(args) > 0) {
+    .string <- paste0(.string, ";")
+  }
+
+  paste0(.string, args_string)
+}
+
 check_args <- function(args) {
-  stopifnot(all(has_names(args)))
   if (length(args) == 0) {
-    return(args)
+    return()
+  }
+
+  if (!all(has_names(args))) {
+    abort("All elements of ... must be named.", call = quote(DBI::dbConnect()))
   }
 
   name_groups <- split(names(args), tolower(names(args)))
@@ -100,15 +103,6 @@ check_args <- function(args) {
       call = quote(DBI::dbConnect())
     )
   }
-}
-
-build_connection_string <- function(args) {
-  needs_escape <- grepl("[{}(),;?*=!@]", args) &
-    !grepl("^\\{.*\\}$", args) &
-    !vapply(args, inherits, "AsIs", FUN.VALUE = logical(1))
-
-  args[needs_escape] <- paste0("{", args[needs_escape], "}")
-  paste(names(args), args, sep = "=", collapse = ";")
 }
 
 # -------------------------------------------------------------------------
@@ -400,7 +394,7 @@ setMethod("odbcConnectionCatalogs", "OdbcConnection",
 setGeneric(
   "odbcConnectionSchemas",
   valueClass = "character",
-  function(conn, catalog_name) {
+  function(conn, catalog_name = NULL) {
     standardGeneric("odbcConnectionSchemas")
   }
 )
@@ -408,13 +402,6 @@ setGeneric(
 #' @rdname odbcConnectionSchemas
 setMethod("odbcConnectionSchemas", "OdbcConnection",
   function(conn, catalog_name = NULL) {
-    connection_sql_schemas(conn@ptr)
-  }
-)
-
-#' @rdname odbcConnectionSchemas
-setMethod("odbcConnectionSchemas", c("OdbcConnection", "character"),
-  function(conn, catalog_name) {
     connection_sql_schemas(conn@ptr)
   }
 )

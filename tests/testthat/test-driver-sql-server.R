@@ -102,6 +102,18 @@ test_that("SQLServer", {
     dbWriteTable(conn = con, name = table_id, value = ir, overwrite = TRUE)
     res <- dbReadTable(con, table_id)
     expect_equal(res, ir)
+
+    # Test: We can enumerate schemas out of catalog ( #527 )
+    # Part 1: Make sure we can see the schema we created in the
+    # current catalog.
+    res <- odbcConnectionSchemas(con)
+    expect_true("testSchema" %in% res)
+    # Part 2: Make sure we don't see that schema in the tempdb
+    # listing ( out of catalog schema listing )
+    res <- odbcConnectionSchemas(con, catalog_name = "tempdb")
+    # Should, at least, have INFORMATION_SCHEMA and sys
+    expect_true(length(res) > 1)
+    expect_false("testSchema" %in% res)
   })
 
   local({
