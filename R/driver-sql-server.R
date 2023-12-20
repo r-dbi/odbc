@@ -121,19 +121,15 @@ setMethod(
       return(callNextMethod())
     }
     sproc <- paste(
-      dbQuoteIdentifier(conn, catalog_name),
-      dbQuoteIdentifier(conn, "dbo"),
-      dbQuoteIdentifier(conn, "sp_tables"), 
-      sep = "."
-    )
+      dbQuoteIdentifier(conn, catalog_name), "dbo.sp_tables", sep = ".")
 
-res <- dbGetQuery(conn, paste0(
-    "EXEC ", sproc,
-    "@table_name = '', ",
-    "@table_owner = '%', ",
-    "@table_qualifier = ''", 
-  ))
-  res$TABLE_OWNER
+    res <- dbGetQuery(conn, paste0(
+        "EXEC ", sproc, " ",
+        "@table_name = '', ",
+        "@table_owner = '%', ",
+        "@table_qualifier = ''"
+    ))
+    res$TABLE_OWNER
   }
 )
 
