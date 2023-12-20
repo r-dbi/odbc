@@ -13,7 +13,7 @@ Authors@R: c(
   )
 Description: A DBI-compatible interface to ODBC databases.
 License: MIT + file LICENSE
-URL: https://r-dbi.github.io/odbc/, https://github.com/r-dbi/odbc,
+URL: https://odbc.r-dbi.org, https://github.com/r-dbi/odbc,
     https://solutions.posit.co/connections/db/
 BugReports: https://github.com/r-dbi/odbc/issues
 Depends: 
@@ -73,6 +73,7 @@ Collate:
     'driver-sqlite.R'
     'driver-teradata.R'
     'driver-vertica.R'
+    'odbc-config.R'
     'odbc-data-sources.R'
     'odbc-data-type.R'
     'odbc-drivers.R'
