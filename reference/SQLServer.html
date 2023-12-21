@@ -31,6 +31,14 @@ case for temporary tables, as identified by isTempTable().
 
 
 
+odbcConnectionSchemas
+
+
+Call catalog-specific sp_tables to make sure we list the schemas in the
+appropriate database/catalog.
+
+
+
 sqlCreateTable()
 
 
@@ -69,6 +77,14 @@ case for temporary tables, as identified by isTempTable().
 
 
 
+odbcConnectionSchemas
+
+
+Call catalog-specific sp_tables to make sure we list the schemas in the
+appropriate database/catalog.
+
+
+
 sqlCreateTable()
 
 
@@ -86,7 +102,7 @@ naming conventions (i.e. it doesn't start with #).
     
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -159,6 +175,14 @@ name starts with <code>"#"</code>.</p>
 <p>The default implementation reports temporary tables as non-existent
 since they live in a different catalog. This method provides a special
 case for temporary tables, as identified by <code><a href="isTempTable.html">isTempTable()</a></code>.</p>
+</div>
+
+<div class="section">
+<h3 id="odbcconnectionschemas"><code>odbcConnectionSchemas</code><a class="anchor" aria-label="anchor" href="#odbcconnectionschemas"></a></h3>
+
+
+<p>Call catalog-specific <code>sp_tables</code> to make sure we list the schemas in the
+appropriate database/catalog.</p>
 </div>
 
 <div class="section">

@@ -24,7 +24,7 @@ standard environment variables."><!-- mathjax --><script src="https://cdnjs.clou
     
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,6 +90,8 @@ All of these credentials are detected automatically if present using
 <span>  useNativeQuery <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  driver <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">HTTPPath</span>,</span>
+<span>  uid <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pwd <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -122,6 +124,11 @@ paramterised queries (and hence <code><a href="https://dbi.r-dbi.org/reference/d
 <dt>driver</dt>
 <dd><p>The name of the Databricks ODBC driver, or <code>NULL</code> to use the
 default name.</p></dd>
+
+
+<dt>uid, pwd</dt>
+<dd><p>Manually specify a username and password for authentication.
+Specifying these options will disable automated credential discovery.</p></dd>
 
 
 <dt>...</dt>
