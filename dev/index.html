@@ -27,7 +27,7 @@
     
     <a class="navbar-brand me-2" href="index.html">odbc</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.4.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.4.1.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,7 +84,7 @@
 <p>Support for a given DBMS is provided by an <strong>ODBC driver</strong>, which defines how to interact with that DBMS using the standardized syntax of ODBC and SQL. Drivers can be downloaded from the DBMS vendor or, if you’re a Posit customer, using the <a href="https://docs.posit.co/pro-drivers/" class="external-link">professional drivers</a>.</p>
 <p>Drivers are managed by a <strong>driver manager</strong>, which is responsible for configuring driver locations, and optionally named <strong>data sources</strong> that describe how to connect to a specific database. Windows is bundled with a driver manager, while MacOS and Linux require installation of <a href="https://www.unixodbc.org/" class="external-link">unixODBC</a>. Drivers often require some manual configuration; see <code><a href="articles/setup.html">vignette("setup")</a></code> for details.</p>
 <p>In the <strong>R interface</strong>, the <a href="https://dbi.r-dbi.org/" class="external-link">DBI package</a> provides a front-end while odbc implements a back-end to communicate with the driver manager. The odbc package is built on top of the <a href="https://nanodbc.github.io/nanodbc/" class="external-link">nanodbc</a> C++ library. To interface with DBMSs using R and odbc:</p>
-<p><img src="reference/figures/r-interface.png" alt='A high-level workflow for using the R interface in 3 steps. In step 1, configure drivers and data sources, the functions odbcListDrivers() and odbcListDataSources() help to interface with the driver manager. In step 2, the dbConnect() function, called with the first argument odbc(), connects to a database using the specified ODBC driver to create a connection object "con." Finally, in step 3, that connection object can be passed to various functions to retrieve information on database structure, iteratively develop queries, and query data objects.' width="1824"></p>
+<p><img src="reference/figures/r-interface.png" alt='A high-level workflow for using the R interface in 3 steps. In step 1, configure drivers and data sources, the functions odbcListDrivers() and odbcListDataSources() help to interface with the driver manager. In step 2, the dbConnect() function, called with the first argument odbc(), connects to a database using the specified ODBC driver to create a connection object "con." Finally, in step 3, that connection object can be passed to various functions to retrieve information on database structure, iteratively develop queries, and query data objects.' width="1302"></p>
 <p>You might also use the <a href="https://dbplyr.tidyverse.org/" class="external-link">dbplyr package</a> to automatically generate SQL from your dplyr code.</p>
 </div>
 <div class="section level2">
