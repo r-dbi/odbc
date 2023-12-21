@@ -39,14 +39,16 @@ since they live in a different catalog. This method provides a special
 case for temporary tables, as identified by \code{isTempTable()}.
 }
 
+\subsection{\code{odbcConnectionSchemas}}{
+
+Call catalog-specific \code{sp_tables} to make sure we list the schemas in the
+appropriate database/catalog.
+}
+
 \subsection{\code{sqlCreateTable()}}{
 
 Warns if \code{temporary = TRUE} but the \code{name} does not conform to temp table
 naming conventions (i.e. it doesn't start with \verb{#}).
 }
-}
-\details{
-Call catalog-specific sp_tables to make sure we list the schemas in the
-appropriate database/catalog.
 }
 \keyword{internal}

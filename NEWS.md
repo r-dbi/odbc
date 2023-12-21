@@ -1,19 +1,17 @@
-# odbc (development version)
+# odbc 1.4.1
 
-* The Microsoft SQL Server method for `odbcDataType()` will now return `"BIGINT"`
-  for integer64 objects rather than converting to `"FLOAT"` (@simonpcouch, #698).
+* New `odbcListConfig()` lists configuration files on Mac and Linux 
+  (@simonpcouch, #565).
 
 * `databricks()` now works with manually supplied `pwd` and `uid` (#690).
+
+* Oracle: uses correct parent class (#685).
 
 * SQL Server: correctly enumerate schemas across databases in connections pane
   (@detule, #527).
 
-* Added a function `odbcListConfig()` to help locate configuration files on
-  macOS and Linux (@simonpcouch, #565).
-
-* Use correct parent class for Oracle (#685).
-
-* Removed the `driver_info` class from `dbGetInfo()` output (@simonpcouch, #667).
+* SQL Server: now uses column type `"BIGINT"` integer64 objects 
+  (@simonpcouch, #698).
 
 # odbc 1.4.0
 

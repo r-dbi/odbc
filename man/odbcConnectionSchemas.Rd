@@ -6,7 +6,7 @@
 \alias{odbcConnectionSchemas,Spark SQL-method}
 \title{odbcConnectionSchemas}
 \usage{
-odbcConnectionSchemas(conn, catalog_name)
+odbcConnectionSchemas(conn, catalog_name = NULL)
 
 \S4method{odbcConnectionSchemas}{OdbcConnection}(conn, catalog_name = NULL)
 }
