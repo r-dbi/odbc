@@ -263,6 +263,7 @@ test_that("SQLServer", {
     rs <- dbSendStatement(con, paste0("SELECT * FROM ", tblName))
     expect_equal(nrow(dbFetch(rs, n = 0)), 0)
     expect_equal(nrow(dbFetch(rs, n = 10)), 2)
+    dbClearResult(rs)
   })
 
   test_that("isTempTable tests", {
