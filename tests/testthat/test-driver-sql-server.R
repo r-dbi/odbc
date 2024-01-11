@@ -58,6 +58,7 @@ test_that("SQLServer", {
     "list_fields_wrong_table",
     "list_fields_quoted",
     "list_fields_object",
+    "list_objects_features",
     NULL
   ))
   DBItest::test_meta(c(
