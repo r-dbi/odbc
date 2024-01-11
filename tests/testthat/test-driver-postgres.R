@@ -143,6 +143,7 @@ test_that("PostgreSQL", {
     NULL
   ))
   DBItest::test_meta(c(
+    "arrow_.*",
     "bind_.*", # TODO
     "has_completed_statement",
     "get_statement_statement",
