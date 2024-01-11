@@ -2,7 +2,7 @@
 
 ## Driver specific changes
 
-* SQL Server Fix `dbExists` for temporary table (#720).
+* SQL Server Fix `dbExists` for temporary table (#723).
 
 # odbc 1.4.1
 
