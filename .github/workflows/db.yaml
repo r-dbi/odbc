@@ -15,6 +15,21 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
+      oracle:
+        image: gvenzl/oracle-xe:21.3.0
+        ports:
+          - 1521:1521
+        env:
+          ORACLE_RANDOM_PASSWORD: true
+          ORACLE_DATABASE: test
+          APP_USER: RodbcR
+          APP_USER_PASSWORD: Password12
+        options: >-
+          --health-cmd healthcheck.sh
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
       postgres:
         image: postgres
         ports:
@@ -35,6 +50,7 @@ jobs:
     env:
       CRAN: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest"
       ODBCSYSINI: ${{ github.workspace }}/.github/odbc
+      TNS_ADMIN: ${{ github.workspace }}/.github/odbc
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
@@ -68,6 +84,12 @@ jobs:
             && apt-get update \
             && ACCEPT_EULA=Y apt-get install -y msodbcsql17 \
             && ln -s /opt/microsoft/msodbcsql17/lib64/libmsodbcsql-17.*.so.* /opt/microsoft/msodbcsql17/lib64/libmsodbcsql-17.so"
+
+      - name: Install Oracle Driver
+        run: |
+          .github/odbc/install-oracle-driver.sh
+          echo "LD_LIBRARY_PATH=/opt/oracle/instantclient_21_12:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+          echo "ODBC_CS_ORACLE=dsn=Oracle;UID=RodbcR;PWD=Password12;DBQ=test" >> $GITHUB_ENV
 
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
