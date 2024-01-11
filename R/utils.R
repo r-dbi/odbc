@@ -53,7 +53,9 @@ parse_size <- function(x) {
   )
 }
 
-id_field <- function(id, field, default = NULL) {
+id_field <- function(id, field = c("catalog", "schema", "table")) {
+  arg_match(field)
+
   if (length(id@name) == 1) {
     switch(field,
       catalog = NULL,
