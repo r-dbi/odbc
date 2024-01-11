@@ -73,7 +73,7 @@ setMethod("dbExistsTable", c("Microsoft SQL Server", "character"),
     stopifnot(length(name) == 1)
     if (isTempTable(conn, name, ...)) {
       query <- paste0("SELECT OBJECT_ID('tempdb..", name, "')")
-      !is.na(dbGetQuery(con, query)[[1]])
+      !is.na(dbGetQuery(conn, query)[[1]])
     } else {
       df <- odbcConnectionTables(conn, name = name, ...)
       NROW(df) > 0
