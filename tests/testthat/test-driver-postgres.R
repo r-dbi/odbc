@@ -144,6 +144,7 @@ test_that("PostgreSQL", {
   ))
   DBItest::test_meta(c(
     "arrow_.*",
+    "stream_bind.*",
     "bind_.*", # TODO
     "has_completed_statement",
     "get_statement_statement",

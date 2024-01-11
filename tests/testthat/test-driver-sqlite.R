@@ -110,6 +110,7 @@ test_that("SQLite", {
   ))
   DBItest::test_meta(c(
     "arrow_.*",
+    "stream_bind.*",
     "column_info_consistent", # TODO
     "row_count_statement", # TODO
     "rows_affected_statement", # TODO
