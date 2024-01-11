@@ -1,5 +1,9 @@
 # odbc (development version)
 
+## Driver specific changes
+
+* SQL Server Fix `dbExists` for temporary table (#720).
+
 # odbc 1.4.1
 
 * New `odbcListConfig()` lists configuration files on Mac and Linux 
