@@ -9,6 +9,13 @@ test_connection_string <- function(db) {
   list(.connection_string = cs)
 }
 
+test_con <- function(db) {
+  dbConnect(
+    odbc::odbc(),
+    .connection_string = test_connection_string("SQLSERVER")
+  )
+}
+
 skip_if_no_drivers <- function() {
   if (nrow(odbcListDrivers()) == 0) {
     skip("No drivers installed")

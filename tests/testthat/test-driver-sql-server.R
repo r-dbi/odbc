@@ -79,271 +79,267 @@ test_that("SQLServer", {
     "reexport",
     NULL
   ))
+})
 
-  local({
-    # SQLServer works with schemas (#197)
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    dbExecute(con, "DROP SCHEMA IF EXISTS testSchema")
-    dbExecute(con, "CREATE SCHEMA testSchema")
-    on.exit({
-      dbExecute(con, "DROP TABLE testSchema.iris")
-      dbExecute(con, "DROP SCHEMA testSchema")
-    })
-
-    ir <- iris
-    ir$Species <- as.character(ir$Species)
-
-    table_id <- Id(schema = "testSchema", table = "iris")
-    dbWriteTable(conn = con, name = table_id, value = ir)
-    dbWriteTable(conn = con, name = table_id, value = ir, append = TRUE)
-
-    res <- dbReadTable(con, table_id)
-    expect_equal(res, rbind(ir, ir))
-
-    dbWriteTable(conn = con, name = table_id, value = ir, overwrite = TRUE)
-    res <- dbReadTable(con, table_id)
-    expect_equal(res, ir)
-
-    # Test: We can enumerate schemas out of catalog ( #527 )
-    # Part 1: Make sure we can see the schema we created in the
-    # current catalog.
-    res <- odbcConnectionSchemas(con)
-    expect_true("testSchema" %in% res)
-    # Part 2: Make sure we don't see that schema in the tempdb
-    # listing ( out of catalog schema listing )
-    res <- odbcConnectionSchemas(con, catalog_name = "tempdb")
-    # Should, at least, have INFORMATION_SCHEMA and sys
-    expect_true(length(res) > 1)
-    expect_false("testSchema" %in% res)
+test_that("works with schemas (#197)", {
+  con <- test_con("sqlserver")
+  dbExecute(con, "DROP SCHEMA IF EXISTS testSchema")
+  dbExecute(con, "CREATE SCHEMA testSchema")
+  on.exit({
+    dbExecute(con, "DROP TABLE testSchema.iris")
+    dbExecute(con, "DROP SCHEMA testSchema")
   })
 
-  local({
-    # SQLServer works with dbAppendTable (#215)
-    con <- DBItest:::connect(DBItest:::get_default_context())
+  ir <- iris
+  ir$Species <- as.character(ir$Species)
 
-    ir <- iris
-    ir$Species <- as.character(ir$Species)
+  table_id <- Id(schema = "testSchema", table = "iris")
+  dbWriteTable(conn = con, name = table_id, value = ir)
+  dbWriteTable(conn = con, name = table_id, value = ir, append = TRUE)
 
-    dbWriteTable(con, "iris", ir)
-    on.exit(dbRemoveTable(con, "iris"))
+  res <- dbReadTable(con, table_id)
+  expect_equal(res, rbind(ir, ir))
 
-    dbAppendTable(conn = con, name = "iris", value = ir)
+  dbWriteTable(conn = con, name = table_id, value = ir, overwrite = TRUE)
+  res <- dbReadTable(con, table_id)
+  expect_equal(res, ir)
 
-    res <- dbReadTable(con, "iris")
-    expect_equal(res, rbind(ir, ir))
+  # Test: We can enumerate schemas out of catalog ( #527 )
+  # Part 1: Make sure we can see the schema we created in the
+  # current catalog.
+  res <- odbcConnectionSchemas(con)
+  expect_true("testSchema" %in% res)
+  # Part 2: Make sure we don't see that schema in the tempdb
+  # listing ( out of catalog schema listing )
+  res <- odbcConnectionSchemas(con, catalog_name = "tempdb")
+  # Should, at least, have INFORMATION_SCHEMA and sys
+  expect_true(length(res) > 1)
+  expect_false("testSchema" %in% res)
+})
+
+test_that("works with dbAppendTable (#215)", {
+  con <- test_con("sqlserver")
+
+  ir <- iris
+  ir$Species <- as.character(ir$Species)
+
+  dbWriteTable(con, "iris", ir)
+  on.exit(dbRemoveTable(con, "iris"))
+
+  dbAppendTable(conn = con, name = "iris", value = ir)
+
+  res <- dbReadTable(con, "iris")
+  expect_equal(res, rbind(ir, ir))
+})
+
+test_that("Subseconds are retained upon insertion (#208)", {
+  con <- test_con("sqlserver")
+
+  data <- data.frame(time = Sys.time())
+  dbWriteTable(con, "time", data, field.types = list(time = "DATETIME"), overwrite = TRUE)
+  on.exit(dbRemoveTable(con, "time"))
+  res <- dbReadTable(con, "time")
+
+  expect_equal(as.double(res$time), as.double(data$time))
+})
+
+test_that("dbWriteTable errors if field.types don't exist (#271)", {
+  con <- test_con("sqlserver")
+
+  on.exit(dbRemoveTable(con, "foo"), add = TRUE)
+  expect_warning(
+    dbWriteTable(con, "foo", iris, field.types = list(bar = "[int]")),
+    "Some columns in `field.types` not in the input, missing columns:"
+  )
+})
+
+test_that("blobs can be retrieved out of order", {
+  con <- test_con("sqlserver")
+  tblName <- "test_out_of_order_blob"
+
+  values <- data.frame(
+    c1 = 1,
+    c2 = "this is varchar max",
+    c3 = 11,
+    c4 = "this is text",
+    stringsAsFactors = FALSE
+  )
+  dbWriteTable(con, tblName, values, field.types = list(c1 = "INT", c2 = "VARCHAR(MAX)", c3 = "INT", c4 = "TEXT"))
+  on.exit(dbRemoveTable(con, tblName))
+  received <- DBI::dbReadTable(con, tblName)
+  # Also test retrival using a prepared statement
+  received2 <- dbGetQuery(con,
+    paste0("SELECT * FROM ", tblName, "  WHERE c1 = ?"),
+    params = list(1L)
+  )
+  expect_equal(values, received)
+  expect_equal(values, received2)
+})
+
+test_that("can bind NA values", {
+  tblName <- "test_na"
+  # With SELECT ing with the OEM SQL Server driver, everything
+  # after the first column should be unbound. Test null detection for
+  # unbound columns (NULL is registered after a call to nanodbc::result::get)
+  values <- data.frame(
+    c1 = c("this is varchar max", NA_character_),
+    c2 = c(1L, NA_integer_),
+    c3 = c(1.0, NA_real_),
+    c4 = c(TRUE, NA),
+    c5 = c(Sys.Date(), NA),
+    c6 = c(Sys.time(), NA),
+    stringsAsFactors = FALSE
+  )
+  dbWriteTable(con, tblName, values, field.types = list(c1 = "VARCHAR(MAX)", c2 = "INT", c3 = "FLOAT", c4 = "BIT", c5 = "DATE", c6 = "DATETIME"))
+  on.exit(dbRemoveTable(con, tblName))
+  received <- DBI::dbReadTable(con, tblName)
+  expect_equal(values[-6], received[-6])
+  expect_equal(as.double(values[[6]]), as.double(received[[6]]))
+})
+
+test_that("can parse SQL server identifiers", {
+  con <- test_con("sqlserver")
+  input <- DBI::SQL(c(
+    "testtable",
+    "[testtable]",
+    "[\"testtable\"]",
+    "testta[ble",
+    "testta]ble",
+    "[testschema].[testtable]",
+    "[testschema].testtable",
+    "[testdb].[testschema].[testtable]",
+    "[testdb].[testschema].testtable"
+  ))
+  expected <- c(
+    DBI::Id("testtable"),
+    DBI::Id("testtable"),
+    DBI::Id("testtable"),
+    DBI::Id("testta[ble"),
+    DBI::Id("testta]ble"),
+    DBI::Id("testschema", "testtable"),
+    DBI::Id("testschema", "testtable"),
+    DBI::Id("testdb", "testschema", "testtable"),
+    DBI::Id("testdb", "testschema", "testtable")
+  )
+  expect_identical(DBI::dbUnquoteIdentifier(con, input), expected)
+})
+
+test_that("odbcPreviewObject doesn't warn about pending rows", {
+  tblName <- "test_preview"
+  con <- test_con("sqlserver")
+  dbWriteTable(con, tblName, data.frame(a = 1:10L))
+  on.exit(dbRemoveTable(con, tblName))
+  # There should be no "Pending rows" warning
+  expect_no_warning({
+    res <- odbcPreviewObject(con, rowLimit = 3, table = tblName)
   })
+  expect_equal(nrow(res), 3)
+})
 
-  local({
-    # Subseconds are retained upon insertion (#208)
-    con <- DBItest:::connect(DBItest:::get_default_context())
+test_that("dates should always be interpreted in the system time zone (#398)", {
+  con <- test_con("sqlserver")
+  res <- dbGetQuery(con, "SELECT CAST(? AS date)", params = as.Date("2019-01-01"))
+  expect_equal(res[[1]], as.Date("2019-01-01"))
+})
 
-    data <- data.frame(time = Sys.time())
-    dbWriteTable(con, "time", data, field.types = list(time = "DATETIME"), overwrite = TRUE)
-    on.exit(dbRemoveTable(con, "time"))
-    res <- dbReadTable(con, "time")
+test_that("UTF in VARCHAR is not truncated", {
+  con <- test_con("sqlserver")
+  value <- "grün"
+  res <- dbGetQuery(
+    con,
+    paste0("SELECT '", value, "' AS colone")
+  )
+  expect_equal(value, res[[1]])
+})
 
-    expect_equal(as.double(res$time), as.double(data$time))
-  })
+test_that("Zero-row-fetch does not move cursor", {
+  con <- test_con("sqlserver")
+  tblName <- "test_zero_row_fetch"
+  dbWriteTable(con, tblName, mtcars[1:2, ])
+  on.exit(dbRemoveTable(con, tblName))
+  rs <- dbSendStatement(con, paste0("SELECT * FROM ", tblName))
+  expect_equal(nrow(dbFetch(rs, n = 0)), 0)
+  expect_equal(nrow(dbFetch(rs, n = 10)), 2)
+  dbClearResult(rs)
+})
 
-  local({
-    # dbWriteTable errors if field.types don't exist (#271)
-    con <- DBItest:::connect(DBItest:::get_default_context())
+test_that("isTempTable handles variety of temporary specifications", {
+  con <- test_con("sqlserver")
+  expect_true(isTempTable(con, "#myTmp"))
+  expect_true(isTempTable(con, "#myTmp", catalog_name = "tempdb"))
+  expect_true(isTempTable(con, "#myTmp", catalog_name = "%"))
+  expect_true(isTempTable(con, "#myTmp", catalog_name = NULL))
+  expect_true(!isTempTable(con, "##myTmp"))
+  expect_true(!isTempTable(con, "#myTmp", catalog_name = "abc"))
+})
 
-    on.exit(dbRemoveTable(con, "foo"), add = TRUE)
-    expect_warning(
-      dbWriteTable(con, "foo", iris, field.types = list(bar = "[int]")),
-      "Some columns in `field.types` not in the input, missing columns:"
-    )
-  })
+test_that("dbExistsTable accounts for local temp tables", {
+  con <- test_con("sqlserver")
+  tbl_name <- "#myTemp"
+  tbl_name2 <- "##myTemp"
+  tbl_name3 <- "#myTemp2"
+  DBI::dbExecute(con, paste0("CREATE TABLE ", tbl_name, " (
+    id int not null,
+    primary key (id) )"), immediate = TRUE)
+  expect_true(dbExistsTable(con, tbl_name))
+  expect_true(dbExistsTable(con, tbl_name, catalog_name = "tempdb"))
+  # Fail because not recognized as temp table ( catalog not tempdb )
+  expect_true(!dbExistsTable(con, tbl_name, catalog_name = "abc"))
+  # Fail because not recognized as temp table ( second char "#" )
+  expect_true(!dbExistsTable(con, tbl_name2, catalog_name = "tempdb"))
+  # Fail because table not actually present
+  expect_true(!dbExistsTable(con, tbl_name3, catalog_name = "tempdb"))
 
-  local({
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    tblName <- "test_out_of_order_blob"
+  # fail because table was created in another live session
+  con2 <- test_con("sqlserver")
+  expect_true(!dbExistsTable(con2, tbl_name))
+})
 
-    values <- data.frame(
-      c1 = 1,
-      c2 = "this is varchar max",
-      c3 = 11,
-      c4 = "this is text",
-      stringsAsFactors = FALSE
-    )
-    dbWriteTable(con, tblName, values, field.types = list(c1 = "INT", c2 = "VARCHAR(MAX)", c3 = "INT", c4 = "TEXT"))
-    on.exit(dbRemoveTable(con, tblName))
-    received <- DBI::dbReadTable(con, tblName)
-    # Also test retrival using a prepared statement
-    received2 <- dbGetQuery(con,
-      paste0("SELECT * FROM ", tblName, "  WHERE c1 = ?"),
-      params = list(1L)
-    )
-    expect_equal(values, received)
-    expect_equal(values, received2)
-  })
+test_that("can create / write to temp table", {
+  con <- test_con("sqlserver")
+  locTblName <- "#myloctmp"
 
-  local({
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    tblName <- "test_na"
-    # With SELECT ing with the OEM SQL Server driver, everything
-    # after the first column should be unbound. Test null detection for
-    # unbound columns (NULL is registered after a call to nanodbc::result::get)
-    values <- data.frame(
-      c1 = c("this is varchar max", NA_character_),
-      c2 = c(1L, NA_integer_),
-      c3 = c(1.0, NA_real_),
-      c4 = c(TRUE, NA),
-      c5 = c(Sys.Date(), NA),
-      c6 = c(Sys.time(), NA),
-      stringsAsFactors = FALSE
-    )
-    dbWriteTable(con, tblName, values, field.types = list(c1 = "VARCHAR(MAX)", c2 = "INT", c3 = "FLOAT", c4 = "BIT", c5 = "DATE", c6 = "DATETIME"))
-    on.exit(dbRemoveTable(con, tblName))
-    received <- DBI::dbReadTable(con, tblName)
-    expect_equal(values[-6], received[-6])
-    expect_equal(as.double(values[[6]]), as.double(received[[6]]))
-  })
+  df <- data.frame(name = c("one", "two"), value = c(1, 2))
+  values <- sqlData(con, row.names = FALSE, df[, , drop = FALSE])
 
-  local({
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    input <- DBI::SQL(c(
-      "testtable",
-      "[testtable]",
-      "[\"testtable\"]",
-      "testta[ble",
-      "testta]ble",
-      "[testschema].[testtable]",
-      "[testschema].testtable",
-      "[testdb].[testschema].[testtable]",
-      "[testdb].[testschema].testtable"
-    ))
-    expected <- c(
-      DBI::Id("testtable"),
-      DBI::Id("testtable"),
-      DBI::Id("testtable"),
-      DBI::Id("testta[ble"),
-      DBI::Id("testta]ble"),
-      DBI::Id("testschema", "testtable"),
-      DBI::Id("testschema", "testtable"),
-      DBI::Id("testdb", "testschema", "testtable"),
-      DBI::Id("testdb", "testschema", "testtable")
-    )
-    expect_identical(DBI::dbUnquoteIdentifier(con, input), expected)
-  })
+  nm <- dbQuoteIdentifier(con, locTblName)
+  fields <- createFields(con, values, row.names = FALSE, field.types = NULL)
+  expected <- DBI::SQL(paste0(
+    "CREATE TABLE ", nm, " (\n",
+    "  ", paste(fields, collapse = ",\n  "), "\n)\n"
+  ))
 
-  test_that("odbcPreviewObject", {
-    tblName <- "test_preview"
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    dbWriteTable(con, tblName, data.frame(a = 1:10L))
-    on.exit(dbRemoveTable(con, tblName))
-    # There should be no "Pending rows" warning
-    expect_no_warning({
-      res <- odbcPreviewObject(con, rowLimit = 3, table = tblName)
-    })
-    expect_equal(nrow(res), 3)
-  })
+  ret1 <- sqlCreateTable(con, locTblName, values, temporary = TRUE)
+  expect_equal(ret1, expected)
 
-  test_that("dates should always be interpreted in the system time zone (#398)", {
-    con <- DBItest:::connect(DBItest:::get_default_context(), timezone = "America/Chicago")
-    res <- dbGetQuery(con, "SELECT CAST(? AS date)", params = as.Date("2019-01-01"))
-    expect_equal(res[[1]], as.Date("2019-01-01"))
-  })
+  ret2 <- sqlCreateTable(con, locTblName, values, temporary = FALSE)
+  expect_equal(ret2, expected)
 
-  test_that("UTF in VARCHAR is not truncated", {
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    value <- "grün"
-    res <- dbGetQuery(
-      con,
-      paste0("SELECT '", value, "' AS colone")
-    )
-    expect_equal(value, res[[1]])
-  })
+  dbWriteTable(con, locTblName, mtcars, row.names = TRUE)
+  res <- dbGetQuery(con, paste0("SELECT * FROM ", locTblName))
+  expect_equal(mtcars$mpg, res$mpg)
+  dbAppendTable(con, locTblName, mtcars)
+  res <- dbGetQuery(con, paste0("SELECT * FROM ", locTblName))
+  expect_equal(nrow(res), 2 * nrow(mtcars))
 
-  test_that("Zero-row-fetch does not move cursor", {
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    tblName <- "test_zero_row_fetch"
-    dbWriteTable(con, tblName, mtcars[1:2, ])
-    on.exit(dbRemoveTable(con, tblName))
-    rs <- dbSendStatement(con, paste0("SELECT * FROM ", tblName))
-    expect_equal(nrow(dbFetch(rs, n = 0)), 0)
-    expect_equal(nrow(dbFetch(rs, n = 10)), 2)
-    dbClearResult(rs)
-  })
+  globTblName <- "##myglobtmp"
+  expect_snapshot_warning(sqlCreateTable(con, globTblName, values, temporary = TRUE))
+  expect_no_warning(sqlCreateTable(con, globTblName, values, temporary = FALSE))
 
-  test_that("isTempTable tests", {
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    expect_true(isTempTable(con, "#myTmp"))
-    expect_true(isTempTable(con, "#myTmp", catalog_name = "tempdb"))
-    expect_true(isTempTable(con, "#myTmp", catalog_name = "%"))
-    expect_true(isTempTable(con, "#myTmp", catalog_name = NULL))
-    expect_true(!isTempTable(con, "##myTmp"))
-    expect_true(!isTempTable(con, "#myTmp", catalog_name = "abc"))
-  })
+  notTempTblName <- "nottemp"
+  expect_snapshot_warning(sqlCreateTable(con, notTempTblName, values, temporary = TRUE))
+  expect_no_warning(sqlCreateTable(con, notTempTblName, values, temporary = FALSE))
+})
 
-  test_that("dbExistsTable accounts for local temp tables", {
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    con2 <- DBItest:::connect(DBItest:::get_default_context())
-    tbl_name <- "#myTemp"
-    tbl_name2 <- "##myTemp"
-    tbl_name3 <- "#myTemp2"
-    DBI::dbExecute(con, paste0("CREATE TABLE ", tbl_name, " (
-      id int not null,
-      primary key (id) )"), immediate = TRUE)
-    expect_true(dbExistsTable(con, tbl_name))
-    expect_true(dbExistsTable(con, tbl_name, catalog_name = "tempdb"))
-    # Fail because not recognized as temp table ( catalog not tempdb )
-    expect_true(!dbExistsTable(con, tbl_name, catalog_name = "abc"))
-    # Fail because not recognized as temp table ( second char "#" )
-    expect_true(!dbExistsTable(con, tbl_name2, catalog_name = "tempdb"))
-    # Fail because table not actually present
-    expect_true(!dbExistsTable(con, tbl_name3, catalog_name = "tempdb"))
-    # Fail because table was created in another live session
-    expect_true(!dbExistsTable(con2, tbl_name))
-  })
-
-  test_that("Create / write to temp table", {
-    testthat::local_edition(3)
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    locTblName <- "#myloctmp"
-    globTblName <- "##myglobtmp"
-    notTempTblName <- "nottemp"
-
-    df <- data.frame(name = c("one", "two"), value = c(1, 2))
-    values <- sqlData(con, row.names = FALSE, df[, , drop = FALSE])
-    ret1 <- sqlCreateTable(con, locTblName, values, temporary = TRUE)
-    ret2 <- sqlCreateTable(con, locTblName, values, temporary = FALSE)
-
-    nm <- dbQuoteIdentifier(con, locTblName)
-    fields <- createFields(con, values, row.names = FALSE, field.types = NULL)
-    expected <- DBI::SQL(paste0(
-      "CREATE TABLE ", nm, " (\n",
-      "  ", paste(fields, collapse = ",\n  "), "\n)\n"
-    ))
-
-    expect_equal(ret1, expected)
-    expect_equal(ret2, expected)
-    expect_snapshot_warning(sqlCreateTable(con, globTblName, values, temporary = TRUE))
-    expect_no_warning(sqlCreateTable(con, globTblName, values, temporary = FALSE))
-    expect_snapshot_warning(sqlCreateTable(con, notTempTblName, values, temporary = TRUE))
-    expect_no_warning(sqlCreateTable(con, notTempTblName, values, temporary = FALSE))
-
-    # These tests need https://github.com/r-dbi/odbc/pull/600
-    # Uncomment when both merged.
-    # dbWriteTable(con, locTblName, mtcars, row.names = TRUE)
-    # res <- dbGetQuery(con, paste0("SELECT * FROM ", locTblName))
-    # expect_equal( mtcars$mpg, res$mpg )
-    # dbAppendTable(con, locTblName, mtcars)
-    # res <- dbGetQuery(con, paste0("SELECT * FROM ", locTblName))
-    # expect_equal( nrow( res ), 2 * nrow( mtcars ) )
-  })
-
-  test_that("Multiline error message", {
-    tryCatch(
-      {
-        DBI::dbConnect(odbc::odbc(), dsn = "does_not_exist_db")
-      },
-      error = function(e) {
-        # Expect to see at least one newline character in message
-        # ( previously one long string, #643 )
-        expect_true(grepl("\n", e$message))
-      }
-    )
-  })
+test_that("captures multiline errors message", {
+  tryCatch(
+    {
+      DBI::dbConnect(odbc::odbc(), dsn = "does_not_exist_db")
+    },
+    error = function(e) {
+      # Expect to see at least one newline character in message
+      # ( previously one long string, #643 )
+      expect_true(grepl("\n", e$message))
+    }
+  )
 })
