@@ -1,8 +1,6 @@
 # odbc (development version)
 
-## Driver specific changes
-
-* SQL Server Fix `dbExists` for temporary table (#724).
+* SQL Server Fix `dbExists` for temporary table (@meztez, #724).
 
 # odbc 1.4.1
 
