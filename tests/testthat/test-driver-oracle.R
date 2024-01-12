@@ -1,23 +1,17 @@
 test_that("Oracle", {
-  DBItest::make_context(
-    odbc(),
-    test_connection_string("ORACLE"),
-    tweaks = DBItest::tweaks(temporary_tables = FALSE, placeholder_pattern = "?"),
-    name = "PostgreSQL"
-  )
 
+  con <- dbConnect(odbc::odbc(), .connection_string = test_connection_string("ORACLE"))
   # - Long/outstanding issue with batch inserting
   # date/datetime for Oracle.  See for example
   # #349, #350, #391
   # - There also looks like there are issues related
   # to binary elements of size zero.
   # - Finally, no boolean in Oracle prior to 23
-  test_roundtrip(columns = c("time", "date", "datetime", "binary", "logical"))
+  test_roundtrip(con, columns = c("time", "date", "datetime", "binary", "logical"))
 
   local({
     # Test custom dbExistsTable implementation for
     # Oracle
-    con <- DBItest:::connect(DBItest:::get_default_context())
     dbWriteTable(con, "mtcarstest", mtcars)
     expect_true(dbExistsTable(con, "mtcarstest"))
     dbWriteTable(con, "mtcars_test", mtcars)
