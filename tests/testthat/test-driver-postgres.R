@@ -140,9 +140,11 @@ test_that("Writing data.frame with column ordering different than target table",
     num = 1:2,
     stringsAsFactors = FALSE
   )
-  tbl <- local_table(con, "test_order_write", values)
+  tbl <- "test_order_write"
+  dbCreateTable(con, tbl, values)
+  dbAppendTable(con, tbl, values[c(2, 3, 1)])
+  on.exit(dbRemoveTable(con, tbl))
 
-  dbWriteTable(con, tbl, values[c(2, 3, 1)], overwrite = FALSE, append = TRUE)
   received <- dbReadTable(con, tbl)
   received <- received[order(received$num), ]
   row.names(received) <- NULL

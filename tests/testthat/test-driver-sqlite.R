@@ -143,7 +143,7 @@ test_that("odbcPreviewObject works", {
 
   # There should be no "Pending rows" warning
   expect_no_warning({
-    res <- odbcPreviewObject(con, rowLimit = 3, table = tblName)
+    res <- odbcPreviewObject(con, rowLimit = 3, table = tbl)
   })
   expect_equal(nrow(res), 3)
 })
