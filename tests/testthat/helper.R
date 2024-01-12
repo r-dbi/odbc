@@ -12,7 +12,7 @@ test_connection_string <- function(db) {
 test_con <- function(db) {
   dbConnect(
     odbc::odbc(),
-    .connection_string = test_connection_string("SQLSERVER")
+    .connection_string = test_connection_string(db)
   )
 }
 
