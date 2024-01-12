@@ -9,10 +9,11 @@ test_connection_string <- function(db) {
   list(.connection_string = cs)
 }
 
-test_con <- function(db) {
+test_con <- function(db, ...) {
   dbConnect(
     odbc::odbc(),
-    .connection_string = test_connection_string(db)
+    .connection_string = test_connection_string(db),
+    ...
   )
 }
 
@@ -51,7 +52,7 @@ skip_if_no_drivers <- function() {
 #' # Only test a specific column
 #' test_roundtrip(con, "integer", invert = FALSE)
 #' }
-test_roundtrip <- function(con = DBItest:::connect(DBItest::get_default_context()), columns = "", invert = TRUE, force_sorted = FALSE) {
+test_roundtrip <- function(con, columns = "", invert = TRUE, force_sorted = FALSE) {
   dbms <- dbGetInfo(con)$dbms.name
   res <- list()
   testthat::test_that(paste0("[", dbms, "] round tripping data.frames works"), {
