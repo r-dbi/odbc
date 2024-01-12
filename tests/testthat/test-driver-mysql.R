@@ -81,8 +81,10 @@ test_that("MySQL", {
     "reexport",
     NULL
   ))
+})
 
-  test_roundtrip(columns = c("logical", "binary"))
+test_that("can roundtrip columns", {
+  test_roundtrip(test_con("MYSQL"), columns = c("logical", "binary"))
 })
 
 test_that("odbcPreviewObject", {
