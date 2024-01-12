@@ -279,6 +279,7 @@ test_that("SQLServer", {
 
   test_that("dbExistsTable accounts for local temp tables", {
     con <- DBItest:::connect(DBItest:::get_default_context())
+    con2 <- DBItest:::connect(DBItest:::get_default_context())
     tbl_name <- "#myTemp"
     tbl_name2 <- "##myTemp"
     tbl_name3 <- "#myTemp2"
@@ -293,6 +294,8 @@ test_that("SQLServer", {
     expect_true(!dbExistsTable(con, tbl_name2, catalog_name = "tempdb"))
     # Fail because table not actually present
     expect_true(!dbExistsTable(con, tbl_name3, catalog_name = "tempdb"))
+    # Fail because table was created in another live session
+    expect_true(!dbExistsTable(con2, tbl_name))
   })
 
   test_that("Create / write to temp table", {
