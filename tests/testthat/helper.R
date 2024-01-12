@@ -17,6 +17,13 @@ test_con <- function(db, ...) {
   )
 }
 
+local_table <- function(con, name, df, ..., envir = parent.frame()) {
+  dbWriteTable(con, name, df, ...)
+  withr::defer(dbRemoveTable(con, name), envir = envir)
+
+  name
+}
+
 skip_if_no_drivers <- function() {
   if (nrow(odbcListDrivers()) == 0) {
     skip("No drivers installed")

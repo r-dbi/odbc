@@ -87,10 +87,8 @@ test_that("MySQL", {
 
 test_that("odbcPreviewObject", {
   con <- test_con("MYSQL")
+  tbl <- local_table(con, "test_preview", data.frame(a = 1:10L))
 
-  tblName <- "test_preview"
-  dbWriteTable(con, tblName, data.frame(a = 1:10L))
-  on.exit(dbRemoveTable(con, tblName))
   # There should be no "Pending rows" warning
   expect_no_warning({
     res <- odbcPreviewObject(con, rowLimit = 3, table = tblName)
@@ -107,6 +105,7 @@ test_that("sproc result retrieval", {
     paste0("CREATE PROCEDURE ", sprocName, "(IN arg INT) BEGIN SELECT 'abc' as TestCol; END")
   )
   on.exit(DBI::dbExecute(con, paste0("DROP PROCEDURE ", sprocName)))
+
   expect_no_error({
     res <- dbGetQuery(con, paste0("CALL ", sprocName, "(1)"))
   })

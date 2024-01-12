@@ -12,12 +12,9 @@ test_that("can round columns", {
 test_that("can detect existance of table", {
   con <- test_con("ORACLE")
 
-  dbWriteTable(con, "mtcarstest", mtcars)
-  expect_true(dbExistsTable(con, "mtcarstest"))
-  dbWriteTable(con, "mtcars_test", mtcars)
-  expect_true(dbExistsTable(con, "mtcars_test"))
-  on.exit({
-    dbExecute(con, "DROP TABLE mtcarstest")
-    dbExecute(con, "DROP TABLE mtcars_test")
-  })
+  tbl1 <- local_table(con, "mtcarstest", mtcars)
+  expect_true(dbExistsTable(con, tbl1))
+
+  tbl2 <- dbWriteTable(con, "mtcars_test", mtcars)
+  expect_true(dbExistsTable(con, tbl2))
 })

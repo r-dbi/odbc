@@ -109,23 +109,22 @@ test_that("show method works as expected with real connection", {
 })
 
 test_that("64 bit integers work with alternate mappings", {
-  con_default <- test_con("POSTGRES")
   con_integer64 <- test_con("POSTGRES", bigint = "integer64")
   con_integer <- test_con("POSTGRES", bigint = "integer")
   con_numeric <- test_con("POSTGRES", bigint = "numeric")
   con_character <- test_con("POSTGRES", bigint = "character")
 
-  dbWriteTable(con_default, "test", data.frame(a = 1:10L), field.types = c(a = "BIGINT"))
-  on.exit(dbRemoveTable(con_default, "test"))
+  tbl <- local_table(
+    con_integer64,
+    "test",
+    data.frame(a = 1:10L),
+    field.types = c(a = "BIGINT")
+  )
 
-  expect_s3_class(dbReadTable(con_default, "test")$a, "integer64")
-  expect_s3_class(dbReadTable(con_integer64, "test")$a, "integer64")
-
-  expect_type(dbReadTable(con_integer, "test")$a, "integer")
-
-  expect_type(dbReadTable(con_numeric, "test")$a, "double")
-
-  expect_type(dbReadTable(con_character, "test")$a, "character")
+  expect_s3_class(dbReadTable(con_integer64, tbl)$a, "integer64")
+  expect_type(dbReadTable(con_integer, tbl)$a, "integer")
+  expect_type(dbReadTable(con_numeric, tbl)$a, "double")
+  expect_type(dbReadTable(con_character, tbl)$a, "character")
 })
 
 # This test checks whether when writing to a table and using
@@ -134,7 +133,6 @@ test_that("64 bit integers work with alternate mappings", {
 # case when the data being written has columns ordered
 # differently than the table we are targetting.
 test_that("Writing data.frame with column ordering different than target table", {
-  tblName <- "test_order_write"
   con <- test_con("POSTGRES")
   values <- data.frame(
     datetime = as.POSIXct(c(14, 15), origin = "2016-01-01", tz = "UTC"),
@@ -142,26 +140,22 @@ test_that("Writing data.frame with column ordering different than target table",
     num = 1:2,
     stringsAsFactors = FALSE
   )
-  sql <- sqlCreateTable(con, tblName, values)
-  dbExecute(con, sql)
-  on.exit(dbRemoveTable(con, tblName))
-  dbWriteTable(con, tblName, values[c(2, 3, 1)],
-    overwrite = FALSE, append = TRUE
-  )
-  received <- DBI::dbReadTable(con, tblName)
+  tbl <- local_table(con, "test_order_write", values)
+
+  dbWriteTable(con, tbl, values[c(2, 3, 1)], overwrite = FALSE, append = TRUE)
+  received <- dbReadTable(con, tbl)
   received <- received[order(received$num), ]
   row.names(received) <- NULL
   expect_equal(values, received)
 })
 
 test_that("odbcPreviewObject", {
-  tblName <- "test_preview"
   con <- test_con("POSTGRES")
-  dbWriteTable(con, tblName, data.frame(a = 1:10L))
-  on.exit(dbRemoveTable(con, tblName))
+  tbl <- local_table(con, "test_preview", data.frame(a = 1:10L))
+
   # There should be no "Pending rows" warning
   expect_no_warning({
-    res <- odbcPreviewObject(con, rowLimit = 3, table = tblName)
+    res <- odbcPreviewObject(con, rowLimit = 3, table = tbl)
   })
   expect_equal(nrow(res), 3)
 })

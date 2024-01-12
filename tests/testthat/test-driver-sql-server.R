@@ -82,7 +82,7 @@ test_that("SQLServer", {
 })
 
 test_that("works with schemas (#197)", {
-  con <- test_con("sqlserver")
+  con <- test_con("SQLSERVER")
   dbExecute(con, "DROP SCHEMA IF EXISTS testSchema")
   dbExecute(con, "CREATE SCHEMA testSchema")
   on.exit({
@@ -118,45 +118,37 @@ test_that("works with schemas (#197)", {
 })
 
 test_that("works with dbAppendTable (#215)", {
-  con <- test_con("sqlserver")
+  con <- test_con("SQLSERVER")
 
   ir <- iris
   ir$Species <- as.character(ir$Species)
 
-  dbWriteTable(con, "iris", ir)
-  on.exit(dbRemoveTable(con, "iris"))
+  tbl <- local_table(con, "iris", ir)
+  dbAppendTable(con, tbl, ir)
 
-  dbAppendTable(conn = con, name = "iris", value = ir)
-
-  res <- dbReadTable(con, "iris")
+  res <- dbReadTable(con, tbl)
   expect_equal(res, rbind(ir, ir))
 })
 
 test_that("Subseconds are retained upon insertion (#208)", {
-  con <- test_con("sqlserver")
-
+  con <- test_con("SQLSERVER")
   data <- data.frame(time = Sys.time())
-  dbWriteTable(con, "time", data, field.types = list(time = "DATETIME"), overwrite = TRUE)
-  on.exit(dbRemoveTable(con, "time"))
-  res <- dbReadTable(con, "time")
+  tbl <- local_table(con, "time", data)
 
+  res <- dbReadTable(con, tbl)
   expect_equal(as.double(res$time), as.double(data$time))
 })
 
 test_that("dbWriteTable errors if field.types don't exist (#271)", {
-  con <- test_con("sqlserver")
+  con <- test_con("SQLSERVER")
 
-  on.exit(dbRemoveTable(con, "foo"), add = TRUE)
-  expect_warning(
-    dbWriteTable(con, "foo", iris, field.types = list(bar = "[int]")),
-    "Some columns in `field.types` not in the input, missing columns:"
+  expect_snapshot(
+    sqlCreateTable(con, "foo", iris, field.types = list(bar = "[int]"))
   )
 })
 
 test_that("blobs can be retrieved out of order", {
-  con <- test_con("sqlserver")
-  tblName <- "test_out_of_order_blob"
-
+  con <- test_con("SQLSERVER")
   values <- data.frame(
     c1 = 1,
     c2 = "this is varchar max",
@@ -164,21 +156,21 @@ test_that("blobs can be retrieved out of order", {
     c4 = "this is text",
     stringsAsFactors = FALSE
   )
-  dbWriteTable(con, tblName, values, field.types = list(c1 = "INT", c2 = "VARCHAR(MAX)", c3 = "INT", c4 = "TEXT"))
-  on.exit(dbRemoveTable(con, tblName))
-  received <- DBI::dbReadTable(con, tblName)
+  tbl <- local_table(con, "test_out_of_order_blob", values)
+
+  received <- DBI::dbReadTable(con, tbl)
+  expect_equal(received, values)
+
   # Also test retrival using a prepared statement
   received2 <- dbGetQuery(con,
-    paste0("SELECT * FROM ", tblName, "  WHERE c1 = ?"),
+    paste0("SELECT * FROM ", tbl, "  WHERE c1 = ?"),
     params = list(1L)
   )
-  expect_equal(values, received)
-  expect_equal(values, received2)
+  expect_equal(received2, values)
 })
 
 test_that("can bind NA values", {
-  con <- test_con("sqlserver")
-  tblName <- "test_na"
+  con <- test_con("SQLSERVER")
   # With SELECT ing with the OEM SQL Server driver, everything
   # after the first column should be unbound. Test null detection for
   # unbound columns (NULL is registered after a call to nanodbc::result::get)
@@ -191,15 +183,15 @@ test_that("can bind NA values", {
     c6 = c(Sys.time(), NA),
     stringsAsFactors = FALSE
   )
-  dbWriteTable(con, tblName, values, field.types = list(c1 = "VARCHAR(MAX)", c2 = "INT", c3 = "FLOAT", c4 = "BIT", c5 = "DATE", c6 = "DATETIME"))
-  on.exit(dbRemoveTable(con, tblName))
-  received <- DBI::dbReadTable(con, tblName)
+  tbl <- local_table(con, "test_na", values)
+
+  received <- DBI::dbReadTable(con, tbl)
   expect_equal(values[-6], received[-6])
   expect_equal(as.double(values[[6]]), as.double(received[[6]]))
 })
 
 test_that("can parse SQL server identifiers", {
-  con <- test_con("sqlserver")
+  con <- test_con("SQLSERVER")
   input <- DBI::SQL(c(
     "testtable",
     "[testtable]",
@@ -226,25 +218,24 @@ test_that("can parse SQL server identifiers", {
 })
 
 test_that("odbcPreviewObject doesn't warn about pending rows", {
-  tblName <- "test_preview"
-  con <- test_con("sqlserver")
-  dbWriteTable(con, tblName, data.frame(a = 1:10L))
-  on.exit(dbRemoveTable(con, tblName))
+  con <- test_con("SQLSERVER")
+  tbl <- local_table(con, "test_preview", data.frame(a = 1:10L))
+
   # There should be no "Pending rows" warning
   expect_no_warning({
-    res <- odbcPreviewObject(con, rowLimit = 3, table = tblName)
+    res <- odbcPreviewObject(con, rowLimit = 3, table = tbl)
   })
   expect_equal(nrow(res), 3)
 })
 
 test_that("dates should always be interpreted in the system time zone (#398)", {
-  con <- test_con("sqlserver")
+  con <- test_con("SQLSERVER")
   res <- dbGetQuery(con, "SELECT CAST(? AS date)", params = as.Date("2019-01-01"))
   expect_equal(res[[1]], as.Date("2019-01-01"))
 })
 
 test_that("UTF in VARCHAR is not truncated", {
-  con <- test_con("sqlserver")
+  con <- test_con("SQLSERVER")
   value <- "grün"
   res <- dbGetQuery(
     con,
@@ -254,18 +245,17 @@ test_that("UTF in VARCHAR is not truncated", {
 })
 
 test_that("Zero-row-fetch does not move cursor", {
-  con <- test_con("sqlserver")
-  tblName <- "test_zero_row_fetch"
-  dbWriteTable(con, tblName, mtcars[1:2, ])
-  on.exit(dbRemoveTable(con, tblName))
-  rs <- dbSendStatement(con, paste0("SELECT * FROM ", tblName))
+  con <- test_con("SQLSERVER")
+  tbl <- local_table(con, "test_zero_row_fetch", mtcars[1:2, ])
+
+  rs <- dbSendStatement(con, paste0("SELECT * FROM ", tbl))
   expect_equal(nrow(dbFetch(rs, n = 0)), 0)
   expect_equal(nrow(dbFetch(rs, n = 10)), 2)
   dbClearResult(rs)
 })
 
 test_that("isTempTable handles variety of temporary specifications", {
-  con <- test_con("sqlserver")
+  con <- test_con("SQLSERVER")
   expect_true(isTempTable(con, "#myTmp"))
   expect_true(isTempTable(con, "#myTmp", catalog_name = "tempdb"))
   expect_true(isTempTable(con, "#myTmp", catalog_name = "%"))
@@ -275,7 +265,7 @@ test_that("isTempTable handles variety of temporary specifications", {
 })
 
 test_that("dbExistsTable accounts for local temp tables", {
-  con <- test_con("sqlserver")
+  con <- test_con("SQLSERVER")
   tbl_name <- "#myTemp"
   tbl_name2 <- "##myTemp"
   tbl_name3 <- "#myTemp2"
@@ -292,12 +282,12 @@ test_that("dbExistsTable accounts for local temp tables", {
   expect_true(!dbExistsTable(con, tbl_name3, catalog_name = "tempdb"))
 
   # fail because table was created in another live session
-  con2 <- test_con("sqlserver")
+  con2 <- test_con("SQLSERVER")
   expect_true(!dbExistsTable(con2, tbl_name))
 })
 
 test_that("can create / write to temp table", {
-  con <- test_con("sqlserver")
+  con <- test_con("SQLSERVER")
   locTblName <- "#myloctmp"
 
   df <- data.frame(name = c("one", "two"), value = c(1, 2))

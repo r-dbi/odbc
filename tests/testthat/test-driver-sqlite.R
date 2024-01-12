@@ -138,10 +138,9 @@ test_that("unsupported types gives informative error", {
 })
 
 test_that("odbcPreviewObject works", {
-  tblName <- "test_preview"
   con <- test_con("SQLITE")
-  dbWriteTable(con, tblName, data.frame(a = 1:10L))
-  on.exit(dbRemoveTable(con, tblName))
+  tbl <- local_table(con, "test_preview", data.frame(a = 1:10L))
+
   # There should be no "Pending rows" warning
   expect_no_warning({
     res <- odbcPreviewObject(con, rowLimit = 3, table = tblName)
