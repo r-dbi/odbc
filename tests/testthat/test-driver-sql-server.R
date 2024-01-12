@@ -177,6 +177,7 @@ test_that("blobs can be retrieved out of order", {
 })
 
 test_that("can bind NA values", {
+  con <- test_con("sqlserver")
   tblName <- "test_na"
   # With SELECT ing with the OEM SQL Server driver, everything
   # after the first column should be unbound. Test null detection for
