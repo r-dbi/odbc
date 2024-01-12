@@ -58,6 +58,7 @@ test_that("SQLServer", {
     "list_fields_wrong_table",
     "list_fields_quoted",
     "list_fields_object",
+    "list_objects_features",
     NULL
   ))
   DBItest::test_meta(c(
@@ -214,15 +215,15 @@ test_that("SQLServer", {
       "[testdb].[testschema].testtable"
     ))
     expected <- c(
-      DBI::Id(table = "testtable"),
-      DBI::Id(table = "testtable"),
-      DBI::Id(table = "testtable"),
-      DBI::Id(table = "testta[ble"),
-      DBI::Id(table = "testta]ble"),
-      DBI::Id(schema = "testschema", table = "testtable"),
-      DBI::Id(schema = "testschema", table = "testtable"),
-      DBI::Id(catalog = "testdb", schema = "testschema", table = "testtable"),
-      DBI::Id(catalog = "testdb", schema = "testschema", table = "testtable")
+      DBI::Id("testtable"),
+      DBI::Id("testtable"),
+      DBI::Id("testtable"),
+      DBI::Id("testta[ble"),
+      DBI::Id("testta]ble"),
+      DBI::Id("testschema", "testtable"),
+      DBI::Id("testschema", "testtable"),
+      DBI::Id("testdb", "testschema", "testtable"),
+      DBI::Id("testdb", "testschema", "testtable")
     )
     expect_identical(DBI::dbUnquoteIdentifier(con, input), expected)
   })

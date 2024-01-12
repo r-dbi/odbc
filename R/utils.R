@@ -53,11 +53,31 @@ parse_size <- function(x) {
   )
 }
 
-id_field <- function(id, field, default = NULL) {
-  if (field %in% names(id@name)) {
-    id@name[[field]]
+id_field <- function(id,
+                     field = c("catalog", "schema", "table"),
+                     error_call = caller_env()) {
+  arg_match(field, error_call = error_call)
+
+  if (length(id@name) == 1) {
+    switch(field,
+      catalog = NULL,
+      schema = NULL,
+      table = id@name[[1]],
+    )
+  } else if (length(id@name) == 2) {
+    switch(field,
+      catalog = NULL,
+      schema = id@name[[1]],
+      table = id@name[[2]],
+    )
+  } else if (length(id@name) == 3) {
+    switch(field,
+      catalog = id@name[[1]],
+      schema = id@name[[2]],
+      table = id@name[[3]],
+    )
   } else {
-    default
+    abort("Identifier must be length 1, 2, or 3.", call = error_call)
   }
 }
 
