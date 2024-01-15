@@ -17,8 +17,8 @@ test_that("Oracle", {
     dbWriteTable(con, "mtcars_test", mtcars)
     expect_true(dbExistsTable(con, "mtcars_test"))
     on.exit({
-      dbExecute(con, "DROP TABLE mtcarstest")
-      dbExecute(con, "DROP TABLE mtcars_test")
+      dbRemoveTable(con, "mtcarstest")
+      dbRemoveTable(con, "mtcars_test")
     })
   })
 })
