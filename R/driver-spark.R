@@ -11,7 +11,10 @@ setClass("Spark SQL", contains = "OdbcConnection")
 #' @rdname odbcConnectionSchemas
 #' @usage NULL
 setMethod("odbcConnectionSchemas", "Spark SQL",
-  function(conn, catalog_name) {
+  function(conn, catalog_name = NULL) {
+    if (is.null(catalog_name)) {
+      return(callNextMethod())
+    }
     res <- dbGetQuery(conn, paste0("SHOW SCHEMAS IN ", catalog_name))
     if (nrow(res)) {
       return(res$databaseName)

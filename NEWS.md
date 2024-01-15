@@ -6,6 +6,8 @@
 * databricks: Fix schema enumeration in connections pane
   (@detule, #715).
 
+* SQL Server Fix `dbExists` for temporary table (@meztez, #724).
+
 # odbc 1.4.1
 
 * New `odbcListConfig()` lists configuration files on Mac and Linux 
