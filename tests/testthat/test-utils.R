@@ -35,6 +35,7 @@ test_that("id_field checks inputs", {
     id_field(DBI::Id("a"), "foo")
     id_field(DBI::Id("a", "b", "c", "d"))
   })
+})
 
 test_that("getSelector", {
   # If no wild cards are detected always use exact comparison / ignore `exact` argument
