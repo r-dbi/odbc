@@ -1,5 +1,11 @@
 # odbc (development version)
 
+* Oracle: Fix checking for existence when identifier components
+  contain underscores (@detule, #712).
+
+* databricks: Fix schema enumeration in connections pane
+  (@detule, #715).
+
 # odbc 1.4.1
 
 * New `odbcListConfig()` lists configuration files on Mac and Linux 
