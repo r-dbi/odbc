@@ -11,7 +11,7 @@ setClass("Spark SQL", contains = "OdbcConnection")
 #' @rdname odbcConnectionSchemas
 #' @usage NULL
 setMethod("odbcConnectionSchemas", "Spark SQL",
-  function(conn, catalog_name) {
+  function(conn, catalog_name = NULL) {
     if (is.null(catalog_name)) {
       return(callNextMethod())
     }
