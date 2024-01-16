@@ -168,7 +168,7 @@ with:</p>
 <pre class="shell"><code>sudo docker run \
   --platform linux/amd64 \
   -e "ACCEPT_EULA=Y" \
-  -e "MSSQL_SA_PASSWORD=BoopBop123!" \
+  -e 'MSSQL_SA_PASSWORD=BoopBop123!' \
   -p 1433:1433 \
    --name sql1 \
    --hostname sql1 \
