@@ -10,6 +10,9 @@
   if (is_windows()) {
     if (!nzchar(Sys.getenv("TZDIR"))) Sys.setenv("TZDIR" = file.path(R.home(), "share", "zoneinfo"))
   }
+
+  # ensure that statically linked odbcsysini matches dynamically linked (#709)
+  set_odbcsysini()
 }
 
 # nocov end
