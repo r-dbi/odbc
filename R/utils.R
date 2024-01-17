@@ -142,3 +142,23 @@ is_windows <- function() {
 }
 
 compact <- function(x) x[!vapply(x, is.null, logical(1))]
+
+set_odbcsysini <- function(x) {
+  odbcsysini <- Sys.getenv("ODBCSYSINI")
+
+  if (!identical(odbcsysini, "")) {
+    return(invisible(TRUE))
+  }
+
+  odbcsysini <- tryCatch(odbcListConfig(), error = function(e) e)
+
+  if (inherits(odbcsysini, "error")) {
+    return(invisible(TRUE))
+  }
+
+  odbcsysini <- dirname(odbcsysini[1])
+
+  Sys.setenv(ODBCSYSINI = odbcsysini)
+
+  invisible(TRUE)
+}
