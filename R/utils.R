@@ -145,20 +145,17 @@ compact <- function(x) x[!vapply(x, is.null, logical(1))]
 
 set_odbcsysini <- function() {
   odbcsysini <- Sys.getenv("ODBCSYSINI")
-
   if (!identical(odbcsysini, "")) {
-    return(invisible(TRUE))
+    return(invisible())
   }
 
-  odbcsysini <- tryCatch(odbcListConfig(), error = function(e) e)
+  tryCatch(
+    {
+      path <- dirname(odbcListConfig()$drivers)
+      Sys.setenv(ODBCSYSINI = path)
+    },
+    error = function(err) NULL
+  )
 
-  if (inherits(odbcsysini, "error")) {
-    return(invisible(TRUE))
-  }
-
-  odbcsysini <- dirname(odbcsysini[1])
-
-  Sys.setenv(ODBCSYSINI = odbcsysini)
-
-  invisible(TRUE)
+  invisible()
 }
