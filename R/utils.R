@@ -143,7 +143,7 @@ is_windows <- function() {
 
 compact <- function(x) x[!vapply(x, is.null, logical(1))]
 
-set_odbcsysini <- function(x) {
+set_odbcsysini <- function() {
   odbcsysini <- Sys.getenv("ODBCSYSINI")
 
   if (!identical(odbcsysini, "")) {
