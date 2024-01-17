@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* freetds: Fix regression when executing multiple queries
+  (@detule, #731)
+
 * Oracle: Fix checking for existence when identifier components
   contain underscores (@detule, #712).
 
