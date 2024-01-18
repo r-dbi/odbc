@@ -10,7 +10,7 @@ odbcSetTransactionIsolationLevel(conn, levels)
 \item{conn}{A \linkS4class{DBIConnection} object, as returned by
 \code{\link[DBI:dbConnect]{dbConnect()}}.}
 
-\item{levels}{One or more of \Sexpr[stage=render, results=rd]{odbc:::choices_rd(names(odbc:::transactionLevels()))}.}
+\item{levels}{One or more of 'read_uncommitted', 'read_committed', 'repeatable_read', 'serializable'.}
 }
 \description{
 Set the Transaction Isolation Level for a Connection
