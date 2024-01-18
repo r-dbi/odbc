@@ -103,6 +103,13 @@ convertWildCards <- function(val) {
   gsub("_", "(.)", val)
 }
 
+# Will return " AND key [= | LIKE] value"
+# where "=" or "LIKE" is chosen depending
+# on the the `exact` argument, and whether
+# the `value` contains any wild card characters.
+#
+# Note, wild cards are not escaped in `value`
+# as part of this call.
 getSelector <- function(key, value, exact) {
   if (is.null(value)) {
     return("")
@@ -111,9 +118,6 @@ getSelector <- function(key, value, exact) {
   if ((value == "%" || !exact) &&
     isPatternValue(value)) {
     comp <- " LIKE "
-  }
-  if (exact && (value != "%")) {
-    value <- escapePattern(value)
   }
   value <- paste0("'", value, "'")
 

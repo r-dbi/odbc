@@ -1,5 +1,11 @@
 # odbc (development version)
 
+* Oracle: Fix checking for existence when identifier components
+  contain underscores (@detule, #712).
+
+* databricks: Fix schema enumeration in connections pane
+  (@detule, #715).
+
 * SQL Server Fix `dbExists` for temporary table (@meztez, #724).
 
 # odbc 1.4.1

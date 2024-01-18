@@ -36,3 +36,21 @@ test_that("id_field checks inputs", {
     id_field(DBI::Id("a", "b", "c", "d"))
   })
 })
+
+test_that("getSelector", {
+  # If no wild cards are detected always use exact comparison / ignore `exact` argument
+  expect_equal(getSelector("mykey", "myvalue", exact = TRUE), " AND mykey = 'myvalue'")
+  expect_equal(getSelector("mykey", "myvalue", exact = FALSE), " AND mykey = 'myvalue'")
+
+  # If `value` contains wild cards, respect `exact`argument
+  expect_equal(getSelector("mykey", "myvalu_", exact = TRUE), " AND mykey = 'myvalu_'")
+  expect_equal(getSelector("mykey", "myvalu_", exact = FALSE), " AND mykey LIKE 'myvalu_'")
+
+  expect_equal(getSelector("mykey", "myvalu%", exact = TRUE), " AND mykey = 'myvalu%'")
+  expect_equal(getSelector("mykey", "myvalu%", exact = FALSE), " AND mykey LIKE 'myvalu%'")
+
+  # ... unless argument is '%' - always use 'LIKE' since this is most likely the
+  # desired comparison / ignore `exact` argument
+  expect_equal(getSelector("mykey", "%", exact = TRUE), " AND mykey LIKE '%'")
+  expect_equal(getSelector("mykey", "%", exact = FALSE), " AND mykey LIKE '%'")
+})
