@@ -47,7 +47,10 @@ special values.}
 i.e. \linkS4class{DBIDriver}, \linkS4class{DBIConnection},
 or a \linkS4class{DBIResult}}
 
-\item{params}{A list of bindings, named or unnamed.}
+\item{params}{For \code{dbBind()}, a list of values, named or unnamed,
+or a data frame, with one element/column per query parameter.
+For \code{dbBindArrow()}, values as a nanoarrow stream,
+with one column per query parameter.}
 
 \item{batch_rows}{The number of rows to retrieve. Defaults to \code{NA}, which
 is set dynamically to the size of the input. Depending on the database,

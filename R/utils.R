@@ -32,7 +32,7 @@ enc2iconv <- function(x, to, ...) {
 }
 
 choices_rd <- function(x) {
-  paste0(collapse = ", ", paste0("\\sQuote{", x, "}"))
+  paste0(collapse = ", ", paste0("'", x, "'"))
 }
 
 lengths <- function(x) {
