@@ -1,8 +1,8 @@
 # odbc (development version)
 
-* On MacOS and Linux, the package will now automatically set the ODBCSYSINI
-  environmental variable when using the unixODBC driver manager. ODBCSYSINI
-  will not be changed if it exists already.
+* On MacOS and Linux, the package will now automatically set the `ODBCSYSINI`
+  environmental variable when using the unixODBC driver manager. `ODBCSYSINI`
+  will not be changed if it exists already (@simonpcouch, #709).
 
 * Oracle: Fix checking for existence when identifier components
   contain underscores (@detule, #712).
