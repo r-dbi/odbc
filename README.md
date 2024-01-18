@@ -54,7 +54,7 @@ with the driver manager. The odbc package is built on top of the
 [nanodbc](https://nanodbc.github.io/nanodbc/) C++ library. To interface
 with DBMSs using R and odbc:
 
-<img src="man/figures/r-interface.png" alt="A high-level workflow for using the R interface in 3 steps. In step 1, configure drivers and data sources, the functions odbcListDrivers() and odbcListDataSources() help to interface with the driver manager. In step 2, the dbConnect() function, called with the first argument odbc(), connects to a database using the specified ODBC driver to create a connection object &quot;con.&quot; Finally, in step 3, that connection object can be passed to various functions to retrieve information on database structure, iteratively develop queries, and query data objects." width="1824" />
+<img src="man/figures/r-interface.png" alt="A high-level workflow for using the R interface in 3 steps. In step 1, configure drivers and data sources, the functions odbcListDrivers() and odbcListDataSources() help to interface with the driver manager. In step 2, the dbConnect() function, called with the first argument odbc(), connects to a database using the specified ODBC driver to create a connection object &quot;con.&quot; Finally, in step 3, that connection object can be passed to various functions to retrieve information on database structure, iteratively develop queries, and query data objects." width="1302" />
 
 You might also use the [dbplyr package](https://dbplyr.tidyverse.org/)
 to automatically generate SQL from your dplyr code.

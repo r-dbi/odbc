@@ -1,21 +1,26 @@
 # odbc (development version)
 
-* The Microsoft SQL Server method for `odbcDataType()` will now return `"BIGINT"`
-  for integer64 objects rather than converting to `"FLOAT"` (@simonpcouch, #698).
+* `dbAppendTable()` Improve performance by checking existence once (#691).
+
+* Oracle: Fix checking for existence when identifier components
+  contain underscores (@detule, #712).
+
+* databricks: Fix schema enumeration in connections pane
+  (@detule, #715).
+
+* SQL Server Fix `dbExists` for temporary table (@meztez, #724).
+
+# odbc 1.4.1
+
+* New `odbcListConfig()` lists configuration files on Mac and Linux 
+  (@simonpcouch, #565).
 
 * `databricks()` now works with manually supplied `pwd` and `uid` (#690).
 
+* Oracle: uses correct parent class (#685).
+
 * SQL Server: correctly enumerate schemas across databases in connections pane
   (@detule, #527).
-
-* Added a function `odbcListConfig()` to help locate configuration files on
-  macOS and Linux (@simonpcouch, #565).
-
-* Use correct parent class for Oracle (#685).
-
-* dbAppendTable: Improve performance by checking existence once (#691).
-
-* Removed the `driver_info` class from `dbGetInfo()` output (@simonpcouch, #667).
 
 # odbc 1.4.0
 

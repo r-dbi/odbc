@@ -1,6 +1,9 @@
 ## R CMD check results
 
-0 errors | 0 warnings | 0 notes
+0 errors | 0 warnings | 1 notes
+
+There was one note: Days since last update: 5.
+I discovered a severe breakage for Oracle users and wanted to get a fix out as soon as possible.
 
 ## revdepcheck results
 

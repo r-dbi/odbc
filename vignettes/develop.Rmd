@@ -121,7 +121,7 @@ With docker and the needed driver installed, deploy the container with:
 sudo docker run \
   --platform linux/amd64 \
   -e "ACCEPT_EULA=Y" \
-  -e "MSSQL_SA_PASSWORD=BoopBop123!" \
+  -e 'MSSQL_SA_PASSWORD=BoopBop123!' \
   -p 1433:1433 \
    --name sql1 \
    --hostname sql1 \
@@ -257,6 +257,39 @@ Sys.setenv("TNS_ADMIN" = getwd())
 con <- dbConnect(odbc::odbc(), "OracleODBC-19")
 ```
 
+## Snowflake
+
+To obtain a Snowflake account:
+
+* If you're a Posit employee, reach out to James Blair.
+* If you're not affiliated with Posit, sign up for a [free trial](https://signup.snowflake.com/).
+
+Install drivers using the [instructions on the Snowflake documentation](https://docs.snowflake.com/en/developer-guide/odbc/odbc). For MacOS, feel free to ignore sections noting that iODBC is required.
+
+On MacOS and Linux:
+
+* Locate your `simba.snowflake.ini` file, likely in `opt/snowflake/`. You will need `sudo` access to edit it.
+  * Change `DriverManagerEncoding` to `UTF-16`.
+  * Change the uncommented `ODBCInstLib` entry to the [path of your unixODBC install](https://community.snowflake.com/s/article/R-Studio-to-Snowflake-fails-with-error-Unable-to-locate-SQLGetPrivateProfileString-function).
+* In the Snowflake UI, navigate to Worksheets, make a new worksheet using the blue "+" button in the top right-hand corner, and run the line `SELECT SYSTEM$ALLOWLIST()`. In the output, copy the URL corresponding to `"type":"SNOWFLAKE_DEPLOYMENT"`. This Deployment URL should look like a random string, an AWS region, and the snowflake API URL, e.g. `wmc39401.us-east-1.snowflakecomputing.com`.
+
+The `odbc.ini` file should look like:
+
+```ini
+[Snowflake]
+Driver      = Snowflake
+Description =
+uid         = <uid>
+server      = <deployment-url>
+```
+
+The above assumes `Driver = Snowflake` is configured in `odbcinst.ini`. Then, connect by supplying the password as an argument:
+
+```
+con <- dbConnect(odbc(), dsn = "Snowflake", pwd = Sys.getenv("snowflakePass"))
+```
+
+In the above, the password has been set as `Sys.setenv(snowflakePass = "actualPass")`.
 
 ## RODBC
 

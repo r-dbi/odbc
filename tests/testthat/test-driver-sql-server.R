@@ -58,6 +58,7 @@ test_that("SQLServer", {
     "list_fields_wrong_table",
     "list_fields_quoted",
     "list_fields_object",
+    "list_objects_features",
     NULL
   ))
   DBItest::test_meta(c(
@@ -214,15 +215,15 @@ test_that("SQLServer", {
       "[testdb].[testschema].testtable"
     ))
     expected <- c(
-      DBI::Id(table = "testtable"),
-      DBI::Id(table = "testtable"),
-      DBI::Id(table = "testtable"),
-      DBI::Id(table = "testta[ble"),
-      DBI::Id(table = "testta]ble"),
-      DBI::Id(schema = "testschema", table = "testtable"),
-      DBI::Id(schema = "testschema", table = "testtable"),
-      DBI::Id(catalog = "testdb", schema = "testschema", table = "testtable"),
-      DBI::Id(catalog = "testdb", schema = "testschema", table = "testtable")
+      DBI::Id("testtable"),
+      DBI::Id("testtable"),
+      DBI::Id("testtable"),
+      DBI::Id("testta[ble"),
+      DBI::Id("testta]ble"),
+      DBI::Id("testschema", "testtable"),
+      DBI::Id("testschema", "testtable"),
+      DBI::Id("testdb", "testschema", "testtable"),
+      DBI::Id("testdb", "testschema", "testtable")
     )
     expect_identical(DBI::dbUnquoteIdentifier(con, input), expected)
   })
@@ -263,6 +264,7 @@ test_that("SQLServer", {
     rs <- dbSendStatement(con, paste0("SELECT * FROM ", tblName))
     expect_equal(nrow(dbFetch(rs, n = 0)), 0)
     expect_equal(nrow(dbFetch(rs, n = 10)), 2)
+    dbClearResult(rs)
   })
 
   test_that("isTempTable tests", {
@@ -277,6 +279,7 @@ test_that("SQLServer", {
 
   test_that("dbExistsTable accounts for local temp tables", {
     con <- DBItest:::connect(DBItest:::get_default_context())
+    con2 <- DBItest:::connect(DBItest:::get_default_context())
     tbl_name <- "#myTemp"
     tbl_name2 <- "##myTemp"
     tbl_name3 <- "#myTemp2"
@@ -291,6 +294,8 @@ test_that("SQLServer", {
     expect_true(!dbExistsTable(con, tbl_name2, catalog_name = "tempdb"))
     # Fail because table not actually present
     expect_true(!dbExistsTable(con, tbl_name3, catalog_name = "tempdb"))
+    # Fail because table was created in another live session
+    expect_true(!dbExistsTable(con2, tbl_name))
   })
 
   test_that("Create / write to temp table", {

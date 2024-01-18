@@ -72,17 +72,12 @@ setMethod("dbExistsTable", c("Microsoft SQL Server", "character"),
   function(conn, name, ...) {
     stopifnot(length(name) == 1)
     if (isTempTable(conn, name, ...)) {
-      name <- paste0(name, "\\_\\_\\_%")
-      df <- odbcConnectionTables(
-        conn,
-        name,
-        catalog_name = "tempdb",
-        schema_name = "dbo"
-      )
+      query <- paste0("SELECT OBJECT_ID('tempdb..", name, "')")
+      !is.na(dbGetQuery(conn, query)[[1]])
     } else {
       df <- odbcConnectionTables(conn, name = name, ...)
+      NROW(df) > 0
     }
-    NROW(df) > 0
   }
 )
 
