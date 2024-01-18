@@ -28,6 +28,7 @@ reference:
   contents:
   - starts_with("odbc")
   - isTempTable
+  - quote_value
 
 articles:
 - title: Articles
