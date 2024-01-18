@@ -1,5 +1,10 @@
 # odbc (development version)
 
+* `dbConnect()` no longer automatically escapes suspicious characters
+  (since there doesn't seem to be a consistent way to do this across drivers)
+  but instead points you to `quote_value()` which applies a heuristic
+  that should work for most drivers (#718).
+
 * Oracle: Fix checking for existence when identifier components
   contain underscores (@detule, #712).
 

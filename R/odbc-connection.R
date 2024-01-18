@@ -67,11 +67,6 @@ build_connection_string <- function(.string = NULL, ...) {
   args <- compact(list(...))
   check_args(args)
 
-  needs_escape <- grepl("[{}(),;?*=!@]", args) &
-    !grepl("^\\{.*\\}$", args) &
-    !vapply(args, inherits, "AsIs", FUN.VALUE = logical(1))
-
-  args[needs_escape] <- paste0("{", args[needs_escape], "}")
   args_string <- paste(names(args), args, sep = "=", collapse = ";")
 
   if (!is.null(.string) && !grepl(";$", .string) && length(args) > 0) {
@@ -79,6 +74,52 @@ build_connection_string <- function(.string = NULL, ...) {
   }
 
   paste0(.string, args_string)
+}
+
+#' Quote special character when connecting
+#'
+#' @description
+#' When connecting to a database using odbc, all the arguments are concatenated
+#' into a single connection string that looks like `name1=value1;name2=value2`.
+#' That means if your value contains `=` or `;` then it needs to be quoted.
+#' Other rules means that it's generally a good idea to quote any text that
+#' contains `{`, `}` or white space.
+#'
+#' This function attempts to quote a string in a way that should hopefully
+#' work for most drivers. Unfortunately, there doesn't seem to be an approach
+#' that works everywhere, but hopefully this function solves most common
+#' issues.
+#'
+#' @export
+#' @param x A string to quote.
+#' @return A quoted string, wrapped in `I()`.
+#' @examples
+#' quote_value("abc")
+#' quote_value("ab'c")
+#'
+#' # Real usage is more likely to look like:
+#' \dontrun{
+#' library(DBI)
+#'
+#' con <- dbConnect(
+#'   odbc::odbc(),
+#'   dsn = "reallycooldatabase"
+#'   password = odbc::quote_value(Sys.getenv("MY_PASSWORD"))
+#' )
+#' }
+quote_value <- function(x) {
+  has_single <- grepl("'", x, fixed = TRUE)
+  has_double <- grepl('"', x, fixed = TRUE)
+
+  if (has_single && has_double) {
+    abort("Don't know how to escape a value with both single and double quotes.")
+  } else if (has_double) {
+    quote <- "'"
+  } else {
+    quote <- '"'
+  }
+
+  I(paste0(quote, x, quote))
 }
 
 check_args <- function(args) {
@@ -103,6 +144,28 @@ check_args <- function(args) {
       call = quote(DBI::dbConnect())
     )
   }
+
+  needs_quoting <- vapply(args, needs_quoting, FUN.VALUE = logical(1))
+  for(arg in names(args[needs_quoting])) {
+    warn(c(
+      paste0("`", arg, "` contains a special character that may need quoting."),
+      i = "If the connection worked, you don't need to quote it and you can use `I()` to suppress this warning.",
+      i = "Otherwise, wrap the value in `odbc::quote_value()` to use a heuristic that should work for most backends.",
+      i = "If that still doesn't work, consult your driver's documentation."
+    ))
+  }
+}
+
+needs_quoting <- function(x) {
+  if (inherits(x, "AsIs")) {
+    return(FALSE)
+  }
+
+  if (grepl("^\\{.*\\}$", x) || grepl("^(['\\\"]).*\\1$", x)) {
+    return(FALSE)
+  }
+
+  grepl("[{}=; ]", x)
 }
 
 # -------------------------------------------------------------------------

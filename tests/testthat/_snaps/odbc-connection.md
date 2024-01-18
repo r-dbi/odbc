@@ -28,3 +28,24 @@
       * xa, xA
       * xb, xB
 
+# warns if your values might need quoting
+
+    Code
+      build_connection_string(foo = "f{o")
+    Condition
+      Warning:
+      `foo` contains a special character that may need quoting.
+      i If the connection worked, you don't need to quote it and you can use `I()` to suppress this warning.
+      i Otherwise, wrap the value in `odbc::quote_value()` to use a heuristic that should work for most backends.
+      i If that still doesn't work, consult your driver's documentation.
+    Output
+      [1] "foo=f{o"
+
+# automatically picks correct quote type
+
+    Code
+      quote_value("'\"")
+    Condition
+      Error in `quote_value()`:
+      ! Don't know how to escape a value with both single and double quotes.
+
