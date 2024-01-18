@@ -15,6 +15,6 @@ test_that("can detect existance of table", {
   tbl1 <- local_table(con, "mtcarstest", mtcars)
   expect_true(dbExistsTable(con, tbl1))
 
-  tbl2 <- dbWriteTable(con, "mtcars_test", mtcars)
+  tbl2 <- local_table(con, "mtcars_test", mtcars)
   expect_true(dbExistsTable(con, tbl2))
 })
