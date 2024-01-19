@@ -6,77 +6,6 @@ test_that("PostgreSQL", {
     name = "PostgreSQL"
   )
 
-  test_that("show method works as expected with real connection", {
-    skip_on_os("windows")
-    con <- DBItest:::connect(DBItest:::get_default_context())
-
-    expect_output(show(con), "@localhost")
-    expect_output(show(con), "Database: [a-z]+")
-    expect_output(show(con), "PostgreSQL Version: ")
-  })
-
-  test_that("64 bit integers work with alternate mappings", {
-    con_default <- DBItest:::connect(DBItest:::get_default_context())
-    con_integer64 <-
-      DBItest:::connect(DBItest:::get_default_context(), bigint = "integer64")
-    con_integer <-
-      DBItest:::connect(DBItest:::get_default_context(), bigint = "integer")
-    con_numeric <-
-      DBItest:::connect(DBItest:::get_default_context(), bigint = "numeric")
-    con_character <-
-      DBItest:::connect(DBItest:::get_default_context(), bigint = "character")
-
-    dbWriteTable(con_default, "test", data.frame(a = 1:10L), field.types = c(a = "BIGINT"))
-    on.exit(dbRemoveTable(con_default, "test"))
-
-    expect_s3_class(dbReadTable(con_default, "test")$a, "integer64")
-    expect_s3_class(dbReadTable(con_integer64, "test")$a, "integer64")
-
-    expect_type(dbReadTable(con_integer, "test")$a, "integer")
-
-    expect_type(dbReadTable(con_numeric, "test")$a, "double")
-
-    expect_type(dbReadTable(con_character, "test")$a, "character")
-  })
-
-  # This test checks whether when writing to a table and using
-  # result_describe_parameters to offer descriptions of the data
-  # we are attempting to write, our logic remains robust to the
-  # case when the data being written has columns ordered
-  # differently than the table we are targetting.
-  test_that("Writing data.frame with column ordering different than target table", {
-    tblName <- "test_order_write"
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    values <- data.frame(
-      datetime = as.POSIXct(c(14, 15), origin = "2016-01-01", tz = "UTC"),
-      name = c("one", "two"),
-      num = 1:2,
-      stringsAsFactors = FALSE
-    )
-    sql <- sqlCreateTable(con, tblName, values)
-    dbExecute(con, sql)
-    on.exit(dbRemoveTable(con, tblName))
-    dbWriteTable(con, tblName, values[c(2, 3, 1)],
-      overwrite = FALSE, append = TRUE
-    )
-    received <- DBI::dbReadTable(con, tblName)
-    received <- received[order(received$num), ]
-    row.names(received) <- NULL
-    expect_equal(values, received)
-  })
-
-  test_that("odbcPreviewObject", {
-    tblName <- "test_preview"
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    dbWriteTable(con, tblName, data.frame(a = 1:10L))
-    on.exit(dbRemoveTable(con, tblName))
-    # There should be no "Pending rows" warning
-    expect_no_warning({
-      res <- odbcPreviewObject(con, rowLimit = 3, table = tblName)
-    })
-    expect_equal(nrow(res), 3)
-  })
-
   DBItest::test_getting_started(c(
     "package_name", # Not an error
     NULL
@@ -163,6 +92,73 @@ test_that("PostgreSQL", {
     "reexport", # TODO
     NULL
   ))
-
-  test_roundtrip()
 })
+
+test_that("can roundtrip columns", {
+  con <- test_con("POSTGRES")
+  test_roundtrip(con)
+})
+
+test_that("show method works as expected with real connection", {
+  skip_on_os("windows")
+  con <- test_con("POSTGRES")
+
+  expect_output(show(con), "@localhost")
+  expect_output(show(con), "Database: [a-z]+")
+  expect_output(show(con), "PostgreSQL Version: ")
+})
+
+test_that("64 bit integers work with alternate mappings", {
+  con_integer64 <- test_con("POSTGRES", bigint = "integer64")
+  con_integer <- test_con("POSTGRES", bigint = "integer")
+  con_numeric <- test_con("POSTGRES", bigint = "numeric")
+  con_character <- test_con("POSTGRES", bigint = "character")
+
+  tbl <- local_table(
+    con_integer64,
+    "test",
+    data.frame(a = 1:10L),
+    field.types = c(a = "BIGINT")
+  )
+
+  expect_s3_class(dbReadTable(con_integer64, tbl)$a, "integer64")
+  expect_type(dbReadTable(con_integer, tbl)$a, "integer")
+  expect_type(dbReadTable(con_numeric, tbl)$a, "double")
+  expect_type(dbReadTable(con_character, tbl)$a, "character")
+})
+
+# This test checks whether when writing to a table and using
+# result_describe_parameters to offer descriptions of the data
+# we are attempting to write, our logic remains robust to the
+# case when the data being written has columns ordered
+# differently than the table we are targetting.
+test_that("Writing data.frame with column ordering different than target table", {
+  con <- test_con("POSTGRES")
+  values <- data.frame(
+    datetime = as.POSIXct(c(14, 15), origin = "2016-01-01", tz = "UTC"),
+    name = c("one", "two"),
+    num = 1:2,
+    stringsAsFactors = FALSE
+  )
+  tbl <- "test_order_write"
+  dbCreateTable(con, tbl, values)
+  dbAppendTable(con, tbl, values[c(2, 3, 1)])
+  on.exit(dbRemoveTable(con, tbl))
+
+  received <- dbReadTable(con, tbl)
+  received <- received[order(received$num), ]
+  row.names(received) <- NULL
+  expect_equal(values, received)
+})
+
+test_that("odbcPreviewObject", {
+  con <- test_con("POSTGRES")
+  tbl <- local_table(con, "test_preview", data.frame(a = 1:10L))
+
+  # There should be no "Pending rows" warning
+  expect_no_warning({
+    res <- odbcPreviewObject(con, rowLimit = 3, table = tbl)
+  })
+  expect_equal(nrow(res), 3)
+})
+

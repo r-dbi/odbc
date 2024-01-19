@@ -81,33 +81,38 @@ test_that("MySQL", {
     "reexport",
     NULL
   ))
+})
 
-  test_roundtrip(columns = c("logical", "binary"))
-  test_that("odbcPreviewObject", {
-    tblName <- "test_preview"
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    dbWriteTable(con, tblName, data.frame(a = 1:10L))
-    on.exit(dbRemoveTable(con, tblName))
-    # There should be no "Pending rows" warning
-    expect_no_warning({
-      res <- odbcPreviewObject(con, rowLimit = 3, table = tblName)
-    })
-    expect_equal(nrow(res), 3)
+test_that("can roundtrip columns", {
+  test_roundtrip(test_con("MYSQL"), columns = c("logical", "binary"))
+})
+
+test_that("odbcPreviewObject", {
+  con <- test_con("MYSQL")
+  tbl <- local_table(con, "test_preview", data.frame(a = 1:10L))
+
+  # There should be no "Pending rows" warning
+  expect_no_warning({
+    res <- odbcPreviewObject(con, rowLimit = 3, table = tbl)
   })
-  test_that("sproc result retrieval", {
-    sprocName <- "testSproc"
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    DBI::dbExecute(
-      con,
-      paste0("CREATE PROCEDURE ", sprocName, "(IN arg INT) BEGIN SELECT 'abc' as TestCol; END")
-    )
-    on.exit(DBI::dbExecute(con, paste0("DROP PROCEDURE ", sprocName)))
-    expect_no_error({
-      res <- dbGetQuery(con, paste0("CALL ", sprocName, "(1)"))
-    })
-    expect_identical(
-      res,
-      data.frame("TestCol" = "abc", stringsAsFactors = FALSE)
-    )
+  expect_equal(nrow(res), 3)
+})
+
+test_that("sproc result retrieval", {
+  con <- test_con("MYSQL")
+
+  sprocName <- "testSproc"
+  DBI::dbExecute(
+    con,
+    paste0("CREATE PROCEDURE ", sprocName, "(IN arg INT) BEGIN SELECT 'abc' as TestCol; END")
+  )
+  on.exit(DBI::dbExecute(con, paste0("DROP PROCEDURE ", sprocName)))
+
+  expect_no_error({
+    res <- dbGetQuery(con, paste0("CALL ", sprocName, "(1)"))
   })
+  expect_identical(
+    res,
+    data.frame("TestCol" = "abc", stringsAsFactors = FALSE)
+  )
 })
