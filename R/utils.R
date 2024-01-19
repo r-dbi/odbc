@@ -143,6 +143,23 @@ is_windows <- function() {
 
 compact <- function(x) x[!vapply(x, is.null, logical(1))]
 
+set_odbcsysini <- function() {
+  odbcsysini <- Sys.getenv("ODBCSYSINI")
+  if (!identical(odbcsysini, "")) {
+    return(invisible())
+  }
+
+  tryCatch(
+    {
+      path <- dirname(odbcListConfig()$drivers)
+      Sys.setenv(ODBCSYSINI = path)
+    },
+    error = function(err) NULL
+  )
+
+  invisible()
+}
+
 random_name <- function(prefix = "") {
   vals <- c(letters, LETTERS, 0:9)
   name <- paste0(sample(vals, 10, replace = TRUE), collapse = "")

@@ -9,6 +9,8 @@
   # we can use the standard timezone database elsewhere.
   if (is_windows()) {
     if (!nzchar(Sys.getenv("TZDIR"))) Sys.setenv("TZDIR" = file.path(R.home(), "share", "zoneinfo"))
+  } else {
+    set_odbcsysini()
   }
 }
 
