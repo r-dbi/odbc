@@ -8,6 +8,7 @@
 \alias{dbIsValid,OdbcConnection-method}
 \alias{dbDisconnect,OdbcConnection-method}
 \alias{dbSendQuery,OdbcConnection,character-method}
+\alias{dbExecute,OdbcConnection,character-method}
 \alias{dbSendStatement,OdbcConnection,character-method}
 \alias{dbDataType,OdbcConnection,ANY-method}
 \alias{dbDataType,OdbcConnection,data.frame-method}
@@ -31,7 +32,9 @@
 
 \S4method{dbDisconnect}{OdbcConnection}(conn, ...)
 
-\S4method{dbSendQuery}{OdbcConnection,character}(conn, statement, params = NULL, ..., immediate = is.null(params))
+\S4method{dbSendQuery}{OdbcConnection,character}(conn, statement, params = NULL, ..., immediate = FALSE)
+
+\S4method{dbExecute}{OdbcConnection,character}(conn, statement, params = NULL, ..., immediate = is.null(params))
 
 \S4method{dbSendStatement}{OdbcConnection,character}(conn, statement, params = NULL, ..., immediate = FALSE)
 
