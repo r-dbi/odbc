@@ -95,24 +95,10 @@ setMethod("dbListTables", "Microsoft SQL Server",
            table_name = NULL,
            table_type = NULL,
            ...) {
-    res <- callNextMethod(
-      conn = conn,
-      catalog_name = catalog_name,
-      schema_name = schema_name,
-      table_name = table_name,
-      table_type = table_type,
-      ...
-    )
+    res <- callNextMethod()
 
     if (is.null(catalog_name)) {
-      res_temp <- callNextMethod(
-        conn = conn,
-        catalog_name = "tempdb",
-        schema_name = schema_name,
-        table_name = table_name,
-        table_type = table_type,
-        ...
-      )
+      res_temp <- callNextMethod(conn = conn, catalog_name = "tempdb")
 
       res <- c(res, res_temp)
     }
