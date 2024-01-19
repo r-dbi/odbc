@@ -9,7 +9,7 @@ test_that("can round columns", {
   test_roundtrip(con, columns = c("time", "date", "datetime", "binary", "logical"))
 })
 
-test_that("can detect existance of table", {
+test_that("can detect existence of table", {
   con <- test_con("ORACLE")
 
   tbl1 <- local_table(con, "mtcarstest", mtcars)
