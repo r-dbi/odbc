@@ -85,8 +85,7 @@ setMethod("dbExistsTable", c("Microsoft SQL Server", "character"),
 #' ## `dbListTables()`
 #' The default implementation reports temporary tables as non-existent
 #' when a `catalog_name` isn't supplied since they live in a different catalog.
-#' This method provides a special case for temporary tables, as identified by
-#' `isTempTable()`.
+#' This method provides a special case for temporary tables.
 #' @rdname SQLServer
 #' @usage NULL
 setMethod("dbListTables", "Microsoft SQL Server",
