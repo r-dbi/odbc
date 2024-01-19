@@ -81,6 +81,47 @@ setMethod("dbExistsTable", c("Microsoft SQL Server", "character"),
   }
 )
 
+#' @description
+#' ## `dbListTables()`
+#' The default implementation reports temporary tables as non-existent
+#' when a `catalog_name` isn't supplied since they live in a different catalog.
+#' This method provides a special case for temporary tables, as identified by
+#' `isTempTable()`.
+#' @rdname SQLServer
+#' @usage NULL
+setMethod("dbListTables", "Microsoft SQL Server",
+  function(conn,
+           catalog_name = NULL,
+           schema_name = NULL,
+           table_name = NULL,
+           table_type = NULL,
+           ...) {
+    res <- callNextMethod(
+      conn = conn,
+      catalog_name = catalog_name,
+      schema_name = schema_name,
+      table_name = table_name,
+      table_type = table_type,
+      ...
+    )
+
+    if (is.null(catalog_name)) {
+      res_temp <- callNextMethod(
+        conn = conn,
+        catalog_name = "tempdb",
+        schema_name = schema_name,
+        table_name = table_name,
+        table_type = table_type,
+        ...
+      )
+
+      res <- c(res, res_temp)
+    }
+
+    res
+  }
+)
+
 #' @rdname SQLServer
 #' @usage NULL
 setMethod("dbExistsTable", c("Microsoft SQL Server", "Id"),
@@ -103,7 +144,7 @@ setMethod("dbExistsTable", c("Microsoft SQL Server", "SQL"),
 )
 
 #' @description
-#' ## `odbcConnectionSchemas` 
+#' ## `odbcConnectionSchemas`
 #' Call catalog-specific `sp_tables` to make sure we list the schemas in the
 #' appropriate database/catalog.
 #' @rdname SQLServer

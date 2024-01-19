@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Microsoft SQL Server: `dbListTables()` now includes temporary tables in output
+  (@simonpcouch, #509). 
+
 * `dbSendQuery()` once again defaults to `immediate = FALSE` (since if you're
   using it instead of `dbGetQuery()` you're likely to be using it with 
   `dbBind()`). (#726).
