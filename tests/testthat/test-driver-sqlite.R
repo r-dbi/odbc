@@ -128,25 +128,22 @@ test_that("SQLite", {
     "reexport", # TODO
     NULL
   ))
+})
 
+test_that("unsupported types gives informative error", {
+  con <- test_con("SQLITE")
 
-  local({
-    ## Test that trying to write unsupported types (like complex numbers) throws an
-    ## informative error message
-    con <- DBItest:::connect(DBItest:::get_default_context())
+  df <- data.frame(foo = complex(1))
+  expect_error(dbWriteTable(con, "df", df), "Column 'foo' is of unsupported type: 'complex'")
+})
 
-    df <- data.frame(foo = complex(1))
-    expect_error(dbWriteTable(con, "df", df), "Column 'foo' is of unsupported type: 'complex'")
+test_that("odbcPreviewObject works", {
+  con <- test_con("SQLITE")
+  tbl <- local_table(con, "test_preview", data.frame(a = 1:10L))
+
+  # There should be no "Pending rows" warning
+  expect_no_warning({
+    res <- odbcPreviewObject(con, rowLimit = 3, table = tbl)
   })
-  test_that("odbcPreviewObject", {
-    tblName <- "test_preview"
-    con <- DBItest:::connect(DBItest:::get_default_context())
-    dbWriteTable(con, tblName, data.frame(a = 1:10L))
-    on.exit(dbRemoveTable(con, tblName))
-    # There should be no "Pending rows" warning
-    expect_no_warning({
-      res <- odbcPreviewObject(con, rowLimit = 3, table = tblName)
-    })
-    expect_equal(nrow(res), 3)
-  })
+  expect_equal(nrow(res), 3)
 })

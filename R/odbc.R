@@ -1,10 +1,9 @@
 #' Set the Transaction Isolation Level for a Connection
 #'
-#' @param levels One or more of \Sexpr[stage=render, results=rd]{odbc:::choices_rd(names(odbc:::transactionLevels()))}.
+#' @param levels One or more of `r odbc:::choices_rd(names(odbc:::transactionLevels()))`.
 #' @inheritParams DBI::dbDisconnect
-#' @seealso \url{https://docs.microsoft.com/en-us/sql/odbc/reference/develop-app/setting-the-transaction-isolation-level}
+#' @seealso <https://docs.microsoft.com/en-us/sql/odbc/reference/develop-app/setting-the-transaction-isolation-level>
 #' @export
-#' @noMd
 #' @examples
 #' \dontrun{
 #' # Can use spaces or underscores in between words.

@@ -76,7 +76,7 @@ just any valid bare table name.}
 \item{append}{Allow appending to the destination table. Cannot be
 \code{TRUE} if \code{overwrite} is also \code{TRUE}.}
 
-\item{temporary}{If \code{TRUE}, will generate a temporary table statement.}
+\item{temporary}{If \code{TRUE}, will generate a temporary table.}
 
 \item{row.names}{Either \code{TRUE}, \code{FALSE}, \code{NA} or a string.
 
