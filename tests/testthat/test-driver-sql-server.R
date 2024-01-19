@@ -316,6 +316,9 @@ test_that("can create / write to temp table", {
   globTblName <- "##myglobtmp"
   expect_snapshot_warning(sqlCreateTable(con, globTblName, values, temporary = TRUE))
   expect_no_warning(sqlCreateTable(con, globTblName, values, temporary = FALSE))
+  # ensure we include global temp tables in dbListTables output (#509)
+  local_table(con, globTblName, mtcars)
+  expect_true(globTblName %in% dbListTables(con))
 
   notTempTblName <- "nottemp"
   expect_snapshot_warning(sqlCreateTable(con, notTempTblName, values, temporary = TRUE))
