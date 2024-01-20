@@ -16,7 +16,7 @@
   overwrite = FALSE,
   append = FALSE,
   temporary = FALSE,
-  row.names = NA,
+  row.names = NULL,
   field.types = NULL,
   batch_rows = getOption("odbc.batch_rows", NA),
   ...
@@ -29,7 +29,7 @@
   overwrite = FALSE,
   append = FALSE,
   temporary = FALSE,
-  row.names = NA,
+  row.names = NULL,
   field.types = NULL,
   batch_rows = getOption("odbc.batch_rows", NA),
   ...
@@ -42,13 +42,20 @@
   overwrite = FALSE,
   append = FALSE,
   temporary = FALSE,
-  row.names = NA,
+  row.names = NULL,
   field.types = NULL,
   batch_rows = getOption("odbc.batch_rows", NA),
   ...
 )
 
-\S4method{dbAppendTable}{OdbcConnection}(conn, name, value, ..., row.names = NULL)
+\S4method{dbAppendTable}{OdbcConnection}(
+  conn,
+  name,
+  value,
+  batch_rows = getOption("odbc.batch_rows", NA),
+  ...,
+  row.names = NULL
+)
 
 \S4method{sqlCreateTable}{OdbcConnection}(
   con,
@@ -76,7 +83,7 @@ just any valid bare table name.}
 \item{append}{Allow appending to the destination table. Cannot be
 \code{TRUE} if \code{overwrite} is also \code{TRUE}.}
 
-\item{temporary}{If \code{TRUE}, will generate a temporary table statement.}
+\item{temporary}{If \code{TRUE}, will generate a temporary table.}
 
 \item{row.names}{Either \code{TRUE}, \code{FALSE}, \code{NA} or a string.
 
