@@ -54,7 +54,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="odbc-development-version">odbc (development version)<a class="anchor" aria-label="anchor" href="#odbc-development-version"></a></h2>
-<ul><li><p>Teradata: Fix usage of <code>exact</code> argument in internal methods (<a href="https://github.com/detule" class="external-link">@detule</a>, 717).</p></li>
+<ul><li><p>freetds: Fix regression when executing multiple queries (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/731" class="external-link">#731</a>).</p></li>
+<li><p><code><a href="https://dbi.r-dbi.org/reference/dbAppendTable.html" class="external-link">dbAppendTable()</a></code> Improve performance by checking existence once (<a href="https://github.com/r-dbi/odbc/issues/691" class="external-link">#691</a>).</p></li>
+<li><p>Teradata: Fix usage of <code>exact</code> argument in internal methods (<a href="https://github.com/detule" class="external-link">@detule</a>, 717).</p></li>
 <li><p>On MacOS and Linux, the package will now automatically set the <code>ODBCSYSINI</code> environmental variable when using the unixODBC driver manager. <code>ODBCSYSINI</code> will not be changed if it exists already (<a href="https://github.com/simonpcouch" class="external-link">@simonpcouch</a>, <a href="https://github.com/r-dbi/odbc/issues/709" class="external-link">#709</a>).</p></li>
 <li><p><code><a href="https://dbi.r-dbi.org/reference/dbSendQuery.html" class="external-link">dbSendQuery()</a></code> once again defaults to <code>immediate = FALSE</code> (since if you’re using it instead of <code><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery()</a></code> you’re likely to be using it with <code><a href="https://dbi.r-dbi.org/reference/dbBind.html" class="external-link">dbBind()</a></code>). (<a href="https://github.com/r-dbi/odbc/issues/726" class="external-link">#726</a>).</p></li>
 <li><p>New wrapper for <code><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute()</a></code> that sets <code>immediate = TRUE</code> if you are not supplying <code>params</code>. That should yield a small speed boost in many cases (<a href="https://github.com/r-dbi/odbc/issues/706" class="external-link">#706</a>).</p></li>
@@ -68,7 +70,6 @@
 <li><p><code><a href="../reference/databricks.html">databricks()</a></code> now works with manually supplied <code>pwd</code> and <code>uid</code> (<a href="https://github.com/r-dbi/odbc/issues/690" class="external-link">#690</a>).</p></li>
 <li><p>Oracle: uses correct parent class (<a href="https://github.com/r-dbi/odbc/issues/685" class="external-link">#685</a>).</p></li>
 <li><p>SQL Server: correctly enumerate schemas across databases in connections pane (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/527" class="external-link">#527</a>).</p></li>
-<li><p>SQL Server: now uses column type <code>"BIGINT"</code> integer64 objects (<a href="https://github.com/simonpcouch" class="external-link">@simonpcouch</a>, <a href="https://github.com/r-dbi/odbc/issues/698" class="external-link">#698</a>).</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.0" id="odbc-140">odbc 1.4.0<a class="anchor" aria-label="anchor" href="#odbc-140"></a></h2><p class="text-muted">CRAN release: 2023-12-15</p>

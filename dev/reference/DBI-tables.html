@@ -67,7 +67,7 @@
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  append <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  temporary <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  row.names <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  row.names <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  field.types <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  batch_rows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"odbc.batch_rows"</span>, <span class="cn">NA</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -81,7 +81,7 @@
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  append <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  temporary <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  row.names <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  row.names <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  field.types <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  batch_rows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"odbc.batch_rows"</span>, <span class="cn">NA</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -95,14 +95,21 @@
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  append <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  temporary <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  row.names <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  row.names <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  field.types <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  batch_rows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"odbc.batch_rows"</span>, <span class="cn">NA</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for OdbcConnection</span></span>
-<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbAppendTable.html" class="external-link">dbAppendTable</a></span><span class="op">(</span><span class="va">conn</span>, <span class="va">name</span>, <span class="va">value</span>, <span class="va">...</span>, row.names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbAppendTable.html" class="external-link">dbAppendTable</a></span><span class="op">(</span></span>
+<span>  <span class="va">conn</span>,</span>
+<span>  <span class="va">name</span>,</span>
+<span>  <span class="va">value</span>,</span>
+<span>  batch_rows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"odbc.batch_rows"</span>, <span class="cn">NA</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  row.names <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for OdbcConnection</span></span>
 <span><span class="fu"><a href="https://dbi.r-dbi.org/reference/sqlCreateTable.html" class="external-link">sqlCreateTable</a></span><span class="op">(</span></span>
