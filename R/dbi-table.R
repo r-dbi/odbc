@@ -168,19 +168,13 @@ setMethod("dbAppendTable", "OdbcConnection",
   })
 
 #' @rdname DBI-methods
-#' @details If the `value` argument has an attribute `.odbc.transformed` that
-#' is set to TRUE, then the method immediately returns the input value without
-#' modifications.  This is an optimization to avoid multiple methods that are
-#' chained together from needlessly iterating across the columns of
-#' the data.frame.  It is unlikely that users would ever need to set ( or
-#' interogate ) this attribute directly.
 #' @inheritParams DBI::dbReadTable
 #' @export
 setMethod("sqlData", "OdbcConnection",
   function(con, value, row.names = NA, ...) {
 
     chk <- attr(value, ".odbc.transformed", exact = TRUE)
-    if ( !is.null(chk) && chk == TRUE ) return(value)
+    if (isTRUE(chk)) return(value)
 
     value <- sqlRownamesToColumn(value, row.names)
 
