@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Teradata: Fix usage of `exact` argument in internal methods
+  (@detule, 717).
+
 * On MacOS and Linux, the package will now automatically set the `ODBCSYSINI`
   environmental variable when using the unixODBC driver manager. `ODBCSYSINI`
   will not be changed if it exists already (@simonpcouch, #709).
