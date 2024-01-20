@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* `dbAppendTable()` Improve performance by checking existence once (#691).
+
 * Teradata: Fix usage of `exact` argument in internal methods
   (@detule, 717).
 
@@ -14,7 +16,7 @@
 * New wrapper for `dbExecute()` that sets `immediate = TRUE` if you are 
   not supplying `params`. That should yield a small speed boost in 
   many cases (#706).
-  
+
 * Oracle: Fix checking for existence when identifier components
   contain underscores (@detule, #712).
 
@@ -34,9 +36,6 @@
 
 * SQL Server: correctly enumerate schemas across databases in connections pane
   (@detule, #527).
-
-* SQL Server: now uses column type `"BIGINT"` integer64 objects 
-  (@simonpcouch, #698).
 
 # odbc 1.4.0
 
