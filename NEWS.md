@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Teradata: Fix usage of `exact` argument in internal methods
+  (@detule, 717).
+
 * Oracle: Fix checking for existence when identifier components
   contain underscores (@detule, #712).
 
