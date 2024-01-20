@@ -3,6 +3,18 @@
 * Teradata: Fix usage of `exact` argument in internal methods
   (@detule, 717).
 
+* On MacOS and Linux, the package will now automatically set the `ODBCSYSINI`
+  environmental variable when using the unixODBC driver manager. `ODBCSYSINI`
+  will not be changed if it exists already (@simonpcouch, #709).
+
+* `dbSendQuery()` once again defaults to `immediate = FALSE` (since if you're
+  using it instead of `dbGetQuery()` you're likely to be using it with 
+  `dbBind()`). (#726).
+  
+* New wrapper for `dbExecute()` that sets `immediate = TRUE` if you are 
+  not supplying `params`. That should yield a small speed boost in 
+  many cases (#706).
+  
 * Oracle: Fix checking for existence when identifier components
   contain underscores (@detule, #712).
 

@@ -28,3 +28,11 @@ reference:
   contents:
   - starts_with("odbc")
   - isTempTable
+
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - setup
+  - benchmarks
+  - develop
