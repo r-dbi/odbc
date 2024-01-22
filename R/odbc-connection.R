@@ -20,7 +20,9 @@ OdbcConnection <- function(
   stopifnot(all(has_names(attributes)))
   stopifnot(all(names(attributes) %in% SUPPORTED_CONNECTION_ATTRIBUTES))
 
-  connection_string <- build_connection_string(..., .string = .connection_string)
+  args <- compact(list(...))
+  check_args(args)
+  connection_string <- build_connection_string(args, .connection_string)
 
   bigint <- bigint_mappings()[match.arg(bigint, names(bigint_mappings()))]
 
@@ -28,14 +30,19 @@ OdbcConnection <- function(
     timeout <- 0
   }
 
-  ptr <- odbc_connect(
-    connection_string,
-    timezone = timezone,
-    timezone_out = timezone_out,
-    encoding = encoding,
-    bigint = bigint,
-    timeout = timeout,
-    r_attributes_ = attributes
+  withCallingHandlers(
+    ptr <- odbc_connect(
+      connection_string,
+      timezone = timezone,
+      timezone_out = timezone_out,
+      encoding = encoding,
+      bigint = bigint,
+      timeout = timeout,
+      r_attributes_ = attributes
+    ),
+    error = function(cnd) {
+      check_quoting(args)
+    }
   )
   quote <- connection_quote(ptr)
 
@@ -63,22 +70,61 @@ OdbcConnection <- function(
   )
 }
 
-build_connection_string <- function(.string = NULL, ...) {
-  args <- compact(list(...))
-  check_args(args)
+build_connection_string <- function(args = list(), string = NULL) {
 
-  needs_escape <- grepl("[{}(),;?*=!@]", args) &
-    !grepl("^\\{.*\\}$", args) &
-    !vapply(args, inherits, "AsIs", FUN.VALUE = logical(1))
-
-  args[needs_escape] <- paste0("{", args[needs_escape], "}")
   args_string <- paste(names(args), args, sep = "=", collapse = ";")
 
-  if (!is.null(.string) && !grepl(";$", .string) && length(args) > 0) {
-    .string <- paste0(.string, ";")
+  if (!is.null(string) && !grepl(";$", string) && length(args) > 0) {
+    string <- paste0(string, ";")
   }
 
-  paste0(.string, args_string)
+  paste0(string, args_string)
+}
+
+#' Quote special character when connecting
+#'
+#' @description
+#' When connecting to a database using odbc, all the arguments are concatenated
+#' into a single connection string that looks like `name1=value1;name2=value2`.
+#' That means if your value contains `=` or `;` then it needs to be quoted.
+#' Other rules mean that you need to quote any values that starts or ends with
+#' white space, or contains `{` or `}`.
+#'
+#' This function quotes a string in a way that should work for most drivers,
+#' but unfortunately there doesn't seem to be an approach that works everywhere.
+#' If this function doesn't work for you, you'll need to carefully read the
+#' docs for your driver.
+#'
+#' @export
+#' @param x A string to quote.
+#' @return A quoted string, wrapped in `I()`.
+#' @examples
+#' quote_value("abc")
+#' quote_value("ab'c")
+#'
+#' # Real usage is more likely to look like:
+#' \dontrun{
+#' library(DBI)
+#'
+#' con <- dbConnect(
+#'   odbc::odbc(),
+#'   dsn = "reallycooldatabase"
+#'   password = odbc::quote_value(Sys.getenv("MY_PASSWORD"))
+#' )
+#' }
+quote_value <- function(x) {
+  has_single <- grepl("'", x, fixed = TRUE)
+  has_double <- grepl('"', x, fixed = TRUE)
+
+  if (has_single && has_double) {
+    abort("Don't know how to escape a value with both single and double quotes.")
+  } else if (has_double) {
+    quote <- "'"
+  } else {
+    quote <- '"'
+  }
+
+  I(paste0(quote, x, quote))
 }
 
 check_args <- function(args) {
@@ -103,6 +149,33 @@ check_args <- function(args) {
       call = quote(DBI::dbConnect())
     )
   }
+}
+
+check_quoting <- function(args) {
+  needs_quoting <- vapply(args, needs_quoting, FUN.VALUE = logical(1))
+  if (any(needs_quoting)) {
+    # TODO: use cli pluralisation
+    args <- paste0("`", names(args)[needs_quoting], "`", collapse = ", ")
+
+    inform(c(
+      paste0(args, " contains a special character that may need quoting."),
+      i = "Wrap the value in `odbc::quote_value()` to use a heuristic that should work for most drivers.",
+      i = "If that still doesn't work, consult your driver's documentation.",
+      i = "Otherwise, you can suppress this message by wrapping the value in `I()`."
+    ))
+  }
+}
+
+needs_quoting <- function(x) {
+  if (inherits(x, "AsIs")) {
+    return(FALSE)
+  }
+
+  if (grepl("^\\{.*\\}$", x) || grepl("^(['\\\"]).*\\1$", x)) {
+    return(FALSE)
+  }
+
+  grepl("[{}=;]| $|^ ", x)
 }
 
 # -------------------------------------------------------------------------
