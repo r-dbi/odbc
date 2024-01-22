@@ -9,7 +9,6 @@
 \alias{dbExistsTable,Microsoft SQL Server,character-method}
 \alias{dbExistsTable,Microsoft SQL Server,Id-method}
 \alias{dbExistsTable,Microsoft SQL Server,SQL-method}
-\alias{odbcConnectionSchemas,Microsoft SQL Server-method}
 \alias{sqlCreateTable,Microsoft SQL Server-method}
 \title{SQL Server}
 \description{
@@ -37,12 +36,6 @@ name starts with \code{"#"}.
 The default implementation reports temporary tables as non-existent
 since they live in a different catalog. This method provides a special
 case for temporary tables, as identified by \code{isTempTable()}.
-}
-
-\subsection{\code{odbcConnectionSchemas}}{
-
-Call catalog-specific \code{sp_tables} to make sure we list the schemas in the
-appropriate database/catalog.
 }
 
 \subsection{\code{sqlCreateTable()}}{

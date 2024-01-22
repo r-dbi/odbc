@@ -4,7 +4,6 @@
 \name{Oracle-class}
 \alias{Oracle-class}
 \alias{sqlCreateTable,Oracle-method}
-\alias{odbcConnectionTables,Oracle,character-method}
 \alias{odbcConnectionColumns,Oracle,character-method}
 \title{Oracle}
 \usage{
@@ -18,15 +17,6 @@
   field.types = NULL
 )
 
-\S4method{odbcConnectionTables}{Oracle,character}(
-  conn,
-  name,
-  catalog_name = NULL,
-  schema_name = NULL,
-  table_type = NULL,
-  exact = FALSE
-)
-
 \S4method{odbcConnectionColumns}{Oracle,character}(
   conn,
   name,
@@ -38,15 +28,6 @@
 }
 \description{
 Details of Oracle methods for odbc and DBI generics.
-
-\subsection{\code{odbcConnectionTables()}}{
-
-Query, rather than use \code{SQLTables} ODBC API for performance reasons.
-Main functional difference between the implementation of \code{SQLTables} in the
-OEM driver and the query below is that the OEM implementation also looks
-through the synonyms. Given the performance reports, we sacrifice the
-synonym look-through for better execution time.
-}
 
 \subsection{\code{odbcConnectionColumns()}}{
 

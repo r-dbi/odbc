@@ -102,12 +102,8 @@ setMethod("dbExistsTable", c("Microsoft SQL Server", "SQL"),
   }
 )
 
-#' @description
-#' ## `odbcConnectionSchemas` 
-#' Call catalog-specific `sp_tables` to make sure we list the schemas in the
-#' appropriate database/catalog.
-#' @rdname SQLServer
-#' @usage NULL
+# Call catalog-specific `sp_tables` to make sure we list the schemas in the
+# appropriate database/catalog.
 setMethod(
   "odbcConnectionSchemas", "Microsoft SQL Server",
   function(conn, catalog_name = NULL) {
