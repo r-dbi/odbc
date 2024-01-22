@@ -214,7 +214,7 @@ setMethod("dbListFields", c("OdbcConnection", "character"),
            schema_name = NULL,
            column_name = NULL,
            ...) {
-    cols <- odbcConnectionColumns(
+    cols <- odbcConnectionColumns_(
       conn,
       name = name,
       catalog_name = catalog_name,

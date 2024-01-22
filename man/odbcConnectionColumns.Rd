@@ -2,31 +2,14 @@
 % Please edit documentation in R/odbc-connection.R
 \name{odbcConnectionColumns}
 \alias{odbcConnectionColumns}
-\alias{odbcConnectionColumns,OdbcConnection,Id-method}
-\alias{odbcConnectionColumns,OdbcConnection,character-method}
-\alias{odbcConnectionColumns,OdbcConnection,SQL-method}
 \title{odbcConnectionColumns}
 \usage{
 odbcConnectionColumns(conn, name, ..., exact = FALSE)
-
-\S4method{odbcConnectionColumns}{OdbcConnection,Id}(conn, name, ..., column_name = NULL, exact = FALSE)
-
-\S4method{odbcConnectionColumns}{OdbcConnection,character}(
-  conn,
-  name,
-  ...,
-  catalog_name = NULL,
-  schema_name = NULL,
-  column_name = NULL,
-  exact = FALSE
-)
-
-\S4method{odbcConnectionColumns}{OdbcConnection,SQL}(conn, name, ..., exact = FALSE)
 }
 \arguments{
 \item{conn}{OdbcConnection}
 
-\item{name, catalog_name, schema_name}{Catalog, schema, and table identifiers.
+\item{name}{Table identifiers.
 By default, are interpreted as a ODBC search pattern where \verb{_} and \verb{\%} are
 wild cards. Set \code{exact = TRUE} to match \verb{_} exactly.}
 
@@ -36,9 +19,6 @@ wild cards. Set \code{exact = TRUE} to match \verb{_} exactly.}
 matches exactly, rather than matching any single character. \verb{\%} always
 matches any number of characters as this is unlikely to appear in a
 table name.}
-
-\item{column_name}{The name of the column to return, the default returns
-all columns.}
 }
 \value{
 data.frame with columns
@@ -63,6 +43,10 @@ data.frame with columns
 }
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
+This function has been deprecated in favor of \code{\link[=dbListFields]{dbListFields()}}.
+
 For a given table this function returns detailed information on
 all fields / columns.  The expectation is that this is a relatively thin
 wrapper around the ODBC \code{SQLColumns} function call, with some of the field
@@ -85,7 +69,5 @@ identifiers do not make sense, so we unquote identifiers prior to the call.
 The ODBC documentation on
 \href{https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function}{SQLColumns}
 for further details.
-
-The ODBC documentation on
-\href{https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/arguments-in-catalog-functions}{Arguments to catalog functions}.
 }
+\keyword{internal}

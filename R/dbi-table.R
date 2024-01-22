@@ -36,10 +36,11 @@ odbc_write_table <- function(conn,
                              overwrite = FALSE,
                              append = FALSE,
                              temporary = FALSE,
-                             row.names = NA,
+                             row.names = NULL,
                              field.types = NULL,
                              batch_rows = getOption("odbc.batch_rows", NA),
                              ...) {
+  # Sanity checks: begin
   stopifnot(
     rlang::is_scalar_logical(overwrite) && !is.na(overwrite),
     rlang::is_scalar_logical(append) && !is.na(append),
@@ -49,18 +50,10 @@ odbc_write_table <- function(conn,
   if (append && !is.null(field.types)) {
     stop("Cannot specify field.types with append = TRUE", call. = FALSE)
   }
-
-  if (is.na(batch_rows)) {
-    batch_rows <- NROW(value)
-    if (batch_rows == 0) {
-      batch_rows <- 1
-    }
-  }
-  batch_rows <- parse_size(batch_rows)
-
   if (overwrite && append) {
     stop("overwrite and append cannot both be TRUE", call. = FALSE)
   }
+  # Sanity checks: done
 
   found <- dbExistsTable(conn, name)
   if (found && !overwrite && !append) {
@@ -74,52 +67,24 @@ odbc_write_table <- function(conn,
   }
 
   values <- sqlData(conn, row.names = row.names, value[, , drop = FALSE])
-
   if (!found || overwrite) {
-    sql <- sqlCreateTable(
-      conn,
-      name,
-      values,
+    dbCreateTable(
+      conn = conn,
+      name = name,
+      fields = values,
       field.types = field.types,
-      row.names = FALSE,
+      row.names = NULL,
       temporary = temporary
     )
-    dbExecute(conn, sql, immediate = TRUE)
   }
-
-  fieldDetails <- tryCatch(
-    {
-      details <- odbcConnectionColumns(conn, name, exact = TRUE)
-      details$param_index <- match(details$name, names(values))
-      details[!is.na(details$param_index) & !is.na(details$data_type), ]
-    },
-    error = function(e) {
-      return(NULL)
-    }
+  dbAppendTable(
+    conn = conn,
+    name = name,
+    value = values,
+    batch_rows = batch_rows,
+    ...,
+    row.names = NULL
   )
-
-  if (nrow(value) > 0) {
-    name <- dbQuoteIdentifier(conn, name)
-    fields <- dbQuoteIdentifier(conn, names(values))
-    nparam <- length(fields)
-    params <- rep("?", nparam)
-
-    sql <- paste0(
-      "INSERT INTO ", name, " (", paste0(fields, collapse = ", "), ")\n",
-      "VALUES (", paste0(params, collapse = ", "), ")"
-    )
-    rs <- OdbcResult(conn, sql)
-
-    if (!is.null(fieldDetails) && nrow(fieldDetails) == nparam) {
-      result_describe_parameters(rs@ptr, fieldDetails)
-    }
-
-    tryCatch(
-      result_insert_dataframe(rs@ptr, values, batch_rows),
-      finally = dbClearResult(rs)
-    )
-  }
-
   invisible(TRUE)
 }
 
@@ -152,21 +117,65 @@ setMethod("dbWriteTable", c("OdbcConnection", "SQL", "data.frame"),
 
 #' @rdname DBI-tables
 #' @inheritParams DBI::dbAppendTable
+#' @inheritParams DBI::dbWriteTable
 #' @export
 setMethod("dbAppendTable", "OdbcConnection",
-  function(conn, name, value, ..., row.names = NULL) {
+  function(conn, name, value,
+           batch_rows = getOption("odbc.batch_rows", NA),
+           ..., row.names = NULL) {
     stopifnot(is.null(row.names))
-    stopifnot(dbExistsTable(conn, name))
-    dbWriteTable(conn, name, value, ..., row.names = row.names, append = TRUE)
+
+    fieldDetails <- tryCatch({
+      details <- odbcConnectionColumns_(conn, name, exact = TRUE)
+      details$param_index <- match(details$name, colnames(value))
+      details[!is.na(details$param_index) & !is.na(details$data_type), ]
+    },
+    error = function(e) {
+      return(NULL)
+    })
+
+    if (nrow(value) > 0) {
+      name <- dbQuoteIdentifier(conn, name)
+      fields <- dbQuoteIdentifier(conn, colnames(value))
+      nparam <- length(fields)
+      params <- rep("?", nparam)
+
+      sql <- paste0(
+        "INSERT INTO ", name, " (", paste0(fields, collapse = ", "), ")\n",
+        "VALUES (", paste0(params, collapse = ", "), ")"
+      )
+      rs <- OdbcResult(conn, sql)
+
+      if (!is.null(fieldDetails) && nrow(fieldDetails) == nparam) {
+        result_describe_parameters(rs@ptr, fieldDetails)
+      }
+
+      values <- sqlData(conn, row.names = row.names, value[, , drop = FALSE])
+      if (is.na(batch_rows)) {
+        batch_rows <- NROW(value)
+        if (batch_rows == 0) {
+          batch_rows <- 1
+        }
+      }
+      batch_rows <- parse_size(batch_rows)
+      tryCatch(
+        result_insert_dataframe(rs@ptr, values, batch_rows),
+        finally = dbClearResult(rs)
+      )
+    }
+
     invisible(NA_real_)
-  }
-)
+  })
 
 #' @rdname DBI-methods
 #' @inheritParams DBI::dbReadTable
 #' @export
 setMethod("sqlData", "OdbcConnection",
   function(con, value, row.names = NA, ...) {
+
+    chk <- attr(value, ".odbc.transformed", exact = TRUE)
+    if (isTRUE(chk)) return(value)
+
     value <- sqlRownamesToColumn(value, row.names)
 
     # Convert POSIXlt to POSIXct
@@ -186,6 +195,7 @@ setMethod("sqlData", "OdbcConnection",
       value[is_character] <- lapply(value[is_character], enc2iconv, to = con@encoding)
     }
 
+    attr(value, ".odbc.transformed") <- TRUE
     value
   }
 )

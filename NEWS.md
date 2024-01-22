@@ -3,6 +3,29 @@
 * Microsoft SQL Server: `dbListTables()` now includes temporary tables in output
   (@simonpcouch, #509). 
 
+* Deprecated `odbcConnectionColumns()` (in favor of `dbListFields()`), 
+  `odbcConnectionActions()`, and `odbcConnectionIcon()` (@simonpcouch, #699).
+  
+* `dbConnect()` no longer automatically escapes suspicious characters
+  (since there doesn't seem to be a consistent way to do this across drivers)
+  but instead points you to `quote_value()` which applies a heuristic
+  that should work for most drivers (#718).
+
+* Oracle: use more reliable technique to determine user/schema name (#738).
+
+* freetds: Fix regression when executing multiple queries
+  (@detule, #731).
+
+* `dbAppendTable()` Improve performance by checking existence once (#691).
+
+* Teradata: Fix usage of `exact` argument in internal methods
+  (@detule, 717).
+
+* On MacOS and Linux, the package will now automatically set the `ODBCSYSINI`
+  environmental variable when using the unixODBC driver manager. `ODBCSYSINI`
+  will not be changed if it exists already (@simonpcouch, #709).
+>>>>>>> main
+
 * `dbSendQuery()` once again defaults to `immediate = FALSE` (since if you're
   using it instead of `dbGetQuery()` you're likely to be using it with 
   `dbBind()`). (#726).
@@ -30,9 +53,6 @@
 
 * SQL Server: correctly enumerate schemas across databases in connections pane
   (@detule, #527).
-
-* SQL Server: now uses column type `"BIGINT"` integer64 objects 
-  (@simonpcouch, #698).
 
 # odbc 1.4.0
 

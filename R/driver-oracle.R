@@ -35,11 +35,9 @@ setMethod("sqlCreateTable", "Oracle",
 #' @description
 #' ## `odbcConnectionTables()`
 #'
-#' Query, rather than use `SQLTables` ODBC API for performance reasons.
-#' Main functional difference between the implementation of `SQLTables` in the
-#' OEM driver and the query below is that the OEM implementation also looks
-#' through the synonyms. Given the performance reports, we sacrifice the
-#' synonym look-through for better execution time.
+#' Method for an internal function that otherwise relies on the `SQLTables`
+#' ODBC API. While this method is much faster than the OEM implementation, it
+#' does not look through synonyms.
 setMethod("odbcConnectionTables", c("Oracle", "character"),
   function(conn,
            name,
@@ -50,7 +48,7 @@ setMethod("odbcConnectionTables", c("Oracle", "character"),
     qTable <- getSelector("object_name", name, exact)
     if (is.null(schema_name)) {
       query <- paste0(
-        " SELECT null AS \"table_catalog\", '", conn@info$username, "' AS \"table_schema\", object_name AS \"table_name\", object_type AS \"table_type\", null AS \"table_remarks\"",
+        " SELECT null AS \"table_catalog\", USER AS \"table_schema\", object_name AS \"table_name\", object_type AS \"table_type\", null AS \"table_remarks\"",
         " FROM user_objects ",
         " WHERE 1 = 1 ", qTable,
         " AND ( object_type = 'TABLE' OR object_type = 'VIEW' ) "
@@ -75,7 +73,8 @@ setMethod("odbcConnectionTables", c("Oracle", "character"),
 #'
 #' Query, rather than use `SQLColumns` ODBC API, since we bind a `BIGINT` to
 #' one of the column results and Oracle's OEM driver can't handle it.
-setMethod("odbcConnectionColumns", c("Oracle", "character"),
+#' @usage NULL
+setMethod("odbcConnectionColumns_", c("Oracle", "character"),
   function(conn,
            name,
            catalog_name = NULL,

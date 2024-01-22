@@ -134,8 +134,9 @@ setMethod("dbExistsTable", c("Microsoft SQL Server", "SQL"),
 
 #' @description
 #' ## `odbcConnectionSchemas`
-#' Call catalog-specific `sp_tables` to make sure we list the schemas in the
-#' appropriate database/catalog.
+#'
+#' Method for an internal function. Calls catalog-specific `sp_tables` to make
+#' sure we list the schemas in the appropriate database/catalog.
 #' @rdname SQLServer
 #' @usage NULL
 setMethod(

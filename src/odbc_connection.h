@@ -18,6 +18,7 @@ class odbc_result;
 
 class odbc_connection {
 public:
+  friend odbc_result;
   odbc_connection(
       std::string connection_string,
       std::string timezone = "UTC",
