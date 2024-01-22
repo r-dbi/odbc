@@ -140,11 +140,15 @@ NULL
 
 #' odbcConnectionColumns
 #'
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
 #' For a given table this function returns detailed information on
 #' all fields / columns.  The expectation is that this is a relatively thin
 #' wrapper around the ODBC `SQLColumns` function call, with some of the field
 #' names renamed / re-ordered according to the return specifications below.
 #'
+#' @details
 #' In [dbWriteTable()] we make a call to this method
 #' to get details on the fields of the table we are writing to.  In particular
 #' the columns `data_type`, `column_size`, and `decimal_digits` are used.  An
@@ -176,21 +180,33 @@ NULL
 #'
 #' @rdname odbcConnectionColumns
 #' @export
+odbcConnectionColumns <- function(conn, name, ..., exact = FALSE) {
+  lifecycle::deprecate_warn(
+    "1.4.2",
+    "odbcConnectionColumns()",
+    "dbListFields()"
+  )
+
+  odbcConnectionColumns_(conn = conn, name = name, ..., exact = exact)
+}
+
+#' @rdname odbcConnectionColumns
+#' @usage NULL
 setGeneric(
-  "odbcConnectionColumns",
+  "odbcConnectionColumns_",
   valueClass = "data.frame",
   function(conn, name, ..., exact = FALSE) {
-    standardGeneric("odbcConnectionColumns")
+    standardGeneric("odbcConnectionColumns_")
   }
 )
 
 #' @rdname odbcConnectionColumns
 #' @param column_name The name of the column to return, the default returns
 #'   all columns.
-#' @export
-setMethod("odbcConnectionColumns", c("OdbcConnection", "Id"),
+#' @usage NULL
+setMethod("odbcConnectionColumns_", c("OdbcConnection", "Id"),
   function(conn, name, ..., column_name = NULL, exact = FALSE) {
-    odbcConnectionColumns(conn,
+    odbcConnectionColumns_(conn,
       name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
       schema_name = id_field(name, "schema"),
@@ -201,8 +217,8 @@ setMethod("odbcConnectionColumns", c("OdbcConnection", "Id"),
 )
 
 #' @rdname odbcConnectionColumns
-#' @export
-setMethod("odbcConnectionColumns", c("OdbcConnection", "character"),
+#' @usage NULL
+setMethod("odbcConnectionColumns_", c("OdbcConnection", "character"),
   function(conn,
            name,
            ...,
@@ -234,10 +250,10 @@ setMethod("odbcConnectionColumns", c("OdbcConnection", "character"),
 #' @seealso The ODBC documentation on
 #' [Arguments to catalog functions](https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/arguments-in-catalog-functions).
 #' @rdname odbcConnectionColumns
-#' @export
-setMethod("odbcConnectionColumns", c("OdbcConnection", "SQL"),
+#' @usage NULL
+setMethod("odbcConnectionColumns_", c("OdbcConnection", "SQL"),
   function(conn, name, ...) {
-    odbcConnectionColumns(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+    odbcConnectionColumns_(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   }
 )
 

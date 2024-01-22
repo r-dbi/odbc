@@ -2,26 +2,13 @@
 % Please edit documentation in R/odbc-connection.R
 \name{odbcConnectionColumns}
 \alias{odbcConnectionColumns}
-\alias{odbcConnectionColumns,OdbcConnection,Id-method}
-\alias{odbcConnectionColumns,OdbcConnection,character-method}
-\alias{odbcConnectionColumns,OdbcConnection,SQL-method}
+\alias{odbcConnectionColumns_}
+\alias{odbcConnectionColumns_,OdbcConnection,Id-method}
+\alias{odbcConnectionColumns_,OdbcConnection,character-method}
+\alias{odbcConnectionColumns_,OdbcConnection,SQL-method}
 \title{odbcConnectionColumns}
 \usage{
 odbcConnectionColumns(conn, name, ..., exact = FALSE)
-
-\S4method{odbcConnectionColumns}{OdbcConnection,Id}(conn, name, ..., column_name = NULL, exact = FALSE)
-
-\S4method{odbcConnectionColumns}{OdbcConnection,character}(
-  conn,
-  name,
-  ...,
-  catalog_name = NULL,
-  schema_name = NULL,
-  column_name = NULL,
-  exact = FALSE
-)
-
-\S4method{odbcConnectionColumns}{OdbcConnection,SQL}(conn, name, ..., exact = FALSE)
 }
 \arguments{
 \item{conn}{OdbcConnection}
@@ -63,6 +50,8 @@ data.frame with columns
 }
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
 For a given table this function returns detailed information on
 all fields / columns.  The expectation is that this is a relatively thin
 wrapper around the ODBC \code{SQLColumns} function call, with some of the field

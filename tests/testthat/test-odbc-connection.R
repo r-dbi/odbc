@@ -35,3 +35,21 @@ test_that("errors about case-insensitve arguments", {
     build_connection_string(xa = 1, xA = 1, xb = 1, xB = 1)
   })
 })
+
+# odbcConnectionColumns deprecation --------------------------------------
+
+test_that("odbcConnectionColumns warns on usage (#699)", {
+  con <- test_con("SQLITE")
+  expect_deprecated(odbcConnectionColumns(con, "test"))
+})
+
+test_that("odbcConnectionColumns_ is eventually removed (#699)", {
+  skip_on_cran()
+  if (Sys.Date() > "2026-01-01") {
+    testthat::expect(
+      FALSE,
+      c("Time to unexport `odbcConnectionColumns()` and rename",
+        "`odbcConnectionColumns_()` to `odbcConnectionColumns()`! See #699.")
+    )
+  }
+})

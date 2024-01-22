@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Deprecated `odbcConnectionColumns()` in favor of `dbListFields()` 
+  (@simonpcouch, #699).
+
 * Oracle: use more reliable technique to determine user/schema name (#738).
 
 * freetds: Fix regression when executing multiple queries
