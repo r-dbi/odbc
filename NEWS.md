@@ -24,7 +24,6 @@
 * On MacOS and Linux, the package will now automatically set the `ODBCSYSINI`
   environmental variable when using the unixODBC driver manager. `ODBCSYSINI`
   will not be changed if it exists already (@simonpcouch, #709).
->>>>>>> main
 
 * `dbSendQuery()` once again defaults to `immediate = FALSE` (since if you're
   using it instead of `dbGetQuery()` you're likely to be using it with 
