@@ -2,10 +2,6 @@
 % Please edit documentation in R/odbc-connection.R
 \name{odbcConnectionColumns}
 \alias{odbcConnectionColumns}
-\alias{odbcConnectionColumns_}
-\alias{odbcConnectionColumns_,OdbcConnection,Id-method}
-\alias{odbcConnectionColumns_,OdbcConnection,character-method}
-\alias{odbcConnectionColumns_,OdbcConnection,SQL-method}
 \title{odbcConnectionColumns}
 \usage{
 odbcConnectionColumns(conn, name, ..., exact = FALSE)
@@ -13,9 +9,7 @@ odbcConnectionColumns(conn, name, ..., exact = FALSE)
 \arguments{
 \item{conn}{OdbcConnection}
 
-\item{name, catalog_name, schema_name}{Catalog, schema, and table identifiers.
-By default, are interpreted as a ODBC search pattern where \verb{_} and \verb{\%} are
-wild cards. Set \code{exact = TRUE} to match \verb{_} exactly.}
+\item{name}{Table identifier.}
 
 \item{...}{additional parameters to methods}
 
@@ -23,9 +17,6 @@ wild cards. Set \code{exact = TRUE} to match \verb{_} exactly.}
 matches exactly, rather than matching any single character. \verb{\%} always
 matches any number of characters as this is unlikely to appear in a
 table name.}
-
-\item{column_name}{The name of the column to return, the default returns
-all columns.}
 }
 \value{
 data.frame with columns
@@ -74,7 +65,4 @@ identifiers do not make sense, so we unquote identifiers prior to the call.
 The ODBC documentation on
 \href{https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function}{SQLColumns}
 for further details.
-
-The ODBC documentation on
-\href{https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/arguments-in-catalog-functions}{Arguments to catalog functions}.
 }

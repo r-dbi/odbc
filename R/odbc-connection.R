@@ -153,6 +153,15 @@ NULL
 #' to get details on the fields of the table we are writing to.  In particular
 #' the columns `data_type`, `column_size`, and `decimal_digits` are used.  An
 #' implementation is not necessary for [dbWriteTable()] to work.
+#'
+#' `odbcConnectionColumns` is routed through the `SQLColumns` ODBC
+#' method.  This function, together with remaining catalog functions
+#' (`SQLTables`, etc), by default ( `SQL_ATTR_METADATA_ID == false` ) expect
+#' either ordinary arguments (OA) in the case of the catalog, or pattern value
+#' arguments (PV) in the case of schema/table name.  For these, quoted
+#' identifiers do not make sense, so we unquote identifiers prior to the call.
+#'
+#' @param name Table identifier.
 #' @inheritParams odbcConnectionTables
 #'
 #' @seealso The ODBC documentation on
@@ -190,8 +199,6 @@ odbcConnectionColumns <- function(conn, name, ..., exact = FALSE) {
   odbcConnectionColumns_(conn = conn, name = name, ..., exact = exact)
 }
 
-#' @rdname odbcConnectionColumns
-#' @usage NULL
 setGeneric(
   "odbcConnectionColumns_",
   valueClass = "data.frame",
@@ -200,10 +207,6 @@ setGeneric(
   }
 )
 
-#' @rdname odbcConnectionColumns
-#' @param column_name The name of the column to return, the default returns
-#'   all columns.
-#' @usage NULL
 setMethod("odbcConnectionColumns_", c("OdbcConnection", "Id"),
   function(conn, name, ..., column_name = NULL, exact = FALSE) {
     odbcConnectionColumns_(conn,
@@ -216,8 +219,6 @@ setMethod("odbcConnectionColumns_", c("OdbcConnection", "Id"),
   }
 )
 
-#' @rdname odbcConnectionColumns
-#' @usage NULL
 setMethod("odbcConnectionColumns_", c("OdbcConnection", "character"),
   function(conn,
            name,
@@ -241,16 +242,6 @@ setMethod("odbcConnectionColumns_", c("OdbcConnection", "character"),
   }
 )
 
-#' @details `odbcConnectionColumns` is routed through the `SQLColumns` ODBC
-#'  method.  This function, together with remaining catalog functions
-#'  (`SQLTables`, etc), by default ( `SQL_ATTR_METADATA_ID == false` ) expect
-#'  either ordinary arguments (OA) in the case of the catalog, or pattern value
-#'  arguments (PV) in the case of schema/table name.  For these, quoted
-#'  identifiers do not make sense, so we unquote identifiers prior to the call.
-#' @seealso The ODBC documentation on
-#' [Arguments to catalog functions](https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/arguments-in-catalog-functions).
-#' @rdname odbcConnectionColumns
-#' @usage NULL
 setMethod("odbcConnectionColumns_", c("OdbcConnection", "SQL"),
   function(conn, name, ...) {
     odbcConnectionColumns_(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
