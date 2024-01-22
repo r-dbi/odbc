@@ -214,6 +214,12 @@ odbc_result::~odbc_result() {
     try {
       c_->set_current_result(nullptr);
     } catch (...) {
+      // SQLCancel may throw an error.
+      // Regardless, as this object is
+      // getting destroyed, we need to
+      // make sure the connection is not
+      // holding onto an invalid reference
+      c_->current_result_ = nullptr;
     };
   }
 }

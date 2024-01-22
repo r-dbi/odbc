@@ -80,13 +80,25 @@ setMethod("dbDisconnect", "OdbcConnection",
 #'   SQLPrepare, and the `params` argument is ignored
 #' @export
 setMethod("dbSendQuery", c("OdbcConnection", "character"),
-  function(conn, statement, params = NULL, ..., immediate = is.null(params)) {
+  function(conn, statement, params = NULL, ..., immediate = FALSE) {
     OdbcResult(
       connection = conn,
       statement = statement,
       params = params,
       immediate = immediate
     )
+  }
+)
+
+#' @rdname OdbcConnection
+#' @inheritParams DBI::dbExecute
+#' @export
+setMethod("dbExecute", c("OdbcConnection", "character"),
+  function(conn, statement, params = NULL, ..., immediate = is.null(params)) {
+    rs <- dbSendStatement(conn, statement, params = params, ..., immediate = immediate)
+    on.exit(dbClearResult(rs))
+
+    dbGetRowsAffected(rs)
   }
 )
 

@@ -30,7 +30,8 @@ setMethod("odbcConnectionTables", c("Teradata", "character"),
            name,
            catalog_name = NULL,
            schema_name = NULL,
-           table_type = NULL) {
+           table_type = NULL,
+           exact = FALSE) {
     res <- callNextMethod()
     if (!is.null(schema_name)) {
       return(res)
@@ -42,9 +43,10 @@ setMethod("odbcConnectionTables", c("Teradata", "character"),
     # If a name argument is supplied, subset the temp table names vector
     # to either an exact match, or if pattern value, to an approximate match
     if (!is.null(name)) {
-      if (isPatternValue(name)) {
+      if (!exact && isPatternValue(name)) {
         name <- convertWildCards(name)
       } else {
+        name <- escapePattern(name)
         name <- paste0("^", name, "$")
       }
       tempTableNames <- tempTableNames[grepl(name, tempTableNames)]
