@@ -149,7 +149,16 @@ NULL
 #' to get details on the fields of the table we are writing to.  In particular
 #' the columns `data_type`, `column_size`, and `decimal_digits` are used.  An
 #' implementation is not necessary for [dbWriteTable()] to work.
-#' @inheritParams odbcConnectionTables
+#'
+#' @param conn OdbcConnection
+#' @param name,catalog_name,schema_name Catalog, schema, and table identifiers.
+#'   By default, are interpreted as a ODBC search pattern where `_` and `%` are
+#'   wild cards. Set `exact = TRUE` to match `_` exactly.
+#' @param ... additional parameters to methods
+#' @param exact Set to `TRUE` to escape `_` in identifier names so that it
+#'   matches exactly, rather than matching any single character. `%` always
+#'   matches any number of characters as this is unlikely to appear in a
+#'   table name.
 #'
 #' @seealso The ODBC documentation on
 #' [SQLColumns](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
@@ -258,15 +267,7 @@ setMethod("odbcConnectionColumns", c("OdbcConnection", "SQL"),
 #' DBI::dbListTables and DBI::dbExistsTable methods.
 #' ( The former also advertises pattern value arguments )
 #'
-#' @param conn OdbcConnection
-#' @param name,catalog_name,schema_name Catalog, schema, and table identifiers.
-#'   By default, are interpreted as a ODBC search pattern where `_` and `%` are
-#'   wild cards. Set `exact = TRUE` to match `_` exactly.
-#' @param ... additional parameters to methods
-#' @param exact Set to `TRUE` to escape `_` in identifier names so that it
-#'   matches exactly, rather than matching any single character. `%` always
-#'   matches any number of characters as this is unlikely to appear in a
-#'   table name.
+#' @inheritParams odbcConnectionColumns
 #'
 #' @seealso The ODBC documentation on
 #' [SQLTables](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)

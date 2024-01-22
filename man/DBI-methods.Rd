@@ -43,12 +43,4 @@
 \description{
 Unimportant DBI methods
 }
-\details{
-If the \code{value} argument has an attribute \code{.odbc.transformed} that
-is set to TRUE, then the method immediately returns the input value without
-modifications.  This is an optimization to avoid multiple methods that are
-chained together from needlessly iterating across the columns of
-the data.frame.  It is unlikely that users would ever need to set ( or
-interogate ) this attribute directly.
-}
 \keyword{internal}
