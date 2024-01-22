@@ -68,3 +68,4 @@ The ODBC documentation on
 \href{https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function}{SQLColumns}
 for further details.
 }
+\keyword{internal}

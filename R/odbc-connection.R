@@ -190,6 +190,7 @@ NULL
 #' - nullable
 #'
 #' @rdname odbcConnectionColumns
+#' @keywords internal
 #' @export
 odbcConnectionColumns <- function(conn, name, ..., exact = FALSE) {
   lifecycle::deprecate_warn(
