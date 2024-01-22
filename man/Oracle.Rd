@@ -4,6 +4,7 @@
 \name{Oracle-class}
 \alias{Oracle-class}
 \alias{sqlCreateTable,Oracle-method}
+\alias{odbcConnectionTables,Oracle,character-method}
 \alias{odbcConnectionColumns,Oracle,character-method}
 \title{Oracle}
 \usage{
@@ -17,6 +18,15 @@
   field.types = NULL
 )
 
+\S4method{odbcConnectionTables}{Oracle,character}(
+  conn,
+  name,
+  catalog_name = NULL,
+  schema_name = NULL,
+  table_type = NULL,
+  exact = FALSE
+)
+
 \S4method{odbcConnectionColumns}{Oracle,character}(
   conn,
   name,
@@ -28,6 +38,13 @@
 }
 \description{
 Details of Oracle methods for odbc and DBI generics.
+
+\subsection{\code{odbcConnectionTables()}}{
+
+Method for an internal function that otherwise relies on the \code{SQLTables}
+ODBC API. While this method is much faster than the OEM implementation, it
+does not look through synonyms.
+}
 
 \subsection{\code{odbcConnectionColumns()}}{
 

@@ -31,11 +31,13 @@ setMethod("sqlCreateTable", "Oracle",
   }
 )
 
-# Query, rather than use `SQLTables` ODBC API for performance reasons.
-# Main functional difference between the implementation of `SQLTables` in the
-# OEM driver and the query below is that the OEM implementation also looks
-# through the synonyms. Given the performance reports, we sacrifice the
-# synonym look-through for better execution time.
+#' @rdname Oracle
+#' @description
+#' ## `odbcConnectionTables()`
+#'
+#' Method for an internal function that otherwise relies on the `SQLTables`
+#' ODBC API. While this method is much faster than the OEM implementation, it
+#' does not look through synonyms.
 setMethod("odbcConnectionTables", c("Oracle", "character"),
   function(conn,
            name,
