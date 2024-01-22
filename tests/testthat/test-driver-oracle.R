@@ -1,6 +1,5 @@
-test_that("Oracle", {
-
-  con <- dbConnect(odbc::odbc(), .connection_string = test_connection_string("ORACLE"))
+test_that("can round columns", {
+  con <- test_con("ORACLE")
   # - Long/outstanding issue with batch inserting
   # date/datetime for Oracle.  See for example
   # #349, #350, #391
@@ -8,17 +7,14 @@ test_that("Oracle", {
   # to binary elements of size zero.
   # - Finally, no boolean in Oracle prior to 23
   test_roundtrip(con, columns = c("time", "date", "datetime", "binary", "logical"))
+})
 
-  local({
-    # Test custom dbExistsTable implementation for
-    # Oracle
-    dbWriteTable(con, "mtcarstest", mtcars)
-    expect_true(dbExistsTable(con, "mtcarstest"))
-    dbWriteTable(con, "mtcars_test", mtcars)
-    expect_true(dbExistsTable(con, "mtcars_test"))
-    on.exit({
-      dbRemoveTable(con, "mtcarstest")
-      dbRemoveTable(con, "mtcars_test")
-    })
-  })
+test_that("can detect existence of table", {
+  con <- test_con("ORACLE")
+
+  tbl1 <- local_table(con, "mtcarstest", mtcars)
+  expect_true(dbExistsTable(con, tbl1))
+
+  tbl2 <- local_table(con, "mtcars_test", mtcars)
+  expect_true(dbExistsTable(con, tbl2))
 })
