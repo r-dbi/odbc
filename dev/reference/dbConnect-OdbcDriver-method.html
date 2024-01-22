@@ -112,9 +112,9 @@ arguments to form the final connection string.</p>
 and <code>drv</code> are equivalent. Since this is different to R and a possible
 source of confusion, odbc will error if you supply multiple arguments that
 have the same name when case is ignored.</p>
-<p>Any argument values that contain <code>[]{}(),;?*=!@</code> will be "quoted" by
-wrapping in <code><a href="https://rdrr.io/r/base/Paren.html" class="external-link">{}</a></code>. You can opt-out of this behaviour by wrapping the
-value with <code><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I()</a></code>.</p></dd>
+<p>Any values containing a leading or trailing space, a <code>=</code>, <code>;</code>, <code>{</code>,
+or <code>}</code> are likely to require quoting. Use <code><a href="quote_value.html">quote_value()</a></code> for a fairly
+standard approach or see your driver documentation for specifics.</p></dd>
 
 
 <dt>timezone</dt>
