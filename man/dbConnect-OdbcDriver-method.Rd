@@ -41,9 +41,9 @@ and \code{drv} are equivalent. Since this is different to R and a possible
 source of confusion, odbc will error if you supply multiple arguments that
 have the same name when case is ignored.
 
-Argument values that contain characters likely to require quoting will
-generate a warning suggesting that you either use \code{\link[=quote_value]{quote_value()}} or
-opt-out with \code{I()}.}
+Any values containing a leading or trailing space, a \code{=}, \verb{;}, \verb{\{},
+or \verb{\}} are likely to require quoting. Use \code{\link[=quote_value]{quote_value()}} for a fairly
+standard approach or see your driver documentation for specifics.}
 
 \item{timezone}{The server time zone. Useful if the database has an internal
 timezone that is \emph{not} 'UTC'. If the database is in your local timezone,

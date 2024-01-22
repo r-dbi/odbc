@@ -14,7 +14,7 @@ test_that("combines with existing .connection string", {
 })
 
 test_that("errors if unnamed arguments", {
-  expect_snapshot(build_connection_string(1, 2, 3), error = TRUE)
+  expect_snapshot(check_args(list(1, 2, 3)), error = TRUE)
 })
 
 test_that("errors about case-insensitve arguments", {
@@ -28,7 +28,7 @@ test_that("errors about case-insensitve arguments", {
   })
 })
 
-test_that("warns if your values might need quoting", {
+test_that("messages if values might need quoting", {
   expect_snapshot(check_quoting(list(foo = "f{oo", bar = "b{ar", baz = "baz")))
 })
 

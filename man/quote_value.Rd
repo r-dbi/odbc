@@ -16,13 +16,13 @@ A quoted string, wrapped in \code{I()}.
 When connecting to a database using odbc, all the arguments are concatenated
 into a single connection string that looks like \verb{name1=value1;name2=value2}.
 That means if your value contains \code{=} or \verb{;} then it needs to be quoted.
-Other rules mean that it's generally a good idea to quote any text that
-contains \verb{\{}, \verb{\}} or white space.
+Other rules mean that you need to quote any values that starts or ends with
+white space, or contains \verb{\{} or \verb{\}}.
 
-This function attempts to quote a string in a way that should hopefully
-work for most drivers. Unfortunately, there doesn't seem to be an approach
-that works everywhere, but hopefully this function solves most common
-issues.
+This function quotes a string in a way that should work for most drivers,
+but unfortunately there doesn't seem to be an approach that works everywhere.
+If this function doesn't work for you, you'll need to carefully read the
+docs for your driver.
 }
 \examples{
 quote_value("abc")

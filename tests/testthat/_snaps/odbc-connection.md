@@ -1,10 +1,10 @@
 # errors if unnamed arguments
 
     Code
-      build_connection_string(1, 2, 3)
+      check_args(list(1, 2, 3))
     Condition
-      Error in `build_connection_string()`:
-      ! unused argument (3)
+      Error in `DBI::dbConnect()`:
+      ! All elements of ... must be named.
 
 # errors about case-insensitve arguments
 
