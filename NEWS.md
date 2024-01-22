@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* Oracle: use more reliable technique to determine user/schema name (#738).
+
 * freetds: Fix regression when executing multiple queries
   (@detule, #731).
 
