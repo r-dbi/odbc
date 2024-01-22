@@ -146,9 +146,12 @@ check_args <- function(args) {
   }
 
   needs_quoting <- vapply(args, needs_quoting, FUN.VALUE = logical(1))
-  for(arg in names(args[needs_quoting])) {
+  if (any(needs_quoting)) {
+    # TODO: use cli pluralisation
+    args <- paste0("`", names(args)[needs_quoting], "`", collapse = ", ")
+
     warn(c(
-      paste0("`", arg, "` contains a special character that may need quoting."),
+      paste0(args, " contains a special character that may need quoting."),
       i = "If the connection worked, you don't need to quote it and you can use `I()` to suppress this warning.",
       i = "Otherwise, wrap the value in `odbc::quote_value()` to use a heuristic that should work for most backends.",
       i = "If that still doesn't work, consult your driver's documentation."

@@ -29,7 +29,7 @@ test_that("errors about case-insensitve arguments", {
 })
 
 test_that("warns if your values might need quoting", {
-  expect_snapshot(build_connection_string(foo = "f{o"))
+  expect_snapshot(build_connection_string(foo = "f{oo", bar = "b{ar"))
 })
 
 test_that("correctly detects values that need escaping", {

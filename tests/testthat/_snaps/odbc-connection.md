@@ -31,15 +31,15 @@
 # warns if your values might need quoting
 
     Code
-      build_connection_string(foo = "f{o")
+      build_connection_string(foo = "f{oo", bar = "b{ar")
     Condition
       Warning:
-      `foo` contains a special character that may need quoting.
+      `foo`, `bar` contains a special character that may need quoting.
       i If the connection worked, you don't need to quote it and you can use `I()` to suppress this warning.
       i Otherwise, wrap the value in `odbc::quote_value()` to use a heuristic that should work for most backends.
       i If that still doesn't work, consult your driver's documentation.
     Output
-      [1] "foo=f{o"
+      [1] "foo=f{oo;bar=b{ar"
 
 # automatically picks correct quote type
 
