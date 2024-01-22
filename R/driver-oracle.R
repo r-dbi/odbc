@@ -50,7 +50,7 @@ setMethod("odbcConnectionTables", c("Oracle", "character"),
     qTable <- getSelector("object_name", name, exact)
     if (is.null(schema_name)) {
       query <- paste0(
-        " SELECT null AS \"table_catalog\", '", conn@info$username, "' AS \"table_schema\", object_name AS \"table_name\", object_type AS \"table_type\", null AS \"table_remarks\"",
+        " SELECT null AS \"table_catalog\", USER AS \"table_schema\", object_name AS \"table_name\", object_type AS \"table_type\", null AS \"table_remarks\"",
         " FROM user_objects ",
         " WHERE 1 = 1 ", qTable,
         " AND ( object_type = 'TABLE' OR object_type = 'VIEW' ) "
