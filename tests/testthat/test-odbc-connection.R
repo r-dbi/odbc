@@ -45,11 +45,15 @@ test_that("correctly detects values that need escaping", {
   expect_false(needs_quoting("foo"))
 
   # has a special character
-  expect_true(needs_quoting("foo "))
   expect_true(needs_quoting("foo{"))
   expect_true(needs_quoting("foo}"))
   expect_true(needs_quoting("foo="))
   expect_true(needs_quoting("foo;"))
+
+  # space at start or end
+  expect_true(needs_quoting("foo "))
+  expect_true(needs_quoting(" foo"))
+  expect_false(needs_quoting("fo o"))
 })
 
 test_that("automatically picks correct quote type", {
