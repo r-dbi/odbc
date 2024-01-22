@@ -222,7 +222,16 @@ NULL
 #' to get details on the fields of the table we are writing to.  In particular
 #' the columns `data_type`, `column_size`, and `decimal_digits` are used.  An
 #' implementation is not necessary for [dbWriteTable()] to work.
-#' @inheritParams odbcConnectionTables
+#'
+#' @param conn OdbcConnection
+#' @param name,catalog_name,schema_name Catalog, schema, and table identifiers.
+#'   By default, are interpreted as a ODBC search pattern where `_` and `%` are
+#'   wild cards. Set `exact = TRUE` to match `_` exactly.
+#' @param ... additional parameters to methods
+#' @param exact Set to `TRUE` to escape `_` in identifier names so that it
+#'   matches exactly, rather than matching any single character. `%` always
+#'   matches any number of characters as this is unlikely to appear in a
+#'   table name.
 #'
 #' @seealso The ODBC documentation on
 #' [SQLColumns](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
@@ -314,43 +323,20 @@ setMethod("odbcConnectionColumns", c("OdbcConnection", "SQL"),
   }
 )
 
-#' odbcConnectionTables
-#'
-#' This function returns a listing of tables accessible
-#' to the connected user.
-#' The expectation is that this is a relatively thin
-#' wrapper around the ODBC `SQLTables` function call,
-#' albeit returning a subset of the fields.
-#'
-#' It is important to note that, similar to the ODBC/API
-#' call, this method also accomodates pattern-value arguments
-#' for the catalog, schema, and table name arguments.
-#'
-#' If extending this method, be aware that `package:odbc`
-#' internally uses this method to satisfy both
-#' DBI::dbListTables and DBI::dbExistsTable methods.
-#' ( The former also advertises pattern value arguments )
-#'
-#' @param conn OdbcConnection
-#' @param name,catalog_name,schema_name Catalog, schema, and table identifiers.
-#'   By default, are interpreted as a ODBC search pattern where `_` and `%` are
-#'   wild cards. Set `exact = TRUE` to match `_` exactly.
-#' @param ... additional parameters to methods
-#' @param exact Set to `TRUE` to escape `_` in identifier names so that it
-#'   matches exactly, rather than matching any single character. `%` always
-#'   matches any number of characters as this is unlikely to appear in a
-#'   table name.
-#'
-#' @seealso The ODBC documentation on
-#' [SQLTables](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
-#' for further details.
-#'
-#' @return data.frame with columns
-#' - table_catalog
-#' - table_schema
-#' - table_name
-#' - table_remarks
-#' @rdname odbcConnectionTables
+# This function returns a listing of tables accessible
+# to the connected user.
+# The expectation is that this is a relatively thin
+# wrapper around the ODBC `SQLTables` function call,
+# albeit returning a subset of the fields.
+#
+# It is important to note that, similar to the ODBC/API
+# call, this method also accomodates pattern-value arguments
+# for the catalog, schema, and table name arguments.
+#
+# If extending this method, be aware that `package:odbc`
+# internally uses this method to satisfy both
+# DBI::dbListTables and DBI::dbExistsTable methods.
+# ( The former also advertises pattern value arguments )
 setGeneric(
   "odbcConnectionTables",
   valueClass = "data.frame",
@@ -359,10 +345,6 @@ setGeneric(
   }
 )
 
-#' @rdname odbcConnectionTables
-#' @param table_type List tables of this type, for example 'VIEW'.
-#' See odbcConnectionTableTypes for a listing of available table
-#' types for your connection.
 setMethod("odbcConnectionTables", c("OdbcConnection", "Id"),
   function(conn, name, table_type = NULL, exact = FALSE) {
     odbcConnectionTables(
@@ -376,7 +358,6 @@ setMethod("odbcConnectionTables", c("OdbcConnection", "Id"),
   }
 )
 
-#' @rdname odbcConnectionTables
 setMethod("odbcConnectionTables", c("OdbcConnection", "character"),
   function(conn,
            name,
@@ -399,7 +380,6 @@ setMethod("odbcConnectionTables", c("OdbcConnection", "character"),
   }
 )
 
-#' @rdname odbcConnectionTables
 setMethod("odbcConnectionTables", "OdbcConnection",
   function(conn,
            name = NULL,
@@ -418,7 +398,6 @@ setMethod("odbcConnectionTables", "OdbcConnection",
   }
 )
 
-#' @rdname odbcConnectionTables
 setMethod("odbcConnectionTables", c("OdbcConnection", "SQL"),
   function(conn, name, table_type = NULL, exact = FALSE) {
     odbcConnectionTables(
@@ -430,12 +409,6 @@ setMethod("odbcConnectionTables", c("OdbcConnection", "SQL"),
   }
 )
 
-#' odbcConnectionCatalogs
-#'
-#' This function returns a listing of available
-#' catalogs.
-#' @param conn OdbcConnection
-#' @rdname odbcConnectionCatalogs
 setGeneric(
   "odbcConnectionCatalogs",
   valueClass = "character",
@@ -444,26 +417,14 @@ setGeneric(
   }
 )
 
-#' @rdname odbcConnectionCatalogs
 setMethod("odbcConnectionCatalogs", "OdbcConnection",
   function(conn) {
     connection_sql_catalogs(conn@ptr)
   }
 )
 
-#' odbcConnectionSchemas
-#'
-#' This function returns a listing of available
-#' schemas.
-#'
-#' Currently, for a generic connection the
-#' catalog_name argument is ignored.
-#'
-#' @param conn OdbcConnection
-#' @param catalog_name Catalog where
-#' we are looking to list schemas.
-#' @keywords internal
-#' @rdname odbcConnectionSchemas
+# Currently, for a generic connection the
+# catalog_name argument is ignored.
 setGeneric(
   "odbcConnectionSchemas",
   valueClass = "character",
@@ -472,19 +433,12 @@ setGeneric(
   }
 )
 
-#' @rdname odbcConnectionSchemas
 setMethod("odbcConnectionSchemas", "OdbcConnection",
   function(conn, catalog_name = NULL) {
     connection_sql_schemas(conn@ptr)
   }
 )
 
-#' odbcConnectionTableTypes
-#'
-#' This function returns a listing of table
-#' types available in database.
-#' @param conn OdbcConnection
-#' @rdname odbcConnectionTableTypes
 setGeneric(
   "odbcConnectionTableTypes",
   valueClass = "character",
@@ -493,7 +447,6 @@ setGeneric(
   }
 )
 
-#' @rdname odbcConnectionTableTypes
 setMethod("odbcConnectionTableTypes", "OdbcConnection",
   function(conn) {
     connection_sql_table_types(conn@ptr)

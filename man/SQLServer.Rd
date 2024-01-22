@@ -41,8 +41,8 @@ case for temporary tables, as identified by \code{isTempTable()}.
 
 \subsection{\code{odbcConnectionSchemas}}{
 
-Call catalog-specific \code{sp_tables} to make sure we list the schemas in the
-appropriate database/catalog.
+Method for an internal function. Calls catalog-specific \code{sp_tables} to make
+sure we list the schemas in the appropriate database/catalog.
 }
 
 \subsection{\code{sqlCreateTable()}}{
