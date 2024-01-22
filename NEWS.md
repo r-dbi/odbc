@@ -1,7 +1,7 @@
 # odbc (development version)
 
-* Deprecated `odbcConnectionColumns()` (in favor of `dbListFields()`) and
-  `odbcConnectionActions()` (@simonpcouch, #699).
+* Deprecated `odbcConnectionColumns()` (in favor of `dbListFields()`), 
+  `odbcConnectionActions()`, and `odbcConnectionIcon()` (@simonpcouch, #699).
 
 * Oracle: use more reliable technique to determine user/schema name (#738).
 

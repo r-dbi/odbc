@@ -301,8 +301,11 @@ odbcPreviewQuery.Oracle <- function(connection, rowLimit, name) {
 
 #' Get an icon representing a connection.
 #'
+#' @description
+#' `r lifecycle::badge("deprecated")`
 #' Return the path on disk to an icon representing a connection.
 #'
+#' @details
 #' The icon returned should be a 32x32 square image file.
 #'
 #' @param connection A connection object, as returned by `dbConnect()`.
@@ -310,6 +313,11 @@ odbcPreviewQuery.Oracle <- function(connection, rowLimit, name) {
 #' @keywords internal
 #' @export
 odbcConnectionIcon <- function(connection) {
+  lifecycle::deprecate_warn(
+    "1.4.2",
+    "odbcConnectionIcon()"
+  )
+
   UseMethod("odbcConnectionIcon")
 }
 
