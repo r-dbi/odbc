@@ -31,6 +31,15 @@ case for temporary tables, as identified by isTempTable().
 
 
 
+dbListTables()
+
+
+The default implementation reports temporary tables as non-existent
+when a catalog_name isn't supplied since they live in a different catalog.
+This method provides a special case for temporary tables.
+
+
+
 odbcConnectionSchemas
 
 
@@ -74,6 +83,15 @@ dbExistsTable()
 The default implementation reports temporary tables as non-existent
 since they live in a different catalog. This method provides a special
 case for temporary tables, as identified by isTempTable().
+
+
+
+dbListTables()
+
+
+The default implementation reports temporary tables as non-existent
+when a catalog_name isn't supplied since they live in a different catalog.
+This method provides a special case for temporary tables.
 
 
 
@@ -175,6 +193,15 @@ name starts with <code>"#"</code>.</p>
 <p>The default implementation reports temporary tables as non-existent
 since they live in a different catalog. This method provides a special
 case for temporary tables, as identified by <code><a href="isTempTable.html">isTempTable()</a></code>.</p>
+</div>
+
+<div class="section">
+<h3 id="dblisttables-"><code><a href="https://dbi.r-dbi.org/reference/dbListTables.html" class="external-link">dbListTables()</a></code><a class="anchor" aria-label="anchor" href="#dblisttables-"></a></h3>
+
+
+<p>The default implementation reports temporary tables as non-existent
+when a <code>catalog_name</code> isn't supplied since they live in a different catalog.
+This method provides a special case for temporary tables.</p>
 </div>
 
 <div class="section">
