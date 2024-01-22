@@ -321,7 +321,11 @@ odbcConnectionIcon.default <- function(connection) {
 
 #' List the actions supported for the connection
 #'
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
 #' Return a list of actions that can be performed on the connection.
+#' @details
 #'
 #' The list returned is a named list of actions, where each action has the
 #' following properties:
@@ -336,6 +340,11 @@ odbcConnectionIcon.default <- function(connection) {
 #' @keywords internal
 #' @export
 odbcConnectionActions <- function(connection) {
+  lifecycle::deprecate_warn(
+    "1.4.2",
+    "odbcConnectionActions()"
+  )
+
   UseMethod("odbcConnectionActions")
 }
 
