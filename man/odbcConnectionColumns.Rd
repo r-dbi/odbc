@@ -43,6 +43,8 @@ data.frame with columns
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
+This function has been deprecated in favor of \code{\link[=dbListFields]{dbListFields()}}.
+
 For a given table this function returns detailed information on
 all fields / columns.  The expectation is that this is a relatively thin
 wrapper around the ODBC \code{SQLColumns} function call, with some of the field
