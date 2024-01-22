@@ -16,7 +16,7 @@ A quoted string, wrapped in \code{I()}.
 When connecting to a database using odbc, all the arguments are concatenated
 into a single connection string that looks like \verb{name1=value1;name2=value2}.
 That means if your value contains \code{=} or \verb{;} then it needs to be quoted.
-Other rules means that it's generally a good idea to quote any text that
+Other rules mean that it's generally a good idea to quote any text that
 contains \verb{\{}, \verb{\}} or white space.
 
 This function attempts to quote a string in a way that should hopefully

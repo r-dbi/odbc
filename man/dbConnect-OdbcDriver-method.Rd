@@ -41,7 +41,7 @@ and \code{drv} are equivalent. Since this is different to R and a possible
 source of confusion, odbc will error if you supply multiple arguments that
 have the same name when case is ignored.
 
-Argument values that contain character likely to require quoting will
+Argument values that contain characters likely to require quoting will
 generate a warning suggesting that you either use \code{\link[=quote_value]{quote_value()}} or
 opt-out with \code{I()}.}
 
