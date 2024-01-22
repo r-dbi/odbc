@@ -40,7 +40,7 @@ test_that("errors about case-insensitve arguments", {
 
 test_that("odbcConnectionColumns warns on usage (#699)", {
   con <- test_con("SQLITE")
-  expect_deprecated(odbcConnectionColumns(con, "test"))
+  lifecycle::expect_deprecated(odbcConnectionColumns(con, "test"))
 })
 
 test_that("odbcConnectionColumns_ is eventually removed (#699)", {
