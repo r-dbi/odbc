@@ -9,7 +9,9 @@ odbcConnectionColumns(conn, name, ..., exact = FALSE)
 \arguments{
 \item{conn}{OdbcConnection}
 
-\item{name}{Table identifier.}
+\item{name}{Table identifiers.
+By default, are interpreted as a ODBC search pattern where \verb{_} and \verb{\%} are
+wild cards. Set \code{exact = TRUE} to match \verb{_} exactly.}
 
 \item{...}{additional parameters to methods}
 

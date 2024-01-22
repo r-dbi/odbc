@@ -2,14 +2,12 @@
 #' @rdname DBI-classes
 setClass("Spark SQL", contains = "OdbcConnection")
 
-#' @details Databricks supports multiple catalogs.  On the other hand,
-#' the default implementation of `odbcConnectionSchemas` which routes through
-#' `SQLTables` is likely to enumerate the schemas in the currently active
-#' catalog only.
-#'
-#' This implementation will respect the `catalog_name` arrgument.
-#' @rdname odbcConnectionSchemas
-#' @usage NULL
+# Databricks supports multiple catalogs.  On the other hand,
+# the default implementation of `odbcConnectionSchemas` which routes through
+# `SQLTables` is likely to enumerate the schemas in the currently active
+# catalog only.
+#
+# This implementation will respect the `catalog_name` arrgument.
 setMethod("odbcConnectionSchemas", "Spark SQL",
   function(conn, catalog_name = NULL) {
     if (is.null(catalog_name)) {
