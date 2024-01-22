@@ -1,4 +1,4 @@
-# odbc (development version)
+# odbc 1.4.2
 
 * `dbAppendTable()` Improve performance by checking existence once (#691).
 
