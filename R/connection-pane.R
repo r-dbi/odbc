@@ -318,11 +318,10 @@ odbcConnectionIcon <- function(connection) {
     "odbcConnectionIcon()"
   )
 
-  UseMethod("odbcConnectionIcon")
+  odbcConnectionIcon_(connection)
 }
 
-#' @export
-odbcConnectionIcon.default <- function(connection) {
+odbcConnectionIcon_ <- function(connection) {
   # no icon is returned by default
   ""
 }
@@ -353,11 +352,10 @@ odbcConnectionActions <- function(connection) {
     "odbcConnectionActions()"
   )
 
-  UseMethod("odbcConnectionActions")
+  odbcConnectionActions_(connection)
 }
 
-#' @export
-odbcConnectionActions.default <- function(connection) {
+odbcConnectionActions_ <- function(connection) {
   actions <- list()
 
   if (exists(".rs.api.documentNew")) {
@@ -462,7 +460,7 @@ on_connection_opened <- function(connection, code) {
   }
 
   # find an icon for this DBMS
-  icon <- odbcConnectionIcon(connection)
+  icon <- odbcConnectionIcon_(connection)
 
   # let observer know that connection has opened
   observer$connectionOpened(
@@ -505,7 +503,7 @@ on_connection_opened <- function(connection, code) {
     },
 
     # other actions that can be executed on this connection
-    actions = odbcConnectionActions(connection),
+    actions = odbcConnectionActions_(connection),
 
     # raw connection object
     connectionObject = connection

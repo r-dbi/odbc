@@ -77,7 +77,7 @@ test_that("odbcConnectionColumns_ is eventually removed (#699)", {
     testthat::expect(
       FALSE,
       c("Time to unexport deprecated `odbcConnection*()` functions and rename",
-        "`odbcConnectionColumns_()` to `odbcConnectionColumns()`! See #699.")
+        "`odbcConnection*_()` to `odbcConnection*()`! See #699.")
     )
   }
 })
