@@ -27,7 +27,6 @@
   not supplying `params`. That should yield a small speed boost in 
   many cases (#706).
 
->>>>>>> 3b532ef05f8b9d71de011bbe04830e10eb509880
 * Oracle: Fix checking for existence when identifier components
   contain underscores (@detule, #712).
 
