@@ -7,6 +7,7 @@
 \alias{isTempTable,Microsoft SQL Server,character-method}
 \alias{isTempTable,Microsoft SQL Server,SQL-method}
 \alias{dbExistsTable,Microsoft SQL Server,character-method}
+\alias{dbListTables,Microsoft SQL Server-method}
 \alias{dbExistsTable,Microsoft SQL Server,Id-method}
 \alias{dbExistsTable,Microsoft SQL Server,SQL-method}
 \alias{odbcConnectionSchemas,Microsoft SQL Server-method}
@@ -37,6 +38,13 @@ name starts with \code{"#"}.
 The default implementation reports temporary tables as non-existent
 since they live in a different catalog. This method provides a special
 case for temporary tables, as identified by \code{isTempTable()}.
+}
+
+\subsection{\code{dbListTables()}}{
+
+The default implementation reports temporary tables as non-existent
+when a \code{catalog_name} isn't supplied since they live in a different catalog.
+This method provides a special case for temporary tables.
 }
 
 \subsection{\code{odbcConnectionSchemas}}{

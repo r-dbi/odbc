@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Microsoft SQL Server: `dbListTables()` now includes temporary tables in output
+  (@simonpcouch, #509). 
+
 * Deprecated `odbcConnectionColumns()` (in favor of `dbListFields()`), 
   `odbcConnectionActions()`, and `odbcConnectionIcon()` (@simonpcouch, #699).
   
