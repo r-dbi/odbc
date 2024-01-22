@@ -4,11 +4,9 @@
 odbcConnectionTables()
 
 
-Query, rather than use SQLTables ODBC API for performance reasons.
-Main functional difference between the implementation of SQLTables in the
-OEM driver and the query below is that the OEM implementation also looks
-through the synonyms. Given the performance reports, we sacrifice the
-synonym look-through for better execution time.
+Method for an internal function that otherwise relies on the SQLTables
+ODBC API. While this method is much faster than the OEM implementation, it
+does not look through synonyms.
 
 
 
@@ -23,11 +21,9 @@ one of the column results and Oracle's OEM driver can't handle it.
 odbcConnectionTables()
 
 
-Query, rather than use SQLTables ODBC API for performance reasons.
-Main functional difference between the implementation of SQLTables in the
-OEM driver and the query below is that the OEM implementation also looks
-through the synonyms. Given the performance reports, we sacrifice the
-synonym look-through for better execution time.
+Method for an internal function that otherwise relies on the SQLTables
+ODBC API. While this method is much faster than the OEM implementation, it
+does not look through synonyms.
 
 
 
@@ -94,14 +90,12 @@ one of the column results and Oracle's OEM driver can't handle it.
     <div class="ref-description section level2">
     <p>Details of Oracle methods for odbc and DBI generics.</p>
 <div class="section">
-<h3 id="odbcconnectiontables-"><code><a href="odbcConnectionTables.html">odbcConnectionTables()</a></code><a class="anchor" aria-label="anchor" href="#odbcconnectiontables-"></a></h3>
+<h3 id="odbcconnectiontables-"><code>odbcConnectionTables()</code><a class="anchor" aria-label="anchor" href="#odbcconnectiontables-"></a></h3>
 
 
-<p>Query, rather than use <code>SQLTables</code> ODBC API for performance reasons.
-Main functional difference between the implementation of <code>SQLTables</code> in the
-OEM driver and the query below is that the OEM implementation also looks
-through the synonyms. Given the performance reports, we sacrifice the
-synonym look-through for better execution time.</p>
+<p>Method for an internal function that otherwise relies on the <code>SQLTables</code>
+ODBC API. While this method is much faster than the OEM implementation, it
+does not look through synonyms.</p>
 </div>
 
 <div class="section">
@@ -128,7 +122,7 @@ one of the column results and Oracle's OEM driver can't handle it.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for Oracle,character</span></span>
-<span><span class="fu"><a href="odbcConnectionTables.html">odbcConnectionTables</a></span><span class="op">(</span></span>
+<span><span class="fu">odbcConnectionTables</span><span class="op">(</span></span>
 <span>  <span class="va">conn</span>,</span>
 <span>  <span class="va">name</span>,</span>
 <span>  catalog_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
