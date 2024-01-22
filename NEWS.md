@@ -2,6 +2,11 @@
 
 * Deprecated `odbcConnectionColumns()` (in favor of `dbListFields()`), 
   `odbcConnectionActions()`, and `odbcConnectionIcon()` (@simonpcouch, #699).
+  
+* `dbConnect()` no longer automatically escapes suspicious characters
+  (since there doesn't seem to be a consistent way to do this across drivers)
+  but instead points you to `quote_value()` which applies a heuristic
+  that should work for most drivers (#718).
 
 * Oracle: use more reliable technique to determine user/schema name (#738).
 

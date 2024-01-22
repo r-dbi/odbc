@@ -73,9 +73,9 @@ setMethod("show", "OdbcDriver",
 #'   source of confusion, odbc will error if you supply multiple arguments that
 #'   have the same name when case is ignored.
 #'
-#'   Any argument values that contain `[]{}(),;?*=!@` will be "quoted" by
-#'   wrapping in `{}`. You can opt-out of this behaviour by wrapping the
-#'   value with `I()`.
+#'   Any values containing a leading or trailing space, a `=`, `;`, `{`,
+#'   or `}` are likely to require quoting. Use [quote_value()] for a fairly
+#'   standard approach or see your driver documentation for specifics.
 #' @param .connection_string A complete connection string, useful if you are
 #'   copy pasting it from another source. If this argument is used, any
 #'   additional arguments will be appended to this string.
