@@ -3,14 +3,14 @@
 
 test_that("handles simple inputs", {
   expect_equal(build_connection_string(), "")
-  expect_equal(build_connection_string(foo = "1"), "foo=1")
-  expect_equal(build_connection_string(foo = "1", bar = "2"), "foo=1;bar=2")
+  expect_equal(build_connection_string(list(foo = "1")), "foo=1")
+  expect_equal(build_connection_string(list(foo = "1", bar = "2")), "foo=1;bar=2")
 })
 
 test_that("combines with existing .connection string", {
-  expect_equal(build_connection_string("x=1"), "x=1")
-  expect_equal(build_connection_string("x=1", foo = "1"), "x=1;foo=1")
-  expect_equal(build_connection_string("x=1;", foo = "1"), "x=1;foo=1")
+  expect_equal(build_connection_string(string = "x=1"), "x=1")
+  expect_equal(build_connection_string(list(foo = "1"), "x=1"), "x=1;foo=1")
+  expect_equal(build_connection_string(list(foo = "1"), "x=1;"), "x=1;foo=1")
 })
 
 test_that("errors if unnamed arguments", {
@@ -18,18 +18,18 @@ test_that("errors if unnamed arguments", {
 })
 
 test_that("errors about case-insensitve arguments", {
-  expect_no_error(build_connection_string())
-  expect_no_error(build_connection_string(x = 1, y = 1))
+  expect_no_error(check_args(list()))
+  expect_no_error(check_args(list(x = 1, y = 1)))
 
   expect_snapshot(error = TRUE, {
-    build_connection_string(xa = 1, xA = 1)
-    build_connection_string(xa = 1, xA = 1, XA = 1)
-    build_connection_string(xa = 1, xA = 1, xb = 1, xB = 1)
+    check_args(list(xa = 1, xA = 1))
+    check_args(list(xa = 1, xA = 1, XA = 1))
+    check_args(list(xa = 1, xA = 1, xb = 1, xB = 1))
   })
 })
 
 test_that("warns if your values might need quoting", {
-  expect_snapshot(build_connection_string(foo = "f{oo", bar = "b{ar"))
+  expect_snapshot(check_quoting(list(foo = "f{oo", bar = "b{ar", baz = "baz")))
 })
 
 test_that("correctly detects values that need escaping", {

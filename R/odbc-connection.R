@@ -20,7 +20,9 @@ OdbcConnection <- function(
   stopifnot(all(has_names(attributes)))
   stopifnot(all(names(attributes) %in% SUPPORTED_CONNECTION_ATTRIBUTES))
 
-  connection_string <- build_connection_string(..., .string = .connection_string)
+  args <- compact(list(...))
+  check_args(args)
+  connection_string <- build_connection_string(args, .connection_string)
 
   bigint <- bigint_mappings()[match.arg(bigint, names(bigint_mappings()))]
 
@@ -28,14 +30,19 @@ OdbcConnection <- function(
     timeout <- 0
   }
 
-  ptr <- odbc_connect(
-    connection_string,
-    timezone = timezone,
-    timezone_out = timezone_out,
-    encoding = encoding,
-    bigint = bigint,
-    timeout = timeout,
-    r_attributes_ = attributes
+  withCallingHandlers(
+    ptr <- odbc_connect(
+      connection_string,
+      timezone = timezone,
+      timezone_out = timezone_out,
+      encoding = encoding,
+      bigint = bigint,
+      timeout = timeout,
+      r_attributes_ = attributes
+    ),
+    error = function(cnd) {
+      check_quoting(args)
+    }
   )
   quote <- connection_quote(ptr)
 
@@ -63,17 +70,15 @@ OdbcConnection <- function(
   )
 }
 
-build_connection_string <- function(.string = NULL, ...) {
-  args <- compact(list(...))
-  check_args(args)
+build_connection_string <- function(args = list(), string = NULL) {
 
   args_string <- paste(names(args), args, sep = "=", collapse = ";")
 
-  if (!is.null(.string) && !grepl(";$", .string) && length(args) > 0) {
-    .string <- paste0(.string, ";")
+  if (!is.null(string) && !grepl(";$", string) && length(args) > 0) {
+    string <- paste0(string, ";")
   }
 
-  paste0(.string, args_string)
+  paste0(string, args_string)
 }
 
 #' Quote special character when connecting
@@ -144,17 +149,19 @@ check_args <- function(args) {
       call = quote(DBI::dbConnect())
     )
   }
+}
 
+check_quoting <- function(args) {
   needs_quoting <- vapply(args, needs_quoting, FUN.VALUE = logical(1))
   if (any(needs_quoting)) {
     # TODO: use cli pluralisation
     args <- paste0("`", names(args)[needs_quoting], "`", collapse = ", ")
 
-    warn(c(
+    inform(c(
       paste0(args, " contains a special character that may need quoting."),
-      i = "If the connection worked, you don't need to quote it and you can use `I()` to suppress this warning.",
-      i = "Otherwise, wrap the value in `odbc::quote_value()` to use a heuristic that should work for most backends.",
-      i = "If that still doesn't work, consult your driver's documentation."
+      i = "Wrap the value in `odbc::quote_value()` to use a heuristic that should work for most drivers.",
+      i = "If that still doesn't work, consult your driver's documentation.",
+      i = "Otherwise, you can suppress this message by wrapping the value in `I()`."
     ))
   }
 }

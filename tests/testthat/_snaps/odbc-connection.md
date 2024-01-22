@@ -3,25 +3,25 @@
     Code
       build_connection_string(1, 2, 3)
     Condition
-      Error in `DBI::dbConnect()`:
-      ! All elements of ... must be named.
+      Error in `build_connection_string()`:
+      ! unused argument (3)
 
 # errors about case-insensitve arguments
 
     Code
-      build_connection_string(xa = 1, xA = 1)
+      check_args(list(xa = 1, xA = 1))
     Condition
       Error in `DBI::dbConnect()`:
       ! After ignoring case, some arguments have the same name:
       * xa, xA
     Code
-      build_connection_string(xa = 1, xA = 1, XA = 1)
+      check_args(list(xa = 1, xA = 1, XA = 1))
     Condition
       Error in `DBI::dbConnect()`:
       ! After ignoring case, some arguments have the same name:
       * xa, xA, XA
     Code
-      build_connection_string(xa = 1, xA = 1, xb = 1, xB = 1)
+      check_args(list(xa = 1, xA = 1, xb = 1, xB = 1))
     Condition
       Error in `DBI::dbConnect()`:
       ! After ignoring case, some arguments have the same name:
@@ -31,15 +31,12 @@
 # warns if your values might need quoting
 
     Code
-      build_connection_string(foo = "f{oo", bar = "b{ar")
-    Condition
-      Warning:
+      check_quoting(list(foo = "f{oo", bar = "b{ar", baz = "baz"))
+    Message
       `foo`, `bar` contains a special character that may need quoting.
-      i If the connection worked, you don't need to quote it and you can use `I()` to suppress this warning.
-      i Otherwise, wrap the value in `odbc::quote_value()` to use a heuristic that should work for most backends.
+      i Wrap the value in `odbc::quote_value()` to use a heuristic that should work for most drivers.
       i If that still doesn't work, consult your driver's documentation.
-    Output
-      [1] "foo=f{oo;bar=b{ar"
+      i Otherwise, you can suppress this message by wrapping the value in `I()`.
 
 # automatically picks correct quote type
 
