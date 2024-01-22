@@ -28,7 +28,7 @@
       * xa, xA
       * xb, xB
 
-# warns if your values might need quoting
+# messages if values might need quoting
 
     Code
       check_quoting(list(foo = "f{oo", bar = "b{ar", baz = "baz"))

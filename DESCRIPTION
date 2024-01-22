@@ -23,6 +23,7 @@ Imports:
     blob (>= 1.2.0),
     DBI (>= 1.0.0),
     hms,
+    lifecycle,
     methods,
     Rcpp (>= 0.12.11),
     rlang (>= 0.2.0)

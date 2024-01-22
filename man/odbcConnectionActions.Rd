@@ -13,6 +13,8 @@ odbcConnectionActions(connection)
 A named list of actions that can be performed on the connection.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
 Return a list of actions that can be performed on the connection.
 }
 \details{

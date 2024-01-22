@@ -213,18 +213,31 @@ NULL
 
 #' odbcConnectionColumns
 #'
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' This function has been deprecated in favor of [dbListFields()].
+#'
 #' For a given table this function returns detailed information on
 #' all fields / columns.  The expectation is that this is a relatively thin
 #' wrapper around the ODBC `SQLColumns` function call, with some of the field
 #' names renamed / re-ordered according to the return specifications below.
 #'
+#' @details
 #' In [dbWriteTable()] we make a call to this method
 #' to get details on the fields of the table we are writing to.  In particular
 #' the columns `data_type`, `column_size`, and `decimal_digits` are used.  An
 #' implementation is not necessary for [dbWriteTable()] to work.
 #'
+#' `odbcConnectionColumns` is routed through the `SQLColumns` ODBC
+#' method.  This function, together with remaining catalog functions
+#' (`SQLTables`, etc), by default ( `SQL_ATTR_METADATA_ID == false` ) expect
+#' either ordinary arguments (OA) in the case of the catalog, or pattern value
+#' arguments (PV) in the case of schema/table name.  For these, quoted
+#' identifiers do not make sense, so we unquote identifiers prior to the call.
+#'
 #' @param conn OdbcConnection
-#' @param name,catalog_name,schema_name Catalog, schema, and table identifiers.
+#' @param name Table identifiers.
 #'   By default, are interpreted as a ODBC search pattern where `_` and `%` are
 #'   wild cards. Set `exact = TRUE` to match `_` exactly.
 #' @param ... additional parameters to methods
@@ -257,22 +270,29 @@ NULL
 #' - nullable
 #'
 #' @rdname odbcConnectionColumns
+#' @keywords internal
 #' @export
+odbcConnectionColumns <- function(conn, name, ..., exact = FALSE) {
+  lifecycle::deprecate_warn(
+    "1.4.2",
+    "odbcConnectionColumns()",
+    "dbListFields()"
+  )
+
+  odbcConnectionColumns_(conn = conn, name = name, ..., exact = exact)
+}
+
 setGeneric(
-  "odbcConnectionColumns",
+  "odbcConnectionColumns_",
   valueClass = "data.frame",
   function(conn, name, ..., exact = FALSE) {
-    standardGeneric("odbcConnectionColumns")
+    standardGeneric("odbcConnectionColumns_")
   }
 )
 
-#' @rdname odbcConnectionColumns
-#' @param column_name The name of the column to return, the default returns
-#'   all columns.
-#' @export
-setMethod("odbcConnectionColumns", c("OdbcConnection", "Id"),
+setMethod("odbcConnectionColumns_", c("OdbcConnection", "Id"),
   function(conn, name, ..., column_name = NULL, exact = FALSE) {
-    odbcConnectionColumns(conn,
+    odbcConnectionColumns_(conn,
       name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
       schema_name = id_field(name, "schema"),
@@ -282,9 +302,7 @@ setMethod("odbcConnectionColumns", c("OdbcConnection", "Id"),
   }
 )
 
-#' @rdname odbcConnectionColumns
-#' @export
-setMethod("odbcConnectionColumns", c("OdbcConnection", "character"),
+setMethod("odbcConnectionColumns_", c("OdbcConnection", "character"),
   function(conn,
            name,
            ...,
@@ -307,19 +325,9 @@ setMethod("odbcConnectionColumns", c("OdbcConnection", "character"),
   }
 )
 
-#' @details `odbcConnectionColumns` is routed through the `SQLColumns` ODBC
-#'  method.  This function, together with remaining catalog functions
-#'  (`SQLTables`, etc), by default ( `SQL_ATTR_METADATA_ID == false` ) expect
-#'  either ordinary arguments (OA) in the case of the catalog, or pattern value
-#'  arguments (PV) in the case of schema/table name.  For these, quoted
-#'  identifiers do not make sense, so we unquote identifiers prior to the call.
-#' @seealso The ODBC documentation on
-#' [Arguments to catalog functions](https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/arguments-in-catalog-functions).
-#' @rdname odbcConnectionColumns
-#' @export
-setMethod("odbcConnectionColumns", c("OdbcConnection", "SQL"),
+setMethod("odbcConnectionColumns_", c("OdbcConnection", "SQL"),
   function(conn, name, ...) {
-    odbcConnectionColumns(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+    odbcConnectionColumns_(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   }
 )
 

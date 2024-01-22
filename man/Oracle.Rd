@@ -5,7 +5,7 @@
 \alias{Oracle-class}
 \alias{sqlCreateTable,Oracle-method}
 \alias{odbcConnectionTables,Oracle,character-method}
-\alias{odbcConnectionColumns,Oracle,character-method}
+\alias{odbcConnectionColumns_,Oracle,character-method}
 \title{Oracle}
 \usage{
 \S4method{sqlCreateTable}{Oracle}(
@@ -24,15 +24,6 @@
   catalog_name = NULL,
   schema_name = NULL,
   table_type = NULL,
-  exact = FALSE
-)
-
-\S4method{odbcConnectionColumns}{Oracle,character}(
-  conn,
-  name,
-  catalog_name = NULL,
-  schema_name = NULL,
-  column_name = NULL,
   exact = FALSE
 )
 }

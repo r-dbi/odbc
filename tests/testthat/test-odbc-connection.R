@@ -63,3 +63,21 @@ test_that("automatically picks correct quote type", {
 
   expect_snapshot(quote_value("'\""), error = TRUE)
 })
+
+# odbcConnectionColumns deprecation --------------------------------------
+
+test_that("odbcConnectionColumns warns on usage (#699)", {
+  con <- test_con("SQLITE")
+  lifecycle::expect_deprecated(odbcConnectionColumns(con, "test"))
+})
+
+test_that("odbcConnectionColumns_ is eventually removed (#699)", {
+  skip_on_cran()
+  if (Sys.Date() > "2026-01-01") {
+    testthat::expect(
+      FALSE,
+      c("Time to unexport deprecated `odbcConnection*()` functions and rename",
+        "`odbcConnection*_()` to `odbcConnection*()`! See #699.")
+    )
+  }
+})

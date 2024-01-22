@@ -4,10 +4,11 @@
 "_PACKAGE"
 
 ## usethis namespace: start
-#' @importFrom Rcpp sourceCpp
-#' @importFrom blob blob
 #' @importFrom bit64 integer64
+#' @importFrom blob blob
 #' @importFrom hms hms
+#' @importFrom lifecycle deprecated
+#' @importFrom Rcpp sourceCpp
 #' @useDynLib odbc, .registration = TRUE
 ## usethis namespace: end
 NULL

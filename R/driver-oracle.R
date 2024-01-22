@@ -73,7 +73,8 @@ setMethod("odbcConnectionTables", c("Oracle", "character"),
 #'
 #' Query, rather than use `SQLColumns` ODBC API, since we bind a `BIGINT` to
 #' one of the column results and Oracle's OEM driver can't handle it.
-setMethod("odbcConnectionColumns", c("Oracle", "character"),
+#' @usage NULL
+setMethod("odbcConnectionColumns_", c("Oracle", "character"),
   function(conn,
            name,
            catalog_name = NULL,
