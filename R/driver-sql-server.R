@@ -97,8 +97,12 @@ setMethod("dbListTables", "Microsoft SQL Server",
            ...) {
     res <- callNextMethod()
 
-    if (is.null(catalog_name)) {
-      res_temp <- callNextMethod(conn = conn, catalog_name = "tempdb")
+    if (is.null(catalog_name) && is.null(schema_name)) {
+      res_temp <- callNextMethod(
+        conn = conn,
+        catalog_name = "tempdb",
+        schema_name = "dbo"
+      )
 
       res <- c(res, res_temp)
     }
