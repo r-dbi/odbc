@@ -88,22 +88,10 @@
     <loc>https://odbc.r-dbi.org/reference/odbcConnectionActions.html</loc>
   </url>
   <url>
-    <loc>https://odbc.r-dbi.org/reference/odbcConnectionCatalogs.html</loc>
-  </url>
-  <url>
     <loc>https://odbc.r-dbi.org/reference/odbcConnectionColumns.html</loc>
   </url>
   <url>
     <loc>https://odbc.r-dbi.org/reference/odbcConnectionIcon.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/reference/odbcConnectionSchemas.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/reference/odbcConnectionTableTypes.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/reference/odbcConnectionTables.html</loc>
   </url>
   <url>
     <loc>https://odbc.r-dbi.org/reference/odbcDataType.html</loc>
@@ -134,5 +122,8 @@
   </url>
   <url>
     <loc>https://odbc.r-dbi.org/reference/odbcSetTransactionIsolationLevel.html</loc>
+  </url>
+  <url>
+    <loc>https://odbc.r-dbi.org/reference/quote_value.html</loc>
   </url>
 </urlset>

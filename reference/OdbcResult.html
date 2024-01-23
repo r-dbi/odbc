@@ -12,7 +12,7 @@ for OdbcResult objects."><!-- mathjax --><script src="https://cdnjs.cloudflare.c
     
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,9 +26,9 @@ for OdbcResult objects."><!-- mathjax --><script src="https://cdnjs.cloudflare.c
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/setup.html">Installing and Configuring Drivers</a>
     <a class="dropdown-item" href="../articles/benchmarks.html">Benchmarks</a>
     <a class="dropdown-item" href="../articles/develop.html">Developing odbc</a>
-    <a class="dropdown-item" href="../articles/setup.html">Installing and Configuring Drivers</a>
   </div>
 </li>
 <li class="nav-item">
@@ -114,7 +114,10 @@ or a <a href="https://dbi.r-dbi.org/reference/DBIResult-class.html" class="exter
 
 
 <dt>params</dt>
-<dd><p>A list of bindings, named or unnamed.</p></dd>
+<dd><p>For <code><a href="https://dbi.r-dbi.org/reference/dbBind.html" class="external-link">dbBind()</a></code>, a list of values, named or unnamed,
+or a data frame, with one element/column per query parameter.
+For <code><a href="https://dbi.r-dbi.org/reference/dbBind.html" class="external-link">dbBindArrow()</a></code>, values as a nanoarrow stream,
+with one column per query parameter.</p></dd>
 
 
 <dt>batch_rows</dt>

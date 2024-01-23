@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,9 +24,9 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/setup.html">Installing and Configuring Drivers</a>
     <a class="dropdown-item" href="../articles/benchmarks.html">Benchmarks</a>
     <a class="dropdown-item" href="../articles/develop.html">Developing odbc</a>
-    <a class="dropdown-item" href="../articles/setup.html">Installing and Configuring Drivers</a>
   </div>
 </li>
 <li class="active nav-item">
@@ -53,12 +53,28 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.4.2" id="odbc-142">odbc 1.4.2<a class="anchor" aria-label="anchor" href="#odbc-142"></a></h2><p class="text-muted">CRAN release: 2024-01-22</p>
+<ul><li><p><code><a href="https://dbi.r-dbi.org/reference/dbAppendTable.html" class="external-link">dbAppendTable()</a></code> Improve performance by checking existence once (<a href="https://github.com/r-dbi/odbc/issues/691" class="external-link">#691</a>).</p></li>
+<li><p><code><a href="../reference/dbConnect-OdbcDriver-method.html">dbConnect()</a></code> no longer automatically escapes suspicious characters (since there doesn’t seem to be a consistent way to do this across drivers) but instead points you to <code><a href="../reference/quote_value.html">quote_value()</a></code> which applies a heuristic that should work for most drivers (<a href="https://github.com/r-dbi/odbc/issues/718" class="external-link">#718</a>).</p></li>
+<li><p>New wrapper for <code><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute()</a></code> that sets <code>immediate = TRUE</code> if you are not supplying <code>params</code>. That should yield a small speed boost in many cases (<a href="https://github.com/r-dbi/odbc/issues/706" class="external-link">#706</a>).</p></li>
+<li><p><code><a href="https://dbi.r-dbi.org/reference/dbSendQuery.html" class="external-link">dbSendQuery()</a></code> once again defaults to <code>immediate = FALSE</code> (since if you’re using it instead of <code><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery()</a></code> you’re likely to be using it with <code><a href="https://dbi.r-dbi.org/reference/dbBind.html" class="external-link">dbBind()</a></code>). (<a href="https://github.com/r-dbi/odbc/issues/726" class="external-link">#726</a>).</p></li>
+<li><p>Deprecated <code><a href="../reference/odbcConnectionColumns.html">odbcConnectionColumns()</a></code> (in favor of <code><a href="https://dbi.r-dbi.org/reference/dbListFields.html" class="external-link">dbListFields()</a></code>), <code><a href="../reference/odbcConnectionActions.html">odbcConnectionActions()</a></code>, and <code><a href="../reference/odbcConnectionIcon.html">odbcConnectionIcon()</a></code> (<a href="https://github.com/simonpcouch" class="external-link">@simonpcouch</a>, <a href="https://github.com/r-dbi/odbc/issues/699" class="external-link">#699</a>).</p></li>
+<li>
+<p>Backend specific changes:</p>
+<ul><li><p>databricks: Fix schema enumeration in connections pane (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/715" class="external-link">#715</a>).</p></li>
+<li><p>Oracle: use more reliable technique to determine user/schema name (<a href="https://github.com/r-dbi/odbc/issues/738" class="external-link">#738</a>), and fix <code><a href="https://dbi.r-dbi.org/reference/dbExistsTable.html" class="external-link">dbExistsTable()</a></code> when identifier components contain <code>_</code> (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/712" class="external-link">#712</a>).</p></li>
+<li><p>SQL Server: improvements to <code>dbExists()</code> (<a href="https://github.com/meztez" class="external-link">@meztez</a>, <a href="https://github.com/r-dbi/odbc/issues/724" class="external-link">#724</a>) and <code><a href="https://dbi.r-dbi.org/reference/dbListTables.html" class="external-link">dbListTables()</a></code> (<a href="https://github.com/simonpcouch" class="external-link">@simonpcouch</a>, <a href="https://github.com/r-dbi/odbc/issues/509" class="external-link">#509</a>) for temporary tables. It now uses column type <code>"BIGINT"</code> integer64 objects.</p></li>
+<li><p>SQL Server with freetds driver: no longer crashes when executing multiple queries (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/731" class="external-link">#731</a>).</p></li>
+<li><p>Teradata: Fix usage of <code>exact</code> argument in internal methods (<a href="https://github.com/detule" class="external-link">@detule</a>, 717).</p></li>
+</ul></li>
+<li><p>On MacOS and Linux, the package will now automatically set the <code>ODBCSYSINI</code> environmental variable when using the unixODBC driver manager. <code>ODBCSYSINI</code> will not be changed if it exists already (<a href="https://github.com/simonpcouch" class="external-link">@simonpcouch</a>, <a href="https://github.com/r-dbi/odbc/issues/709" class="external-link">#709</a>).</p></li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.1" id="odbc-141">odbc 1.4.1<a class="anchor" aria-label="anchor" href="#odbc-141"></a></h2><p class="text-muted">CRAN release: 2023-12-21</p>
 <ul><li><p>New <code><a href="../reference/odbcListConfig.html">odbcListConfig()</a></code> lists configuration files on Mac and Linux (<a href="https://github.com/simonpcouch" class="external-link">@simonpcouch</a>, <a href="https://github.com/r-dbi/odbc/issues/565" class="external-link">#565</a>).</p></li>
 <li><p><code><a href="../reference/databricks.html">databricks()</a></code> now works with manually supplied <code>pwd</code> and <code>uid</code> (<a href="https://github.com/r-dbi/odbc/issues/690" class="external-link">#690</a>).</p></li>
 <li><p>Oracle: uses correct parent class (<a href="https://github.com/r-dbi/odbc/issues/685" class="external-link">#685</a>).</p></li>
 <li><p>SQL Server: correctly enumerate schemas across databases in connections pane (<a href="https://github.com/detule" class="external-link">@detule</a>, <a href="https://github.com/r-dbi/odbc/issues/527" class="external-link">#527</a>).</p></li>
-<li><p>SQL Server: now uses column type <code>"BIGINT"</code> integer64 objects (<a href="https://github.com/simonpcouch" class="external-link">@simonpcouch</a>, <a href="https://github.com/r-dbi/odbc/issues/698" class="external-link">#698</a>).</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.0" id="odbc-140">odbc 1.4.0<a class="anchor" aria-label="anchor" href="#odbc-140"></a></h2><p class="text-muted">CRAN release: 2023-12-15</p>

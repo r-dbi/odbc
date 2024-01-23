@@ -18,7 +18,7 @@ below."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/math
     
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,9 +32,9 @@ below."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/math
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/setup.html">Installing and Configuring Drivers</a>
     <a class="dropdown-item" href="../articles/benchmarks.html">Benchmarks</a>
     <a class="dropdown-item" href="../articles/develop.html">Developing odbc</a>
-    <a class="dropdown-item" href="../articles/setup.html">Installing and Configuring Drivers</a>
   </div>
 </li>
 <li class="nav-item">
@@ -112,9 +112,9 @@ arguments to form the final connection string.</p>
 and <code>drv</code> are equivalent. Since this is different to R and a possible
 source of confusion, odbc will error if you supply multiple arguments that
 have the same name when case is ignored.</p>
-<p>Any argument values that contain <code>[]{}(),;?*=!@</code> will be "quoted" by
-wrapping in <code><a href="https://rdrr.io/r/base/Paren.html" class="external-link">{}</a></code>. You can opt-out of this behaviour by wrapping the
-value with <code><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I()</a></code>.</p></dd>
+<p>Any values containing a leading or trailing space, a <code>=</code>, <code>;</code>, <code>{</code>,
+or <code>}</code> are likely to require quoting. Use <code><a href="quote_value.html">quote_value()</a></code> for a fairly
+standard approach or see your driver documentation for specifics.</p></dd>
 
 
 <dt>timezone</dt>

@@ -31,11 +31,20 @@ case for temporary tables, as identified by isTempTable().
 
 
 
+dbListTables()
+
+
+The default implementation reports temporary tables as non-existent
+when a catalog_name isn't supplied since they live in a different catalog.
+This method provides a special case for temporary tables.
+
+
+
 odbcConnectionSchemas
 
 
-Call catalog-specific sp_tables to make sure we list the schemas in the
-appropriate database/catalog.
+Method for an internal function. Calls catalog-specific sp_tables to make
+sure we list the schemas in the appropriate database/catalog.
 
 
 
@@ -77,11 +86,20 @@ case for temporary tables, as identified by isTempTable().
 
 
 
+dbListTables()
+
+
+The default implementation reports temporary tables as non-existent
+when a catalog_name isn't supplied since they live in a different catalog.
+This method provides a special case for temporary tables.
+
+
+
 odbcConnectionSchemas
 
 
-Call catalog-specific sp_tables to make sure we list the schemas in the
-appropriate database/catalog.
+Method for an internal function. Calls catalog-specific sp_tables to make
+sure we list the schemas in the appropriate database/catalog.
 
 
 
@@ -102,7 +120,7 @@ naming conventions (i.e. it doesn't start with #).
     
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -116,9 +134,9 @@ naming conventions (i.e. it doesn't start with #).
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/setup.html">Installing and Configuring Drivers</a>
     <a class="dropdown-item" href="../articles/benchmarks.html">Benchmarks</a>
     <a class="dropdown-item" href="../articles/develop.html">Developing odbc</a>
-    <a class="dropdown-item" href="../articles/setup.html">Installing and Configuring Drivers</a>
   </div>
 </li>
 <li class="nav-item">
@@ -178,11 +196,20 @@ case for temporary tables, as identified by <code><a href="isTempTable.html">isT
 </div>
 
 <div class="section">
+<h3 id="dblisttables-"><code><a href="https://dbi.r-dbi.org/reference/dbListTables.html" class="external-link">dbListTables()</a></code><a class="anchor" aria-label="anchor" href="#dblisttables-"></a></h3>
+
+
+<p>The default implementation reports temporary tables as non-existent
+when a <code>catalog_name</code> isn't supplied since they live in a different catalog.
+This method provides a special case for temporary tables.</p>
+</div>
+
+<div class="section">
 <h3 id="odbcconnectionschemas"><code>odbcConnectionSchemas</code><a class="anchor" aria-label="anchor" href="#odbcconnectionschemas"></a></h3>
 
 
-<p>Call catalog-specific <code>sp_tables</code> to make sure we list the schemas in the
-appropriate database/catalog.</p>
+<p>Method for an internal function. Calls catalog-specific <code>sp_tables</code> to make
+sure we list the schemas in the appropriate database/catalog.</p>
 </div>
 
 <div class="section">
