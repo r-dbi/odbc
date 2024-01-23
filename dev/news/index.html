@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.4.1.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.4.2.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,6 +54,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="odbc-development-version">odbc (development version)<a class="anchor" aria-label="anchor" href="#odbc-development-version"></a></h2>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.4.2" id="odbc-142">odbc 1.4.2<a class="anchor" aria-label="anchor" href="#odbc-142"></a></h2><p class="text-muted">CRAN release: 2024-01-22</p>
 <ul><li><p><code><a href="https://dbi.r-dbi.org/reference/dbAppendTable.html" class="external-link">dbAppendTable()</a></code> Improve performance by checking existence once (<a href="https://github.com/r-dbi/odbc/issues/691" class="external-link">#691</a>).</p></li>
 <li><p><code><a href="../reference/dbConnect-OdbcDriver-method.html">dbConnect()</a></code> no longer automatically escapes suspicious characters (since there doesn’t seem to be a consistent way to do this across drivers) but instead points you to <code><a href="../reference/quote_value.html">quote_value()</a></code> which applies a heuristic that should work for most drivers (<a href="https://github.com/r-dbi/odbc/issues/718" class="external-link">#718</a>).</p></li>
 <li><p>New wrapper for <code><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute()</a></code> that sets <code>immediate = TRUE</code> if you are not supplying <code>params</code>. That should yield a small speed boost in many cases (<a href="https://github.com/r-dbi/odbc/issues/706" class="external-link">#706</a>).</p></li>
