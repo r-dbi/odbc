@@ -5,6 +5,7 @@
 \alias{odbcPreviewQuery.OdbcConnection}
 \alias{odbcPreviewQuery.Microsoft SQL Server}
 \alias{odbcPreviewQuery.Oracle}
+\alias{odbcPreviewQuery.Redshift}
 \title{Create a preview query.}
 \usage{
 odbcPreviewQuery(connection, rowLimit, name)
@@ -14,6 +15,8 @@ odbcPreviewQuery(connection, rowLimit, name)
 \method{odbcPreviewQuery}{`Microsoft SQL Server`}(connection, rowLimit, name)
 
 \method{odbcPreviewQuery}{Oracle}(connection, rowLimit, name)
+
+\method{odbcPreviewQuery}{Redshift}(connection, rowLimit, name)
 }
 \arguments{
 \item{connection}{A connection object, as returned by \code{dbConnect()}.}

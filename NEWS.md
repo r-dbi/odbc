@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Redshift: add `odbcPreviewQuery()` method to improve performance of the 
+  Connections pane (@simonpcouch, #142).
+
 # odbc 1.4.2
 
 * `dbAppendTable()` Improve performance by checking existence once (#691).

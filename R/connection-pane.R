@@ -299,6 +299,12 @@ odbcPreviewQuery.Oracle <- function(connection, rowLimit, name) {
   paste0("SELECT * FROM ", name, " WHERE ROWNUM <= ", rowLimit)
 }
 
+#' Redshift specific top-N syntax
+#' @rdname odbcPreviewQuery
+odbcPreviewQuery.Redshift <- function(connection, rowLimit, name) {
+  paste0("SELECT * FROM ", name, " LIMIT ", rowLimit)
+}
+
 #' Get an icon representing a connection.
 #'
 #' @description
