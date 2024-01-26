@@ -54,3 +54,117 @@ test_that("getSelector", {
   expect_equal(getSelector("mykey", "%", exact = TRUE), " AND mykey LIKE '%'")
   expect_equal(getSelector("mykey", "%", exact = FALSE), " AND mykey LIKE '%'")
 })
+
+test_that("configure_spark() returns early on windows", {
+  local_mocked_bindings(is_windows = function() {TRUE})
+
+  res <- configure_spark()
+
+  expect_equal(res, NULL)
+})
+
+test_that("configure_spark() errors informatively on failure to install unixODBC", {
+  local_mocked_bindings(
+    install_unixodbc_libs = function() {stop("Nope!")},
+    is_windows = function() {FALSE},
+    locate_install_unixodbc = function() {character(0)},
+    has_unixodbc = function() {FALSE}
+  )
+
+  expect_snapshot(configure_spark(), error = TRUE)
+})
+
+test_that("locate_install_unixodbc() returns reasonable values", {
+  skip_on_os("windows")
+  skip_if(!has_unixodbc(), "odbcinst not available.")
+
+  res <- locate_install_unixodbc()
+
+  expect_true(file.exists(res[1]))
+  expect_true(grepl("\\.dylib", res[1]))
+})
+
+test_that("locate_config_spark() returns reasonable values", {
+  simba_spark_ini <- "some/folder/simba.sparkodbc.ini"
+  withr::local_envvar(SIMBASPARKINI = simba_spark_ini)
+  expect_equal(locate_config_spark(), simba_spark_ini)
+})
+
+test_that("configure_unixodbc_spark() writes reasonable entries", {
+  unixodbc_install_path <- "libodbcinst.dylib"
+  spark_config_path <- "simba.sparkodbc.ini"
+
+  withr::local_file(spark_config_path)
+
+  # neither of the relevant fields already there:
+  writeLines(
+    c("some=entries", "not=relevant"),
+    con = spark_config_path
+  )
+
+  configure_unixodbc_spark(
+    unixodbc_install = unixodbc_install_path,
+    spark_config = spark_config_path
+  )
+
+  expect_equal(
+    readLines(spark_config_path),
+    c(
+      "some=entries",
+      "not=relevant",
+      "ODBCInstLib=libodbcinst.dylib",
+      "DriverManagerEncoding=UTF-16"
+    )
+  )
+
+  # both of the relevant fields are already there:
+  writeLines(
+    c("some=entries",
+      "not=relevant",
+      "ODBCInstLib=somewhere.dylib",
+      "DriverManagerEncoding=UTF-8"),
+    con = spark_config_path
+  )
+
+  res <- configure_unixodbc_spark(
+    unixodbc_install = unixodbc_install_path,
+    spark_config = spark_config_path
+  )
+
+  expect_equal(res, NULL)
+  expect_equal(
+    readLines(spark_config_path),
+    c(
+      "some=entries",
+      "not=relevant",
+      "ODBCInstLib=libodbcinst.dylib",
+      "DriverManagerEncoding=UTF-16"
+    )
+  )
+
+  # an entry is there but commented out
+  writeLines(
+    c("some=entries",
+      "not=relevant",
+      ";ODBCInstLib=somewhere.dylib",
+      ";DriverManagerEncoding=UTF-8"),
+    con = spark_config_path
+  )
+
+  configure_unixodbc_spark(
+    unixodbc_install = unixodbc_install_path,
+    spark_config = spark_config_path
+  )
+
+  expect_equal(
+    readLines(spark_config_path),
+    c(
+      "some=entries",
+      "not=relevant",
+      ";ODBCInstLib=somewhere.dylib",
+      ";DriverManagerEncoding=UTF-8",
+      "ODBCInstLib=libodbcinst.dylib",
+      "DriverManagerEncoding=UTF-16"
+    )
+  )
+})

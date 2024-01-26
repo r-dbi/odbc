@@ -11,3 +11,12 @@
       Error:
       ! Identifier must be length 1, 2, or 3.
 
+# configure_spark() errors informatively on failure to install unixODBC
+
+    Code
+      configure_spark()
+    Condition
+      Error in `configure_spark()`:
+      ! Unable to install the unixODBC driver manager.
+      i Please install unixODBC using Homebrew with `brew install unixodbc`.
+
