@@ -169,3 +169,116 @@ random_name <- function(prefix = "") {
   name <- paste0(sample(vals, 10, replace = TRUE), collapse = "")
   paste0(prefix, "odbc_", name)
 }
+
+# apple + spark drive config (#651) --------------------------------------------
+configure_spark <- function() {
+  if (is_windows()) {
+    return()
+  }
+
+  if (!has_unixodbc()) {
+    install_unixodbc()
+  }
+
+  unixodbc_install <- locate_install_unixodbc()
+  if (identical(unixodbc_install, character(0))) {
+    unixodbc_install <- install_unixodbc()
+  }
+
+  spark_config <- locate_config_spark()
+  if (identical(spark_config, character(0))) {
+    abort(c(
+      "Unable to locate the needed spark ODBC driver.",
+      i = "Please install the needed driver from https://www.databricks.com/spark/odbc-drivers-download."
+    ))
+  }
+
+  configure_unixodbc_spark(unixodbc_install[1], spark_config[1])
+}
+
+locate_install_unixodbc <- function() {
+  unixodbc_prefix <- tryCatch(
+    system("odbc_config --lib-prefix", intern = TRUE),
+    error = function(e) character(0)
+  )
+  if (!identical(unixodbc_prefix, character(0))) {
+    return(paste0(unixodbc_prefix, "/libodbcinst.dylib"))
+  }
+
+  common_dirs <- c(
+    "/usr/local/lib",
+    "/opt/homebrew/lib",
+    "/opt/homebrew/opt/unixodbc/lib"
+  )
+
+  list.files(
+    common_dirs,
+    pattern = "libodbcinst\\.dylib$",
+    full.names = TRUE
+  )
+}
+
+install_unixodbc <- function() {
+  tryCatch(
+    {install_unixodbc_libs()},
+    error = function(e) {
+      abort(c(
+        "Unable to install the unixODBC driver manager.",
+        i = "Please install unixODBC using Homebrew with `brew install unixodbc`."
+      ))
+    }
+  )
+
+  locate_install_unixodbc()
+}
+
+install_unixodbc_libs <- function() {
+  source("https://mac.R-project.org/bin/install.R")
+  install.libs("unixodbc")
+}
+
+# p. 44 https://downloads.datastax.com/odbc/2.6.5.1005/Simba%20Spark%20ODBC%20Install%20and%20Configuration%20Guide.pdf
+locate_config_spark <- function() {
+  spark_env <- Sys.getenv("SIMBASPARKINI")
+  if (!identical(spark_env, "")) {
+    return(spark_env)
+  }
+
+  common_dirs <- c(
+    "/Library/simba/spark/lib",
+    "/etc",
+    getwd(),
+    Sys.getenv("HOME")
+  )
+
+  list.files(
+    common_dirs,
+    pattern = "simba\\.sparkodbc\\.ini$",
+    full.names = TRUE
+  )
+}
+
+configure_unixodbc_spark <- function(unixodbc_install, spark_config) {
+  # As shipped, the simba spark ini has an incomplete final line
+  suppressWarnings(
+    spark_lines <- readLines(spark_config)
+  )
+
+  odbcinstlib <- spark_lines[grepl("^ODBCInstLib=", spark_lines)]
+  odbcinstlib_config <- paste0("ODBCInstLib=", unixodbc_install)
+  if (identical(odbcinstlib, character(0))) {
+    spark_lines <- c(spark_lines, odbcinstlib_config)
+  } else {
+    spark_lines[odbcinstlib] <- odbcinstlib_config
+  }
+
+  manager_encoding <- spark_lines[grepl("^DriverManagerEncoding=", spark_lines)]
+  manager_encoding_config <- paste0("DriverManagerEncoding=UTF-16")
+  if (identical(manager_encoding, character(0))) {
+    spark_lines <- c(spark_lines, manager_encoding_config)
+  } else {
+    spark_lines[odbcinstlib] <- manager_encoding_config
+  }
+
+  writeLines(spark_lines, spark_config)
+}
