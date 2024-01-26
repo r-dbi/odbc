@@ -75,15 +75,10 @@ test_that("configure_spark() errors informatively on failure to install unixODBC
 })
 
 test_that("locate_install_unixodbc() returns reasonable values", {
-  skip_on_os("windows")
+  skip_if(!is_macos())
   skip_if(!has_unixodbc(), "odbcinst not available.")
 
   res <- locate_install_unixodbc()
-
-  # quick, known-failing tests to see what the values are on Actions
-  expect_equal("boop", res)
-  expect_equal("boop", Sys.getenv("DYLD_LIBRARY_PATH"))
-  expect_equal("boop", Sys.getenv("LD_LIBRARY_PATH"))
 
   expect_true(file.exists(res[1]))
   expect_true(grepl("\\.dylib", res[1]))
