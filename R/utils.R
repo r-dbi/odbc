@@ -173,7 +173,7 @@ random_name <- function(prefix = "") {
 # apple + spark drive config (#651) --------------------------------------------
 configure_spark <- function() {
   if (is_windows()) {
-    return()
+    return(invisible())
   }
 
   if (!has_unixodbc()) {
@@ -218,14 +218,17 @@ locate_install_unixodbc <- function() {
   )
 }
 
-install_unixodbc <- function() {
+install_unixodbc <- function(call = caller_env()) {
   tryCatch(
     {install_unixodbc_libs()},
     error = function(e) {
-      abort(c(
-        "Unable to install the unixODBC driver manager.",
-        i = "Please install unixODBC using Homebrew with `brew install unixodbc`."
-      ))
+      abort(
+        c(
+          "Unable to install the unixODBC driver manager.",
+          i = "Please install unixODBC using Homebrew with `brew install unixodbc`."
+        ),
+        call = call
+      )
     }
   )
 
@@ -283,4 +286,6 @@ configure_unixodbc_spark <- function(unixodbc_install, spark_config) {
   }
 
   writeLines(spark_lines, spark_config)
+
+  invisible()
 }
