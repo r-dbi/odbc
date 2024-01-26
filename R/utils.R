@@ -264,20 +264,22 @@ configure_unixodbc_spark <- function(unixodbc_install, spark_config) {
     spark_lines <- readLines(spark_config)
   )
 
-  odbcinstlib <- spark_lines[grepl("^ODBCInstLib=", spark_lines)]
+  odbcinstlib_lines <- grepl("^ODBCInstLib=", spark_lines)
+  odbcinstlib <- spark_lines[odbcinstlib_lines]
   odbcinstlib_config <- paste0("ODBCInstLib=", unixodbc_install)
   if (identical(odbcinstlib, character(0))) {
     spark_lines <- c(spark_lines, odbcinstlib_config)
   } else {
-    spark_lines[odbcinstlib] <- odbcinstlib_config
+    spark_lines[odbcinstlib_lines] <- odbcinstlib_config
   }
 
-  manager_encoding <- spark_lines[grepl("^DriverManagerEncoding=", spark_lines)]
+  manager_encoding_lines <- grepl("^DriverManagerEncoding=", spark_lines)
+  manager_encoding <- spark_lines[manager_encoding_lines]
   manager_encoding_config <- paste0("DriverManagerEncoding=UTF-16")
   if (identical(manager_encoding, character(0))) {
     spark_lines <- c(spark_lines, manager_encoding_config)
   } else {
-    spark_lines[odbcinstlib] <- manager_encoding_config
+    spark_lines[manager_encoding_lines] <- manager_encoding_config
   }
 
   writeLines(spark_lines, spark_config)
