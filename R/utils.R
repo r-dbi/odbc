@@ -141,6 +141,10 @@ is_windows <- function() {
   identical(.Platform$OS.type, "windows")
 }
 
+is_macos <- function() {
+  identical(Sys.info()[["sysname"]], "Darwin")
+}
+
 compact <- function(x) x[!vapply(x, is.null, logical(1))]
 
 set_odbcsysini <- function() {
