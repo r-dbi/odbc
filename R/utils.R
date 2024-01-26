@@ -278,7 +278,7 @@ configure_unixodbc_spark <- function(unixodbc_install, spark_config) {
 
   manager_encoding_lines <- grepl("^DriverManagerEncoding=", spark_lines)
   manager_encoding <- spark_lines[manager_encoding_lines]
-  manager_encoding_config <- paste0("DriverManagerEncoding=UTF-16")
+  manager_encoding_config <- "DriverManagerEncoding=UTF-16"
   if (identical(manager_encoding, character(0))) {
     spark_lines <- c(spark_lines, manager_encoding_config)
   } else {
