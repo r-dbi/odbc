@@ -293,6 +293,12 @@ odbcPreviewQuery.OdbcConnection <- function(connection, rowLimit, name) {
   paste0("SELECT TOP ", rowLimit, " * FROM ", name)
 }
 
+#' Teradata specific top-N syntax
+#' @rdname odbcPreviewQuery
+`odbcPreviewQuery.Teradata` <- function(connection, rowLimit, name) {
+  paste0("SELECT TOP ", rowLimit, " * FROM ", name)
+}
+
 #' Oracle specific top-N syntax
 #' @rdname odbcPreviewQuery
 odbcPreviewQuery.Oracle <- function(connection, rowLimit, name) {

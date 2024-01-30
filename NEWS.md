@@ -3,6 +3,9 @@
 * Transitioned `odbcDataType()` to use S4 for consistency. S3 methods defined
   locally will need to be rewritten (#701).
 
+* Teradata: Resolved issue when previewing tables using the Connections pane.
+
+
 # odbc 1.4.2
 
 * `dbAppendTable()` Improve performance by checking existence once (#691).
