@@ -2,19 +2,26 @@
 NULL
 
 #' @export
-`odbcDataType.Vertica Database` <- function(con, obj, ...) {
-  switch_type(obj,
-    factor = "VARCHAR",
-    datetime = "TIMESTAMP",
-    date = "DATE",
-    integer = "INTEGER",
-    int64 = "INTEGER",
-    double = "DOUBLE PRECISION",
-    character = "VARCHAR",
-    logical = "BOOLEAN",
-    list = "VARCHAR",
-    time = "TIME",
-    binary = "VARBINARY",
-    stop("Unsupported type", call. = FALSE)
-  )
-}
+#' @rdname DBI-classes
+setClass("Vertica Database", contains = "OdbcConnection")
+
+#' @export
+setMethod("odbcDataType", "Vertica Database",
+  function(con, obj, ...) {
+    switch_type(
+      obj,
+      factor = "VARCHAR",
+      datetime = "TIMESTAMP",
+      date = "DATE",
+      integer = "INTEGER",
+      int64 = "INTEGER",
+      double = "DOUBLE PRECISION",
+      character = "VARCHAR",
+      logical = "BOOLEAN",
+      list = "VARCHAR",
+      time = "TIME",
+      binary = "VARBINARY",
+      stop("Unsupported type", call. = FALSE)
+    )
+  }
+)

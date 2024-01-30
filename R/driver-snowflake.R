@@ -2,20 +2,26 @@
 NULL
 
 #' @export
-`odbcDataType.Snowflake` <- function(con, obj, ...) {
-  switch_type(
-    obj,
-    factor = "VARCHAR",
-    datetime = "TIMESTAMP",
-    date = "DATE",
-    time = "TIME",
-    binary = "BINARY",
-    integer = "INTEGER",
-    int64 = "INTEGER",
-    double = "FLOAT",
-    character = "VARCHAR",
-    logical = "BOOLEAN",
-    list = "VARCHAR",
-    stop("Unsupported type", call. = FALSE)
-  )
-}
+#' @rdname DBI-classes
+setClass("Snowflake", contains = "OdbcConnection")
+
+#' @export
+setMethod("odbcDataType", "Snowflake",
+  function(con, obj, ...) {
+    switch_type(
+      obj,
+      factor = "VARCHAR",
+      datetime = "TIMESTAMP",
+      date = "DATE",
+      time = "TIME",
+      binary = "BINARY",
+      integer = "INTEGER",
+      int64 = "INTEGER",
+      double = "FLOAT",
+      character = "VARCHAR",
+      logical = "BOOLEAN",
+      list = "VARCHAR",
+      stop("Unsupported type", call. = FALSE)
+    )
+  }
+)

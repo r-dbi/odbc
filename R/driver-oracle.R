@@ -124,21 +124,25 @@ setMethod("odbcConnectionColumns_", c("Oracle", "character"),
 )
 
 #' @export
-odbcDataType.Oracle <- function(con, obj, ...) {
-  switch_type(obj,
-    factor = "VARCHAR2(255)",
+setMethod("odbcDataType", "Oracle",
+  function(con, obj, ...) {
+    switch_type(
+      obj,
+      factor = "VARCHAR2(255)",
 
-    # No native oracle type for time
-    time = "VARCHAR2(255)",
-    date = "DATE",
-    datetime = "TIMESTAMP",
-    binary = "BLOB",
-    integer = "INTEGER",
-    int64 = "INTEGER",
-    double = "BINARY_DOUBLE",
-    character = "VARCHAR2(255)",
-    logical = "DECIMAL",
-    list = "VARCHAR2(255)",
-    stop("Unsupported type", call. = FALSE)
-  )
-}
+      # No native oracle type for time
+      time = "VARCHAR2(255)",
+      date = "DATE",
+      datetime = "TIMESTAMP",
+      binary = "BLOB",
+      integer = "INTEGER",
+      int64 = "INTEGER",
+      double = "BINARY_DOUBLE",
+      character = "VARCHAR2(255)",
+      logical = "DECIMAL",
+      list = "VARCHAR2(255)",
+      stop("Unsupported type", call. = FALSE)
+    )
+  }
+)
+
