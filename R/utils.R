@@ -172,7 +172,7 @@ random_name <- function(prefix = "") {
 
 # apple + spark drive config (#651) --------------------------------------------
 configure_spark <- function() {
-  if (is_windows()) {
+  if (!is_macos()) {
     return(invisible())
   }
 
