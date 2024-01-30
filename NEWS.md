@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* `databricks()` will now automatically install the needed driver and driver
+  manager (#651).
+
 # odbc 1.4.2
 
 * `dbAppendTable()` Improve performance by checking existence once (#691).
