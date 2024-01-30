@@ -23,6 +23,8 @@ setMethod("dbQuoteString", c("Hive", "character"),
 
 
 #' @export
+#' @rdname odbcDataType
+#' @usage NULL
 setMethod("odbcDataType", "Hive",
   function(con, obj, ...) {
     switch_type(

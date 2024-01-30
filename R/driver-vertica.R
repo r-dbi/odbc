@@ -6,6 +6,8 @@ NULL
 setClass("Vertica Database", contains = "OdbcConnection")
 
 #' @export
+#' @rdname odbcDataType
+#' @usage NULL
 setMethod("odbcDataType", "Vertica Database",
   function(con, obj, ...) {
     switch_type(

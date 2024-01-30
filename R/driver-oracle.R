@@ -124,6 +124,8 @@ setMethod("odbcConnectionColumns_", c("Oracle", "character"),
 )
 
 #' @export
+#' @rdname odbcDataType
+#' @usage NULL
 setMethod("odbcDataType", "Oracle",
   function(con, obj, ...) {
     switch_type(

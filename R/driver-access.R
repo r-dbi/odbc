@@ -6,6 +6,8 @@ NULL
 setClass("ACCESS", contains = "OdbcConnection")
 
 #' @export
+#' @rdname odbcDataType
+#' @usage NULL
 setMethod("odbcDataType", "ACCESS",
   function(con, obj, ...) {
     switch_type(

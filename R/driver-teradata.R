@@ -68,6 +68,8 @@ setMethod("odbcConnectionTables", c("Teradata", "character"),
 
 
 #' @export
+#' @rdname odbcDataType
+#' @usage NULL
 setMethod("odbcDataType", "Teradata",
   function(con, obj, ...) {
     switch_type(

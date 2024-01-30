@@ -3,6 +3,8 @@
 setClass("Redshift", contains = "OdbcConnection")
 
 #' @export
+#' @rdname odbcDataType
+#' @usage NULL
 setMethod("odbcDataType", "Redshift",
   function(con, obj, ...) {
     switch_type(

@@ -183,6 +183,8 @@ setMethod("sqlCreateTable", "Microsoft SQL Server",
 )
 
 #' @export
+#' @rdname odbcDataType
+#' @usage NULL
 setMethod("odbcDataType", "Microsoft SQL Server",
   function(con, obj, ...) {
     switch_type(

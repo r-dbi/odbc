@@ -6,6 +6,8 @@ NULL
 setClass("MySQL", contains = "OdbcConnection")
 
 #' @export
+#' @rdname odbcDataType
+#' @usage NULL
 setMethod("odbcDataType", "MySQL",
   function(con, obj, ...) {
     switch_type(

@@ -6,6 +6,8 @@ NULL
 setClass("PostgreSQL", contains = "OdbcConnection")
 
 #' @export
+#' @rdname odbcDataType
+#' @usage NULL
 setMethod("odbcDataType", "PostgreSQL",
   function(con, obj, ...) {
     switch_type(

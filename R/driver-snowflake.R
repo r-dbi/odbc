@@ -6,6 +6,8 @@ NULL
 setClass("Snowflake", contains = "OdbcConnection")
 
 #' @export
+#' @rdname odbcDataType
+#' @usage NULL
 setMethod("odbcDataType", "Snowflake",
   function(con, obj, ...) {
     switch_type(

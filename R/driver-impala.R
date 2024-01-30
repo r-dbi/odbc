@@ -7,6 +7,8 @@ setClass("Impala", contains = "OdbcConnection")
 
 # TODO: Revisit binary type (Impala)
 #' @export
+#' @rdname odbcDataType
+#' @usage NULL
 setMethod("odbcDataType", "Impala",
   function(con, obj, ...) {
     switch_type(

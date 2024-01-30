@@ -6,6 +6,8 @@ NULL
 setClass("BigQuery", contains = "OdbcConnection")
 
 #' @export
+#' @rdname odbcDataType
+#' @usage NULL
 setMethod("odbcDataType", "BigQuery",
   function(con, obj, ...) {
     switch_type(

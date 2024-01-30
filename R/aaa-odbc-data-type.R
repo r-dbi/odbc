@@ -42,6 +42,8 @@ setGeneric(
 )
 
 #' @export
+#' @rdname odbcDataType
+#' @usage NULL
 setMethod("odbcDataType", "ANY",
   function(con, obj, ...) {
     switch_type(

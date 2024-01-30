@@ -6,6 +6,8 @@ NULL
 setClass("SQLite", contains = "OdbcConnection")
 
 #' @export
+#' @rdname odbcDataType
+#' @usage NULL
 setMethod("odbcDataType", "SQLite",
   function(con, obj, ...) {
     switch_type(

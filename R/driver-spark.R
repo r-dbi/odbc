@@ -23,6 +23,8 @@ setMethod("odbcConnectionSchemas", "Spark SQL",
 
 
 #' @export
+#' @rdname odbcDataType
+#' @usage NULL
 setMethod("odbcDataType", "Spark SQL",
   function(con, obj, ...) {
     switch_type(
