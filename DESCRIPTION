@@ -49,6 +49,7 @@ RoxygenNote: 7.3.0
 SystemRequirements: GNU make, An ODBC3 driver manager and drivers.
 Collate: 
     'RcppExports.R'
+    'aaa-odbc-data-type.R'
     'connection-pane.R'
     'dbi-connection.R'
     'odbc-connection.R'
@@ -76,7 +77,6 @@ Collate:
     'driver-vertica.R'
     'odbc-config.R'
     'odbc-data-sources.R'
-    'odbc-data-type.R'
     'odbc-drivers.R'
     'odbc-package.R'
     'odbc.R'

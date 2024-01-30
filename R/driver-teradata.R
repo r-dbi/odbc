@@ -68,19 +68,24 @@ setMethod("odbcConnectionTables", c("Teradata", "character"),
 
 
 #' @export
-`odbcDataType.Teradata` <- function(con, obj, ...) {
-  switch_type(obj,
-    factor = "VARCHAR(255)",
-    datetime = "TIMESTAMP",
-    date = "DATE",
-    time = "TIME",
-    binary = "BLOB",
-    integer = "INTEGER",
-    int64 = "INTEGER",
-    double = "FLOAT",
-    character = "VARCHAR(255)",
-    logical = "BYTEINT",
-    list = "VARCHAR(255)",
-    stop("Unsupported type", call. = FALSE)
-  )
-}
+#' @rdname odbcDataType
+#' @usage NULL
+setMethod("odbcDataType", "Teradata",
+  function(con, obj, ...) {
+    switch_type(
+      obj,
+      factor = "VARCHAR(255)",
+      datetime = "TIMESTAMP",
+      date = "DATE",
+      time = "TIME",
+      binary = "BLOB",
+      integer = "INTEGER",
+      int64 = "INTEGER",
+      double = "FLOAT",
+      character = "VARCHAR(255)",
+      logical = "BYTEINT",
+      list = "VARCHAR(255)",
+      stop("Unsupported type", call. = FALSE)
+    )
+  }
+)

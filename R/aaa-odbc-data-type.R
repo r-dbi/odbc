@@ -1,7 +1,10 @@
 #' Return the corresponding ODBC data type for an R object
 #'
+#' @description
+#'
 #' This is used when creating a new table with `dbWriteTable()`.
-#' Databases with default methods defined are
+#' Databases with default methods defined are:
+#'
 #' - MySQL
 #' - PostgreSQL
 #' - SQL Server
@@ -15,61 +18,51 @@
 #' - BigQuery
 #' - Teradata
 #' - Access
+#' - Snowflake
+#'
+#' @details
 #'
 #' If you are using a different database and `dbWriteTable()` fails with a SQL
 #' parsing error the default method is not appropriate, you will need to write
-#' a new method.
+#' a new method. The object type for your method will be the database name
+#' retrieved by `dbGetInfo(con)$dbms.name`. Use the documentation provided with
+#' your database to determine appropriate values for each R data type.
 #'
-#' @section Defining a new dbDataType method:
-#'
-#' The object type for your connection will be the database name retrieved by
-#' `dbGetInfo(con)$dbms.name`. Use the documentation provided with your
-#' database to determine appropriate values for each R data type. An example
-#' method definition of a fictional `foo` database follows.
-#' ```
-#' con <- dbConnect(odbc::odbc(), "FooConnection")
-#' dbGetInfo(con)$dbms.name
-#' #> [1] "foo"
-#'
-#' `odbcDataType.foo <- function(con, obj, ...) {
-#'   switch_type(obj,
-#'     factor = "VARCHAR(255)",
-#'     datetime = "TIMESTAMP",
-#'     date = "DATE",
-#'     binary = "BINARY",
-#'     integer = "INTEGER",
-#'     double = "DOUBLE",
-#'     character = "VARCHAR(255)",
-#'     logical = "BIT",
-#'     list = "VARCHAR(255)",
-#'     stop("Unsupported type", call. = FALSE)
-#'   )
-#' }
-#' ```
 #' @param con A driver connection object, as returned by `dbConnect()`.
 #' @param obj An R object.
 #' @param ... Additional arguments passed to methods.
 #' @return Corresponding SQL type for the `obj`.
 #' @export
-odbcDataType <- function(con, obj, ...) UseMethod("odbcDataType")
+setGeneric(
+  "odbcDataType",
+  valueClass = "character",
+  function(con, obj, ...) {
+    standardGeneric("odbcDataType")
+  }
+)
 
 #' @export
-odbcDataType.default <- function(con, obj, ...) {
-  switch_type(obj,
-    factor = "VARCHAR(255)",
-    datetime = "TIMESTAMP",
-    date = "DATE",
-    time = "TIME",
-    binary = "VARBINARY(255)",
-    integer = "INTEGER",
-    int64 = "INTEGER",
-    double = "DOUBLE PRECISION",
-    character = "VARCHAR(255)",
-    logical = "BIT", # only valid if DB supports Null fields
-    list = "VARCHAR(255)",
-    stop("Unsupported type", call. = FALSE)
-  )
-}
+#' @rdname odbcDataType
+#' @usage NULL
+setMethod("odbcDataType", "ANY",
+  function(con, obj, ...) {
+    switch_type(
+      obj,
+      factor = "VARCHAR(255)",
+      datetime = "TIMESTAMP",
+      date = "DATE",
+      time = "TIME",
+      binary = "VARBINARY(255)",
+      integer = "INTEGER",
+      int64 = "INTEGER",
+      double = "DOUBLE PRECISION",
+      character = "VARCHAR(255)",
+      logical = "BIT", # only valid if DB supports Null fields
+      list = "VARCHAR(255)",
+      stop("Unsupported type", call. = FALSE)
+    )
+  }
+)
 
 switch_type <- function(obj, ...) {
   switch(object_type(obj),
