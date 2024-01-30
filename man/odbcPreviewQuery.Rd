@@ -4,6 +4,7 @@
 \alias{odbcPreviewQuery}
 \alias{odbcPreviewQuery.OdbcConnection}
 \alias{odbcPreviewQuery.Microsoft SQL Server}
+\alias{odbcPreviewQuery.Teradata}
 \alias{odbcPreviewQuery.Oracle}
 \title{Create a preview query.}
 \usage{
@@ -12,6 +13,8 @@ odbcPreviewQuery(connection, rowLimit, name)
 \method{odbcPreviewQuery}{OdbcConnection}(connection, rowLimit, name)
 
 \method{odbcPreviewQuery}{`Microsoft SQL Server`}(connection, rowLimit, name)
+
+\method{odbcPreviewQuery}{Teradata}(connection, rowLimit, name)
 
 \method{odbcPreviewQuery}{Oracle}(connection, rowLimit, name)
 }

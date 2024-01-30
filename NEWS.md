@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* Teradata: Resolved issue when previewing tables using the Connections pane.
+
 # odbc 1.4.2
 
 * `dbAppendTable()` Improve performance by checking existence once (#691).
