@@ -71,7 +71,7 @@ test_that("configure_spark() errors informatively on failure to install unixODBC
     has_unixodbc = function() {FALSE}
   )
 
-  expect_snapshot(configure_spark(), error = TRUE)
+  expect_snapshot(databricks(), error = TRUE)
 })
 
 test_that("locate_install_unixodbc() returns reasonable values", {

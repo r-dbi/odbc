@@ -14,9 +14,9 @@
 # configure_spark() errors informatively on failure to install unixODBC
 
     Code
-      configure_spark()
+      databricks()
     Condition
-      Error in `configure_spark()`:
+      Error in `databricks()`:
       ! Unable to install the unixODBC driver manager.
       i Please install unixODBC using Homebrew with `brew install unixodbc`.
 

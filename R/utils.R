@@ -171,26 +171,25 @@ random_name <- function(prefix = "") {
 }
 
 # apple + spark drive config (#651) --------------------------------------------
-configure_spark <- function() {
+configure_spark <- function(call = caller_env()) {
   if (!is_macos()) {
     return(invisible())
   }
 
-  if (!has_unixodbc()) {
-    install_unixodbc()
-  }
-
   unixodbc_install <- locate_install_unixodbc()
   if (identical(unixodbc_install, character(0))) {
-    unixodbc_install <- install_unixodbc()
+    unixodbc_install <- install_unixodbc(call = call)
   }
 
   spark_config <- locate_config_spark()
   if (identical(spark_config, character(0))) {
-    abort(c(
-      "Unable to locate the needed spark ODBC driver.",
-      i = "Please install the needed driver from https://www.databricks.com/spark/odbc-drivers-download."
-    ))
+    abort(
+      c(
+        "Unable to locate the needed spark ODBC driver.",
+        i = "Please install the needed driver from https://www.databricks.com/spark/odbc-drivers-download."
+      ),
+      call = call
+    )
   }
 
   configure_unixodbc_spark(unixodbc_install[1], spark_config[1])
@@ -218,7 +217,7 @@ locate_install_unixodbc <- function() {
   )
 }
 
-install_unixodbc <- function(call = caller_env()) {
+install_unixodbc <- function(call) {
   tryCatch(
     {install_unixodbc_libs()},
     error = function(e) {
