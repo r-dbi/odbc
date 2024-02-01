@@ -1,6 +1,6 @@
 # odbc (development version)
 
-* `databricks()` will now automatically install the needed driver and driver
+* `databricks()` will now automatically configure the needed driver and driver
   manager (#651).
 
 # odbc 1.4.2
