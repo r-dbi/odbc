@@ -178,7 +178,13 @@ configure_spark <- function(call = caller_env()) {
 
   unixodbc_install <- locate_install_unixodbc()
   if (identical(unixodbc_install, character(0))) {
-    unixodbc_install <- install_unixodbc(call = call)
+    abort(
+      c(
+        "Unable to locate the unixODBC driver manager.",
+        i = "Please install unixODBC using Homebrew with `brew install unixodbc`."
+      ),
+      call = call
+    )
   }
 
   spark_config <- locate_config_spark()
@@ -215,28 +221,6 @@ locate_install_unixodbc <- function() {
     pattern = "libodbcinst\\.dylib$",
     full.names = TRUE
   )
-}
-
-install_unixodbc <- function(call) {
-  tryCatch(
-    {install_unixodbc_libs()},
-    error = function(e) {
-      abort(
-        c(
-          "Unable to install the unixODBC driver manager.",
-          i = "Please install unixODBC using Homebrew with `brew install unixodbc`."
-        ),
-        call = call
-      )
-    }
-  )
-
-  locate_install_unixodbc()
-}
-
-install_unixodbc_libs <- function() {
-  source("https://mac.R-project.org/bin/install.R")
-  install.libs("unixodbc")
 }
 
 # p. 44 https://downloads.datastax.com/odbc/2.6.5.1005/Simba%20Spark%20ODBC%20Install%20and%20Configuration%20Guide.pdf

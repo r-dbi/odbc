@@ -17,6 +17,6 @@
       databricks()
     Condition
       Error in `databricks()`:
-      ! Unable to install the unixODBC driver manager.
+      ! Unable to locate the unixODBC driver manager.
       i Please install unixODBC using Homebrew with `brew install unixodbc`.
 
