@@ -58,9 +58,7 @@ test_that("getSelector", {
 test_that("configure_spark() returns early on windows", {
   local_mocked_bindings(is_macos = function() {FALSE})
 
-  res <- configure_spark()
-
-  expect_equal(res, NULL)
+  expect_equal(configure_spark(), NULL)
 })
 
 test_that("configure_spark() errors informatively on failure to install unixODBC", {

@@ -196,13 +196,13 @@ configure_spark <- function(call = caller_env()) {
 }
 
 locate_install_unixodbc <- function() {
-  unixodbc_prefix <- tryCatch(
-    system("odbc_config --lib-prefix", intern = TRUE),
-    error = function(e) character(0)
+  tryCatch(
+    {
+      unixodbc_prefix <- system("odbc_config --lib-prefix", intern = TRUE)
+      return(paste0(unixodbc_prefix, "/libodbcinst.dylib"))
+    },
+    error = function(e) {}
   )
-  if (!identical(unixodbc_prefix, character(0))) {
-    return(paste0(unixodbc_prefix, "/libodbcinst.dylib"))
-  }
 
   common_dirs <- c(
     "/usr/local/lib",
