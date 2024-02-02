@@ -53,45 +53,17 @@
     </div>
 
 
-<div class="section level3">
-<h3 id="issue-description-and-expected-result">Issue Description and Expected Result<a class="anchor" aria-label="anchor" href="#issue-description-and-expected-result"></a></h3>
-<!--Example: `dbGetQuery()` returns incorrect timestamps.-->
-</div>
-<div class="section level3">
-<h3 id="database">Database<a class="anchor" aria-label="anchor" href="#database"></a></h3>
-<!--Example: PostgreSQL 9.5, SQL Server 2012-->
-</div>
-<div class="section level3">
-<h3 id="reproducible-example">Reproducible Example<a class="anchor" aria-label="anchor" href="#reproducible-example"></a></h3>
-<!--
-If possible include a _small_ dump of the table with the error and the R code
-that generates the error. In your reprex please use `con` as the name of the
-connection, this makes it easier to run locally.
-
-The reprex package can be helpful in doing this.
-
-    install.packages("reprex")
-    reprex::reprex()
-
-Example:
-```r
-library(odbc)
-library(DBI)
-con <- dbConnect(odbc::odbc(), dsn = "PostgreSQL")
-dbWriteTable(con, "iris", iris)
-dbReadTable(con, "iris")
-```
--->
 <details><summary>
-Session Info
+Database
 </summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetInfo.html" class="external-link">dbGetInfo</a></span><span class="op">(</span><span class="va">con</span><span class="op">)</span></span>
+<span><span class="co">#&gt; output</span></span></code></pre></div>
+</details><details><summary>
+Session Info
+</summary><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">session_info</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; output</span></span></code></pre></div>
-</details></div>
-
-
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
-    </nav></aside></div>
+</details></main></div>
 
 
     <footer><div class="pkgdown-footer-left">
