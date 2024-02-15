@@ -23,19 +23,24 @@ setMethod("odbcConnectionSchemas", "Spark SQL",
 
 
 #' @export
-`odbcDataType.Spark SQL` <- function(con, obj, ...) {
-  switch_type(obj,
-    factor = "VARCHAR(255)",
-    datetime = "TIMESTAMP",
-    date = "DATE",
-    binary = "BINARY",
-    integer = "INT",
-    int64 = "INT",
-    double = "DOUBLE",
-    character = "VARCHAR(255)",
-    logical = "BOOLEAN",
-    list = "VARCHAR(255)",
-    time = ,
-    stop("Unsupported type", call. = FALSE)
-  )
-}
+#' @rdname odbcDataType
+#' @usage NULL
+setMethod("odbcDataType", "Spark SQL",
+  function(con, obj, ...) {
+    switch_type(
+      obj,
+      factor = "VARCHAR(255)",
+      datetime = "TIMESTAMP",
+      date = "DATE",
+      binary = "BINARY",
+      integer = "INT",
+      int64 = "INT",
+      double = "DOUBLE",
+      character = "VARCHAR(255)",
+      logical = "BOOLEAN",
+      list = "VARCHAR(255)",
+      time = ,
+      stop("Unsupported type", call. = FALSE)
+    )
+  }
+)

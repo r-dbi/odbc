@@ -23,19 +23,24 @@ setMethod("dbQuoteString", c("Hive", "character"),
 
 
 #' @export
-`odbcDataType.Hive` <- function(con, obj, ...) {
-  switch_type(obj,
-    factor = "STRING",
-    datetime = "TIMESTAMP",
-    date = "DATE",
-    binary = "BINARY",
-    integer = "INT",
-    int64 = "INT",
-    double = "DOUBLE",
-    character = "STRING",
-    logical = "BOOLEAN",
-    list = "STRING",
-    time = ,
-    stop("Unsupported type", call. = FALSE)
-  )
-}
+#' @rdname odbcDataType
+#' @usage NULL
+setMethod("odbcDataType", "Hive",
+  function(con, obj, ...) {
+    switch_type(
+      obj,
+      factor = "STRING",
+      datetime = "TIMESTAMP",
+      date = "DATE",
+      binary = "BINARY",
+      integer = "INT",
+      int64 = "INT",
+      double = "DOUBLE",
+      character = "STRING",
+      logical = "BOOLEAN",
+      list = "STRING",
+      time = ,
+      stop("Unsupported type", call. = FALSE)
+    )
+  }
+)
