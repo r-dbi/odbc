@@ -177,7 +177,7 @@ configure_spark <- function(call = caller_env()) {
   }
 
   unixodbc_install <- locate_install_unixodbc()
-  if (identical(unixodbc_install, character(0))) {
+  if (length(unixodbc_install) == 0) {
     abort(
       c(
         "Unable to locate the unixODBC driver manager.",
@@ -188,7 +188,7 @@ configure_spark <- function(call = caller_env()) {
   }
 
   spark_config <- locate_config_spark()
-  if (identical(spark_config, character(0))) {
+  if (length(spark_config) == 0) {
     abort(
       c(
         "Unable to locate the needed spark ODBC driver.",

@@ -1,7 +1,7 @@
 # odbc (development version)
 
 * `databricks()` will now automatically configure the needed driver and driver
-  manager (#651).
+  manager on macOS (#651).
 
 * Transitioned `odbcDataType()` to use S4 for consistency. S3 methods defined
   locally will need to be rewritten (#701).
