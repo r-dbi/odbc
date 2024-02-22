@@ -250,25 +250,34 @@ configure_unixodbc_spark <- function(unixodbc_install, spark_config) {
     spark_lines <- readLines(spark_config)
   )
 
-  odbcinstlib_lines <- grepl("^ODBCInstLib=", spark_lines)
-  odbcinstlib <- spark_lines[odbcinstlib_lines]
-  odbcinstlib_config <- paste0("ODBCInstLib=", unixodbc_install)
-  if (identical(odbcinstlib, character(0))) {
-    spark_lines <- c(spark_lines, odbcinstlib_config)
-  } else {
-    spark_lines[odbcinstlib_lines] <- odbcinstlib_config
-  }
+  spark_lines <- replace_or_append(
+    lines = spark_lines,
+    pattern = "^ODBCInstLib=",
+    replacement = paste0("ODBCInstLib=", unixodbc_install)
+  )
 
-  manager_encoding_lines <- grepl("^DriverManagerEncoding=", spark_lines)
-  manager_encoding <- spark_lines[manager_encoding_lines]
-  manager_encoding_config <- "DriverManagerEncoding=UTF-16"
-  if (identical(manager_encoding, character(0))) {
-    spark_lines <- c(spark_lines, manager_encoding_config)
-  } else {
-    spark_lines[manager_encoding_lines] <- manager_encoding_config
-  }
+  spark_lines <- replace_or_append(
+    lines = spark_lines,
+    pattern = "^DriverManagerEncoding=",
+    replacement = "DriverManagerEncoding=UTF-16"
+  )
 
   writeLines(spark_lines, spark_config)
 
   invisible()
+}
+
+# given a vector of lines in an ini file, look for a given key pattern.
+# the `replacement` is the whole intended line, giving the "key=value" pair.
+# if the key is found, replace that line with `replacement`.
+# if the key isn't found, append a new line with `replacement`.
+replace_or_append <- function(lines, pattern, replacement) {
+  matching_lines_loc <- grepl(pattern, lines)
+  matching_lines <- lines[matching_lines_loc]
+  if (length(matching_lines) == 0) {
+    lines <- c(lines, replacement)
+  } else {
+    lines[matching_lines_loc] <- replacement
+  }
+  lines
 }
