@@ -198,7 +198,7 @@ configure_spark <- function(call = caller_env()) {
     )
   }
 
-  configure_unixodbc_spark(unixodbc_install[1], spark_config[1])
+  configure_unixodbc_spark(unixodbc_install[1], spark_config[1], call)
 }
 
 locate_install_unixodbc <- function() {
@@ -244,27 +244,54 @@ locate_config_spark <- function() {
   )
 }
 
-configure_unixodbc_spark <- function(unixodbc_install, spark_config) {
+configure_unixodbc_spark <- function(unixodbc_install, spark_config, call) {
   # As shipped, the simba spark ini has an incomplete final line
   suppressWarnings(
     spark_lines <- readLines(spark_config)
   )
 
-  spark_lines <- replace_or_append(
+  spark_lines_new <- replace_or_append(
     lines = spark_lines,
     pattern = "^ODBCInstLib=",
     replacement = paste0("ODBCInstLib=", unixodbc_install)
   )
 
-  spark_lines <- replace_or_append(
-    lines = spark_lines,
+  spark_lines_new <- replace_or_append(
+    lines = spark_lines_new,
     pattern = "^DriverManagerEncoding=",
     replacement = "DriverManagerEncoding=UTF-16"
   )
 
-  writeLines(spark_lines, spark_config)
+  write_spark_lines(spark_lines, spark_lines_new, spark_config, call)
 
   invisible()
+}
+
+write_spark_lines <- function(spark_lines, spark_lines_new, spark_config, call) {
+  if (identical(spark_lines, spark_lines_new)) {
+    return(invisible())
+  }
+
+  # see assertthat::is.writeable
+  if (!is_writeable(spark_config)) {
+    abort(
+      c(
+        paste0(
+          "Detected needed changes to the driver configuration file at ",
+          spark_config,
+          ", but the file was not writeable."
+        ),
+        i = "Please make the changes outlined at https://solutions.posit.co/connections/db/databases/databricks/#troubleshooting-apple-macos-users."
+      ),
+      call = call
+    )
+  }
+
+  writeLines(spark_lines_new, spark_config)
+}
+
+is_writeable <- function(path) {
+  tryCatch(file.access(path, mode = 2)[[1]] == 0, error = function(e) FALSE)
 }
 
 # given a vector of lines in an ini file, look for a given key pattern.

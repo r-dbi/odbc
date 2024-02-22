@@ -80,6 +80,14 @@ test_that("locate_install_unixodbc() returns reasonable values", {
   expect_true(grepl("\\.dylib", res[1]))
 })
 
+test_that("databricks() errors informatively when spark ini isn't writeable", {
+  local_mocked_bindings(is_writeable = function(path) {FALSE})
+  expect_snapshot(
+    write_spark_lines("", ".", ".", call2("databricks")),
+    error = TRUE
+  )
+})
+
 test_that("locate_config_spark() returns reasonable values", {
   simba_spark_ini <- "some/folder/simba.sparkodbc.ini"
   withr::local_envvar(SIMBASPARKINI = simba_spark_ini)
