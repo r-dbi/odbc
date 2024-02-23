@@ -157,3 +157,24 @@ port       = 5432
 ```
 
 The `driver` entry represents the name of the driver defined in `odbcinst.ini`. You can see all currently defined data sources by running `odbcListDataSources()`.
+
+## Debugging driver and data source configurations
+
+The odbc package may have trouble locating your driver and data source configurations. If you find that `odbcListDrivers()` and `odbcListDataSources()` report no configurations, check the output of `odbcListConfig()` next. While `odbcListDrivers()` and `odbcListConfig()` interface with the unixodbc driver manager through nanodbc—the tool that the odbc package uses to interface with the ODBC API—`odbcListConfig()` interfaces with unixODBC directly. `odbcListConfig()` will show where unixODBC is looking for your configurations.
+
+* If the files listed in `odbcListConfig()` are at a location other than where you've configured drivers and data sources, either 1) configure the listed files as instructed above, or 2) change the folder where ODBC should look for configurations using the `ODBCSYSINI` environmental variable. See [the following section](#odbcsysini) on setting `ODBCSYSINI`.
+
+* If the files listed in `odbcListConfig()` are where you expected them to be and appear complete, the odbc package may have had trouble interfacing with the unixODBC driver manager through nanodbc. To remedy this, first run `dirname(odbcListConfig()[1])` and note its output. Then, follow the instructions in [the section below](#odbcsysini), replacing `"some/folder"` with the noted output. If this doesn't resolve the issue, try to build the odbc package from source, e.g. with `devtools::install_github("r-dbi/odbc")`.
+
+### Setting `ODBCSYSINI` {#odbcsysini}
+
+The `ODBCSYSINI` environmental variable controls the path where unixODBC and the odbc package will look for configuration files. Setting `Sys.setenv(ODBCSYSINI = "some/folder")` means that your configuration files should be located at `"/my/folder/odbc.ini"` and `"/my/folder/odbcinst.ini"`. Be sure to set `ODBCSYSINI` _before_ loading the odbc package. That is:
+
+* Restart R
+* Run `Sys.setenv(ODBCSYSINI = "some/folder")`
+* Load the odbc package with `library(odbc)`
+* Test `odbcListDrivers()` and `odbcListDataSources()` again
+
+If setting `ODBCSYSINI` resolves the issue you've noted, you may want to set that environmental variable every time you start R. To do so, add an entry like `ODBCSYSINI = some/folder` to your `~/.Renviron` file, which contains environmental variables that are set every time an R session is started. To open that file using R, run `usethis::edit_r_environ()`.
+
+Once you've edited `~/.Renviron`, you'll need to save the file and restart R for changes to take effect.
