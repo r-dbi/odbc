@@ -227,6 +227,66 @@ its own line, e.g.:</p>
 defined in <code>odbcinst.ini</code>. You can see all currently defined
 data sources by running <code><a href="../reference/odbcListDataSources.html">odbcListDataSources()</a></code>.</p>
 </div>
+<div class="section level2">
+<h2 id="debugging-driver-and-data-source-configurations">Debugging driver and data source configurations<a class="anchor" aria-label="anchor" href="#debugging-driver-and-data-source-configurations"></a>
+</h2>
+<p>The odbc package may have trouble locating your driver and data
+source configurations. If you find that <code><a href="../reference/odbcListDrivers.html">odbcListDrivers()</a></code>
+and <code><a href="../reference/odbcListDataSources.html">odbcListDataSources()</a></code> report no configurations, check
+the output of <code><a href="../reference/odbcListConfig.html">odbcListConfig()</a></code> next. While
+<code><a href="../reference/odbcListDrivers.html">odbcListDrivers()</a></code> and <code><a href="../reference/odbcListConfig.html">odbcListConfig()</a></code>
+interface with the unixodbc driver manager through nanodbc—the tool that
+the odbc package uses to interface with the ODBC
+API—<code><a href="../reference/odbcListConfig.html">odbcListConfig()</a></code> interfaces with unixODBC directly.
+<code><a href="../reference/odbcListConfig.html">odbcListConfig()</a></code> will show where unixODBC is looking for
+your configurations.</p>
+<ul>
+<li><p>If the files listed in <code><a href="../reference/odbcListConfig.html">odbcListConfig()</a></code> are at a
+location other than where you’ve configured drivers and data sources,
+either 1) configure the listed files as instructed above, or 2) change
+the folder where ODBC should look for configurations using the
+<code>ODBCSYSINI</code> environmental variable. See <a href="#odbcsysini">the following section</a> on setting
+<code>ODBCSYSINI</code>.</p></li>
+<li><p>If the files listed in <code><a href="../reference/odbcListConfig.html">odbcListConfig()</a></code> are where
+you expected them to be and appear complete, the odbc package may have
+had trouble interfacing with the unixODBC driver manager through
+nanodbc. To remedy this, first run
+<code>dirname(odbcListConfig()[1])</code> and note its output. Then,
+follow the instructions in <a href="#odbcsysini">the section below</a>,
+replacing <code>"some/folder"</code> with the noted output. If this
+doesn’t resolve the issue, try to build the odbc package from source,
+e.g. with <code>devtools::install_github("r-dbi/odbc")</code>.</p></li>
+</ul>
+<div class="section level3">
+<h3 id="odbcsysini">Setting <code>ODBCSYSINI</code><a class="anchor" aria-label="anchor" href="#odbcsysini"></a>
+</h3>
+<p>The <code>ODBCSYSINI</code> environmental variable controls the path
+where unixODBC and the odbc package will look for configuration files.
+Setting <code>Sys.setenv(ODBCSYSINI = "some/folder")</code> means that
+your configuration files should be located at
+<code>"/my/folder/odbc.ini"</code> and
+<code>"/my/folder/odbcinst.ini"</code>. Be sure to set
+<code>ODBCSYSINI</code> <em>before</em> loading the odbc package. That
+is:</p>
+<ul>
+<li>Restart R</li>
+<li>Run <code>Sys.setenv(ODBCSYSINI = "some/folder")</code>
+</li>
+<li>Load the odbc package with <code><a href="https://odbc.r-dbi.org">library(odbc)</a></code>
+</li>
+<li>Test <code><a href="../reference/odbcListDrivers.html">odbcListDrivers()</a></code> and
+<code><a href="../reference/odbcListDataSources.html">odbcListDataSources()</a></code> again</li>
+</ul>
+<p>If setting <code>ODBCSYSINI</code> resolves the issue you’ve noted,
+you may want to set that environmental variable every time you start R.
+To do so, add an entry like <code>ODBCSYSINI = some/folder</code> to
+your <code>~/.Renviron</code> file, which contains environmental
+variables that are set every time an R session is started. To open that
+file using R, run <code>usethis::edit_r_environ()</code>.</p>
+<p>Once you’ve edited <code>~/.Renviron</code>, you’ll need to save the
+file and restart R for changes to take effect.</p>
+</div>
+</div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
 </div>
