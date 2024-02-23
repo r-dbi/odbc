@@ -16,6 +16,7 @@ snowflake()
   schema = NULL,
   uid = NULL,
   pwd = NULL,
+  session = NULL,
   ...
 )
 }
@@ -41,6 +42,9 @@ default.}
 
 \item{uid, pwd}{Manually specify a username and password for authentication.
 Specifying these options will disable ambient credential discovery.}
+
+\item{session}{A Shiny session object, when using viewer-based credentials on
+Posit Connect.}
 
 \item{...}{Further arguments passed on to \code{\link[=dbConnect]{dbConnect()}}.}
 }
@@ -74,5 +78,11 @@ DBI::dbConnect(
   uid = "me",
   pwd = rstudioapi::askForPassword()
 )
+
+# Use credentials from the viewer (when possible) in a Shiny app
+# deployed to Posit Connect.
+server <- function(input, output, session) {
+  conn <- DBI::dbConnect(odbc::snowflake(), session = session)
+}
 }
 }
