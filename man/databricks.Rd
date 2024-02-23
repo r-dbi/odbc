@@ -13,6 +13,7 @@ databricks()
   workspace = Sys.getenv("DATABRICKS_HOST"),
   useNativeQuery = TRUE,
   driver = NULL,
+  session = NULL,
   HTTPPath,
   ...
 )
@@ -35,6 +36,8 @@ paramterised queries (and hence \code{dbWriteTable()}) do not work.}
 
 \item{driver}{The name of the Databricks ODBC driver, or \code{NULL} to use the
 default name.}
+
+\item{session}{A Shiny session object, when using viewer-based credentials.}
 
 \item{...}{Further arguments passed on to \code{\link[=dbConnect]{dbConnect()}}.}
 }
@@ -59,5 +62,14 @@ DBI::dbConnect(
   odbc::databricks(),
   httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
 )
+
+# Use credentials from the viewer (when possible) in a Shiny app:
+server <- function(input, output, session) {
+  conn <- DBI::dbConnect(
+    odbc::databricks(),
+    httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj",
+    session = session
+  )
+}
 }
 }

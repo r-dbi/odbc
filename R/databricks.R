@@ -24,6 +24,7 @@
 #'   `"https://example.cloud.databricks.com"`.
 #' @param driver The name of the Databricks ODBC driver, or `NULL` to use the
 #'   default name.
+#' @param session A Shiny session object, when using viewer-based credentials.
 #' @param ... Further arguments passed on to [`dbConnect()`].
 #'
 #' @returns An `OdbcConnection` object with an active connection to a Databricks
@@ -35,6 +36,15 @@
 #'   odbc::databricks(),
 #'   httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
 #' )
+#'
+#' # Use credentials from the viewer (when possible) in a Shiny app:
+#' server <- function(input, output, session) {
+#'   conn <- DBI::dbConnect(
+#'     odbc::databricks(),
+#'     httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj",
+#'     session = session
+#'   )
+#' }
 #' }
 #' @export
 databricks <- function() {
@@ -52,6 +62,7 @@ setMethod(
            workspace = Sys.getenv("DATABRICKS_HOST"),
            useNativeQuery = TRUE,
            driver = NULL,
+           session = NULL,
            HTTPPath,
            ...) {
 
@@ -63,6 +74,7 @@ setMethod(
       workspace = workspace,
       useNativeQuery = useNativeQuery,
       driver = driver,
+      session = session,
       ...
     )
     inject(dbConnect(odbc(), !!!args))
@@ -73,6 +85,7 @@ databricks_args <- function(httpPath,
                             workspace = Sys.getenv("DATABRICKS_HOST"),
                             useNativeQuery = FALSE,
                             driver = NULL,
+                            session = NULL,
                             ...) {
   host <- databricks_host(workspace)
 
@@ -82,7 +95,7 @@ databricks_args <- function(httpPath,
     httpPath = httpPath,
     useNativeQuery = useNativeQuery
   )
-  auth <- databricks_auth_args(host)
+  auth <- databricks_auth_args(host, session)
   all <- c(args, auth, ...)
 
   arg_names <- tolower(names(all))
@@ -180,28 +193,34 @@ databricks_user_agent <- function() {
   user_agent
 }
 
-databricks_auth_args <- function(host) {
+databricks_auth_args <- function(host, session) {
 
   # Check some standard Databricks environment variables. This is used to
   # implement a subset of the "Databricks client unified authentication" model.
-  token <- Sys.getenv("DATABRICKS_TOKEN")
+  pat <- Sys.getenv("DATABRICKS_TOKEN")
   client_id <- Sys.getenv("DATABRICKS_CLIENT_ID")
   client_secret <- Sys.getenv("DATABRICKS_CLIENT_SECRET")
   cli_path <- Sys.getenv("DATABRICKS_CLI_PATH", "databricks")
+  token <- NULL
 
-  # Check for Workbench-provided credentials.
-  wb_token <- NULL
-  if (exists(".rs.api.getDatabricksToken")) {
-    getDatabricksToken <- get(".rs.api.getDatabricksToken")
-    wb_token <- getDatabricksToken(host)
+  # Check for Connect-provided credentials for the given session.
+  if (!is.null(session) && !is.null(session$request) &&
+      nchar(Sys.getenv("CONNECT_SERVER")) != 0) {
+    token <- posit_connect_viewer_token(host, session)
   }
 
-  if (nchar(token) != 0) {
+  # Check for Workbench-provided credentials.
+  if (exists(".rs.api.getDatabricksToken")) {
+    getDatabricksToken <- get(".rs.api.getDatabricksToken")
+    token <- getDatabricksToken(host)
+  }
+
+  if (nchar(pat) != 0) {
     # An explicit PAT takes precedence over everything else.
     list(
       authMech = 3,
       uid = "token",
-      pwd = token
+      pwd = pat
     )
   } else if (nchar(client_id) != 0) {
     # Next up are explicit OAuth2 M2M credentials.
@@ -211,12 +230,12 @@ databricks_auth_args <- function(host) {
       auth_client_id = client_id,
       auth_client_secret = client_secret
     )
-  } else if (!is.null(wb_token)) {
-    # Next up are Workbench-provided credentials.
+  } else if (!is.null(token)) {
+    # Next up are OAuth access tokens.
     list(
       authMech = 11,
       auth_flow = 0,
-      auth_accesstoken = wb_token
+      auth_accesstoken = token
     )
   } else if (!is_hosted_session() && nchar(Sys.which(cli_path)) != 0) {
     # When on desktop, try using the Databricks CLI for auth.
@@ -259,3 +278,39 @@ is_camel_case <- function(x) {
 }
 
 dot_names <- function(...) names(substitute(...()))
+
+posit_connect_viewer_token <- function(host, session) {
+  server_url <- Sys.getenv("CONNECT_SERVER")
+  if (nchar(server_url) == 0) {
+    return(NULL)
+  }
+
+  # NOT YET IMPLEMENTED:
+  token <- session$request$HTTP_POSIT_CONNECT_USER_SESSION_TOKEN
+  # CURRENT IMPLEMENTATION:
+  # token <- session$request$HTTP_POSIT_CONNECT_CONTENT_IDENTITY
+  if (is.null(token)) {
+    return(NULL)
+  }
+
+  url <- file.path(server_url, "v1/oauth/integrations/credentials", fsep = "/")
+  resp <- httr2::request(url) |>
+    httr2::req_body_json(
+      data = list(
+        grant_type = "urn:ietf:params:oauth:grant-type:token-exchange",
+        # NOT YET IMPLEMENTED:
+        resource = paste0("https://", host),
+        subject_token_type = "urn:posit:connect:user-session-token",
+        subject_token = token,
+        # CURRENT IMPLEMENTATION:
+        # subject_token_type = "urn:posit:connect:user-guid",
+        # subject_token = parse_target_guid(content_identity),
+        # actor_token_type = "urn:posit:connect:content-identity-token",
+        # actor_token = identity
+        )
+    ) |>
+    httr2::req_perform() |>
+    httr2::resp_body_json()
+
+  resp$access_token
+}
