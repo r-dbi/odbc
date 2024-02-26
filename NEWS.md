@@ -5,6 +5,9 @@
 
 * Teradata: Resolved issue when previewing tables using the Connections pane.
 
+* The `"OdbcConnection"` method for `dbQuoteIdentifier()` will no longer 
+  pass `x` to `encodeString()` before returning, for consistency with the
+  default implementation in DBI (@simonpcouch, #765).
 
 # odbc 1.4.2
 
