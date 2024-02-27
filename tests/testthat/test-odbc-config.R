@@ -1,6 +1,6 @@
 test_that("odbcListConfig returns appropriate result", {
   skip_on_os(c("windows", "solaris"))
-  skip_if(!has_odbc(), "odbcinst not available.")
+  skip_if(!has_unixodbc(), "odbcinst not available.")
 
   res <- odbcListConfig()
 
@@ -20,14 +20,14 @@ test_that("odbcListConfig returns an empty vector on Windows", {
 
 test_that("odbcListConfig errors informatively without unixODBC", {
   local_mocked_bindings(is_windows = function() {FALSE},
-                        has_odbc = function() {FALSE})
+                        has_unixodbc = function() {FALSE})
 
   expect_snapshot(error = TRUE, odbcListConfig())
 })
 
 test_that("odbcListConfig errors informatively with unexpected odbcinst output", {
   local_mocked_bindings(is_windows = function() {FALSE},
-                        has_odbc = function() {TRUE})
+                        has_unixodbc = function() {TRUE})
 
   local_mocked_bindings(system = function(...) {c("beep", "bop")})
   expect_snapshot(error = TRUE, odbcListConfig())

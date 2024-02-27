@@ -141,6 +141,10 @@ is_windows <- function() {
   identical(.Platform$OS.type, "windows")
 }
 
+is_macos <- function() {
+  identical(Sys.info()[["sysname"]], "Darwin")
+}
+
 compact <- function(x) x[!vapply(x, is.null, logical(1))]
 
 set_odbcsysini <- function() {
@@ -164,4 +168,143 @@ random_name <- function(prefix = "") {
   vals <- c(letters, LETTERS, 0:9)
   name <- paste0(sample(vals, 10, replace = TRUE), collapse = "")
   paste0(prefix, "odbc_", name)
+}
+
+# apple + spark drive config (#651) --------------------------------------------
+configure_spark <- function(call = caller_env()) {
+  if (!is_macos()) {
+    return(invisible())
+  }
+
+  unixodbc_install <- locate_install_unixodbc()
+  if (length(unixodbc_install) == 0) {
+    abort(
+      c(
+        "Unable to locate the unixODBC driver manager.",
+        i = "Please install unixODBC using Homebrew with `brew install unixodbc`."
+      ),
+      call = call
+    )
+  }
+
+  spark_config <- locate_config_spark()
+  if (length(spark_config) == 0) {
+    abort(
+      c(
+        "Unable to locate the needed spark ODBC driver.",
+        i = "Please install the needed driver from https://www.databricks.com/spark/odbc-drivers-download."
+      ),
+      call = call
+    )
+  }
+
+  configure_unixodbc_spark(unixodbc_install[1], spark_config[1], call)
+}
+
+locate_install_unixodbc <- function() {
+  tryCatch(
+    {
+      unixodbc_prefix <- system("odbc_config --lib-prefix", intern = TRUE)
+      return(paste0(unixodbc_prefix, "/libodbcinst.dylib"))
+    },
+    error = function(e) {}
+  )
+
+  common_dirs <- c(
+    "/usr/local/lib",
+    "/opt/homebrew/lib",
+    "/opt/homebrew/opt/unixodbc/lib"
+  )
+
+  list.files(
+    common_dirs,
+    pattern = "libodbcinst\\.dylib$",
+    full.names = TRUE
+  )
+}
+
+# p. 44 https://downloads.datastax.com/odbc/2.6.5.1005/Simba%20Spark%20ODBC%20Install%20and%20Configuration%20Guide.pdf
+locate_config_spark <- function() {
+  spark_env <- Sys.getenv("SIMBASPARKINI")
+  if (!identical(spark_env, "")) {
+    return(spark_env)
+  }
+
+  common_dirs <- c(
+    "/Library/simba/spark/lib",
+    "/etc",
+    getwd(),
+    Sys.getenv("HOME")
+  )
+
+  list.files(
+    common_dirs,
+    pattern = "simba\\.sparkodbc\\.ini$",
+    full.names = TRUE
+  )
+}
+
+configure_unixodbc_spark <- function(unixodbc_install, spark_config, call) {
+  # As shipped, the simba spark ini has an incomplete final line
+  suppressWarnings(
+    spark_lines <- readLines(spark_config)
+  )
+
+  spark_lines_new <- replace_or_append(
+    lines = spark_lines,
+    pattern = "^ODBCInstLib=",
+    replacement = paste0("ODBCInstLib=", unixodbc_install)
+  )
+
+  spark_lines_new <- replace_or_append(
+    lines = spark_lines_new,
+    pattern = "^DriverManagerEncoding=",
+    replacement = "DriverManagerEncoding=UTF-16"
+  )
+
+  write_spark_lines(spark_lines, spark_lines_new, spark_config, call)
+
+  invisible()
+}
+
+write_spark_lines <- function(spark_lines, spark_lines_new, spark_config, call) {
+  if (identical(spark_lines, spark_lines_new)) {
+    return(invisible())
+  }
+
+  # see assertthat::is.writeable
+  if (!is_writeable(spark_config)) {
+    abort(
+      c(
+        paste0(
+          "Detected needed changes to the driver configuration file at ",
+          spark_config,
+          ", but the file was not writeable."
+        ),
+        i = "Please make the changes outlined at https://solutions.posit.co/connections/db/databases/databricks/#troubleshooting-apple-macos-users."
+      ),
+      call = call
+    )
+  }
+
+  writeLines(spark_lines_new, spark_config)
+}
+
+is_writeable <- function(path) {
+  tryCatch(file.access(path, mode = 2)[[1]] == 0, error = function(e) FALSE)
+}
+
+# given a vector of lines in an ini file, look for a given key pattern.
+# the `replacement` is the whole intended line, giving the "key=value" pair.
+# if the key is found, replace that line with `replacement`.
+# if the key isn't found, append a new line with `replacement`.
+replace_or_append <- function(lines, pattern, replacement) {
+  matching_lines_loc <- grepl(pattern, lines)
+  matching_lines <- lines[matching_lines_loc]
+  if (length(matching_lines) == 0) {
+    lines <- c(lines, replacement)
+  } else {
+    lines[matching_lines_loc] <- replacement
+  }
+  lines
 }
