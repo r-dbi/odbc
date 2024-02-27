@@ -36,6 +36,28 @@ setMethod("odbcConnectionColumns_", c("Snowflake", "character"),
   }
 )
 
+#' If the catalog, or the schema arguments are NULL, attempt to infer
+#' by querying for CURRENT_DATABASE() and CURRENT_SCHEMA().  We do this
+#' to aid with performance, as the SQLTables method is more performant
+#' when restricted to a particular DB/schema.
+#' @rdname OdbcConnection
+setMethod("dbExistsTableForWrite", c("Snowflake", "character"),
+  function(conn, name, ...) {
+    args <- compact(list(...))
+    if (is.null(args$catalog_name) || is.null(args$schema_name)) {
+      res <- dbGetQuery(conn, "SELECT CURRENT_DATABASE() AS CATALOG, CURRENT_SCHEMA() AS SCHEMA")
+      if(is.null(args$catalog_name) && !is.na(res$CATALOG[1])) {
+        args$catalog_name <- res$CATALOG[1]
+      }
+      if(is.null(args$schema_name) && !is.na(res$SCHEMA[1])) {
+        args$schema_name <- res$SCHEMA[1]
+      }
+    }
+
+    do.call(callNextMethod, c(list(conn = conn, name = name), args))
+  }
+)
+
 #' @export
 #' @rdname odbcDataType
 #' @usage NULL
