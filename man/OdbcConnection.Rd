@@ -20,6 +20,9 @@
 \alias{dbCommit,OdbcConnection-method}
 \alias{dbRollback,OdbcConnection-method}
 \alias{OdbcConnection}
+\alias{dbExistsTableForWrite,OdbcConnection,Id-method}
+\alias{dbExistsTableForWrite,OdbcConnection,SQL-method}
+\alias{dbExistsTableForWrite,OdbcConnection,character-method}
 \alias{dbExistsTable,OdbcConnection,Id-method}
 \alias{dbExistsTable,OdbcConnection,SQL-method}
 \alias{dbExistsTable,OdbcConnection,character-method}
@@ -62,6 +65,12 @@
 \S4method{dbCommit}{OdbcConnection}(conn, ...)
 
 \S4method{dbRollback}{OdbcConnection}(conn, ...)
+
+\S4method{dbExistsTableForWrite}{OdbcConnection,Id}(conn, name, ...)
+
+\S4method{dbExistsTableForWrite}{OdbcConnection,SQL}(conn, name, ...)
+
+\S4method{dbExistsTableForWrite}{OdbcConnection,character}(conn, name, ...)
 
 \S4method{dbExistsTable}{OdbcConnection,Id}(conn, name, ...)
 
