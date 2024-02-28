@@ -262,9 +262,7 @@ odbcPreviewObject.OdbcConnection <- function(connection,
     name <- paste(dbQuoteIdentifier(connection, catalog), name, sep = ".")
   }
 
-  dbGetQuery(connection, odbcPreviewQuery(connection, rowLimit, name),
-    n = rowLimit
-  )
+  dbGetQuery(connection, odbcPreviewQuery(connection, rowLimit, name))
 }
 
 #' Create a preview query.
