@@ -5,7 +5,6 @@ NULL
 #' @rdname DBI-classes
 setClass("Snowflake", contains = "OdbcConnection")
 
-#' @rdname Snowflake
 #' @description
 #' ## `odbcConnectionColumns()`
 #'
@@ -13,6 +12,8 @@ setClass("Snowflake", contains = "OdbcConnection")
 #' by querying for CURRENT_DATABASE() and CURRENT_SCHEMA().  We do this
 #' to aid with performance, as the SQLColumns method is more performant
 #' when restricted to a particular DB/schema.
+#' @inheritParams DBI::dbListFields
+#' @rdname Snowflake
 #' @usage NULL
 setMethod("odbcConnectionColumns_", c("Snowflake", "character"),
   function(conn,
