@@ -27,11 +27,11 @@ setMethod("odbcConnectionColumns_", c("Snowflake", "character"),
            exact = FALSE) {
     if(is.null(catalog_name) || is.null(schema_name)) {
       res <- dbGetQuery(conn, "SELECT CURRENT_DATABASE() AS CAT, CURRENT_SCHEMA() AS SCH")
-      if(is.null(catalog_name) && !is.na(res$CAT[1])) {
-        catalog_name <- res$CAT[1]
+      if(is.null(catalog_name) && !is.na(res$CAT)) {
+        catalog_name <- res$CAT
       }
-      if(is.null(schema_name) && !is.na(res$SCH[1])) {
-        schema_name <- res$SCH[1]
+      if(is.null(schema_name) && !is.na(res$SCH)) {
+        schema_name <- res$SCH
       }
     }
     callNextMethod(conn = conn, name = name, ..., catalog_name = catalog_name,
@@ -44,12 +44,12 @@ setMethod("dbExistsTableForWrite", c("Snowflake", "character"),
   function(conn, name, ...) {
     args <- compact(list(...))
     if (is.null(args$catalog_name) || is.null(args$schema_name)) {
-      res <- dbGetQuery(conn, "SELECT CURRENT_DATABASE() AS CATALOG, CURRENT_SCHEMA() AS SCHEMA")
-      if(is.null(args$catalog_name) && !is.na(res$CATALOG[1])) {
-        args$catalog_name <- res$CATALOG[1]
+      res <- dbGetQuery(conn, "SELECT CURRENT_DATABASE() AS CAT, CURRENT_SCHEMA() AS SCH")
+      if(is.null(args$catalog_name) && !is.na(res$CAT)) {
+        args$catalog_name <- res$CAT
       }
-      if(is.null(args$schema_name) && !is.na(res$SCHEMA[1])) {
-        args$schema_name <- res$SCHEMA[1]
+      if(is.null(args$schema_name) && !is.na(res$SCH)) {
+        args$schema_name <- res$SCH
       }
     }
 
