@@ -5,6 +5,8 @@ NULL
 #' @rdname DBI-classes
 setClass("Snowflake", contains = "OdbcConnection")
 
+#' Connecting to Snowflake via ODBC
+#'
 #' @description
 #' ## `odbcConnectionColumns()`
 #'
@@ -37,10 +39,6 @@ setMethod("odbcConnectionColumns_", c("Snowflake", "character"),
   }
 )
 
-#' If the catalog, or the schema arguments are NULL, attempt to infer
-#' by querying for CURRENT_DATABASE() and CURRENT_SCHEMA().  We do this
-#' to aid with performance, as the SQLTables method is more performant
-#' when restricted to a particular DB/schema.
 #' @rdname Snowflake
 setMethod("dbExistsTableForWrite", c("Snowflake", "character"),
   function(conn, name, ...) {

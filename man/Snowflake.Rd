@@ -3,10 +3,7 @@
 \name{odbcConnectionColumns_,Snowflake,character-method}
 \alias{odbcConnectionColumns_,Snowflake,character-method}
 \alias{dbExistsTableForWrite,Snowflake,character-method}
-\title{If the catalog, or the schema arguments are NULL, attempt to infer
-by querying for CURRENT_DATABASE() and CURRENT_SCHEMA().  We do this
-to aid with performance, as the SQLTables method is more performant
-when restricted to a particular DB/schema.}
+\title{Connecting to Snowflake via ODBC}
 \usage{
 \S4method{dbExistsTableForWrite}{Snowflake,character}(conn, name, ...)
 }
