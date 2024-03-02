@@ -485,7 +485,6 @@ setGeneric(
   }
 )
 
-#' @noRd
 setMethod("dbExistsTableForWrite", c("OdbcConnection", "Id"),
   function(conn, name, ...) {
     dbExistsTableForWrite(
@@ -497,14 +496,12 @@ setMethod("dbExistsTableForWrite", c("OdbcConnection", "Id"),
   }
 )
 
-#' @noRd
 setMethod("dbExistsTableForWrite", c("OdbcConnection", "SQL"),
   function(conn, name, ...) {
     dbExistsTableForWrite(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   }
 )
 
-#' @noRd
 setMethod("dbExistsTableForWrite", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     dbExistsTable(conn = conn, name = name, ...)
