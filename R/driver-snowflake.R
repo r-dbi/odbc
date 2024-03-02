@@ -5,6 +5,26 @@ NULL
 #' @rdname DBI-classes
 setClass("Snowflake", contains = "OdbcConnection")
 
+#' getCatalogSchema
+#'
+#' Internal, Snowflake specific method that will return a list
+#' where `catalog_name` and `schema_name` are either the arguments
+#' passed by the user ( if not null ), or if null, the CURRENT
+#' database ( or schema, respectively ).
+#' @noRd
+getCatalogSchema <- function(conn, catalog_name = NULL, schema_name = NULL) {
+  if(is.null(catalog_name) || is.null(schema_name)) {
+    res <- dbGetQuery(conn, "SELECT CURRENT_DATABASE() AS CAT, CURRENT_SCHEMA() AS SCH")
+    if(is.null(catalog_name) && !is.na(res$CAT)) {
+      catalog_name <- res$CAT
+    }
+    if(is.null(schema_name) && !is.na(res$SCH)) {
+      schema_name <- res$SCH
+    }
+  }
+  return(list(catalog_name = catalog_name, schema_name = schema_name))
+}
+
 #' Connecting to Snowflake via ODBC
 #'
 #' @description
@@ -25,17 +45,10 @@ setMethod("odbcConnectionColumns_", c("Snowflake", "character"),
            schema_name = NULL,
            column_name = NULL,
            exact = FALSE) {
-    if(is.null(catalog_name) || is.null(schema_name)) {
-      res <- dbGetQuery(conn, "SELECT CURRENT_DATABASE() AS CAT, CURRENT_SCHEMA() AS SCH")
-      if(is.null(catalog_name) && !is.na(res$CAT)) {
-        catalog_name <- res$CAT
-      }
-      if(is.null(schema_name) && !is.na(res$SCH)) {
-        schema_name <- res$SCH
-      }
-    }
-    callNextMethod(conn = conn, name = name, ..., catalog_name = catalog_name,
-      schema_name = schema_name, column_name = column_name, exact = exact)
+    catSchema <- getCatalogSchema(conn, catalog_name, schema_name)
+
+    callNextMethod(conn = conn, name = name, ..., catalog_name = catSchema$catalog_name,
+      schema_name = catSchema$schema_name, column_name = column_name, exact = exact)
   }
 )
 
@@ -43,15 +56,9 @@ setMethod("odbcConnectionColumns_", c("Snowflake", "character"),
 setMethod("dbExistsTableForWrite", c("Snowflake", "character"),
   function(conn, name, ...) {
     args <- compact(list(...))
-    if (is.null(args$catalog_name) || is.null(args$schema_name)) {
-      res <- dbGetQuery(conn, "SELECT CURRENT_DATABASE() AS CAT, CURRENT_SCHEMA() AS SCH")
-      if(is.null(args$catalog_name) && !is.na(res$CAT)) {
-        args$catalog_name <- res$CAT
-      }
-      if(is.null(args$schema_name) && !is.na(res$SCH)) {
-        args$schema_name <- res$SCH
-      }
-    }
+    catSchema <- getCatalogSchema(conn, args$catalog_name, args$schema_name)
+    args$catalog_name <- catSchema$catalog_name
+    args$schema_name <- catSchema$schema_name
 
     do.call(callNextMethod, c(list(conn = conn, name = name), args))
   }
