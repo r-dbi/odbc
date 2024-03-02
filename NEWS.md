@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* dbListFields: Now works with DBI::Id and DBI::SQL identifiers.
+
 * Snowflake: Improved performance on write (#760).
 
 * Transitioned `odbcDataType()` to use S4 for consistency. S3 methods defined

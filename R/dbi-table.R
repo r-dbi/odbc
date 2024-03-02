@@ -249,6 +249,54 @@ createFields <- function(con, fields, field.types, row.names) {
 }
 
 #' @rdname OdbcConnection
+#' @inheritParams DBI::dbListFields
+#' @export
+setMethod("dbListFields", c("OdbcConnection", "Id"),
+  function(conn, name, ...) {
+    dbListFields(
+      conn,
+      name = id_field(name, "table"),
+      catalog_name = id_field(name, "catalog"),
+      schema_name = id_field(name, "schema")
+    )
+  }
+)
+
+#' @rdname OdbcConnection
+#' @inheritParams DBI::dbListFields
+#' @export
+setMethod("dbListFields", c("OdbcConnection", "SQL"),
+  function(conn, name, ...) {
+    dbListFields(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+  }
+)
+
+#' @rdname OdbcConnection
+#' @inheritParams DBI::dbListFields
+#' @param catalog_name Catalog where table is located.
+#' @param schema_name Schema where table is located.
+#' @param column_name The name of the column to return, the default returns all columns.
+#' @export
+setMethod("dbListFields", c("OdbcConnection", "character"),
+  function(conn,
+           name,
+           catalog_name = NULL,
+           schema_name = NULL,
+           column_name = NULL,
+           ...) {
+    cols <- odbcConnectionColumns_(
+      conn,
+      name = name,
+      catalog_name = catalog_name,
+      schema_name = schema_name,
+      column_name = column_name,
+      exact = TRUE
+    )
+    cols[["name"]]
+  }
+)
+
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbExistsTable
 #' @export
 setMethod("dbExistsTable", c("OdbcConnection", "Id"),
