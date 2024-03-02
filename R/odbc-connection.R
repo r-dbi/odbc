@@ -486,7 +486,6 @@ setGeneric(
 )
 
 #' @noRd
-#' @inheritParams DBI::dbExistsTable
 setMethod("dbExistsTableForWrite", c("OdbcConnection", "Id"),
   function(conn, name, ...) {
     dbExistsTableForWrite(
@@ -499,7 +498,6 @@ setMethod("dbExistsTableForWrite", c("OdbcConnection", "Id"),
 )
 
 #' @noRd
-#' @inheritParams DBI::dbExistsTable
 setMethod("dbExistsTableForWrite", c("OdbcConnection", "SQL"),
   function(conn, name, ...) {
     dbExistsTableForWrite(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
@@ -507,7 +505,6 @@ setMethod("dbExistsTableForWrite", c("OdbcConnection", "SQL"),
 )
 
 #' @noRd
-#' @inheritParams DBI::dbExistsTable
 setMethod("dbExistsTableForWrite", c("OdbcConnection", "character"),
   function(conn, name, ...) {
     dbExistsTable(conn = conn, name = name, ...)
