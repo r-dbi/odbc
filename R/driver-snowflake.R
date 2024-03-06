@@ -54,13 +54,14 @@ setMethod("odbcConnectionColumns_", c("Snowflake", "character"),
 
 #' @rdname Snowflake
 setMethod("dbExistsTableForWrite", c("Snowflake", "character"),
-  function(conn, name, ...) {
-    args <- compact(list(...))
-    catSchema <- getCatalogSchema(conn, args$catalog_name, args$schema_name)
-    args$catalog_name <- catSchema$catalog_name
-    args$schema_name <- catSchema$schema_name
+  function(conn, name, ...,
+           catalog_name = NULL, schema_name = NULL) {
+    catSchema <- getCatalogSchema(conn, catalog_name, schema_name)
+    catalog_name <- catSchema$catalog_name
+    schema_name <- catSchema$schema_name
 
-    do.call(callNextMethod, c(list(conn = conn, name = name), args))
+    callNextMethod(conn = conn, name = name, ...,
+      catalog_name = catalog_name, schema_name = schema_name)
   }
 )
 
