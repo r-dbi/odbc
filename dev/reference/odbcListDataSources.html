@@ -101,13 +101,13 @@ about the available data source names.</p>
 manager. unixODBC looks to the <code>odbc.ini</code> <em>configuration file</em> for information
 on DSNs. Find the location(s) of your <code>odbc.ini</code> file(s) with <code>odbcinst -j</code>.</p>
 <p>In this example <code>odbc.ini</code> file:</p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>[MySQL]</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>Driver <span class="ot">=</span> MySQL Driver</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>Database <span class="ot">=</span> test</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>Server <span class="ot">=</span> <span class="dv">127</span>.<span class="dv">0</span>.<span class="fl">0.1</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>User <span class="ot">=</span> root</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>password <span class="ot">=</span> root</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>Port <span class="ot">=</span> <span class="dv">3306</span></span></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>[MySQL]</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>Driver <span class="ot">=</span> MySQL Driver</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>Database <span class="ot">=</span> test</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>Server <span class="ot">=</span> <span class="dv">127</span>.<span class="dv">0</span>.<span class="fl">0.1</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>User <span class="ot">=</span> root</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>password <span class="ot">=</span> root</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>Port <span class="ot">=</span> <span class="dv">3306</span></span></code></pre><p></p></div>
 <p>...the data source name is <code>MySQL</code>, which will appear in the <code>name</code>
 column of this function's output. To pass the DSN as the <code>dsn</code> argument to
 <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code>, pass it as a string, like <code>"MySQL"</code>.
@@ -119,18 +119,18 @@ with an ODBC driver manager.</p>
 be automatically passed on to <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code> when its <code>dsn</code> argument is set.</p>
 <p>For example, with the <code>MySQL</code> data source name configured, and the driver
 name <code>MySQL Driver</code> appearing in <code><a href="odbcListDrivers.html">odbcListDrivers()</a></code> output, the code:</p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dbConnect</span>(</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    odbc<span class="sc">::</span><span class="fu">odbc</span>(),</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Driver =</span> <span class="st">"MySQL Driver"</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Database =</span> <span class="st">"test"</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">Server =</span> <span class="st">"127.0.0.1"</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">User =</span> <span class="st">"root"</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">password =</span> <span class="st">"root"</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">Port =</span> <span class="dv">3306</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>con <span class="ot">&lt;-</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="fu">dbConnect</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>    odbc<span class="sc">::</span><span class="fu">odbc</span>(),</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>    <span class="at">Driver =</span> <span class="st">"MySQL Driver"</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>    <span class="at">Database =</span> <span class="st">"test"</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>    <span class="at">Server =</span> <span class="st">"127.0.0.1"</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>    <span class="at">User =</span> <span class="st">"root"</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>    <span class="at">password =</span> <span class="st">"root"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>    <span class="at">Port =</span> <span class="dv">3306</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  )</span></code></pre><p></p></div>
 <p>...can be written:</p>
-<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(odbc<span class="sc">::</span><span class="fu">odbc</span>(), <span class="at">dsn =</span> <span class="st">"MySQL"</span>)</span></code></pre><p></p></div>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(odbc<span class="sc">::</span><span class="fu">odbc</span>(), <span class="at">dsn =</span> <span class="st">"MySQL"</span>)</span></code></pre><p></p></div>
 <p>In this case, <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code> will look up the information defined for <code>MySQL</code>
 in the driver manager (in our example, <code>odbc.ini</code>) and automatically
 pass the needed arguments.</p>

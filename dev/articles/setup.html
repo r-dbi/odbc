@@ -172,11 +172,11 @@ you will need to edit <code>odbcinst.ini</code>. You can use
 <code>odbcinst -j</code> (provided by unixODBC) to find out where this
 file lives.</p>
 <p>The basic form of this file is something like this:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[PostgreSQL Driver]</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Driver          </span><span class="ot">=</span><span class="st"> /usr/local/lib/psqlodbcw.so</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">[SQLite Driver]</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="dt">Driver          </span><span class="ot">=</span><span class="st"> /usr/local/lib/libsqlite3odbc.dylib</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="kw">[PostgreSQL Driver]</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="dt">Driver          </span><span class="ot">=</span><span class="st"> /usr/local/lib/psqlodbcw.so</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="kw">[SQLite Driver]</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="dt">Driver          </span><span class="ot">=</span><span class="st"> /usr/local/lib/libsqlite3odbc.dylib</span></span></code></pre></div>
 <p>i.e., a mapping between driver names, and the location of the driver
 file. The driver name is what you pass to <code><a href="../reference/dbConnect-OdbcDriver-method.html">odbc::odbc()</a></code> when
 you connect, e,g:</p>
@@ -216,13 +216,13 @@ sources on Windows. On Linux and Mac, you’ll need to edit
 <code>odbcinst -j</code>). Each data source is defined in a separate
 section (defined by <code>[name]</code>]), with each paramter going on
 its own line, e.g.:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[test_db]</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="dt">driver     </span><span class="ot">=</span><span class="st"> PostgreSQL Driver</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="dt">database   </span><span class="ot">=</span><span class="st"> test_db</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="dt">username   </span><span class="ot">=</span><span class="st"> postgres</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="dt">password   </span><span class="ot">=</span><span class="st"> password</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="dt">host       </span><span class="ot">=</span><span class="st"> </span><span class="kw">localhost</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="dt">port       </span><span class="ot">=</span><span class="st"> </span><span class="dv">5432</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="kw">[test_db]</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="dt">driver     </span><span class="ot">=</span><span class="st"> PostgreSQL Driver</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="dt">database   </span><span class="ot">=</span><span class="st"> test_db</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="dt">username   </span><span class="ot">=</span><span class="st"> postgres</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="dt">password   </span><span class="ot">=</span><span class="st"> password</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="dt">host       </span><span class="ot">=</span><span class="st"> </span><span class="kw">localhost</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="dt">port       </span><span class="ot">=</span><span class="st"> </span><span class="dv">5432</span></span></code></pre></div>
 <p>The <code>driver</code> entry represents the name of the driver
 defined in <code>odbcinst.ini</code>. You can see all currently defined
 data sources by running <code><a href="../reference/odbcListDataSources.html">odbcListDataSources()</a></code>.</p>

@@ -126,8 +126,8 @@ MariaDB driver:</p>
 is, with the driver name <code>[MariaDB]</code> configuring your MariaDB
 install in <code>odbcinst.ini</code>, the first lines of your
 <code>odbc.ini</code> entry should look something like:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[MySQL]</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Driver </span><span class="ot">=</span><span class="st"> MariaDB</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="kw">[MySQL]</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="dt">Driver </span><span class="ot">=</span><span class="st"> MariaDB</span></span></code></pre></div>
 <p>After running <code>brew services start mysql</code> if needed, and
 confirming that the database is running with
 <code>brew services info mysql</code>, you should be able to:</p>
@@ -156,11 +156,11 @@ use:</p>
 <pre class="shell"><code>brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
 brew install microsoft/mssql-release/msodbcsql18 microsoft/mssql-release/mssql-tools18</code></pre>
 <p>The <code>odbc.ini</code> entry should look something like:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[MicrosoftSQLServer]</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="dt">driver </span><span class="ot">=</span><span class="st"> ODBC Driver 18 for SQL Server</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="dt">Server </span><span class="ot">=</span><span class="st"> 127.0.0.1</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="dt">port </span><span class="ot">=</span><span class="st"> </span><span class="dv">1433</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="dt">Encrypt </span><span class="ot">=</span><span class="st"> </span><span class="kw">no</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="kw">[MicrosoftSQLServer]</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="dt">driver </span><span class="ot">=</span><span class="st"> ODBC Driver 18 for SQL Server</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="dt">Server </span><span class="ot">=</span><span class="st"> 127.0.0.1</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="dt">port </span><span class="ot">=</span><span class="st"> </span><span class="dv">1433</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="dt">Encrypt </span><span class="ot">=</span><span class="st"> </span><span class="kw">no</span></span></code></pre></div>
 <p>With the driver name in <code>odbcinst.ini</code> being
 <code>[ODBC Driver 18 for SQL Server]</code>.</p>
 <p>With docker and the needed driver installed, deploy the container
@@ -219,11 +219,11 @@ ACCEPT_EULA=Y apt-get install -y msodbcsql17
 apt-get install -y unixodbc-dev</code></pre>
 <p>The resulting <code>odbc.ini</code> file will look something
 like:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[MicrosoftSQLServer]</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="dt">driver </span><span class="ot">=</span><span class="st"> ODBC Driver 17 for SQL Server</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="dt">Server </span><span class="ot">=</span><span class="st"> sql1</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="dt">port </span><span class="ot">=</span><span class="st"> </span><span class="dv">1433</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="dt">Database </span><span class="ot">=</span><span class="st"> test</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="kw">[MicrosoftSQLServer]</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="dt">driver </span><span class="ot">=</span><span class="st"> ODBC Driver 17 for SQL Server</span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="dt">Server </span><span class="ot">=</span><span class="st"> sql1</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="dt">port </span><span class="ot">=</span><span class="st"> </span><span class="dv">1433</span></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="dt">Database </span><span class="ot">=</span><span class="st"> test</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="sqlite">SQLite<a class="anchor" aria-label="anchor" href="#sqlite"></a>
@@ -259,11 +259,11 @@ ORCLPDB1=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=32769))
 appropriately</a>.</p>
 <p>Then, to add a new user to the database:</p>
 <pre class="shell"><code>docker exec -it oracle_db bash -c "source /home/oracle/.bashrc; sqlplus SYS/Oradoc_db1 AS SYSDBA"</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">alter</span> <span class="kw">session</span> <span class="kw">set</span> <span class="ot">"_ORACLE_SCRIPT"</span><span class="op">=</span><span class="kw">true</span>;</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="kw">create</span> <span class="fu">user</span> test <span class="kw">identified</span> <span class="kw">by</span> <span class="dv">12345</span>;</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">ALL</span> <span class="kw">PRIVILEGES</span> <span class="kw">TO</span> TEST;</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="kw">alter</span> <span class="kw">session</span> <span class="kw">set</span> <span class="ot">"_ORACLE_SCRIPT"</span><span class="op">=</span><span class="kw">true</span>;</span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a><span class="kw">create</span> <span class="fu">user</span> test <span class="kw">identified</span> <span class="kw">by</span> <span class="dv">12345</span>;</span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">ALL</span> <span class="kw">PRIVILEGES</span> <span class="kw">TO</span> TEST;</span></code></pre></div>
 <p>Finally, in R:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span><span class="st">"TNS_ADMIN"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
@@ -301,11 +301,11 @@ snowflake API URL,
 e.g. <code>wmc39401.us-east-1.snowflakecomputing.com</code>.</li>
 </ul>
 <p>The <code>odbc.ini</code> file should look like:</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[Snowflake]</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Driver      </span><span class="ot">=</span><span class="st"> Snowflake</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="dt">Description </span><span class="ot">=</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="dt">uid         </span><span class="ot">=</span><span class="st"> &lt;uid&gt;</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="dt">server      </span><span class="ot">=</span><span class="st"> &lt;deployment-url&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="kw">[Snowflake]</span></span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a><span class="dt">Driver      </span><span class="ot">=</span><span class="st"> Snowflake</span></span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a><span class="dt">Description </span><span class="ot">=</span></span>
+<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a><span class="dt">uid         </span><span class="ot">=</span><span class="st"> &lt;uid&gt;</span></span>
+<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a><span class="dt">server      </span><span class="ot">=</span><span class="st"> &lt;deployment-url&gt;</span></span></code></pre></div>
 <p>The above assumes <code>Driver = Snowflake</code> is configured in
 <code>odbcinst.ini</code>. Then, connect by supplying the password as an
 argument:</p>
