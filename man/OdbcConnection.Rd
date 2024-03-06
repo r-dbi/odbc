@@ -20,6 +20,9 @@
 \alias{dbCommit,OdbcConnection-method}
 \alias{dbRollback,OdbcConnection-method}
 \alias{OdbcConnection}
+\alias{dbListFields,OdbcConnection,Id-method}
+\alias{dbListFields,OdbcConnection,SQL-method}
+\alias{dbListFields,OdbcConnection,character-method}
 \alias{dbExistsTable,OdbcConnection,Id-method}
 \alias{dbExistsTable,OdbcConnection,SQL-method}
 \alias{dbExistsTable,OdbcConnection,character-method}
@@ -62,6 +65,19 @@
 \S4method{dbCommit}{OdbcConnection}(conn, ...)
 
 \S4method{dbRollback}{OdbcConnection}(conn, ...)
+
+\S4method{dbListFields}{OdbcConnection,Id}(conn, name, ...)
+
+\S4method{dbListFields}{OdbcConnection,SQL}(conn, name, ...)
+
+\S4method{dbListFields}{OdbcConnection,character}(
+  conn,
+  name,
+  catalog_name = NULL,
+  schema_name = NULL,
+  column_name = NULL,
+  ...
+)
 
 \S4method{dbExistsTable}{OdbcConnection,Id}(conn, name, ...)
 
@@ -109,6 +125,12 @@ e.g. \code{Id(schema = "my_schema", table = "table_name")}
 \item a call to \code{\link[DBI:SQL]{SQL()}} with the quoted and fully qualified table name
 given verbatim, e.g. \code{SQL('"my_schema"."table_name"')}
 }}
+
+\item{catalog_name}{Catalog where table is located.}
+
+\item{schema_name}{Schema where table is located.}
+
+\item{column_name}{The name of the column to return, the default returns all columns.}
 }
 \description{
 Implementations of pure virtual functions defined in the \code{DBI} package

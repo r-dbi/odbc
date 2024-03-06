@@ -203,29 +203,6 @@ setMethod("dbListTables", "OdbcConnection",
   }
 )
 
-#' @rdname dbListTables-OdbcConnection-method
-#' @inheritParams DBI::dbListFields
-#' @param column_name The name of the column to return, the default returns all columns.
-#' @export
-setMethod("dbListFields", c("OdbcConnection", "character"),
-  function(conn,
-           name,
-           catalog_name = NULL,
-           schema_name = NULL,
-           column_name = NULL,
-           ...) {
-    cols <- odbcConnectionColumns_(
-      conn,
-      name = name,
-      catalog_name = catalog_name,
-      schema_name = schema_name,
-      column_name = column_name,
-      exact = TRUE
-    )
-    cols[["name"]]
-  }
-)
-
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbGetInfo
 #' @export

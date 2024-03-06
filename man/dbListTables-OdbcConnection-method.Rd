@@ -2,7 +2,6 @@
 % Please edit documentation in R/dbi-connection.R
 \name{dbListTables,OdbcConnection-method}
 \alias{dbListTables,OdbcConnection-method}
-\alias{dbListFields,OdbcConnection,character-method}
 \title{List remote tables and fields for an ODBC connection}
 \usage{
 \S4method{dbListTables}{OdbcConnection}(
@@ -11,15 +10,6 @@
   schema_name = NULL,
   table_name = NULL,
   table_type = NULL,
-  ...
-)
-
-\S4method{dbListFields}{OdbcConnection,character}(
-  conn,
-  name,
-  catalog_name = NULL,
-  schema_name = NULL,
-  column_name = NULL,
   ...
 )
 }
@@ -38,18 +28,6 @@ will need to use \code{odbcConnectionTables()} directly instead.}
 all table types.}
 
 \item{...}{Other parameters passed on to methods.}
-
-\item{name}{The table name, passed on to \code{\link[DBI:dbQuoteIdentifier]{dbQuoteIdentifier()}}. Options are:
-\itemize{
-\item a character string with the unquoted DBMS table name,
-e.g. \code{"table_name"},
-\item a call to \code{\link[DBI:Id]{Id()}} with components to the fully qualified table name,
-e.g. \code{Id(schema = "my_schema", table = "table_name")}
-\item a call to \code{\link[DBI:SQL]{SQL()}} with the quoted and fully qualified table name
-given verbatim, e.g. \code{SQL('"my_schema"."table_name"')}
-}}
-
-\item{column_name}{The name of the column to return, the default returns all columns.}
 }
 \value{
 A character vector of table or field names respectively.
