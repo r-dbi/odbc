@@ -70,16 +70,6 @@ connection; <code><a href="https://dbi.r-dbi.org/reference/dbListFields.html" cl
 <span>  table_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  table_type <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for OdbcConnection,character</span></span>
-<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbListFields.html" class="external-link">dbListFields</a></span><span class="op">(</span></span>
-<span>  <span class="va">conn</span>,</span>
-<span>  <span class="va">name</span>,</span>
-<span>  catalog_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  schema_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  column_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -105,20 +95,6 @@ all table types.</p></dd>
 
 <dt>...</dt>
 <dd><p>Other parameters passed on to methods.</p></dd>
-
-
-<dt>name</dt>
-<dd><p>The table name, passed on to <code><a href="https://dbi.r-dbi.org/reference/dbQuoteIdentifier.html" class="external-link">dbQuoteIdentifier()</a></code>. Options are:</p><ul><li><p>a character string with the unquoted DBMS table name,
-e.g. <code>"table_name"</code>,</p></li>
-<li><p>a call to <code><a href="https://dbi.r-dbi.org/reference/Id.html" class="external-link">Id()</a></code> with components to the fully qualified table name,
-e.g. <code>Id(schema = "my_schema", table = "table_name")</code></p></li>
-<li><p>a call to <code><a href="https://dbi.r-dbi.org/reference/SQL.html" class="external-link">SQL()</a></code> with the quoted and fully qualified table name
-given verbatim, e.g. <code>SQL('"my_schema"."table_name"')</code></p></li>
-</ul></dd>
-
-
-<dt>column_name</dt>
-<dd><p>The name of the column to return, the default returns all columns.</p></dd>
 
 </dl></div>
     <div class="section level2">
