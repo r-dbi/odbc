@@ -76,11 +76,15 @@ std::string get_info_or_empty(connection_ptr const& p, short type) {
 // [[Rcpp::export]]
 Rcpp::List connection_info(connection_ptr const& p) {
   SQLUINTEGER getdata_ext;
+  SQLUINTEGER owner_usage;
   try {
     getdata_ext =
         (*p)->connection()->get_info<SQLUINTEGER>(SQL_GETDATA_EXTENSIONS);
+    owner_usage =
+        (*p)->connection()->get_info<SQLUINTEGER>(SQL_OWNER_USAGE);
   } catch (const nanodbc::database_error& c) {
     getdata_ext = 0;
+    owner_usage = 0;
   }
 
   return Rcpp::List::create(
@@ -97,6 +101,8 @@ Rcpp::List connection_info(connection_ptr const& p) {
       Rcpp::_["driver.version"] = get_info_or_empty(p, SQL_DRIVER_VER),
       Rcpp::_["odbcdriver.version"] = get_info_or_empty(p, SQL_DRIVER_ODBC_VER),
       Rcpp::_["supports.transactions"] = (*p)->supports_transactions(),
+      Rcpp::_["supports.catalogs"] = get_info_or_empty(p, SQL_CATALOG_NAME) == "Y" ? true : false,
+      Rcpp::_["supports.schema"] = owner_usage == 0 ? false : true,
       Rcpp::_["getdata.extensions.any_column"] =
           ((getdata_ext & SQL_GD_ANY_COLUMN) != 0),
       Rcpp::_["getdata.extensions.any_order"] =

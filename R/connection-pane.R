@@ -44,15 +44,13 @@ odbcListObjectTypes.default <- function(connection) {
     obj_types <- c(obj_types, list(view = list(contains = "data")))
   }
 
-  # check for multiple schema or a named schema
-  schemas <- string_values(odbcConnectionSchemas(connection))
-  if (length(schemas) > 0) {
+  # check for schema support
+  if (conn@info$supports.schema) {
     obj_types <- list(schema = list(contains = obj_types))
   }
 
   # check for multiple catalogs
-  catalogs <- string_values(odbcConnectionCatalogs(connection))
-  if (length(catalogs) > 0) {
+  if (conn@info$supports.catalogs) {
     obj_types <- list(catalog = list(contains = obj_types))
   }
 
