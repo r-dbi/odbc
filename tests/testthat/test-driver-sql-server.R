@@ -337,3 +337,36 @@ test_that("captures multiline errors message", {
     }
   )
 })
+
+test_that("odbcListObjects shows synonyms (#221)", {
+  con <- test_con("SQLSERVER")
+  db <- dbGetQuery(con, "SELECT db_name()")[1,1]
+  dbExecute(con, "CREATE SCHEMA testSchema")
+  dbExecute(con, "CREATE SCHEMA testSchema2")
+
+  on.exit({
+    dbExecute(con, "DROP TABLE IF EXISTS testSchema.tbl")
+    dbExecute(con, "DROP SYNONYM IF EXISTS testSchema.tbl2")
+    dbExecute(con, "DROP SYNONYM IF EXISTS testSchema2.tbl2")
+    dbExecute(con, "DROP SCHEMA IF EXISTS testSchema")
+    dbExecute(con, "DROP SCHEMA IF EXISTS testSchema2")
+  })
+
+  dbExecute(con, "CREATE TABLE testSchema.tbl (x int)")
+  expect_equal(nrow(odbcListObjects(con, catalog = db, schema = "testSchema")), 1)
+
+  dbExecute(con, "CREATE SYNONYM testSchema.tbl2 for testSchema.tbl")
+  expect_equal(nrow(odbcListObjects(con, catalog = db, schema = "testSchema")), 2)
+  expect_equal(
+    nrow(odbcListObjects(con, catalog = db, schema = "testSchema", name = "tbl")),
+    1
+  )
+  expect_false("tbl2" %in% odbcListObjects(con))
+  dbExecute(con, "DROP SYNONYM testSchema.tbl2")
+
+  # ensure query filters out synonyms in schemas other than the one
+  # where the base object lives effectively
+  dbExecute(con, "CREATE SYNONYM testSchema2.tbl2 for testSchema.tbl")
+  expect_equal(nrow(odbcListObjects(con, catalog = db, schema = "testSchema")), 1)
+  expect_equal(nrow(odbcListObjects(con, catalog = db, schema = "testSchema2")), 1)
+})

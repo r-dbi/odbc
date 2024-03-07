@@ -204,3 +204,56 @@ setMethod("odbcDataType", "Microsoft SQL Server",
     )
   }
 )
+
+#' @rdname SQLServer
+#' @description
+#' ## `odbcListObjects()`
+#'
+#' This method makes tables that are synonyms visible in the Connections pane.
+# See (#221).
+#' @usage NULL
+#' @export
+`odbcListObjects.Microsoft SQL Server` <- function(connection,
+                                                   catalog = NULL,
+                                                   schema = NULL,
+                                                   name = NULL,
+                                                   type = NULL,
+                                                   ...) {
+  objects <- NextMethod(
+    object = connection,
+    catalog = catalog,
+    schema = schema,
+    name = name,
+    type = type,
+    ...
+  )
+
+  if (is.null(catalog) | is.null(schema)) {
+    return(objects)
+  }
+
+  synonyms <- dbGetQuery(
+    connection,
+    "SELECT
+       catalog = DB.name,
+       [schema] = Sch.name,
+       name   = Syn.name
+     FROM sys.synonyms          AS Syn
+       INNER JOIN sys.schemas AS Sch
+         ON Sch.schema_id = Syn.schema_id
+       INNER JOIN sys.databases AS DB
+         ON Sch.principal_id = DB.database_id
+     WHERE DB.name = ? AND Sch.name = ?
+       AND OBJECTPROPERTY(Object_ID(Syn.base_object_name), 'IsTable') = 1;",
+    params = list(catalog, schema)
+  )
+
+  if (!is.null(name)) {
+    synonyms <- synonyms[synonyms$name == name, , drop = FALSE]
+  }
+
+  rbind(
+    objects,
+    data.frame(name = synonyms$name, type = rep("table", length(synonyms$name)))
+  )
+}
