@@ -10,6 +10,9 @@
 * The `"OdbcConnection"` method for `dbQuoteIdentifier()` will no longer 
   pass `x` to `encodeString()` before returning, for consistency with the
   default implementation in DBI (@simonpcouch, #765).
+  
+* The Connections pane will now include synonyms when displaying objects with
+  Microsoft SQL Server (@simonpcouch, #773).
 
 # odbc 1.4.2
 
