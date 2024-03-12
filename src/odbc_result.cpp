@@ -16,6 +16,8 @@ odbc_result::odbc_result(
       bound_(false),
       output_encoder_(Iconv(c_->encoding(), "UTF-8")) {
 
+  c_->cancel_current_result(false);
+
   if (immediate) {
     s_ = std::make_shared<nanodbc::statement>();
     bound_ = true;
@@ -212,6 +214,12 @@ odbc_result::~odbc_result() {
     try {
       c_->set_current_result(nullptr);
     } catch (...) {
+      // SQLCancel may throw an error.
+      // Regardless, as this object is
+      // getting destroyed, we need to
+      // make sure the connection is not
+      // holding onto an invalid reference
+      c_->current_result_ = nullptr;
     };
   }
 }

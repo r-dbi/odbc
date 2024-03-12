@@ -6,35 +6,123 @@
 * Fixed issue that odbc may throw errors with garbage letters when the encoding
   of client and db-server are different. (@shrektan, #432)
 
-* ODBC errors are now spread across multiple lines, making them easier to 
-  read (@detule, #564).
+* dbListFields: Now works with DBI::Id and DBI::SQL identifiers.
+
+* Transitioned `odbcDataType()` to use S4 for consistency. S3 methods defined
+  locally will need to be rewritten (#701).
+
+* Teradata: Resolved issue when previewing tables using the Connections pane.
+
+* The `"OdbcConnection"` method for `dbQuoteIdentifier()` will no longer 
+  pass `x` to `encodeString()` before returning, for consistency with the
+  default implementation in DBI (@simonpcouch, #765).
+
+# odbc 1.4.2
+
+* `dbAppendTable()` Improve performance by checking existence once (#691).
+
+* `dbConnect()` no longer automatically escapes suspicious characters
+  (since there doesn't seem to be a consistent way to do this across drivers)
+  but instead points you to `quote_value()` which applies a heuristic
+  that should work for most drivers (#718).
+
+* New wrapper for `dbExecute()` that sets `immediate = TRUE` if you are 
+  not supplying `params`. That should yield a small speed boost in 
+  many cases (#706).
+
+* `dbSendQuery()` once again defaults to `immediate = FALSE` (since if you're
+  using it instead of `dbGetQuery()` you're likely to be using it with 
+  `dbBind()`). (#726).
+  
+* Deprecated `odbcConnectionColumns()` (in favor of `dbListFields()`), 
+  `odbcConnectionActions()`, and `odbcConnectionIcon()` (@simonpcouch, #699).
+  
+* Backend specific changes:
+
+  * databricks: Fix schema enumeration in connections pane
+    (@detule, #715).
+
+  * Oracle: use more reliable technique to determine user/schema name (#738),
+    and fix `dbExistsTable()` when identifier components contain `_` 
+    (@detule, #712).
+  
+  * SQL Server: improvements to `dbExists()` (@meztez, #724) and 
+    `dbListTables()` (@simonpcouch, #509) for temporary tables.
+    It now uses column type `"BIGINT"` integer64 objects.
+
+  * SQL Server with freetds driver: no longer crashes when executing multiple 
+    queries (@detule, #731).
+
+  * Teradata: Fix usage of `exact` argument in internal methods (@detule, 717).
+
+* On MacOS and Linux, the package will now automatically set the `ODBCSYSINI`
+  environmental variable when using the unixODBC driver manager. `ODBCSYSINI`
+  will not be changed if it exists already (@simonpcouch, #709).
+
+# odbc 1.4.1
+
+* New `odbcListConfig()` lists configuration files on Mac and Linux 
+  (@simonpcouch, #565).
+
+* `databricks()` now works with manually supplied `pwd` and `uid` (#690).
+
+* Oracle: uses correct parent class (#685).
+
+* SQL Server: correctly enumerate schemas across databases in connections pane
+  (@detule, #527).
+
+# odbc 1.4.0
+
+## Major changes
+
+* New `odbc::databricks()` makes it easier to connect to Databricks, 
+  automatically handling many common authentication scenarios (@atheriel, #615).
 
 * `dbListTables()`, `dbListFields()` and `dbExistsTable()` automatically
   escape underscores in identifier arguments. This leads to substantial 
   performance improvements for some backends (e.g. snowflake) 
   (@detule, @fh-afrachioni, #618).
 
+* `dbGetQuery()` and `dbSendQuery()` now set `immediate = TRUE` if you are 
+  not using a parameterised query. That should yield a small speed boost in 
+  many cases (#633).
+
+## Minor improvements and bug fixes
+
+* Increased the minimum required R version from 3.2.0 to 3.6.0 
+  (@simonpcouch, #629).
+
+* S4 classes for the most database drivers are now exported, make it possible
+  to use in other packages (#558).
+
+* ODBC errors are now spread across multiple lines, making them easier to 
+  read (@detule, #564).
+
 * `DBI::dbConnect(odbc::odbc())` now gives a clear error if you supply multiple
   arguments with the same name when case is ignored (#641).
 
-* `dbConnect(odbc::odbc())` now automatically quotes argument values that need 
+* `DBI::dbConnect(odbc::odbc())` now automatically quotes argument values that need 
   it (#616).
 
-* Spark SQL: Correctly enumerate schemas away from the current catalog (@detule, #614)
-* Modify `odbcDataType.Snowflake` to better reflect Snowflake Data Types documentation (@meztez, #599).
-* SQL Server: Specialize syntax in sqlCreateTable to avoid failures when
-  writing to (new) local temp tables. (@detule, #601)
-* SQL Server: Improved handling for local temp tables in dbWrite, dbAppendTable,
-  dbExistTable (@detule, #600)
-* Teradata: Improved handling for temp tables (@detule and @But2ene, #589, 590)
-* Oracle: Fix regression when falling back to odbcConnectionColumns to
+## Driver specific changes
+
+* Oracle: Fix regression when falling back to `odbcConnectionColumns()` to
   describe column data types (@detule, #587)
 
-* Add a new, specialised `odbc::databricks()` class with its own `dbConnect()`
-  method to make using Databricks's ODBC driver easier (@atheriel, #615).
-* Increased the minimum required R version from 3.2.0 to 3.6.0 (@simonpcouch, #629).
-* Add support for searching multiple paths for the default location of the
-  Databricks driver (@bschwedler, #621).
+* Spark SQL: Correctly enumerate schemas away from the current catalog 
+  (@detule, #614)
+
+* Snowflake: improved translation from R to snowflake types (@meztez, #599).
+
+* SQL Server
+
+  * Improved handling for local temp tables in `dbWrite()`, `dbAppendTable()`,
+    and `dbExistTable()` (@detule, #600)
+
+  * Specialize syntax in `sqlCreateTable` to avoid failures when
+    writing to (new) local temp tables. (@detule, #601)
+
+* Teradata: Improved handling for temp tables (@detule and @But2ene, #589, 590)
 
 # odbc 1.3.5
 

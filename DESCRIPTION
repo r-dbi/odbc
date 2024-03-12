@@ -1,6 +1,6 @@
 Package: odbc
 Title: Connect to ODBC Compatible Databases (using the DBI Interface)
-Version: 1.3.5.9000
+Version: 1.4.2.9000
 Authors@R: c(
     person("Jim", "Hester", role = "aut"),
     person("Hadley", "Wickham", , "hadley@posit.co", role = c("aut", "cre")),
@@ -13,7 +13,7 @@ Authors@R: c(
   )
 Description: A DBI-compatible interface to ODBC databases.
 License: MIT + file LICENSE
-URL: https://r-dbi.github.io/odbc/, https://github.com/r-dbi/odbc,
+URL: https://odbc.r-dbi.org, https://github.com/r-dbi/odbc,
     https://solutions.posit.co/connections/db/
 BugReports: https://github.com/r-dbi/odbc/issues
 Depends: 
@@ -23,6 +23,7 @@ Imports:
     blob (>= 1.2.0),
     DBI (>= 1.0.0),
     hms,
+    lifecycle,
     methods,
     Rcpp (>= 0.12.11),
     rlang (>= 0.2.0)
@@ -44,19 +45,41 @@ Config/Needs/website: tidyverse/tidytemplate
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.0
 SystemRequirements: GNU make, An ODBC3 driver manager and drivers.
 Collate: 
-    'odbc.R'
-    'Driver.R'
-    'Connection.R'
-    'DataTypes.R'
     'RcppExports.R'
-    'Result.R'
-    'Table.R'
-    'Viewer.R'
-    'databricks.R'
+    'aaa-odbc-data-type.R'
+    'connection-pane.R'
+    'dbi-connection.R'
+    'odbc-connection.R'
     'db.R'
+    'dbi-driver.R'
+    'dbi-result.R'
+    'dbi-table.R'
+    'dbi.R'
+    'driver-access.R'
+    'driver-bigquery.R'
+    'driver-databricks.R'
+    'driver-db2.R'
+    'driver-hana.R'
+    'driver-hive.R'
+    'driver-impala.R'
+    'driver-mysql.R'
+    'driver-oracle.R'
+    'driver-postgres.R'
+    'driver-redshift.R'
+    'driver-snowflake.R'
+    'driver-spark.R'
+    'driver-sql-server.R'
+    'driver-sqlite.R'
+    'driver-teradata.R'
+    'driver-vertica.R'
+    'odbc-config.R'
+    'odbc-data-sources.R'
+    'odbc-drivers.R'
+    'odbc-package.R'
+    'odbc.R'
     'utils.R'
     'zzz.R'
 VignetteBuilder: knitr

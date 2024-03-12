@@ -1,7 +1,5 @@
 test_connection_string <- function(db) {
-  if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
-    skip("On CRAN")
-  }
+  testthat::skip_on_cran()
 
   var <- paste0("ODBC_CS_", db)
   cs <- Sys.getenv(var)
@@ -9,6 +7,21 @@ test_connection_string <- function(db) {
     skip(paste0("env var '", var, "' not set"))
   }
   list(.connection_string = cs)
+}
+
+test_con <- function(db, ...) {
+  dbConnect(
+    odbc::odbc(),
+    .connection_string = test_connection_string(db),
+    ...
+  )
+}
+
+local_table <- function(con, name, df, ..., envir = parent.frame()) {
+  dbWriteTable(con, name, df, ...)
+  withr::defer(dbRemoveTable(con, name), envir = envir)
+
+  name
 }
 
 skip_if_no_drivers <- function() {
@@ -46,11 +59,11 @@ skip_if_no_drivers <- function() {
 #' # Only test a specific column
 #' test_roundtrip(con, "integer", invert = FALSE)
 #' }
-test_roundtrip <- function(con = DBItest:::connect(DBItest::get_default_context()), columns = "", invert = TRUE, force_sorted = FALSE) {
+test_roundtrip <- function(con, columns = "", invert = TRUE, force_sorted = FALSE) {
   dbms <- dbGetInfo(con)$dbms.name
   res <- list()
   testthat::test_that(paste0("[", dbms, "] round tripping data.frames works"), {
-    #on.exit(try(DBI::dbRemoveTable(con, "test_table"), silent = TRUE))
+    # on.exit(try(DBI::dbRemoveTable(con, "test_table"), silent = TRUE))
     set.seed(42)
 
     iris <- datasets::iris
@@ -59,8 +72,7 @@ test_roundtrip <- function(con = DBItest:::connect(DBItest::get_default_context(
     sent <- list(
 
       # We always return strings as factors
-      #factor = iris$Species,
-
+      # factor = iris$Species,
       datetime = as.POSIXct(as.numeric(iris$Petal.Length * 10), origin = "2016-01-01", tz = "UTC"),
       date = as.Date(iris$Sepal.Width * 100, origin = Sys.time()),
       time = hms::hms(seconds = sample.int(24 * 60 * 60, NROW(iris))),
@@ -73,7 +85,10 @@ test_roundtrip <- function(con = DBItest:::connect(DBItest::get_default_context(
     attributes(sent) <- list(names = names(sent), row.names = c(NA_integer_, -length(sent[[1]])), class = "data.frame")
 
     # Add a proportion of NA values to a data frame
-    add_na <- function(x, p = .1) { is.na(x) <- stats::runif(length(x)) < p; x}
+    add_na <- function(x, p = .1) {
+      is.na(x) <- stats::runif(length(x)) < p
+      x
+    }
     sent[] <- lapply(sent, add_na, p = .1)
     if (isTRUE(invert)) {
       sent <- sent[, !names(sent) %in% columns]
@@ -84,7 +99,7 @@ test_roundtrip <- function(con = DBItest:::connect(DBItest::get_default_context(
 
     DBI::dbWriteTable(con, "test_table", sent, overwrite = TRUE)
     received <- DBI::dbReadTable(con, "test_table")
-    if (force_sorted) received <- received[order(received$id),]
+    if (force_sorted) received <- received[order(received$id), ]
     row.names(received) <- NULL
     testthat::expect_equal(sent, received)
     res <<- list(sent = sent, received = received)

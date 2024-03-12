@@ -18,6 +18,7 @@ class odbc_result;
 
 class odbc_connection {
 public:
+  friend odbc_result;
   odbc_connection(
       std::string connection_string,
       std::string timezone = "UTC",
@@ -37,6 +38,7 @@ public:
   bool supports_transactions() const;
   bool get_data_any_order() const;
 
+  void cancel_current_result(bool quiet);
   void set_current_result(odbc_result* r);
 
   cctz::time_zone timezone() const;
