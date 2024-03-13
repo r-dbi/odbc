@@ -8,6 +8,12 @@
   drivers. The package will now interpet `NA` as the minimum of 1024 and the 
   length of the input (@simonpcouch, #774).
 
+* odbc now always converts the encoding of non-ASCII column names of the SQL
+  results to UTF-8. (@shrektan, #430)
+
+* Fixed issue that odbc may throw errors with garbage letters when the encoding
+  of client and db-server are different. (@shrektan, #432)
+
 * dbListFields: Now works with DBI::Id and DBI::SQL identifiers.
 
 * Transitioned `odbcDataType()` to use S4 for consistency. S3 methods defined

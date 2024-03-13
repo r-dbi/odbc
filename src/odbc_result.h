@@ -19,13 +19,21 @@ inline void signal_unknown_field_type(short type, const std::string& name) {
 
 class odbc_error : public Rcpp::exception {
 public:
-  odbc_error(const nanodbc::database_error& e, const std::string& sql)
+  odbc_error(
+      const nanodbc::database_error& e,
+      const std::string& sql,
+      Iconv& output_encoder)
       : Rcpp::exception("", false) {
-    message = std::string(e.what()) + "\n<SQL> '" + sql + "'";
+    std::string m = std::string(e.what()) + "\n<SQL> '" + sql + "'";
+    // #432: [R] expects UTF-8 encoded strings but both nanodbc and sql are
+    // encoded in the database encoding, which may differ from UTF-8
+    message = Rf_translateChar(
+        output_encoder.makeSEXP(m.c_str(), m.c_str() + m.length()));
   }
   const char* what() const NANODBC_NOEXCEPT { return message.c_str(); }
 
 private:
+  // #432: must be native encoded, as R expects native encoded chars for error msg
   std::string message;
 };
 
