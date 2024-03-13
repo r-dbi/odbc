@@ -1,5 +1,13 @@
 # odbc (development version)
 
+* Adjusted the default `batch_rows` value for `dbWriteTable()` and `dbBind()` 
+  methods. odbc 1.3.0 changed the default value from 1024 to `NA`, which sets the 
+  batch size to be the length of the input. While this addressed issues for
+  some drivers when 1024 was greater than the number of rows, it also led
+  to excessive memory consumption when the input was very large for some other
+  drivers. The package will now interpet `NA` as the minimum of 1024 and the 
+  length of the input (@simonpcouch, #774).
+
 * odbc now always converts the encoding of non-ASCII column names of the SQL
   results to UTF-8. (@shrektan, #430)
 
