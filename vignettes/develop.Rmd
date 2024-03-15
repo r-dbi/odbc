@@ -291,6 +291,12 @@ con <- dbConnect(odbc(), dsn = "Snowflake", pwd = Sys.getenv("snowflakePass"))
 
 In the above, the password has been set as `Sys.setenv(snowflakePass = "actualPass")`.
 
+## Amazon Redshift
+
+If you're a Posit employee, you should have access to the [https://github.com/rstudio/warehouse](https://github.com/rstudio/warehouse) repository. Follow the instructions there to get access to the internal Redshift cluster. Access to the cluster is only enabled through Posit's internal Workbench instance, where the professional drivers will already be installed.
+
+Note that Redshift is based on a modified version of PostgreSQL.
+
 ## RODBC
 
 We need to install the RODBC package for benchmarking in the vignette `vignette("benchmarks")`. The CRAN version of RODBC uses iODBC, so to use unixODBC we need to recompile it from source, specifying the odbc manager explicitly:
