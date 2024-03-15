@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* Snowflake: Improved performance on write (#760).
+
 * Adjusted the default `batch_rows` value for `dbWriteTable()` and `dbBind()` 
   methods. odbc 1.3.0 changed the default value from 1024 to `NA`, which sets the 
   batch size to be the length of the input. While this addressed issues for
