@@ -64,6 +64,9 @@
     <loc>https://odbc.r-dbi.org/dev/reference/SQLServer.html</loc>
   </url>
   <url>
+    <loc>https://odbc.r-dbi.org/dev/reference/Snowflake.html</loc>
+  </url>
+  <url>
     <loc>https://odbc.r-dbi.org/dev/reference/databricks.html</loc>
   </url>
   <url>
