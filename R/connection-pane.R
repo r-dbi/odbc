@@ -259,7 +259,7 @@ odbcPreviewObject.OdbcConnection <- function(connection,
                                              catalog = NULL,
                                              ...) {
   # extract object name from arguments
-  name <- validateObjectName(table, view)
+  name <- validateObjectName(connection, table, view, ...)
 
   # prepend schema if specified
   if (!is.null(schema)) {
