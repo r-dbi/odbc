@@ -27,3 +27,8 @@ setMethod("odbcDataType", "PostgreSQL",
     )
   }
 )
+
+validateObjectName.PostgreSQL <- function(connection, table, view, ...) {
+  matview <- list(...)$matview
+  NextMethod(view = view %||% matview)
+}

@@ -38,11 +38,18 @@ odbcListObjectTypes.default <- function(connection) {
   # all databases contain tables, at a minimum
   obj_types <- list(table = list(contains = "data"))
 
-  # see if we have views too
-  table_types <- string_values(odbcConnectionTableTypes(connection))
-  if (any(table_types == "VIEW")) {
-    obj_types <- c(obj_types, list(view = list(contains = "data")))
-  }
+  # See if we have views too.  A little more elaborate than just
+  # checking if any( table_types == "VIEW" ), because some back-ends
+  # may contain VIEW "look-alikes".  For example PostgreSQL/"MATVIEW".
+  # The icon url is that of the default Rstudio IDE resource location.
+  # It gets automatically pulled in for an object type "view" ( but
+  # not for some of the other ones ).  Should we not want to encode that
+  # dependency, we can just bring that PNG into this package.
+  table_types <- tolower(string_values(odbcConnectionTableTypes(connection)))
+  viewlike <- table_types[grepl("view", table_types)]
+  viewlike_types <-
+    sapply(viewlike, function(i) list(contains = "data", icon="connections/objects/view.png"), simplify=FALSE)
+  obj_types <- c(obj_types, viewlike_types)
 
   # check for multiple schema or a named schema
   schemas <- string_values(odbcConnectionSchemas(connection))
@@ -184,8 +191,12 @@ computeDisplayName <- function(connection) {
   display_name
 }
 
-# selects the table or view from arguments
-validateObjectName <- function(table, view) {
+# Internal method: selects the table or view from arguments
+validateObjectName <- function(connection, ...) {
+  UseMethod("validateObjectName")
+}
+
+validateObjectName.OdbcConnection <- function(connection, table, view, ...) {
   # Error if both table and view are passed
   if (!is.null(table) && !is.null(view)) {
     stop("`table` and `view` can not both be used", call. = FALSE)
@@ -206,9 +217,10 @@ odbcListColumns.OdbcConnection <- function(connection,
                                            catalog = NULL,
                                            schema = NULL,
                                            ...) {
+
   # specify schema or catalog if given
   cols <- odbcConnectionColumns_(connection,
-    name = validateObjectName(table, view),
+    name = validateObjectName(connection, table, view, ...),
     catalog_name = catalog,
     schema_name = schema
   )
