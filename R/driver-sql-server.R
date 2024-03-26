@@ -107,7 +107,17 @@ setMethod("dbListTables", "Microsoft SQL Server",
       res <- c(res, res_temp)
     }
 
-    res
+    if (is.null(catalog_name) | is.null(schema_name)) {
+      return(res)
+    }
+
+    synonyms <- dbGetQuery(
+      conn,
+      synonyms_query,
+      params = list(catalog_name, schema_name)
+    )
+
+    c(res, synonyms$name)
   }
 )
 
@@ -234,17 +244,7 @@ setMethod("odbcDataType", "Microsoft SQL Server",
 
   synonyms <- dbGetQuery(
     connection,
-    "SELECT
-       catalog = DB.name,
-       [schema] = Sch.name,
-       name   = Syn.name
-     FROM sys.synonyms          AS Syn
-       INNER JOIN sys.schemas AS Sch
-         ON Sch.schema_id = Syn.schema_id
-       INNER JOIN sys.databases AS DB
-         ON Sch.principal_id = DB.database_id
-     WHERE DB.name = ? AND Sch.name = ?
-       AND OBJECTPROPERTY(Object_ID(Syn.base_object_name), 'IsTable') = 1;",
+    synonyms_query,
     params = list(catalog, schema)
   )
 
@@ -257,3 +257,16 @@ setMethod("odbcDataType", "Microsoft SQL Server",
     data.frame(name = synonyms$name, type = rep("table", length(synonyms$name)))
   )
 }
+
+synonyms_query <-
+  "SELECT
+     catalog = DB.name,
+     [schema] = Sch.name,
+     name   = Syn.name
+   FROM sys.synonyms          AS Syn
+     INNER JOIN sys.schemas AS Sch
+       ON Sch.schema_id = Syn.schema_id
+     INNER JOIN sys.databases AS DB
+       ON Sch.principal_id = DB.database_id
+   WHERE DB.name = ? AND Sch.name = ?
+     AND OBJECTPROPERTY(Object_ID(Syn.base_object_name), 'IsTable') = 1;"
