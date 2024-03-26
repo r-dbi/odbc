@@ -47,8 +47,11 @@ odbcListObjectTypes.default <- function(connection) {
   # dependency, we can just bring that PNG into this package.
   table_types <- tolower(string_values(odbcConnectionTableTypes(connection)))
   viewlike <- grep("view", table_types, value = TRUE)
-  viewlike_types <-
-    sapply(viewlike, function(i) list(contains = "data", icon="connections/objects/view.png"), simplify=FALSE)
+  viewlike_types <- sapply(
+    viewlike,
+    function(i) list(contains = "data", icon = "connections/objects/view.png"),
+    simplify = FALSE
+  )
   obj_types <- c(obj_types, viewlike_types)
 
   # check for multiple schema or a named schema
