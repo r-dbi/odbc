@@ -81,7 +81,7 @@ Rcpp::List connection_info(connection_ptr const& p) {
     getdata_ext =
         (*p)->connection()->get_info<SQLUINTEGER>(SQL_GETDATA_EXTENSIONS);
     owner_usage =
-        (*p)->connection()->get_info<SQLUINTEGER>(SQL_OWNER_USAGE);
+        (*p)->connection()->get_info<SQLUINTEGER>(SQL_SCHEMA_USAGE);
   } catch (const nanodbc::database_error& c) {
     getdata_ext = 0;
     owner_usage = 0;
