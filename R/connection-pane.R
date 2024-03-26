@@ -50,7 +50,7 @@ odbcListObjectTypes.default <- function(connection) {
   }
 
   # check for multiple catalogs
-  if (conn@info$supports.catalogs) {
+  if (connection@info$supports.catalogs) {
     obj_types <- list(catalog = list(contains = obj_types))
   }
 
