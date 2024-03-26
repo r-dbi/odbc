@@ -45,7 +45,7 @@ odbcListObjectTypes.default <- function(connection) {
   }
 
   # check for schema support
-  if (conn@info$supports.schema) {
+  if (connection@info$supports.schema) {
     obj_types <- list(schema = list(contains = obj_types))
   }
 
