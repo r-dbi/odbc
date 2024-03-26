@@ -46,7 +46,7 @@ odbcListObjectTypes.default <- function(connection) {
   # not for some of the other ones ).  Should we not want to encode that
   # dependency, we can just bring that PNG into this package.
   table_types <- tolower(string_values(odbcConnectionTableTypes(connection)))
-  viewlike <- table_types[grepl("view", table_types)]
+  viewlike <- grep("view", table_types, value = TRUE)
   viewlike_types <-
     sapply(viewlike, function(i) list(contains = "data", icon="connections/objects/view.png"), simplify=FALSE)
   obj_types <- c(obj_types, viewlike_types)
