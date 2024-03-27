@@ -107,15 +107,7 @@ setMethod("dbListTables", "Microsoft SQL Server",
       res <- c(res, res_temp)
     }
 
-    if (is.null(catalog_name) | is.null(schema_name)) {
-      return(res)
-    }
-
-    synonyms <- dbGetQuery(
-      conn,
-      synonyms_query,
-      params = list(catalog_name, schema_name)
-    )
+    synonyms <- dbGetQuery(conn, synonyms_query(conn, catalog_name, schema_name))
 
     c(res, synonyms$name)
   }
@@ -238,15 +230,7 @@ setMethod("odbcDataType", "Microsoft SQL Server",
     ...
   )
 
-  if (is.null(catalog) | is.null(schema)) {
-    return(objects)
-  }
-
-  synonyms <- dbGetQuery(
-    connection,
-    synonyms_query,
-    params = list(catalog, schema)
-  )
+  synonyms <- dbGetQuery(connection, synonyms_query(connection, catalog, schema))
 
   if (!is.null(name)) {
     synonyms <- synonyms[synonyms$name == name, , drop = FALSE]
@@ -258,15 +242,32 @@ setMethod("odbcDataType", "Microsoft SQL Server",
   )
 }
 
-synonyms_query <-
-  "SELECT
-     catalog = DB.name,
-     [schema] = Sch.name,
-     name   = Syn.name
-   FROM sys.synonyms          AS Syn
-     INNER JOIN sys.schemas AS Sch
-       ON Sch.schema_id = Syn.schema_id
-     INNER JOIN sys.databases AS DB
-       ON Sch.principal_id = DB.database_id
-   WHERE DB.name = ? AND Sch.name = ?
-     AND OBJECTPROPERTY(Object_ID(Syn.base_object_name), 'IsTable') = 1;"
+synonyms_query <- function(conn, catalog_name = NULL, schema_name = NULL) {
+  res <- "SELECT
+            catalog = DB.name,
+            [schema] = Sch.name,
+            name   = Syn.name
+          FROM sys.synonyms          AS Syn
+            INNER JOIN sys.schemas AS Sch
+              ON Sch.schema_id = Syn.schema_id
+            INNER JOIN sys.databases AS DB
+              ON Sch.principal_id = DB.database_id"
+
+  has_catalog <- !is.null(catalog_name)
+  has_schema <- !is.null(schema_name)
+  if (!has_catalog & !has_schema) {
+    return(paste0(res, filter_is_table))
+  }
+
+  if (has_catalog & has_schema) {
+    res <- paste0(res, " WHERE DB.name = '", catalog_name, "' AND Sch.name = '", schema_name, "'")
+  } else if (has_catalog) {
+    res <- paste0(res, " WHERE DB.name = '", catalog_name, "'")
+  } else if (has_schema) {
+    res <- paste0(res, " WHERE Sch.name = '", schema_name, "'")
+  }
+
+  paste0(res, filter_is_table)
+}
+
+filter_is_table <- " AND OBJECTPROPERTY(Object_ID(Syn.base_object_name), 'IsTable') = 1;"
