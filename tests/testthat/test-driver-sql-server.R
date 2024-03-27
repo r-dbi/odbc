@@ -357,16 +357,27 @@ test_that("odbcListObjects shows synonyms (#221)", {
 
   dbExecute(con, "CREATE SYNONYM testSchema.tbl2 for testSchema.tbl")
   expect_equal(nrow(odbcListObjects(con, catalog = db, schema = "testSchema")), 2)
+  expect_length(dbListTables(con, catalog_name = db, schema_name = "testSchema"), 2)
   expect_equal(
     nrow(odbcListObjects(con, catalog = db, schema = "testSchema", name = "tbl")),
     1
   )
   expect_false("tbl2" %in% odbcListObjects(con))
+  expect_true(
+    dbExistsTable(con, name = "tbl2", catalog_name = db, schema_name = "testSchema")
+  )
+  expect_true(dbExistsTable(con, name = Id(db, "testSchema", "tbl2")))
   dbExecute(con, "DROP SYNONYM testSchema.tbl2")
+  expect_false(dbExistsTable(con, name = Id(db, "testSchema", "tbl2")))
 
   # ensure query filters out synonyms in schemas other than the one
   # where the base object lives effectively
   dbExecute(con, "CREATE SYNONYM testSchema2.tbl2 for testSchema.tbl")
   expect_equal(nrow(odbcListObjects(con, catalog = db, schema = "testSchema")), 1)
   expect_equal(nrow(odbcListObjects(con, catalog = db, schema = "testSchema2")), 1)
+  expect_length(dbListTables(con, catalog_name = db, schema_name = "testSchema2"), 1)
+  expect_true(
+    dbExistsTable(con, name = "tbl2", catalog_name = db, schema_name = "testSchema2")
+  )
+  expect_true(dbExistsTable(con, name = Id(db, "testSchema2", "tbl2")))
 })
