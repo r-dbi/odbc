@@ -73,11 +73,11 @@ setMethod("dbExistsTable", c("Microsoft SQL Server", "character"),
     stopifnot(length(name) == 1)
     if (isTempTable(conn, name, ...)) {
       query <- paste0("SELECT OBJECT_ID('tempdb..", name, "')")
-      !is.na(dbGetQuery(conn, query)[[1]])
-    } else {
-      df <- odbcConnectionTables(conn, name = name, ...)
-      NROW(df) > 0
+      return(!is.na(dbGetQuery(conn, query)[[1]]))
     }
+    df <- odbcConnectionTables(conn, name = name, ...)
+    synonyms <- dbGetQuery(conn, synonyms_query(conn, ...))
+    NROW(df) > 0 || name %in% synonyms$name
   }
 )
 
@@ -107,7 +107,9 @@ setMethod("dbListTables", "Microsoft SQL Server",
       res <- c(res, res_temp)
     }
 
-    res
+    synonyms <- dbGetQuery(conn, synonyms_query(conn, catalog_name, schema_name))
+
+    c(res, synonyms$name)
   }
 )
 
@@ -204,3 +206,68 @@ setMethod("odbcDataType", "Microsoft SQL Server",
     )
   }
 )
+
+#' @rdname SQLServer
+#' @description
+#' ## `odbcListObjects()`
+#'
+#' This method makes tables that are synonyms visible in the Connections pane.
+# See (#221).
+#' @usage NULL
+#' @export
+`odbcListObjects.Microsoft SQL Server` <- function(connection,
+                                                   catalog = NULL,
+                                                   schema = NULL,
+                                                   name = NULL,
+                                                   type = NULL,
+                                                   ...) {
+  objects <- NextMethod(
+    object = connection,
+    catalog = catalog,
+    schema = schema,
+    name = name,
+    type = type,
+    ...
+  )
+
+  synonyms <- dbGetQuery(connection, synonyms_query(connection, catalog, schema))
+
+  if (!is.null(name)) {
+    synonyms <- synonyms[synonyms$name == name, , drop = FALSE]
+  }
+
+  rbind(
+    objects,
+    data.frame(name = synonyms$name, type = rep("table", length(synonyms$name)))
+  )
+}
+
+synonyms_query <- function(conn, catalog_name = NULL, schema_name = NULL) {
+  res <- "SELECT
+            catalog = DB.name,
+            [schema] = Sch.name,
+            name   = Syn.name
+          FROM sys.synonyms          AS Syn
+            INNER JOIN sys.schemas AS Sch
+              ON Sch.schema_id = Syn.schema_id
+            INNER JOIN sys.databases AS DB
+              ON Sch.principal_id = DB.database_id"
+
+  has_catalog <- !is.null(catalog_name)
+  has_schema <- !is.null(schema_name)
+  if (!has_catalog & !has_schema) {
+    return(paste0(res, filter_is_table))
+  }
+
+  if (has_catalog & has_schema) {
+    res <- paste0(res, " WHERE DB.name = '", catalog_name, "' AND Sch.name = '", schema_name, "'")
+  } else if (has_catalog) {
+    res <- paste0(res, " WHERE DB.name = '", catalog_name, "'")
+  } else if (has_schema) {
+    res <- paste0(res, " WHERE Sch.name = '", schema_name, "'")
+  }
+
+  paste0(res, filter_is_table)
+}
+
+filter_is_table <- " AND OBJECTPROPERTY(Object_ID(Syn.base_object_name), 'IsTable') = 1;"
