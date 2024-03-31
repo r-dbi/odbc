@@ -194,12 +194,15 @@ computeDisplayName <- function(connection) {
   display_name
 }
 
-# Internal method: selects the table or view from arguments
-validateObjectName <- function(connection, ...) {
-  UseMethod("validateObjectName")
-}
+validateObjectName <- function(table, view, ...) {
 
-validateObjectName.OdbcConnection <- function(connection, table, view, ...) {
+  # Handle view look-alike object types
+  # ( e.g. PostgreSQL/"matview" )
+  args <- list(...)
+  argNames <- names(args)
+  viewlike <- grep("view", argNames, value = TRUE)
+  view <- Reduce(`%||%`, args[viewlike], view)
+
   # Error if both table and view are passed
   if (!is.null(table) && !is.null(view)) {
     stop("`table` and `view` can not both be used", call. = FALSE)
@@ -223,7 +226,7 @@ odbcListColumns.OdbcConnection <- function(connection,
 
   # specify schema or catalog if given
   cols <- odbcConnectionColumns_(connection,
-    name = validateObjectName(connection, table, view, ...),
+    name = validateObjectName(table, view, ...),
     catalog_name = catalog,
     schema_name = schema
   )
@@ -262,7 +265,7 @@ odbcPreviewObject.OdbcConnection <- function(connection,
                                              catalog = NULL,
                                              ...) {
   # extract object name from arguments
-  name <- validateObjectName(connection, table, view, ...)
+  name <- validateObjectName(table, view, ...)
 
   # prepend schema if specified
   if (!is.null(schema)) {
