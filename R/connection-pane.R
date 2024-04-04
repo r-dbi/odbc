@@ -199,7 +199,7 @@ validateObjectName <- function(table, view, ...) {
   # Handle view look-alike object types
   # ( e.g. PostgreSQL/"matview" )
   args <- list(...)
-  argNames <- names(args)
+  arg_names <- names(args)
   viewlike <- grep("view", argNames, value = TRUE)
   view <- Reduce(`%||%`, args[viewlike], view)
 
