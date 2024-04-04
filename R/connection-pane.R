@@ -200,7 +200,7 @@ validateObjectName <- function(table, view, ...) {
   # ( e.g. PostgreSQL/"matview" )
   args <- list(...)
   arg_names <- names(args)
-  viewlike <- grep("view", argNames, value = TRUE)
+  viewlike <- grep("view", arg_names, value = TRUE)
   view <- Reduce(`%||%`, args[viewlike], view)
 
   # Error if both table and view are passed
