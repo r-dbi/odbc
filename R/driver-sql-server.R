@@ -95,6 +95,11 @@ setMethod("dbListTables", "Microsoft SQL Server",
            table_name = NULL,
            table_type = NULL,
            ...) {
+    check_string(catalog_name, allow_na = TRUE, allow_null = TRUE)
+    check_string(schema_name, allow_na = TRUE, allow_null = TRUE)
+    check_string(table_name, allow_na = TRUE, allow_null = TRUE)
+    check_string(table_type, allow_na = TRUE, allow_null = TRUE)
+
     res <- callNextMethod()
 
     if (is.null(catalog_name) && is.null(schema_name)) {
