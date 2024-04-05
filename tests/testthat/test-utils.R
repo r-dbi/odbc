@@ -54,3 +54,21 @@ test_that("getSelector", {
   expect_equal(getSelector("mykey", "%", exact = TRUE), " AND mykey LIKE '%'")
   expect_equal(getSelector("mykey", "%", exact = FALSE), " AND mykey LIKE '%'")
 })
+
+test_that("check_row.names()", {
+  con <- test_con("SQLITE")
+
+  expect_snapshot(
+    error = TRUE,
+    dbWriteTable(con, "boopery", data.frame(bop = 1), row.names = c("no", "way"))
+  )
+})
+
+test_that("check_field.types()", {
+  con <- test_con("SQLITE")
+
+  expect_snapshot(
+    error = TRUE,
+    dbWriteTable(con, "boopery", data.frame(bop = 1), field.types = "numeric")
+  )
+})
