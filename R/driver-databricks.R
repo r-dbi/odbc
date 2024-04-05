@@ -68,7 +68,7 @@ setMethod("dbConnect", "DatabricksOdbcDriver",
     check_exclusive(httpPath, HTTPPath)
     check_string(httpPath, allow_na = TRUE, allow_null = TRUE)
     check_string(workspace, allow_na = TRUE, allow_null = TRUE)
-    check_logical(useNativeQuery)
+    check_bool(useNativeQuery)
     check_string(driver, allow_na = TRUE, allow_null = TRUE)
     check_string(HTTPPath, allow_na = TRUE, allow_null = TRUE)
     check_string(uid, allow_na = TRUE, allow_null = TRUE)
