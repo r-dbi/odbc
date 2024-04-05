@@ -40,20 +40,23 @@ odbc_write_table <- function(conn,
                              field.types = NULL,
                              batch_rows = getOption("odbc.batch_rows", NA),
                              ...) {
-  check_bool(overwrite)
-  check_bool(append)
-  check_bool(temporary)
-  check_number_whole(batch_rows, allow_na = TRUE, allow_null = TRUE)
-  check_row.names(row.names)
-  check_field.types(field.types)
+  call <- call2("dbWriteTable")
+  check_bool(overwrite, call = call)
+  check_bool(append, call = call)
+  check_bool(temporary, call = call)
+  check_number_whole(batch_rows, allow_na = TRUE, allow_null = TRUE, call = call)
+  check_row.names(row.names, call = call)
+  check_field.types(field.types, call = call)
   if (append && !is.null(field.types)) {
     cli::cli_abort(
-      "Cannot specify {.arg field.types} with {.code append = TRUE}."
+      "Cannot specify {.arg field.types} with {.code append = TRUE}.",
+      call = call
     )
   }
   if (overwrite && append) {
     cli::cli_abort(
-      "{.arg overwrite} and {.arg append} cannot both be {.val TRUE}."
+      "{.arg overwrite} and {.arg append} cannot both be {.val TRUE}.",
+      call = call
     )
   }
 
@@ -61,7 +64,8 @@ odbc_write_table <- function(conn,
   if (found && !overwrite && !append) {
     cli::cli_abort(
       "Table {toString(name)} exists in database, and both overwrite and \\
-       append are {.code FALSE}."
+       append are {.code FALSE}.",
+      call = call
     )
   }
   if (found && overwrite) {
