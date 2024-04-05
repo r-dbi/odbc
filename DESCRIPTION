@@ -21,6 +21,7 @@ Depends:
 Imports:
     bit64,
     blob (>= 1.2.0),
+    cli,
     DBI (>= 1.0.0),
     hms,
     lifecycle,
