@@ -179,8 +179,13 @@ setMethod("sqlCreateTable", "Microsoft SQL Server",
            temporary = FALSE,
            ...,
            field.types = NULL) {
+    check_bool(temporary)
+    check_row.names(row.names)
+    check_field.types(field.types)
     if (temporary && !isTempTable(con, table)) {
-      warning("Temporary flag is set to true, but table name doesn't use # prefix")
+      cli::cli_warn(
+        "{.arg temporary} is {.code TRUE}, but table name doesn't use # prefix."
+      )
     }
     temporary <- FALSE
     callNextMethod()

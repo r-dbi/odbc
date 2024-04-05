@@ -165,3 +165,25 @@ random_name <- function(prefix = "") {
   name <- paste0(sample(vals, 10, replace = TRUE), collapse = "")
   paste0(prefix, "odbc_", name)
 }
+
+# check helpers for common odbc arguments --------------------------------------
+check_row.names <- function(row.names, call = caller_env()) {
+  if (!inherits_any(row.names, c("logical", "character", "NULL")) ||
+      length(row.names) > 1) {
+    cli::cli_abort(
+      "{.arg row.names} must be {.code NULL}, {.code TRUE}, {.code FALSE}, \\
+       {.code NA}, or a single string, not {.obj_type_friendly {row.names}}.",
+      call = call
+    )
+  }
+}
+
+check_field.types <- function(field.types, call = caller_env()) {
+  if (!(is_null(field.types) || (is_named(field.types)))) {
+    cli::cli_abort(
+      "{.arg field.types} must be {.code NULL} or a named vector of field \\
+       types, not {.obj_type_friendly {field.types}}.",
+      call = call
+    )
+  }
+}
