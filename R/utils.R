@@ -168,14 +168,15 @@ random_name <- function(prefix = "") {
 
 # check helpers for common odbc arguments --------------------------------------
 check_row.names <- function(row.names, call = caller_env()) {
-  if (!inherits_any(row.names, c("logical", "character", "NULL")) ||
-      length(row.names) > 1) {
-    cli::cli_abort(
-      "{.arg row.names} must be {.code NULL}, {.code TRUE}, {.code FALSE}, \\
-       {.code NA}, or a single string, not {.obj_type_friendly {row.names}}.",
-      call = call
-    )
+  if (is.null(row.names) || is_scalar_logical(row.names) || is_string(row.names)) {
+    return()
   }
+
+  cli::cli_abort(
+    "{.arg row.names} must be {.code NULL}, {.code TRUE}, {.code FALSE}, \\
+     {.code NA}, or a single string, not {.obj_type_friendly {row.names}}.",
+    call = call
+  )
 }
 
 check_field.types <- function(field.types, call = caller_env()) {
