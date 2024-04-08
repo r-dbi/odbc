@@ -40,26 +40,32 @@ odbc_write_table <- function(conn,
                              field.types = NULL,
                              batch_rows = getOption("odbc.batch_rows", NA),
                              ...) {
-  # Sanity checks: begin
-  stopifnot(
-    rlang::is_scalar_logical(overwrite) && !is.na(overwrite),
-    rlang::is_scalar_logical(append) && !is.na(append),
-    rlang::is_scalar_logical(temporary) && !is.na(temporary),
-    rlang::is_null(field.types) || (rlang::is_named(field.types))
-  )
+  call <- caller_env()
+  check_bool(overwrite, call = call)
+  check_bool(append, call = call)
+  check_bool(temporary, call = call)
+  check_number_whole(batch_rows, allow_na = TRUE, allow_null = TRUE, call = call)
+  check_row.names(row.names, call = call)
+  check_field.types(field.types, call = call)
   if (append && !is.null(field.types)) {
-    stop("Cannot specify field.types with append = TRUE", call. = FALSE)
+    cli::cli_abort(
+      "Cannot specify {.arg field.types} with {.code append = TRUE}.",
+      call = call
+    )
   }
   if (overwrite && append) {
-    stop("overwrite and append cannot both be TRUE", call. = FALSE)
+    cli::cli_abort(
+      "{.arg overwrite} and {.arg append} cannot both be {.val TRUE}.",
+      call = call
+    )
   }
-  # Sanity checks: done
 
   found <- dbExistsTableForWrite(conn, name)
   if (found && !overwrite && !append) {
-    stop("Table ", toString(name), " exists in database, and both overwrite and",
-      " append are FALSE",
-      call. = FALSE
+    cli::cli_abort(
+      "Table {toString(name)} exists in database, and both overwrite and \\
+       append are {.code FALSE}.",
+      call = call
     )
   }
   if (found && overwrite) {
@@ -123,7 +129,12 @@ setMethod("dbAppendTable", "OdbcConnection",
   function(conn, name, value,
            batch_rows = getOption("odbc.batch_rows", NA),
            ..., row.names = NULL) {
-    stopifnot(is.null(row.names))
+    if (!is.null(row.names)) {
+      cli::cli_abort(
+        "{.arg row.names} must be {.code NULL}, not \\
+         {.obj_type_friendly {row.names}}."
+      )
+    }
 
     fieldDetails <- tryCatch({
       details <- odbcConnectionColumns_(conn, name, exact = TRUE)
@@ -213,6 +224,9 @@ setMethod("sqlCreateTable", "OdbcConnection",
            temporary = FALSE,
            ...,
            field.types = NULL) {
+    check_bool(temporary)
+    check_row.names(row.names)
+    check_field.types(field.types)
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
@@ -285,6 +299,11 @@ setMethod("dbListFields", c("OdbcConnection", "character"),
            schema_name = NULL,
            column_name = NULL,
            ...) {
+    check_string(name)
+    check_string(catalog_name, allow_null = TRUE)
+    check_string(schema_name, allow_null = TRUE)
+    check_string(column_name, allow_null = TRUE)
+
     cols <- odbcConnectionColumns_(
       conn,
       name = name,

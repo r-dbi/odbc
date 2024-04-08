@@ -20,6 +20,9 @@ setMethod("sqlCreateTable", "Oracle",
            temporary = FALSE,
            ...,
            field.types = NULL) {
+    check_bool(temporary)
+    check_row.names(row.names)
+    check_field.types(field.types)
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 

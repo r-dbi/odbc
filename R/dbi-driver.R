@@ -168,6 +168,19 @@ setMethod("dbConnect", "OdbcDriver",
       dbms.name = NULL,
       attributes = NULL,
       .connection_string = NULL) {
+    check_string(dsn, allow_null = TRUE)
+    check_string(timezone, allow_null = TRUE)
+    check_string(timezone_out, allow_null = TRUE)
+    check_string(encoding, allow_null = TRUE)
+    arg_match(bigint)
+    check_number_decimal(timeout, allow_null = TRUE, allow_na = TRUE)
+    check_string(driver, allow_null = TRUE)
+    check_string(server, allow_null = TRUE)
+    check_string(database, allow_null = TRUE)
+    check_string(uid, allow_null = TRUE)
+    check_string(pwd, allow_null = TRUE)
+    check_string(dbms.name, allow_null = TRUE)
+
     con <- OdbcConnection(
       dsn = dsn,
       ...,

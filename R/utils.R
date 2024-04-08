@@ -170,6 +170,29 @@ random_name <- function(prefix = "") {
   paste0(prefix, "odbc_", name)
 }
 
+# check helpers for common odbc arguments --------------------------------------
+check_row.names <- function(row.names, call = caller_env()) {
+  if (is.null(row.names) || is_scalar_logical(row.names) || is_string(row.names)) {
+    return()
+  }
+
+  cli::cli_abort(
+    "{.arg row.names} must be {.code NULL}, {.code TRUE}, {.code FALSE}, \\
+     {.code NA}, or a single string, not {.obj_type_friendly {row.names}}.",
+    call = call
+  )
+}
+
+check_field.types <- function(field.types, call = caller_env()) {
+  if (!(is_null(field.types) || (is_named(field.types)))) {
+    cli::cli_abort(
+      "{.arg field.types} must be {.code NULL} or a named vector of field \\
+       types, not {.obj_type_friendly {field.types}}.",
+      call = call
+    )
+  }
+}
+
 # apple + spark drive config (#651) --------------------------------------------
 configure_spark <- function(call = caller_env()) {
   if (!is_macos()) {
