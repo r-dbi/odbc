@@ -27,3 +27,21 @@
       Error in `dbWriteTable()`:
       ! `field.types` must be `NULL` or a named vector of field types, not a string.
 
+# configure_spark() errors informatively on failure to install unixODBC
+
+    Code
+      databricks()
+    Condition
+      Error in `databricks()`:
+      ! Unable to locate the unixODBC driver manager.
+      i Please install unixODBC using Homebrew with `brew install unixodbc`.
+
+# databricks() errors informatively when spark ini isn't writeable
+
+    Code
+      write_spark_lines("", ".", ".", call2("databricks"))
+    Condition
+      Error in `databricks()`:
+      ! Detected needed changes to the driver configuration file at ., but the file was not writeable.
+      i Please make the changes outlined at https://solutions.posit.co/connections/db/databases/databricks/#troubleshooting-apple-macos-users.
+
