@@ -172,7 +172,7 @@ setMethod("dbConnect", "OdbcDriver",
     check_string(timezone, allow_na = TRUE, allow_null = TRUE)
     check_string(timezone_out, allow_na = TRUE, allow_null = TRUE)
     check_string(encoding, allow_na = TRUE, allow_null = TRUE)
-    check_character(bigint, allow_na = TRUE, allow_null = TRUE)
+    arg_match(bigint)
     check_number_decimal(timeout, allow_null = TRUE, allow_na = TRUE)
     check_string(driver, allow_na = TRUE, allow_null = TRUE)
     check_string(server, allow_na = TRUE, allow_null = TRUE)
