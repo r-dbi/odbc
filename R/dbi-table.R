@@ -40,7 +40,7 @@ odbc_write_table <- function(conn,
                              field.types = NULL,
                              batch_rows = getOption("odbc.batch_rows", NA),
                              ...) {
-  call <- call2("dbWriteTable")
+  call <- caller_env()
   check_bool(overwrite, call = call)
   check_bool(append, call = call)
   check_bool(temporary, call = call)
