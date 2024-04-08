@@ -93,6 +93,11 @@ odbcListObjects.OdbcConnection <- function(connection,
                                            name = NULL,
                                            type = NULL,
                                            ...) {
+  check_string(catalog, allow_null = TRUE)
+  check_string(schema, allow_null = TRUE)
+  check_string(name, allow_null = TRUE)
+  check_string(type, allow_null = TRUE)
+
   # if no catalog was supplied but this database has catalogs, return a list of
   # catalogs
   if (is.null(catalog)) {
@@ -221,6 +226,10 @@ odbcListColumns.OdbcConnection <- function(connection,
                                            catalog = NULL,
                                            schema = NULL,
                                            ...) {
+  check_string(table, allow_null = TRUE)
+  check_string(view, allow_null = TRUE)
+  check_string(catalog, allow_null = TRUE)
+  check_string(schema, allow_null = TRUE)
 
   # specify schema or catalog if given
   cols <- odbcConnectionColumns_(connection,
@@ -262,6 +271,12 @@ odbcPreviewObject.OdbcConnection <- function(connection,
                                              schema = NULL,
                                              catalog = NULL,
                                              ...) {
+  check_number_whole(rowLimit)
+  check_string(table, allow_null = TRUE)
+  check_string(view, allow_null = TRUE)
+  check_string(schema, allow_null = TRUE)
+  check_string(catalog, allow_null = TRUE)
+
   # extract object name from arguments
   name <- validateObjectName(table, view, ...)
 
