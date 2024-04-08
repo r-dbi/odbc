@@ -76,8 +76,12 @@ setMethod("dbExistsTable", c("Microsoft SQL Server", "character"),
       return(!is.na(dbGetQuery(conn, query)[[1]]))
     }
     df <- odbcConnectionTables(conn, name = name, ...)
+    if (NROW(df) > 0) {
+      return(TRUE)
+    }
+
     synonyms <- dbGetQuery(conn, synonyms_query(conn, ...))
-    NROW(df) > 0 || name %in% synonyms$name
+    name %in% synonyms$name
   }
 )
 
@@ -255,9 +259,6 @@ synonyms_query <- function(conn, catalog_name = NULL, schema_name = NULL) {
 
   has_catalog <- !is.null(catalog_name)
   has_schema <- !is.null(schema_name)
-  if (!has_catalog & !has_schema) {
-    return(paste0(res, filter_is_table))
-  }
 
   if (has_catalog & has_schema) {
     res <- paste0(res, " WHERE DB.name = '", catalog_name, "' AND Sch.name = '", schema_name, "'")
@@ -267,7 +268,5 @@ synonyms_query <- function(conn, catalog_name = NULL, schema_name = NULL) {
     res <- paste0(res, " WHERE Sch.name = '", schema_name, "'")
   }
 
-  paste0(res, filter_is_table)
+  paste0(res, " AND OBJECTPROPERTY(Object_ID(Syn.base_object_name), 'IsTable') = 1;")
 }
-
-filter_is_table <- " AND OBJECTPROPERTY(Object_ID(Syn.base_object_name), 'IsTable') = 1;"
