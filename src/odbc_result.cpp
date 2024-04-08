@@ -53,7 +53,7 @@ void odbc_result::execute() {
       num_columns_ = r_->columns();
     } catch (const nanodbc::database_error& e) {
       c_->set_current_result(nullptr);
-      throw odbc_error(e, sql_);
+      throw odbc_error(e, sql_, output_encoder_);
     } catch (...) {
       c_->set_current_result(nullptr);
       throw;
@@ -462,7 +462,13 @@ std::vector<std::string> odbc_result::column_names(nanodbc::result const& r) {
   std::vector<std::string> names;
   names.reserve(num_columns_);
   for (short i = 0; i < num_columns_; ++i) {
-    names.push_back(r.column_name(i));
+    nanodbc::string_type name = r.column_name(i);
+    // We expect column names to share the same encoding as the
+    // data itself.  Similar to the handling of string fields,
+    // convert to UTF-8 before returning to user ( if needed )
+    names.push_back(
+        output_encoder_.makeString(name.c_str(), name.c_str() + name.length())
+    );
   }
   return names;
 }
@@ -831,11 +837,7 @@ void odbc_result::assign_string(
     if (value.is_null(column)) {
       res = NA_STRING;
     } else {
-      if (c_->encoding() != "") {
-        res = output_encoder_.makeSEXP(str.c_str(), str.c_str() + str.length());
-      } else { // If no encoding specified assume it is UTF-8 / ASCII
-        res = Rf_mkCharCE(str.c_str(), CE_UTF8);
-      }
+      res = output_encoder_.makeSEXP(str.c_str(), str.c_str() + str.length());
     }
   }
   SET_STRING_ELT(out[column], row, res);

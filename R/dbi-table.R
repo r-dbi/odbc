@@ -55,7 +55,7 @@ odbc_write_table <- function(conn,
   }
   # Sanity checks: done
 
-  found <- dbExistsTable(conn, name)
+  found <- dbExistsTableForWrite(conn, name)
   if (found && !overwrite && !append) {
     stop("Table ", toString(name), " exists in database, and both overwrite and",
       " append are FALSE",
@@ -95,9 +95,9 @@ odbc_write_table <- function(conn,
 #' @param append Allow appending to the destination table. Cannot be
 #'   `TRUE` if `overwrite` is also `TRUE`.
 #' @param batch_rows The number of rows to retrieve. Defaults to `NA`, which
-#'   is set dynamically to the size of the input. Depending on the database,
-#'   driver, dataset and free memory setting this to a lower value may improve
-#'   performance.
+#'   is set dynamically to the minimum of 1024 and the size of the input.
+#'   Depending on the database, driver, dataset and free memory, setting this
+#'   to a lower value may improve performance.
 #' @export
 setMethod("dbWriteTable", c("OdbcConnection", "character", "data.frame"),
   odbc_write_table
@@ -156,6 +156,7 @@ setMethod("dbAppendTable", "OdbcConnection",
         if (batch_rows == 0) {
           batch_rows <- 1
         }
+        batch_rows <- min(1024, batch_rows)
       }
       batch_rows <- parse_size(batch_rows)
       tryCatch(
@@ -247,6 +248,54 @@ createFields <- function(con, fields, field.types, row.names) {
   field_types <- unname(fields)
   paste0(field_names, " ", field_types)
 }
+
+#' @rdname OdbcConnection
+#' @inheritParams DBI::dbListFields
+#' @export
+setMethod("dbListFields", c("OdbcConnection", "Id"),
+  function(conn, name, ...) {
+    dbListFields(
+      conn,
+      name = id_field(name, "table"),
+      catalog_name = id_field(name, "catalog"),
+      schema_name = id_field(name, "schema")
+    )
+  }
+)
+
+#' @rdname OdbcConnection
+#' @inheritParams DBI::dbListFields
+#' @export
+setMethod("dbListFields", c("OdbcConnection", "SQL"),
+  function(conn, name, ...) {
+    dbListFields(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+  }
+)
+
+#' @rdname OdbcConnection
+#' @inheritParams DBI::dbListFields
+#' @param catalog_name Catalog where table is located.
+#' @param schema_name Schema where table is located.
+#' @param column_name The name of the column to return, the default returns all columns.
+#' @export
+setMethod("dbListFields", c("OdbcConnection", "character"),
+  function(conn,
+           name,
+           catalog_name = NULL,
+           schema_name = NULL,
+           column_name = NULL,
+           ...) {
+    cols <- odbcConnectionColumns_(
+      conn,
+      name = name,
+      catalog_name = catalog_name,
+      schema_name = schema_name,
+      column_name = column_name,
+      exact = TRUE
+    )
+    cols[["name"]]
+  }
+)
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbExistsTable

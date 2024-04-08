@@ -154,7 +154,7 @@ setMethod("dbQuoteIdentifier", c("OdbcConnection", "character"),
       x <- gsub(conn@quote, paste0(conn@quote, conn@quote), x, fixed = TRUE)
     }
     nms <- names(x)
-    res <- DBI::SQL(paste(conn@quote, encodeString(x), conn@quote, sep = ""))
+    res <- DBI::SQL(paste(conn@quote, x, conn@quote, sep = ""))
     names(res) <- nms
     res
   }
@@ -200,29 +200,6 @@ setMethod("dbListTables", "OdbcConnection",
       exact = TRUE
     )
     tables[["table_name"]]
-  }
-)
-
-#' @rdname dbListTables-OdbcConnection-method
-#' @inheritParams DBI::dbListFields
-#' @param column_name The name of the column to return, the default returns all columns.
-#' @export
-setMethod("dbListFields", c("OdbcConnection", "character"),
-  function(conn,
-           name,
-           catalog_name = NULL,
-           schema_name = NULL,
-           column_name = NULL,
-           ...) {
-    cols <- odbcConnectionColumns_(
-      conn,
-      name = name,
-      catalog_name = catalog_name,
-      schema_name = schema_name,
-      column_name = column_name,
-      exact = TRUE
-    )
-    cols[["name"]]
   }
 )
 
