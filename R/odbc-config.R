@@ -28,7 +28,7 @@ odbcListConfig <- function() {
     return(character(0))
   }
 
-  if (!has_odbc()) {
+  if (!has_unixodbc()) {
     abort(
       c("The unixODBC driver manager is not available. ",
         "Please install and try again.")
@@ -52,6 +52,6 @@ odbcListConfig <- function() {
 
 system <- NULL
 
-has_odbc <- function() {
+has_unixodbc <- function() {
   !identical(unname(Sys.which("odbcinst")), "")
 }

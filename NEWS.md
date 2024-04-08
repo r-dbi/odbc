@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* `databricks()` will now automatically configure the needed driver and driver
+  manager on macOS (#651).
+
 * Snowflake: Improved performance on write (#760).
 
 * Adjusted the default `batch_rows` value for `dbWriteTable()` and `dbBind()` 

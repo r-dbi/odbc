@@ -45,6 +45,7 @@ NULL
 #' }
 #' @export
 databricks <- function() {
+  configure_spark()
   new("DatabricksOdbcDriver")
 }
 
