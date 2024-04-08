@@ -300,9 +300,9 @@ setMethod("dbListFields", c("OdbcConnection", "character"),
            column_name = NULL,
            ...) {
     check_string(name)
-    check_string(catalog_name, allow_na = TRUE, allow_null = TRUE)
-    check_string(schema_name, allow_na = TRUE, allow_null = TRUE)
-    check_string(column_name, allow_na = TRUE, allow_null = TRUE)
+    check_string(catalog_name, allow_null = TRUE)
+    check_string(schema_name, allow_null = TRUE)
+    check_string(column_name, allow_null = TRUE)
 
     cols <- odbcConnectionColumns_(
       conn,
