@@ -51,14 +51,14 @@
     Code
       odbcListColumns(con, table = "boop", view = "bop")
     Condition
-      Error:
-      ! error in evaluating the argument 'name' in selecting a method for function 'odbcConnectionColumns_': `table` and `view` can not both be used.
+      Error in `odbcListColumns()`:
+      ! `table` and `view` can not both be used.
 
 ---
 
     Code
       odbcListColumns(con)
     Condition
-      Error:
-      ! error in evaluating the argument 'name' in selecting a method for function 'odbcConnectionColumns_': `table` and `view` can not both be `NULL`.
+      Error in `odbcListColumns()`:
+      ! `table` and `view` can not both be `NULL`.
 

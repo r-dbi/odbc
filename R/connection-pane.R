@@ -227,10 +227,10 @@ odbcListColumns.OdbcConnection <- function(connection,
                                            catalog = NULL,
                                            schema = NULL,
                                            ...) {
-
+  name <- validateObjectName(table, view, ...)
   # specify schema or catalog if given
   cols <- odbcConnectionColumns_(connection,
-    name = validateObjectName(table, view, ...),
+    name = name,
     catalog_name = catalog,
     schema_name = schema
   )
