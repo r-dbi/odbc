@@ -13,6 +13,7 @@
 #' odbcSetTransactionIsolationLevel(con, "SQL_TXN_READ_UNCOMMITTED")
 #' }
 odbcSetTransactionIsolationLevel <- function(conn, levels) {
+  arg_match(levels, values = names(transactionLevels()), multiple = TRUE)
   # Convert to lowercase, spaces to underscores, remove sql_txn prefix
   levels <- tolower(levels)
   levels <- gsub(" ", "_", levels)
