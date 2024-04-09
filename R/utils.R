@@ -40,17 +40,9 @@ lengths <- function(x) {
 }
 
 # A 'size' must be an integer greater than 1, returned as a double so we have a larger range
-parse_size <- function(x) {
-  nme <- substitute(x) %||% "NULL"
-
-  if (rlang::is_scalar_integerish(x) && !is.na(x) && !is.infinite(x) && x > 0) {
-    return(as.numeric(x))
-  }
-
-  stop(
-    sprintf("`%s` is not a valid size:\n  Must be a positive integer.", as.character(nme)),
-    call. = FALSE
-  )
+parse_size <- function(x, call = caller_env()) {
+  check_number_whole(x, min = 0, call = call)
+  as.numeric(x)
 }
 
 id_field <- function(id,
@@ -81,11 +73,9 @@ id_field <- function(id,
   }
 }
 
-check_n <- function(n) {
-  if (length(n) != 1) stop("`n` must be scalar", call. = FALSE)
-  if (n < -1) stop("`n` must be nonnegative or -1", call. = FALSE)
+check_n <- function(n, call = caller_env()) {
+  check_number_whole(n, min = -1, call = call)
   if (is.infinite(n)) n <- -1
-  if (trunc(n) != n) stop("`n` must be a whole number", call. = FALSE)
   n
 }
 

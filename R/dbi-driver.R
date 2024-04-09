@@ -255,9 +255,12 @@ odbc_data_type_df <- function(dbObj, obj, ...) {
       res[[i]] <- odbcDataType(con = dbObj, obj[[i]]),
       error = function(e) {
         if (conditionMessage(e) == "Unsupported type") {
-          stop("Column '", nms[[i]], "' is of unsupported type: '", object_type(obj[[i]]), "'", call. = FALSE)
+          cli::cli_abort(
+            "Column {nms[[i]]} is of unsupported type {.val object_type(obj[[i]])}.",
+            call = call2("odbcDataType")
+          )
         } else {
-          stop(e)
+          cli::cli_abort(conditionMessage(e), call = call2("odbcDataType"))
         }
       }
     )

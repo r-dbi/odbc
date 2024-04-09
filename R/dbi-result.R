@@ -92,7 +92,7 @@ setMethod("dbIsValid", "OdbcResult",
 setMethod("dbGetStatement", "OdbcResult",
   function(res, ...) {
     if (!dbIsValid(res)) {
-      stop("Result already cleared", call. = FALSE)
+      cli::cli_abort("Result already cleared.")
     }
     res@statement
   }

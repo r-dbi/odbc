@@ -192,7 +192,7 @@ computeDisplayName <- function(connection) {
   display_name
 }
 
-validateObjectName <- function(table, view, ...) {
+validateObjectName <- function(table, view, ..., call = caller_env()) {
 
   # Handle view look-alike object types
   # ( e.g. PostgreSQL/"matview" )
@@ -203,12 +203,18 @@ validateObjectName <- function(table, view, ...) {
 
   # Error if both table and view are passed
   if (!is.null(table) && !is.null(view)) {
-    stop("`table` and `view` can not both be used", call. = FALSE)
+    cli::cli_abort(
+      "{.arg table} and {.arg view} can not both be used.",
+      call = call
+    )
   }
 
   # Error if neither table and view are passed
   if (is.null(table) && is.null(view)) {
-    stop("`table` and `view` can not both be `NULL`", call. = FALSE)
+    cli::cli_abort(
+      "{.arg table} and {.arg view} can not both be {.code NULL}.",
+      call = call
+    )
   }
 
   table %||% view
