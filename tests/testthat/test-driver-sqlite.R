@@ -134,7 +134,10 @@ test_that("unsupported types gives informative error", {
   con <- test_con("SQLITE")
 
   df <- data.frame(foo = complex(1))
-  expect_error(dbWriteTable(con, "df", df), "Column 'foo' is of unsupported type: 'complex'")
+  expect_snapshot(
+    error = TRUE,
+    dbWriteTable(con, "df", df)
+  )
 })
 
 test_that("odbcPreviewObject works", {

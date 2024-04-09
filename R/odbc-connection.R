@@ -15,7 +15,7 @@ OdbcConnection <- function(
     dbms.name = NULL,
     attributes = NULL,
     .connection_string = NULL,
-    call = caller_env()
+    call = caller_env(2)
 ) {
   check_attributes(attributes, call = call)
 

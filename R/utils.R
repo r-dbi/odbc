@@ -41,7 +41,7 @@ lengths <- function(x) {
 
 # A 'size' must be an integer greater than 1, returned as a double so we have a larger range
 parse_size <- function(x, call = caller_env()) {
-  check_number_whole(x, min = 0, call = call)
+  check_number_whole(x, min = 1, call = call)
   as.numeric(x)
 }
 
@@ -74,7 +74,7 @@ id_field <- function(id,
 }
 
 check_n <- function(n, call = caller_env()) {
-  check_number_whole(n, min = -1, call = call)
+  check_number_whole(n, min = -1, allow_infinite = TRUE, call = call)
   if (is.infinite(n)) n <- -1
   n
 }

@@ -1,17 +1,18 @@
 test_that("parse_size works", {
-  expect_error(parse_size("foo"), "Must be a positive integer")
-  expect_error(parse_size(TRUE), "Must be a positive integer")
-  expect_error(parse_size(0), "Must be a positive integer")
-  expect_error(parse_size(-1), "Must be a positive integer")
-  expect_error(parse_size(-.1), "Must be a positive integer")
-  expect_error(parse_size(.1), "Must be a positive integer")
-  expect_error(parse_size("0"), "Must be a positive integer")
-  expect_error(parse_size("1"), "Must be a positive integer")
-  expect_error(parse_size(Inf), "Must be a positive integer")
-  expect_error(parse_size(NULL), "Must be a positive integer")
-  expect_error(parse_size(1:2), "Must be a positive integer")
-  expect_error(parse_size(numeric()), "Must be a positive integer")
-  expect_error(parse_size(integer()), "Must be a positive integer")
+  expect_snapshot(error = TRUE, parse_size("foo"))
+  expect_error(parse_size("foo"), "must be a whole number")
+  expect_error(parse_size(TRUE), "must be a whole number")
+  expect_error(parse_size(0), "must be a whole number")
+  expect_error(parse_size(-1), "must be a whole number")
+  expect_error(parse_size(-.1), "must be a whole number")
+  expect_error(parse_size(.1), "must be a whole number")
+  expect_error(parse_size("0"), "must be a whole number")
+  expect_error(parse_size("1"), "must be a whole number")
+  expect_error(parse_size(Inf), "must be a whole number")
+  expect_error(parse_size(NULL), "must be a whole number")
+  expect_error(parse_size(1:2), "must be a whole number")
+  expect_error(parse_size(numeric()), "must be a whole number")
+  expect_error(parse_size(integer()), "must be a whole number")
 
   expect_identical(parse_size(1L), 1)
   expect_identical(parse_size(1), 1)
@@ -70,6 +71,18 @@ test_that("check_field.types()", {
   expect_snapshot(
     error = TRUE,
     dbWriteTable(con, "boopery", data.frame(bop = 1), field.types = "numeric")
+  )
+})
+
+test_that("check_attributes()", {
+  expect_snapshot(
+    error = TRUE,
+    con <- test_con("SQLITE", attributes = list(boop = "bop"))
+  )
+
+  expect_snapshot(
+    error = TRUE,
+    con <- test_con("SQLITE", attributes = list(boop = "bop", beep = "boop"))
   )
 })
 

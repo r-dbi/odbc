@@ -1,3 +1,11 @@
+# unsupported types gives informative error
+
+    Code
+      dbWriteTable(con, "df", df)
+    Condition
+      Error in `odbcDataType()`:
+      ! Column foo is of unsupported type "object_type(obj[[i]])".
+
 # dbWriteTable() with `field.types` with `append = TRUE`
 
     Code
