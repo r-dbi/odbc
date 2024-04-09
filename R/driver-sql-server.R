@@ -70,7 +70,7 @@ setMethod("isTempTable", c("Microsoft SQL Server", "SQL"),
 #' @usage NULL
 setMethod("dbExistsTable", c("Microsoft SQL Server", "character"),
   function(conn, name, ...) {
-    stopifnot(length(name) == 1)
+    check_string(name)
     if (isTempTable(conn, name, ...)) {
       query <- paste0("SELECT OBJECT_ID('tempdb..", name, "')")
       !is.na(dbGetQuery(conn, query)[[1]])

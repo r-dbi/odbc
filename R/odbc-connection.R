@@ -17,9 +17,7 @@ OdbcConnection <- function(
     .connection_string = NULL,
     call = caller_env()
 ) {
-
-  stopifnot(all(has_names(attributes)))
-  stopifnot(all(names(attributes) %in% SUPPORTED_CONNECTION_ATTRIBUTES))
+  check_attributes(attributes, call = call)
 
   args <- compact(list(...))
   check_args(args)

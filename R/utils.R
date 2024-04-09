@@ -183,6 +183,23 @@ check_field.types <- function(field.types, call = caller_env()) {
   }
 }
 
+check_attributes <- function(attributes, call = caller_env()) {
+  if (!all(has_names(attributes))) {
+    cli::cli_abort("All elements of {.arg attributes} must be named.", call = call)
+  }
+
+  attributes_supported <- names(attributes) %in% SUPPORTED_CONNECTION_ATTRIBUTES
+  if (!all(attributes_supported)) {
+    cli::cli_abort(
+      c("!" = "{.arg attributes} does not support the connection attribute{?s} \\
+               {.val {names(attributes)[!attributes_supported]}}.",
+        "i" = "Allowed connection attribute{?s} {?is/are} \\
+               {.val {SUPPORTED_CONNECTION_ATTRIBUTES}}."),
+      call = call
+    )
+  }
+}
+
 # apple + spark drive config (#651) --------------------------------------------
 configure_spark <- function(call = caller_env()) {
   if (!is_macos()) {
