@@ -344,7 +344,7 @@ setMethod("dbExistsTable", c("OdbcConnection", "SQL"),
 #' @export
 setMethod("dbExistsTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
-    stopifnot(length(name) == 1)
+    check_string(name)
     df <- odbcConnectionTables(conn, name = name, ..., exact = TRUE)
     NROW(df) > 0
   }

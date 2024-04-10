@@ -25,3 +25,12 @@ test_that("show method does not print server if it is not available", {
   )
   expect_snapshot(con)
 })
+
+test_that("dbQuoteIdentifier() errors informatively", {
+  con <- test_con("SQLITE")
+
+  expect_snapshot(
+    error = TRUE,
+    dbQuoteIdentifier(con, NA_character_)
+  )
+})

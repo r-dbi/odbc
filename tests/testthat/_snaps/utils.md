@@ -1,3 +1,11 @@
+# parse_size works
+
+    Code
+      parse_size("foo")
+    Condition
+      Error:
+      ! `"foo"` must be a whole number, not the string "foo".
+
 # id_field checks inputs
 
     Code
@@ -26,6 +34,24 @@
     Condition
       Error in `dbWriteTable()`:
       ! `field.types` must be `NULL` or a named vector of field types, not a string.
+
+# check_attributes()
+
+    Code
+      con <- test_con("SQLITE", attributes = list(boop = "bop"))
+    Condition
+      Error in `dbConnect()`:
+      ! `attributes` does not support the connection attribute "boop".
+      i Allowed connection attribute is "azure_token".
+
+---
+
+    Code
+      con <- test_con("SQLITE", attributes = list(boop = "bop", beep = "boop"))
+    Condition
+      Error in `dbConnect()`:
+      ! `attributes` does not support the connection attributes "boop" and "beep".
+      i Allowed connection attribute is "azure_token".
 
 # configure_spark() errors informatively on failure to install unixODBC
 

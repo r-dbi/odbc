@@ -197,7 +197,7 @@ computeDisplayName <- function(connection) {
   display_name
 }
 
-validateObjectName <- function(table, view, ...) {
+validateObjectName <- function(table, view, ..., call = caller_env()) {
 
   # Handle view look-alike object types
   # ( e.g. PostgreSQL/"matview" )
@@ -207,14 +207,7 @@ validateObjectName <- function(table, view, ...) {
   view <- Reduce(`%||%`, args[viewlike], view)
 
   # Error if both table and view are passed
-  if (!is.null(table) && !is.null(view)) {
-    stop("`table` and `view` can not both be used", call. = FALSE)
-  }
-
-  # Error if neither table and view are passed
-  if (is.null(table) && is.null(view)) {
-    stop("`table` and `view` can not both be `NULL`", call. = FALSE)
-  }
+  check_exclusive(table, view, .frame = call)
 
   table %||% view
 }
@@ -231,9 +224,10 @@ odbcListColumns.OdbcConnection <- function(connection,
   check_string(catalog, allow_null = TRUE)
   check_string(schema, allow_null = TRUE)
 
+  name <- validateObjectName(table, view, ...)
   # specify schema or catalog if given
   cols <- odbcConnectionColumns_(connection,
-    name = validateObjectName(table, view, ...),
+    name = name,
     catalog_name = catalog,
     schema_name = schema
   )

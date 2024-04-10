@@ -251,14 +251,10 @@ odbc_data_type_df <- function(dbObj, obj, ...) {
   res <- character(NCOL(obj))
   nms <- names(obj)
   for (i in seq_along(obj)) {
-    tryCatch(
+    withCallingHandlers(
       res[[i]] <- odbcDataType(con = dbObj, obj[[i]]),
-      error = function(e) {
-        if (conditionMessage(e) == "Unsupported type") {
-          stop("Column '", nms[[i]], "' is of unsupported type: '", object_type(obj[[i]]), "'", call. = FALSE)
-        } else {
-          stop(e)
-        }
+      error = function(err) {
+        cli::cli_abort("Can't determine type for column {nms[[i]]}.", parent = err, call = quote(odbcDataType()))
       }
     )
   }

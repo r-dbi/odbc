@@ -40,17 +40,9 @@ lengths <- function(x) {
 }
 
 # A 'size' must be an integer greater than 1, returned as a double so we have a larger range
-parse_size <- function(x) {
-  nme <- substitute(x) %||% "NULL"
-
-  if (rlang::is_scalar_integerish(x) && !is.na(x) && !is.infinite(x) && x > 0) {
-    return(as.numeric(x))
-  }
-
-  stop(
-    sprintf("`%s` is not a valid size:\n  Must be a positive integer.", as.character(nme)),
-    call. = FALSE
-  )
+parse_size <- function(x, arg = caller_arg(x), call = caller_env()) {
+  check_number_whole(x, min = 1, arg = arg, call = call)
+  as.numeric(x)
 }
 
 id_field <- function(id,
@@ -79,14 +71,6 @@ id_field <- function(id,
   } else {
     abort("Identifier must be length 1, 2, or 3.", call = error_call)
   }
-}
-
-check_n <- function(n) {
-  if (length(n) != 1) stop("`n` must be scalar", call. = FALSE)
-  if (n < -1) stop("`n` must be nonnegative or -1", call. = FALSE)
-  if (is.infinite(n)) n <- -1
-  if (trunc(n) != n) stop("`n` must be a whole number", call. = FALSE)
-  n
 }
 
 isPatternValue <- function(val) {
@@ -188,6 +172,23 @@ check_field.types <- function(field.types, call = caller_env()) {
     cli::cli_abort(
       "{.arg field.types} must be {.code NULL} or a named vector of field \\
        types, not {.obj_type_friendly {field.types}}.",
+      call = call
+    )
+  }
+}
+
+check_attributes <- function(attributes, call = caller_env()) {
+  if (!all(has_names(attributes))) {
+    cli::cli_abort("All elements of {.arg attributes} must be named.", call = call)
+  }
+
+  attributes_supported <- names(attributes) %in% SUPPORTED_CONNECTION_ATTRIBUTES
+  if (!all(attributes_supported)) {
+    cli::cli_abort(
+      c("!" = "{.arg attributes} does not support the connection attribute{?s} \\
+               {.val {names(attributes)[!attributes_supported]}}.",
+        "i" = "Allowed connection attribute{?s} {?is/are} \\
+               {.val {SUPPORTED_CONNECTION_ATTRIBUTES}}."),
       call = call
     )
   }

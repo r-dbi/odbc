@@ -14,11 +14,10 @@ OdbcConnection <- function(
     timeout = Inf,
     dbms.name = NULL,
     attributes = NULL,
-    .connection_string = NULL
+    .connection_string = NULL,
+    call = caller_env(2)
 ) {
-
-  stopifnot(all(has_names(attributes)))
-  stopifnot(all(names(attributes) %in% SUPPORTED_CONNECTION_ATTRIBUTES))
+  check_attributes(attributes, call = call)
 
   args <- compact(list(...))
   check_args(args)
@@ -51,7 +50,13 @@ OdbcConnection <- function(
     info$dbms.name <- dbms.name
   }
   if (!nzchar(info$dbms.name)) {
-    stop("The ODBC driver returned an invalid `dbms.name`. Please provide one manually with the `dbms.name` parameter.", call. = FALSE)
+    cli::cli_abort(
+      c(
+        "!" = "The ODBC driver failed to generate a DBMS name.",
+        "i" = "Please provide one manually with {.arg dbms.name}."
+      ),
+      call = call
+    )
   }
 
   class <- getClassDef(info$dbms.name, inherits = FALSE)
