@@ -51,8 +51,10 @@ OdbcConnection <- function(
   }
   if (!nzchar(info$dbms.name)) {
     cli::cli_abort(
-      c("!" = "The ODBC driver returned an invalid {.code dbms.name}.",
-        "i" = "Please provide one manually with {.arg dbms.name}."),
+      c(
+        "!" = "The ODBC driver failed to generate a DBMS name.",
+        "i" = "Please provide one manually with {.arg dbms.name}."
+      ),
       call = call
     )
   }

@@ -207,20 +207,7 @@ validateObjectName <- function(table, view, ..., call = caller_env()) {
   view <- Reduce(`%||%`, args[viewlike], view)
 
   # Error if both table and view are passed
-  if (!is.null(table) && !is.null(view)) {
-    cli::cli_abort(
-      "{.arg table} and {.arg view} can not both be used.",
-      call = call
-    )
-  }
-
-  # Error if neither table and view are passed
-  if (is.null(table) && is.null(view)) {
-    cli::cli_abort(
-      "{.arg table} and {.arg view} can not both be {.code NULL}.",
-      call = call
-    )
-  }
+  check_exclusive(table, view, .frame = call)
 
   table %||% view
 }

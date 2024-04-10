@@ -40,8 +40,8 @@ lengths <- function(x) {
 }
 
 # A 'size' must be an integer greater than 1, returned as a double so we have a larger range
-parse_size <- function(x, call = caller_env()) {
-  check_number_whole(x, min = 1, call = call)
+parse_size <- function(x, arg = caller_arg(x), call = caller_env()) {
+  check_number_whole(x, min = 1, arg = arg, call = call)
   as.numeric(x)
 }
 
@@ -71,12 +71,6 @@ id_field <- function(id,
   } else {
     abort("Identifier must be length 1, 2, or 3.", call = error_call)
   }
-}
-
-check_n <- function(n, call = caller_env()) {
-  check_number_whole(n, min = -1, allow_infinite = TRUE, call = call)
-  if (is.infinite(n)) n <- -1
-  n
 }
 
 isPatternValue <- function(val) {

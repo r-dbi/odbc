@@ -4,7 +4,9 @@
       dbWriteTable(con, "df", df)
     Condition
       Error in `odbcDataType()`:
-      ! Column foo is of unsupported type "object_type(obj[[i]])".
+      ! Can't determine type for column foo.
+      Caused by error:
+      ! Unsupported type
 
 # dbWriteTable() with `field.types` with `append = TRUE`
 

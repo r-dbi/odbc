@@ -52,7 +52,7 @@
       odbcListColumns(con, table = "boop", view = "bop")
     Condition
       Error in `odbcListColumns()`:
-      ! `table` and `view` can not both be used.
+      ! Exactly one of `table` or `view` must be supplied.
 
 ---
 
@@ -60,5 +60,5 @@
       odbcListColumns(con)
     Condition
       Error in `odbcListColumns()`:
-      ! `table` and `view` can not both be `NULL`.
+      ! One of `table` or `view` must be supplied.
 

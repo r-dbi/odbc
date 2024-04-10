@@ -26,5 +26,5 @@
       dbQuoteIdentifier(con, NA_character_)
     Condition
       Error in `dbQuoteIdentifier()`:
-      ! NA values are not supported in `x`.
+      ! `x` can't be `NA`.
 

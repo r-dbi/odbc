@@ -4,7 +4,7 @@
       parse_size("foo")
     Condition
       Error:
-      ! `x` must be a whole number, not the string "foo".
+      ! `"foo"` must be a whole number, not the string "foo".
 
 # id_field checks inputs
 

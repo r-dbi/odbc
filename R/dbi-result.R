@@ -63,7 +63,8 @@ setMethod("dbClearResult", "OdbcResult",
 #' @export
 setMethod("dbFetch", "OdbcResult",
   function(res, n = -1, ...) {
-    n <- check_n(n)
+    check_number_whole(n, min = -1, allow_infinite = TRUE)
+    if (is.infinite(n)) n <- -1
     result_fetch(res@ptr, n)
   }
 )

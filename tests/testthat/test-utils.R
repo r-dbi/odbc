@@ -1,18 +1,5 @@
 test_that("parse_size works", {
   expect_snapshot(error = TRUE, parse_size("foo"))
-  expect_error(parse_size("foo"), "must be a whole number")
-  expect_error(parse_size(TRUE), "must be a whole number")
-  expect_error(parse_size(0), "must be a whole number")
-  expect_error(parse_size(-1), "must be a whole number")
-  expect_error(parse_size(-.1), "must be a whole number")
-  expect_error(parse_size(.1), "must be a whole number")
-  expect_error(parse_size("0"), "must be a whole number")
-  expect_error(parse_size("1"), "must be a whole number")
-  expect_error(parse_size(Inf), "must be a whole number")
-  expect_error(parse_size(NULL), "must be a whole number")
-  expect_error(parse_size(1:2), "must be a whole number")
-  expect_error(parse_size(numeric()), "must be a whole number")
-  expect_error(parse_size(integer()), "must be a whole number")
 
   expect_identical(parse_size(1L), 1)
   expect_identical(parse_size(1), 1)

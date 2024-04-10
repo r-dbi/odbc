@@ -148,7 +148,7 @@ setMethod("dbQuoteIdentifier", c("OdbcConnection", "character"),
       return(DBI::SQL(character()))
     }
     if (any(is.na(x))) {
-      cli::cli_abort("NA values are not supported in {.arg x}.")
+      cli::cli_abort("{.arg x} can't be {.code NA}.")
     }
     if (nzchar(conn@quote)) {
       x <- gsub(conn@quote, paste0(conn@quote, conn@quote), x, fixed = TRUE)
