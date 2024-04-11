@@ -260,6 +260,10 @@ synonyms_query <- function(conn, catalog_name = NULL, schema_name = NULL) {
   has_catalog <- !is.null(catalog_name)
   has_schema <- !is.null(schema_name)
 
+  if (!has_catalog & !has_schema) {
+    return(paste0(res, " WHERE ", filter_is_table))
+  }
+
   if (has_catalog & has_schema) {
     res <- paste0(res, " WHERE DB.name = '", catalog_name, "' AND Sch.name = '", schema_name, "'")
   } else if (has_catalog) {
@@ -268,5 +272,7 @@ synonyms_query <- function(conn, catalog_name = NULL, schema_name = NULL) {
     res <- paste0(res, " WHERE Sch.name = '", schema_name, "'")
   }
 
-  paste0(res, " AND OBJECTPROPERTY(Object_ID(Syn.base_object_name), 'IsTable') = 1;")
+  paste0(res, " AND ", filter_is_table)
 }
+
+filter_is_table <- "OBJECTPROPERTY(Object_ID(Syn.base_object_name), 'IsTable') = 1;"

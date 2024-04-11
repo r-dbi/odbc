@@ -367,6 +367,9 @@ test_that("odbcListObjects shows synonyms (#221)", {
     dbExistsTable(con, name = "tbl2", catalog_name = db, schema_name = "testSchema")
   )
   expect_true(dbExistsTable(con, name = Id(db, "testSchema", "tbl2")))
+  expect_true(dbExistsTable(con, name = Id("testSchema", "tbl2")))
+  expect_true(dbExistsTable(con, name = Id("tbl2")))
+  expect_true(dbExistsTable(con, name = "tbl2"))
   dbExecute(con, "DROP SYNONYM testSchema.tbl2")
   expect_false(dbExistsTable(con, name = Id(db, "testSchema", "tbl2")))
 
