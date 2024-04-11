@@ -362,7 +362,8 @@ test_that("odbcListObjects shows synonyms (#221)", {
     nrow(odbcListObjects(con, catalog = db, schema = "testSchema", name = "tbl")),
     1
   )
-  expect_false("tbl2" %in% odbcListObjects(con))
+  expect_false("tbl2" %in% odbcListObjects(con)$name)
+  expect_false("tbl2" %in% odbcListObjects(con, catalog = db)$name)
   expect_true(
     dbExistsTable(con, name = "tbl2", catalog_name = db, schema_name = "testSchema")
   )
