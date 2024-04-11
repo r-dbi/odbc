@@ -234,7 +234,7 @@ setMethod("odbcDataType", "Microsoft SQL Server",
     ...
   )
 
-  if (!any(objects$type == "table")) {
+  if (!any(objects$type == "table") && nrow(objects) > 0) {
     return(objects)
   }
 
