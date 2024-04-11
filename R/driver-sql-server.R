@@ -234,6 +234,10 @@ setMethod("odbcDataType", "Microsoft SQL Server",
     ...
   )
 
+  if (!any(objects$type == "table")) {
+    return(objects)
+  }
+
   synonyms <- dbGetQuery(connection, synonyms_query(connection, catalog, schema))
 
   if (!is.null(name)) {
