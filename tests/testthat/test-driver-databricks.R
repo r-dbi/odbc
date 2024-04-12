@@ -89,7 +89,7 @@ test_that("supports OAuth M2M in env var", {
 })
 
 test_that("dbConnect method handles httpPath aliases (#787)", {
-  local_mocked_bindings(inject = function(...) stop("made it"))
+  local_mocked_bindings(databricks_args = function(...) stop("made it"))
 
   expect_error(dbConnect(databricks(), HTTPPath = "boop"), "made it")
   expect_error(dbConnect(databricks(), httpPath = "boop"), "made it")
