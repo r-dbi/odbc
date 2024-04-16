@@ -154,6 +154,53 @@ random_name <- function(prefix = "") {
   paste0(prefix, "odbc_", name)
 }
 
+# error handling ---------------------------------------------------------------
+rethrow_database_error <- function(msg, call = trace_back()$call[[1]]) {
+  tryCatch(
+    res <- parse_database_error(msg),
+    error = function(e) {cli::cli_abort(msg, call = call)}
+  )
+
+  cli::cli_abort(
+    c(
+      "i" = "At {.file {res$cnd_context_nanodbc}}, error {res$cnd_context_code} \\
+             from {.field {paste0(res$cnd_context_driver, collapse = '')}}.",
+      set_names(res$cnd_body, nm = c("x", rep("*", length(res$cnd_body) - 1)))
+    ),
+    call = call
+  )
+}
+
+parse_database_error <- function(msg) {
+  # Split nanodbc's context, error code, and message returned from the database
+  cnd_msg <- strsplit(msg, "\n", fixed = TRUE)[[1]]
+
+  # Parse out nanodbc/nanodbc.cpp:<line#> and 5-char error code
+  cnd_context <- strsplit(cnd_msg[1], ": ")[[1]]
+  cnd_context_nanodbc <- cnd_context[1]
+  cnd_context_code <- cnd_context[2]
+
+  # In error returned from the database, find the square-bracketed context
+  # on driver and driver manager
+  cnd_context_driver <- gregexpr("(\\[.*?\\])", cnd_msg[-1])
+  cnd_context_driver <- regmatches(cnd_msg[-1], cnd_context_driver)[[1]]
+
+  # Remove the square-bracketed context from the database error
+  cnd_body <- Reduce(
+    function(p, x) gsub(p, "", x, fixed = TRUE),
+    cnd_context_driver,
+    cnd_msg[-1],
+    right = TRUE
+  )
+
+  return(list(
+    cnd_context_nanodbc = cnd_context_nanodbc,
+    cnd_context_code = cnd_context_code,
+    cnd_context_driver = cnd_context_driver,
+    cnd_body = cnd_body
+  ))
+}
+
 # check helpers for common odbc arguments --------------------------------------
 check_row.names <- function(row.names, call = caller_env()) {
   if (is.null(row.names) || is_scalar_logical(row.names) || is_string(row.names)) {

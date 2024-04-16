@@ -43,6 +43,73 @@ test_that("getSelector", {
   expect_equal(getSelector("mykey", "%", exact = FALSE), " AND mykey LIKE '%'")
 })
 
+test_that("errors are rethrown informatively (#643, #788)", {
+  skip_if_not(has_unixodbc())
+
+  expect_snapshot(error = TRUE, dbConnect(odbc(), dsn = "does_not_exist_db"))
+
+  con <- test_con("SQLITE")
+  expect_snapshot(error = TRUE, dbExecute(con, "SELECT * FROM boopbopbopbeep"))
+})
+
+test_that("rethrow_database_error() errors well when parse_database_error() fails", {
+  expect_snapshot(
+    error = TRUE,
+    rethrow_database_error("boop", call = NULL)
+  )
+})
+
+test_that("parse_database_error() works with messages from the wild", {
+  expect_snapshot(
+    error = TRUE,
+    rethrow_database_error(
+      "nanodbc/nanodbc.cpp:1135: 00000
+       [unixODBC][Driver Manager]Data source name not found and no default driver specified",
+      call = NULL
+    )
+  )
+
+  expect_snapshot(
+    error = TRUE,
+    rethrow_database_error(
+      "nanodbc/nanodbc.cpp:1594: 07002
+       [Microsoft][ODBC Driver 17 for SQL Server]COUNT field incorrect or syntax error",
+      call = NULL
+    )
+  )
+
+  expect_snapshot(
+    error = TRUE,
+    rethrow_database_error(
+      "nanodbc/nanodbc.cpp:1710: 07002
+       [ODBC Firebird Driver]COUNT field incorrect",
+      call = NULL
+    )
+  )
+
+  expect_snapshot(
+    error = TRUE,
+    rethrow_database_error(
+      "nanodbc/nanodbc.cpp:1655: HYT00
+       [Microsoft][SQL Server Native Client 11.0]Query timeout expired",
+      call = NULL
+    )
+  )
+
+  expect_snapshot(
+    error = TRUE,
+    rethrow_database_error(
+      "nanodbc/nanodbc.cpp:1147: 00000
+       [Microsoft][ODBC Driver 18 for SQL Server]Login timeout expired
+       [Microsoft][ODBC Driver 18 for SQL Server]TCP Provider: Error code 0x2726
+       [Microsoft][ODBC Driver 18 for SQL Server]A network-related or instance-specific error has occurred while establishing a connection to 127.0.0.1. Server is not found or not accessible. Check if instance name is correct and if SQL Server is configured to allow remote connections. For more information see SQL Server Books Online. ",
+      call = NULL
+    )
+  )
+
+
+})
+
 test_that("check_row.names()", {
   con <- test_con("SQLITE")
 

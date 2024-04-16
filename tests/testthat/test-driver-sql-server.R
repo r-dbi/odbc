@@ -324,16 +324,3 @@ test_that("can create / write to temp table", {
   expect_snapshot_warning(sqlCreateTable(con, notTempTblName, values, temporary = TRUE))
   expect_no_warning(sqlCreateTable(con, notTempTblName, values, temporary = FALSE))
 })
-
-test_that("captures multiline errors message", {
-  tryCatch(
-    {
-      DBI::dbConnect(odbc::odbc(), dsn = "does_not_exist_db")
-    },
-    error = function(e) {
-      # Expect to see at least one newline character in message
-      # ( previously one long string, #643 )
-      expect_true(grepl("\n", e$message))
-    }
-  )
-})
