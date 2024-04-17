@@ -306,16 +306,6 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// result_execute
-void result_execute(result_ptr const& r);
-RcppExport SEXP _odbc_result_execute(SEXP rSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< result_ptr const& >::type r(rSEXP);
-    result_execute(r);
-    return R_NilValue;
-END_RCPP
-}
 // result_insert_dataframe
 void result_insert_dataframe(result_ptr const& r, DataFrame const& df, size_t batch_rows);
 RcppExport SEXP _odbc_result_insert_dataframe(SEXP rSEXP, SEXP dfSEXP, SEXP batch_rowsSEXP) {
@@ -399,7 +389,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_odbc_result_fetch", (DL_FUNC) &_odbc_result_fetch, 2},
     {"_odbc_result_column_info", (DL_FUNC) &_odbc_result_column_info, 1},
     {"_odbc_result_bind", (DL_FUNC) &_odbc_result_bind, 3},
-    {"_odbc_result_execute", (DL_FUNC) &_odbc_result_execute, 1},
     {"_odbc_result_insert_dataframe", (DL_FUNC) &_odbc_result_insert_dataframe, 3},
     {"_odbc_result_describe_parameters", (DL_FUNC) &_odbc_result_describe_parameters, 2},
     {"_odbc_result_rows_affected", (DL_FUNC) &_odbc_result_rows_affected, 1},

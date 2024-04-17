@@ -17,23 +17,9 @@ odbc_result::odbc_result(
       output_encoder_(Iconv(c_->encoding(), "UTF-8")) {
 
   c_->cancel_current_result();
-
-  if (immediate) {
-    s_ = std::make_shared<nanodbc::statement>();
-    bound_ = true;
-    r_ = std::make_shared<nanodbc::result>(
-        s_->execute_direct(*c_->connection(), sql_));
-    num_columns_ = r_->columns();
-    c_->set_current_result(this);
-  } else {
-    prepare();
-    c_->set_current_result(this);
-    if (s_->parameters() == 0) {
-      bound_ = true;
-      execute();
-    }
-  }
+  execute(immediate);
 }
+
 std::shared_ptr<odbc_connection> odbc_result::connection() const {
   return std::shared_ptr<odbc_connection>(c_);
 }
@@ -43,21 +29,24 @@ std::shared_ptr<nanodbc::statement> odbc_result::statement() const {
 std::shared_ptr<nanodbc::result> odbc_result::result() const {
   return std::shared_ptr<nanodbc::result>(r_);
 }
-void odbc_result::prepare() {
-  s_ = std::make_shared<nanodbc::statement>(*c_->connection(), sql_);
-}
-void odbc_result::execute() {
-  if (!r_) {
-    try {
-      r_ = std::make_shared<nanodbc::result>(s_->execute());
-      num_columns_ = r_->columns();
-    } catch (const nanodbc::database_error& e) {
-      c_->set_current_result(nullptr);
-      throw odbc_error(e, sql_, output_encoder_);
-    } catch (...) {
-      c_->set_current_result(nullptr);
-      throw;
+
+void odbc_result::execute(const bool immediate) {
+  try {
+    c_->set_current_result(this);
+    s_ = std::make_shared<nanodbc::statement>();
+    if (!immediate) s_->prepare(*c_->connection(), sql_);
+    if (immediate || (s_->parameters() == 0)) {
+      bound_ = true;
+      r_ = std::make_shared<nanodbc::result>(
+          immediate ? s_->execute_direct(*c_->connection(), sql_) :
+          s_->execute());
     }
+  } catch (const nanodbc::database_error& e) {
+    c_->set_current_result(nullptr);
+    throw odbc_error(e, sql_, output_encoder_);
+  } catch (...) {
+    c_->set_current_result(nullptr);
+    throw;
   }
 }
 

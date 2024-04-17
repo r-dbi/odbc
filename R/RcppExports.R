@@ -105,10 +105,6 @@ result_bind <- function(r, params, batch_rows) {
     invisible(.Call(`_odbc_result_bind`, r, params, batch_rows))
 }
 
-result_execute <- function(r) {
-    invisible(.Call(`_odbc_result_execute`, r))
-}
-
 result_insert_dataframe <- function(r, df, batch_rows) {
     invisible(.Call(`_odbc_result_insert_dataframe`, r, df, batch_rows))
 }

@@ -45,7 +45,6 @@ public:
   std::shared_ptr<nanodbc::statement> statement() const;
   std::shared_ptr<nanodbc::result> result() const;
   void prepare();
-  void execute();
   void describe_parameters(Rcpp::List const& x);
   void bind_list(Rcpp::List const& x, bool use_transaction, size_t batch_rows);
   Rcpp::DataFrame fetch(int n_max = -1);
@@ -82,6 +81,14 @@ private:
   void clear_buffers();
   void unbind_if_needed();
 
+  // Private method - use only in constructor.
+  // It will allocate nanodbc resources ( statement, result )
+  // and call execute or execute_direct as needed.
+  //
+  // @param immediate If false, will prepare and execute
+  // a statement against this-sql_.  If true, will call
+  // nanodbc::statement::execute_direct ( without preparing ).
+  void execute(const bool immediate);
   void bind_columns(
       nanodbc::statement& statement,
       r_type type,
