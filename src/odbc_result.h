@@ -69,6 +69,7 @@ private:
   int num_columns_;
   bool complete_;
   bool bound_;
+  bool immediate_;
   Iconv output_encoder_;
 
   std::map<short, std::vector<std::string>> strings_;
@@ -83,12 +84,9 @@ private:
 
   // Private method - use only in constructor.
   // It will allocate nanodbc resources ( statement, result )
-  // and call execute or execute_direct as needed.
-  //
-  // @param immediate If false, will prepare and execute
-  // a statement against this-sql_.  If true, will call
-  // nanodbc::statement::execute_direct ( without preparing ).
-  void execute(const bool immediate);
+  // and call execute.
+  void execute();
+
   void bind_columns(
       nanodbc::statement& statement,
       r_type type,

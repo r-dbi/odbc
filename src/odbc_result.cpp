@@ -1,6 +1,7 @@
 #include "odbc_result.h"
 #include "integer64.h"
 #include "time_zone.h"
+#include "utils.h"
 #include <chrono>
 #include <memory>
 
@@ -14,10 +15,18 @@ odbc_result::odbc_result(
       num_columns_(0),
       complete_(0),
       bound_(false),
+      immediate_(immediate),
       output_encoder_(Iconv(c_->encoding(), "UTF-8")) {
 
   c_->cancel_current_result();
-  execute(immediate);
+
+  auto exc = std::mem_fn(&odbc_result::execute);
+  auto cleanup_fn = [this]() {
+      this->c_->set_current_result(nullptr);
+      this->s_->close();
+      this->s_.reset();
+  };
+  odbc::utils::run_interruptible(std::bind(exc, this), cleanup_fn);
 }
 
 std::shared_ptr<odbc_connection> odbc_result::connection() const {
@@ -30,16 +39,17 @@ std::shared_ptr<nanodbc::result> odbc_result::result() const {
   return std::shared_ptr<nanodbc::result>(r_);
 }
 
-void odbc_result::execute(const bool immediate) {
+void odbc_result::execute() {
   try {
     c_->set_current_result(this);
     s_ = std::make_shared<nanodbc::statement>();
-    if (!immediate) s_->prepare(*c_->connection(), sql_);
-    if (immediate || (s_->parameters() == 0)) {
+    if (!this->immediate_) s_->prepare(*c_->connection(), sql_);
+    if (this->immediate_ || (s_->parameters() == 0)) {
       bound_ = true;
       r_ = std::make_shared<nanodbc::result>(
-          immediate ? s_->execute_direct(*c_->connection(), sql_) :
+          this->immediate_ ? s_->execute_direct(*c_->connection(), sql_) :
           s_->execute());
+      num_columns_ = r_->columns();
     }
   } catch (const nanodbc::database_error& e) {
     c_->set_current_result(nullptr);

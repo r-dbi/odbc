@@ -1,7 +1,10 @@
 #include <memory>
 #include <string>
+#include <future>
 #include "utils.h"
-
+#if !defined(_WIN32) && !defined(_WIN64)
+#include <signal.h>
+#endif
 namespace odbc {
 namespace utils {
 
@@ -45,6 +48,51 @@ namespace utils {
               SQL_COPT_SS_ACCESS_TOKEN, SQL_IS_POINTER, buffer.get()));
         buffer_context.push_back( buffer );
       }
+    }
+  }
+
+  void run_interruptible(const std::function<void()>& exec_fn, const std::function<void()>& cleanup_fn)
+  {
+    std::exception_ptr eptr;
+#if !defined(_WIN32) && !defined(_WIN64)
+    sigset_t set, old_set;
+    sigemptyset(&set);
+    sigaddset(&set, SIGINT);
+    int rc = pthread_sigmask(SIG_BLOCK, &set, &old_set);
+    if ( rc != 0 )
+    {
+      Rcpp::warning("Unable to properly mask SIGINT from execution thread.");
+    }
+#endif
+    auto future = std::async(std::launch::async, [&exec_fn, &eptr]() {
+      try {
+        exec_fn();
+      } catch (...) {
+        eptr = std::current_exception();
+      }
+      return;
+    });
+#if !defined(_WIN32) && !defined(_WIN64)
+    pthread_sigmask(SIG_SETMASK, &old_set, NULL);
+#endif
+
+    std::future_status status;
+    do {
+      status = future.wait_for(std::chrono::seconds(1));
+      if (status != std::future_status::ready) {
+        try {
+          Rcpp::checkUserInterrupt();
+        } catch (const Rcpp::internal::InterruptedException& e) {
+          Rcpp::Rcout<<"Caught user interrupt, attempting a clean exit...\n";
+          cleanup_fn();
+        } catch (...) {
+          throw;
+        }
+      }
+    } while (status != std::future_status::ready);
+    if (eptr) {
+      // An exception was thrown in the thread
+      std::rethrow_exception(eptr);
     }
   }
 }}

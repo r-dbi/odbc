@@ -7,6 +7,7 @@
 
 #include <Rcpp.h>
 #include "sql_types.h"
+#include "odbc_result.h"
 #include "nanodbc.h"
 
 namespace odbc {
@@ -44,5 +45,17 @@ namespace utils {
   /// \param token The authentication token.
   /// \return A shared pointer to the buffer containing the serialized structure.
   std::shared_ptr< void > serialize_azure_token( const std::string& token );
+
+  /// \brief Wrapper to allow for interruptible execution of argument function
+  ///
+  /// The execution function is relegated to a separate thread.
+  /// On the main thread, we wait for the execution to complete while
+  /// at the same time checking for user interrupts every one second.
+  ///
+  /// \param exec_fn Function executed on a separate thread.  Exceptions
+  /// are caught and re-thrown on the main thread.
+  /// \param cleanup_fn Function executed on main thread in the event a
+  /// user interrupt is caught.
+  void run_interruptible(const std::function<void()>& exec_fn, const std::function<void()>& cleanup_fn);
 }}
 #endif
