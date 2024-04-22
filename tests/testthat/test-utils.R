@@ -43,6 +43,12 @@ test_that("getSelector", {
   expect_equal(getSelector("mykey", "%", exact = FALSE), " AND mykey LIKE '%'")
 })
 
+test_that("set_odbcsysini() works (#791)", {
+  skip_if(is_windows())
+
+  expect_false(identical(Sys.getenv("ODBCSYSINI"), ""))
+})
+
 test_that("check_row.names()", {
   con <- test_con("SQLITE")
 
