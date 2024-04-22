@@ -25,8 +25,9 @@
       dbConnect(odbc(), dsn = "does_not_exist_db")
     Condition
       Error in `dbConnect()`:
-      i At 'nanodbc/nanodbc.cpp:1147', error 00000 from [unixODBC][Driver Manager].
+      ! ODBC failed with error 00000 from [unixODBC][Driver Manager].
       x Data source name not found and no default driver specified
+      i From 'nanodbc/nanodbc.cpp:1147'.
 
 ---
 
@@ -34,8 +35,9 @@
       dbExecute(con, "SELECT * FROM boopbopbopbeep")
     Condition
       Error in `dbExecute()`:
-      i At 'nanodbc/nanodbc.cpp:1719', error 00000 from [SQLite].
+      ! ODBC failed with error 00000 from [SQLite].
       x no such table: boopbopbopbeep (1)
+      i From 'nanodbc/nanodbc.cpp:1719'.
 
 # rethrow_database_error() errors well when parse_database_error() fails
 
@@ -51,8 +53,9 @@
       rethrow_database_error(msg, call = NULL)
     Condition
       Error:
-      i At 'nanodbc/nanodbc.cpp:1135', error 00000 from [unixODBC][Driver Manager].
+      ! ODBC failed with error 00000 from [unixODBC][Driver Manager].
       x  Data source name not found and no default driver specified
+      i From 'nanodbc/nanodbc.cpp:1135'.
 
 ---
 
@@ -60,8 +63,9 @@
       rethrow_database_error(msg, call = NULL)
     Condition
       Error:
-      i At 'nanodbc/nanodbc.cpp:1594', error 07002 from [Microsoft][ODBC Driver 17 for SQL Server].
+      ! ODBC failed with error 07002 from [Microsoft][ODBC Driver 17 for SQL Server].
       x  COUNT field incorrect or syntax error
+      i From 'nanodbc/nanodbc.cpp:1594'.
 
 ---
 
@@ -69,8 +73,9 @@
       rethrow_database_error(msg, call = NULL)
     Condition
       Error:
-      i At 'nanodbc/nanodbc.cpp:1710', error 07002 from [ODBC Firebird Driver].
+      ! ODBC failed with error 07002 from [ODBC Firebird Driver].
       x  COUNT field incorrect
+      i From 'nanodbc/nanodbc.cpp:1710'.
 
 ---
 
@@ -78,8 +83,9 @@
       rethrow_database_error(msg, call = NULL)
     Condition
       Error:
-      i At 'nanodbc/nanodbc.cpp:1655', error HYT00 from [Microsoft][SQL Server Native Client 11.0].
+      ! ODBC failed with error HYT00 from [Microsoft][SQL Server Native Client 11.0].
       x  Query timeout expired
+      i From 'nanodbc/nanodbc.cpp:1655'.
 
 ---
 
@@ -87,10 +93,11 @@
       rethrow_database_error(msg, call = NULL)
     Condition
       Error:
-      i At 'nanodbc/nanodbc.cpp:1147', error 00000 from [Microsoft][ODBC Driver 18 for SQL Server].
+      ! ODBC failed with error 00000 from [Microsoft][ODBC Driver 18 for SQL Server].
       x  Login timeout expired
       *  TCP Provider: Error code 0x2726
       *  A network-related or instance-specific error has occurred while establishing a connection to 127.0.0.1. Server is not found or not accessible. Check if instance name is correct and if SQL Server is configured to allow remote connections. For more information see SQL Server Books Online.
+      i From 'nanodbc/nanodbc.cpp:1147'.
 
 # check_row.names()
 

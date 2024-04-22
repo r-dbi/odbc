@@ -163,9 +163,10 @@ rethrow_database_error <- function(msg, call = trace_back()$call[[1]]) {
 
   cli::cli_abort(
     c(
-      "i" = "At {.file {res$cnd_context_nanodbc}}, error {res$cnd_context_code} \\
-             from {.field {paste0(res$cnd_context_driver, collapse = '')}}.",
-      set_names(res$cnd_body, nm = c("x", rep("*", length(res$cnd_body) - 1)))
+      "!" = "ODBC failed with error {res$cnd_context_code} from \\
+             {.field {paste0(res$cnd_context_driver, collapse = '')}}.",
+      set_names(res$cnd_body, nm = c("x", rep("*", length(res$cnd_body) - 1))),
+      "i" = "From {.file {res$cnd_context_nanodbc}}."
     ),
     call = call
   )
