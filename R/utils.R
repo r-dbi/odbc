@@ -139,7 +139,7 @@ set_odbcsysini <- function() {
 
   tryCatch(
     {
-      path <- dirname(odbcListConfig()["drivers"])
+      path <- dirname(odbcListConfig()[["drivers"]])
       Sys.setenv(ODBCSYSINI = path)
     },
     error = function(err) NULL
