@@ -87,3 +87,25 @@ test_that("supports OAuth M2M in env var", {
   expect_equal(auth$auth_client_id, "abc")
   expect_equal(auth$auth_client_secret, "def")
 })
+
+test_that("dbConnect method handles httpPath aliases (#787)", {
+  local_mocked_bindings(
+    databricks_args = function(...) stop("made it"),
+    configure_spark = function(...) TRUE
+  )
+
+  expect_error(dbConnect(databricks(), HTTPPath = "boop"), "made it")
+  expect_error(dbConnect(databricks(), httpPath = "boop"), "made it")
+})
+
+test_that("dbConnect method errors informatively re: httpPath (#787)", {
+  local_mocked_bindings(configure_spark = function(...) TRUE)
+
+  expect_snapshot(
+    error = TRUE,
+    dbConnect(databricks(), httpPath = "boop", HTTPPath = "bop")
+  )
+
+  expect_snapshot(error = TRUE, dbConnect(databricks(), HTTPPath = 1L))
+  expect_snapshot(error = TRUE, dbConnect(databricks(), httpPath = 1L))
+})

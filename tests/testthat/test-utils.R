@@ -83,6 +83,12 @@ test_that("parse_database_error() works with messages from the wild", {
   expect_snapshot(error = TRUE, rethrow_database_error(msg, call = NULL))
 })
 
+test_that("set_odbcsysini() works (#791)", {
+  skip_if(is_windows())
+
+  expect_false(identical(Sys.getenv("ODBCSYSINI"), ""))
+})
+
 test_that("check_row.names()", {
   con <- test_con("SQLITE")
 

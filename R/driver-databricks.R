@@ -65,15 +65,15 @@ setMethod("dbConnect", "DatabricksOdbcDriver",
            uid = NULL,
            pwd = NULL,
            ...) {
+    call <- caller_env()
     # For backward compatibility with RStudio connection string
-    check_exclusive(httpPath, HTTPPath)
-    check_string(httpPath, allow_null = TRUE)
-    check_string(workspace, allow_null = TRUE)
-    check_bool(useNativeQuery)
-    check_string(driver, allow_null = TRUE)
-    check_string(HTTPPath, allow_null = TRUE)
-    check_string(uid, allow_null = TRUE)
-    check_string(pwd, allow_null = TRUE)
+    http_path <- check_exclusive(httpPath, HTTPPath, .call = call)
+    check_string(get(http_path), allow_null = TRUE, arg = http_path, call = call)
+    check_string(workspace, allow_null = TRUE, call = call)
+    check_bool(useNativeQuery, call = call)
+    check_string(driver, allow_null = TRUE, call = call)
+    check_string(uid, allow_null = TRUE, call = call)
+    check_string(pwd, allow_null = TRUE, call = call)
 
     args <- databricks_args(
       httpPath = if (missing(httpPath)) HTTPPath else httpPath,
