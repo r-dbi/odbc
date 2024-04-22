@@ -158,7 +158,7 @@ random_name <- function(prefix = "") {
 rethrow_database_error <- function(msg, call = trace_back()$call[[1]]) {
   tryCatch(
     res <- parse_database_error(msg),
-    error = function(e) {cli::cli_abort(msg, call = call)}
+    error = function(e) cli::cli_abort(msg, call = call)
   )
 
   cli::cli_abort(
@@ -193,12 +193,12 @@ parse_database_error <- function(msg) {
     right = TRUE
   )
 
-  return(list(
+  list(
     cnd_context_nanodbc = cnd_context_nanodbc,
     cnd_context_code = cnd_context_code,
     cnd_context_driver = cnd_context_driver,
     cnd_body = cnd_body
-  ))
+  )
 }
 
 # check helpers for common odbc arguments --------------------------------------
