@@ -155,6 +155,10 @@ random_name <- function(prefix = "") {
 }
 
 # error handling ---------------------------------------------------------------
+# `call` looks to the "user-called" function rather than the usual `caller_env(n)`.
+# this function is called from C++, and parent.frame() (and thus caller_env())
+# is unable to traverse across the Rcpp code to find the caller env; setting
+# `call = caller_env(n)` with n of 0/1/2/3 gives no error context.
 rethrow_database_error <- function(msg, call = trace_back()$call[[1]]) {
   tryCatch(
     res <- parse_database_error(msg),
