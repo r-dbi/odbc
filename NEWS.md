@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Transitioned to the cli package for formatting most error messages 
+  (@simonpcouch, #781, #784, #785, #788).
+
 * `databricks()` will now automatically configure the needed driver and driver
   manager on macOS (#651).
 
