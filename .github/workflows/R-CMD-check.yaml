@@ -56,7 +56,7 @@ jobs:
           needs: check
 
       - name: Install unixODBC
-        if: matrix.os == 'macOS-latest'
+        if: matrix.os == 'macos-latest'
         # unixODBC is not pre-installed on macos-14-arm64 runner (#794)
         run: brew install unixodbc
 
