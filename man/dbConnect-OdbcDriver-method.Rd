@@ -24,6 +24,7 @@ odbc()
   pwd = NULL,
   dbms.name = NULL,
   attributes = NULL,
+  interruptibleExecution = TRUE,
   .connection_string = NULL
 )
 }
@@ -86,8 +87,12 @@ name for the OdbcConnection object returned from \code{\link[=dbConnect]{dbConne
 the driver does not return a valid value, it can be set manually with this
 parameter.}
 
-\item{attributes}{An S4 object of connection attributes that are passed
+\item{attributes}{A list of connection attributes that are passed
 prior to the connection being established. See \link{ConnectionAttributes}.}
+
+\item{interruptibleExecution}{Logical.  If true calls to SQLExecute and
+SQLExecuteDirect can be interrupted when the user sends SIGINT ( ctrl-c ).
+Otherwise they block.  Defaults to TRUE.}
 
 \item{.connection_string}{A complete connection string, useful if you are
 copy pasting it from another source. If this argument is used, any

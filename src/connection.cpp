@@ -53,7 +53,8 @@ connection_ptr odbc_connect(
     std::string const& encoding = "",
     int bigint = 0,
     long timeout = 0,
-    Rcpp::Nullable<Rcpp::List> const& r_attributes_ = R_NilValue) {
+    Rcpp::Nullable<Rcpp::List> const& r_attributes = R_NilValue,
+    bool const& interruptible_execution = true) {
   return connection_ptr(
       new std::shared_ptr<odbc_connection>(new odbc_connection(
           connection_string,
@@ -62,7 +63,8 @@ connection_ptr odbc_connect(
           encoding,
           static_cast<bigint_map_t>(bigint),
           timeout,
-          r_attributes_)));
+          r_attributes,
+          interruptible_execution)));
 }
 
 std::string get_info_or_empty(connection_ptr const& p, short type) {

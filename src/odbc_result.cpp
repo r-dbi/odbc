@@ -20,13 +20,18 @@ odbc_result::odbc_result(
 
   c_->cancel_current_result();
 
-  auto exc = std::mem_fn(&odbc_result::execute);
-  auto cleanup_fn = [this]() {
+  if (c_->interruptible_execution_) {
+    auto exec_fn = std::mem_fn(&odbc_result::execute);
+    auto cleanup_fn = [this]() {
       this->c_->set_current_result(nullptr);
       this->s_->close();
       this->s_.reset();
-  };
-  odbc::utils::run_interruptible(std::bind(exc, this), cleanup_fn);
+    };
+    odbc::utils::run_interruptible(std::bind(exec_fn, this), cleanup_fn);
+    return;
+  } else {
+    this->execute();
+  }
 }
 
 std::shared_ptr<odbc_connection> odbc_result::connection() const {

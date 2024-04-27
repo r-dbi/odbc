@@ -14,6 +14,7 @@ OdbcConnection <- function(
     timeout = Inf,
     dbms.name = NULL,
     attributes = NULL,
+    interruptibleExecution = TRUE,
     .connection_string = NULL,
     call = caller_env(2)
 ) {
@@ -37,7 +38,8 @@ OdbcConnection <- function(
       encoding = encoding,
       bigint = bigint,
       timeout = timeout,
-      r_attributes_ = attributes
+      r_attributes = attributes,
+      interruptible_execution = interruptibleExecution
     ),
     error = function(cnd) {
       check_quoting(args)
