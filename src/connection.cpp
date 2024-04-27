@@ -74,6 +74,11 @@ std::string get_info_or_empty(connection_ptr const& p, short type) {
 }
 
 // [[Rcpp::export]]
+bool has_result(connection_ptr const& p) {
+  return (*p)->has_result();
+}
+
+// [[Rcpp::export]]
 Rcpp::List connection_info(connection_ptr const& p) {
   SQLUINTEGER getdata_ext;
   SQLUINTEGER owner_usage;

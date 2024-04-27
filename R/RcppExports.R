@@ -13,6 +13,10 @@ odbc_connect <- function(connection_string, timezone = "", timezone_out = "", en
     .Call(`_odbc_odbc_connect`, connection_string, timezone, timezone_out, encoding, bigint, timeout, r_attributes_)
 }
 
+has_result <- function(p) {
+    .Call(`_odbc_has_result`, p)
+}
+
 connection_info <- function(p) {
     .Call(`_odbc_connection_info`, p)
 }
