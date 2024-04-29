@@ -154,6 +154,19 @@ random_name <- function(prefix = "") {
   paste0(prefix, "odbc_", name)
 }
 
+# formatted message display ---------------------------------------------------
+# This method is called from the C++ side.  We use `package::cli` to format
+# the message.  If type != "i", in addition the displaying the message we
+# also generate an [R] warning ( via cli::warn ).  See rethrow_database_error
+# for re-formatting (database) errors ( also called from C code-base).
+print_message <- function(msg, type = "i") {
+  if (type == "i") {
+    cli::cli_inform(c("i" = msg));
+  } else {
+    cli::cli_warn(c("!" = msg));
+  }
+}
+
 # error handling ---------------------------------------------------------------
 # `call` looks to the "user-called" function rather than the usual `caller_env(n)`.
 # this function is called from C++, and parent.frame() (and thus caller_env())

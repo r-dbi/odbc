@@ -27,7 +27,7 @@
       Error in `dbConnect()`:
       ! ODBC failed with error 00000 from [unixODBC][Driver Manager].
       x Data source name not found and no default driver specified
-      i From 'nanodbc/nanodbc.cpp:1147'.
+      i From 'nanodbc/nanodbc.cpp:1141'.
 
 ---
 
@@ -37,7 +37,7 @@
       Error in `dbExecute()`:
       ! ODBC failed with error 00000 from [SQLite].
       x no such table: boopbopbopbeep (1)
-      i From 'nanodbc/nanodbc.cpp:1719'.
+      i From 'nanodbc/nanodbc.cpp:1713zz'.
 
 # rethrow_database_error() errors well when parse_database_error() fails
 

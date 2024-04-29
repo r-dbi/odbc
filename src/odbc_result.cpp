@@ -7,6 +7,8 @@
 
 namespace odbc {
 
+using odbc::utils::run_interruptible;
+using odbc::utils::pretty_print_message;
 odbc_result::odbc_result(
     std::shared_ptr<odbc_connection> c, std::string sql, bool immediate)
     : c_(c),
@@ -27,11 +29,11 @@ odbc_result::odbc_result(
       this->s_->close();
       this->s_.reset();
     };
-    odbc::utils::run_interruptible(std::bind(exec_fn, this), cleanup_fn);
-    return;
+    run_interruptible(std::bind(exec_fn, this), cleanup_fn);
   } else {
     this->execute();
   }
+  return;
 }
 
 std::shared_ptr<odbc_connection> odbc_result::connection() const {
@@ -58,7 +60,14 @@ void odbc_result::execute() {
     }
   } catch (const nanodbc::database_error& e) {
     c_->set_current_result(nullptr);
-    throw odbc_error(e, sql_, output_encoder_);
+    if (c_->interruptible_execution_) {
+      // Executing in a thread away from main.  Signal
+      // that we have encountered an error using ane exception.
+      // Main thread will pretty-print.
+      throw odbc_error(e, sql_, output_encoder_);
+    } else {
+      odbc_error(e, sql_, output_encoder_).pretty_print();
+    }
   } catch (...) {
     c_->set_current_result(nullptr);
     throw;
@@ -198,7 +207,7 @@ void odbc_result::unbind_if_needed() {
       }
     }
   } catch (const nanodbc::database_error& e) {
-    Rcpp::warning("Was unable to unbind some nanodbc buffers");
+    pretty_print_message("Was unable to unbind some nanodbc buffers", true);
   };
 }
 

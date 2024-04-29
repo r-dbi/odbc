@@ -496,19 +496,13 @@ const std::string database_error::state() const NANODBC_NOEXCEPT
     return sql_state;
 }
 
-void database_error::rethrow() {
-  Rcpp::Environment pkg = Rcpp::Environment::namespace_env("odbc");
-  Rcpp::Function rethrow_database_error = pkg["rethrow_database_error"];
-  rethrow_database_error(message);
-}
-
 } // namespace nanodbc
 
 // Throwing exceptions using NANODBC_THROW_DATABASE_ERROR enables file name
 // and line numbers to be inserted into the error message. Useful for debugging.
 #define NANODBC_THROW_DATABASE_ERROR(handle, handle_type)                                          \
-    nanodbc::database_error(                                                                 \
-        handle, handle_type, __FILE__ ":" NANODBC_STRINGIZE(__LINE__) ": ").rethrow() /**/
+    throw nanodbc::database_error(                                                                 \
+        handle, handle_type, __FILE__ ":" NANODBC_STRINGIZE(__LINE__) ": ") /**/
 
 // clang-format off
 // 8888888b.           888             d8b 888

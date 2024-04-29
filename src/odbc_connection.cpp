@@ -58,7 +58,8 @@ odbc_connection::odbc_connection(
         timeout, r_attributes, attributes, buffer_context );
     c_ = std::make_shared<nanodbc::connection>(connection_string, attributes);
   } catch (const nanodbc::database_error& e) {
-    throw Rcpp::exception(e.what(), FALSE);
+    Iconv encoder(this->encoding(), "UTF-8");
+    odbc_error(e, "", encoder).pretty_print();
   }
 }
 

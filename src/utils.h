@@ -57,5 +57,11 @@ namespace utils {
   /// \param cleanup_fn Function executed on main thread in the event a
   /// user interrupt is caught.
   void run_interruptible(const std::function<void()>& exec_fn, const std::function<void()>& cleanup_fn);
+
+  /// \brief Entry point form package::odbc:::print_message
+  ///
+  /// \param messge Message to be shown.
+  /// \param is_warning Should displaying this message also generate an [R] warning.
+  void pretty_print_message(const std::string& message, const bool is_warning = false);
 }}
 #endif

@@ -24,13 +24,22 @@ public:
       const std::string& sql,
       Iconv& output_encoder)
       : Rcpp::exception("", false) {
-    std::string m = std::string(e.what()) + "\n<SQL> '" + sql + "'";
+    std::string m = std::string(e.what());
+    if (sql != "" ) {
+      m += "\n<SQL> '" + sql + "'";
+    }
     // #432: [R] expects UTF-8 encoded strings but both nanodbc and sql are
     // encoded in the database encoding, which may differ from UTF-8
     message = Rf_translateChar(
         output_encoder.makeSEXP(m.c_str(), m.c_str() + m.length()));
   }
   const char* what() const NANODBC_NOEXCEPT { return message.c_str(); }
+
+  void pretty_print() const {
+    Rcpp::Environment pkg = Rcpp::Environment::namespace_env("odbc");
+    Rcpp::Function rethrow_database_error = pkg["rethrow_database_error"];
+    rethrow_database_error(message);
+  }
 
 private:
   // #432: must be native encoded, as R expects native encoded chars for error msg

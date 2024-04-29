@@ -75,24 +75,29 @@ namespace utils {
 #if !defined(_WIN32) && !defined(_WIN64)
     pthread_sigmask(SIG_SETMASK, &old_set, NULL);
 #endif
-
     std::future_status status;
     do {
       status = future.wait_for(std::chrono::seconds(1));
       if (status != std::future_status::ready) {
-        try {
-          Rcpp::checkUserInterrupt();
-        } catch (const Rcpp::internal::InterruptedException& e) {
-          Rcpp::Rcout<<"Caught user interrupt, attempting a clean exit...\n";
+        try { Rcpp::checkUserInterrupt(); }
+        catch (const Rcpp::internal::InterruptedException& e) {
+          pretty_print_message("Caught user interrupt, attempting a clean exit...");
           cleanup_fn();
-        } catch (...) {
-          throw;
-        }
+        } catch (...) { throw; }
       }
     } while (status != std::future_status::ready);
     if (eptr) {
       // An exception was thrown in the thread
-      std::rethrow_exception(eptr);
+      try { std::rethrow_exception(eptr); }
+      catch (const odbc_error& e) { e.pretty_print(); }
+      catch (...) { pretty_print_message("Unknown exception while executing"); throw; };
     }
   }
+
+  void pretty_print_message(const std::string& message, const bool is_warning) {
+    Rcpp::Environment pkg = Rcpp::Environment::namespace_env("odbc");
+    Rcpp::Function r_print_message = pkg["print_message"];
+    r_print_message(message, is_warning ? "w" : "i");
+  }
+
 }}
