@@ -58,10 +58,26 @@ namespace utils {
   /// user interrupt is caught.
   void run_interruptible(const std::function<void()>& exec_fn, const std::function<void()>& cleanup_fn);
 
-  /// \brief Entry point form package::odbc:::print_message
+  /// \brief Entry point for package::cli::cli_inform
   ///
-  /// \param messge Message to be shown.
-  /// \param is_warning Should displaying this message also generate an [R] warning.
-  void pretty_print_message(const std::string& message, const bool is_warning = false);
+  /// \param message Message to be shown.
+  void raise_message(const std::string& message);
+
+  /// \brief Entry point for package::cli::cli_warn
+  ///
+  /// \param message Message to be shown.
+  void raise_warning(const std::string& message);
+
+  /// \brief Entry point for package::cli::cli_abort
+  ///
+  /// \param message Message to be shown.
+  void raise_error(const std::string& message);
+
+  /// \brief Entry point for package::odbc:::rethrow_database_error
+  ///
+  /// On the [R] side, the message ( e.what() ) is parsed and
+  /// displayed in a user friendly / multi-line format.
+  /// \param e (nanodbc::database_)Exception to be raised.
+  void raise_error(const odbc_error& e);
 }}
 #endif

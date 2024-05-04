@@ -61,7 +61,8 @@ namespace utils {
     int rc = pthread_sigmask(SIG_BLOCK, &set, &old_set);
     if ( rc != 0 )
     {
-      Rcpp::warning("Unable to properly mask SIGINT from execution thread.");
+      // Unable to properly mask SIGINT from execution thread
+      Rcpp::warning("Unexpected behavior when creating execution thread.  Signals to interrupt execution may not be caught.");
     }
 #endif
     auto future = std::async(std::launch::async, [&exec_fn, &eptr]() {
@@ -81,7 +82,7 @@ namespace utils {
       if (status != std::future_status::ready) {
         try { Rcpp::checkUserInterrupt(); }
         catch (const Rcpp::internal::InterruptedException& e) {
-          pretty_print_message("Caught user interrupt, attempting a clean exit...");
+          raise_message("Caught user interrupt, attempting a clean exit...");
           cleanup_fn();
         } catch (...) { throw; }
       }
@@ -89,15 +90,39 @@ namespace utils {
     if (eptr) {
       // An exception was thrown in the thread
       try { std::rethrow_exception(eptr); }
-      catch (const odbc_error& e) { e.pretty_print(); }
-      catch (...) { pretty_print_message("Unknown exception while executing"); throw; };
+      catch (const odbc_error& e) { raise_error(e); }
+      catch (...) { raise_message("Unknown exception while executing"); throw; };
     }
   }
 
-  void pretty_print_message(const std::string& message, const bool is_warning) {
+  void raise_message(const std::string& message) {
+    Rcpp::Environment pkg = Rcpp::Environment::namespace_env("cli");
+    Rcpp::Function r_method = pkg["cli_inform"];
+    Rcpp::CharacterVector argMessage =
+      Rcpp::CharacterVector::create(Rcpp::Named("i", message));
+    r_method(argMessage);
+  }
+
+  void raise_warning(const std::string& message) {
+    Rcpp::Environment pkg = Rcpp::Environment::namespace_env("cli");
+    Rcpp::Function r_method = pkg["cli_warn"];
+    Rcpp::CharacterVector argMessage =
+      Rcpp::CharacterVector::create(Rcpp::Named("!", message));
+    r_method(argMessage);
+  }
+
+  void raise_error(const std::string& message) {
+    Rcpp::Environment pkg = Rcpp::Environment::namespace_env("cli");
+    Rcpp::Function r_method = pkg["cli_abort"];
+    Rcpp::CharacterVector argMessage =
+      Rcpp::CharacterVector::create(Rcpp::Named("x", message));
+    r_method(argMessage);
+  }
+
+  void raise_error(const odbc_error& e) {
     Rcpp::Environment pkg = Rcpp::Environment::namespace_env("odbc");
-    Rcpp::Function r_print_message = pkg["print_message"];
-    r_print_message(message, is_warning ? "w" : "i");
+    Rcpp::Function r_method = pkg["rethrow_database_error"];
+    r_method(e.what());
   }
 
 }}

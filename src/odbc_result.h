@@ -35,12 +35,6 @@ public:
   }
   const char* what() const NANODBC_NOEXCEPT { return message.c_str(); }
 
-  void pretty_print() const {
-    Rcpp::Environment pkg = Rcpp::Environment::namespace_env("odbc");
-    Rcpp::Function rethrow_database_error = pkg["rethrow_database_error"];
-    rethrow_database_error(message);
-  }
-
 private:
   // #432: must be native encoded, as R expects native encoded chars for error msg
   std::string message;

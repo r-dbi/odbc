@@ -59,7 +59,7 @@ odbc_connection::odbc_connection(
     c_ = std::make_shared<nanodbc::connection>(connection_string, attributes);
   } catch (const nanodbc::database_error& e) {
     Iconv encoder(this->encoding(), "UTF-8");
-    odbc_error(e, "", encoder).pretty_print();
+    utils::raise_error(odbc_error(e, "", encoder));
   }
 }
 

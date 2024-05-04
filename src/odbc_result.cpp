@@ -8,7 +8,9 @@
 namespace odbc {
 
 using odbc::utils::run_interruptible;
-using odbc::utils::pretty_print_message;
+using odbc::utils::raise_message;
+using odbc::utils::raise_warning;
+using odbc::utils::raise_error;
 odbc_result::odbc_result(
     std::shared_ptr<odbc_connection> c, std::string sql, bool immediate)
     : c_(c),
@@ -62,11 +64,13 @@ void odbc_result::execute() {
     c_->set_current_result(nullptr);
     if (c_->interruptible_execution_) {
       // Executing in a thread away from main.  Signal
-      // that we have encountered an error using ane exception.
-      // Main thread will pretty-print.
+      // that we have encountered an error using an exception.
+      // Main thread will raise the formatted [R] error.
       throw odbc_error(e, sql_, output_encoder_);
     } else {
-      odbc_error(e, sql_, output_encoder_).pretty_print();
+      // Executing on the main thread.  Raise the
+      // formatted [R] errpr ourselves.
+      raise_error(odbc_error(e, sql_, output_encoder_));
     }
   } catch (...) {
     c_->set_current_result(nullptr);
@@ -207,7 +211,7 @@ void odbc_result::unbind_if_needed() {
       }
     }
   } catch (const nanodbc::database_error& e) {
-    pretty_print_message("Was unable to unbind some nanodbc buffers", true);
+    raise_warning("Was unable to unbind some nanodbc buffers");
   };
 }
 

@@ -90,9 +90,9 @@ parameter.}
 \item{attributes}{A list of connection attributes that are passed
 prior to the connection being established. See \link{ConnectionAttributes}.}
 
-\item{interruptibleExecution}{Logical.  If true calls to SQLExecute and
+\item{interruptibleExecution}{Logical.  If \code{TRUE} calls to SQLExecute and
 SQLExecuteDirect can be interrupted when the user sends SIGINT ( ctrl-c ).
-Otherwise they block.  Defaults to TRUE.}
+Otherwise, they block.  Defaults to \code{TRUE}.}
 
 \item{.connection_string}{A complete connection string, useful if you are
 copy pasting it from another source. If this argument is used, any

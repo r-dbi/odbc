@@ -65,9 +65,9 @@ setMethod("show", "OdbcDriver",
 #'   parameter.
 #' @param attributes A list of connection attributes that are passed
 #'   prior to the connection being established. See \link{ConnectionAttributes}.
-#' @param interruptibleExecution Logical.  If true calls to SQLExecute and
+#' @param interruptibleExecution Logical.  If `TRUE` calls to SQLExecute and
 #'   SQLExecuteDirect can be interrupted when the user sends SIGINT ( ctrl-c ).
-#'   Otherwise they block.  Defaults to TRUE.
+#'   Otherwise, they block.  Defaults to `TRUE`.
 #' @param ... Additional ODBC keywords. These will be joined with the other
 #'   arguments to form the final connection string.
 #'
@@ -184,6 +184,7 @@ setMethod("dbConnect", "OdbcDriver",
     check_string(uid, allow_null = TRUE)
     check_string(pwd, allow_null = TRUE)
     check_string(dbms.name, allow_null = TRUE)
+    check_bool(interruptibleExecution)
 
     con <- OdbcConnection(
       dsn = dsn,
