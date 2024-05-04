@@ -81,9 +81,8 @@ setMethod("dbDisconnect", "OdbcConnection",
 #' @export
 setMethod("dbSendQuery", c("OdbcConnection", "character"),
   function(conn, statement, params = NULL, ..., immediate = FALSE) {
-    if (has_result(conn@ptr))
-    {
-      warning("Cancelling previous query")
+    if (has_result(conn@ptr)) {
+      cli::cli_warn("Cancelling previous query")
     }
     OdbcResult(
       connection = conn,
@@ -113,9 +112,8 @@ setMethod("dbExecute", c("OdbcConnection", "character"),
 #' @export
 setMethod("dbSendStatement", c("OdbcConnection", "character"),
   function(conn, statement, params = NULL, ..., immediate = FALSE) {
-    if (has_result(conn@ptr))
-    {
-      warning("Cancelling previous query")
+    if (has_result(conn@ptr)) {
+      cli::cli_warn("Cancelling previous query")
     }
     OdbcResult(
       connection = conn,
