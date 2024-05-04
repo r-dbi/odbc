@@ -62,7 +62,7 @@ namespace utils {
     if ( rc != 0 )
     {
       // Unable to properly mask SIGINT from execution thread
-      Rcpp::warning("Unexpected behavior when creating execution thread.  Signals to interrupt execution may not be caught.");
+      raise_warning("Unexpected behavior when creating execution thread.  Signals to interrupt execution may not be caught.");
     }
 #endif
     auto future = std::async(std::launch::async, [&exec_fn, &eptr]() {
