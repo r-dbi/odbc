@@ -168,6 +168,19 @@ setMethod("dbConnect", "OdbcDriver",
       dbms.name = NULL,
       attributes = NULL,
       .connection_string = NULL) {
+    check_string(dsn, allow_null = TRUE)
+    check_string(timezone, allow_null = TRUE)
+    check_string(timezone_out, allow_null = TRUE)
+    check_string(encoding, allow_null = TRUE)
+    arg_match(bigint)
+    check_number_decimal(timeout, allow_null = TRUE, allow_na = TRUE)
+    check_string(driver, allow_null = TRUE)
+    check_string(server, allow_null = TRUE)
+    check_string(database, allow_null = TRUE)
+    check_string(uid, allow_null = TRUE)
+    check_string(pwd, allow_null = TRUE)
+    check_string(dbms.name, allow_null = TRUE)
+
     con <- OdbcConnection(
       dsn = dsn,
       ...,
@@ -238,14 +251,10 @@ odbc_data_type_df <- function(dbObj, obj, ...) {
   res <- character(NCOL(obj))
   nms <- names(obj)
   for (i in seq_along(obj)) {
-    tryCatch(
+    withCallingHandlers(
       res[[i]] <- odbcDataType(con = dbObj, obj[[i]]),
-      error = function(e) {
-        if (conditionMessage(e) == "Unsupported type") {
-          stop("Column '", nms[[i]], "' is of unsupported type: '", object_type(obj[[i]]), "'", call. = FALSE)
-        } else {
-          stop(e)
-        }
+      error = function(err) {
+        cli::cli_abort("Can't determine type for column {nms[[i]]}.", parent = err, call = quote(odbcDataType()))
       }
     )
   }

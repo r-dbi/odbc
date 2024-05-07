@@ -20,6 +20,26 @@ While the odbc package contains some documentation on how to install and configu
 
 For the most part, this vignette assumes a MacOS system with aarch64 (e.g. M1 or M2) architecture. For Linux example code, see [`.github/workflows/db.yaml`](https://github.com/r-dbi/odbc/blob/main/.github/workflows/db.yaml), and for Windows, see [`.github/workflows/db-windows.yml`](https://github.com/r-dbi/odbc/blob/main/.github/workflows/db-windows.yml).
 
+## Posit Professional Drivers
+
+Posit employees have access to the [Posit Professional drivers](https://docs.posit.co/pro-drivers/) and the infrastructure used to build and test them in the [rstudio/pro-drivers](https://github.com/rstudio/pro-drivers) repo. The Posit Professional drivers are a set of drivers vendored from Magnitude Simba that support many of the most popular DBMS, including SQL Server, Oracle, Redshift, Databricks, Snowflake, etc. The repository they're developed in contains tooling to spin up a number of databases in docker containers to test against.
+
+Note that Athena, Hive, Impala, MongoDB, and Oracle drivers are [not available for macOS aarch64](https://github.com/oracle/python-cx_Oracle/issues/617) (M1, M2, etc) at the time of writing.
+
+### Drivers
+
+The only documented installation method for these drivers on MacOS is via RStudio Desktop Pro. The Posit confluence page titled "\[INTERNAL\] Posit License Files for Employee Use" contains instructions for installing RStudio Desktop Pro. Once RStudio Pro is installed, install individual drivers as documented [here](https://docs.posit.co/ide/desktop-pro/database_drivers/install_database_drivers.html).
+
+### Databases
+
+Among other things, the [rstudio/pro-drivers](https://github.com/rstudio/pro-drivers) repo defines a `MAKE` tool for setting up and tearing down databases in docker containers. Ensure that you have a docker daemon running (i.e. Docker Desktop open) and, if you're on macOS aarch64, have `Settings > Use Rosetta for x86_64/amd64 emulation on Apple Silicon` enabled. To start a container for a given `dbms`, run `MAKE dist=none DB=dbms up`, and **tear it down** with `MAKE dist=none DB=db down`. To see available `dbms` options, see the names of `.yml` files in the `docker-compose` directory. Find connection details for each database in `docker/shared/odbc.ini`.
+
+DBMS-specific notes:
+
+* `sqlserver`: Be sure to pass `uid` and `pwd` as arguments to `dbConnect()` explicitly, even though they're in the `odbc.ini` as well.
+
+On macOS aarch64, you will see a `requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8)` warning when you start any of these containers. Feel free to ignore. :)
+
 ## PostgreSQL
 
 On MacOS, install PostgreSQL with:
@@ -290,6 +310,12 @@ con <- dbConnect(odbc(), dsn = "Snowflake", pwd = Sys.getenv("snowflakePass"))
 ```
 
 In the above, the password has been set as `Sys.setenv(snowflakePass = "actualPass")`.
+
+## Amazon Redshift
+
+If you're a Posit employee, you should have access to the [https://github.com/rstudio/warehouse](https://github.com/rstudio/warehouse) repository. Follow the instructions there to get access to the internal Redshift cluster. Access to the cluster is only enabled through Posit's internal Workbench instance, where the professional drivers will already be installed.
+
+Note that Redshift is based on a modified version of PostgreSQL.
 
 ## RODBC
 

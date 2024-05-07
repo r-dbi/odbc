@@ -64,6 +64,21 @@ test_that("automatically picks correct quote type", {
   expect_snapshot(quote_value("'\""), error = TRUE)
 })
 
+# connections pane -------------------------------------------------------------
+test_that("validateObjectName() errors informatively", {
+  con <- test_con("SQLITE")
+
+  expect_snapshot(
+    error = TRUE,
+    odbcListColumns(con, table = "boop", view = "bop")
+  )
+
+  expect_snapshot(
+    error = TRUE,
+    odbcListColumns(con)
+  )
+})
+
 # odbcConnectionColumns deprecation --------------------------------------
 
 test_that("odbcConnectionColumns warns on usage (#699)", {

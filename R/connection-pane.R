@@ -38,21 +38,29 @@ odbcListObjectTypes.default <- function(connection) {
   # all databases contain tables, at a minimum
   obj_types <- list(table = list(contains = "data"))
 
-  # see if we have views too
-  table_types <- string_values(odbcConnectionTableTypes(connection))
-  if (any(table_types == "VIEW")) {
-    obj_types <- c(obj_types, list(view = list(contains = "data")))
-  }
+  # See if we have views too.  A little more elaborate than just
+  # checking if any( table_types == "VIEW" ), because some back-ends
+  # may contain VIEW "look-alikes".  For example PostgreSQL/"MATVIEW".
+  # The icon url is that of the default Rstudio IDE resource location.
+  # It gets automatically pulled in for an object type "view" ( but
+  # not for some of the other ones ).  Should we not want to encode that
+  # dependency, we can just bring that PNG into this package.
+  table_types <- tolower(string_values(odbcConnectionTableTypes(connection)))
+  viewlike <- grep("view", table_types, value = TRUE)
+  viewlike_types <- sapply(
+    viewlike,
+    function(i) list(contains = "data", icon = "connections/objects/view.png"),
+    simplify = FALSE
+  )
+  obj_types <- c(obj_types, viewlike_types)
 
-  # check for multiple schema or a named schema
-  schemas <- string_values(odbcConnectionSchemas(connection))
-  if (length(schemas) > 0) {
+  # check for schema support
+  if (connection@info$supports.schema) {
     obj_types <- list(schema = list(contains = obj_types))
   }
 
   # check for multiple catalogs
-  catalogs <- string_values(odbcConnectionCatalogs(connection))
-  if (length(catalogs) > 0) {
+  if (connection@info$supports.catalogs) {
     obj_types <- list(catalog = list(contains = obj_types))
   }
 
@@ -85,6 +93,11 @@ odbcListObjects.OdbcConnection <- function(connection,
                                            name = NULL,
                                            type = NULL,
                                            ...) {
+  check_string(catalog, allow_null = TRUE)
+  check_string(schema, allow_null = TRUE)
+  check_string(name, allow_null = TRUE)
+  check_string(type, allow_null = TRUE)
+
   # if no catalog was supplied but this database has catalogs, return a list of
   # catalogs
   if (is.null(catalog)) {
@@ -184,17 +197,17 @@ computeDisplayName <- function(connection) {
   display_name
 }
 
-# selects the table or view from arguments
-validateObjectName <- function(table, view) {
-  # Error if both table and view are passed
-  if (!is.null(table) && !is.null(view)) {
-    stop("`table` and `view` can not both be used", call. = FALSE)
-  }
+validateObjectName <- function(table, view, ..., call = caller_env()) {
 
-  # Error if neither table and view are passed
-  if (is.null(table) && is.null(view)) {
-    stop("`table` and `view` can not both be `NULL`", call. = FALSE)
-  }
+  # Handle view look-alike object types
+  # ( e.g. PostgreSQL/"matview" )
+  args <- list(...)
+  arg_names <- names(args)
+  viewlike <- grep("view", arg_names, value = TRUE)
+  view <- Reduce(`%||%`, args[viewlike], view)
+
+  # Error if both table and view are passed
+  check_exclusive(table, view, .frame = call)
 
   table %||% view
 }
@@ -206,9 +219,15 @@ odbcListColumns.OdbcConnection <- function(connection,
                                            catalog = NULL,
                                            schema = NULL,
                                            ...) {
+  check_string(table, allow_null = TRUE)
+  check_string(view, allow_null = TRUE)
+  check_string(catalog, allow_null = TRUE)
+  check_string(schema, allow_null = TRUE)
+
+  name <- validateObjectName(table, view, ...)
   # specify schema or catalog if given
   cols <- odbcConnectionColumns_(connection,
-    name = validateObjectName(table, view),
+    name = name,
     catalog_name = catalog,
     schema_name = schema
   )
@@ -246,8 +265,14 @@ odbcPreviewObject.OdbcConnection <- function(connection,
                                              schema = NULL,
                                              catalog = NULL,
                                              ...) {
+  check_number_whole(rowLimit)
+  check_string(table, allow_null = TRUE)
+  check_string(view, allow_null = TRUE)
+  check_string(schema, allow_null = TRUE)
+  check_string(catalog, allow_null = TRUE)
+
   # extract object name from arguments
-  name <- validateObjectName(table, view)
+  name <- validateObjectName(table, view, ...)
 
   # prepend schema if specified
   if (!is.null(schema)) {

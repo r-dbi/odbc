@@ -46,3 +46,19 @@
       Error in `quote_value()`:
       ! Don't know how to escape a value with both single and double quotes.
 
+# validateObjectName() errors informatively
+
+    Code
+      odbcListColumns(con, table = "boop", view = "bop")
+    Condition
+      Error in `odbcListColumns()`:
+      ! Exactly one of `table` or `view` must be supplied.
+
+---
+
+    Code
+      odbcListColumns(con)
+    Condition
+      Error in `odbcListColumns()`:
+      ! One of `table` or `view` must be supplied.
+

@@ -20,3 +20,11 @@
     Output
       <OdbcConnection>
 
+# dbQuoteIdentifier() errors informatively
+
+    Code
+      dbQuoteIdentifier(con, NA_character_)
+    Condition
+      Error in `dbQuoteIdentifier()`:
+      ! `x` can't be `NA`.
+

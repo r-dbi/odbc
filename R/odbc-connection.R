@@ -14,11 +14,10 @@ OdbcConnection <- function(
     timeout = Inf,
     dbms.name = NULL,
     attributes = NULL,
-    .connection_string = NULL
+    .connection_string = NULL,
+    call = caller_env(2)
 ) {
-
-  stopifnot(all(has_names(attributes)))
-  stopifnot(all(names(attributes) %in% SUPPORTED_CONNECTION_ATTRIBUTES))
+  check_attributes(attributes, call = call)
 
   args <- compact(list(...))
   check_args(args)
@@ -51,7 +50,13 @@ OdbcConnection <- function(
     info$dbms.name <- dbms.name
   }
   if (!nzchar(info$dbms.name)) {
-    stop("The ODBC driver returned an invalid `dbms.name`. Please provide one manually with the `dbms.name` parameter.", call. = FALSE)
+    cli::cli_abort(
+      c(
+        "!" = "The ODBC driver failed to generate a DBMS name.",
+        "i" = "Please provide one manually with {.arg dbms.name}."
+      ),
+      call = call
+    )
   }
 
   class <- getClassDef(info$dbms.name, inherits = FALSE)
@@ -458,5 +463,52 @@ setGeneric(
 setMethod("odbcConnectionTableTypes", "OdbcConnection",
   function(conn) {
     connection_sql_table_types(conn@ptr)
+  }
+)
+
+
+# Internal method, used to check for target existence
+# in dbWriteTable.  Historically we used DBI::dbExistsTable
+# however its mission may be interpreted more broadly
+# ( does this table exists period ) versus the question
+# we are trying to answer in dbWriteTable ( does this
+# table identifier I may be writing to exist? )  In
+# particular, the former may mean, across catalogs or schema;
+# the latter we understand to mean:
+# 1. At the specified catalog/schema; if not specified then
+# 2A. In the current catalog/schema; OR
+# 2B. In a temporary table.
+#
+# While by default we continue to route requests to dbExistsTable,
+# this narrower interpretation may allow some back-ends
+# to optimize this search.
+setGeneric(
+  "dbExistsTableForWrite",
+  valueClass = "logical",
+  function(conn, name, ...) {
+    standardGeneric("dbExistsTableForWrite")
+  }
+)
+
+setMethod("dbExistsTableForWrite", c("OdbcConnection", "Id"),
+  function(conn, name, ...) {
+    dbExistsTableForWrite(
+      conn,
+      name = id_field(name, "table"),
+      catalog_name = id_field(name, "catalog"),
+      schema_name = id_field(name, "schema")
+    )
+  }
+)
+
+setMethod("dbExistsTableForWrite", c("OdbcConnection", "SQL"),
+  function(conn, name, ...) {
+    dbExistsTableForWrite(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+  }
+)
+
+setMethod("dbExistsTableForWrite", c("OdbcConnection", "character"),
+  function(conn, name, ...) {
+    dbExistsTable(conn = conn, name = name, ...)
   }
 )

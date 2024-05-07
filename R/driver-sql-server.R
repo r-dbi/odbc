@@ -70,7 +70,7 @@ setMethod("isTempTable", c("Microsoft SQL Server", "SQL"),
 #' @usage NULL
 setMethod("dbExistsTable", c("Microsoft SQL Server", "character"),
   function(conn, name, ...) {
-    stopifnot(length(name) == 1)
+    check_string(name)
     if (isTempTable(conn, name, ...)) {
       query <- paste0("SELECT OBJECT_ID('tempdb..", name, "')")
       !is.na(dbGetQuery(conn, query)[[1]])
@@ -95,6 +95,11 @@ setMethod("dbListTables", "Microsoft SQL Server",
            table_name = NULL,
            table_type = NULL,
            ...) {
+    check_string(catalog_name, allow_null = TRUE)
+    check_string(schema_name, allow_null = TRUE)
+    check_string(table_name, allow_null = TRUE)
+    check_string(table_type, allow_null = TRUE)
+
     res <- callNextMethod()
 
     if (is.null(catalog_name) && is.null(schema_name)) {
@@ -174,8 +179,13 @@ setMethod("sqlCreateTable", "Microsoft SQL Server",
            temporary = FALSE,
            ...,
            field.types = NULL) {
+    check_bool(temporary)
+    check_row.names(row.names)
+    check_field.types(field.types)
     if (temporary && !isTempTable(con, table)) {
-      warning("Temporary flag is set to true, but table name doesn't use # prefix")
+      cli::cli_warn(
+        "{.arg temporary} is {.code TRUE}, but table name doesn't use # prefix."
+      )
     }
     temporary <- FALSE
     callNextMethod()

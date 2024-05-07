@@ -21,12 +21,13 @@ Depends:
 Imports:
     bit64,
     blob (>= 1.2.0),
+    cli,
     DBI (>= 1.0.0),
     hms,
     lifecycle,
     methods,
     Rcpp (>= 0.12.11),
-    rlang (>= 0.2.0)
+    rlang (>= 1.1.0)
 Suggests:
     covr,
     DBItest,
@@ -75,6 +76,8 @@ Collate:
     'driver-sqlite.R'
     'driver-teradata.R'
     'driver-vertica.R'
+    'import-standalone-obj-type.R'
+    'import-standalone-types-check.R'
     'odbc-config.R'
     'odbc-data-sources.R'
     'odbc-drivers.R'

@@ -40,26 +40,32 @@ odbc_write_table <- function(conn,
                              field.types = NULL,
                              batch_rows = getOption("odbc.batch_rows", NA),
                              ...) {
-  # Sanity checks: begin
-  stopifnot(
-    rlang::is_scalar_logical(overwrite) && !is.na(overwrite),
-    rlang::is_scalar_logical(append) && !is.na(append),
-    rlang::is_scalar_logical(temporary) && !is.na(temporary),
-    rlang::is_null(field.types) || (rlang::is_named(field.types))
-  )
+  call <- caller_env()
+  check_bool(overwrite, call = call)
+  check_bool(append, call = call)
+  check_bool(temporary, call = call)
+  check_number_whole(batch_rows, allow_na = TRUE, allow_null = TRUE, call = call)
+  check_row.names(row.names, call = call)
+  check_field.types(field.types, call = call)
   if (append && !is.null(field.types)) {
-    stop("Cannot specify field.types with append = TRUE", call. = FALSE)
+    cli::cli_abort(
+      "Cannot specify {.arg field.types} with {.code append = TRUE}.",
+      call = call
+    )
   }
   if (overwrite && append) {
-    stop("overwrite and append cannot both be TRUE", call. = FALSE)
+    cli::cli_abort(
+      "{.arg overwrite} and {.arg append} cannot both be {.val TRUE}.",
+      call = call
+    )
   }
-  # Sanity checks: done
 
-  found <- dbExistsTable(conn, name)
+  found <- dbExistsTableForWrite(conn, name)
   if (found && !overwrite && !append) {
-    stop("Table ", toString(name), " exists in database, and both overwrite and",
-      " append are FALSE",
-      call. = FALSE
+    cli::cli_abort(
+      "Table {toString(name)} exists in database, and both overwrite and \\
+       append are {.code FALSE}.",
+      call = call
     )
   }
   if (found && overwrite) {
@@ -95,9 +101,9 @@ odbc_write_table <- function(conn,
 #' @param append Allow appending to the destination table. Cannot be
 #'   `TRUE` if `overwrite` is also `TRUE`.
 #' @param batch_rows The number of rows to retrieve. Defaults to `NA`, which
-#'   is set dynamically to the size of the input. Depending on the database,
-#'   driver, dataset and free memory setting this to a lower value may improve
-#'   performance.
+#'   is set dynamically to the minimum of 1024 and the size of the input.
+#'   Depending on the database, driver, dataset and free memory, setting this
+#'   to a lower value may improve performance.
 #' @export
 setMethod("dbWriteTable", c("OdbcConnection", "character", "data.frame"),
   odbc_write_table
@@ -123,7 +129,12 @@ setMethod("dbAppendTable", "OdbcConnection",
   function(conn, name, value,
            batch_rows = getOption("odbc.batch_rows", NA),
            ..., row.names = NULL) {
-    stopifnot(is.null(row.names))
+    if (!is.null(row.names)) {
+      cli::cli_abort(
+        "{.arg row.names} must be {.code NULL}, not \\
+         {.obj_type_friendly {row.names}}."
+      )
+    }
 
     fieldDetails <- tryCatch({
       details <- odbcConnectionColumns_(conn, name, exact = TRUE)
@@ -156,6 +167,7 @@ setMethod("dbAppendTable", "OdbcConnection",
         if (batch_rows == 0) {
           batch_rows <- 1
         }
+        batch_rows <- min(1024, batch_rows)
       }
       batch_rows <- parse_size(batch_rows)
       tryCatch(
@@ -212,6 +224,9 @@ setMethod("sqlCreateTable", "OdbcConnection",
            temporary = FALSE,
            ...,
            field.types = NULL) {
+    check_bool(temporary)
+    check_row.names(row.names)
+    check_field.types(field.types)
     table <- dbQuoteIdentifier(con, table)
     fields <- createFields(con, fields, field.types, row.names)
 
@@ -249,6 +264,59 @@ createFields <- function(con, fields, field.types, row.names) {
 }
 
 #' @rdname OdbcConnection
+#' @inheritParams DBI::dbListFields
+#' @export
+setMethod("dbListFields", c("OdbcConnection", "Id"),
+  function(conn, name, ...) {
+    dbListFields(
+      conn,
+      name = id_field(name, "table"),
+      catalog_name = id_field(name, "catalog"),
+      schema_name = id_field(name, "schema")
+    )
+  }
+)
+
+#' @rdname OdbcConnection
+#' @inheritParams DBI::dbListFields
+#' @export
+setMethod("dbListFields", c("OdbcConnection", "SQL"),
+  function(conn, name, ...) {
+    dbListFields(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+  }
+)
+
+#' @rdname OdbcConnection
+#' @inheritParams DBI::dbListFields
+#' @param catalog_name Catalog where table is located.
+#' @param schema_name Schema where table is located.
+#' @param column_name The name of the column to return, the default returns all columns.
+#' @export
+setMethod("dbListFields", c("OdbcConnection", "character"),
+  function(conn,
+           name,
+           catalog_name = NULL,
+           schema_name = NULL,
+           column_name = NULL,
+           ...) {
+    check_string(name)
+    check_string(catalog_name, allow_null = TRUE)
+    check_string(schema_name, allow_null = TRUE)
+    check_string(column_name, allow_null = TRUE)
+
+    cols <- odbcConnectionColumns_(
+      conn,
+      name = name,
+      catalog_name = catalog_name,
+      schema_name = schema_name,
+      column_name = column_name,
+      exact = TRUE
+    )
+    cols[["name"]]
+  }
+)
+
+#' @rdname OdbcConnection
 #' @inheritParams DBI::dbExistsTable
 #' @export
 setMethod("dbExistsTable", c("OdbcConnection", "Id"),
@@ -276,7 +344,7 @@ setMethod("dbExistsTable", c("OdbcConnection", "SQL"),
 #' @export
 setMethod("dbExistsTable", c("OdbcConnection", "character"),
   function(conn, name, ...) {
-    stopifnot(length(name) == 1)
+    check_string(name)
     df <- odbcConnectionTables(conn, name = name, ..., exact = TRUE)
     NROW(df) > 0
   }

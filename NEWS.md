@@ -1,9 +1,37 @@
 # odbc (development version)
 
+* Transitioned to the cli package for formatting most error messages 
+  (@simonpcouch, #781, #784, #785, #788).
+
+* `databricks()` will now automatically configure the needed driver and driver
+  manager on macOS (#651).
+
+* Snowflake: Improved performance on write (#760).
+
+* Adjusted the default `batch_rows` value for `dbWriteTable()` and `dbBind()` 
+  methods. odbc 1.3.0 changed the default value from 1024 to `NA`, which sets the 
+  batch size to be the length of the input. While this addressed issues for
+  some drivers when 1024 was greater than the number of rows, it also led
+  to excessive memory consumption when the input was very large for some other
+  drivers. The package will now interpet `NA` as the minimum of 1024 and the 
+  length of the input (@simonpcouch, #774).
+
+* odbc now always converts the encoding of non-ASCII column names of the SQL
+  results to UTF-8. (@shrektan, #430)
+
+* Fixed issue that odbc may throw errors with garbage letters when the encoding
+  of client and db-server are different. (@shrektan, #432)
+
+* dbListFields: Now works with DBI::Id and DBI::SQL identifiers.
+
 * Transitioned `odbcDataType()` to use S4 for consistency. S3 methods defined
   locally will need to be rewritten (#701).
 
 * Teradata: Resolved issue when previewing tables using the Connections pane.
+
+* The `"OdbcConnection"` method for `dbQuoteIdentifier()` will no longer 
+  pass `x` to `encodeString()` before returning, for consistency with the
+  default implementation in DBI (@simonpcouch, #765).
 
 # odbc 1.4.2
 

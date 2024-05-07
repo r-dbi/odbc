@@ -134,7 +134,10 @@ test_that("unsupported types gives informative error", {
   con <- test_con("SQLITE")
 
   df <- data.frame(foo = complex(1))
-  expect_error(dbWriteTable(con, "df", df), "Column 'foo' is of unsupported type: 'complex'")
+  expect_snapshot(
+    error = TRUE,
+    dbWriteTable(con, "df", df)
+  )
 })
 
 test_that("odbcPreviewObject works", {
@@ -146,4 +149,51 @@ test_that("odbcPreviewObject works", {
     res <- odbcPreviewObject(con, rowLimit = 3, table = tbl)
   })
   expect_equal(nrow(res), 3)
+})
+
+test_that("dbWriteTable() with `field.types` with `append = TRUE`", {
+  con <- test_con("SQLITE")
+
+  expect_snapshot(
+    error = TRUE,
+    dbWriteTable(
+      con,
+      "boopery",
+      data.frame(bop = 1),
+      field.types = c(bop = "numeric"),
+      append = TRUE
+    )
+  )
+})
+
+test_that("WriteTable() with `overwrite = TRUE` and `append = TRUE`", {
+  con <- test_con("SQLITE")
+
+  expect_snapshot(
+    error = TRUE,
+    dbWriteTable(
+      con,
+      "boopery",
+      data.frame(bop = 1),
+      overwrite = TRUE,
+      append = TRUE
+    )
+  )
+})
+
+test_that("dbWriteTable(), existing table, `overwrite = FALSE`, `append = FALSE`", {
+  con <- test_con("SQLITE")
+
+  local_table(con, "boopery", data.frame(bop = 1))
+
+  expect_snapshot(
+    error = TRUE,
+    dbWriteTable(
+      con,
+      "boopery",
+      data.frame(bop = 1),
+      overwrite = FALSE,
+      append = FALSE
+    )
+  )
 })
