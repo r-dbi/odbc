@@ -102,6 +102,9 @@ jobs:
           cp .github/odbc/simba.snowflake.ini .github/odbc/snowflake_odbc/lib/simba.snowflake.ini
           echo "CABundleFile=$ODBCSYSINI/snowflake_odbc/lib/cacert.pem" >> .github/odbc/snowflake_odbc/lib/simba.snowflake.ini
 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
