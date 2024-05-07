@@ -35,6 +35,7 @@ getCatalogSchema <- function(conn, catalog_name = NULL, schema_name = NULL) {
 #' to aid with performance, as the SQLColumns method is more performant
 #' when restricted to a particular DB/schema.
 #' @inheritParams DBI::dbListFields
+#' @param catalog_name,schema_name Catalog and schema names.
 #' @rdname driver-Snowflake
 #' @usage NULL
 setMethod("odbcConnectionColumns_", c("Snowflake", "character"),

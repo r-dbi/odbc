@@ -22,6 +22,8 @@ given verbatim, e.g. \code{SQL('"my_schema"."table_name"')}
 }}
 
 \item{...}{Other parameters passed on to methods.}
+
+\item{catalog_name, schema_name}{Catalog and schema names.}
 }
 \description{
 \subsection{\code{odbcConnectionColumns()}}{
