@@ -101,6 +101,7 @@ jobs:
           rm snowflake_linux_x8664_odbc-3.2.0.tar
           cp .github/odbc/simba.snowflake.ini .github/odbc/snowflake_odbc/lib/simba.snowflake.ini
           echo "CABundleFile=$ODBCSYSINI/snowflake_odbc/lib/cacert.pem" >> .github/odbc/snowflake_odbc/lib/simba.snowflake.ini
+          echo "ErrorMessagesPath=$ODBCSYSINI/snowflake_odbc/ErrorMessages/" >> .github/odbc/snowflake_odbc/lib/simba.snowflake.ini
 
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
