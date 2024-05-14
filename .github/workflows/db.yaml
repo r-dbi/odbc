@@ -62,7 +62,7 @@ jobs:
         run: |
           sudo systemctl start mysql.service
           mysql -uroot -h127.0.0.1 -proot -e 'CREATE DATABASE `test`;'
-          sudo apt-get install -y odbc-mariadb
+          .github/odbc/install-mariadb-driver.sh
           echo "ODBC_CS_MYSQL=dsn=MySQL" >> $GITHUB_ENV
 
       - name: Install SQLite Driver
