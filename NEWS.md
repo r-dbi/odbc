@@ -1,5 +1,9 @@
 # odbc (development version)
 
+* New `odbc::snowflake()` makes it easier to connect to Snowflake, 
+  automatically handling authentication correctly on platforms that provide 
+  Snowflake-native OAuth credentials (@atheriel, #662).
+
 * Transitioned to the cli package for formatting most error messages 
   (@simonpcouch, #781, #784, #785, #788).
 

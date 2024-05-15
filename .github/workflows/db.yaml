@@ -94,6 +94,7 @@ jobs:
       - name: Install Snowflake Driver
         run: |
           echo "ODBC_CS_SNOWFLAKE=dsn=Snowflake;pwd=${{ secrets.SNOWFLAKE_PWD }}" >> $GITHUB_ENV
+          echo "ODBC_PWD_SNOWFLAKE=${{ secrets.SNOWFLAKE_PWD }}" >> $GITHUB_ENV
           curl https://sfc-repo.snowflakecomputing.com/odbc/linux/3.2.0/snowflake_linux_x8664_odbc-3.2.0.tgz --output snowflake_linux_x8664_odbc-3.2.0.tgz
           gunzip snowflake_linux_x8664_odbc-3.2.0.tgz
           tar -xvf snowflake_linux_x8664_odbc-3.2.0.tar
@@ -101,6 +102,7 @@ jobs:
           rm snowflake_linux_x8664_odbc-3.2.0.tar
           cp .github/odbc/simba.snowflake.ini .github/odbc/snowflake_odbc/lib/simba.snowflake.ini
           echo "CABundleFile=$ODBCSYSINI/snowflake_odbc/lib/cacert.pem" >> .github/odbc/snowflake_odbc/lib/simba.snowflake.ini
+          echo "ErrorMessagesPath=$ODBCSYSINI/snowflake_odbc/ErrorMessages/" >> .github/odbc/snowflake_odbc/lib/simba.snowflake.ini
 
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
