@@ -49,14 +49,14 @@ test_that("user agent respects envvar", {
   expect_equal(databricks_user_agent(), "my-odbc/1.0.0")
 })
 
-test_that("warns if auth fails", {
+test_that("errors if auth fails", {
   withr::local_envvar(DATABRICKS_TOKEN = "")
 
   databricks_args1 <- function(...) {
     databricks_args("path", "host", driver = "driver", ...)
   }
 
-  expect_snapshot(. <- databricks_args1())
+  expect_snapshot(. <- databricks_args1(), error = TRUE)
 
   expect_silent(databricks_args1(uid = "uid", pwd = "pwd"))
   expect_silent(databricks_args1(authMech = 10))

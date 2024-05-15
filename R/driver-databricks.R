@@ -109,7 +109,7 @@ databricks_args <- function(httpPath,
 
   arg_names <- tolower(names(all))
   if (!"authmech" %in% arg_names && !all(c("uid", "pwd") %in% arg_names)) {
-    warn(
+    abort(
       c(
         "x" = "Failed to detect ambient Databricks credentials.",
         "i" = "Supply `uid` and `pwd` to authenticate manually."
