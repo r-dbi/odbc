@@ -1,5 +1,9 @@
 # odbc (development version)
 
+* Raises "Cancelling previous query" warnings from R rather than from Rcpp when 
+  a connection has a current result to avoid possible incorrect resource 
+  unwinds with `options(warn = 2)` (#797).
+
 * New `odbc::snowflake()` makes it easier to connect to Snowflake, 
   automatically handling authentication correctly on platforms that provide 
   Snowflake-native OAuth credentials (@atheriel, #662).
