@@ -16,7 +16,7 @@ odbc_result::odbc_result(
       bound_(false),
       output_encoder_(Iconv(c_->encoding(), "UTF-8")) {
 
-  c_->cancel_current_result(false);
+  c_->cancel_current_result();
 
   if (immediate) {
     s_ = std::make_shared<nanodbc::statement>();

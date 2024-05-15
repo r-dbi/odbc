@@ -38,8 +38,9 @@ public:
   bool supports_transactions() const;
   bool get_data_any_order() const;
 
-  void cancel_current_result(bool quiet);
+  void cancel_current_result();
   void set_current_result(odbc_result* r);
+  bool has_result() const;
 
   cctz::time_zone timezone() const;
   std::string timezone_out_str() const;

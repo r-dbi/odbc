@@ -48,6 +48,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// has_result
+bool has_result(connection_ptr const& p);
+RcppExport SEXP _odbc_has_result(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< connection_ptr const& >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(has_result(p));
+    return rcpp_result_gen;
+END_RCPP
+}
 // connection_info
 Rcpp::List connection_info(connection_ptr const& p);
 RcppExport SEXP _odbc_connection_info(SEXP pSEXP) {
@@ -365,6 +376,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_odbc_list_drivers_", (DL_FUNC) &_odbc_list_drivers_, 0},
     {"_odbc_list_data_sources_", (DL_FUNC) &_odbc_list_data_sources_, 0},
     {"_odbc_odbc_connect", (DL_FUNC) &_odbc_odbc_connect, 7},
+    {"_odbc_has_result", (DL_FUNC) &_odbc_has_result, 1},
     {"_odbc_connection_info", (DL_FUNC) &_odbc_connection_info, 1},
     {"_odbc_connection_quote", (DL_FUNC) &_odbc_connection_quote, 1},
     {"_odbc_connection_release", (DL_FUNC) &_odbc_connection_release, 1},
