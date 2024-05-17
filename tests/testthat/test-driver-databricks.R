@@ -42,6 +42,7 @@ test_that("databricks host validates inputs", {
 })
 
 test_that("user agent respects envvar", {
+  withr::local_envvar(SPARK_CONNECT_USER_AGENT = NULL)
   local_mocked_bindings(packageVersion = function(...) "1.0.0")
   expect_equal(databricks_user_agent(), "r-odbc/1.0.0")
 
@@ -73,7 +74,7 @@ test_that("must supply both uid and pwd", {
 
 test_that("supports PAT in env var", {
   withr::local_envvar(DATABRICKS_TOKEN = "abc")
-  expect_equal(databricks_auth_args()$pwd, "abc")
+  expect_equal(databricks_auth_args("host")$pwd, "abc")
 })
 
 test_that("supports OAuth M2M in env var", {
@@ -83,7 +84,7 @@ test_that("supports OAuth M2M in env var", {
     DATABRICKS_CLIENT_SECRET = "def"
   )
 
-  auth <- databricks_auth_args()
+  auth <- databricks_auth_args("host")
   expect_equal(auth$auth_client_id, "abc")
   expect_equal(auth$auth_client_secret, "def")
 })
