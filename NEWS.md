@@ -41,6 +41,10 @@
   pass `x` to `encodeString()` before returning, for consistency with the
   default implementation in DBI (@simonpcouch, #765).
 
+* `odbc::databricks()` now picks up on Posit Workbench-managed Databricks
+  credentials when rendering Quarto and RMarkdown documents in RStudio
+  (@atheriel, #805).
+
 # odbc 1.4.2
 
 * `dbAppendTable()` Improve performance by checking existence once (#691).

@@ -221,12 +221,12 @@ databricks_auth_args <- function(host, uid = NULL, pwd = NULL) {
   client_id <- Sys.getenv("DATABRICKS_CLIENT_ID")
   client_secret <- Sys.getenv("DATABRICKS_CLIENT_SECRET")
   cli_path <- Sys.getenv("DATABRICKS_CLI_PATH", "databricks")
+  cfg_file <- Sys.getenv("DATABRICKS_CONFIG_FILE")
 
   # Check for Workbench-provided credentials.
   wb_token <- NULL
-  if (exists(".rs.api.getDatabricksToken")) {
-    getDatabricksToken <- get(".rs.api.getDatabricksToken")
-    wb_token <- getDatabricksToken(host)
+  if (grepl("posit-workbench", cfg_file, fixed = TRUE)) {
+    wb_token <- workbench_databricks_token(host, cfg_file)
   }
 
   if (nchar(token) != 0) {
@@ -292,3 +292,26 @@ is_camel_case <- function(x) {
 }
 
 dot_names <- function(...) names(substitute(...()))
+
+# Reads Posit Workbench-managed Databricks credentials from a
+# $DATABRICKS_CONFIG_FILE. The generated file will look as follows:
+#
+# [workbench]
+# host = some-host
+# token = some-token
+workbench_databricks_token <- function(host, cfg_file) {
+  cfg <- readLines(cfg_file)
+  # We don't attempt a full parse of the INI syntax supported by Databricks
+  # config files, instead relying on the fact that this particular file will
+  # always contain only one section.
+  if (!any(grepl(host, cfg, fixed = TRUE))) {
+    # The configuration doesn't actually apply to this host.
+    return(NULL)
+  }
+  line <- grepl("token = ", cfg, fixed = TRUE)
+  token <- gsub("token = ", "", cfg[line])
+  if (nchar(token) == 0) {
+    return(NULL)
+  }
+  token
+}
