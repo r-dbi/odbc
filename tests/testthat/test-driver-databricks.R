@@ -51,7 +51,10 @@ test_that("user agent respects envvar", {
 })
 
 test_that("errors if auth fails", {
-  withr::local_envvar(DATABRICKS_TOKEN = "")
+  withr::local_envvar(
+    DATABRICKS_TOKEN = "",
+    DATABRICKS_CONFIG_FILE = NULL
+  )
 
   databricks_args1 <- function(...) {
     databricks_args("path", "host", driver = "driver", ...)
@@ -109,4 +112,41 @@ test_that("dbConnect method errors informatively re: httpPath (#787)", {
 
   expect_snapshot(error = TRUE, dbConnect(databricks(), HTTPPath = 1L))
   expect_snapshot(error = TRUE, dbConnect(databricks(), httpPath = 1L))
+})
+
+test_that("Workbench-managed credentials are detected correctly", {
+  # Emulate the databricks.cfg file written by Workbench.
+  db_home <- tempfile("posit-workbench")
+  dir.create(db_home)
+  writeLines(
+    c(
+      '[workbench]',
+      'host = some-host',
+      'token = token'
+    ),
+    file.path(db_home, "databricks.cfg")
+  )
+  withr::local_envvar(
+    DATABRICKS_CONFIG_FILE = file.path(db_home, "databricks.cfg")
+  )
+  args <- databricks_auth_args(host = "some-host")
+  expect_equal(args, list(authMech = 11, auth_flow = 0, auth_accesstoken = "token"))
+})
+
+test_that("Workbench-managed credentials are ignored for other hosts", {
+  # Emulate the databricks.cfg file written by Workbench.
+  db_home <- tempfile("posit-workbench")
+  dir.create(db_home)
+  writeLines(
+    c(
+      '[workbench]',
+      'host = nonmatching',
+      'token = token'
+    ),
+    file.path(db_home, "databricks.cfg")
+  )
+  withr::local_envvar(
+    DATABRICKS_CONFIG_FILE = file.path(db_home, "databricks.cfg")
+  )
+  expect_equal(databricks_auth_args(host = "some-host"), NULL)
 })
