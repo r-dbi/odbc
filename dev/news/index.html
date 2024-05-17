@@ -66,6 +66,7 @@
 <li><p>Transitioned <code><a href="../reference/odbcDataType.html">odbcDataType()</a></code> to use S4 for consistency. S3 methods defined locally will need to be rewritten (<a href="https://github.com/r-dbi/odbc/issues/701" class="external-link">#701</a>).</p></li>
 <li><p>Teradata: Resolved issue when previewing tables using the Connections pane.</p></li>
 <li><p>The <code>"OdbcConnection"</code> method for <code><a href="https://dbi.r-dbi.org/reference/dbQuoteIdentifier.html" class="external-link">dbQuoteIdentifier()</a></code> will no longer pass <code>x</code> to <code><a href="https://rdrr.io/r/base/encodeString.html" class="external-link">encodeString()</a></code> before returning, for consistency with the default implementation in DBI (<a href="https://github.com/simonpcouch" class="external-link">@simonpcouch</a>, <a href="https://github.com/r-dbi/odbc/issues/765" class="external-link">#765</a>).</p></li>
+<li><p><code><a href="../reference/databricks.html">odbc::databricks()</a></code> now picks up on Posit Workbench-managed Databricks credentials when rendering Quarto and RMarkdown documents in RStudio (<a href="https://github.com/atheriel" class="external-link">@atheriel</a>, <a href="https://github.com/r-dbi/odbc/issues/805" class="external-link">#805</a>).</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.2" id="odbc-142">odbc 1.4.2<a class="anchor" aria-label="anchor" href="#odbc-142"></a></h2><p class="text-muted">CRAN release: 2024-01-22</p>
