@@ -1,3 +1,5 @@
+# See #796 for some reasoning behind not using the canned mariadb-odbc-driver (v3.1.15), at time of writing
+# and needing to install v3.1.17 from source
 sudo apt-get install -y cmake
 cd /tmp && git clone https://github.com/MariaDB/mariadb-connector-odbc.git connector
 cd connector && git checkout 3.1.17
