@@ -14,7 +14,7 @@ OdbcConnection <- function(
     timeout = Inf,
     dbms.name = NULL,
     attributes = NULL,
-    interruptibleExecution = TRUE,
+    interruptible = getOption("odbc.interruptible", TRUE),
     .connection_string = NULL,
     call = caller_env(2)
 ) {
@@ -39,7 +39,7 @@ OdbcConnection <- function(
       bigint = bigint,
       timeout = timeout,
       r_attributes = attributes,
-      interruptible_execution = interruptibleExecution
+      interruptible_execution = interruptible
     ),
     error = function(cnd) {
       check_quoting(args)

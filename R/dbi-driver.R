@@ -65,9 +65,11 @@ setMethod("show", "OdbcDriver",
 #'   parameter.
 #' @param attributes A list of connection attributes that are passed
 #'   prior to the connection being established. See \link{ConnectionAttributes}.
-#' @param interruptibleExecution Logical.  If `TRUE` calls to SQLExecute and
-#'   SQLExecuteDirect can be interrupted when the user sends SIGINT ( ctrl-c ).
-#'   Otherwise, they block.  Defaults to `TRUE`.
+#' @param interruptible Logical.  If `TRUE` calls to `SQLExecute` and
+#'   `SQLExecuteDirect` can be interrupted when the user sends SIGINT ( ctrl-c ).
+#'   Otherwise, they block.  Defaults to `TRUE`.  It can be set either by
+#'   manipulating this argument, or setting the global option `odbc.interruptible`
+#'   to `FALSE`.
 #' @param ... Additional ODBC keywords. These will be joined with the other
 #'   arguments to form the final connection string.
 #'
@@ -170,7 +172,7 @@ setMethod("dbConnect", "OdbcDriver",
       pwd = NULL,
       dbms.name = NULL,
       attributes = NULL,
-      interruptibleExecution = TRUE,
+      interruptible = getOption("odbc.interruptible", TRUE),
       .connection_string = NULL) {
     check_string(dsn, allow_null = TRUE)
     check_string(timezone, allow_null = TRUE)
@@ -184,7 +186,7 @@ setMethod("dbConnect", "OdbcDriver",
     check_string(uid, allow_null = TRUE)
     check_string(pwd, allow_null = TRUE)
     check_string(dbms.name, allow_null = TRUE)
-    check_bool(interruptibleExecution)
+    check_bool(interruptible)
 
     con <- OdbcConnection(
       dsn = dsn,
@@ -201,7 +203,7 @@ setMethod("dbConnect", "OdbcDriver",
       pwd = pwd,
       dbms.name = dbms.name,
       attributes = attributes,
-      interruptibleExecution = interruptibleExecution,
+      interruptible = interruptible,
       .connection_string = .connection_string
     )
 

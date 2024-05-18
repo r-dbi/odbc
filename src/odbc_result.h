@@ -25,7 +25,7 @@ public:
       Iconv& output_encoder)
       : Rcpp::exception("", false) {
     std::string m = std::string(e.what());
-    if (sql != "" ) {
+    if (sql != "") {
       m += "\n<SQL> '" + sql + "'";
     }
     // #432: [R] expects UTF-8 encoded strings but both nanodbc and sql are

@@ -24,7 +24,7 @@ odbc()
   pwd = NULL,
   dbms.name = NULL,
   attributes = NULL,
-  interruptibleExecution = TRUE,
+  interruptible = getOption("odbc.interruptible", TRUE),
   .connection_string = NULL
 )
 }
@@ -90,9 +90,11 @@ parameter.}
 \item{attributes}{A list of connection attributes that are passed
 prior to the connection being established. See \link{ConnectionAttributes}.}
 
-\item{interruptibleExecution}{Logical.  If \code{TRUE} calls to SQLExecute and
-SQLExecuteDirect can be interrupted when the user sends SIGINT ( ctrl-c ).
-Otherwise, they block.  Defaults to \code{TRUE}.}
+\item{interruptible}{Logical.  If \code{TRUE} calls to \code{SQLExecute} and
+\code{SQLExecuteDirect} can be interrupted when the user sends SIGINT ( ctrl-c ).
+Otherwise, they block.  Defaults to \code{TRUE}.  It can be set either by
+manipulating this argument, or setting the global option \code{odbc.interruptible}
+to \code{FALSE}.}
 
 \item{.connection_string}{A complete connection string, useful if you are
 copy pasting it from another source. If this argument is used, any
