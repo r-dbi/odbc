@@ -304,12 +304,17 @@ Rcpp::IntegerVector transactionLevels() {
   return out;
 }
 
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 // [[Rcpp::export]]
 void set_transaction_isolation(connection_ptr const& p, size_t level) {
   auto c = (*p)->connection();
   SQLSetConnectAttr(
       c->native_dbc_handle(), SQL_ATTR_TXN_ISOLATION, (SQLPOINTER)level, 0);
 }
+
+# pragma GCC diagnostic pop
 
 // [[Rcpp::export]]
 Rcpp::IntegerVector bigint_mappings() {
