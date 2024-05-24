@@ -67,9 +67,9 @@ setMethod("show", "OdbcDriver",
 #'   prior to the connection being established. See \link{ConnectionAttributes}.
 #' @param interruptible Logical.  If `TRUE` calls to `SQLExecute` and
 #'   `SQLExecuteDirect` can be interrupted when the user sends SIGINT ( ctrl-c ).
-#'   Otherwise, they block.  Defaults to `TRUE`.  It can be set either by
-#'   manipulating this argument, or setting the global option `odbc.interruptible`
-#'   to `FALSE`.
+#'   Otherwise, they block.  Defaults to `TRUE` in interactive sessions, and
+#'   `FALSE` otherwise.  It can be set explicitly either by manipulating this
+#'   argument, or by setting the global option `odbc.interruptible`.
 #' @param ... Additional ODBC keywords. These will be joined with the other
 #'   arguments to form the final connection string.
 #'
@@ -172,7 +172,7 @@ setMethod("dbConnect", "OdbcDriver",
       pwd = NULL,
       dbms.name = NULL,
       attributes = NULL,
-      interruptible = getOption("odbc.interruptible", TRUE),
+      interruptible = getOption("odbc.interruptible", interactive()),
       .connection_string = NULL) {
     check_string(dsn, allow_null = TRUE)
     check_string(timezone, allow_null = TRUE)

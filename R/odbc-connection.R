@@ -14,7 +14,7 @@ OdbcConnection <- function(
     timeout = Inf,
     dbms.name = NULL,
     attributes = NULL,
-    interruptible = getOption("odbc.interruptible", TRUE),
+    interruptible = getOption("odbc.interruptible", interactive()),
     .connection_string = NULL,
     call = caller_env(2)
 ) {
