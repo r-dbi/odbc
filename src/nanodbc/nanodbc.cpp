@@ -274,6 +274,8 @@ inline void convert(const wide_string_type& in, std::string& out)
     using boost::locale::conv::utf_to_utf;
     out = utf_to_utf<char>(in.c_str(), in.c_str() + in.size());
 #else
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 // Workaround for confirmed bug in VS2015. See:
 // https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
 // https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481
@@ -281,6 +283,7 @@ inline void convert(const wide_string_type& in, std::string& out)
     auto p = reinterpret_cast<unsigned short const*>(in.data());
     out = std::wstring_convert<NANODBC_CODECVT_TYPE<unsigned short>, unsigned short>().to_bytes(
         p, p + in.size());
+# pragma GCC diagnostic pop
 #else
 
 #ifdef NANODBC_USE_NATIVE_CONVERT
@@ -319,11 +322,14 @@ inline void convert(const std::string& in, wide_string_type& out)
 // Workaround for confirmed bug in VS2015. See:
 // https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
 // https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #elif defined(_MSC_VER) && (_MSC_VER == 1900)
     auto s =
         std::wstring_convert<NANODBC_CODECVT_TYPE<unsigned short>, unsigned short>().from_bytes(in);
     auto p = reinterpret_cast<wide_char_t const*>(s.data());
     out.assign(p, p + s.size());
+# pragma GCC diagnostic pop
 #else
 #ifdef NANODBC_USE_NATIVE_CONVERT
     if (in.empty())
@@ -334,8 +340,11 @@ inline void convert(const std::string& in, wide_string_type& out)
         MultiByteToWideChar(CP_UTF8, 0, &in[0], static_cast<int>(in.size()), nullptr, 0);
     out.resize(size_needed);
     MultiByteToWideChar(CP_UTF8, 0, &in[0], static_cast<int>(in.size()), &out[0], size_needed);
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #else
     out = std::wstring_convert<NANODBC_CODECVT_TYPE<wide_char_t>, wide_char_t>().from_bytes(in);
+# pragma GCC diagnostic pop
 #endif
 #endif
 }
