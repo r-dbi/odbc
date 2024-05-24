@@ -268,8 +268,6 @@ inline std::size_t strarrlen(T (&a)[N])
     return i;
 }
 
-# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
 inline void convert(const wide_string_type& in, std::string& out)
 {
 #ifdef NANODBC_USE_BOOST_CONVERT
@@ -303,8 +301,10 @@ inline void convert(const wide_string_type& in, std::string& out)
         nullptr,
         nullptr);
 #else
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     out = std::wstring_convert<NANODBC_CODECVT_TYPE<wide_char_t>, wide_char_t>().to_bytes(in);
-
+# pragma GCC diagnostic pop
 #endif
 #endif
 #endif
