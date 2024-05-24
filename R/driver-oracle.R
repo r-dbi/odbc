@@ -122,7 +122,12 @@ setMethod("odbcConnectionColumns_", c("Oracle", "character"),
       )
     }
 
-    dbGetQuery(conn, query)
+    res <- dbGetQuery(conn, query)
+
+    res$data_type <- as.numeric(res$data_type)
+    res[res$`field.type` == "DATE", c("data_type", "column_size")] <- c(91, 6)
+    res[grepl("TIMESTAMP", res$`field.type`), c("data_type", "column_size")] <- c(93, 16)
+    res
   }
 )
 
