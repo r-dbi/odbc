@@ -1874,7 +1874,6 @@ public:
         disable_async();
 #endif
 
-        // TODO: Check if we have param_descr_data_
         NANODBC_CALL_RC(
             SQLDescribeParam,
             rc,
@@ -1949,7 +1948,6 @@ public:
                 param.size_ = 255;
                 param.scale_ = 0;
             }
-            // TODO: populate param_descr_data
         }
         else
         {
