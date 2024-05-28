@@ -90,6 +90,7 @@ below.</p>
 <span>  pwd <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  dbms.name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  attributes <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  interruptible <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"odbc.interruptible"</span>, <span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  .connection_string <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -181,8 +182,16 @@ parameter.</p></dd>
 
 
 <dt>attributes</dt>
-<dd><p>An S4 object of connection attributes that are passed
+<dd><p>A list of connection attributes that are passed
 prior to the connection being established. See <a href="ConnectionAttributes.html">ConnectionAttributes</a>.</p></dd>
+
+
+<dt>interruptible</dt>
+<dd><p>Logical.  If <code>TRUE</code> calls to <code>SQLExecute</code> and
+<code>SQLExecuteDirect</code> can be interrupted when the user sends SIGINT ( ctrl-c ).
+Otherwise, they block.  Defaults to <code>TRUE</code> in interactive sessions, and
+<code>FALSE</code> otherwise.  It can be set explicitly either by manipulating this
+argument, or by setting the global option <code>odbc.interruptible</code>.</p></dd>
 
 
 <dt>.connection_string</dt>
