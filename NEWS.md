@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* oracle: Fix writing to DATE and TIMESTAMP(n) targets using `batch_size` > 1.
+
 * Raises "Cancelling previous query" warnings from R rather than from Rcpp when 
   a connection has a current result to avoid possible incorrect resource 
   unwinds with `options(warn = 2)` (#797).
