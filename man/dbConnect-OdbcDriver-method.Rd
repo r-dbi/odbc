@@ -24,6 +24,7 @@ odbc()
   pwd = NULL,
   dbms.name = NULL,
   attributes = NULL,
+  interruptible = getOption("odbc.interruptible", interactive()),
   .connection_string = NULL
 )
 }
@@ -86,8 +87,14 @@ name for the OdbcConnection object returned from \code{\link[=dbConnect]{dbConne
 the driver does not return a valid value, it can be set manually with this
 parameter.}
 
-\item{attributes}{An S4 object of connection attributes that are passed
+\item{attributes}{A list of connection attributes that are passed
 prior to the connection being established. See \link{ConnectionAttributes}.}
+
+\item{interruptible}{Logical.  If \code{TRUE} calls to \code{SQLExecute} and
+\code{SQLExecuteDirect} can be interrupted when the user sends SIGINT ( ctrl-c ).
+Otherwise, they block.  Defaults to \code{TRUE} in interactive sessions, and
+\code{FALSE} otherwise.  It can be set explicitly either by manipulating this
+argument, or by setting the global option \code{odbc.interruptible}.}
 
 \item{.connection_string}{A complete connection string, useful if you are
 copy pasting it from another source. If this argument is used, any

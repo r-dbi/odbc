@@ -54,7 +54,7 @@ with one column per query parameter.}
 
 \item{batch_rows}{The number of rows to retrieve. Defaults to \code{NA}, which
 is set dynamically to the minimum of 1024 and the size of the input.
-Depending on the database, driver, dataset and free memory setting this
+Depending on the database, driver, dataset and free memory, setting this
 to a lower value may improve performance.}
 }
 \description{

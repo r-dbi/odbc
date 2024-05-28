@@ -1,5 +1,12 @@
 # odbc (development version)
 
+* Long running queries can now be interrupted using Ctrl-C.  This
+  feature is enabled by default in interactive sessions.  It can be
+  controlled by the `interruptible` argument to `dbConnect`, or by the
+  global option `odbc.interruptible`.  Should be considered experimental -
+  if you experience problems please file an issue on the package github
+  repository (#796).
+
 * Raises "Cancelling previous query" warnings from R rather than from Rcpp when 
   a connection has a current result to avoid possible incorrect resource 
   unwinds with `options(warn = 2)` (#797).

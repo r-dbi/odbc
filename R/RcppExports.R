@@ -9,8 +9,8 @@ list_data_sources_ <- function() {
     .Call(`_odbc_list_data_sources_`)
 }
 
-odbc_connect <- function(connection_string, timezone = "", timezone_out = "", encoding = "", bigint = 0L, timeout = 0L, r_attributes_ = NULL) {
-    .Call(`_odbc_odbc_connect`, connection_string, timezone, timezone_out, encoding, bigint, timeout, r_attributes_)
+odbc_connect <- function(connection_string, timezone = "", timezone_out = "", encoding = "", bigint = 0L, timeout = 0L, r_attributes = NULL, interruptible_execution = TRUE) {
+    .Call(`_odbc_odbc_connect`, connection_string, timezone, timezone_out, encoding, bigint, timeout, r_attributes, interruptible_execution)
 }
 
 has_result <- function(p) {
@@ -103,10 +103,6 @@ result_column_info <- function(r) {
 
 result_bind <- function(r, params, batch_rows) {
     invisible(.Call(`_odbc_result_bind`, r, params, batch_rows))
-}
-
-result_execute <- function(r) {
-    invisible(.Call(`_odbc_result_execute`, r))
 }
 
 result_insert_dataframe <- function(r, df, batch_rows) {
