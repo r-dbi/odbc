@@ -1,28 +1,27 @@
-# odbc (development version)
+# odbc 1.4.3
 
-* Long running queries can now be interrupted using Ctrl-C.  This
-  feature is enabled by default in interactive sessions.  It can be
-  controlled by the `interruptible` argument to `dbConnect`, or by the
-  global option `odbc.interruptible`.  Should be considered experimental -
-  if you experience problems please file an issue on the package github
+## Major changes
+
+* New function `snowflake()` makes it easier to connect to Snowflake, 
+  automatically handling authentication correctly on platforms that provide 
+  Snowflake-native OAuth credentials (@atheriel, #662).
+    
+* Long running queries can now be interrupted using Ctrl-C. This
+  feature is enabled by default in interactive sessions. It can be
+  controlled by the `interruptible` argument to `dbConnect()` or by the
+  global option `odbc.interruptible`. Should be considered experimental---if
+  you experience problems please file an issue on the package's GitHub
   repository (#796).
+
+## Minor improvements and bug fixes
+
+* Improved argument checking and transitioned to the cli package for 
+  formatting most existing error messages (@simonpcouch, #781, #784, #785, #788).
 
 * Raises "Cancelling previous query" warnings from R rather than from Rcpp when 
   a connection has a current result to avoid possible incorrect resource 
   unwinds with `options(warn = 2)` (#797).
-
-* New `odbc::snowflake()` makes it easier to connect to Snowflake, 
-  automatically handling authentication correctly on platforms that provide 
-  Snowflake-native OAuth credentials (@atheriel, #662).
-
-* Transitioned to the cli package for formatting most error messages 
-  (@simonpcouch, #781, #784, #785, #788).
-
-* `databricks()` will now automatically configure the needed driver and driver
-  manager on macOS (#651).
-
-* Snowflake: Improved performance on write (#760).
-
+  
 * Adjusted the default `batch_rows` value for `dbWriteTable()` and `dbBind()` 
   methods. odbc 1.3.0 changed the default value from 1024 to `NA`, which sets the 
   batch size to be the length of the input. While this addressed issues for
@@ -31,26 +30,39 @@
   drivers. The package will now interpet `NA` as the minimum of 1024 and the 
   length of the input (@simonpcouch, #774).
 
-* odbc now always converts the encoding of non-ASCII column names of the SQL
-  results to UTF-8. (@shrektan, #430)
+* The encoding of non-ASCII column names of SQL results is now always converted
+  to UTF-8. (@shrektan, #430)
 
-* Fixed issue that odbc may throw errors with garbage letters when the encoding
-  of client and db-server are different. (@shrektan, #432)
+* Improved error messages when the encoding of client and db-server are 
+  different. (@shrektan, #432)
 
-* dbListFields: Now works with DBI::Id and DBI::SQL identifiers.
+* `dbListFields()` now works with `Id()` and `SQL()` identifiers (#771).
 
 * Transitioned `odbcDataType()` to use S4 for consistency. S3 methods defined
-  locally will need to be rewritten (#701).
-
-* Teradata: Resolved issue when previewing tables using the Connections pane.
+  locally will need to be rewritten (@simonpcouch, #701).
 
 * The `"OdbcConnection"` method for `dbQuoteIdentifier()` will no longer 
   pass `x` to `encodeString()` before returning, for consistency with the
   default implementation in DBI (@simonpcouch, #765).
 
-* `odbc::databricks()` now picks up on Posit Workbench-managed Databricks
+* A bug in the implementation of a new feature introduced in 1.4.2, where the
+  package would automatically set the `ODBCSYSINI` environmental variable when 
+  using the unixODBC driver manager, was fixed; that environmental variable
+  will now actually be set on package load (@simonpcouch, #792).
+
+## Driver specific changes
+
+* `databricks()` will now automatically configure the needed driver and driver
+  manager on macOS (@simonpcouch, #651).
+
+* `databricks()` now picks up on Posit Workbench-managed Databricks
   credentials when rendering Quarto and RMarkdown documents in RStudio
   (@atheriel, #805).
+  
+* Improved performance on write with Snowflake (#760).
+
+* Resolved issue when previewing tables using the RStudio Connections pane with 
+  Teradata (@simonpcouch, #755).
 
 # odbc 1.4.2
 
