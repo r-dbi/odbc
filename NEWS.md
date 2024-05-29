@@ -1,4 +1,4 @@
-# odbc 1.4.3
+# odbc 1.5.0
 
 ## Major changes
 
