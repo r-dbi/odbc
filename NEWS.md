@@ -223,7 +223,8 @@
 * When calling `sqlCreateTable(con, ..., temporary = TRUE)` and `con` is a
   connection of class `DB2/AIX64`, the `CREATE TABLE` statement that is generated
   properly creates a temporary table in DB2. The statement begins with
-  [`DECLARE GLOBAL TEMPORARY TABLE`](https://www.ibm.com/docs/SSEPEK_11.0.0/sqlref/src/tpc/db2z_sql_declareglobaltemptable.html)
+  `DECLARE GLOBAL TEMPORARY TABLE` at
+  `https://www.ibm.com/docs/SSEPEK_11.0.0/sqlref/src/tpc/db2z_sql_declareglobaltemptable.html`
   and ends with `ON COMMIT PRESERVE ROWS` (DB2's default behavior is
   `ON COMMIT DELETE ROWS`, which results in the inserted data being
   deleted as soon as `dbWriteTable` completes). (@rnorberg, #426)
