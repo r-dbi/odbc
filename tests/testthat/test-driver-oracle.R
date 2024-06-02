@@ -24,13 +24,12 @@ test_that("Writing date/datetime with batch size > 1", {
   # See #349, #350, #391
   con <- test_con("ORACLE")
 
-  ir <- datasets::iris
   values <- data.frame(
-    datetime = as.POSIXct(as.numeric(ir$Petal.Length * 10), origin = "2024-01-01", tz = "UTC"),
-    date    = as.Date(as.numeric(ir$Petal.Length * 10), origin = "2024-01-01", tz = "UTC"),
-    integer = as.integer(ir$Petal.Width * 100),
-    double = ir$Sepal.Length,
-    varchar = ir$Species)
+    datetime = as.POSIXct(as.numeric(iris$Petal.Length * 10), origin = "2024-01-01", tz = "UTC"),
+    date    = as.Date(as.numeric(iris$Petal.Length * 10), origin = "2024-01-01", tz = "UTC"),
+    integer = as.integer(iris$Petal.Width * 100),
+    double = iris$Sepal.Length,
+    varchar = iris$Species)
   tbl <- local_table(con, "test_batched_write_w_dates", values)
   res <- dbReadTable(con, "test_batched_write_w_dates")
   expect_true(nrow(res) == nrow(values))
