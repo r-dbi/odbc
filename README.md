@@ -21,7 +21,7 @@ drivers. This makes it easy to connect databases such as [SQL
 Server](https://www.microsoft.com/en-us/sql-server/),
 Oracle,
 [Databricks](https://www.databricks.com/), and
-[Snowflake](https://www.snowflake.com/en/).
+Snowflake.
 
 The odbc package is an alternative to
 [RODBC](https://cran.r-project.org/package=RODBC) and
