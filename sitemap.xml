@@ -76,6 +76,9 @@
     <loc>https://odbc.r-dbi.org/reference/dbListTables-OdbcConnection-method.html</loc>
   </url>
   <url>
+    <loc>https://odbc.r-dbi.org/reference/driver-Snowflake.html</loc>
+  </url>
+  <url>
     <loc>https://odbc.r-dbi.org/reference/index.html</loc>
   </url>
   <url>
@@ -125,5 +128,8 @@
   </url>
   <url>
     <loc>https://odbc.r-dbi.org/reference/quote_value.html</loc>
+  </url>
+  <url>
+    <loc>https://odbc.r-dbi.org/reference/snowflake.html</loc>
   </url>
 </urlset>
