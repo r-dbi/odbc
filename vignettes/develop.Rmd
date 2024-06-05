@@ -22,7 +22,7 @@ For the most part, this vignette assumes a MacOS system with aarch64 (e.g. M1 or
 
 ## Posit Professional Drivers
 
-Posit employees have access to the [Posit Professional drivers](https://docs.posit.co/pro-drivers/) and the infrastructure used to build and test them in the [rstudio/pro-drivers](https://github.com/rstudio/pro-drivers) repo. The Posit Professional drivers are a set of drivers vendored from Magnitude Simba that support many of the most popular DBMS, including SQL Server, Oracle, Redshift, Databricks, Snowflake, etc. The repository they're developed in contains tooling to spin up a number of databases in docker containers to test against.
+Posit employees have access to the [Posit Professional drivers](https://docs.posit.co/pro-drivers/) and the infrastructure used to build and test them in the rstudio/pro-drivers GitHub repository. The Posit Professional drivers are a set of drivers vendored from Magnitude Simba that support many of the most popular DBMS, including SQL Server, Oracle, Redshift, Databricks, Snowflake, etc. The repository they're developed in contains tooling to spin up a number of databases in docker containers to test against.
 
 Note that Athena, Hive, Impala, MongoDB, and Oracle drivers are [not available for macOS aarch64](https://github.com/oracle/python-cx_Oracle/issues/617) (M1, M2, etc) at the time of writing.
 
@@ -32,7 +32,7 @@ The only documented installation method for these drivers on MacOS is via RStudi
 
 ### Databases
 
-Among other things, the [rstudio/pro-drivers](https://github.com/rstudio/pro-drivers) repo defines a `MAKE` tool for setting up and tearing down databases in docker containers. Ensure that you have a docker daemon running (i.e. Docker Desktop open) and, if you're on macOS aarch64, have `Settings > Use Rosetta for x86_64/amd64 emulation on Apple Silicon` enabled. To start a container for a given `dbms`, run `MAKE dist=none DB=dbms up`, and **tear it down** with `MAKE dist=none DB=db down`. To see available `dbms` options, see the names of `.yml` files in the `docker-compose` directory. Find connection details for each database in `docker/shared/odbc.ini`.
+Among other things, the rstudio/pro-drivers GitHub repository defines a `MAKE` tool for setting up and tearing down databases in docker containers. Ensure that you have a docker daemon running (i.e. Docker Desktop open) and, if you're on macOS aarch64, have `Settings > Use Rosetta for x86_64/amd64 emulation on Apple Silicon` enabled. To start a container for a given `dbms`, run `MAKE dist=none DB=dbms up`, and **tear it down** with `MAKE dist=none DB=db down`. To see available `dbms` options, see the names of `.yml` files in the `docker-compose` directory. Find connection details for each database in `docker/shared/odbc.ini`.
 
 DBMS-specific notes:
 
@@ -313,7 +313,7 @@ In the above, the password has been set as `Sys.setenv(snowflakePass = "actualPa
 
 ## Amazon Redshift
 
-If you're a Posit employee, you should have access to the [https://github.com/rstudio/warehouse](https://github.com/rstudio/warehouse) repository. Follow the instructions there to get access to the internal Redshift cluster. Access to the cluster is only enabled through Posit's internal Workbench instance, where the professional drivers will already be installed.
+If you're a Posit employee, you should have access to the rstudio/warehouse GitHub repository. Follow the instructions there to get access to the internal Redshift cluster. Access to the cluster is only enabled through Posit's internal Workbench instance, where the professional drivers will already be installed.
 
 Note that Redshift is based on a modified version of PostgreSQL.
 

@@ -84,6 +84,7 @@ test_that("parse_database_error() works with messages from the wild", {
 })
 
 test_that("set_odbcsysini() works (#791)", {
+  skip_on_cran()
   skip_if(is_windows())
 
   expect_false(identical(Sys.getenv("ODBCSYSINI"), ""))

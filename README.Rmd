@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/r-dbi/odbc/branch/main/graph/badge.svg)](https://app.codecov.io/gh/r-dbi/odbc?branch=main)
 <!-- badges: end -->
 
-The goal of the odbc package is to provide a [DBI](https://dbi.r-dbi.org/)-compliant interface to [ODBC](https://learn.microsoft.com/en-us/sql/odbc/microsoft-open-database-connectivity-odbc) drivers. This makes it easy to connect databases such as [SQL Server](https://www.microsoft.com/en-us/sql-server/), [Oracle](https://www.oracle.com/database), [Databricks](https://www.databricks.com/), and [Snowflake](https://www.snowflake.com/en/).
+The goal of the odbc package is to provide a [DBI](https://dbi.r-dbi.org/)-compliant interface to [ODBC](https://learn.microsoft.com/en-us/sql/odbc/microsoft-open-database-connectivity-odbc) drivers. This makes it easy to connect databases such as [SQL Server](https://www.microsoft.com/en-us/sql-server/), Oracle, [Databricks](https://www.databricks.com/), and Snowflake.
 
 The odbc package is an alternative to
 [RODBC](https://cran.r-project.org/package=RODBC) and [RODBCDBI](https://cran.r-project.org/package=RODBCDBI) packages, and is typically much faster. See `vignette("benchmarks")` to learn more.
