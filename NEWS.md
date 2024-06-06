@@ -1,5 +1,9 @@
 # odbc (development version)
 
+* Reverted a change to the default `batch_rows` value for `dbWriteTable()` and 
+  `dbBind()` that resulted in write errors for some drivers. The default
+  `batch_size` is once again the length of the input (@simonpcouch, #813, #814).
+
 # odbc 1.5.0
 
 ## Major changes

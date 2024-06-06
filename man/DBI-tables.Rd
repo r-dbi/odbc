@@ -83,7 +83,7 @@ just any valid bare table name.}
 \item{append}{Allow appending to the destination table. Cannot be
 \code{TRUE} if \code{overwrite} is also \code{TRUE}.}
 
-\item{temporary}{If \code{TRUE}, will generate a temporary table statement.}
+\item{temporary}{If \code{TRUE}, will generate a temporary table.}
 
 \item{row.names}{Either \code{TRUE}, \code{FALSE}, \code{NA} or a string.
 
@@ -99,9 +99,9 @@ For backward compatibility, \code{NULL} is equivalent to \code{FALSE}.}
 \item{field.types}{Additional field types used to override derived types.}
 
 \item{batch_rows}{The number of rows to retrieve. Defaults to \code{NA}, which
-is set dynamically to the minimum of 1024 and the size of the input.
-Depending on the database, driver, dataset and free memory setting this
-to a lower value may improve performance.}
+is set dynamically to the size of the input. Depending on the database,
+driver, dataset and free memory setting this to a lower value may improve
+performance.}
 
 \item{...}{Other arguments used by individual methods.}
 
