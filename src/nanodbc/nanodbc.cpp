@@ -1868,6 +1868,10 @@ public:
 
     unsigned long parameter_size(short param_index) const
     {
+        if (!param_descr_data_.count(param_index))
+        {
+                return static_cast<unsigned long>(param_descr_data_.at(param_index).size_);
+        }
         RETCODE rc;
         SQLSMALLINT data_type;
         SQLSMALLINT nullable;
@@ -1937,9 +1941,9 @@ public:
                 rc,
                 stmt_,
                 param_index + 1,
-                &param.type_,
-                &param.size_,
-                &param.scale_,
+                &param_descr_data_[param_index].type_,
+                &param_descr_data_[param_index].size_,
+                &param_descr_data_[param_index].scale_,
                 &nullable);
             if (!success(rc))
             {
@@ -1947,19 +1951,15 @@ public:
                 // truncate data if it is longer than 255 characters, and may not
                 // work for all data types, but is necessary to support drivers
                 // which do not support SQLDescribeParam.
-                param.type_ = SQL_VARCHAR;
-                param.size_ = 255;
-                param.scale_ = 0;
+                param_descr_data_[param_index].type_ = SQL_VARCHAR;
+                param_descr_data_[param_index].size_ = 255;
+                param_descr_data_[param_index].scale_ = 0;
             }
         }
-        else
-        {
-            param.type_ = param_descr_data_[param_index].type_;
-            param.size_ = param_descr_data_[param_index].size_;
-            param.scale_ = param_descr_data_[param_index].scale_;
-        }
-
         param.index_ = param_index;
+        param.type_ = param_descr_data_[param_index].type_;
+        param.size_ = param_descr_data_[param_index].size_;
+        param.scale_ = param_descr_data_[param_index].scale_;
         param.iotype_ = param_type_from_direction(direction);
 
         if (!bind_len_or_null_.count(param_index))
