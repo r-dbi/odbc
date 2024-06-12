@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* SQL Server: Fix issue related to writing when using SIMBA drivers (#816).
+
 # odbc 1.5.0
 
 ## Major changes
