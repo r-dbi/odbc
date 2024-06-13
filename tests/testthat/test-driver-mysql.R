@@ -102,7 +102,7 @@ test_that("sproc result retrieval", {
   con <- test_con("MYSQL")
 
   # TODO: resolve the issue requiring this skip
-  skip_if(grepl("RStudio", dbGetInfo(con)$drivername), "Pro Drivers fail this test.")
+  skip_if(grepl("libmysqlodbc_sb64", dbGetInfo(con)$drivername), "Pro Drivers fail this test.")
 
   sprocName <- "testSproc"
   DBI::dbExecute(
