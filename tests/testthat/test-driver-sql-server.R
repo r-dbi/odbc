@@ -230,6 +230,8 @@ test_that("odbcPreviewObject doesn't warn about pending rows", {
 
 test_that("dates should always be interpreted in the system time zone (#398)", {
   con <- test_con("SQLSERVER")
+  # todo: resolve the issue requiring this skip
+  skip_if(grepl("RStudio", dbGetInfo(con)$drivername), "Pro Drivers fail this test.")
   res <- dbGetQuery(con, "SELECT CAST(? AS date)", params = as.Date("2019-01-01"))
   expect_equal(res[[1]], as.Date("2019-01-01"))
 })

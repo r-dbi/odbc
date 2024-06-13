@@ -1,0 +1,112 @@
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+
+name: DBs + Posit Pro Drivers (Linux)
+
+jobs:
+  database:
+    runs-on: ubuntu-latest
+
+    services:
+      oracle:
+        image: gvenzl/oracle-xe:21.3.0
+        ports:
+          - 1521:1521
+        env:
+          ORACLE_RANDOM_PASSWORD: true
+          ORACLE_DATABASE: test
+          APP_USER: RodbcR
+          APP_USER_PASSWORD: Password12
+        options: >-
+          --health-cmd healthcheck.sh
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+      postgres:
+        image: postgres
+        ports:
+        - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
+        ports:
+        - 1433:1433
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: Password12
+
+    env:
+      CRAN: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest"
+      ODBCSYSINI: ${{ github.workspace }}/.github/odbc
+      TNS_ADMIN: ${{ github.workspace }}/.github/odbc
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: r-lib/actions/setup-r@v2
+
+      - name: Install MySQL Driver
+        run: |
+          sudo systemctl start mysql.service
+          mysql -uroot -h127.0.0.1 -proot -e 'CREATE DATABASE `test`;'
+          echo "ODBC_CS_MYSQL=dsn=ProMySQL" >> $GITHUB_ENV
+          mkdir -p $ODBCSYSINI/pro_drivers/mysql
+          touch $ODBCSYSINI/pro_drivers/mysql.tar.gz
+          curl ${{ secrets.PRO_DRIVER_MYSQL }} --output $ODBCSYSINI/pro_drivers/mysql.tar.gz
+          tar -xvzf $ODBCSYSINI/pro_drivers/mysql.tar.gz -C $ODBCSYSINI/pro_drivers/mysql
+
+      - name: Install SQL Server Driver
+        run: |
+          echo "ODBC_CS_SQLSERVER=dsn=ProMicrosoftSQLServer;UID=SA;PWD=Password12" >> $GITHUB_ENV
+          mkdir -p $ODBCSYSINI/pro_drivers/sql_server
+          touch $ODBCSYSINI/pro_drivers/sql_server.tar.gz
+          curl ${{ secrets.PRO_DRIVER_SQL_SERVER }} --output $ODBCSYSINI/pro_drivers/sql_server.tar.gz
+          tar -xvzf $ODBCSYSINI/pro_drivers/sql_server.tar.gz -C $ODBCSYSINI/pro_drivers/sql_server
+
+      - name: Install Oracle Driver
+        run: |
+          echo "ODBC_CS_ORACLE=dsn=ProOracle;UID=RodbcR;PWD=Password12;DBQ=test" >> $GITHUB_ENV
+          .github/odbc/install-oracle-driver.sh
+          echo "LD_LIBRARY_PATH=/opt/oracle/instantclient_21_12:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+          mkdir -p $ODBCSYSINI/pro_drivers/oracle
+          touch $ODBCSYSINI/pro_drivers/oracle.tar.gz
+          curl ${{ secrets.PRO_DRIVER_ORACLE }} --output $ODBCSYSINI/pro_drivers/oracle.tar.gz
+          tar -xvzf $ODBCSYSINI/pro_drivers/oracle.tar.gz -C $ODBCSYSINI/pro_drivers/oracle
+
+      - name: Install PostgreSQL Driver
+        run: |
+          echo "ODBC_CS_POSTGRES=dsn=ProPostgreSQL" >> $GITHUB_ENV
+          mkdir -p $ODBCSYSINI/pro_drivers/postgresql
+          touch $ODBCSYSINI/pro_drivers/postgresql.tar.gz
+          curl ${{ secrets.PRO_DRIVER_POSTGRESQL }} --output $ODBCSYSINI/pro_drivers/postgresql.tar.gz
+          tar -xvzf $ODBCSYSINI/pro_drivers/postgresql.tar.gz -C $ODBCSYSINI/pro_drivers/postgresql
+
+      - name: Install dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          needs: check
+
+      - name: Install locally to avoid error with test_local()
+        run: |
+          R CMD INSTALL .
+        env:
+          LIB_DIR: /usr/lib/x86_64-linux-gnu/
+          INCLUDE_DIR: /usr/include
+
+      - name: Test
+        run: |
+          options("odbc.interruptible"=TRUE);testthat::test_local(reporter = testthat::ProgressReporter$new(max_failures = Inf, update_interval = Inf))
+        shell: Rscript {0}

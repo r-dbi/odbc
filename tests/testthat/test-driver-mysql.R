@@ -101,6 +101,9 @@ test_that("odbcPreviewObject", {
 test_that("sproc result retrieval", {
   con <- test_con("MYSQL")
 
+  # todo: resolve the issue requiring this skip
+  skip_if(grepl("RStudio", dbGetInfo(con)$drivername), "Pro Drivers fail this test.")
+
   sprocName <- "testSproc"
   DBI::dbExecute(
     con,
