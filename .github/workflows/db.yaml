@@ -102,7 +102,7 @@ jobs:
           cp .github/odbc/simba.snowflake.ini .github/odbc/snowflake_odbc/lib/simba.snowflake.ini
           echo "CABundleFile=$ODBCSYSINI/snowflake_odbc/lib/cacert.pem" >> .github/odbc/snowflake_odbc/lib/simba.snowflake.ini
           echo "ErrorMessagesPath=$ODBCSYSINI/snowflake_odbc/ErrorMessages/" >> .github/odbc/snowflake_odbc/lib/simba.snowflake.ini
-          echo "Driver=SnowflakeDSIIDriver" > | tee -a $ODBCSYSINI/odbc.ini
+          echo "Driver=SnowflakeDSIIDriver" | tee -a $ODBCSYSINI/odbc.ini
 
       # note that this assumes Snowflake is the last odbc.ini entry
       - name: Prepare Snowflake private key
