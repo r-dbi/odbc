@@ -94,6 +94,22 @@ jobs:
           curl ${{ secrets.PRO_DRIVER_POSTGRESQL }} --output $ODBCSYSINI/pro_drivers/postgresql.tar.gz
           tar -xvzf $ODBCSYSINI/pro_drivers/postgresql.tar.gz -C $ODBCSYSINI/pro_drivers/postgresql
 
+      - name: Install Snowflake Driver
+        run: |
+          echo "ODBC_CS_SNOWFLAKE=dsn=Snowflake" >> $GITHUB_ENV
+          mkdir -p $ODBCSYSINI/pro_drivers/snowflake
+          touch $ODBCSYSINI/pro_drivers/snowflake.tar.gz
+          curl ${{ secrets.PRO_DRIVER_SNOWFLAKE }} --output $ODBCSYSINI/pro_drivers/snowflake.tar.gz
+          tar -xvzf $ODBCSYSINI/pro_drivers/snowflake.tar.gz -C $ODBCSYSINI/pro_drivers/snowflake
+          echo "Driver=$ODBCSYSINI/pro_drivers/snowflake/bin/lib/libsnowflakeodbc_sb64.so" > | tee -a $ODBCSYSINI/odbc.ini
+
+      # note that this assumes Snowflake is the last odbc.ini entry
+      - name: Prepare Snowflake private key
+        run: |
+          echo "${{ secrets.SNOWFLAKE_PRIVATE_KEY }}" > $ODBCSYSINI/private_key.pem
+          echo "PRIV_KEY_FILE=$ODBCSYSINI/private_key.pem" | tee -a $ODBCSYSINI/odbc.ini
+          export SNOWFLAKE_PRIVATE_KEY_EXISTS=TRUE
+
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
