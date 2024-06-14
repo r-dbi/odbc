@@ -101,7 +101,7 @@ jobs:
           touch $ODBCSYSINI/pro_drivers/snowflake.tar.gz
           curl ${{ secrets.PRO_DRIVER_SNOWFLAKE }} --output $ODBCSYSINI/pro_drivers/snowflake.tar.gz
           tar -xvzf $ODBCSYSINI/pro_drivers/snowflake.tar.gz -C $ODBCSYSINI/pro_drivers/snowflake
-          echo "Driver=$ODBCSYSINI/pro_drivers/snowflake/bin/lib/libsnowflakeodbc_sb64.so" > | tee -a $ODBCSYSINI/odbc.ini
+          echo "Driver=$ODBCSYSINI/pro_drivers/snowflake/bin/lib/libsnowflakeodbc_sb64.so" | tee -a $ODBCSYSINI/odbc.ini
 
       # note that this assumes Snowflake is the last odbc.ini entry
       - name: Prepare Snowflake private key
