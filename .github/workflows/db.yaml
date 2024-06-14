@@ -104,6 +104,13 @@ jobs:
           echo "CABundleFile=$ODBCSYSINI/snowflake_odbc/lib/cacert.pem" >> .github/odbc/snowflake_odbc/lib/simba.snowflake.ini
           echo "ErrorMessagesPath=$ODBCSYSINI/snowflake_odbc/ErrorMessages/" >> .github/odbc/snowflake_odbc/lib/simba.snowflake.ini
 
+      # note that this assumes Snowflake is the last odbc.ini entry
+      - name: Prepare Snowflake private key
+        run: |
+          echo "${{ secrets.SNOWFLAKE_PRIVATE_KEY }}" > $ODBCSYSINI/private_key.pem
+          echo "PRIV_KEY_FILE=$ODBCSYSINI/private_key.pem" | tee -a $ODBCSYSINI/odbc.ini
+          export SNOWFLAKE_PRIVATE_KEY_EXISTS=TRUE
+
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
