@@ -1,7 +1,7 @@
 test_that("can connect to snowflake", {
-  pwd <- Sys.getenv("ODBC_PWD_SNOWFLAKE")
-  if (nchar(pwd) == 0) {
-    skip("Secret ODBC_PWD_SNOWFLAKE not available.")
+  key_exists <- Sys.getenv("SNOWFLAKE_PRIVATE_KEY_EXISTS")
+  if (nchar(key_exists) == 0) {
+    skip("Secret SNOWFLAKE_PRIVATE_KEY not available.")
   }
 
   con <- test_con("SNOWFLAKE")
@@ -145,19 +145,5 @@ test_that("Workbench-managed credentials are ignored for other accounts", {
   expect_snapshot(
     snowflake_args(account = "testorg-test_account", driver = "driver"),
     error = TRUE
-  )
-})
-
-test_that("snowflake() works against a real account", {
-  pwd <- Sys.getenv("ODBC_PWD_SNOWFLAKE")
-  if (nchar(pwd) == 0) {
-    skip("Secret ODBC_PWD_SNOWFLAKE not available.")
-  }
-  dbConnect(
-    odbc::snowflake(),
-    account = "uab99020.us-east-1",
-    driver = "SnowflakeDSIIDriver",
-    uid = "odbcTestRunner",
-    pwd = pwd
   )
 })
