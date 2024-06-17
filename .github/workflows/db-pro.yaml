@@ -8,7 +8,7 @@ on:
       - master
       - main
 
-name: DBs (Linux)
+name: DBs + Posit Pro Drivers (Linux)
 
 jobs:
   database:
@@ -62,47 +62,46 @@ jobs:
         run: |
           sudo systemctl start mysql.service
           mysql -uroot -h127.0.0.1 -proot -e 'CREATE DATABASE `test`;'
-          .github/odbc/install-mariadb-driver.sh
-          echo "ODBC_CS_MYSQL=dsn=MySQL" >> $GITHUB_ENV
-
-      - name: Install SQLite Driver
-        run: |
-          sudo apt-get install -y libsqliteodbc
-          echo "ODBC_CS_SQLITE=dsn=SQLite" >> $GITHUB_ENV
-
-      - name: Install PostgreSQL Driver
-        run: |
-          sudo apt-get install -y unixodbc-dev odbc-postgresql devscripts
-          echo "ODBC_CS_POSTGRES=dsn=PostgreSQL" >> $GITHUB_ENV
+          echo "ODBC_CS_MYSQL=dsn=ProMySQL" >> $GITHUB_ENV
+          mkdir -p $ODBCSYSINI/pro_drivers/mysql
+          touch $ODBCSYSINI/pro_drivers/mysql.tar.gz
+          curl ${{ secrets.PRO_DRIVER_MYSQL }} --output $ODBCSYSINI/pro_drivers/mysql.tar.gz
+          tar -xvzf $ODBCSYSINI/pro_drivers/mysql.tar.gz -C $ODBCSYSINI/pro_drivers/mysql
 
       - name: Install SQL Server Driver
         run: |
-          echo "ODBC_CS_SQLSERVER=dsn=MicrosoftSQLServer;UID=SA;PWD=Password12" >> $GITHUB_ENV
-          sudo bash -c "
-            curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-            && curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list > /etc/apt/sources.list.d/mssql-release.list \
-            && apt-get update \
-            && ACCEPT_EULA=Y apt-get install -y msodbcsql17 \
-            && ln -s /opt/microsoft/msodbcsql17/lib64/libmsodbcsql-17.*.so.* /opt/microsoft/msodbcsql17/lib64/libmsodbcsql-17.so"
+          echo "ODBC_CS_SQLSERVER=dsn=ProMicrosoftSQLServer;UID=SA;PWD=Password12" >> $GITHUB_ENV
+          mkdir -p $ODBCSYSINI/pro_drivers/sql_server
+          touch $ODBCSYSINI/pro_drivers/sql_server.tar.gz
+          curl ${{ secrets.PRO_DRIVER_SQL_SERVER }} --output $ODBCSYSINI/pro_drivers/sql_server.tar.gz
+          tar -xvzf $ODBCSYSINI/pro_drivers/sql_server.tar.gz -C $ODBCSYSINI/pro_drivers/sql_server
 
       - name: Install Oracle Driver
         run: |
+          echo "ODBC_CS_ORACLE=dsn=ProOracle;UID=RodbcR;PWD=Password12;DBQ=test" >> $GITHUB_ENV
           .github/odbc/install-oracle-driver.sh
           echo "LD_LIBRARY_PATH=/opt/oracle/instantclient_21_12:$LD_LIBRARY_PATH" >> $GITHUB_ENV
-          echo "ODBC_CS_ORACLE=dsn=Oracle;UID=RodbcR;PWD=Password12;DBQ=test" >> $GITHUB_ENV
+          mkdir -p $ODBCSYSINI/pro_drivers/oracle
+          touch $ODBCSYSINI/pro_drivers/oracle.tar.gz
+          curl ${{ secrets.PRO_DRIVER_ORACLE }} --output $ODBCSYSINI/pro_drivers/oracle.tar.gz
+          tar -xvzf $ODBCSYSINI/pro_drivers/oracle.tar.gz -C $ODBCSYSINI/pro_drivers/oracle
+
+      - name: Install PostgreSQL Driver
+        run: |
+          echo "ODBC_CS_POSTGRES=dsn=ProPostgreSQL" >> $GITHUB_ENV
+          mkdir -p $ODBCSYSINI/pro_drivers/postgresql
+          touch $ODBCSYSINI/pro_drivers/postgresql.tar.gz
+          curl ${{ secrets.PRO_DRIVER_POSTGRESQL }} --output $ODBCSYSINI/pro_drivers/postgresql.tar.gz
+          tar -xvzf $ODBCSYSINI/pro_drivers/postgresql.tar.gz -C $ODBCSYSINI/pro_drivers/postgresql
 
       - name: Install Snowflake Driver
         run: |
           echo "ODBC_CS_SNOWFLAKE=dsn=Snowflake" >> $GITHUB_ENV
-          curl https://sfc-repo.snowflakecomputing.com/odbc/linux/3.2.0/snowflake_linux_x8664_odbc-3.2.0.tgz --output snowflake_linux_x8664_odbc-3.2.0.tgz
-          gunzip snowflake_linux_x8664_odbc-3.2.0.tgz
-          tar -xvf snowflake_linux_x8664_odbc-3.2.0.tar
-          mv snowflake_odbc $ODBCSYSINI
-          rm snowflake_linux_x8664_odbc-3.2.0.tar
-          cp .github/odbc/simba.snowflake.ini .github/odbc/snowflake_odbc/lib/simba.snowflake.ini
-          echo "CABundleFile=$ODBCSYSINI/snowflake_odbc/lib/cacert.pem" >> .github/odbc/snowflake_odbc/lib/simba.snowflake.ini
-          echo "ErrorMessagesPath=$ODBCSYSINI/snowflake_odbc/ErrorMessages/" >> .github/odbc/snowflake_odbc/lib/simba.snowflake.ini
-          echo "Driver=SnowflakeDSIIDriver" | tee -a $ODBCSYSINI/odbc.ini
+          mkdir -p $ODBCSYSINI/pro_drivers/snowflake
+          touch $ODBCSYSINI/pro_drivers/snowflake.tar.gz
+          curl ${{ secrets.PRO_DRIVER_SNOWFLAKE }} --output $ODBCSYSINI/pro_drivers/snowflake.tar.gz
+          tar -xvzf $ODBCSYSINI/pro_drivers/snowflake.tar.gz -C $ODBCSYSINI/pro_drivers/snowflake
+          echo "Driver=$ODBCSYSINI/pro_drivers/snowflake/bin/lib/libsnowflakeodbc_sb64.so" | tee -a $ODBCSYSINI/odbc.ini
 
       # note that this assumes Snowflake is the last odbc.ini entry
       - name: Prepare Snowflake private key

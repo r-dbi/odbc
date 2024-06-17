@@ -22,6 +22,8 @@ test_that("SQLServer", {
   DBItest::test_result(c(
     "get_query_n_zero_rows",
     "get_query_n_incomplete",
+    # TODO: fails with Pro Driver due to no "good" results returned
+    "fetch_n_good_after_bad",
     "fetch_no_return_value", # TODO
     "clear_result_return_statement",
     "cannot_clear_result_twice_statement",
@@ -230,6 +232,8 @@ test_that("odbcPreviewObject doesn't warn about pending rows", {
 
 test_that("dates should always be interpreted in the system time zone (#398)", {
   con <- test_con("SQLSERVER")
+  # TODO: resolve the issue requiring this skip
+  skip_if(grepl("RStudio", dbGetInfo(con)$drivername), "Pro Drivers fail this test.")
   res <- dbGetQuery(con, "SELECT CAST(? AS date)", params = as.Date("2019-01-01"))
   expect_equal(res[[1]], as.Date("2019-01-01"))
 })
