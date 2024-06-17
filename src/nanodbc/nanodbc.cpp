@@ -274,6 +274,8 @@ inline void convert(const wide_string_type& in, std::string& out)
     using boost::locale::conv::utf_to_utf;
     out = utf_to_utf<char>(in.c_str(), in.c_str() + in.size());
 #else
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 // Workaround for confirmed bug in VS2015. See:
 // https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
 // https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481
@@ -281,6 +283,7 @@ inline void convert(const wide_string_type& in, std::string& out)
     auto p = reinterpret_cast<unsigned short const*>(in.data());
     out = std::wstring_convert<NANODBC_CODECVT_TYPE<unsigned short>, unsigned short>().to_bytes(
         p, p + in.size());
+# pragma GCC diagnostic pop
 #else
 
 #ifdef NANODBC_USE_NATIVE_CONVERT
@@ -319,11 +322,14 @@ inline void convert(const std::string& in, wide_string_type& out)
 // Workaround for confirmed bug in VS2015. See:
 // https://connect.microsoft.com/VisualStudio/Feedback/Details/1403302
 // https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #elif defined(_MSC_VER) && (_MSC_VER == 1900)
     auto s =
         std::wstring_convert<NANODBC_CODECVT_TYPE<unsigned short>, unsigned short>().from_bytes(in);
     auto p = reinterpret_cast<wide_char_t const*>(s.data());
     out.assign(p, p + s.size());
+# pragma GCC diagnostic pop
 #else
 #ifdef NANODBC_USE_NATIVE_CONVERT
     if (in.empty())
@@ -334,8 +340,11 @@ inline void convert(const std::string& in, wide_string_type& out)
         MultiByteToWideChar(CP_UTF8, 0, &in[0], static_cast<int>(in.size()), nullptr, 0);
     out.resize(size_needed);
     MultiByteToWideChar(CP_UTF8, 0, &in[0], static_cast<int>(in.size()), &out[0], size_needed);
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #else
     out = std::wstring_convert<NANODBC_CODECVT_TYPE<wide_char_t>, wide_char_t>().from_bytes(in);
+# pragma GCC diagnostic pop
 #endif
 #endif
 }
@@ -496,19 +505,13 @@ const std::string database_error::state() const NANODBC_NOEXCEPT
     return sql_state;
 }
 
-void database_error::rethrow() {
-  Rcpp::Environment pkg = Rcpp::Environment::namespace_env("odbc");
-  Rcpp::Function rethrow_database_error = pkg["rethrow_database_error"];
-  rethrow_database_error(message);
-}
-
 } // namespace nanodbc
 
 // Throwing exceptions using NANODBC_THROW_DATABASE_ERROR enables file name
 // and line numbers to be inserted into the error message. Useful for debugging.
 #define NANODBC_THROW_DATABASE_ERROR(handle, handle_type)                                          \
-    nanodbc::database_error(                                                                 \
-        handle, handle_type, __FILE__ ":" NANODBC_STRINGIZE(__LINE__) ": ").rethrow() /**/
+    throw nanodbc::database_error(                                                                 \
+        handle, handle_type, __FILE__ ":" NANODBC_STRINGIZE(__LINE__) ": ") /**/
 
 // clang-format off
 // 8888888b.           888             d8b 888
@@ -1865,6 +1868,10 @@ public:
 
     unsigned long parameter_size(short param_index) const
     {
+        if (!param_descr_data_.count(param_index))
+        {
+                return static_cast<unsigned long>(param_descr_data_.at(param_index).size_);
+        }
         RETCODE rc;
         SQLSMALLINT data_type;
         SQLSMALLINT nullable;
@@ -1934,9 +1941,9 @@ public:
                 rc,
                 stmt_,
                 param_index + 1,
-                &param.type_,
-                &param.size_,
-                &param.scale_,
+                &param_descr_data_[param_index].type_,
+                &param_descr_data_[param_index].size_,
+                &param_descr_data_[param_index].scale_,
                 &nullable);
             if (!success(rc))
             {
@@ -1944,19 +1951,15 @@ public:
                 // truncate data if it is longer than 255 characters, and may not
                 // work for all data types, but is necessary to support drivers
                 // which do not support SQLDescribeParam.
-                param.type_ = SQL_VARCHAR;
-                param.size_ = 255;
-                param.scale_ = 0;
+                param_descr_data_[param_index].type_ = SQL_VARCHAR;
+                param_descr_data_[param_index].size_ = 255;
+                param_descr_data_[param_index].scale_ = 0;
             }
         }
-        else
-        {
-            param.type_ = param_descr_data_[param_index].type_;
-            param.size_ = param_descr_data_[param_index].size_;
-            param.scale_ = param_descr_data_[param_index].scale_;
-        }
-
         param.index_ = param_index;
+        param.type_ = param_descr_data_[param_index].type_;
+        param.size_ = param_descr_data_[param_index].size_;
+        param.scale_ = param_descr_data_[param_index].scale_;
         param.iotype_ = param_type_from_direction(direction);
 
         if (!bind_len_or_null_.count(param_index))

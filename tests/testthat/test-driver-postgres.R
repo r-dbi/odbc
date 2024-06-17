@@ -30,6 +30,10 @@ test_that("PostgreSQL", {
     "data_64_bit_numeric_warning", # TODO
     "data_64_bit_lossless", # TODO
     "data_integer", # Fails, unreliably on Windows
+    # TODO: fails with Pro Driver with "a statement is already in progress"
+    "send_query_immediate",
+    # TODO: fails with Pro Driver with "a statement is already in progress"
+    "send_query_only_one_result_set",
     "send_query_syntax_error", # TODO
     "get_query_syntax_error", # TODO
     "send_query_params", # TODO

@@ -1,6 +1,6 @@
 Package: odbc
 Title: Connect to ODBC Compatible Databases (using the DBI Interface)
-Version: 1.4.2.9000
+Version: 1.5.0.9000
 Authors@R: c(
     person("Jim", "Hester", role = "aut"),
     person("Hadley", "Wickham", , "hadley@posit.co", role = c("aut", "cre")),
@@ -17,7 +17,7 @@ URL: https://odbc.r-dbi.org, https://github.com/r-dbi/odbc,
     https://solutions.posit.co/connections/db/
 BugReports: https://github.com/r-dbi/odbc/issues
 Depends: 
-    R (>= 3.6.0)
+    R (>= 4.0.0)
 Imports:
     bit64,
     blob (>= 1.2.0),

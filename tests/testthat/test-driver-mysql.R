@@ -38,6 +38,8 @@ test_that("MySQL", {
     "roundtrip_timestamp", # We explicitly want to set tzone to UTC regardless of input
     "roundtrip_time",
     "roundtrip_raw", # TODO
+    # TODO: fails with Pro Driver with shuffled names
+    "list_fields",
     "list_tables",
     ".*_table_name",
     "write_table_error", # TODO
@@ -100,6 +102,9 @@ test_that("odbcPreviewObject", {
 
 test_that("sproc result retrieval", {
   con <- test_con("MYSQL")
+
+  # TODO: resolve the issue requiring this skip
+  skip_if(grepl("libmysqlodbc_sb64", dbGetInfo(con)$drivername), "Pro Drivers fail this test.")
 
   sprocName <- "testSproc"
   DBI::dbExecute(

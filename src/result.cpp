@@ -50,9 +50,6 @@ void result_bind(result_ptr const& r, List const& params, size_t batch_rows) {
 }
 
 // [[Rcpp::export]]
-void result_execute(result_ptr const& r) { r->execute(); }
-
-// [[Rcpp::export]]
 void result_insert_dataframe(
     result_ptr const& r, DataFrame const& df, size_t batch_rows) {
   r->bind_list(df, true, batch_rows);

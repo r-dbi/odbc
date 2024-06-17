@@ -26,7 +26,8 @@ public:
       std::string encoding = "",
       bigint_map_t bigint_mapping = i64_to_integer64,
       long timeout = 0,
-      Rcpp::Nullable<Rcpp::List> const& r_attributes_ = R_NilValue);
+      Rcpp::Nullable<Rcpp::List> const& r_attributes = R_NilValue,
+      bool const& interruptible_execution = true);
 
   std::shared_ptr<nanodbc::connection> connection() const;
 
@@ -57,5 +58,6 @@ private:
   std::string timezone_out_str_;
   std::string encoding_;
   bigint_map_t bigint_mapping_;
+  bool interruptible_execution_;
 };
 } // namespace odbc

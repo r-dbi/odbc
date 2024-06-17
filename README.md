@@ -19,9 +19,9 @@ The goal of the odbc package is to provide a
 [ODBC](https://learn.microsoft.com/en-us/sql/odbc/microsoft-open-database-connectivity-odbc)
 drivers. This makes it easy to connect databases such as [SQL
 Server](https://www.microsoft.com/en-us/sql-server/),
-[Oracle](https://www.oracle.com/database),
+Oracle,
 [Databricks](https://www.databricks.com/), and
-[Snowflake](https://www.snowflake.com/en/).
+Snowflake.
 
 The odbc package is an alternative to
 [RODBC](https://cran.r-project.org/package=RODBC) and

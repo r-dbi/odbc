@@ -33,11 +33,13 @@ odbc_connection::odbc_connection(
     std::string encoding,
     bigint_map_t bigint_mapping,
     long timeout,
-    Rcpp::Nullable<Rcpp::List> const& r_attributes_)
+    Rcpp::Nullable<Rcpp::List> const& r_attributes,
+    bool const& interruptible_execution)
     : current_result_(nullptr),
       timezone_out_str_(timezone_out),
       encoding_(encoding),
-      bigint_mapping_(bigint_mapping) {
+      bigint_mapping_(bigint_mapping),
+      interruptible_execution_(interruptible_execution) {
 
   if (!cctz::load_time_zone(timezone, &timezone_)) {
     Rcpp::stop("Error loading time zone (%s)", timezone);
@@ -53,10 +55,11 @@ odbc_connection::odbc_connection(
     std::list< nanodbc::connection::attribute > attributes;
     std::list< std::shared_ptr< void > > buffer_context;
     utils::prepare_connection_attributes(
-        timeout, r_attributes_, attributes, buffer_context );
+        timeout, r_attributes, attributes, buffer_context );
     c_ = std::make_shared<nanodbc::connection>(connection_string, attributes);
   } catch (const nanodbc::database_error& e) {
-    throw Rcpp::exception(e.what(), FALSE);
+    Iconv encoder(this->encoding(), "UTF-8");
+    utils::raise_error(odbc_error(e, "", encoder));
   }
 }
 
