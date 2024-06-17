@@ -122,7 +122,24 @@ setMethod("odbcConnectionColumns_", c("Oracle", "character"),
       )
     }
 
-    dbGetQuery(conn, query)
+    res <- dbGetQuery(conn, query)
+
+    # SQLColumns does not correctly describe buffer sizes for date/time
+    # fields ( nor does our custom query above ).  We use these data
+    # as a fallback for SQLDescribeParam ( also incorrectly describes
+    # parameters for ORACLE ) when writing using prepared statements ( see
+    # `dbAppendTable` ).  Fix them here.  91 and 93 are SQL_TYPE_DATE,
+    # and SQL_TYPE_TIMESTAMP, respectively in sql.h.  Six and sixteen
+    # are the sizes of nanodbc::date and nanodbc::timestmp in bytes
+    # (#349, #350, #391).
+    res$data_type <- as.numeric(res$data_type)
+    isDate <- res$field.type == "DATE"
+    res$data_type[isDate] <- 91
+    res$column_size[isDate] <- 6
+    isTimestamp <- grepl("TIMESTAMP", res$field.type)
+    res$data_type[isTimestamp] <- 93
+    res$column_size[isTimestamp] <- 16
+    res
   }
 )
 

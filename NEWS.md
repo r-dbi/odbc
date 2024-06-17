@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* oracle: Fix writing to DATE and TIMESTAMP(n) targets using `batch_size` > 1.
+
 * SQL Server: Fix issue related to writing when using SIMBA drivers (#816).
 
 # odbc 1.5.0

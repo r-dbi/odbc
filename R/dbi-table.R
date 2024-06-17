@@ -157,7 +157,7 @@ setMethod("dbAppendTable", "OdbcConnection",
       )
       rs <- OdbcResult(conn, sql)
 
-      if (!is.null(fieldDetails) && nrow(fieldDetails) == nparam) {
+      if (!is.null(fieldDetails) && nrow(fieldDetails) <= nparam) {
         result_describe_parameters(rs@ptr, fieldDetails)
       }
 
