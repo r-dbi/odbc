@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# odbc
+# odbc <a href="https://odbc.r-dbi.org"><img src="man/figures/logo.png" align="right" height="138" alt="odbc website" /></a>
 <!-- badges: start -->
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/odbc)](https://cran.r-project.org/package=odbc)
