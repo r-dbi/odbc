@@ -252,15 +252,8 @@ configure_spark <- function(call = caller_env()) {
     return(invisible())
   }
 
-  unixodbc_install <- locate_install_unixodbc()
-  if (length(unixodbc_install) == 0) {
-    abort(
-      c(
-        "Unable to locate the unixODBC driver manager.",
-        i = "Please install unixODBC using Homebrew with `brew install unixodbc`."
-      ),
-      call = call
-    )
+  if (length(locate_install_unixodbc()) == 0) {
+    error_install_unixodbc(call)
   }
 
   spark_config <- locate_config_spark()
@@ -296,6 +289,16 @@ locate_install_unixodbc <- function() {
     common_dirs,
     pattern = "libodbcinst\\.dylib$",
     full.names = TRUE
+  )
+}
+
+error_install_unixodbc <- function(call) {
+  abort(
+    c(
+      "Unable to locate the unixODBC driver manager.",
+      i = "Please install unixODBC using Homebrew with `brew install unixodbc`."
+    ),
+    call = call
   )
 }
 

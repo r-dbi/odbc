@@ -34,3 +34,10 @@ test_that("dbQuoteIdentifier() errors informatively", {
     dbQuoteIdentifier(con, NA_character_)
   )
 })
+
+test_that("dbConnect() errors informatively without unixODBC (#782)", {
+  local_mocked_bindings(
+    locate_install_unixodbc = function(...) {character()}
+  )
+  expect_snapshot(error = TRUE, test_con("SQLITE"))
+})

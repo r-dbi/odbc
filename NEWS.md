@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* `dbConnect(odbc(), ....)` will now error informatively if the package
+  can't locate a unixODBC install on MacOS and Linux (@simonpcouch, #782).
+
 * Added a hex logo for the package (@edgararuiz, #824).
 
 * oracle: Fix writing to DATE and TIMESTAMP(n) targets using `batch_size` > 1.
