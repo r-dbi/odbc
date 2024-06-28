@@ -1,9 +1,8 @@
 # odbc (development version)
 
-* DB2: Better support for temp tables in `dbListTables`, and `dbExistsTable`.
+* DB2: Better support for temp tables in `dbListTables`, and `dbExistsTable (#823).
 
-* oracle: Fix writing to DATE and TIMESTAMP(n) targets using `batch_size` > 1.
-  (#810)
+* oracle: Fix writing to DATE and TIMESTAMP(n) targets using `batch_size` > 1 (#810),
 
 * SQL Server: Fix issue related to writing when using SIMBA drivers (#816).
 
