@@ -1,6 +1,6 @@
 # odbc (development version)
 
-* `dbConnect(odbc(), ....)` will now error informatively if the package
+* `dbConnect(odbc(), ...)` will now error informatively if the package
   can't locate a unixODBC install on MacOS and Linux (@simonpcouch, #782).
 
 * Added a hex logo for the package (@edgararuiz, #824).
