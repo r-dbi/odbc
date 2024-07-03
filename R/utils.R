@@ -291,7 +291,7 @@ locate_install_unixodbc <- function() {
 
   list.files(
     common_dirs,
-    pattern = "libodbcinst\\.(dylib|so)$",
+    pattern = libodbcinst_filename(),
     full.names = TRUE
   )
 }
@@ -300,7 +300,7 @@ system_safely <- function(x) {
   tryCatch(
     {
       unixodbc_prefix <- system(x, intern = TRUE, ignore.stderr = TRUE)
-      return(paste0(unixodbc_prefix, "/libodbcinst.", libodbcinst_extension()))
+      return(paste0(unixodbc_prefix, "/", libodbcinst_filename()))
     },
     error = function(e) {},
     warning = function(w) {}
@@ -308,29 +308,23 @@ system_safely <- function(x) {
   character()
 }
 
-libodbcinst_extension <- function() {
+libodbcinst_filename <- function() {
   if (is_macos()) {
-    return("dylib")
+    "libodbcinst.dylib"
+  } else {
+    "libodbcinst.so"
   }
-  return("so")
 }
 
 error_install_unixodbc <- function(call) {
   abort(
     c(
       "Unable to locate the unixODBC driver manager.",
-      i = prompt_install_unixodbc()
+      i = if (is_macos()) "Please install unixODBC using Homebrew with `brew install unixodbc`.",
+      i = if (!is_macos()) "Please install unixODBC and retry."
     ),
     call = call
   )
-}
-
-prompt_install_unixodbc <- function() {
-  if (is_macos()) {
-    return("Please install unixODBC using Homebrew with `brew install unixodbc`.")
-  }
-
-  "Please install unixODBC and retry."
 }
 
 # p. 44 https://downloads.datastax.com/odbc/2.6.5.1005/Simba%20Spark%20ODBC%20Install%20and%20Configuration%20Guide.pdf
