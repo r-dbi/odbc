@@ -54,7 +54,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="odbc-development-version">odbc (development version)<a class="anchor" aria-label="anchor" href="#odbc-development-version"></a></h2>
-<ul><li><p>Added a hex logo for the package (<a href="https://github.com/edgararuiz" class="external-link">@edgararuiz</a>, <a href="https://github.com/r-dbi/odbc/issues/824" class="external-link">#824</a>).</p></li>
+<ul><li><p><code>dbConnect(odbc(), ...)</code> will now error informatively if the package can’t locate a unixODBC install on MacOS and Linux (<a href="https://github.com/simonpcouch" class="external-link">@simonpcouch</a>, <a href="https://github.com/r-dbi/odbc/issues/782" class="external-link">#782</a>).</p></li>
+<li><p>Added a hex logo for the package (<a href="https://github.com/edgararuiz" class="external-link">@edgararuiz</a>, <a href="https://github.com/r-dbi/odbc/issues/824" class="external-link">#824</a>).</p></li>
 <li><p>oracle: Fix writing to DATE and TIMESTAMP(n) targets using <code>batch_size</code> &gt; 1.</p></li>
 <li><p>SQL Server: Fix issue related to writing when using SIMBA drivers (<a href="https://github.com/r-dbi/odbc/issues/816" class="external-link">#816</a>).</p></li>
 </ul></div>
