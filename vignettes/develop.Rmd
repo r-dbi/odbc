@@ -222,59 +222,87 @@ The above example assumes the configured SQLite DSN is called `"SQLite"`.
 
 A huge pain.
 
-Get the DB container:
+## Oracle
 
-```shell
-docker login
+A huge pain.
 
-docker pull store/oracle/database-enterprise:12.2.0.1
+These instructions are for a Linux machine running Ubuntu 22.04. Oracle [just recently](https://github.com/oracle/python-cx_Oracle/issues/617#issuecomment-2182010721) released Instant Client for ARM64, so MacOS instructions may be coming down the line.
+
+Two steps here--1) booting up an Oracle database in a docker container and 2) installing and configuring the Oracle Instant Client and driver to connect to that database.
+
+If you haven't already, you'll need to install Docker Desktop, unixODBC, and `libaio1`. You can get the last with:
+
+``` shell
+sudo apt-get install libaio1
 ```
 
-Start the container:
+First, to boot up an Oracle database in a Docker container, run:
 
-```shell
-docker run -d -it --name oracle_db -P store/oracle/database-enterprise:12.2.0.1
+``` shell
+docker run -d \
+  --name oracle2 \
+  -p 1521:1521 \
+  -e ORACLE_RANDOM_PASSWORD=true \
+  -e ORACLE_DATABASE=test \
+  -e APP_USER=RodbcR \
+  -e APP_USER_PASSWORD=Password12 \
+  gvenzl/oracle-xe:21.3.0
 ```
 
-The `-P` is important to set up the port forwarding from the docker container.
+Some documentation on this Docker image [here](https://hub.docker.com/r/gvenzl/oracle-xe).
 
+Now, as for installing and configuring the Oracle Instant Client and driver, the PRs [implementing support for unit testing Oracle](https://github.com/r-dbi/odbc/commit/257f041a3aec8348000a89208da5ed0eb059fe81) and [adding support for the Oracle Pro Driver](https://github.com/r-dbi/odbc/commit/4090f0a7916db7ab22e4088040aa2492751140dd) for odbc are a great guide here. The "Installation Instructions" at the bottom of [Oracle's Instant Client docs](https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html) are thorough--you shouldn't need them here, but a good backup.
 
-Then, query the port and edit the ports in `tnsnames.ora`:
+I ultimately wasn't able to make a connection with the driver that Oracle ships, but was able to do so with the Posit Pro Drivers.
 
-```shell
-docker port oracle_db
+Run the lines in `.github/odbc/install-oracle-driver.sh` from the first linked PR, which installs both the Instant Client and Oracle's driver.
+
+Add the following lines to your .Rprofile (with `usethis::edit_r_profile()`): 
+
+``` r
+Sys.setenv(LD_LIBRARY_PATH = paste0("/opt/oracle/instantclient_21_12:", Sys.getenv("LD_LIBRARY_PATH")))
+Sys.setenv(PATH = paste0("/opt/oracle/instantclient_21_12:", Sys.getenv("PATH")))
 ```
 
-The contents of `snsnames.ora` should look like:
+Create a text file called `/opt/oracle/instant_client_21_12/tnsnames.ora` and paste the following inside of it:
 
 ```
-ORCLCDB=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=32769))
-    (CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCLCDB.localdomain)))
-ORCLPDB1=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=32769))
-    (CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCLPDB1.localdomain)))
+TEST=
+   (DESCRIPTION=
+    (ADDRESS=(PROTOCOL=tcp)(HOST=0.0.0.0)(PORT=1521))
+    (CONNECT_DATA=(SERVICE_NAME=test)))
 ```
 
-Ensure that the current working directly is [set appropriately](https://www.ibm.com/support/pages/how-configure-tnsnamesora-use-dedicated-server-process-datastage-connections-oracle-databases#:~:text=accessed%20via%20DataStage%3A-,The%20tnsnames.,specified%20by%20the%20TNS_ADMIN%20variable.). 
+Install the RStudio Pro Oracle driver, either using the [installation code from the linked PR](https://github.com/r-dbi/odbc/commit/4090f0a7916db7ab22e4088040aa2492751140dd#diff-bc1733bfd46bbe6f651eee14b11879e4b7e0428af876e0322768bdbf138ef238R84-R87) (see the repository secret for the driver URL or contact Simon Couch or Hadley Wickham if you don't have access) or through RStudio Pro (if you have credentials, you can generate yourself a license key [here](https://connect.posit.it/support/license_management/)).
 
-Then, to add a new user to the database:
+Add the following lines to your `.Renviron` (with `usethis::edit_r_environ()`). Adjust the value for `ODBCSYSINI` to the directory prefixing `.ini` files in `odbcinst -j`.
 
-```shell
-docker exec -it oracle_db bash -c "source /home/oracle/.bashrc; sqlplus SYS/Oradoc_db1 AS SYSDBA"
+```
+TNS_ADMIN=/opt/oracle/instantclient_21_12
+ODBCSYSINI=/etc
+ORACLE_HOME=/opt/oracle
 ```
 
-```sql
-alter session set "_ORACLE_SCRIPT"=true;
+Symlink your Instant Client install into the Pro Driver install directory with `sudo ln -s /opt/oracle/instantclient_21_12/* /etc/pro_drivers/oracle/bin/lib/`.
 
-create user test identified by 12345;
+Add the following to your `odbc.ini`:
 
-GRANT ALL PRIVILEGES TO TEST;
+``` ini
+[ProOracle]
+Driver = /etc/pro_drivers/oracle/bin/lib/liboracleodbc_sb64.so
+Port = 1521
+Host = localhost
+SVC = FREEPDB1
+UID = RodbcR
+PWD = Password12
+DBQ = test
 ```
 
-Finally, in R:
+Now, putting the pieces together, connect to the Oracle Database docker container from R with:
 
-```r
-Sys.setenv("TNS_ADMIN" = getwd())
-con <- dbConnect(odbc::odbc(), "OracleODBC-19")
+``` r
+library(odbc)
+dbConnect(odbc(), dsn = "ProOracle")
 ```
 
 ## Snowflake
