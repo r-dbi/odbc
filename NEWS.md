@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* DB2: Better support for temp tables in `dbListTables`, and `dbExistsTable` (#823).
+
 * `dbConnect(odbc(), ...)` will now error informatively if the package
   can't locate a unixODBC install on MacOS and Linux (@simonpcouch, #782).
 

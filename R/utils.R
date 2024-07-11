@@ -172,6 +172,7 @@ rethrow_database_error <- function(msg, call = trace_back()$call[[1]]) {
       set_names(res$cnd_body, nm = c("x", rep("*", length(res$cnd_body) - 1))),
       "i" = "From {.file {res$cnd_context_nanodbc}}."
     ),
+    class = "odbc_database_error",
     call = call
   )
 }
