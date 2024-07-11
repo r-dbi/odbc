@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# odbc
+# odbc <a href="https://odbc.r-dbi.org"><img src="man/figures/logo.png" align="right" height="138" alt="odbc website" /></a>
 
 <!-- badges: start -->
 
@@ -18,9 +18,9 @@ The goal of the odbc package is to provide a
 [DBI](https://dbi.r-dbi.org/)-compliant interface to
 [ODBC](https://learn.microsoft.com/en-us/sql/odbc/microsoft-open-database-connectivity-odbc)
 drivers. This makes it easy to connect databases such as [SQL
-Server](https://www.microsoft.com/en-us/sql-server/),
+Server](https://www.microsoft.com/en-us/sql-server/), 
 Oracle,
-[Databricks](https://www.databricks.com/), and
+[Databricks](https://www.databricks.com/), and 
 Snowflake.
 
 The odbc package is an alternative to

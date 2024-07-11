@@ -188,6 +188,10 @@ setMethod("dbConnect", "OdbcDriver",
     check_string(dbms.name, allow_null = TRUE)
     check_bool(interruptible)
 
+    if (!is_windows() && length(locate_install_unixodbc()) == 0) {
+      error_install_unixodbc(call = caller_env())
+    }
+
     con <- OdbcConnection(
       dsn = dsn,
       ...,

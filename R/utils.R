@@ -253,15 +253,8 @@ configure_spark <- function(call = caller_env()) {
     return(invisible())
   }
 
-  unixodbc_install <- locate_install_unixodbc()
-  if (length(unixodbc_install) == 0) {
-    abort(
-      c(
-        "Unable to locate the unixODBC driver manager.",
-        i = "Please install unixODBC using Homebrew with `brew install unixodbc`."
-      ),
-      call = call
-    )
+  if (length(locate_install_unixodbc()) == 0) {
+    error_install_unixodbc(call)
   }
 
   spark_config <- locate_config_spark()
@@ -279,15 +272,19 @@ configure_spark <- function(call = caller_env()) {
 }
 
 locate_install_unixodbc <- function() {
-  tryCatch(
-    {
-      unixodbc_prefix <- system("odbc_config --lib-prefix", intern = TRUE)
-      return(paste0(unixodbc_prefix, "/libodbcinst.dylib"))
-    },
-    error = function(e) {}
+  libodbcinst <- c(
+    system_safely("odbc_config --lib-prefix"),
+    system_safely("pkg-config --variable=libdir odbc")
   )
 
+  if (length(libodbcinst) > 0) {
+    return(libodbcinst[1])
+  }
+
   common_dirs <- c(
+    "/usr/lib",
+    "/usr/local",
+    "/lib",
     "/usr/local/lib",
     "/opt/homebrew/lib",
     "/opt/homebrew/opt/unixodbc/lib"
@@ -295,8 +292,39 @@ locate_install_unixodbc <- function() {
 
   list.files(
     common_dirs,
-    pattern = "libodbcinst\\.dylib$",
+    pattern = libodbcinst_filename(),
     full.names = TRUE
+  )
+}
+
+system_safely <- function(x) {
+  tryCatch(
+    {
+      unixodbc_prefix <- system(x, intern = TRUE, ignore.stderr = TRUE)
+      return(paste0(unixodbc_prefix, "/", libodbcinst_filename()))
+    },
+    error = function(e) {},
+    warning = function(w) {}
+  )
+  character()
+}
+
+libodbcinst_filename <- function() {
+  if (is_macos()) {
+    "libodbcinst.dylib"
+  } else {
+    "libodbcinst.so"
+  }
+}
+
+error_install_unixodbc <- function(call) {
+  abort(
+    c(
+      "Unable to locate the unixODBC driver manager.",
+      i = if (is_macos()) "Please install unixODBC using Homebrew with `brew install unixodbc`.",
+      i = if (!is_macos()) "Please install unixODBC and retry."
+    ),
+    call = call
   )
 }
 
