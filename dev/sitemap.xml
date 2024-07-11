@@ -1,132 +1,46 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/CODE_OF_CONDUCT.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/ISSUE_TEMPLATE.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/MAINTENANCE.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/articles/benchmarks.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/articles/develop.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/articles/setup.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/index.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/ConnectionAttributes.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/DBI-classes.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/DBI-methods.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/DBI-tables.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/OdbcConnection.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/OdbcDriver.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/OdbcResult.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/Oracle.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/SQLServer.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/databricks.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/dbConnect-OdbcDriver-method.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/dbListTables-OdbcConnection-method.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/driver-Snowflake.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/isTempTable.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/odbc-package.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/odbcConnectionActions.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/odbcConnectionColumns.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/odbcConnectionIcon.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/odbcDataType.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/odbcListColumns.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/odbcListConfig.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/odbcListDataSources.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/odbcListDrivers.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/odbcListObjectTypes.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/odbcListObjects.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/odbcPreviewObject.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/odbcPreviewQuery.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/odbcSetTransactionIsolationLevel.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/quote_value.html</loc>
-  </url>
-  <url>
-    <loc>https://odbc.r-dbi.org/dev/reference/snowflake.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://odbc.r-dbi.org/dev/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/ISSUE_TEMPLATE.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/LICENSE-text.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/LICENSE.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/MAINTENANCE.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/articles/benchmarks.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/articles/develop.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/articles/index.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/articles/setup.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/authors.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/index.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/news/index.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/ConnectionAttributes.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/DBI-classes.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/DBI-methods.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/DBI-tables.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/OdbcConnection.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/OdbcDriver.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/OdbcResult.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/Oracle.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/SQLServer.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/databricks.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/dbConnect-OdbcDriver-method.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/dbListTables-OdbcConnection-method.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/driver-Snowflake.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/index.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/isTempTable.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/odbc-package.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/odbcConnectionActions.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/odbcConnectionColumns.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/odbcConnectionIcon.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/odbcDataType.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/odbcListColumns.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/odbcListConfig.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/odbcListDataSources.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/odbcListDrivers.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/odbcListObjectTypes.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/odbcListObjects.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/odbcPreviewObject.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/odbcPreviewQuery.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/odbcSetTransactionIsolationLevel.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/quote_value.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/snowflake.html</loc></url>
 </urlset>
+
