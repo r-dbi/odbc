@@ -222,10 +222,6 @@ The above example assumes the configured SQLite DSN is called `"SQLite"`.
 
 A huge pain.
 
-## Oracle
-
-A huge pain.
-
 These instructions are for a Linux machine running Ubuntu 22.04. Oracle [just recently](https://github.com/oracle/python-cx_Oracle/issues/617#issuecomment-2182010721) released Instant Client for ARM64, so MacOS instructions may be coming down the line.
 
 Two steps here--1) booting up an Oracle database in a docker container and 2) installing and configuring the Oracle Instant Client and driver to connect to that database.
