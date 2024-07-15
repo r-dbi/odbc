@@ -274,35 +274,79 @@ like:</p>
 <h2 id="oracle">Oracle<a class="anchor" aria-label="anchor" href="#oracle"></a>
 </h2>
 <p>A huge pain.</p>
-<p>Get the DB container:</p>
-<pre class="shell"><code>docker login
-
-docker pull store/oracle/database-enterprise:12.2.0.1</code></pre>
-<p>Start the container:</p>
-<pre class="shell"><code>docker run -d -it --name oracle_db -P store/oracle/database-enterprise:12.2.0.1</code></pre>
-<p>The <code>-P</code> is important to set up the port forwarding from
-the docker container.</p>
-<p>Then, query the port and edit the ports in
-<code>tnsnames.ora</code>:</p>
-<pre class="shell"><code>docker port oracle_db</code></pre>
-<p>The contents of <code>snsnames.ora</code> should look like:</p>
-<pre><code>ORCLCDB=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=32769))
-    (CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCLCDB.localdomain)))
-ORCLPDB1=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=32769))
-    (CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=ORCLPDB1.localdomain)))</code></pre>
-<p>Ensure that the current working directly is <a href="https://www.ibm.com/support/pages/how-configure-tnsnamesora-use-dedicated-server-process-datastage-connections-oracle-databases#:~:text=accessed%20via%20DataStage%3A-,The%20tnsnames.,specified%20by%20the%20TNS_ADMIN%20variable." class="external-link">set
-appropriately</a>.</p>
-<p>Then, to add a new user to the database:</p>
-<pre class="shell"><code>docker exec -it oracle_db bash -c "source /home/oracle/.bashrc; sqlplus SYS/Oradoc_db1 AS SYSDBA"</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="kw">alter</span> <span class="kw">session</span> <span class="kw">set</span> <span class="ot">"_ORACLE_SCRIPT"</span><span class="op">=</span><span class="kw">true</span>;</span>
-<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a></span>
-<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a><span class="kw">create</span> <span class="fu">user</span> test <span class="kw">identified</span> <span class="kw">by</span> <span class="dv">12345</span>;</span>
-<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a></span>
-<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">ALL</span> <span class="kw">PRIVILEGES</span> <span class="kw">TO</span> TEST;</span></code></pre></div>
-<p>Finally, in R:</p>
+<p>These instructions are for a Linux machine running Ubuntu 22.04.
+Oracle <a href="https://github.com/oracle/python-cx_Oracle/issues/617#issuecomment-2182010721" class="external-link">just
+recently</a> released Instant Client for ARM64, so MacOS instructions
+may be coming down the line.</p>
+<p>Two steps here–1) booting up an Oracle database in a docker container
+and 2) installing and configuring the Oracle Instant Client and driver
+to connect to that database.</p>
+<p>If you haven’t already, you’ll need to install Docker Desktop,
+unixODBC, and <code>libaio1</code>. You can get the last with:</p>
+<pre class="shell"><code>sudo apt-get install libaio1</code></pre>
+<p>First, to boot up an Oracle database in a Docker container, run:</p>
+<pre class="shell"><code>docker run -d \
+  --name oracle2 \
+  -p 1521:1521 \
+  -e ORACLE_RANDOM_PASSWORD=true \
+  -e ORACLE_DATABASE=test \
+  -e APP_USER=RodbcR \
+  -e APP_USER_PASSWORD=Password12 \
+  gvenzl/oracle-xe:21.3.0</code></pre>
+<p>Some documentation on this Docker image <a href="https://hub.docker.com/r/gvenzl/oracle-xe" class="external-link">here</a>.</p>
+<p>Now, as for installing and configuring the Oracle Instant Client and
+driver, the PRs <a href="https://github.com/r-dbi/odbc/commit/257f041a3aec8348000a89208da5ed0eb059fe81" class="external-link">implementing
+support for unit testing Oracle</a> and <a href="https://github.com/r-dbi/odbc/commit/4090f0a7916db7ab22e4088040aa2492751140dd" class="external-link">adding
+support for the Oracle Pro Driver</a> for odbc are a great guide here.
+The “Installation Instructions” at the bottom of <a href="https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html" class="external-link">Oracle’s
+Instant Client docs</a> are thorough–you shouldn’t need them here, but a
+good backup.</p>
+<p>I ultimately wasn’t able to make a connection with the driver that
+Oracle ships, but was able to do so with the Posit Pro Drivers.</p>
+<p>Run the lines in <code>.github/odbc/install-oracle-driver.sh</code>
+from the first linked PR, which installs both the Instant Client and
+Oracle’s driver.</p>
+<p>Add the following lines to your .Rprofile (with
+<code>usethis::edit_r_profile()</code>):</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>LD_LIBRARY_PATH <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"/opt/oracle/instantclient_21_12:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"LD_LIBRARY_PATH"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>PATH <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"/opt/oracle/instantclient_21_12:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"PATH"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Create a text file called
+<code>/opt/oracle/instant_client_21_12/tnsnames.ora</code> and paste the
+following inside of it:</p>
+<pre><code>TEST=
+   (DESCRIPTION=
+    (ADDRESS=(PROTOCOL=tcp)(HOST=0.0.0.0)(PORT=1521))
+    (CONNECT_DATA=(SERVICE_NAME=test)))</code></pre>
+<p>Install the RStudio Pro Oracle driver, either using the <a href="https://github.com/r-dbi/odbc/commit/4090f0a7916db7ab22e4088040aa2492751140dd#diff-bc1733bfd46bbe6f651eee14b11879e4b7e0428af876e0322768bdbf138ef238R84-R87" class="external-link">installation
+code from the linked PR</a> (see the repository secret for the driver
+URL or contact Simon Couch or Hadley Wickham if you don’t have access)
+or through RStudio Pro (if you have credentials, you can generate
+yourself a license key <a href="https://connect.posit.it/support/license_management/" class="external-link">here</a>).</p>
+<p>Add the following lines to your <code>.Renviron</code> (with
+<code>usethis::edit_r_environ()</code>). Adjust the value for
+<code>ODBCSYSINI</code> to the directory prefixing <code>.ini</code>
+files in <code>odbcinst -j</code>.</p>
+<pre><code>TNS_ADMIN=/opt/oracle/instantclient_21_12
+ODBCSYSINI=/etc
+ORACLE_HOME=/opt/oracle</code></pre>
+<p>Symlink your Instant Client install into the Pro Driver install
+directory with
+<code>sudo ln -s /opt/oracle/instantclient_21_12/* /etc/pro_drivers/oracle/bin/lib/</code>.</p>
+<p>Add the following to your <code>odbc.ini</code>:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="kw">[ProOracle]</span></span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a><span class="dt">Driver </span><span class="ot">=</span><span class="st"> /etc/pro_drivers/oracle/bin/lib/liboracleodbc_sb64.so</span></span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a><span class="dt">Port </span><span class="ot">=</span><span class="st"> </span><span class="dv">1521</span></span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a><span class="dt">Host </span><span class="ot">=</span><span class="st"> </span><span class="kw">localhost</span></span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a><span class="dt">SVC </span><span class="ot">=</span><span class="st"> FREEPDB1</span></span>
+<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a><span class="dt">UID </span><span class="ot">=</span><span class="st"> RodbcR</span></span>
+<span id="cb24-7"><a href="#cb24-7" tabindex="-1"></a><span class="dt">PWD </span><span class="ot">=</span><span class="st"> Password12</span></span>
+<span id="cb24-8"><a href="#cb24-8" tabindex="-1"></a><span class="dt">DBQ </span><span class="ot">=</span><span class="st"> test</span></span></code></pre></div>
+<p>Now, putting the pieces together, connect to the Oracle Database
+docker container from R with:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span><span class="st">"TNS_ADMIN"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">dbConnect</a></span><span class="op">(</span><span class="fu">odbc</span><span class="fu">::</span><span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">odbc</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"OracleODBC-19"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://odbc.r-dbi.org">odbc</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">dbConnect</a></span><span class="op">(</span><span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">odbc</a></span><span class="op">(</span><span class="op">)</span>, dsn <span class="op">=</span> <span class="st">"ProOracle"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="snowflake">Snowflake<a class="anchor" aria-label="anchor" href="#snowflake"></a>
