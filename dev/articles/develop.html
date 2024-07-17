@@ -274,10 +274,102 @@ like:</p>
 <h2 id="oracle">Oracle<a class="anchor" aria-label="anchor" href="#oracle"></a>
 </h2>
 <p>A huge pain.</p>
-<p>These instructions are for a Linux machine running Ubuntu 22.04.
-Oracle <a href="https://github.com/oracle/python-cx_Oracle/issues/617#issuecomment-2182010721" class="external-link">just
-recently</a> released Instant Client for ARM64, so MacOS instructions
-may be coming down the line.</p>
+<div class="section level3">
+<h3 id="on-macos">On MacOS<a class="anchor" aria-label="anchor" href="#on-macos"></a>
+</h3>
+<p>Getting an Oracle database booted up in a Docker container on MacOS
+is a bit challenging. First, you’ll build the container image yourself
+from the official Oracle source using the instructions <a href="https://www.simonpcouch.com/blog/2024-03-14-oracle/" class="external-link">here</a>.
+Once you’ve finished building the image, run it with:</p>
+<pre class="shell"><code>docker run -d --name oracle -p 1521:1521 -e ORACLE_PWD=odbcTest321 oracle/database:19.3.0-ee</code></pre>
+<p>Note that the <code>run</code> command here is a bit different than
+the one in the linked blog post.</p>
+<p>Next, you’ll install the Basic, ODBC, and SQLPlus Instant Client
+libraries from the <a href="https://www.oracle.com/database/technologies/instant-client/macos-arm64-downloads.html" class="external-link">Oracle
+website</a> by doing the following:</p>
+<ul>
+<li>Download the Basic, ODBC, and SQLPlus <code>.dmg</code>s.</li>
+<li>Create a folder for the instant client to live in. I made mine at
+<code>/Users/simoncouch/instantclient_23_3</code>. (This folder will
+show up many times in the rest of these instructions–always substitute
+it with your own from here on out.)</li>
+<li>For each of the <code>dmg</code>s, open up the image and copy and
+paste its contents into the folder you made in the previous step.</li>
+<li>Symlink your <code>libodbcinst.2.dylib</code> (unixODBC library)
+into the folder. I used
+<code>ln -s /opt/homebrew/Cellar/unixodbc/2.3.12/lib/libodbcinst.2.dylib /Users/simoncouch/instantclient_23_3/libodbcinst.2.dylib</code>
+to do so for myself; use <code>odbc_config --lib-prefix</code> to help
+locate yours.</li>
+</ul>
+<p>Make a text file at
+<code>/Users/simoncouch/instantclient_23_3/network/admin/tnsnames.ora</code>.
+Open that file (maybe with
+<code>file.edit("/Users/simoncouch/instantclient_23_3/network/admin/tnsnames.ora")</code>)
+and add the following:</p>
+<pre class="ora"><code>db=
+   (DESCRIPTION=
+    (ADDRESS=(PROTOCOL=tcp)(HOST=0.0.0.0)(PORT=1521))
+    (CONNECT_DATA=(SERVICE_NAME=orclpdb1)))</code></pre>
+<p>Now, set some paths to help R and the Instant Client communicate. In
+<code>usethis::edit_r_profile()</code>, add:</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>PATH <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"/Users/simoncouch/instantclient_23_3:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"PATH"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>LD_LIBRARY_PATH <span class="op">=</span> <span class="st">"/Users/simoncouch/instantclient_23_3"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>ORACLE_HOME <span class="op">=</span> <span class="st">"/Users/simoncouch/instantclient_23_3"</span><span class="op">)</span></span>
+<span><span class="co"># this one is the default, but just to prevent gotchas:</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>TNS_ADMIN <span class="op">=</span> <span class="st">"/Users/simoncouch/instantclient_23_3/network/admin"</span><span class="op">)</span></span></code></pre></div>
+<p>(These are indeed all environmental variables that could be set in
+<code>.Renviron</code>. Be sure to substitute <code>&lt;$PATH&gt;</code>
+carefully if you choose to do so there.)</p>
+<p>Note that there’s a <a href="https://github.com/rstudio/rstudio/issues/9815" class="external-link">MacOS-specific
+bug</a> where RStudio overwrites <code>PATH</code> when set in
+Rprofile/Renviron before the 2024.04.0 “Chocolate Cosmos” release, so be
+sure to update your RStudio if needed.</p>
+<p>In the terminal, test your Instant Client installation and database
+connection with:</p>
+<pre class="shell"><code>sqlplus sys/odbcTest321@//localhost:1521/ORCLPDB1 as sysdba</code></pre>
+<p>If you’re able to connect, make a test user with:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="kw">CREATE</span> <span class="fu">USER</span> test <span class="kw">IDENTIFIED</span> <span class="kw">BY</span> odbc;</span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">DBA</span> <span class="kw">TO</span> test;</span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>exit;</span></code></pre></div>
+<p>Test connecting with that new user with:</p>
+<pre><code>sqlplus test/odbc@//localhost:1521/ORCLPDB1</code></pre>
+<p>If that succeeds, configure a DSN in your <code>odbc.ini</code> file
+with:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="kw">[Oracle]</span></span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a><span class="dt">Driver </span><span class="ot">=</span><span class="st"> /Users/simoncouch/instantclient_23_3/libsqora.dylib.23.1</span></span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a><span class="dt">Port </span><span class="ot">=</span><span class="st"> </span><span class="dv">1521</span></span>
+<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a><span class="dt">Host </span><span class="ot">=</span><span class="st"> 0.0.0.0</span></span></code></pre></div>
+<p>Then, connect in R with:</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://odbc.r-dbi.org">odbc</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">dbConnect</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">odbc</a></span><span class="op">(</span><span class="op">)</span>, </span>
+<span>  dsn <span class="op">=</span> <span class="st">"Oracle"</span>, </span>
+<span>  DBQ <span class="op">=</span> <span class="st">"db"</span>, </span>
+<span>  UID <span class="op">=</span> <span class="st">"test"</span>, </span>
+<span>  PWD <span class="op">=</span> <span class="st">"odbc"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Potential gotchas:</p>
+<ul>
+<li>Setting those DBQ, UID, and PWD parameters in my <code>.ini</code>
+file instead of the call to <code><a href="../reference/dbConnect-OdbcDriver-method.html">dbConnect()</a></code> introduces errors
+for me.</li>
+<li>Note that, as of July 2024, there are no Posit Pro Drivers for
+Oracle on ARM Macs.</li>
+<li>If you see a “file not found” error for a driver that does exist,
+it’s because some dependency for the driver doesn’t exist; use
+<code>otool -L /yada/yada/drivername.dylib</code> to find the
+dependencies and then symlink them from elsewhere on your computer into
+where the driver looks for them.</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="on-linux">On Linux<a class="anchor" aria-label="anchor" href="#on-linux"></a>
+</h3>
+<p>The process looks a bit different on Linux. These instructions are
+for a machine running Ubuntu 22.04.</p>
 <p>Two steps here–1) booting up an Oracle database in a docker container
 and 2) installing and configuring the Oracle Instant Client and driver
 to connect to that database.</p>
@@ -308,7 +400,7 @@ from the first linked PR, which installs both the Instant Client and
 Oracle’s driver.</p>
 <p>Add the following lines to your .Rprofile (with
 <code>usethis::edit_r_profile()</code>):</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>LD_LIBRARY_PATH <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"/opt/oracle/instantclient_21_12:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"LD_LIBRARY_PATH"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>PATH <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"/opt/oracle/instantclient_21_12:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"PATH"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Create a text file called
@@ -334,19 +426,20 @@ ORACLE_HOME=/opt/oracle</code></pre>
 directory with
 <code>sudo ln -s /opt/oracle/instantclient_21_12/* /etc/pro_drivers/oracle/bin/lib/</code>.</p>
 <p>Add the following to your <code>odbc.ini</code>:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="kw">[ProOracle]</span></span>
-<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a><span class="dt">Driver </span><span class="ot">=</span><span class="st"> /etc/pro_drivers/oracle/bin/lib/liboracleodbc_sb64.so</span></span>
-<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a><span class="dt">Port </span><span class="ot">=</span><span class="st"> </span><span class="dv">1521</span></span>
-<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a><span class="dt">Host </span><span class="ot">=</span><span class="st"> </span><span class="kw">localhost</span></span>
-<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a><span class="dt">SVC </span><span class="ot">=</span><span class="st"> FREEPDB1</span></span>
-<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a><span class="dt">UID </span><span class="ot">=</span><span class="st"> RodbcR</span></span>
-<span id="cb24-7"><a href="#cb24-7" tabindex="-1"></a><span class="dt">PWD </span><span class="ot">=</span><span class="st"> Password12</span></span>
-<span id="cb24-8"><a href="#cb24-8" tabindex="-1"></a><span class="dt">DBQ </span><span class="ot">=</span><span class="st"> test</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="kw">[ProOracle]</span></span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a><span class="dt">Driver </span><span class="ot">=</span><span class="st"> /etc/pro_drivers/oracle/bin/lib/liboracleodbc_sb64.so</span></span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a><span class="dt">Port </span><span class="ot">=</span><span class="st"> </span><span class="dv">1521</span></span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a><span class="dt">Host </span><span class="ot">=</span><span class="st"> </span><span class="kw">localhost</span></span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a><span class="dt">SVC </span><span class="ot">=</span><span class="st"> FREEPDB1</span></span>
+<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a><span class="dt">UID </span><span class="ot">=</span><span class="st"> RodbcR</span></span>
+<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a><span class="dt">PWD </span><span class="ot">=</span><span class="st"> Password12</span></span>
+<span id="cb32-8"><a href="#cb32-8" tabindex="-1"></a><span class="dt">DBQ </span><span class="ot">=</span><span class="st"> test</span></span></code></pre></div>
 <p>Now, putting the pieces together, connect to the Oracle Database
 docker container from R with:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://odbc.r-dbi.org">odbc</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">dbConnect</a></span><span class="op">(</span><span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">odbc</a></span><span class="op">(</span><span class="op">)</span>, dsn <span class="op">=</span> <span class="st">"ProOracle"</span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="snowflake">Snowflake<a class="anchor" aria-label="anchor" href="#snowflake"></a>
@@ -380,11 +473,11 @@ snowflake API URL,
 e.g. <code>wmc39401.us-east-1.snowflakecomputing.com</code>.</li>
 </ul>
 <p>The <code>odbc.ini</code> file should look like:</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="kw">[Snowflake]</span></span>
-<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a><span class="dt">Driver      </span><span class="ot">=</span><span class="st"> Snowflake</span></span>
-<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a><span class="dt">Description </span><span class="ot">=</span></span>
-<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a><span class="dt">uid         </span><span class="ot">=</span><span class="st"> &lt;uid&gt;</span></span>
-<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a><span class="dt">server      </span><span class="ot">=</span><span class="st"> &lt;deployment-url&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode ini"><code class="sourceCode ini"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="kw">[Snowflake]</span></span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a><span class="dt">Driver      </span><span class="ot">=</span><span class="st"> Snowflake</span></span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a><span class="dt">Description </span><span class="ot">=</span></span>
+<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a><span class="dt">uid         </span><span class="ot">=</span><span class="st"> &lt;uid&gt;</span></span>
+<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a><span class="dt">server      </span><span class="ot">=</span><span class="st"> &lt;deployment-url&gt;</span></span></code></pre></div>
 <p>The above assumes <code>Driver = Snowflake</code> is configured in
 <code>odbcinst.ini</code>. Then, connect by supplying the password as an
 argument:</p>
@@ -409,7 +502,7 @@ professional drivers will already be installed.</p>
 <code><a href="../articles/benchmarks.html">vignette("benchmarks")</a></code>. The CRAN version of RODBC uses
 iODBC, so to use unixODBC we need to recompile it from source,
 specifying the odbc manager explicitly:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"RODBC"</span>, type <span class="op">=</span> <span class="st">"source"</span>, INSTALL_opts<span class="op">=</span><span class="st">"--configure-args='--with-odbc-manager=odbc'"</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
