@@ -1,3 +1,75 @@
+test_that("Oracle", {
+  DBItest::make_context(
+    odbc(),
+    test_connection_string("ORACLE"),
+    tweaks = DBItest::tweaks(),
+    name = "Oracle"
+  )
+
+  DBItest::test_getting_started(c(
+    "package_name", # Not an error
+    NULL
+  ))
+  DBItest::test_driver(c(
+    "connect_bigint_integer",
+    "connect_bigint_numeric",
+    "connect_bigint_character",
+    "connect_bigint_integer64"
+  ))
+  DBItest::test_connection()
+  DBItest::test_result(c(
+    "send_query.*",
+    "fetch.*",
+    "clear_result_return_query",
+    "clear_result_return_statement",
+    "clear_result_return_query_arrow",
+    "cannot_clear_result_twice_query",
+    "cannot_clear_result_twice_statement",
+    "get_query_atomic",
+    "cannot_clear_result_twice_query_arrow",
+    "get_query.*",
+    "send_statement.*",
+    "execute_atomic",
+    "execute_params",
+    "execute_immediate",
+    "data.*"
+  ))
+  DBItest::test_sql(c(
+    "quote_string.*",
+    "quote_literal.*",
+    "quote_identifier.*",
+    "read_table.*",
+    "create_table_name_quoted",
+    "create_temporary_table",
+    "create_table_visible.*",
+    "create_roundtrip_quotes",
+    "append_roundtrip_quotes_column_names",
+    "append_roundtrip.*",
+    "write_table.*",
+    "overwrite_table.*",
+    "append_table.*",
+    "temporary_table.*",
+    "table_visible.*",
+    "roundtrip.*",
+    "remove_table.*",
+    "list_objects_features",
+    "list_fields_wrong_table"
+  ))
+  DBItest::test_meta(c(
+    "bind.*",
+    "is_valid_result_query",
+    "has_completed.*",
+    "get_statement.*",
+    "column_info.*",
+    "row_count.*",
+    "get_row_count_error",
+    "rows_affected.*",
+    "get_info_result"
+  ))
+  DBItest::test_transaction("begin_write_commit.*")
+  DBItest::test_compliance("reexport")
+})
+
 test_that("can round columns", {
   con <- test_con("ORACLE")
   # - Date does not roundtrip correctly since
