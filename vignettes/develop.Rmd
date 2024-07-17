@@ -222,7 +222,98 @@ The above example assumes the configured SQLite DSN is called `"SQLite"`.
 
 A huge pain.
 
-These instructions are for a Linux machine running Ubuntu 22.04. Oracle [just recently](https://github.com/oracle/python-cx_Oracle/issues/617#issuecomment-2182010721) released Instant Client for ARM64, so MacOS instructions may be coming down the line.
+### On MacOS
+
+Getting an Oracle database booted up in a Docker container on MacOS is a bit challenging. First, you'll build the container image yourself from the official Oracle source using the instructions [here](https://www.simonpcouch.com/blog/2024-03-14-oracle/). Once you've finished building the image, run it with:
+
+``` shell
+docker run -d --name oracle -p 1521:1521 -e ORACLE_PWD=odbcTest321 oracle/database:19.3.0-ee
+```
+
+Note that the `run` command here is a bit different than the one in the linked blog post.
+
+Next, you'll install the Basic, ODBC, and SQLPlus Instant Client libraries from the [Oracle website](https://www.oracle.com/database/technologies/instant-client/macos-arm64-downloads.html) by doing the following:
+
+* Download the Basic, ODBC, and SQLPlus `.dmg`s.
+* Create a folder for the instant client to live in. I made mine at `/Users/simoncouch/instantclient_23_3`. (This folder will show up many times in the rest of these instructions--always substitute it with your own from here on out.)
+* For each of the `dmg`s, open up the image and copy and paste its contents into the folder you made in the previous step.
+* Symlink your `libodbcinst.2.dylib` (unixODBC library) into the folder. I used `ln -s /opt/homebrew/Cellar/unixodbc/2.3.12/lib/libodbcinst.2.dylib /Users/simoncouch/instantclient_23_3/libodbcinst.2.dylib` to do so for myself; use `odbc_config --lib-prefix` to help locate yours.
+
+Make a text file at `/Users/simoncouch/instantclient_23_3/network/admin/tnsnames.ora`. Open that file (maybe with `file.edit("/Users/simoncouch/instantclient_23_3/network/admin/tnsnames.ora")`) and add the following:
+
+``` ora
+db=
+   (DESCRIPTION=
+    (ADDRESS=(PROTOCOL=tcp)(HOST=0.0.0.0)(PORT=1521))
+    (CONNECT_DATA=(SERVICE_NAME=orclpdb1)))
+```
+
+Now, set some paths to help R and the Instant Client communicate. In `usethis::edit_r_profile()`, add:
+
+``` r
+Sys.setenv(PATH = paste0("/Users/simoncouch/instantclient_23_3:", Sys.getenv("PATH")))
+Sys.setenv(LD_LIBRARY_PATH = "/Users/simoncouch/instantclient_23_3")
+Sys.setenv(ORACLE_HOME = "/Users/simoncouch/instantclient_23_3")
+# this one is the default, but just to prevent gotchas:
+Sys.setenv(TNS_ADMIN = "/Users/simoncouch/instantclient_23_3/network/admin")
+```
+
+(These are indeed all environmental variables that could be set in `.Renviron`. Be sure to substitute `<$PATH>` carefully if you choose to do so there.)
+
+Note that there's a [MacOS-specific bug](https://github.com/rstudio/rstudio/issues/9815) where RStudio overwrites `PATH` when set in Rprofile/Renviron before the 2024.04.0 "Chocolate Cosmos" release, so be sure to update your RStudio if needed.
+
+In the terminal, test your Instant Client installation and database connection with:
+
+``` shell
+sqlplus sys/odbcTest321@//localhost:1521/ORCLPDB1 as sysdba
+```
+
+If you're able to connect, make a test user with:
+
+``` sql
+CREATE USER test IDENTIFIED BY odbc;
+GRANT DBA TO test;
+exit;
+```
+
+Test connecting with that new user with:
+
+```
+sqlplus test/odbc@//localhost:1521/ORCLPDB1
+```
+
+If that succeeds, configure a DSN in your `odbc.ini` file with:
+
+```ini
+[Oracle]
+Driver = /Users/simoncouch/instantclient_23_3/libsqora.dylib.23.1
+Port = 1521
+Host = 0.0.0.0
+```
+
+Then, connect in R with:
+
+``` r
+library(odbc)
+
+con <- dbConnect(
+  odbc(), 
+  dsn = "Oracle", 
+  DBQ = "db", 
+  UID = "test", 
+  PWD = "odbc"
+)
+```
+
+Potential gotchas:
+
+* Setting those DBQ, UID, and PWD parameters in my `.ini` file instead of the call to `dbConnect()` introduces errors for me. 
+* Note that, as of July 2024, there are no Posit Pro Drivers for Oracle on ARM Macs. 
+* If you see a "file not found" error for a driver that does exist, it's because some dependency for the driver doesn't exist; use `otool -L /yada/yada/drivername.dylib` to find the dependencies and then symlink them from elsewhere on your computer into where the driver looks for them.
+
+### On Linux
+
+The process looks a bit different on Linux. These instructions are for a machine running Ubuntu 22.04. 
 
 Two steps here--1) booting up an Oracle database in a docker container and 2) installing and configuring the Oracle Instant Client and driver to connect to that database.
 
