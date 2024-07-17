@@ -39,7 +39,7 @@ test_that("Oracle", {
     "quote_literal.*",
     "quote_identifier.*",
     "read_table.*",
-    "create_table_name_quoted",
+    "create_table.*",
     "create_temporary_table",
     "create_table_visible.*",
     "create_roundtrip_quotes",
