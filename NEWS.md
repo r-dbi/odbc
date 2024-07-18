@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* `snowflake()` now allows passing `uid` without `pwd` when 
+  `authenticator = "externalbrowser"` (@simonpcouch, #817).
+
 * DB2: Better support for temp tables in `dbListTables`, and `dbExistsTable` (#823).
 
 * `dbConnect(odbc(), ...)` will now error informatively if the package
