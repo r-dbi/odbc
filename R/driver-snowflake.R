@@ -267,7 +267,9 @@ snowflake_auth_args <- function(account,
                                 pwd = NULL,
                                 authenticator = NULL,
                                 ...) {
-  if (!is.null(uid) && !is.null(pwd)) {
+  if (!is.null(uid) &&
+      # allow for uid without pwd for externalbrowser auth (#817)
+      (!is.null(pwd) || identical(authenticator, "externalbrowser"))) {
     return(list(uid = uid, pwd = pwd))
   } else if (xor(is.null(uid), is.null(pwd))) {
     abort(
