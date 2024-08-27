@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Trailing slashes are now automatically removed from `databricks(workspace)`,
+  guarding users from an uninformative driver message (@simonpcouch, #827).
+
 * `snowflake()` now allows passing `uid` without `pwd` when 
   `authenticator = "externalbrowser"` (@simonpcouch, #817).
 

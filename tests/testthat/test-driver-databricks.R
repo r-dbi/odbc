@@ -38,6 +38,8 @@ test_that("errors if can't find driver", {
 
 test_that("databricks host validates inputs", {
   expect_equal(databricks_host("https://my-host.com"), "my-host.com")
+  expect_equal(databricks_host("https://my-host.com/"), "my-host.com")
+  expect_equal(databricks_host("my-host.com/"), "my-host.com")
   expect_snapshot(databricks_host(""), error = TRUE)
 })
 

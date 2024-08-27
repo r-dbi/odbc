@@ -187,7 +187,7 @@ databricks_host <- function(workspace) {
       call = quote(DBI::dbConnect())
     )
   }
-  gsub("https://", "", workspace)
+  gsub("https://|/$", "", workspace)
 }
 
 #' @importFrom utils packageVersion
