@@ -214,7 +214,7 @@ contextualize_database_error <- function(cnd_body) {
     cnd_body <-
       c(
         cnd_body,
-        "See {.help [?odbcListDataSources](odbc::odbcListDataSources)} to learn more."
+        "See {.help odbc::odbcListDataSources} to learn more."
       )
   }
 
