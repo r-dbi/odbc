@@ -135,6 +135,16 @@ test_that("configure_spark() errors informatively on failure to install unixODBC
   expect_snapshot(databricks(), error = TRUE)
 })
 
+test_that("configure_spark() calls configure_unixodbc_spark()", {
+  local_mocked_bindings(
+    locate_install_unixodbc = function() "hey",
+    locate_config_spark = function() "there",
+    configure_unixodbc_spark = function(...) TRUE
+  )
+
+  expect_true(configure_spark())
+})
+
 test_that("locate_install_unixodbc() returns reasonable values", {
   skip_if(!is_macos())
   skip_if(!has_unixodbc(), "odbcinst not available.")
