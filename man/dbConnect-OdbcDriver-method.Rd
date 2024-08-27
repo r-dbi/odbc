@@ -147,8 +147,9 @@ manager. The odbc package is built on top of the
 
 Interfacing with DBMSs using R and odbc involves three high-level steps:
 \enumerate{
-\item \emph{Configure drivers and data sources}: the functions \code{\link[=odbcListDrivers]{odbcListDrivers()}}
-and \code{\link[=odbcListDataSources]{odbcListDataSources()}} help to interface with the driver manager.
+\item \emph{Configure drivers and data sources}: the functions \code{\link[=odbcListDrivers]{odbcListDrivers()}},
+\code{\link[=odbcListDataSources]{odbcListDataSources()}}, and \code{\link[=odbcListConfig]{odbcListConfig()}} help to interface with the
+driver manager.
 \item \emph{Connect to a database}: The \code{\link[=dbConnect]{dbConnect()}} function, called with the
 first argument odbc(), connects to a database using the specified ODBC
 driver to create a connection object.
