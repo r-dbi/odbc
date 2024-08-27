@@ -199,12 +199,26 @@ parse_database_error <- function(msg) {
     right = TRUE
   )
 
+  cnd_body <- contextualize_database_error(cnd_body)
+
   list(
     cnd_context_nanodbc = cnd_context_nanodbc,
     cnd_context_code = cnd_context_code,
     cnd_context_driver = cnd_context_driver,
     cnd_body = cnd_body
   )
+}
+
+contextualize_database_error <- function(cnd_body) {
+  if (any(grepl("Data source name not found", cnd_body))) {
+    cnd_body <-
+      c(
+        cnd_body,
+        "See {.help [?odbcListDataSources](odbc::odbcListDataSources)} to learn more."
+      )
+  }
+
+  cnd_body
 }
 
 # check helpers for common odbc arguments --------------------------------------
