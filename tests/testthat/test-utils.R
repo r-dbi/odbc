@@ -136,6 +136,7 @@ test_that("configure_spark() errors informatively on failure to install unixODBC
 })
 
 test_that("configure_spark() calls configure_unixodbc_spark() (#835)", {
+  skip_if_not(is_macos())
   local_mocked_bindings(
     locate_install_unixodbc = function() "hey",
     locate_config_spark = function() "there",
