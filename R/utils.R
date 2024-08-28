@@ -169,7 +169,7 @@ rethrow_database_error <- function(msg, call = trace_back()$call[[1]]) {
     c(
       "!" = "ODBC failed with error {res$cnd_context_code} from \\
              {.field {paste0(res$cnd_context_driver, collapse = '')}}.",
-      set_names(res$cnd_body, nm = c("x", rep("*", length(res$cnd_body) - 1))),
+      set_database_error_names(res$cnd_body),
       "i" = "From {.file {res$cnd_context_nanodbc}}."
     ),
     class = "odbc_database_error",
@@ -199,11 +199,51 @@ parse_database_error <- function(msg) {
     right = TRUE
   )
 
+  cnd_body <- contextualize_database_error(cnd_body)
+
   list(
     cnd_context_nanodbc = cnd_context_nanodbc,
     cnd_context_code = cnd_context_code,
     cnd_context_driver = cnd_context_driver,
     cnd_body = cnd_body
+  )
+}
+
+contextualize_database_error <- function(cnd_body) {
+  if (length(cnd_body) == 0 || !is_character(cnd_body)) {
+    return(cnd_body)
+  }
+
+  if (any(grepl("Data source name not found", cnd_body))) {
+    cnd_body <-
+      c(
+        cnd_body,
+        "i" = "See {.help odbc::odbcListDataSources} to learn more."
+      )
+  }
+
+  cnd_body
+}
+
+set_database_error_names <- function(cnd_body) {
+  # Respect names from `contextualize_database_error()`, otherwise ensure
+  # that the first is an "x" and the remainder are bulleted.
+  if (length(cnd_body) == 0) {
+    return(cnd_body)
+  }
+
+  if (is.null(names(cnd_body))) {
+    return(
+      set_names(cnd_body, nm = c("x", rep("*", length(cnd_body) - 1)))
+    )
+  }
+
+  set_names(
+    cnd_body,
+    c(
+      ifelse(names(cnd_body[1]) == "", "x", names(cnd_body[1])),
+      ifelse(names(cnd_body[-1]) == "", "*", names(cnd_body[-1]))
+    )
   )
 }
 

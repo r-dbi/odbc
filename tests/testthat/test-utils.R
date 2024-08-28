@@ -83,6 +83,23 @@ test_that("parse_database_error() works with messages from the wild", {
   expect_snapshot(error = TRUE, rethrow_database_error(msg, call = NULL))
 })
 
+test_that("set_database_error_names() works (#840)", {
+  expect_equal(
+    set_database_error_names(c("unnamed", "vector")),
+    c(x = "unnamed", `*` = "vector")
+  )
+  expect_equal(set_database_error_names("unnamed scalar"), c(x = "unnamed scalar"))
+  expect_equal(
+    set_database_error_names(c("i" = "partially", "named")),
+    c(i = "partially", `*` = "named")
+  )
+  expect_equal(
+    set_database_error_names(c("partially", "i" = "named")),
+    c(x = "partially", i = "named")
+  )
+  expect_equal(set_database_error_names(c("i" = "named")), c(i = "named"))
+})
+
 test_that("set_odbcsysini() works (#791)", {
   skip_on_cran()
   skip_if(is_windows())
