@@ -27,7 +27,7 @@
       Error in `dbConnect()`:
       ! ODBC failed with error 00000 from [unixODBC][Driver Manager].
       x Data source name not found and no default driver specified
-      * See `?odbc::odbcListDataSources()` to learn more.
+      i See `?odbc::odbcListDataSources()` to learn more.
       i From 'nanodbc/nanodbc.cpp:1150'.
 
 ---
@@ -57,7 +57,7 @@
       Error:
       ! ODBC failed with error 00000 from [unixODBC][Driver Manager].
       x  Data source name not found and no default driver specified
-      * See `?odbc::odbcListDataSources()` to learn more.
+      i See `?odbc::odbcListDataSources()` to learn more.
       i From 'nanodbc/nanodbc.cpp:1135'.
 
 ---
