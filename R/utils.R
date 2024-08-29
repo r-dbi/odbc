@@ -293,7 +293,8 @@ configure_spark <- function(call = caller_env()) {
     return(invisible())
   }
 
-  if (length(locate_install_unixodbc()) == 0) {
+  unixodbc_install <- locate_install_unixodbc()
+  if (length(unixodbc_install) == 0) {
     error_install_unixodbc(call)
   }
 
