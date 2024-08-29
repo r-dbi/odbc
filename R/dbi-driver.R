@@ -130,8 +130,9 @@ setMethod("show", "OdbcDriver",
 #'
 #' Interfacing with DBMSs using R and odbc involves three high-level steps:
 #'
-#' 1) *Configure drivers and data sources*: the functions [odbcListDrivers()]
-#'   and [odbcListDataSources()] help to interface with the driver manager.
+#' 1) *Configure drivers and data sources*: the functions [odbcListDrivers()],
+#'   [odbcListDataSources()], and [odbcListConfig()] help to interface with the
+#'   driver manager.
 #' 2) *Connect to a database*: The [dbConnect()] function, called with the
 #'   first argument odbc(), connects to a database using the specified ODBC
 #'   driver to create a connection object.
