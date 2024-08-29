@@ -223,8 +223,9 @@ package supports the <a href="https://www.unixodbc.org/" class="external-link">u
 front-end while odbc implements a back-end to communicate with the driver
 manager. The odbc package is built on top of the
 <a href="https://nanodbc.github.io/nanodbc/" class="external-link">nanodbc</a> C++ library.</p>
-<p>Interfacing with DBMSs using R and odbc involves three high-level steps:</p><ol><li><p><em>Configure drivers and data sources</em>: the functions <code><a href="odbcListDrivers.html">odbcListDrivers()</a></code>
-and <code><a href="odbcListDataSources.html">odbcListDataSources()</a></code> help to interface with the driver manager.</p></li>
+<p>Interfacing with DBMSs using R and odbc involves three high-level steps:</p><ol><li><p><em>Configure drivers and data sources</em>: the functions <code><a href="odbcListDrivers.html">odbcListDrivers()</a></code>,
+<code><a href="odbcListDataSources.html">odbcListDataSources()</a></code>, and <code><a href="odbcListConfig.html">odbcListConfig()</a></code> help to interface with the
+driver manager.</p></li>
 <li><p><em>Connect to a database</em>: The <code>dbConnect()</code> function, called with the
 first argument odbc(), connects to a database using the specified ODBC
 driver to create a connection object.</p></li>
