@@ -82,13 +82,13 @@ bool has_result(connection_ptr const& p) {
 
 // [[Rcpp::export]]
 Rcpp::List connection_info(connection_ptr const& p) {
-  SQLUINTEGER getdata_ext;
-  SQLUINTEGER owner_usage;
+  std::uint64_t getdata_ext;
+  std::uint64_t owner_usage;
   try {
     getdata_ext =
-        (*p)->connection()->get_info<SQLUINTEGER>(SQL_GETDATA_EXTENSIONS);
+        (*p)->connection()->get_info<std::uint64_t>(SQL_GETDATA_EXTENSIONS);
     owner_usage =
-        (*p)->connection()->get_info<SQLUINTEGER>(SQL_SCHEMA_USAGE);
+        (*p)->connection()->get_info<std::uint64_t>(SQL_SCHEMA_USAGE);
   } catch (const nanodbc::database_error& c) {
     getdata_ext = 0;
     owner_usage = 0;

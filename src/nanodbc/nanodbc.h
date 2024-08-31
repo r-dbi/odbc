@@ -321,6 +321,15 @@ struct timestamp
     std::int32_t fract; ///< Fractional seconds.
 };
 
+/// \brief A type trait for testing if a type is a std::basic_string compatible with the current
+/// nanodbc configuration
+template <typename T>
+using is_string = std::integral_constant<
+    bool,
+    std::is_same<typename std::decay<T>::type, std::string>::value ||
+        std::is_same<typename std::decay<T>::type, string_type>::value
+    >;
+
 /// \}
 
 /// \addtogroup mainc Main classes
