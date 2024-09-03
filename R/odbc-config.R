@@ -6,12 +6,12 @@
 #' where the driver manager will look for that information.
 #'
 #' `odbcListConfig()` is a wrapper around the command line call `odbcinst -j`.
-#' The [odbcConfigureDrivers()], [odbcConfigureSystemDSN()], and
-#' [odbcConfigureUserDSN()] helpers provide a shorthand for
+#' The [odbcEditDrivers()], [odbcEditSystemDSN()], and
+#' [odbcEditUserDSN()] helpers provide a shorthand for
 #' `file.edit(odbcListConfig()[[i]])`.
 #'
 #' Windows does not use `.ini` configuration files; on Windows,
-#' `odbcListConfig()` will return a 0-length vector and `odbcConfigure*()`
+#' `odbcListConfig()` will return a 0-length vector and `odbcEdit*()`
 #' will raise an error.
 #'
 #' @seealso
@@ -29,7 +29,7 @@
 #' configs
 #'
 #' # shorthand for file.edit(configs[[1]])
-#' odbcConfigureDrivers()
+#' odbcEditDrivers()
 #' @export
 odbcListConfig <- function() {
   if (is_windows()) {
@@ -60,19 +60,19 @@ odbcListConfig <- function() {
 
 #' @rdname odbcListConfig
 #' @export
-odbcConfigureDrivers <- function() {
+odbcEditDrivers <- function() {
   open_config(1)
 }
 
 #' @rdname odbcListConfig
 #' @export
-odbcConfigureSystemDSN <- function() {
+odbcEditSystemDSN <- function() {
   open_config(2)
 }
 
 #' @rdname odbcListConfig
 #' @export
-odbcConfigureUserDSN <- function() {
+odbcEditUserDSN <- function() {
   open_config(3)
 }
 

@@ -2,18 +2,18 @@
 % Please edit documentation in R/odbc-config.R
 \name{odbcListConfig}
 \alias{odbcListConfig}
-\alias{odbcConfigureDrivers}
-\alias{odbcConfigureSystemDSN}
-\alias{odbcConfigureUserDSN}
+\alias{odbcEditDrivers}
+\alias{odbcEditSystemDSN}
+\alias{odbcEditUserDSN}
 \title{List locations of ODBC configuration files}
 \usage{
 odbcListConfig()
 
-odbcConfigureDrivers()
+odbcEditDrivers()
 
-odbcConfigureSystemDSN()
+odbcEditSystemDSN()
 
-odbcConfigureUserDSN()
+odbcEditUserDSN()
 }
 \description{
 On MacOS and Linux, odbc uses the unixODBC driver manager to manage
@@ -21,12 +21,12 @@ information about driver and data sources. This helper returns the filepaths
 where the driver manager will look for that information.
 
 \code{odbcListConfig()} is a wrapper around the command line call \code{odbcinst -j}.
-The \code{\link[=odbcConfigureDrivers]{odbcConfigureDrivers()}}, \code{\link[=odbcConfigureSystemDSN]{odbcConfigureSystemDSN()}}, and
-\code{\link[=odbcConfigureUserDSN]{odbcConfigureUserDSN()}} helpers provide a shorthand for
+The \code{\link[=odbcEditDrivers]{odbcEditDrivers()}}, \code{\link[=odbcEditSystemDSN]{odbcEditSystemDSN()}}, and
+\code{\link[=odbcEditUserDSN]{odbcEditUserDSN()}} helpers provide a shorthand for
 \code{file.edit(odbcListConfig()[[i]])}.
 
 Windows does not use \code{.ini} configuration files; on Windows,
-\code{odbcListConfig()} will return a 0-length vector and \verb{odbcConfigure*()}
+\code{odbcListConfig()} will return a 0-length vector and \verb{odbcEdit*()}
 will raise an error.
 }
 \examples{
@@ -36,7 +36,7 @@ configs <- odbcListConfig()
 configs
 
 # shorthand for file.edit(configs[[1]])
-odbcConfigureDrivers()
+odbcEditDrivers()
 \dontshow{\}) # examplesIf}
 }
 \seealso{

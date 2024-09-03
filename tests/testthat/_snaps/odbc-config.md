@@ -27,12 +27,12 @@
       i This is an internal error that was detected in the odbc package.
         Please report it at <https://github.com/r-dbi/odbc/issues> with a reprex (<https://tidyverse.org/help/>) and the full backtrace.
 
-# odbcConfigure*() errors informatively on Windows
+# odbcEdit*() errors informatively on Windows
 
     Code
-      odbcConfigureDrivers()
+      odbcEditDrivers()
     Condition
-      Error in `odbcConfigureDrivers()`:
+      Error in `odbcEditDrivers()`:
       ! Configuration files are only available on macOS and Linux.
       i Use the ODBC Data Source Administrator to configure connections on Windows.
 
