@@ -5,6 +5,7 @@
 \alias{sqlData,OdbcConnection-method}
 \alias{DBI-methods}
 \alias{sqlCreateTable,DB2/AIX64-method}
+\alias{odbcConnectionTables,DB2/AIX64,character-method}
 \alias{sqlCreateTable,HDB-method}
 \alias{dbQuoteString,Hive,character-method}
 \alias{sqlCreateTable,Teradata-method}
@@ -39,6 +40,16 @@
 
 \item{conn}{A \linkS4class{DBIConnection} object, as returned by
 \code{\link[DBI:dbConnect]{dbConnect()}}.}
+
+\item{name}{The table name, passed on to \code{\link[DBI:dbQuoteIdentifier]{dbQuoteIdentifier()}}. Options are:
+\itemize{
+\item a character string with the unquoted DBMS table name,
+e.g. \code{"table_name"},
+\item a call to \code{\link[DBI:Id]{Id()}} with components to the fully qualified table name,
+e.g. \code{Id(schema = "my_schema", table = "table_name")}
+\item a call to \code{\link[DBI:SQL]{SQL()}} with the quoted and fully qualified table name
+given verbatim, e.g. \code{SQL('"my_schema"."table_name"')}
+}}
 }
 \description{
 Unimportant DBI methods
