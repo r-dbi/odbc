@@ -6,13 +6,6 @@ NULL
 #'
 #' Details of Oracle methods for odbc and DBI generics.
 #'
-# while other sections are documented with `@rdname Oracle` and a @description,
-# we document this method in DBI-method to address a \usage NOTE (#823).
-#' @section `odbcConnectionTables()`:
-#' Method for an internal function that otherwise relies on the `SQLTables`
-#' ODBC API. While this method is much faster than the OEM implementation, it
-#' does not look through synonyms.
-#'
 #' @export
 #' @rdname Oracle
 #' @keywords internal
@@ -41,7 +34,13 @@ setMethod("sqlCreateTable", "Oracle",
   }
 )
 
-#' @rdname DBI-methods
+#' @rdname Oracle
+#' @description
+#' ## `odbcConnectionTables()`:
+#'
+#' Method for an internal function that otherwise relies on the `SQLTables`
+#' ODBC API. While this method is much faster than the OEM implementation, it
+#' does not look through synonyms.
 setMethod("odbcConnectionTables", c("Oracle", "character"),
   function(conn,
            name,

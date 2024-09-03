@@ -180,7 +180,6 @@ setMethod("dbAppendTable", "OdbcConnection",
   })
 
 #' @rdname DBI-methods
-#' @inheritParams DBI::dbReadTable
 #' @export
 setMethod("sqlData", "OdbcConnection",
   function(con, value, row.names = NA, ...) {
