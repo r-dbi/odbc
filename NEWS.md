@@ -1,5 +1,10 @@
 # odbc (development version)
 
+* Added functions `odbcEditDrivers()`, `odbcEditSystemDSN()`, and
+  `odbcEditUserDSN()` to provide a shorthand for 
+  `file.edit(odbcListConfig()[[i]])`. The helpers only support macOS and 
+  Linux and will raise an error on Windows (@simonpcouch, #827).
+
 * Trailing slashes are now automatically removed from `databricks(workspace)`,
   guarding users from an uninformative driver message (@simonpcouch, #827).
 

@@ -35,3 +35,9 @@ test_that("odbcListConfig errors informatively with unexpected odbcinst output",
   local_mocked_bindings(system = function(...) {""})
   expect_snapshot(error = TRUE, odbcListConfig())
 })
+
+test_that("odbcEdit*() errors informatively on Windows", {
+  local_mocked_bindings(is_windows = function() {TRUE})
+
+  expect_snapshot(error = TRUE, odbcEditDrivers())
+})
