@@ -89,7 +89,7 @@ open_config <- function(idx, call = caller_env()) {
     )
   }
 
-  file.edit(config[[idx]])
+  utils::file.edit(config[[idx]])
 }
 
 system <- NULL
