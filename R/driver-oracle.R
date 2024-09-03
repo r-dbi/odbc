@@ -36,7 +36,7 @@ setMethod("sqlCreateTable", "Oracle",
 
 #' @rdname Oracle
 #' @description
-#' ## `odbcConnectionTables()`:
+#' ## `odbcConnectionTables()`
 #'
 #' Method for an internal function that otherwise relies on the `SQLTables`
 #' ODBC API. While this method is much faster than the OEM implementation, it

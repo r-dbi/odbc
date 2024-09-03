@@ -30,7 +30,7 @@
 \description{
 Details of Oracle methods for odbc and DBI generics.
 
-\subsection{\code{odbcConnectionTables()}:}{
+\subsection{\code{odbcConnectionTables()}}{
 
 Method for an internal function that otherwise relies on the \code{SQLTables}
 ODBC API. While this method is much faster than the OEM implementation, it
