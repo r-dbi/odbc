@@ -5,6 +5,8 @@
 \alias{odbc-package}
 \title{odbc: Connect to ODBC Compatible Databases (using the DBI Interface)}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 A DBI-compatible interface to ODBC databases.
 }
 \seealso{
