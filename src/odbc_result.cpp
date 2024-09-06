@@ -20,7 +20,8 @@ odbc_result::odbc_result(
       complete_(0),
       bound_(false),
       immediate_(immediate),
-      output_encoder_(c->output_encoder()) {
+      output_encoder_(c->output_encoder()),
+      column_name_encoder_(c->column_name_encoder()) {
 
   c_->cancel_current_result();
 
@@ -480,11 +481,10 @@ std::vector<std::string> odbc_result::column_names(nanodbc::result const& r) {
   names.reserve(num_columns_);
   for (short i = 0; i < num_columns_; ++i) {
     nanodbc::string_type name = r.column_name(i);
-    // We expect column names to share the same encoding as the
-    // data itself.  Similar to the handling of string fields,
+    // Similar to the handling of string fields,
     // convert to UTF-8 before returning to user ( if needed )
     names.push_back(
-        output_encoder_->makeString(name.c_str(), name.c_str() + name.length())
+        column_name_encoder_->makeString(name.c_str(), name.c_str() + name.length())
     );
   }
   return names;

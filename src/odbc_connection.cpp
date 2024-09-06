@@ -27,21 +27,24 @@ void odbc_connection::set_current_result(odbc_result* r) {
 }
 
 odbc_connection::odbc_connection(
-    std::string connection_string,
-    std::string timezone,
-    std::string timezone_out,
-    std::string encoding,
-    bigint_map_t bigint_mapping,
-    long timeout,
+    std::string const& connection_string,
+    std::string const& timezone,
+    std::string const& timezone_out,
+    std::string const& encoding,
+    std::string const& column_name_encoding,
+    bigint_map_t const& bigint_mapping,
+    long const& timeout,
     Rcpp::Nullable<Rcpp::List> const& r_attributes,
     bool const& interruptible_execution)
     : current_result_(nullptr),
       timezone_out_str_(timezone_out),
-      output_encoder_(nullptr),
       bigint_mapping_(bigint_mapping),
+      output_encoder_(nullptr),
+      column_name_encoder_(nullptr),
       interruptible_execution_(interruptible_execution) {
 
   output_encoder_ = std::make_shared<Iconv>(encoding, "UTF-8");
+  column_name_encoder_ = std::make_shared<Iconv>(column_name_encoding, "UTF-8");
   if (!cctz::load_time_zone(timezone, &timezone_)) {
     Rcpp::stop("Error loading time zone (%s)", timezone);
   }
@@ -127,6 +130,7 @@ std::string odbc_connection::timezone_out_str() const {
   return timezone_out_str_;
 }
 const std::shared_ptr<Iconv> odbc_connection::output_encoder() const { return output_encoder_; }
+const std::shared_ptr<Iconv> odbc_connection::column_name_encoder() const { return column_name_encoder_; }
 
 bigint_map_t odbc_connection::get_bigint_mapping() const {
   return bigint_mapping_;
