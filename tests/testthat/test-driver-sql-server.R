@@ -331,7 +331,7 @@ test_that("can create / write to temp table", {
 
 # See https://github.com/r-dbi/odbc/issues/834
 test_that("encoding test", {
-  skip_on_os("windows")
+  local_reproducible_output(unicode = TRUE)
   df <- data.frame(
     var_char_col = c('kanin', 'ræven', 'ålens', 'ørred'),
     bøvs = 1
