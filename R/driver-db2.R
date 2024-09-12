@@ -70,7 +70,7 @@ setMethod("odbcConnectionTables", c("DB2/AIX64", "character"),
         # NULL as colname is not well liked by DB2 it seems. Hack here.
         dfTempTables$table_remarks <- NA_character_
       }, odbc_database_error = function(e) {
-        cli_warn("Unable to query for temporary tables in SYSIBMADM.ADMINTEMPTABLES")
+        cli::cli_warn("Unable to query for temporary tables in SYSIBMADM.ADMINTEMPTABLES")
       })
     }
     rbind(res, dfTempTables)

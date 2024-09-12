@@ -5,6 +5,7 @@
 \alias{sqlData,OdbcConnection-method}
 \alias{DBI-methods}
 \alias{sqlCreateTable,DB2/AIX64-method}
+\alias{odbcConnectionTables,DB2/AIX64,character-method}
 \alias{sqlCreateTable,HDB-method}
 \alias{dbQuoteString,Hive,character-method}
 \alias{sqlCreateTable,Teradata-method}
@@ -33,12 +34,6 @@
   ...,
   field.types = NULL
 )
-}
-\arguments{
-\item{...}{Other parameters passed on to methods.}
-
-\item{conn}{A \linkS4class{DBIConnection} object, as returned by
-\code{\link[DBI:dbConnect]{dbConnect()}}.}
 }
 \description{
 Unimportant DBI methods
