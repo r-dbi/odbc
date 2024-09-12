@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* Netezza: Improved data type inference for character columns (#847).
+
 * Trailing slashes are now automatically removed from `databricks(workspace)`,
   guarding users from an uninformative driver message (@simonpcouch, #827).
 
