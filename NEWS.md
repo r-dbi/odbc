@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* Netezza: Improved data type inference for character columns (#847).
+
 * Added functions `odbcEditDrivers()`, `odbcEditSystemDSN()`, and
   `odbcEditUserDSN()` to provide a shorthand for 
   `file.edit(odbcListConfig()[[i]])`. The helpers only support macOS and 

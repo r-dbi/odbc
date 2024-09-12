@@ -67,6 +67,7 @@ Collate:
     'driver-hive.R'
     'driver-impala.R'
     'driver-mysql.R'
+    'driver-netezza.R'
     'driver-oracle.R'
     'driver-postgres.R'
     'driver-redshift.R'
