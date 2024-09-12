@@ -329,13 +329,17 @@ test_that("can create / write to temp table", {
   expect_no_warning(sqlCreateTable(con, notTempTblName, values, temporary = FALSE))
 })
 
-# See https://github.com/r-dbi/odbc/issues/834
-test_that("encoding test", {
-  local_reproducible_output(unicode = TRUE)
+test_that("independent encoding of column entries and names (#834)", {
+  skip_on_os("windows")
+  rawVal1 <- as.raw(c(0x72, 0xc3, 0xa6, 0x76, 0x65, 0x6e))
+  rawVal2 <- as.raw(c(0xc3, 0xa5, 0x6c, 0x65, 0x6e, 0x73))
+  rawVal3 <- as.raw(c(0xc3, 0xb8, 0x72, 0x72, 0x65, 0x64))
+  rawCol <-  as.raw(c(0x62, 0xc3, 0xb8, 0x76, 0x73))
   df <- data.frame(
-    var_char_col = c('kanin', 'ræven', 'ålens', 'ørred'),
-    bøvs = 1
+    var_char_col = c('kanin', rawToChar(rawVal1), rawToChar(rawVal2), rawToChar(rawVal3)),
+    col = 1
   )
+  colnames(df)[2] <- rawToChar(rawCol)
   conn <- test_con("SQLSERVER", encoding = "latin1", AutoTranslate = "no")
   on.exit({
     dbExecute(conn, "DROP TABLE deleteme_Danish_Norwegian_CI_AS.testschema.deleteme")
@@ -346,8 +350,8 @@ test_that("encoding test", {
   DBI::dbExecute(conn, "CREATE DATABASE deleteme_Danish_Norwegian_CI_AS COLLATE Danish_Norwegian_CI_AS")
   DBI::dbExecute(conn, "USE deleteme_Danish_Norwegian_CI_AS")
   DBI::dbExecute(conn, "CREATE SCHEMA testschema")
-  tbl_id <- DBI::Id(catalog="deleteme_Danish_Norwegian_CI_AS", schema="testschema", name = "deleteme")
+  tbl_id <- DBI::Id(catalog = "deleteme_Danish_Norwegian_CI_AS", schema = "testschema", name = "deleteme")
   DBI::dbWriteTable(conn, name = tbl_id, df, field.types = c('var_char_col' = 'varchar(5)'), overwrite = TRUE)
   res <- DBI::dbReadTable(conn, tbl_id)
-  expect_identical(df, res);
+  expect_identical(df, res)
 })
