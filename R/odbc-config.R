@@ -5,15 +5,20 @@
 #' information about driver and data sources. This helper returns the filepaths
 #' where the driver manager will look for that information.
 #'
-#' This function is a wrapper around the command line call `odbcinst -j`.
+#' `odbcListConfig()` is a wrapper around the command line call `odbcinst -j`.
+#' The [odbcEditDrivers()], [odbcEditSystemDSN()], and
+#' [odbcEditUserDSN()] helpers provide a shorthand for
+#' `file.edit(odbcListConfig()[[i]])`.
 #'
-#' Windows does not use `.ini` configuration files; this function will return a
-#' 0-length vector on Windows.
+#' Windows does not use `.ini` configuration files; on Windows,
+#' `odbcListConfig()` will return a 0-length vector and `odbcEdit*()`
+#' will raise an error.
 #'
 #' @seealso
 #' The [odbcListDrivers()] and [odbcListDataSources()] helpers return
 #' information on the contents of `odbcinst.ini` and `odbc.ini` files,
-#' respectively.
+#' respectively. [odbcListDataSources()] collates entries from both the
+#' System and User `odbc.ini` files.
 #'
 #' Learn more about unixODBC and the `odbcinst` utility
 #' [here](https://www.unixodbc.org/odbcinst.html).
@@ -21,7 +26,10 @@
 #' @examplesIf FALSE
 #' configs <- odbcListConfig()
 #'
-#' file.edit(configs[1])
+#' configs
+#'
+#' # shorthand for file.edit(configs[[1]])
+#' odbcEditDrivers()
 #' @export
 odbcListConfig <- function() {
   if (is_windows()) {
@@ -48,6 +56,40 @@ odbcListConfig <- function() {
   names(res) <- c("drivers", "system_dsn", "user_dsn")
 
   res
+}
+
+#' @rdname odbcListConfig
+#' @export
+odbcEditDrivers <- function() {
+  open_config(1)
+}
+
+#' @rdname odbcListConfig
+#' @export
+odbcEditSystemDSN <- function() {
+  open_config(2)
+}
+
+#' @rdname odbcListConfig
+#' @export
+odbcEditUserDSN <- function() {
+  open_config(3)
+}
+
+open_config <- function(idx, call = caller_env()) {
+  config <- odbcListConfig()
+
+  if (length(config) == 0) {
+    cli::cli_abort(
+      c(
+        "Configuration files are only available on macOS and Linux.",
+        "i" = "Use the ODBC Data Source Administrator to configure connections on Windows."
+      ),
+      call = call
+    )
+  }
+
+  utils::file.edit(config[[idx]])
 }
 
 system <- NULL
