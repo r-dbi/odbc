@@ -1,7 +1,8 @@
 # odbc (development version)
 
-* Trailing slashes are now automatically removed from `databricks(workspace)`,
-  guarding users from an uninformative driver message (@simonpcouch, #827).
+* Separate column content and name encoding by adding
+  a new `name_encoding` argument to `dbConnect` to complement
+  the existing `encoding` parameter (#845).
 
 * `snowflake()` now allows passing `uid` without `pwd` when 
   `authenticator = "externalbrowser"` (@simonpcouch, #817).
