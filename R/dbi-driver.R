@@ -184,7 +184,7 @@ setMethod("dbConnect", "OdbcDriver",
     check_string(timezone, allow_null = TRUE)
     check_string(timezone_out, allow_null = TRUE)
     check_string(encoding, allow_null = TRUE)
-    check_string(name_encoding, allow_null = TRUE)
+    check_string(name_encoding, allow_null = FALSE)
     arg_match(bigint)
     check_number_decimal(timeout, allow_null = TRUE, allow_na = TRUE)
     check_string(driver, allow_null = TRUE)
