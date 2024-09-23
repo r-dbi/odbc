@@ -73,7 +73,8 @@ private:
   bool complete_;
   bool bound_;
   bool immediate_;
-  Iconv output_encoder_;
+  std::shared_ptr<Iconv> output_encoder_;
+  std::shared_ptr<Iconv> column_name_encoder_;
 
   std::map<short, std::vector<std::string>> strings_;
   std::map<short, std::vector<std::vector<uint8_t>>> raws_;
