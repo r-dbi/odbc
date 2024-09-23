@@ -48,7 +48,7 @@ setMethod("show", "OdbcDriver",
 #'   not using UTF-8 you will need to set the encoding to get accurate
 #'   re-encoding. See [iconvlist()] for a complete list of available encodings
 #'   on your system. Note strings are always returned `UTF-8` encoded.
-#' @param columnNameEncoding The text encoding for column names used on the
+#' @param name_encoding The text encoding for column names used on the
 #'   Database.  May be different than the `encoding` argument.  Defaults to
 #'   empty string which is equivalent to returning the column names without
 #'   performing any conversion.
@@ -168,6 +168,7 @@ setMethod("dbConnect", "OdbcDriver",
       timezone = "UTC",
       timezone_out = "UTC",
       encoding = "",
+      name_encoding = "",
       bigint = c("integer64", "integer", "numeric", "character"),
       timeout = 10,
       driver = NULL,
@@ -178,13 +179,12 @@ setMethod("dbConnect", "OdbcDriver",
       dbms.name = NULL,
       attributes = NULL,
       interruptible = getOption("odbc.interruptible", interactive()),
-      columnNameEncoding = "",
       .connection_string = NULL) {
     check_string(dsn, allow_null = TRUE)
     check_string(timezone, allow_null = TRUE)
     check_string(timezone_out, allow_null = TRUE)
     check_string(encoding, allow_null = TRUE)
-    check_string(columnNameEncoding, allow_null = TRUE)
+    check_string(name_encoding, allow_null = TRUE)
     arg_match(bigint)
     check_number_decimal(timeout, allow_null = TRUE, allow_na = TRUE)
     check_string(driver, allow_null = TRUE)
@@ -205,7 +205,7 @@ setMethod("dbConnect", "OdbcDriver",
       timezone = timezone,
       timezone_out = timezone_out,
       encoding = encoding,
-      columnNameEncoding = columnNameEncoding,
+      name_encoding = name_encoding,
       bigint = bigint,
       timeout = timeout,
       driver = driver,

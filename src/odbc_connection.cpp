@@ -31,7 +31,7 @@ odbc_connection::odbc_connection(
     std::string const& timezone,
     std::string const& timezone_out,
     std::string const& encoding,
-    std::string const& column_name_encoding,
+    std::string const& name_encoding,
     bigint_map_t const& bigint_mapping,
     long const& timeout,
     Rcpp::Nullable<Rcpp::List> const& r_attributes,
@@ -44,7 +44,7 @@ odbc_connection::odbc_connection(
       interruptible_execution_(interruptible_execution) {
 
   output_encoder_ = std::make_shared<Iconv>(encoding, "UTF-8");
-  column_name_encoder_ = std::make_shared<Iconv>(column_name_encoding, "UTF-8");
+  column_name_encoder_ = std::make_shared<Iconv>(name_encoding, "UTF-8");
   if (!cctz::load_time_zone(timezone, &timezone_)) {
     Rcpp::stop("Error loading time zone (%s)", timezone);
   }

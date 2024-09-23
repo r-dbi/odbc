@@ -26,7 +26,7 @@ public:
       std::string const& timezone = "UTC",
       std::string const& timezone_out = "UTC",
       std::string const& encoding = "",
-      std::string const& column_name_encoding = "",
+      std::string const& name_encoding = "",
       bigint_map_t const& bigint_mapping = i64_to_integer64,
       long const& timeout = 0,
       Rcpp::Nullable<Rcpp::List> const& r_attributes = R_NilValue,
