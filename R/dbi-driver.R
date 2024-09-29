@@ -176,11 +176,11 @@ setMethod("dbConnect", "OdbcDriver",
       interruptible = getOption("odbc.interruptible", interactive()),
       .connection_string = NULL) {
     check_string(dsn, allow_null = TRUE)
-    check_string(timezone, allow_null = TRUE)
-    check_string(timezone_out, allow_null = TRUE)
-    check_string(encoding, allow_null = TRUE)
+    check_string(timezone)
+    check_string(timezone_out)
+    check_string(encoding)
     arg_match(bigint)
-    check_number_decimal(timeout, allow_null = TRUE, allow_na = TRUE)
+    check_number_decimal(timeout)
     check_string(driver, allow_null = TRUE)
     check_string(server, allow_null = TRUE)
     check_string(database, allow_null = TRUE)
