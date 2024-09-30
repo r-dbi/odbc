@@ -10,6 +10,7 @@ setMethod("odbcDataType", "NetezzaSQL",
     switch_type(
       obj,
       character = varchar(obj),
+      logical = "BOOL",
       callNextMethod(con, obj, ...)
     )
   }

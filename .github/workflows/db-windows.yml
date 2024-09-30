@@ -91,6 +91,16 @@ jobs:
           install.packages(".", repos = NULL, type = "source")
         shell: Rscript {0}
 
+      - name: Install remotes
+        run: |
+          install.packages("remotes")
+        shell: Rscript {0}
+
+      - name: Install dev DBItest
+        run: |
+          remotes::install_github("detule/DBItest@test/stale_send_query")
+        shell: Rscript {0}
+
       - name: Test
         run: |
           options("odbc.interruptible"=TRUE);testthat::test_local(reporter = testthat::ProgressReporter$new(max_failures = Inf, update_interval = Inf))
