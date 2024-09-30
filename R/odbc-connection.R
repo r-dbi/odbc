@@ -26,7 +26,7 @@ OdbcConnection <- function(
 
   bigint <- bigint_mappings()[match.arg(bigint, names(bigint_mappings()))]
 
-  if (is.infinite(timeout)) {
+  if (is.infinite(timeout) || is.na(timeout)) {
     timeout <- 0
   }
 
