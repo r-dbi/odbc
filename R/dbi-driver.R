@@ -87,9 +87,8 @@ setMethod("show", "OdbcDriver",
 #' @param bigint The R type that `SQL_BIGINT` types should be mapped to.
 #'   Default is [bit64::integer64], which allows the full range of 64 bit
 #'   integers.
-#' @param timeout Time in seconds to timeout the connection attempt. Setting an
-#'   `NA` timeout or a timeout of `Inf` indicates no timeout. Defaults to
-#'   10 seconds.
+#' @param timeout Time in seconds to timeout the connection attempt. Setting a
+#'   timeout of `Inf` or `NA` indicates no timeout. Defaults to 10 seconds.
 #'
 #' @section Connection strings:
 #'
