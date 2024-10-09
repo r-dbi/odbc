@@ -193,11 +193,11 @@ snowflake_args <- function(account = Sys.getenv("SNOWFLAKE_ACCOUNT"),
 
   # Set application value and respect the Snowflake Partner environment variable, if present.
   if (is.null(all$application)) {
-    all$application <- ifelse(
-      nchar(Sys.getenv("SF_PARTNER")) != 0,
-      all$application <- Sys.getenv("SF_PARTNER"),
-      paste0("r-odbc/", packageVersion("odbc"))
-    )
+    if (nchar(Sys.getenv("SF_PARTNER")) != 0 ){
+      all$application <- Sys.getenv("SF_PARTNER")
+    } else {
+      all$application <- paste0("r-odbc/", packageVersion("odbc"))
+    }
   }
 
   arg_names <- tolower(names(all))
