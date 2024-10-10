@@ -18,6 +18,7 @@ databricks()
   HTTPPath,
   uid = NULL,
   pwd = NULL,
+  session = NULL,
   ...
 )
 }
@@ -43,6 +44,9 @@ default name.}
 \item{uid, pwd}{Manually specify a username and password for authentication.
 Specifying these options will disable automated credential discovery.}
 
+\item{session}{A Shiny session object, when using viewer-based credentials on
+Posit Connect.}
+
 \item{...}{Further arguments passed on to \code{\link[=dbConnect]{dbConnect()}}.}
 }
 \value{
@@ -66,5 +70,15 @@ DBI::dbConnect(
   odbc::databricks(),
   httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
 )
+
+# Use credentials from the viewer (when possible) in a Shiny app
+# deployed to Posit Connect.
+server <- function(input, output, session) {
+  conn <- DBI::dbConnect(
+    odbc::databricks(),
+    httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj",
+    session = session
+  )
+}
 }
 }

@@ -114,6 +114,8 @@ setMethod("odbcDataType", "Snowflake",
 #'   default.
 #' @param uid,pwd Manually specify a username and password for authentication.
 #'   Specifying these options will disable ambient credential discovery.
+#' @param session A Shiny session object, when using viewer-based credentials on
+#'   Posit Connect.
 #' @param ... Further arguments passed on to [`dbConnect()`].
 #'
 #' @returns An `OdbcConnection` object with an active connection to a Snowflake
@@ -138,6 +140,12 @@ setMethod("odbcDataType", "Snowflake",
 #'   uid = "me",
 #'   pwd = rstudioapi::askForPassword()
 #' )
+#'
+#' # Use credentials from the viewer (when possible) in a Shiny app
+#' # deployed to Posit Connect.
+#' server <- function(input, output, session) {
+#'   conn <- DBI::dbConnect(odbc::snowflake(), session = session)
+#' }
 #' }
 #' @export
 snowflake <- function() {
@@ -156,6 +164,7 @@ setMethod(
            schema = NULL,
            uid = NULL,
            pwd = NULL,
+           session = NULL,
            ...) {
     call <- caller_env()
     check_string(account, call = call)
@@ -164,6 +173,7 @@ setMethod(
     check_string(database, allow_null = TRUE, call = call)
     check_string(uid, allow_null = TRUE, call = call)
     check_string(pwd, allow_null = TRUE, call = call)
+    check_shiny_session(session, allow_null = TRUE, call = call)
     args <- snowflake_args(
       account = account,
       driver = driver,
@@ -172,6 +182,7 @@ setMethod(
       schema = schema,
       uid = uid,
       pwd = pwd,
+      session = session,
       ...
     )
     inject(dbConnect(odbc(), !!!args))
@@ -270,7 +281,19 @@ snowflake_auth_args <- function(account,
                                 uid = NULL,
                                 pwd = NULL,
                                 authenticator = NULL,
+                                session = NULL,
                                 ...) {
+  # If a session is supplied, any viewer-based auth takes precedence.
+  if (!is.null(session)) {
+    check_installed("httr2", "for viewer-based authentication")
+    access_token <- connect_viewer_token(
+      session, paste0("https://", account, ".snowflakecomputing.com")
+    )
+    if (!is.null(access_token)) {
+      return(list(authenticator = "oauth", token = access_token))
+    }
+  }
+
   if (!is.null(uid) &&
       # allow for uid without pwd for externalbrowser auth (#817)
       (!is.null(pwd) || identical(authenticator, "externalbrowser"))) {
