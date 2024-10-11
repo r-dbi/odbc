@@ -53,7 +53,10 @@ Connect to a Snowflake account via the \href{https://docs.snowflake.com/en/devel
 
 In particular, the custom \code{dbConnect()} method for the Snowflake ODBC driver
 detects ambient OAuth credentials on platforms like Snowpark Container
-Services or Posit Workbench.
+Services or Posit Workbench.  In addition, on macOS platforms, the
+\code{dbConnect} method will check and warn if it detects irregularities with
+how the driver is configured, unless the \code{odbc.no_config_override}
+environment variable is set.
 }
 \examples{
 \dontrun{

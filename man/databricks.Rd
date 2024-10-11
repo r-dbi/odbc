@@ -59,6 +59,10 @@ credentials, and OAuth user-to-machine credentials supplied via Posit
 Workbench or the Databricks CLI on desktop.
 All of these credentials are detected automatically if present using
 \href{https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication}{standard environment variables}.
+In addition, on macOS platforms, the \code{dbConnect} method will check
+for irregularities with how the driver is configured,
+and attempt to fix in-situ, unless the \code{odbc.no_config_override}
+environment variable is set.
 }
 \examples{
 \dontrun{
