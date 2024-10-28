@@ -72,7 +72,6 @@ test_that("SQLite", {
     "read_table_row_names_na_missing", # TODO
     "create_table_overwrite", # TODO
     "create_table_error", # TODO
-    "create_temporary_table", # TODO
     "create_table_visible_in_other_connection", # TODO
     "append_table_missing", # TODO
     "append_table_append_incompatible", # TODO
