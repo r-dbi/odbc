@@ -300,7 +300,9 @@ configure_simba <- function(locate_config_callback = (function() character()),
   if (!is_macos()) {
     return(invisible())
   }
-
+  if (is.null(getOption("odbc.no_config_override"))) {
+    return(invisible())
+  }
   unixodbc_install <- locate_install_unixodbc()
   if (length(unixodbc_install) == 0) {
     error_install_unixodbc(call)

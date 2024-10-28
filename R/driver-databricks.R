@@ -87,10 +87,8 @@ setMethod("dbConnect", "DatabricksOdbcDriver",
       pwd = pwd,
       ...
     )
-    if (is.null(getOption("odbc.no_config_override"))) {
-      configure_simba( (function() { spark_simba_config(args$driver) }),
-        action = "modify")
-    }
+    configure_simba( (function() { spark_simba_config(args$driver) }),
+      action = "modify")
     inject(dbConnect(odbc(), !!!args))
   }
 )

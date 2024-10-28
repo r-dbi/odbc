@@ -177,10 +177,8 @@ setMethod(
       pwd = pwd,
       ...
     )
-    if (is.null(getOption("odbc.no_config_override"))) {
-      configure_simba( (function() { snowflake_simba_config(args$driver) }),
-        action = "warn")
-    }
+    configure_simba( (function() { snowflake_simba_config(args$driver) }),
+      action = "warn")
     inject(dbConnect(odbc(), !!!args))
   }
 )
