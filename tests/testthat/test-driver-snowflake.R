@@ -98,6 +98,31 @@ test_that("we error if we can't find ambient credentials", {
   )
 })
 
+test_that("we mention viewer-based credentials have no effect locally", {
+  withr::local_envvar(SF_PARTNER = "")
+  expect_snapshot(
+    ignored <- snowflake_args(
+      account = "testorg-test_account",
+      driver = "driver",
+      uid = "uid",
+      pwd = "pwd",
+      session = list()
+    )
+  )
+})
+
+test_that("we hint viewer-based credentials on Connect", {
+  withr::local_envvar(SF_PARTNER = "")
+  local_mocked_bindings(
+    snowflake_auth_args = function(...) list(),
+    running_on_connect = function() TRUE
+  )
+  expect_snapshot(
+    snowflake_args(account = "testorg-test_account", driver = "driver"),
+    error = TRUE
+  )
+})
+
 test_that("the default driver falls back to a known driver name", {
   local_mocked_bindings(
     snowflake_default_driver_paths = function() character(),

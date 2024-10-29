@@ -25,6 +25,10 @@
 
 * SQL Server: Fix issue related to writing when using SIMBA drivers (#816).
 
+* `snowflake()` and `databricks()` now accept a `session` argument for passing
+  viewer-based OAuth credentials from Shiny sessions on Posit Connect
+  (@atheriel, #853).
+
 # odbc 1.5.0
 
 ## Major changes

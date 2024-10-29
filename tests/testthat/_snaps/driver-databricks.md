@@ -22,7 +22,7 @@
       . <- databricks_args1()
     Condition
       Error in `DBI::dbConnect()`:
-      ! x Failed to detect ambient Databricks credentials.
+      ! Failed to detect ambient Databricks credentials.
       i Supply `uid` and `pwd` to authenticate manually.
 
 # must supply both uid and pwd
@@ -57,4 +57,23 @@
     Condition
       Error in `dbConnect()`:
       ! `httpPath` must be a single string or `NULL`, not the number 1.
+
+# we mention viewer-based credentials have no effect locally
+
+    Code
+      ignored <- databricks_args(workspace = "workspace", httpPath = "path", driver = "driver",
+        uid = "uid", pwd = "pwd", session = list())
+    Message
+      ! Ignoring `sesssion` parameter.
+      i Viewer-based credentials are only available when running on Connect.
+
+# we hint viewer-based credentials on Connect
+
+    Code
+      databricks_args(workspace = "workspace", httpPath = "path", driver = "driver")
+    Condition
+      Error in `DBI::dbConnect()`:
+      ! Failed to detect ambient Databricks credentials.
+      i Supply `uid` and `pwd` to authenticate manually.
+      i Or pass `session` for viewer-based credentials.
 

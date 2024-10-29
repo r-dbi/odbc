@@ -154,3 +154,19 @@
       ! Detected needed changes to the driver configuration file at ., but the file was not writeable.
       i Please make the changes outlined at https://solutions.posit.co/connections/db/databases/databricks/#troubleshooting-apple-macos-users.
 
+# viewer-based credentials are only available on Connect
+
+    Code
+      token <- connect_viewer_token()
+    Message
+      ! Ignoring `sesssion` parameter.
+      i Viewer-based credentials are only available when running on Connect.
+
+# viewer-based credentials require a recent Connect version
+
+    Code
+      token <- connect_viewer_token(session)
+    Condition
+      Error in `connect_viewer_token()`:
+      ! Viewer-based credentials are not supported by this version of Connect.
+
