@@ -56,7 +56,7 @@ jobs:
         if: matrix.database == 'MySQL'
         run: |
           choco install mysql.odbc
-          echo "ODBC_CS_MYSQL=Driver={MySQL ODBC 9.1 ANSI Driver};Server=127.0.0.1;Database=test;User=root;Password=" >> $env:GITHUB_ENV
+          echo "ODBC_CS_MYSQL=Driver={$(Get-OdbcDriver -Platform 64-bit | Select-Object -ExpandProperty Name | Select-String -Pattern 'ANSI')};Server=127.0.0.1;Database=test;User=root;Password=" >> $env:GITHUB_ENV
 
       - name: Install PostgreSQL
         if: matrix.database == 'PostgreSQL'
