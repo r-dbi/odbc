@@ -92,7 +92,7 @@ setMethod("show", "OdbcDriver",
 #'   Default is [bit64::integer64], which allows the full range of 64 bit
 #'   integers.
 #' @param timeout Time in seconds to timeout the connection attempt. Setting a
-#'   timeout of `Inf` indicates no timeout. Defaults to 10 seconds.
+#'   timeout of `Inf` or `NA` indicates no timeout. Defaults to 10 seconds.
 #'
 #' @section Connection strings:
 #'
@@ -181,12 +181,12 @@ setMethod("dbConnect", "OdbcDriver",
       interruptible = getOption("odbc.interruptible", interactive()),
       .connection_string = NULL) {
     check_string(dsn, allow_null = TRUE)
-    check_string(timezone, allow_null = TRUE)
-    check_string(timezone_out, allow_null = TRUE)
-    check_string(encoding, allow_null = TRUE)
-    check_string(name_encoding, allow_null = FALSE)
+    check_string(timezone)
+    check_string(timezone_out)
+    check_string(encoding)
+    check_string(name_encoding)
     arg_match(bigint)
-    check_number_decimal(timeout, allow_null = TRUE, allow_na = TRUE)
+    check_number_decimal(timeout, allow_na = TRUE)
     check_string(driver, allow_null = TRUE)
     check_string(server, allow_null = TRUE)
     check_string(database, allow_null = TRUE)

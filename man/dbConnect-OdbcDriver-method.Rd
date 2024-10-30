@@ -70,7 +70,7 @@ Default is \link[bit64:bit64-package]{bit64::integer64}, which allows the full r
 integers.}
 
 \item{timeout}{Time in seconds to timeout the connection attempt. Setting a
-timeout of \code{Inf} indicates no timeout. Defaults to 10 seconds.}
+timeout of \code{Inf} or \code{NA} indicates no timeout. Defaults to 10 seconds.}
 
 \item{driver}{The ODBC driver name or a path to a driver. For currently
 available options, see the \code{name} column of \code{\link[=odbcListDrivers]{odbcListDrivers()}} output.}

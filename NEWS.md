@@ -4,7 +4,8 @@
   a new `name_encoding` argument to `dbConnect` to complement
   the existing `encoding` parameter (#845).
 
-* Netezza: Improved data type inference for character columns (#847).
+* Netezza: Improved data type inference for character and boolean
+  columns (#847, #850).
 
 * Added functions `odbcEditDrivers()`, `odbcEditSystemDSN()`, and
   `odbcEditUserDSN()` to provide a shorthand for 
@@ -27,6 +28,10 @@
 * oracle: Fix writing to DATE and TIMESTAMP(n) targets using `batch_size` > 1.
 
 * SQL Server: Fix issue related to writing when using SIMBA drivers (#816).
+
+* `snowflake()` and `databricks()` now accept a `session` argument for passing
+  viewer-based OAuth credentials from Shiny sessions on Posit Connect
+  (@atheriel, #853).
 
 # odbc 1.5.0
 

@@ -54,7 +54,6 @@ test_that("SQLServer", {
     "quote_literal_na_is_null",
     "quote_literal_na_is_null",
     "create_table_error",
-    "create_temporary_table",
     "roundtrip_64_bit_roundtrip",
     "write_table_row_names_default",
     "list_fields_wrong_table",
