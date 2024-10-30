@@ -1,5 +1,9 @@
 # odbc (development version)
 
+* Separate column content and name encoding by adding
+  a new `name_encoding` argument to `dbConnect` to complement
+  the existing `encoding` parameter (#845).
+
 * Netezza: Improved data type inference for character and boolean
   columns (#847, #850).
 
