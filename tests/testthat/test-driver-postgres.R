@@ -57,7 +57,6 @@ test_that("PostgreSQL", {
     "unquote_identifier_vectorized", # TODO
     "create_table_overwrite", # TODO
     "create_table_error", # TODO
-    "create_temporary_table", # TODO
     "append_table_.*", # TODO
     "append_roundtrip_.*", # TODO
     "append_table_.*", # TODO
