@@ -257,6 +257,13 @@ databricks_auth_args <- function(host, uid = NULL, pwd = NULL, session = NULL) {
     wb_token <- workbench_databricks_token(host, cfg_file)
   }
 
+  # Check for Connect-provided client credentials if there isn't an ambient
+  # OAuth client defined already.
+  client_token <- NULL
+  if (is.null(client_id)) {
+    client_token <- connect_client_credentials_token(paste0("https://", host))
+  }
+
   if (nchar(token) != 0) {
     # An explicit PAT takes precedence over everything else.
     list(
@@ -271,6 +278,13 @@ databricks_auth_args <- function(host, uid = NULL, pwd = NULL, session = NULL) {
       auth_flow = 1,
       auth_client_id = client_id,
       auth_client_secret = client_secret
+    )
+  } else if (!is.null(client_token)) {
+    # Next up are Connect-provided client credentials.
+    list(
+      authMech = 11,
+      auth_flow = 0,
+      auth_accesstoken = client_token
     )
   } else if (!is.null(wb_token)) {
     # Next up are Workbench-provided credentials.
