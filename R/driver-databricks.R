@@ -87,6 +87,7 @@ setMethod("dbConnect", "DatabricksOdbcDriver",
       pwd = pwd,
       ...
     )
+    # Perform some sanity checks on MacOS
     configure_simba((function() {spark_simba_config(args$driver)}),
       action = "modify")
     inject(dbConnect(odbc(), !!!args))
