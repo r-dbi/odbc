@@ -295,39 +295,33 @@ check_attributes <- function(attributes, call = caller_env()) {
 # performs.
 # 3. If action == "modify" then we attempt to modify the config in-situ.
 # 4. Otherwise we throw a warning asking the user to revise.
-configure_simba <- function(locate_config_callback = (function() character()),
+configure_simba <- function(locate_config_callback =
+                              (function() list(config = character(), driver_url = character())),
                             action = "modify", call = caller_env()) {
   if (!is_macos()) {
     return(invisible())
   }
-  if (is.null(getOption("odbc.no_config_override"))) {
+  if (!is.null(getOption("odbc.no_config_override"))) {
     return(invisible())
   }
+
   unixodbc_install <- locate_install_unixodbc()
   if (length(unixodbc_install) == 0) {
     error_install_unixodbc(call)
   }
 
-  simba_config <- locate_config_callback()
+  res <- locate_config_callback()
+  simba_config <- res$config
   if (length(simba_config) == 0) {
     func <- cli::warn
-    if ( action == "modify" ){
+    if (action == "modify") {
       fun <- cli::abort
     }
     func(
-      c(
-        "Unable to locate the config for the ODBC driver.",
-        i = paste("Please make sure you've installed the appropriate driver",
-          "for your platform and back end."),
-        i = paste("For example, for Databricks, you can download the OEM",
-          "driver from https://www.databricks.com/spark/odbc-drivers-download."),
-        i = paste("Similarly, for Snowflake, you can find information on",
-          "installing the driver at https://docs.snowflake.com/en/developer-guide/odbc/odbc-download.")
-      ),
+      c(i = "Please install the needed driver from {res$driver_url}"),
       call = call
     )
   }
-
   configure_unixodbc_simba(unixodbc_install[1], simba_config[1], action, call)
 }
 
@@ -401,10 +395,11 @@ configure_unixodbc_simba <- function(unixodbc_install, simba_config, action, cal
     replacement = paste0("ODBCInstLib=", unixodbc_install)
   )
   if (action != "modify" && res$modified) {
-    cli::cli_warn(
-      paste0("Detected potentially unsafe driver settings. ",
-       "Please consider revising the `ODBCInstLib` setting in ", simba_config)
-    )
+    cli::cli_warn(c(
+      i = "Detected potentially unsafe driver settings.
+           Please consider revising the {.arg ODBCInstLib} field in
+           {simba_config} and setting its value to {unixodbc_install}"
+    ))
   }
   simba_lines_new <- res$new_lines
   res <- replace_or_append(
@@ -414,11 +409,11 @@ configure_unixodbc_simba <- function(unixodbc_install, simba_config, action, cal
     replacement = "DriverManagerEncoding=UTF-16"
   )
   if (action != "modify" && res$modified) {
-    cli::cli_warn(
-      paste0("Detected potentially unsafe driver settings. ",
-       "Please consider revising the `DriverManagerEncoding` setting in ",
-       simba_config)
-    )
+    cli::cli_warn(c(
+      i = "Detected potentially unsafe driver settings.
+           Please consider revising the {.arg DriverManagerEncoding}
+           field in {simba_config} and setting its value to 'UTF-16'"
+    ))
   }
   simba_lines_new <- res$new_lines
 

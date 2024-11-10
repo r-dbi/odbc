@@ -37,7 +37,7 @@ NULL
 #'   Specifying these options will disable automated credential discovery.
 #' @param ... Further arguments passed on to [`dbConnect()`].
 #'
-#' @return An `OdbcConnection` object with an active connection to a Databricks
+#' @returns An `OdbcConnection` object with an active connection to a Databricks
 #'   cluster or SQL warehouse.
 #'
 #' @examples
@@ -87,7 +87,7 @@ setMethod("dbConnect", "DatabricksOdbcDriver",
       pwd = pwd,
       ...
     )
-    configure_simba( (function() { spark_simba_config(args$driver) }),
+    configure_simba((function() {spark_simba_config(args$driver)}),
       action = "modify")
     inject(dbConnect(odbc(), !!!args))
   }
@@ -334,9 +334,11 @@ spark_simba_config <- function(driver) {
     getwd(),
     Sys.getenv("HOME")
   )
-  list.files(
-    common_dirs,
-    pattern = "simba\\.sparkodbc\\.ini$",
-    full.names = TRUE
-  )
+  return(list(
+    config = list.files(
+      common_dirs,
+      pattern = "simba\\.sparkodbc\\.ini$",
+      full.names = TRUE),
+    driver_url = "https://www.databricks.com/spark/odbc-drivers-download"
+  ))
 }

@@ -161,9 +161,9 @@
         simba_config = spark_config_path, action = "warn")
     Condition
       Warning:
-      Detected potentially unsafe driver settings. Please consider revising the `ODBCInstLib` setting in simba.sparkodbc.ini
+      i Detected potentially unsafe driver settings. Please consider revising the `ODBCInstLib` field in simba.sparkodbc.ini and setting its value to libodbcinst.dylib
       Warning:
-      Detected potentially unsafe driver settings. Please consider revising the `DriverManagerEncoding` setting in simba.sparkodbc.ini
+      i Detected potentially unsafe driver settings. Please consider revising the `DriverManagerEncoding` field in simba.sparkodbc.ini and setting its value to 'UTF-16'
 
 ---
 
@@ -172,9 +172,9 @@
         simba_config = spark_config_path, action = "warn")
     Condition
       Warning:
-      Detected potentially unsafe driver settings. Please consider revising the `ODBCInstLib` setting in simba.sparkodbc.ini
+      i Detected potentially unsafe driver settings. Please consider revising the `ODBCInstLib` field in simba.sparkodbc.ini and setting its value to libodbcinst.dylib
       Warning:
-      Detected potentially unsafe driver settings. Please consider revising the `DriverManagerEncoding` setting in simba.sparkodbc.ini
+      i Detected potentially unsafe driver settings. Please consider revising the `DriverManagerEncoding` field in simba.sparkodbc.ini and setting its value to 'UTF-16'
 
 ---
 
@@ -183,7 +183,7 @@
         simba_config = spark_config_path, action = "warn")
     Condition
       Warning:
-      Detected potentially unsafe driver settings. Please consider revising the `ODBCInstLib` setting in simba.sparkodbc.ini
+      i Detected potentially unsafe driver settings. Please consider revising the `ODBCInstLib` field in simba.sparkodbc.ini and setting its value to libodbcinst.dylib
       Warning:
-      Detected potentially unsafe driver settings. Please consider revising the `DriverManagerEncoding` setting in simba.sparkodbc.ini
+      i Detected potentially unsafe driver settings. Please consider revising the `DriverManagerEncoding` field in simba.sparkodbc.ini and setting its value to 'UTF-16'
 

@@ -177,8 +177,8 @@ setMethod(
       pwd = pwd,
       ...
     )
-    configure_simba( (function() { snowflake_simba_config(args$driver) }),
-      action = "warn")
+    configure_simba((function() {snowflake_simba_config(args$driver)}),
+      action = "modify")
     inject(dbConnect(odbc(), !!!args))
   }
 )
@@ -277,11 +277,13 @@ snowflake_simba_config <- function(driver) {
     getwd(),
     Sys.getenv("HOME")
   )
-  list.files(
-    simba_config_dirs(driver),
-    pattern = "snowflake(odbc)?\\.ini$",
-    full.names = TRUE
-  )
+  return(list(
+    config = list.files(
+      simba_config_dirs(driver),
+      pattern = "snowflake(odbc)?\\.ini$",
+      full.names = TRUE),
+    driver_url = "https://docs.snowflake.com/en/developer-guide/odbc/odbc-download"
+  ))
 }
 
 snowflake_server <- function(account) {
