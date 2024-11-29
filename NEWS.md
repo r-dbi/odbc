@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* snowflake: Runtime driver configuration checks on `MacOS` (#857).
+
 * Netezza: Improved data type inference for character and boolean
   columns (#847, #850).
 
