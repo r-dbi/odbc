@@ -262,6 +262,39 @@ test_that("configure_unixodbc_simba() writes reasonable entries", {
     )
   )
 
+  # One entry correct, other incorrect
+  # expect warning with single suggestion
+  # when action is "warn"
+  writeLines(
+    c("some=entries",
+      "not=relevant",
+      "ODBCInstLib=libodbcinst.dylib",
+      "DriverManagerEncoding=UTF-32"),
+    con = spark_config_path
+  )
+
+  expect_snapshot(configure_unixodbc_simba(
+    unixodbc_install = unixodbc_install_path,
+    simba_config = spark_config_path,
+    action = "warn"
+  ))
+  res <- configure_unixodbc_simba(
+    unixodbc_install = unixodbc_install_path,
+    simba_config = spark_config_path,
+    action = "modify"
+  )
+
+  expect_equal(res, NULL)
+  expect_equal(
+    readLines(spark_config_path),
+    c(
+      "some=entries",
+      "not=relevant",
+      "ODBCInstLib=libodbcinst.dylib",
+      "DriverManagerEncoding=UTF-16"
+    )
+  )
+
   # an entry is there but commented out
   writeLines(
     c("some=entries",

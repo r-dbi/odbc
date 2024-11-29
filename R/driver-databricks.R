@@ -88,7 +88,7 @@ setMethod("dbConnect", "DatabricksOdbcDriver",
       ...
     )
     # Perform some sanity checks on MacOS
-    configure_simba((function() {spark_simba_config(args$driver)}),
+    configure_simba(spark_simba_config(args$driver),
       action = "modify")
     inject(dbConnect(odbc(), !!!args))
   }
@@ -336,10 +336,10 @@ spark_simba_config <- function(driver) {
     Sys.getenv("HOME")
   )
   return(list(
-    config = list.files(
+    path = list.files(
       common_dirs,
       pattern = "simba\\.sparkodbc\\.ini$",
       full.names = TRUE),
-    driver_url = "https://www.databricks.com/spark/odbc-drivers-download"
+    url = "https://www.databricks.com/spark/odbc-drivers-download"
   ))
 }

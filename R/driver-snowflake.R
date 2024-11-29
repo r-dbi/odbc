@@ -178,7 +178,7 @@ setMethod(
       ...
     )
     # Perform some sanity checks on MacOS
-    configure_simba((function() {snowflake_simba_config(args$driver)}),
+    configure_simba(snowflake_simba_config(args$driver),
       action = "modify")
     inject(dbConnect(odbc(), !!!args))
   }
@@ -279,11 +279,11 @@ snowflake_simba_config <- function(driver) {
     Sys.getenv("HOME")
   )
   return(list(
-    config = list.files(
+    path = list.files(
       simba_config_dirs(driver),
       pattern = "snowflake(odbc)?\\.ini$",
       full.names = TRUE),
-    driver_url = "https://docs.snowflake.com/en/developer-guide/odbc/odbc-download"
+    url = "https://docs.snowflake.com/en/developer-guide/odbc/odbc-download"
   ))
 }
 

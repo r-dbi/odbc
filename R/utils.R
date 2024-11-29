@@ -289,14 +289,18 @@ check_attributes <- function(attributes, call = caller_env()) {
 
 # apple + spark drive config (#651) --------------------------------------------
 # Method will attempt to:
-# 1. Locate the simba driver config using the user supplied callback.  Callback
-# method defaults to locate_config_spark.
-# 2. Inspect the config for some settings that can impact how our package
-# performs.
-# 3. If action == "modify" then we attempt to modify the config in-situ.
-# 4. Otherwise we throw a warning asking the user to revise.
-configure_simba <- function(locate_config_callback =
-                              (function() list(config = character(), driver_url = character())),
+# 1. Locate an installation of unixodbc / error out otherwise.
+# 2. Verify the driver_config argument.  Expect this to be a list with
+#    two fields:
+#    * path Vector of viable driver paths ( only first one is used )
+#    * url A location where the user can downlaod the driver from.
+#    See spark_simba_config, for example.  Its return value is used as
+#    the value for this argument.
+# 3. Inspect the config for some settings that can impact how our package
+#    performs.
+# 4. If action == "modify" then we attempt to modify the config in-situ.
+# 5. Otherwise we throw a warning asking the user to revise.
+configure_simba <- function(driver_config,
                             action = "modify", call = caller_env()) {
   if (!is_macos()) {
     return(invisible())
@@ -310,15 +314,14 @@ configure_simba <- function(locate_config_callback =
     error_install_unixodbc(call)
   }
 
-  res <- locate_config_callback()
-  simba_config <- res$config
+  simba_config <- driver_config$path
   if (length(simba_config) == 0) {
     func <- cli::warn
     if (action == "modify") {
       fun <- cli::abort
     }
     func(
-      c(i = "Please install the needed driver from {res$driver_url}"),
+      c(i = "Please install the needed driver from {driver_config$url}"),
       call = call
     )
   }
@@ -394,12 +397,10 @@ configure_unixodbc_simba <- function(unixodbc_install, simba_config, action, cal
     accepted_value = unixodbc_install,
     replacement = paste0("ODBCInstLib=", unixodbc_install)
   )
+  warnings <- character()
   if (action != "modify" && res$modified) {
-    cli::cli_warn(c(
-      i = "Detected potentially unsafe driver settings.
-           Please consider revising the {.arg ODBCInstLib} field in
-           {simba_config} and setting its value to {unixodbc_install}"
-    ))
+     warnings <- c(warnings, c("*" = "Please consider revising the {.arg ODBCInstLib}
+       field in {.file {simba_config}} and setting its value to {unixodbc_install}"))
   }
   simba_lines_new <- res$new_lines
   res <- replace_or_append(
@@ -409,10 +410,14 @@ configure_unixodbc_simba <- function(unixodbc_install, simba_config, action, cal
     replacement = "DriverManagerEncoding=UTF-16"
   )
   if (action != "modify" && res$modified) {
+     warnings <- c(warnings, c("*" = "Please consider revising the
+       {.arg DriverManagerEncoding} field in {simba_config} and setting its
+       value to 'UTF-16'"))
+  }
+  if (length(warnings)) {
     cli::cli_warn(c(
-      i = "Detected potentially unsafe driver settings.
-           Please consider revising the {.arg DriverManagerEncoding}
-           field in {simba_config} and setting its value to 'UTF-16'"
+      c(i = "Detected potentially unsafe driver settings:"),
+      warnings
     ))
   }
   simba_lines_new <- res$new_lines
@@ -454,7 +459,7 @@ driver_dir <- function(driver) {
   # driver argument could be an outright path, or a name
   # of a driver specified in odbcinst.ini  Try to discern
   driver_spec <- subset(odbcListDrivers(), name == driver)
-  if (nrow(driver_spec) ) {
+  if (nrow(driver_spec)) {
     driver_path <- subset(driver_spec, attribute == "Driver")$value
   } else {
     driver_path <- driver
@@ -485,12 +490,12 @@ is_writeable <- function(path) {
 replace_or_append <- function(lines, key_pattern, accepted_value, replacement) {
   matching_lines_loc <- grepl(key_pattern, lines)
   matching_lines <- lines[matching_lines_loc]
-  found_ok = length(matching_lines) != 0 &&
+  found_ok <- length(matching_lines) != 0 &&
     any(grepl(accepted_value, lines[matching_lines_loc]))
   if (length(matching_lines) == 0) {
     lines <- c(lines, replacement)
   } else if (!found_ok) {
     lines[matching_lines_loc] <- replacement
   }
-  return(list("new_lines" = lines, "modified" = !found_ok))
+  return(list(new_lines = lines, modified = !found_ok))
 }
