@@ -98,7 +98,10 @@ setMethod("odbcDataType", "Snowflake",
 #'
 #' In particular, the custom `dbConnect()` method for the Snowflake ODBC driver
 #' detects ambient OAuth credentials on platforms like Snowpark Container
-#' Services or Posit Workbench.
+#' Services or Posit Workbench.  In addition, on macOS platforms, the
+#' `dbConnect` method will check and warn if it detects irregularities with
+#' how the driver is configured, unless the `odbc.no_config_override`
+#' environment variable is set.
 #'
 #' @inheritParams DBI::dbConnect
 #' @param account A Snowflake [account
@@ -185,6 +188,9 @@ setMethod(
       session = session,
       ...
     )
+    # Perform some sanity checks on MacOS
+    configure_simba(snowflake_simba_config(args$driver),
+      action = "modify")
     inject(dbConnect(odbc(), !!!args))
   }
 )
@@ -260,11 +266,39 @@ snowflake_default_driver_paths <- function() {
       "/usr/lib/snowflake/odbc/lib/libSnowflake.so"
     )
   } else if (Sys.info()["sysname"] == "Darwin") {
-    paths <- "/opt/snowflake/snowflakeodbc/lib/universal/libSnowflake.dylib"
+    paths <- c(
+      "/opt/snowflake/snowflakeodbc/lib/universal/libSnowflake.dylib",
+      "/opt/snowflake-osx-x64/bin/lib/libsnowflakeodbc_sb64-universal.dylib"
+    )
   } else {
     paths <- character()
   }
   paths[file.exists(paths)]
+}
+
+snowflake_simba_config <- function(driver) {
+  snowflake_env <- Sys.getenv("SIMBASNOWFLAKEINI")
+  if (!identical(snowflake_env, "")) {
+    return(snowflake_env)
+  }
+  # Posit configuration is likely at:
+  # /opt/snowflake-osx-x64/bin/lib/rstudio.snowflakeodbc.ini
+  # OEM configuration is likely at:
+  # /opt/snowflake/snowflakeodbc/lib/universal/simba.snowflake.ini
+  common_dirs <- c(
+    driver_dir(driver),
+    "/opt/snowflake-osx-x64/bin/lib/",
+    "/opt/snowflake/snowflakeodbc/lib/universal/",
+    getwd(),
+    Sys.getenv("HOME")
+  )
+  return(list(
+    path = list.files(
+      simba_config_dirs(driver),
+      pattern = "snowflake(odbc)?\\.ini$",
+      full.names = TRUE),
+    url = "https://docs.snowflake.com/en/developer-guide/odbc/odbc-download"
+  ))
 }
 
 snowflake_server <- function(account) {

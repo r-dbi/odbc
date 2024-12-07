@@ -17,6 +17,10 @@ NULL
 #' Workbench or the Databricks CLI on desktop.
 #' All of these credentials are detected automatically if present using
 #' [standard environment variables](https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication).
+#' In addition, on macOS platforms, the `dbConnect()` method will check
+#' for irregularities with how the driver is configured,
+#' and attempt to fix in-situ, unless the `odbc.no_config_override`
+#' environment variable is set.
 #'
 #' @inheritParams DBI::dbConnect
 #' @param httpPath,HTTPPath To query a cluster, use the HTTP Path value found
@@ -57,7 +61,6 @@ NULL
 #' }
 #' @export
 databricks <- function() {
-  configure_spark()
   new("DatabricksOdbcDriver")
 }
 
@@ -99,6 +102,9 @@ setMethod("dbConnect", "DatabricksOdbcDriver",
       session = session,
       ...
     )
+    # Perform some sanity checks on MacOS
+    configure_simba(spark_simba_config(args$driver),
+      action = "modify")
     inject(dbConnect(odbc(), !!!args))
   }
 )
@@ -342,4 +348,26 @@ workbench_databricks_token <- function(host, cfg_file) {
     return(NULL)
   }
   token
+}
+
+# p. 44 https://downloads.datastax.com/odbc/2.6.5.1005/Simba%20Spark%20ODBC%20Install%20and%20Configuration%20Guide.pdf
+spark_simba_config <- function(driver) {
+  spark_env <- Sys.getenv("SIMBASPARKINI")
+  if (!identical(spark_env, "")) {
+    return(spark_env)
+  }
+  common_dirs <- c(
+    driver_dir(driver),
+    "/Library/simba/spark/lib",
+    "/etc",
+    getwd(),
+    Sys.getenv("HOME")
+  )
+  return(list(
+    path = list.files(
+      common_dirs,
+      pattern = "simba\\.sparkodbc\\.ini$",
+      full.names = TRUE),
+    url = "https://www.databricks.com/spark/odbc-drivers-download"
+  ))
 }
