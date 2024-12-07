@@ -411,8 +411,8 @@ configure_unixodbc_simba <- function(unixodbc_install, simba_config, action, cal
   )
   if (action != "modify" && res$modified) {
      warnings <- c(warnings, c("*" = "Please consider revising the
-       {.arg DriverManagerEncoding} field in {simba_config} and setting its
-       value to 'UTF-16'"))
+       {.arg DriverManagerEncoding} field in {.file {simba_config}} and setting its
+       value to {.val UTF-16}."))
   }
   if (length(warnings)) {
     cli::cli_warn(c(
