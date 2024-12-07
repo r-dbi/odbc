@@ -152,3 +152,30 @@ test_that("Workbench-managed credentials are ignored for other hosts", {
   )
   expect_equal(databricks_auth_args(host = "some-host"), NULL)
 })
+
+test_that("we mention viewer-based credentials have no effect locally", {
+  expect_snapshot(
+    ignored <- databricks_args(
+      workspace = "workspace",
+      httpPath = "path",
+      driver = "driver",
+      uid = "uid",
+      pwd = "pwd",
+      session = list()
+    )
+  )
+})
+
+test_that("we hint viewer-based credentials on Connect", {
+  local_mocked_bindings(
+    running_on_connect = function() TRUE
+  )
+  expect_snapshot(
+    databricks_args(
+      workspace = "workspace",
+      httpPath = "path",
+      driver = "driver"
+    ),
+    error = TRUE
+  )
+})

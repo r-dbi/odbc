@@ -1,6 +1,11 @@
 # odbc (development version)
 
+
 * snowflake: Runtime driver configuration checks on `MacOS` (#857).
+
+* Separate column content and name encoding by adding
+  a new `name_encoding` argument to `dbConnect` to complement
+  the existing `encoding` parameter (#845).
 
 * Netezza: Improved data type inference for character and boolean
   columns (#847, #850).
@@ -26,6 +31,10 @@
 * oracle: Fix writing to DATE and TIMESTAMP(n) targets using `batch_size` > 1.
 
 * SQL Server: Fix issue related to writing when using SIMBA drivers (#816).
+
+* `snowflake()` and `databricks()` now accept a `session` argument for passing
+  viewer-based OAuth credentials from Shiny sessions on Posit Connect
+  (@atheriel, #853).
 
 # odbc 1.5.0
 

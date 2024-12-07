@@ -117,6 +117,8 @@ setMethod("odbcDataType", "Snowflake",
 #'   default.
 #' @param uid,pwd Manually specify a username and password for authentication.
 #'   Specifying these options will disable ambient credential discovery.
+#' @param session A Shiny session object, when using viewer-based credentials on
+#'   Posit Connect.
 #' @param ... Further arguments passed on to [`dbConnect()`].
 #'
 #' @returns An `OdbcConnection` object with an active connection to a Snowflake
@@ -141,6 +143,12 @@ setMethod("odbcDataType", "Snowflake",
 #'   uid = "me",
 #'   pwd = rstudioapi::askForPassword()
 #' )
+#'
+#' # Use credentials from the viewer (when possible) in a Shiny app
+#' # deployed to Posit Connect.
+#' server <- function(input, output, session) {
+#'   conn <- DBI::dbConnect(odbc::snowflake(), session = session)
+#' }
 #' }
 #' @export
 snowflake <- function() {
@@ -159,6 +167,7 @@ setMethod(
            schema = NULL,
            uid = NULL,
            pwd = NULL,
+           session = NULL,
            ...) {
     call <- caller_env()
     check_string(account, call = call)
@@ -167,6 +176,7 @@ setMethod(
     check_string(database, allow_null = TRUE, call = call)
     check_string(uid, allow_null = TRUE, call = call)
     check_string(pwd, allow_null = TRUE, call = call)
+    check_shiny_session(session, allow_null = TRUE, call = call)
     args <- snowflake_args(
       account = account,
       driver = driver,
@@ -175,6 +185,7 @@ setMethod(
       schema = schema,
       uid = uid,
       pwd = pwd,
+      session = session,
       ...
     )
     # Perform some sanity checks on MacOS
@@ -208,13 +219,16 @@ snowflake_args <- function(account = Sys.getenv("SNOWFLAKE_ACCOUNT"),
 
   arg_names <- tolower(names(all))
   if (!"authenticator" %in% arg_names && !all(c("uid", "pwd") %in% arg_names)) {
-    abort(
-      c(
-        "x" = "Failed to detect ambient Snowflake credentials.",
-        "i" = "Supply `uid` and `pwd` to authenticate manually."
-      ),
-      call = quote(DBI::dbConnect())
+    msg <- c(
+      "Failed to detect ambient Snowflake credentials.",
+      "i" = "Supply {.arg uid} and {.arg pwd} to authenticate manually."
     )
+    if (running_on_connect()) {
+      msg <- c(
+        msg, "i" = "Or pass {.arg session} for viewer-based credentials."
+      )
+    }
+    cli::cli_abort(msg, call = quote(DBI::dbConnect()))
   }
 
   all
@@ -304,7 +318,19 @@ snowflake_auth_args <- function(account,
                                 uid = NULL,
                                 pwd = NULL,
                                 authenticator = NULL,
+                                session = NULL,
                                 ...) {
+  # If a session is supplied, any viewer-based auth takes precedence.
+  if (!is.null(session)) {
+    check_installed("httr2", "for viewer-based authentication")
+    access_token <- connect_viewer_token(
+      session, paste0("https://", account, ".snowflakecomputing.com")
+    )
+    if (!is.null(access_token)) {
+      return(list(authenticator = "oauth", token = access_token))
+    }
+  }
+
   if (!is.null(uid) &&
       # allow for uid without pwd for externalbrowser auth (#817)
       (!is.null(pwd) || identical(authenticator, "externalbrowser"))) {

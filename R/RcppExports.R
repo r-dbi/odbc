@@ -9,8 +9,8 @@ list_data_sources_ <- function() {
     .Call(`_odbc_list_data_sources_`)
 }
 
-odbc_connect <- function(connection_string, timezone = "", timezone_out = "", encoding = "", bigint = 0L, timeout = 0L, r_attributes = NULL, interruptible_execution = TRUE) {
-    .Call(`_odbc_odbc_connect`, connection_string, timezone, timezone_out, encoding, bigint, timeout, r_attributes, interruptible_execution)
+odbc_connect <- function(connection_string, timezone = "", timezone_out = "", encoding = "", name_encoding = "", bigint = 0L, timeout = 0L, r_attributes = NULL, interruptible_execution = TRUE) {
+    .Call(`_odbc_odbc_connect`, connection_string, timezone, timezone_out, encoding, name_encoding, bigint, timeout, r_attributes, interruptible_execution)
 }
 
 has_result <- function(p) {
