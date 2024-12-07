@@ -162,8 +162,8 @@
     Condition
       Warning:
       i Detected potentially unsafe driver settings:
-      * Please consider revising the `ODBCInstLib` field in 'simba.sparkodbc.ini' and setting its value to libodbcinst.dylib
-      * Please consider revising the `DriverManagerEncoding` field in simba.sparkodbc.ini and setting its value to 'UTF-16'
+      * Please consider revising the `ODBCInstLib` field in 'simba.sparkodbc.ini' and setting its value to "libodbcinst.dylib"
+      * Please consider revising the `DriverManagerEncoding` field in 'simba.sparkodbc.ini' and setting its value to "UTF-16".
 
 ---
 
@@ -173,8 +173,8 @@
     Condition
       Warning:
       i Detected potentially unsafe driver settings:
-      * Please consider revising the `ODBCInstLib` field in 'simba.sparkodbc.ini' and setting its value to libodbcinst.dylib
-      * Please consider revising the `DriverManagerEncoding` field in simba.sparkodbc.ini and setting its value to 'UTF-16'
+      * Please consider revising the `ODBCInstLib` field in 'simba.sparkodbc.ini' and setting its value to "libodbcinst.dylib"
+      * Please consider revising the `DriverManagerEncoding` field in 'simba.sparkodbc.ini' and setting its value to "UTF-16".
 
 ---
 
@@ -184,7 +184,7 @@
     Condition
       Warning:
       i Detected potentially unsafe driver settings:
-      * Please consider revising the `DriverManagerEncoding` field in simba.sparkodbc.ini and setting its value to 'UTF-16'
+      * Please consider revising the `DriverManagerEncoding` field in 'simba.sparkodbc.ini' and setting its value to "UTF-16".
 
 ---
 
@@ -194,8 +194,8 @@
     Condition
       Warning:
       i Detected potentially unsafe driver settings:
-      * Please consider revising the `ODBCInstLib` field in 'simba.sparkodbc.ini' and setting its value to libodbcinst.dylib
-      * Please consider revising the `DriverManagerEncoding` field in simba.sparkodbc.ini and setting its value to 'UTF-16'
+      * Please consider revising the `ODBCInstLib` field in 'simba.sparkodbc.ini' and setting its value to "libodbcinst.dylib"
+      * Please consider revising the `DriverManagerEncoding` field in 'simba.sparkodbc.ini' and setting its value to "UTF-16".
 
 # viewer-based credentials are only available on Connect
 
