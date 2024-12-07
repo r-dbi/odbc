@@ -400,7 +400,7 @@ configure_unixodbc_simba <- function(unixodbc_install, simba_config, action, cal
   warnings <- character()
   if (action != "modify" && res$modified) {
      warnings <- c(warnings, c("*" = "Please consider revising the {.arg ODBCInstLib}
-       field in {.file {simba_config}} and setting its value to {unixodbc_install}"))
+       field in {.file {simba_config}} and setting its value to {.val {unixodbc_install}}"))
   }
   simba_lines_new <- res$new_lines
   res <- replace_or_append(
