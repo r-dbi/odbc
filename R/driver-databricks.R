@@ -17,7 +17,7 @@ NULL
 #' Workbench or the Databricks CLI on desktop.
 #' All of these credentials are detected automatically if present using
 #' [standard environment variables](https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication).
-#' In addition, on macOS platforms, the `dbConnect` method will check
+#' In addition, on macOS platforms, the `dbConnect()` method will check
 #' for irregularities with how the driver is configured,
 #' and attempt to fix in-situ, unless the `odbc.no_config_override`
 #' environment variable is set.
