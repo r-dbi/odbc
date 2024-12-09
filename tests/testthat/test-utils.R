@@ -85,8 +85,10 @@ test_that("parse_database_error() works with messages from the wild", {
   # message contains brackets that may be interpreted as inline markup
   msg <- "nanodbc/nanodbc.cpp:1722: S1000
           [SAP AG][LIBODBCHDB DLL][HDBODBC] General error;403 internal error: Error opening the cursor for the remote database <***.***> [SAP AG][LIBODBCHDB SO][HDBODBC] Connection not open;-10807 Connection down: [89013] Socket closed by peer {***.**.*.**:***** -> ***.**.***.**:***** TenantName:(none) SiteVolumeID:1:3 SiteType:PRIMARY ConnectionID:****** SessionID:************}
-          <SQL> 'SELECT DISTINCT
-          \"po_id\", ***CENSORED***'"
+          <SQL> 'SELECT DISTINCT \"po_id\", ***CENSORED***'"
+  expect_snapshot(error = TRUE, rethrow_database_error(msg, call = NULL))
+
+  msg <- "`parse_database_error()` will not {be able to parse this}, but it should still be successfully rethrown as-is."
   expect_snapshot(error = TRUE, rethrow_database_error(msg, call = NULL))
 })
 
