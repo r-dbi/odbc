@@ -102,6 +102,18 @@
       *  A network-related or instance-specific error has occurred while establishing a connection to 127.0.0.1. Server is not found or not accessible. Check if instance name is correct and if SQL Server is configured to allow remote connections. For more information see SQL Server Books Online.
       i From 'nanodbc/nanodbc.cpp:1147'.
 
+---
+
+    Code
+      rethrow_database_error(msg, call = NULL)
+    Condition
+      Error:
+      ! Could not parse cli `{}` expression: `***.**.*.**:*****...`.
+      Caused by error:
+      ! <text>:1:1: unexpected '^'
+      1: **
+          ^
+
 # check_row.names()
 
     Code

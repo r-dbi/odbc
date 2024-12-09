@@ -162,7 +162,10 @@ random_name <- function(prefix = "") {
 rethrow_database_error <- function(msg, call = trace_back()$call[[1]]) {
   tryCatch(
     res <- parse_database_error(msg),
-    error = function(e) cli::cli_abort(msg, call = call)
+    # use `rlang::abort()` rather than `cli::cli_abort()` in case the raw
+    # message contains syntax that cli may erroneously try to interpret
+    # as inline markup (#859)
+    error = function(e) rlang::abort(msg, call = call)
   )
 
   cli::cli_abort(
