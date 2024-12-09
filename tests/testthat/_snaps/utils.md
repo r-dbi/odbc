@@ -136,23 +136,66 @@
       ! `attributes` does not support the connection attributes "boop" and "beep".
       i Allowed connection attribute is "azure_token".
 
-# configure_spark() errors informatively on failure to install unixODBC
+# configure_simba() errors informatively on failure to install unixODBC
 
     Code
-      databricks()
+      configure_simba()
     Condition
-      Error in `databricks()`:
+      Error:
       ! Unable to locate the unixODBC driver manager.
       i Please install unixODBC using Homebrew with `brew install unixodbc`.
 
 # databricks() errors informatively when spark ini isn't writeable
 
     Code
-      write_spark_lines("", ".", ".", call2("databricks"))
+      write_simba_lines("", ".", ".", call2("databricks"))
     Condition
       Error in `databricks()`:
       ! Detected needed changes to the driver configuration file at ., but the file was not writeable.
       i Please make the changes outlined at https://solutions.posit.co/connections/db/databases/databricks/#troubleshooting-apple-macos-users.
+
+# configure_unixodbc_simba() writes reasonable entries
+
+    Code
+      configure_unixodbc_simba(unixodbc_install = unixodbc_install_path,
+        simba_config = spark_config_path, action = "warn")
+    Condition
+      Warning:
+      i Detected potentially unsafe driver settings:
+      * Please consider revising the `ODBCInstLib` field in 'simba.sparkodbc.ini' and setting its value to "libodbcinst.dylib"
+      * Please consider revising the `DriverManagerEncoding` field in 'simba.sparkodbc.ini' and setting its value to "UTF-16".
+
+---
+
+    Code
+      configure_unixodbc_simba(unixodbc_install = unixodbc_install_path,
+        simba_config = spark_config_path, action = "warn")
+    Condition
+      Warning:
+      i Detected potentially unsafe driver settings:
+      * Please consider revising the `ODBCInstLib` field in 'simba.sparkodbc.ini' and setting its value to "libodbcinst.dylib"
+      * Please consider revising the `DriverManagerEncoding` field in 'simba.sparkodbc.ini' and setting its value to "UTF-16".
+
+---
+
+    Code
+      configure_unixodbc_simba(unixodbc_install = unixodbc_install_path,
+        simba_config = spark_config_path, action = "warn")
+    Condition
+      Warning:
+      i Detected potentially unsafe driver settings:
+      * Please consider revising the `DriverManagerEncoding` field in 'simba.sparkodbc.ini' and setting its value to "UTF-16".
+
+---
+
+    Code
+      configure_unixodbc_simba(unixodbc_install = unixodbc_install_path,
+        simba_config = spark_config_path, action = "warn")
+    Condition
+      Warning:
+      i Detected potentially unsafe driver settings:
+      * Please consider revising the `ODBCInstLib` field in 'simba.sparkodbc.ini' and setting its value to "libodbcinst.dylib"
+      * Please consider revising the `DriverManagerEncoding` field in 'simba.sparkodbc.ini' and setting its value to "UTF-16".
 
 # viewer-based credentials are only available on Connect
 

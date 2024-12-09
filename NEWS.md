@@ -1,5 +1,8 @@
 # odbc (development version)
 
+
+* snowflake: Runtime driver configuration checks on `MacOS` (#857).
+
 * Separate column content and name encoding by adding
   a new `name_encoding` argument to `dbConnect` to complement
   the existing `encoding` parameter (#845).
