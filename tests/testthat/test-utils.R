@@ -156,11 +156,10 @@ test_that("configure_simba() calls configure_unixodbc_simba() (#835)", {
   skip_if_not(is_macos())
   local_mocked_bindings(
     locate_install_unixodbc = function() "hey",
-    locate_config_spark = function() "there",
     configure_unixodbc_simba = function(...) TRUE
   )
 
-  expect_true(configure_simba())
+  expect_true(configure_simba(list(path = "example")))
 })
 
 test_that("locate_install_unixodbc() returns reasonable values", {
