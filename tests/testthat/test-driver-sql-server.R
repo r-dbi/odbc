@@ -330,7 +330,7 @@ test_that("can create / write to temp table", {
 
 test_that("independent encoding of column entries and names (#834)", {
   skip_on_os("windows")
-  # OEM Driver does not present "AutoTranslate" option.
+  # PRO Driver does not present "AutoTranslate" option.
   # Cursory investigation seems to indicate behavior is equivalent
   # to AutoTranslate being set to "yes" ( character data is returned
   # as UTF encoded, rather than in the code page corresponding to the
