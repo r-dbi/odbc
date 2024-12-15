@@ -330,6 +330,12 @@ test_that("can create / write to temp table", {
 
 test_that("independent encoding of column entries and names (#834)", {
   skip_on_os("windows")
+  # PRO Driver does not present "AutoTranslate" option.
+  # Cursory investigation seems to indicate behavior is equivalent
+  # to AutoTranslate being set to "yes" ( character data is returned
+  # as UTF encoded, rather than in the code page corresponding to the
+  # collation ).
+  skip_if(Sys.getenv("ODBC_DRIVERS_VINTAGE") != "OEM")
   rawVal1 <- as.raw(c(0x72, 0xc3, 0xa6, 0x76, 0x65, 0x6e))
   rawVal2 <- as.raw(c(0xc3, 0xa5, 0x6c, 0x65, 0x6e, 0x73))
   rawVal3 <- as.raw(c(0xc3, 0xb8, 0x72, 0x72, 0x65, 0x64))
