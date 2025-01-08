@@ -243,22 +243,10 @@ snowflake_args <- function(account = Sys.getenv("SNOWFLAKE_ACCOUNT"),
 # default to known shared library paths used by the official installers.
 # On Windows we use the official driver name.
 snowflake_default_driver <- function() {
-  default_paths <- snowflake_default_driver_paths()
-  if (length(default_paths) > 0) {
-    return(default_paths[1])
-  }
-
-  fallbacks <- c("Snowflake", "SnowflakeDSIIDriver")
-  fallbacks <- intersect(fallbacks, odbcListDrivers()$name)
-  if (length(fallbacks) > 0) {
-    return(fallbacks[1])
-  }
-
-  abort(
-    c(
-      "Failed to automatically find Snowflake ODBC driver.",
-      i = "Set `driver` to known driver name or path."
-    ),
+  find_default_driver(
+    snowflake_default_driver_paths(),
+    fallbacks = c("Snowflake", "SnowflakeDSIIDriver"),
+    label = "Snowflake",
     call = quote(DBI::dbConnect())
   )
 }
@@ -277,7 +265,7 @@ snowflake_default_driver_paths <- function() {
   } else {
     paths <- character()
   }
-  paths[file.exists(paths)]
+  paths
 }
 
 snowflake_simba_config <- function(driver) {
