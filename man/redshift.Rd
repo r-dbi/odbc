@@ -18,6 +18,7 @@ redshift()
   driver = NULL,
   uid = NULL,
   pwd = NULL,
+  dbUser = uid,
   ...
 )
 }
@@ -37,8 +38,10 @@ the more verbose \code{server} is required.}
 \item{driver}{The name of or path to a Redshift ODBC driver, or \code{NULL} to
 locate one automatically.}
 
-\item{uid, pwd}{Manually specify a username and password for authentication.
-Specifying these options will disable automated credential discovery.}
+\item{uid, pwd}{Disable IAM credentials and manually specify a username and
+password for authentication.}
+
+\item{dbUser}{The database account.}
 
 \item{...}{Further arguments passed on to \code{\link[=dbConnect]{dbConnect()}}.}
 }
@@ -51,7 +54,7 @@ Connect to Redshift clusters via ODBC.
 
 In particular, the custom \code{dbConnect()} method for Redshift ODBC drivers
 automatically determines whether IAM-based credentials are available, much
-like other AWS SDKs and tools.
+like other AWS SDKs and tools. This requires the \pkg{paws.common} package.
 }
 \examples{
 \dontrun{

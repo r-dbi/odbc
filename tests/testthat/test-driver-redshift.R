@@ -17,24 +17,3 @@ test_that("IAM credentials in environment variables are handled correctly", {
   expect_equal(args$sessionToken, "session-token")
 })
 
-test_that("shared credential files can be used as well", {
-  withr::local_envvar(
-    AWS_PROFILE = "profile",
-    # Unset anything that might interfere.
-    AWS_ACCESS_KEY_ID = NA,
-    AWS_WEB_IDENTITY_TOKEN_FILE = NA
-  )
-  args <- redshift_args(driver = "driver")
-  expect_equal(args$profile, "profile")
-})
-
-test_that("IAM instance profiles are the fallback", {
-  withr::local_envvar(
-    # Unset anything that might interfere.
-    AWS_ACCESS_KEY_ID = NA,
-    AWS_WEB_IDENTITY_TOKEN_FILE = NA,
-    AWS_PROFILE = NA
-  )
-  args <- redshift_args(driver = "driver")
-  expect_equal(args$instanceProfile, 1L)
-})

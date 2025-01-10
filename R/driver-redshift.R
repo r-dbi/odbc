@@ -33,18 +33,19 @@ setMethod("odbcDataType", "Redshift",
 #'
 #' In particular, the custom `dbConnect()` method for Redshift ODBC drivers
 #' automatically determines whether IAM-based credentials are available, much
-#' like other AWS SDKs and tools.
+#' like other AWS SDKs and tools. This requires the \pkg{paws.common} package.
 #'
 #' @inheritParams DBI::dbConnect
 #' @param clusterId The Redshift cluster identifier. Only one of `clusterId` or
 #'   the more verbose `server` is required.
 #' @param region The AWS region the Redshift cluster runs in. Ignored when
 #'   `server` is provided.
+#' @param dbUser The Redshift database account.
 #' @param server The full hostname of the Redshift cluster.
 #' @param driver The name of or path to a Redshift ODBC driver, or `NULL` to
 #'   locate one automatically.
-#' @param uid,pwd Manually specify a username and password for authentication.
-#'   Specifying these options will disable automated credential discovery.
+#' @param uid,pwd Disable IAM credentials and manually specify a username and
+#'   password for authentication.
 #' @param ... Further arguments passed on to [`dbConnect()`].
 #'
 #' @returns An `OdbcConnection` object with an active connection to a Redshift
@@ -52,11 +53,12 @@ setMethod("odbcDataType", "Redshift",
 #'
 #' @examples
 #' \dontrun{
-#' # Connect to Redshift using ambient IAM credentials.
+#' # Connect to Redshift using IAM credentials.
 #' DBI::dbConnect(
 #'   odbc::redshift(),
 #'   clusterId = "my-testing-cluster",
-#'   database = "dev"
+#'   database = "dev",
+#'   dbUser = "me"
 #' )
 #' }
 #' @export
@@ -79,6 +81,7 @@ setMethod("dbConnect", "RedshiftOdbcDriver",
            driver = NULL,
            uid = NULL,
            pwd = NULL,
+           dbUser = uid,
            ...) {
     call <- caller_env()
     switch(
@@ -99,6 +102,7 @@ setMethod("dbConnect", "RedshiftOdbcDriver",
       region = if (!missing(clusterId)) region,
       server = if (!missing(server)) server,
       database = database,
+      dbUser = dbUser,
       ...
     )
     inject(dbConnect(odbc(), !!!args))
@@ -112,8 +116,7 @@ redshift_args <- function(driver = NULL,
   default_args <- list(
     driver = driver %||% redshift_default_driver(),
     port = 5439L,
-    endpointUrl = getenv2("AWS_ENDPOINT_URL_REDSHIFT", "AWS_ENDPOINT_URL"),
-    stsEndpointUrl = getenv2("AWS_ENDPOINT_URL_STS")
+    endpointUrl = getenv2("AWS_ENDPOINT_URL_REDSHIFT")
   )
   auth_args <- redshift_auth_args(uid = uid, pwd = pwd)
   utils::modifyList(c(default_args, auth_args), list(...))
@@ -122,7 +125,7 @@ redshift_args <- function(driver = NULL,
 redshift_default_driver <- function() {
   find_default_driver(
     redshift_default_driver_paths(),
-    fallbacks = c("Redshift", "Amazon Redshift ODBC Driver (x64)"),
+    fallbacks = c("Redshift", "Amazon Redshift (x64)"),
     label = "Redshift",
     call = quote(DBI::dbConnect())
   )
@@ -145,63 +148,40 @@ redshift_default_driver_paths <- function() {
 redshift_auth_args <- function(uid = NULL, pwd = NULL) {
   if (!is.null(uid) && !is.null(pwd)) {
     return(list(uid = uid, pwd = pwd))
-  } else if (is.null(uid) && !is.null(pwd)) {
+  }
+  if (is.null(uid) && !is.null(pwd)) {
     cli::cli_abort(
       c(
         "Both {.arg uid} and {.arg pwd} must be specified for manual \
-         authentication.",
+         authentication to Redshift.",
         i = "Or leave {.arg pwd} unset to use IAM credentials."
       ),
       call = quote(DBI::dbConnect())
     )
   }
-
-  # The precedence here follows the conventions of other AWS SDKs and the CLI.
-  # See e.g. https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html#configuring-credentials
-  #
-  # The notable exception here is that the driver doesn't support AWS config
-  # files -- though it *does* support shared credential files -- so we ignore
-  # those for now.
-
-  access_key_id <- getenv2("AWS_ACCESS_KEY_ID")
-  if (!is.null(access_key_id)) {
-    return(list(
-      iam = 1L,
-      accessKeyId = access_key_id,
-      secretAccessKey = getenv2("AWS_SECRET_ACCESS_KEY"),
-      sessionToken = getenv2("AWS_SESSION_TOKEN")
-    ))
-  }
-
-  # Note: requires version 1.5.9 (November 2023).
-  token_file <- getenv2("AWS_WEB_IDENTITY_TOKEN_FILE")
-  if (!is.null(token_file)) {
-    if (!file.exists(token_file)) {
+  check_installed("paws.common", "to use IAM credentials for Redshift")
+  try_fetch(
+    {
+      creds <- paws.common::locate_credentials()
+      list(
+        iam = 1L,
+        accessKeyId = creds$access_key_id,
+        secretAccessKey = creds$secret_access_key,
+        sessionToken = creds$session_token
+      )
+    },
+    error = function(cnd) {
       cli::cli_abort(
         c(
-          "{.env AWS_WEB_IDENTITY_TOKEN_FILE} is set, but the file does not exist.",
-          i = "Your IAM credentials may be misconfigured."
+          "No IAM credentials found.",
+          i = "Set {.arg uid} and {.arg pwd} for manual authentication to \
+              Redshift."
         ),
+        parent = cnd,
         call = quote(DBI::dbConnect())
       )
     }
-    token <- readLines(token_file, warn = FALSE, encoding = "UTF-8")
-    return(list(
-      iam = 1L,
-      plugin_name = "JwtIamAuthPlugin",
-      role_arn = getenv2("AWS_ROLE_ARN"),
-      role_session_name = getenv2("AWS_ROLE_SESSION_NAME"),
-      web_identity_token = token
-    ))
-  }
-
-  profile <- getenv2("AWS_PROFILE")
-  if (!is.null(profile)) {
-    return(list(iam = 1L, profile = profile))
-  }
-
-  # Default to the instance profile.
-  list(iam = 1L, instanceProfile = 1L)
+  )
 }
 
 default_aws_region <- function() {
