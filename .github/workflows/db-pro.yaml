@@ -48,6 +48,7 @@ jobs:
           SA_PASSWORD: Password12
 
     env:
+      ODBC_DRIVERS_VINTAGE: "PRO"
       CRAN: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest"
       ODBCSYSINI: ${{ github.workspace }}/.github/odbc
       TNS_ADMIN: ${{ github.workspace }}/.github/odbc
