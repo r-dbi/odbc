@@ -3422,7 +3422,7 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
             (T*)(col.pdata_ + rowset_position_ * col.clen_), [](T* ptr) {});
     }
 
-    std::unique_ptr<T> buffer = std::make_unique<T>();
+    std::unique_ptr<T> buffer(new T);
     const std::size_t buffer_size = sizeof(T);
     void* handle = native_statement_handle();
     NANODBC_CALL_RC(
