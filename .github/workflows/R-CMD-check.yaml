@@ -40,6 +40,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      ODBCSYSINI: ${{ github.workspace }}/.github/odbc
 
     steps:
       - uses: actions/checkout@v4
@@ -52,15 +53,20 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
+      - name: Install Driver Manager (Ubuntu)
+        if: matrix.config.os == 'ubuntu-latest'
+        run: sudo apt-get install -y unixodbc-dev
+
+      - name: Install Driver Manager (MacOS)
+        if: matrix.config.os == 'macOS-latest'
+        # unixODBC is not pre-installed on macos-14-arm64 runner (#794)
+        run: brew install unixodbc
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
 
-      - name: Install unixODBC
-        if: matrix.config.os == 'macOS-latest'
-        # unixODBC is not pre-installed on macos-14-arm64 runner (#794)
-        run: brew install unixodbc
 
       - uses: r-lib/actions/check-r-package@v2
         with:

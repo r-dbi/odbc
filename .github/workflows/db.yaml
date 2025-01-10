@@ -40,7 +40,7 @@ jobs:
           POSTGRES_DB: test
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
       sqlserver:
-        image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
+        image: mcr.microsoft.com/mssql/server:2019-latest
         ports:
         - 1433:1433
         env:
@@ -48,7 +48,7 @@ jobs:
           SA_PASSWORD: Password12
 
     env:
-      CRAN: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest"
+      CRAN: "https://packagemanager.rstudio.com/cran/__linux__/noble/latest"
       ODBCSYSINI: ${{ github.workspace }}/.github/odbc
       TNS_ADMIN: ${{ github.workspace }}/.github/odbc
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -57,6 +57,9 @@ jobs:
       - uses: actions/checkout@v3
 
       - uses: r-lib/actions/setup-r@v2
+
+      - name: Install Driver Manager
+        run: sudo apt-get install -y unixodbc-dev
 
       - name: Install MySQL Driver
         run: |
@@ -79,11 +82,12 @@ jobs:
         run: |
           echo "ODBC_CS_SQLSERVER=dsn=MicrosoftSQLServer;UID=SA;PWD=Password12" >> $GITHUB_ENV
           sudo bash -c "
-            curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-            && curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+            rm -f /usr/share/keyrings/microsoft-prod.gpg \
+            && curl https://packages.microsoft.com/keys/microsoft.asc | gpg --batch --dearmor --no-tty -o /usr/share/keyrings/microsoft-prod.gpg \
+            && curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | tee /etc/apt/sources.list.d/mssql-release.list \
             && apt-get update \
-            && ACCEPT_EULA=Y apt-get install -y msodbcsql17 \
-            && ln -s /opt/microsoft/msodbcsql17/lib64/libmsodbcsql-17.*.so.* /opt/microsoft/msodbcsql17/lib64/libmsodbcsql-17.so"
+            && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
+            && ln -s /opt/microsoft/msodbcsql18/lib64/libmsodbcsql-18.*.so.* /opt/microsoft/msodbcsql18/lib64/libmsodbcsql-18.so"
 
       - name: Install Oracle Driver
         run: |
