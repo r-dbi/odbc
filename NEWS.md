@@ -36,6 +36,9 @@
   viewer-based OAuth credentials from Shiny sessions on Posit Connect
   (@atheriel, #853).
 
+* A new `redshift()` helper greatly simplifies connecting to Amazon Redshift
+  clusters, particularly when using IAM credentials (@atheriel, #879).
+
 # odbc 1.5.0
 
 ## Major changes

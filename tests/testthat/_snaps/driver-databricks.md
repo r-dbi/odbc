@@ -4,7 +4,7 @@
       databricks_default_driver()
     Condition
       Error in `DBI::dbConnect()`:
-      ! Failed to automatically find Databricks/Spark ODBC driver.
+      ! Failed to automatically find the Databricks/Spark ODBC driver.
       i Set `driver` to known driver name or path.
 
 # databricks host validates inputs

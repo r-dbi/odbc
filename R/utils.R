@@ -576,3 +576,33 @@ connect_viewer_token <- function(session, resource) {
 running_on_connect <- function() {
   Sys.getenv("RSTUDIO_PRODUCT") == "CONNECT"
 }
+
+# Like Sys.getenv(), but checks passed keys in order and allows for non-string
+# defaults.
+getenv2 <- function(..., .unset = NULL) {
+  x <- as.character(list(...))
+  env <- Sys.getenv(x, NA_character_)
+  if (all(is.na(env))) {
+    return(.unset)
+  }
+  val <- env[!is.na(env)][1]
+  unname(val)
+}
+
+find_default_driver <- function(paths, fallbacks, label, call = caller_env()) {
+  paths <- paths[file.exists(paths)]
+  if (length(paths) > 0) {
+    return(paths[1])
+  }
+  fallbacks <- intersect(fallbacks, odbcListDrivers()$name)
+  if (length(fallbacks) > 0) {
+    return(fallbacks[1])
+  }
+  cli::cli_abort(
+    c(
+      "Failed to automatically find the {label} ODBC driver.",
+      i = "Set {.arg driver} to known driver name or path."
+    ),
+    call = call
+  )
+}
