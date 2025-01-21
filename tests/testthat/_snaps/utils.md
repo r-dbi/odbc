@@ -102,6 +102,25 @@
       *  A network-related or instance-specific error has occurred while establishing a connection to 127.0.0.1. Server is not found or not accessible. Check if instance name is correct and if SQL Server is configured to allow remote connections. For more information see SQL Server Books Online.
       i From 'nanodbc/nanodbc.cpp:1147'.
 
+---
+
+    Code
+      rethrow_database_error(msg, call = NULL)
+    Condition
+      Error:
+      ! ODBC failed with error S1000 from [SAP AG][LIBODBCHDB DLL][HDBODBC][SAP AG][LIBODBCHDB SO][HDBODBC][89013].
+      x  General error;403 internal error: Error opening the cursor for the remote database <***.***> Connection not open;-10807 Connection down: Socket closed by peer {***.**.*.**:***** -> ***.**.***.**:***** TenantName:(none) SiteVolumeID:1:3 SiteType:PRIMARY ConnectionID:****** SessionID:************}
+      *  <SQL> 'SELECT DISTINCT "po_id", ***CENSORED***'
+      i From 'nanodbc/nanodbc.cpp:1722'.
+
+---
+
+    Code
+      rethrow_database_error(msg, call = NULL)
+    Condition
+      Error:
+      ! `parse_database_error()` will not {be able to parse this}, but it should still be successfully rethrown as-is.
+
 # check_row.names()
 
     Code
