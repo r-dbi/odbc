@@ -82,7 +82,7 @@ test_that("parse_database_error() works with messages from the wild", {
           [Microsoft][ODBC Driver 18 for SQL Server]A network-related or instance-specific error has occurred while establishing a connection to 127.0.0.1. Server is not found or not accessible. Check if instance name is correct and if SQL Server is configured to allow remote connections. For more information see SQL Server Books Online. "
   expect_snapshot(error = TRUE, rethrow_database_error(msg, call = NULL))
 
-  # message contains brackets that may be interpreted as inline markup
+  # message contains brackets that may be interpreted as inline markup (#859)
   msg <- "nanodbc/nanodbc.cpp:1722: S1000
           [SAP AG][LIBODBCHDB DLL][HDBODBC] General error;403 internal error: Error opening the cursor for the remote database <***.***> [SAP AG][LIBODBCHDB SO][HDBODBC] Connection not open;-10807 Connection down: [89013] Socket closed by peer {***.**.*.**:***** -> ***.**.***.**:***** TenantName:(none) SiteVolumeID:1:3 SiteType:PRIMARY ConnectionID:****** SessionID:************}
           <SQL> 'SELECT DISTINCT \"po_id\", ***CENSORED***'"
