@@ -24,6 +24,7 @@ jobs:
           - PostgreSQL
           - SQLite
     env:
+      ODBC_DRIVERS_VINTAGE: "OEM"
       CRAN: "https://packagemanager.rstudio.com/cran/latest"
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 

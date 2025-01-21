@@ -152,13 +152,17 @@ setMethod("odbcDataType", "Snowflake",
 #' }
 #' @export
 snowflake <- function() {
-  new("Snowflake")
+  new("SnowflakeOdbcDriver")
 }
 
 #' @rdname snowflake
 #' @export
+setClass("SnowflakeOdbcDriver", contains = "OdbcDriver")
+
+#' @rdname snowflake
+#' @export
 setMethod(
-  "dbConnect", "Snowflake",
+  "dbConnect", "SnowflakeOdbcDriver",
   function(drv,
            account = Sys.getenv("SNOWFLAKE_ACCOUNT"),
            driver = NULL,
