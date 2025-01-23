@@ -12,6 +12,7 @@
 \alias{dbExistsTable,Microsoft SQL Server,SQL-method}
 \alias{odbcConnectionSchemas,Microsoft SQL Server-method}
 \alias{sqlCreateTable,Microsoft SQL Server-method}
+\alias{odbcListObjects.Microsoft SQL Server}
 \title{SQL Server}
 \description{
 Details of SQL Server methods for odbc and DBI generics.
@@ -57,6 +58,11 @@ sure we list the schemas in the appropriate database/catalog.
 
 Warns if \code{temporary = TRUE} but the \code{name} does not conform to temp table
 naming conventions (i.e. it doesn't start with \verb{#}).
+}
+
+\subsection{\code{odbcListObjects()}}{
+
+This method makes tables that are synonyms visible in the Connections pane.
 }
 }
 \keyword{internal}

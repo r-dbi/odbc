@@ -85,6 +85,10 @@
 * The `"OdbcConnection"` method for `dbQuoteIdentifier()` will no longer 
   pass `x` to `encodeString()` before returning, for consistency with the
   default implementation in DBI (@simonpcouch, #765).
+  
+* `dbListTables()`, `dbExistsTable()`, and `odbcListObjects()` now support
+  synonyms with Microsoft SQL Server. This also means that users can now
+  interact with synonyms using the Connections pane (@simonpcouch, #773).
 
 * A bug in the implementation of a new feature introduced in 1.4.2, where the
   package would automatically set the `ODBCSYSINI` environmental variable when 

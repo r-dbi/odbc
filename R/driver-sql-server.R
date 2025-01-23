@@ -73,11 +73,15 @@ setMethod("dbExistsTable", c("Microsoft SQL Server", "character"),
     check_string(name)
     if (isTempTable(conn, name, ...)) {
       query <- paste0("SELECT OBJECT_ID('tempdb..", name, "')")
-      !is.na(dbGetQuery(conn, query)[[1]])
-    } else {
-      df <- odbcConnectionTables(conn, name = name, ...)
-      NROW(df) > 0
+      return(!is.na(dbGetQuery(conn, query)[[1]]))
     }
+    df <- odbcConnectionTables(conn, name = name, ...)
+    if (NROW(df) > 0) {
+      return(TRUE)
+    }
+
+    synonyms <- dbGetQuery(conn, synonyms_query(...))
+    name %in% synonyms$name
   }
 )
 
@@ -112,7 +116,9 @@ setMethod("dbListTables", "Microsoft SQL Server",
       res <- c(res, res_temp)
     }
 
-    res
+    synonyms <- dbGetQuery(conn, synonyms_query(catalog_name, schema_name))
+
+    c(res, synonyms$name)
   }
 )
 
@@ -214,3 +220,64 @@ setMethod("odbcDataType", "Microsoft SQL Server",
     )
   }
 )
+
+#' @rdname SQLServer
+#' @description
+#' ## `odbcListObjects()`
+#'
+#' This method makes tables that are synonyms visible in the Connections pane.
+# See (#221).
+#' @usage NULL
+#' @export
+`odbcListObjects.Microsoft SQL Server` <- function(connection,
+                                                   catalog = NULL,
+                                                   schema = NULL,
+                                                   name = NULL,
+                                                   type = NULL,
+                                                   ...) {
+  objects <- NextMethod(
+    object = connection,
+    catalog = catalog,
+    schema = schema,
+    name = name,
+    type = type,
+    ...
+  )
+
+  if (!any(objects$type == "table") && nrow(objects) > 0) {
+    return(objects)
+  }
+
+  synonyms <- dbGetQuery(connection, synonyms_query(catalog, schema))
+
+  if (!is.null(name)) {
+    synonyms <- synonyms[synonyms$name == name, , drop = FALSE]
+  }
+
+  rbind(
+    objects,
+    data.frame(name = synonyms$name, type = rep("table", length(synonyms$name)))
+  )
+}
+
+synonyms_query <- function(catalog_name = NULL, schema_name = NULL) {
+  sys_synonyms <- paste0(c(catalog_name, "sys.synonyms"), collapse = ".")
+
+  res <- paste0("IF DB_ID(", sQuote(catalog_name, "'"), ") IS NOT NULL
+                 SELECT
+                   [schema] = SCHEMA_NAME(Syn.schema_id),
+                   name     = Syn.name
+                 FROM ", sys_synonyms, " AS Syn")
+
+  if (is.null(schema_name)) {
+    return(paste0(res, " WHERE ", filter_is_table))
+  }
+
+  paste0(
+    res,
+    " WHERE SCHEMA_NAME(Syn.schema_id) = '", schema_name, "' AND ",
+    filter_is_table
+  )
+}
+
+filter_is_table <- "OBJECTPROPERTY(Object_ID(Syn.base_object_name), 'IsTable') = 1;"

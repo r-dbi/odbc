@@ -2,6 +2,7 @@
 
 S3method(odbcListColumns,OdbcConnection)
 S3method(odbcListObjectTypes,default)
+S3method(odbcListObjects,"Microsoft SQL Server")
 S3method(odbcListObjects,OdbcConnection)
 S3method(odbcPreviewObject,OdbcConnection)
 export(databricks)

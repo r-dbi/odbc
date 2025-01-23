@@ -360,3 +360,51 @@ test_that("independent encoding of column entries and names (#834)", {
   res <- DBI::dbReadTable(conn, tbl_id)
   expect_identical(df, res)
 })
+
+test_that("odbcListObjects shows synonyms (#221)", {
+  con <- test_con("SQLSERVER")
+  db <- dbGetQuery(con, "SELECT db_name()")[1,1]
+  dbExecute(con, "CREATE SCHEMA testSchema")
+  dbExecute(con, "CREATE SCHEMA testSchema2")
+
+  on.exit({
+    dbExecute(con, "DROP TABLE IF EXISTS testSchema.tbl")
+    dbExecute(con, "DROP SYNONYM IF EXISTS testSchema.tbl2")
+    dbExecute(con, "DROP SYNONYM IF EXISTS testSchema2.tbl2")
+    dbExecute(con, "DROP SCHEMA IF EXISTS testSchema")
+    dbExecute(con, "DROP SCHEMA IF EXISTS testSchema2")
+  })
+
+  dbExecute(con, "CREATE TABLE testSchema.tbl (x int)")
+  expect_equal(nrow(odbcListObjects(con, catalog = db, schema = "testSchema")), 1)
+
+  dbExecute(con, "CREATE SYNONYM testSchema.tbl2 for testSchema.tbl")
+  expect_equal(nrow(odbcListObjects(con, catalog = db, schema = "testSchema")), 2)
+  expect_length(dbListTables(con, catalog_name = db, schema_name = "testSchema"), 2)
+  expect_equal(
+    nrow(odbcListObjects(con, catalog = db, schema = "testSchema", name = "tbl")),
+    1
+  )
+  expect_false("tbl2" %in% odbcListObjects(con)$name)
+  expect_false("tbl2" %in% odbcListObjects(con, catalog = db)$name)
+  expect_true(
+    dbExistsTable(con, name = "tbl2", catalog_name = db, schema_name = "testSchema")
+  )
+  expect_true(dbExistsTable(con, name = Id(db, "testSchema", "tbl2")))
+  expect_true(dbExistsTable(con, name = Id("testSchema", "tbl2")))
+  expect_true(dbExistsTable(con, name = Id("tbl2")))
+  expect_true(dbExistsTable(con, name = "tbl2"))
+  dbExecute(con, "DROP SYNONYM testSchema.tbl2")
+  expect_false(dbExistsTable(con, name = Id(db, "testSchema", "tbl2")))
+
+  # ensure query filters out synonyms in schemas other than the one
+  # where the base object lives effectively
+  dbExecute(con, "CREATE SYNONYM testSchema2.tbl2 for testSchema.tbl")
+  expect_equal(nrow(odbcListObjects(con, catalog = db, schema = "testSchema")), 1)
+  expect_equal(nrow(odbcListObjects(con, catalog = db, schema = "testSchema2")), 1)
+  expect_length(dbListTables(con, catalog_name = db, schema_name = "testSchema2"), 1)
+  expect_true(
+    dbExistsTable(con, name = "tbl2", catalog_name = db, schema_name = "testSchema2")
+  )
+  expect_true(dbExistsTable(con, name = Id(db, "testSchema2", "tbl2")))
+})
