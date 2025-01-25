@@ -1870,35 +1870,44 @@ public:
         return params;
     }
 
-    unsigned long parameter_size(short param_index) const
+    unsigned long parameter_size(short param_index)
     {
-        if (!param_descr_data_.count(param_index))
+        if (param_descr_data_.count(param_index))
         {
-                return static_cast<unsigned long>(param_descr_data_.at(param_index).size_);
+            return static_cast<unsigned long>(param_descr_data_.at(param_index).size_);
         }
-        RETCODE rc;
-        SQLSMALLINT data_type;
-        SQLSMALLINT nullable;
-        SQLULEN parameter_size;
 
-#if defined(NANODBC_DO_ASYNC_IMPL)
-        disable_async();
-#endif
-
-        NANODBC_CALL_RC(
-            SQLDescribeParam,
-            rc,
-            stmt_,
-            param_index + 1,
-            &data_type,
-            &parameter_size,
-            0,
-            &nullable);
-        if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        describe_parameters(param_index);
+        const SQLULEN& param_size = param_descr_data_.at(param_index).size_;
         NANODBC_ASSERT(
-            parameter_size <= static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
-        return static_cast<unsigned long>(parameter_size);
+            param_size < static_cast<SQLULEN>(std::numeric_limits<unsigned long>::max()));
+        return static_cast<unsigned long>(param_size);
+    }
+
+    short parameter_scale(short param_index)
+    {
+        if (param_descr_data_.count(param_index))
+        {
+            return static_cast<short>(param_descr_data_.at(param_index).scale_);
+        }
+
+        describe_parameters(param_index);
+        const SQLSMALLINT& param_scale = param_descr_data_.at(param_index).scale_;
+        NANODBC_ASSERT(param_scale < static_cast<SQLULEN>(std::numeric_limits<short>::max()));
+        return static_cast<short>(param_scale);
+    }
+
+    short parameter_type(short param_index)
+    {
+        if (param_descr_data_.count(param_index))
+        {
+            return static_cast<short>(param_descr_data_.at(param_index).type_);
+        }
+
+        describe_parameters(param_index);
+        const SQLSMALLINT& param_type = param_descr_data_.at(param_index).type_;
+        NANODBC_ASSERT(param_type < static_cast<SQLULEN>(std::numeric_limits<short>::max()));
+        return static_cast<unsigned long>(param_type);
     }
 
     static SQLSMALLINT param_type_from_direction(param_direction direction)
@@ -2102,6 +2111,26 @@ public:
             nullptr,     // null value
             0,           // buffe length
             bind_len_or_null_[param.index_].data());
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+    }
+
+    void describe_parameters(const short param_index)
+    {
+        RETCODE rc;
+        SQLSMALLINT nullable; // unused
+#if defined(NANODBC_DO_ASYNC_IMPL)
+        disable_async();
+#endif
+        NANODBC_CALL_RC(
+            SQLDescribeParam,
+            rc,
+            stmt_,
+            static_cast<SQLUSMALLINT>(param_index + 1),
+            &param_descr_data_[param_index].type_,
+            &param_descr_data_[param_index].size_,
+            &param_descr_data_[param_index].scale_,
+            &nullable);
         if (!success(rc))
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
@@ -3422,7 +3451,7 @@ std::unique_ptr<T, std::function<void(T*)>> result::result_impl::ensure_pdata(sh
             (T*)(col.pdata_ + rowset_position_ * col.clen_), [](T* ptr) {});
     }
 
-    std::unique_ptr<T> buffer = std::make_unique<T>();
+    std::unique_ptr<T> buffer(new T);
     const std::size_t buffer_size = sizeof(T);
     void* handle = native_statement_handle();
     NANODBC_CALL_RC(
@@ -4167,6 +4196,16 @@ void statement::reset_parameters() NANODBC_NOEXCEPT
 unsigned long statement::parameter_size(short param_index) const
 {
     return impl_->parameter_size(param_index);
+}
+
+short statement::parameter_scale(short param_index) const
+{
+    return impl_->parameter_scale(param_index);
+}
+
+short statement::parameter_type(short param_index) const
+{
+    return impl_->parameter_type(param_index);
 }
 
 // We need to instantiate each form of bind() for each of our supported data types.
