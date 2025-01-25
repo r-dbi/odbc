@@ -2,6 +2,10 @@
 
 * SQL Server: Writing to DATETIME2 targets respects precision (#793).
 
+* Addressed issue where error messages rethrown from some drivers would be
+  garbled when the raw error message contained curly brackets 
+  (#859 by @simonpcouch).
+
 * snowflake: Runtime driver configuration checks on `MacOS` (#857).
 
 * Separate column content and name encoding by adding

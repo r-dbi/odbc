@@ -162,7 +162,7 @@ random_name <- function(prefix = "") {
 rethrow_database_error <- function(msg, call = trace_back()$call[[1]]) {
   tryCatch(
     res <- parse_database_error(msg),
-    error = function(e) cli::cli_abort(msg, call = call)
+    error = function(e) cli::cli_abort("{msg}", call = call)
   )
 
   cli::cli_abort(
@@ -232,6 +232,8 @@ set_database_error_names <- function(cnd_body) {
     return(cnd_body)
   }
 
+  cnd_body <- escape_curly_brackets(cnd_body)
+
   if (is.null(names(cnd_body))) {
     return(
       set_names(cnd_body, nm = c("x", rep("*", length(cnd_body) - 1)))
@@ -245,6 +247,19 @@ set_database_error_names <- function(cnd_body) {
       ifelse(names(cnd_body[-1]) == "", "*", names(cnd_body[-1]))
     )
   )
+}
+
+# Escape curly brackets before formatting with cli (#859). Do so only to
+# unnamed elements so that formatting is preserved for context
+# added with `contextualize_database_error()`.
+escape_curly_brackets <- function(cnd_body) {
+  if (is.null(names(cnd_body))) {
+    return(gsub("\\{", "{{", gsub("\\}", "}}", cnd_body)))
+  }
+
+  unnamed <- names(cnd_body) == ""
+  cnd_body[unnamed] <- gsub("\\{", "{{", gsub("\\}", "}}", cnd_body[unnamed]))
+  cnd_body
 }
 
 # check helpers for common odbc arguments --------------------------------------
