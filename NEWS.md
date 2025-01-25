@@ -1,5 +1,6 @@
 # odbc (development version)
 
+* SQL Server: Writing to DATETIME2 targets respects precision (#793).
 
 * snowflake: Runtime driver configuration checks on `MacOS` (#857).
 
