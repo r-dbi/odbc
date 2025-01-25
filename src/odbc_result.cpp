@@ -355,7 +355,7 @@ void odbc_result::bind_raw(
       column, raws_[column], reinterpret_cast<bool*>(nulls_[column].data()));
 }
 
-nanodbc::timestamp odbc_result::as_timestamp(double value) {
+nanodbc::timestamp odbc_result::as_timestamp(double value, unsigned long long factor, unsigned long long pad) {
   nanodbc::timestamp ts;
   auto frac = modf(value, &value);
 
@@ -363,9 +363,8 @@ nanodbc::timestamp odbc_result::as_timestamp(double value) {
   auto utc_time = system_clock::from_time_t(static_cast<std::time_t>(value));
 
   auto civil_time = cctz::convert(utc_time, c_->timezone());
-  // We are using a fixed precision of 3, as that is all we can be guaranteed
-  // to support in SQLServer
-  ts.fract = (std::int32_t)(frac * 1000) * 1000000;
+  ts.fract = (std::int32_t)(frac * factor) * pad;
+
   ts.sec = civil_time.second();
   ts.min = civil_time.minute();
   ts.hour = civil_time.hour();
@@ -408,12 +407,24 @@ void odbc_result::bind_datetime(
   auto d = REAL(data[column]);
 
   nanodbc::timestamp ts;
+  short precision = 3;
+  try {
+    precision = statement.parameter_scale(column);
+  } catch (const nanodbc::database_error& e) {
+    raise_warning("Unable to discern datetime precision. Using default (3).");
+  };
+  // Sanity scrub
+  precision = std::min<short>(precision, 7);
+  unsigned long long prec_adj = std::pow(10, precision);
+  // The fraction field is expressed in billionths of
+  // a second.
+  unsigned long long pad = std::pow(10, 9 - precision);
   for (size_t i = 0; i < size; ++i) {
     auto value = d[start + i];
     if (ISNA(value)) {
       nulls_[column][i] = true;
     } else {
-      ts = as_timestamp(value);
+      ts = as_timestamp(value, prec_adj, pad);
     }
     timestamps_[column].push_back(ts);
   }
