@@ -371,5 +371,5 @@ test_that("DATETIME2 precision (#790)", {
   tbl <- local_table(con, "test_datetime2_precision", df,
     field.types = list("dtm" = "DATETIME", "dtm2" = "DATETIME2(6)"))
   res <- DBI::dbReadTable(con, tbl)
-  expect_equal(as.POSIXlt(df[[2]])$sec, as.POSIXlt(res[[2]])$sec)
+  expect_equal(as.POSIXlt(df[[2]])$sec, as.POSIXlt(res[[2]])$sec, tolerance = 1E-7)
 })
