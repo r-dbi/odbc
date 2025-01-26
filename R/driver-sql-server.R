@@ -249,3 +249,15 @@ setMethod("odbcConnectionColumns_", c("Microsoft SQL Server", "character"),
     )
   }
 )
+
+#' @description
+#' ## `odbcConnectionColumns_()`
+#'
+#' Copied over from odbc-connection to avoid S4 dispatch NOTEs.
+#' @rdname SQLServer
+#' @usage NULL
+setMethod("odbcConnectionColumns_", c("Microsoft SQL Server", "SQL"),
+  function(conn, name, ...) {
+    odbcConnectionColumns_(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+  }
+)
