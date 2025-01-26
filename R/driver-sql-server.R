@@ -214,3 +214,38 @@ setMethod("odbcDataType", "Microsoft SQL Server",
     )
   }
 )
+
+#' @description
+#' ## `odbcConnectionColumns_()`
+#'
+#' If temp table, query the database for the
+#' actual table name.
+#' @rdname SQLServer
+#' @usage NULL
+setMethod("odbcConnectionColumns_", c("Microsoft SQL Server", "character"),
+  function(conn,
+           name,
+           ...,
+           catalog_name = NULL,
+           schema_name = NULL,
+           column_name = NULL,
+           exact = FALSE) {
+    if (isTempTable(conn, name, catalog_name, schema_name, column_name, exact)) {
+      catalog_name <- "tempdb"
+      schema_name <- "dbo"
+      query <- paste0("SELECT name FROM tempdb.sys.tables WHERE ",
+        "object_id = OBJECT_ID('tempdb..", name, "')")
+      name <- dbGetQuery(conn, query)[[1]]
+    }
+
+    callNextMethod(
+      conn = conn,
+      name = name,
+      ...,
+      catalog_name = catalog_name,
+      schema_name = schema_name,
+      column_name = column_name,
+      exact = exact
+    )
+  }
+)
