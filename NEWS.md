@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* SQL Server: Fix data truncation when writing to temp tables with
+  `FreeTDS` (#866).
+
 * Addressed issue where error messages rethrown from some drivers would be
   garbled when the raw error message contained curly brackets 
   (#859 by @simonpcouch).
