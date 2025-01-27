@@ -1907,7 +1907,7 @@ public:
         describe_parameters(param_index);
         const SQLSMALLINT& param_type = param_descr_data_.at(param_index).type_;
         NANODBC_ASSERT(param_type < static_cast<SQLULEN>(std::numeric_limits<short>::max()));
-        return static_cast<unsigned long>(param_type);
+        return static_cast<short>(param_type);
     }
 
     static SQLSMALLINT param_type_from_direction(param_direction direction)
