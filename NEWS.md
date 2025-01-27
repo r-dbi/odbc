@@ -3,6 +3,8 @@
 * SQL Server: Fix data truncation when writing to temp tables with
   `FreeTDS` (#866).
 
+* SQL Server: Writing to DATETIME2 targets respects precision (#793).
+
 * Addressed issue where error messages rethrown from some drivers would be
   garbled when the raw error message contained curly brackets 
   (#859 by @simonpcouch).

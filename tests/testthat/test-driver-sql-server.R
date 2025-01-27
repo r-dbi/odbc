@@ -360,3 +360,16 @@ test_that("independent encoding of column entries and names (#834)", {
   res <- DBI::dbReadTable(conn, tbl_id)
   expect_identical(df, res)
 })
+
+test_that("DATETIME2 precision (#790)", {
+  con <- test_con("SQLSERVER")
+
+  seed <- as.POSIXlt("2025-01-25 18:45:39.395682")
+  val <- seed + runif(500, min = 0, max = 1)
+  df <- data.frame(dtm = val, dtm2 = val)
+
+  tbl <- local_table(con, "test_datetime2_precision", df,
+    field.types = list("dtm" = "DATETIME", "dtm2" = "DATETIME2(6)"))
+  res <- DBI::dbReadTable(con, tbl)
+  expect_equal(as.POSIXlt(df[[2]])$sec, as.POSIXlt(res[[2]])$sec, tolerance = 1E-7)
+})

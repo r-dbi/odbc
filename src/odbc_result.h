@@ -135,7 +135,7 @@ private:
       size_t start,
       size_t size);
 
-  nanodbc::timestamp as_timestamp(double value);
+  nanodbc::timestamp as_timestamp(double value, unsigned long long factor, unsigned long long pad);
 
   nanodbc::date as_date(double value);
 
