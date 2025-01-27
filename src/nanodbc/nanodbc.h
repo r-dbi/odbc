@@ -697,6 +697,12 @@ public:
     /// \brief Returns parameter size for indicated parameter placeholder in a prepared statement.
     unsigned long parameter_size(short param_index) const;
 
+    /// \brief Returns parameter scale for indicated parameter placeholder in a prepared statement.
+    short parameter_scale(short param_index) const;
+
+    /// \brief Returns parameter type for indicated parameter placeholder in a prepared statement.
+    short parameter_type(short param_index) const;
+
     /// \addtogroup binding Binding parameters
     /// \brief These functions are used to bind values to ODBC parameters.
     ///
