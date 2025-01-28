@@ -5,6 +5,9 @@
 #include <chrono>
 #include <memory>
 
+#ifndef SQL_SS_TIME2
+#define SQL_SS_TIME2 (-154)
+#endif
 namespace odbc {
 
 using odbc::utils::run_interruptible;
@@ -691,6 +694,7 @@ std::vector<r_type> odbc_result::column_types(nanodbc::result const& r) {
       break;
     // Time
     case SQL_TIME:
+    case SQL_SS_TIME2:
     case SQL_TYPE_TIME:
       types.push_back(odbc::time_t);
       break;
