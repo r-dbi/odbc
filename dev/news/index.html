@@ -39,7 +39,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="odbc-development-version">odbc (development version)<a class="anchor" aria-label="anchor" href="#odbc-development-version"></a></h2>
-<ul><li><p>SQL Server: Writing to DATETIME2 targets respects precision (<a href="https://github.com/r-dbi/odbc/issues/793" class="external-link">#793</a>).</p></li>
+<ul><li><p>SQL Server: Fix data truncation when writing to temp tables with <code>FreeTDS</code> (<a href="https://github.com/r-dbi/odbc/issues/866" class="external-link">#866</a>).</p></li>
+<li><p>SQL Server: Writing to DATETIME2 targets respects precision (<a href="https://github.com/r-dbi/odbc/issues/793" class="external-link">#793</a>).</p></li>
 <li><p>Addressed issue where error messages rethrown from some drivers would be garbled when the raw error message contained curly brackets (<a href="https://github.com/r-dbi/odbc/issues/859" class="external-link">#859</a> by <a href="https://github.com/simonpcouch" class="external-link">@simonpcouch</a>).</p></li>
 <li><p>snowflake: Runtime driver configuration checks on <code>MacOS</code> (<a href="https://github.com/r-dbi/odbc/issues/857" class="external-link">#857</a>).</p></li>
 <li><p>Separate column content and name encoding by adding a new <code>name_encoding</code> argument to <code>dbConnect</code> to complement the existing <code>encoding</code> parameter (<a href="https://github.com/r-dbi/odbc/issues/845" class="external-link">#845</a>).</p></li>
