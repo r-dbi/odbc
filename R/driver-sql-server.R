@@ -230,7 +230,8 @@ setMethod("odbcConnectionColumns_", c("Microsoft SQL Server", "character"),
            schema_name = NULL,
            column_name = NULL,
            exact = FALSE) {
-    if (isTempTable(conn, name, catalog_name, schema_name, column_name, exact)) {
+    if (exact &&
+      isTempTable(conn, name, catalog_name, schema_name, column_name, exact)) {
       catalog_name <- "tempdb"
       schema_name <- "dbo"
       query <- paste0("SELECT name FROM tempdb.sys.tables WHERE ",
