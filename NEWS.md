@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* SQL Server: Fix roundtrip of `hms` data.
+
 * SQL Server: Fix data truncation when writing to temp tables with
   `FreeTDS` (#866).
 
