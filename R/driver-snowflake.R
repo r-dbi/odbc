@@ -324,6 +324,7 @@ snowflake_auth_args <- function(account,
                                 authenticator = NULL,
                                 session = NULL,
                                 ...) {
+  check_string(authenticator, allow_null = TRUE)
   # If a session is supplied, any viewer-based auth takes precedence.
   if (!is.null(session)) {
     check_installed("httr2", "for viewer-based authentication")
@@ -336,8 +337,9 @@ snowflake_auth_args <- function(account,
   }
 
   if (!is.null(uid) &&
-      # allow for uid without pwd for externalbrowser auth (#817)
-      (!is.null(pwd) || identical(authenticator, "externalbrowser"))) {
+      # allow for uid without pwd for alt auth (#817, #889)
+      (!is.null(pwd) ||
+       isTRUE(authenticator %in% c("externalbrowser", "SNOWFLAKE_JWT")))) {
     return(list(uid = uid, pwd = pwd))
   } else if (xor(is.null(uid), is.null(pwd))) {
     abort(

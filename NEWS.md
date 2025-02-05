@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* `snowflake()` now allows passing `uid` without `pwd` when 
+  `authenticator = "SNOWFLAKE_JWT"` (@simonpcouch, #889).
+
 * SQL Server: Fix roundtrip of `hms` data.
 
 * SQL Server: Fix data truncation when writing to temp tables with

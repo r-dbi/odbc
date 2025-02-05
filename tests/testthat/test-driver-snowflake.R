@@ -76,7 +76,7 @@ test_that("alternative authenticators are supported", {
   expect_equal(args$authenticator, "externalbrowser")
 })
 
-test_that("can pass only `uid` with `authenticator = 'externalbrowser'` (#817)", {
+test_that("can pass only `uid` with non-NULL `authenticator` (#817, #889)", {
   args <- snowflake_args(
     account = "testorg-test_account",
     driver = "driver",
@@ -85,6 +85,15 @@ test_that("can pass only `uid` with `authenticator = 'externalbrowser'` (#817)",
   )
   expect_equal(args$uid, "boop")
   expect_equal(args$authenticator, "externalbrowser")
+
+  args <- snowflake_args(
+    account = "testorg-test_account",
+    driver = "driver",
+    authenticator = "SNOWFLAKE_JWT",
+    uid = "boop"
+  )
+  expect_equal(args$uid, "boop")
+  expect_equal(args$authenticator, "SNOWFLAKE_JWT")
 })
 
 test_that("we error if we can't find ambient credentials", {
