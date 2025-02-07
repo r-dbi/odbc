@@ -41,6 +41,7 @@
 <url><loc>https://odbc.r-dbi.org/dev/reference/odbcPreviewQuery.html</loc></url>
 <url><loc>https://odbc.r-dbi.org/dev/reference/odbcSetTransactionIsolationLevel.html</loc></url>
 <url><loc>https://odbc.r-dbi.org/dev/reference/quote_value.html</loc></url>
+<url><loc>https://odbc.r-dbi.org/dev/reference/redshift.html</loc></url>
 <url><loc>https://odbc.r-dbi.org/dev/reference/snowflake.html</loc></url>
 </urlset>
 
