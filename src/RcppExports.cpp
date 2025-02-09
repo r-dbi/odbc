@@ -228,6 +228,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ODBC_TYPE
+int ODBC_TYPE(const std::string& type);
+RcppExport SEXP _odbc_ODBC_TYPE(SEXP typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type type(typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(ODBC_TYPE(type));
+    return rcpp_result_gen;
+END_RCPP
+}
 // result_release
 void result_release(result_ptr r);
 RcppExport SEXP _odbc_result_release(SEXP rSEXP) {
@@ -384,6 +395,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_odbc_transactionLevels", (DL_FUNC) &_odbc_transactionLevels, 0},
     {"_odbc_set_transaction_isolation", (DL_FUNC) &_odbc_set_transaction_isolation, 2},
     {"_odbc_bigint_mappings", (DL_FUNC) &_odbc_bigint_mappings, 0},
+    {"_odbc_ODBC_TYPE", (DL_FUNC) &_odbc_ODBC_TYPE, 1},
     {"_odbc_result_release", (DL_FUNC) &_odbc_result_release, 1},
     {"_odbc_result_active", (DL_FUNC) &_odbc_result_active, 1},
     {"_odbc_result_completed", (DL_FUNC) &_odbc_result_completed, 1},

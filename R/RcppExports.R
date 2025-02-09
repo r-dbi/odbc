@@ -77,6 +77,24 @@ bigint_mappings <- function() {
     .Call(`_odbc_bigint_mappings`)
 }
 
+#' Access the definition of the named SQL Data Type.
+#'
+#' @description Helper method returning the integer of the
+#' [SQL Data Type](https://learn.microsoft.com/en-us/sql/odbc/reference/appendixes/sql-data-types?view=sql-server-ver16)
+#' named in the argument.
+#'
+#' @seealso <https://github.com/microsoft/ODBC-Specification/blob/master/Windows/inc/sql.h>
+#' @rdname odbcDataType.
+#' @examples
+#' \dontrun{
+#' library(odbc)
+#' ODBC_TYPE("LONGVARCHAR")
+#' }
+#' @export
+ODBC_TYPE <- function(type) {
+    .Call(`_odbc_ODBC_TYPE`, type)
+}
+
 result_release <- function(r) {
     invisible(.Call(`_odbc_result_release`, r))
 }
