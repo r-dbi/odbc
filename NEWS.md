@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Enable automatic discovery of SQL Server drivers installed with homebrew 
+  on ARM macOS (@stevecondylios, #893).
+
 * SQL Server: Fix roundtrip of `hms` data.
 
 * SQL Server: Fix data truncation when writing to temp tables with
