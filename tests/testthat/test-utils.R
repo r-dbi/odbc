@@ -350,15 +350,3 @@ test_that("configure_unixodbc_simba() writes reasonable entries", {
     action = "warn"
   ))
 })
-
-test_that("viewer-based credentials are only available on Connect", {
-  expect_snapshot(token <- connect_viewer_token())
-})
-
-test_that("viewer-based credentials require a recent Connect version", {
-  withr::local_envvar(CONNECT_SERVER = "localhost:3939", CONNECT_API_KEY = "x")
-  local_mocked_bindings(running_on_connect = function() TRUE)
-  # Mock a Shiny session object.
-  session <- list(request = list())
-  expect_snapshot(token <- connect_viewer_token(session), error = TRUE)
-})

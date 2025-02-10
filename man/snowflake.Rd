@@ -18,7 +18,6 @@ snowflake()
   schema = NULL,
   uid = NULL,
   pwd = NULL,
-  session = NULL,
   ...
 )
 }
@@ -45,9 +44,6 @@ default.}
 \item{uid, pwd}{Manually specify a username and password for authentication.
 Specifying these options will disable ambient credential discovery.}
 
-\item{session}{A Shiny session object, when using viewer-based credentials on
-Posit Connect.}
-
 \item{...}{Further arguments passed on to \code{\link[=dbConnect]{dbConnect()}}.}
 }
 \value{
@@ -59,10 +55,13 @@ Connect to a Snowflake account via the \href{https://docs.snowflake.com/en/devel
 
 In particular, the custom \code{dbConnect()} method for the Snowflake ODBC driver
 detects ambient OAuth credentials on platforms like Snowpark Container
-Services or Posit Workbench.  In addition, on macOS platforms, the
-\code{dbConnect} method will check and warn if it detects irregularities with
-how the driver is configured, unless the \code{odbc.no_config_override}
-environment variable is set.
+Services or Posit Workbench. It can also detect viewer-based
+credentials on Posit Connect if the \pkg{connectcreds} package is
+installed.
+
+In addition, on macOS platforms, the \code{dbConnect} method will check and warn
+if it detects irregularities with how the driver is configured, unless the
+\code{odbc.no_config_override} environment variable is set.
 }
 \examples{
 \dontrun{
@@ -86,8 +85,9 @@ DBI::dbConnect(
 
 # Use credentials from the viewer (when possible) in a Shiny app
 # deployed to Posit Connect.
+library(connectcreds)
 server <- function(input, output, session) {
-  conn <- DBI::dbConnect(odbc::snowflake(), session = session)
+  conn <- DBI::dbConnect(odbc::snowflake())
 }
 }
 }

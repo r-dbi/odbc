@@ -216,19 +216,3 @@
       * Please consider revising the `ODBCInstLib` field in 'simba.sparkodbc.ini' and setting its value to "libodbcinst.dylib"
       * Please consider revising the `DriverManagerEncoding` field in 'simba.sparkodbc.ini' and setting its value to "UTF-16".
 
-# viewer-based credentials are only available on Connect
-
-    Code
-      token <- connect_viewer_token()
-    Message
-      ! Ignoring `sesssion` parameter.
-      i Viewer-based credentials are only available when running on Connect.
-
-# viewer-based credentials require a recent Connect version
-
-    Code
-      token <- connect_viewer_token(session)
-    Condition
-      Error in `connect_viewer_token()`:
-      ! Viewer-based credentials are not supported by this version of Connect.
-

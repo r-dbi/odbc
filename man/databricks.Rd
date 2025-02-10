@@ -18,7 +18,6 @@ databricks()
   HTTPPath,
   uid = NULL,
   pwd = NULL,
-  session = NULL,
   ...
 )
 }
@@ -44,9 +43,6 @@ default name.}
 \item{uid, pwd}{Manually specify a username and password for authentication.
 Specifying these options will disable automated credential discovery.}
 
-\item{session}{A Shiny session object, when using viewer-based credentials on
-Posit Connect.}
-
 \item{...}{Further arguments passed on to \code{\link[=dbConnect]{dbConnect()}}.}
 }
 \value{
@@ -60,10 +56,12 @@ In particular, the custom \code{dbConnect()} method for the Databricks ODBC driv
 implements a subset of the \href{https://docs.databricks.com/en/dev-tools/auth.html#databricks-client-unified-authentication}{Databricks client unified authentication}
 model, with support for personal access tokens, OAuth machine-to-machine
 credentials, and OAuth user-to-machine credentials supplied via Posit
-Workbench or the Databricks CLI on desktop.
-All of these credentials are detected automatically if present using
-\href{https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication}{standard environment variables}.
-In addition, on macOS platforms, the \code{dbConnect} method will check
+Workbench or the Databricks CLI on desktop. It can also detect viewer-based
+credentials on Posit Connect if the \pkg{connectcreds} package is
+installed. All of these credentials are detected automatically if present
+using \href{https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication}{standard environment variables}.
+
+In addition, on macOS platforms, the \code{dbConnect()} method will check
 for irregularities with how the driver is configured,
 and attempt to fix in-situ, unless the \code{odbc.no_config_override}
 environment variable is set.
@@ -77,11 +75,11 @@ DBI::dbConnect(
 
 # Use credentials from the viewer (when possible) in a Shiny app
 # deployed to Posit Connect.
+library(connectcreds)
 server <- function(input, output, session) {
   conn <- DBI::dbConnect(
     odbc::databricks(),
-    httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj",
-    session = session
+    httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
   )
 }
 }

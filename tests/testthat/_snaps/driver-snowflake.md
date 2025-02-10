@@ -26,15 +26,6 @@
       ! Failed to detect ambient Snowflake credentials.
       i Supply `uid` and `pwd` to authenticate manually.
 
-# we mention viewer-based credentials have no effect locally
-
-    Code
-      ignored <- snowflake_args(account = "testorg-test_account", driver = "driver",
-        uid = "uid", pwd = "pwd", session = list())
-    Message
-      ! Ignoring `sesssion` parameter.
-      i Viewer-based credentials are only available when running on Connect.
-
 # we hint viewer-based credentials on Connect
 
     Code
@@ -43,7 +34,7 @@
       Error in `DBI::dbConnect()`:
       ! Failed to detect ambient Snowflake credentials.
       i Supply `uid` and `pwd` to authenticate manually.
-      i Or pass `session` for viewer-based credentials.
+      i Or consider enabling Posit Connect's Snowflake integration for viewer-based credentials. See <https://docs.posit.co/connect/user/oauth-integrations/#adding-oauth-integrations-to-deployed-content> for details.
 
 # we error if we can't find the driver
 
