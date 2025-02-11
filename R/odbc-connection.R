@@ -256,7 +256,7 @@ NULL
 #'   table name.
 #'
 #' @seealso The ODBC documentation on
-#' [SQLColumns](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
+#' [SQLColumns](https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
 #' for further details.
 #'
 #' @return data.frame with columns
