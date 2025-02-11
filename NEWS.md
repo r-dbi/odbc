@@ -3,6 +3,9 @@
 * `snowflake()` now allows passing `uid` without `pwd` when 
   using `authenticator = "SNOWFLAKE_JWT"` (@simonpcouch, #889).
 
+* Enable automatic discovery of SQL Server drivers installed with homebrew 
+  on ARM macOS (@stevecondylios, #893).
+
 * SQL Server: Fix roundtrip of `hms` data.
 
 * SQL Server: Fix data truncation when writing to temp tables with
@@ -48,6 +51,9 @@
 * `snowflake()` and `databricks()` now accept a `session` argument for passing
   viewer-based OAuth credentials from Shiny sessions on Posit Connect
   (@atheriel, #853).
+
+* A new `redshift()` helper greatly simplifies connecting to Amazon Redshift
+  clusters, particularly when using IAM credentials (@atheriel, #879).
 
 # odbc 1.5.0
 

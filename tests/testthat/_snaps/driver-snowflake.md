@@ -51,7 +51,7 @@
       snowflake_default_driver()
     Condition
       Error in `DBI::dbConnect()`:
-      ! Failed to automatically find Snowflake ODBC driver.
+      ! Failed to automatically find the Snowflake ODBC driver.
       i Set `driver` to known driver name or path.
 
 # Workbench-managed credentials are ignored for other accounts
