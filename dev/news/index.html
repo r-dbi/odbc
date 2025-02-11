@@ -39,7 +39,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="odbc-development-version">odbc (development version)<a class="anchor" aria-label="anchor" href="#odbc-development-version"></a></h2>
-<ul><li><p>Enable automatic discovery of SQL Server drivers installed with homebrew on ARM macOS (<a href="https://github.com/stevecondylios" class="external-link">@stevecondylios</a>, <a href="https://github.com/r-dbi/odbc/issues/893" class="external-link">#893</a>).</p></li>
+<ul><li><p><code><a href="../reference/snowflake.html">snowflake()</a></code> now allows passing <code>uid</code> without <code>pwd</code> when using <code>authenticator = "SNOWFLAKE_JWT"</code> (<a href="https://github.com/simonpcouch" class="external-link">@simonpcouch</a>, <a href="https://github.com/r-dbi/odbc/issues/889" class="external-link">#889</a>).</p></li>
+<li><p>Enable automatic discovery of SQL Server drivers installed with homebrew on ARM macOS (<a href="https://github.com/stevecondylios" class="external-link">@stevecondylios</a>, <a href="https://github.com/r-dbi/odbc/issues/893" class="external-link">#893</a>).</p></li>
 <li><p>SQL Server: Fix roundtrip of <code>hms</code> data.</p></li>
 <li><p>SQL Server: Fix data truncation when writing to temp tables with <code>FreeTDS</code> (<a href="https://github.com/r-dbi/odbc/issues/866" class="external-link">#866</a>).</p></li>
 <li><p>SQL Server: Writing to DATETIME2 targets respects precision (<a href="https://github.com/r-dbi/odbc/issues/793" class="external-link">#793</a>).</p></li>
