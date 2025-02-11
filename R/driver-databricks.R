@@ -14,9 +14,11 @@ NULL
 #' implements a subset of the [Databricks client unified authentication](https://docs.databricks.com/en/dev-tools/auth.html#databricks-client-unified-authentication)
 #' model, with support for personal access tokens, OAuth machine-to-machine
 #' credentials, and OAuth user-to-machine credentials supplied via Posit
-#' Workbench or the Databricks CLI on desktop.
-#' All of these credentials are detected automatically if present using
-#' [standard environment variables](https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication).
+#' Workbench or the Databricks CLI on desktop. It can also detect viewer-based
+#' credentials on Posit Connect if the \pkg{connectcreds} package is
+#' installed. All of these credentials are detected automatically if present
+#' using [standard environment variables](https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication).
+#'
 #' In addition, on macOS platforms, the `dbConnect()` method will check
 #' for irregularities with how the driver is configured,
 #' and attempt to fix in-situ, unless the `odbc.no_config_override`
@@ -35,8 +37,6 @@ NULL
 #'   default name.
 #' @param uid,pwd Manually specify a username and password for authentication.
 #'   Specifying these options will disable automated credential discovery.
-#' @param session A Shiny session object, when using viewer-based credentials on
-#'   Posit Connect.
 #' @param ... Further arguments passed on to [`dbConnect()`].
 #'
 #' @returns An `OdbcConnection` object with an active connection to a Databricks
@@ -51,11 +51,11 @@ NULL
 #'
 #' # Use credentials from the viewer (when possible) in a Shiny app
 #' # deployed to Posit Connect.
+#' library(connectcreds)
 #' server <- function(input, output, session) {
 #'   conn <- DBI::dbConnect(
 #'     odbc::databricks(),
-#'     httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj",
-#'     session = session
+#'     httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
 #'   )
 #' }
 #' }
@@ -79,7 +79,6 @@ setMethod("dbConnect", "DatabricksOdbcDriver",
            HTTPPath,
            uid = NULL,
            pwd = NULL,
-           session = NULL,
            ...) {
     call <- caller_env()
     # For backward compatibility with RStudio connection string
@@ -90,7 +89,6 @@ setMethod("dbConnect", "DatabricksOdbcDriver",
     check_string(driver, allow_null = TRUE, call = call)
     check_string(uid, allow_null = TRUE, call = call)
     check_string(pwd, allow_null = TRUE, call = call)
-    check_shiny_session(session, allow_null = TRUE, call = call)
 
     args <- databricks_args(
       httpPath = if (missing(httpPath)) HTTPPath else httpPath,
@@ -99,7 +97,6 @@ setMethod("dbConnect", "DatabricksOdbcDriver",
       driver = driver,
       uid = uid,
       pwd = pwd,
-      session = session,
       ...
     )
     # Perform some sanity checks on MacOS
@@ -115,7 +112,6 @@ databricks_args <- function(httpPath,
                             driver = NULL,
                             uid = NULL,
                             pwd = NULL,
-                            session = NULL,
                             ...) {
   host <- databricks_host(workspace)
 
@@ -126,7 +122,7 @@ databricks_args <- function(httpPath,
     useNativeQuery = useNativeQuery
   )
 
-  auth <- databricks_auth_args(host, uid = uid, pwd = pwd, session = session)
+  auth <- databricks_auth_args(host, uid = uid, pwd = pwd)
   all <- utils::modifyList(c(args, auth), list(...))
 
   arg_names <- tolower(names(all))
@@ -137,7 +133,11 @@ databricks_args <- function(httpPath,
     )
     if (running_on_connect()) {
       msg <- c(
-        msg, "i" = "Or pass {.arg session} for viewer-based credentials."
+        msg,
+        "i" = "Or consider enabling Posit Connect's Databricks integration \
+              for viewer-based credentials. See {.url \
+              https://docs.posit.co/connect/user/oauth-integrations/#adding-oauth-integrations-to-deployed-content}
+              for details."
       )
     }
     cli::cli_abort(msg, call = quote(DBI::dbConnect()))
@@ -215,14 +215,16 @@ databricks_user_agent <- function() {
   user_agent
 }
 
-databricks_auth_args <- function(host, uid = NULL, pwd = NULL, session = NULL) {
-  # If a session is supplied, any viewer-based auth takes precedence.
-  if (!is.null(session)) {
-    check_installed("httr2", "for viewer-based authentication")
-    access_token <- connect_viewer_token(session, paste0("https://", host))
-    if (!is.null(access_token)) {
-      return(list(authMech = 11, auth_flow = 0, auth_accesstoken = access_token))
-    }
+databricks_auth_args <- function(host, uid = NULL, pwd = NULL) {
+  # Detect viewer-based credentials from Posit Connect.
+  workspace <- paste0("https://", host)
+  if (is_installed("connectcreds") && connectcreds::has_viewer_token(workspace)) {
+    token <- connectcreds::connect_viewer_token(workspace)
+    return(list(
+      authMech = 11,
+      auth_flow = 0,
+      auth_accesstoken = token$access_token
+    ))
   }
 
   if (!is.null(uid) && !is.null(pwd)) {

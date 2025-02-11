@@ -107,19 +107,6 @@ test_that("we error if we can't find ambient credentials", {
   )
 })
 
-test_that("we mention viewer-based credentials have no effect locally", {
-  withr::local_envvar(SF_PARTNER = "")
-  expect_snapshot(
-    ignored <- snowflake_args(
-      account = "testorg-test_account",
-      driver = "driver",
-      uid = "uid",
-      pwd = "pwd",
-      session = list()
-    )
-  )
-})
-
 test_that("we hint viewer-based credentials on Connect", {
   withr::local_envvar(SF_PARTNER = "")
   local_mocked_bindings(
@@ -129,6 +116,16 @@ test_that("we hint viewer-based credentials on Connect", {
   expect_snapshot(
     snowflake_args(account = "testorg-test_account", driver = "driver"),
     error = TRUE
+  )
+})
+
+test_that("tokens can be requested from a Connect server", {
+  skip_if_not_installed("connectcreds")
+
+  connectcreds::local_mocked_connect_responses(token = "token")
+  expect_equal(
+    snowflake_auth_args("testorg-test_account"),
+    list(authenticator = "oauth", token = "token")
   )
 })
 

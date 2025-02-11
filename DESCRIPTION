@@ -29,6 +29,7 @@ Imports:
     Rcpp (>= 0.12.11),
     rlang (>= 1.1.0)
 Suggests:
+    connectcreds,
     covr,
     DBItest,
     httr2,

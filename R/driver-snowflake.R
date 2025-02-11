@@ -98,10 +98,13 @@ setMethod("odbcDataType", "Snowflake",
 #'
 #' In particular, the custom `dbConnect()` method for the Snowflake ODBC driver
 #' detects ambient OAuth credentials on platforms like Snowpark Container
-#' Services or Posit Workbench.  In addition, on macOS platforms, the
-#' `dbConnect` method will check and warn if it detects irregularities with
-#' how the driver is configured, unless the `odbc.no_config_override`
-#' environment variable is set.
+#' Services or Posit Workbench. It can also detect viewer-based
+#' credentials on Posit Connect if the \pkg{connectcreds} package is
+#' installed.
+#'
+#' In addition, on macOS platforms, the `dbConnect` method will check and warn
+#' if it detects irregularities with how the driver is configured, unless the
+#' `odbc.no_config_override` environment variable is set.
 #'
 #' @inheritParams DBI::dbConnect
 #' @param account A Snowflake [account
@@ -117,8 +120,6 @@ setMethod("odbcDataType", "Snowflake",
 #'   default.
 #' @param uid,pwd Manually specify a username and password for authentication.
 #'   Specifying these options will disable ambient credential discovery.
-#' @param session A Shiny session object, when using viewer-based credentials on
-#'   Posit Connect.
 #' @param ... Further arguments passed on to [`dbConnect()`].
 #'
 #' @returns An `OdbcConnection` object with an active connection to a Snowflake
@@ -146,8 +147,9 @@ setMethod("odbcDataType", "Snowflake",
 #'
 #' # Use credentials from the viewer (when possible) in a Shiny app
 #' # deployed to Posit Connect.
+#' library(connectcreds)
 #' server <- function(input, output, session) {
-#'   conn <- DBI::dbConnect(odbc::snowflake(), session = session)
+#'   conn <- DBI::dbConnect(odbc::snowflake())
 #' }
 #' }
 #' @export
@@ -171,7 +173,6 @@ setMethod(
            schema = NULL,
            uid = NULL,
            pwd = NULL,
-           session = NULL,
            ...) {
     call <- caller_env()
     check_string(account, call = call)
@@ -180,7 +181,6 @@ setMethod(
     check_string(database, allow_null = TRUE, call = call)
     check_string(uid, allow_null = TRUE, call = call)
     check_string(pwd, allow_null = TRUE, call = call)
-    check_shiny_session(session, allow_null = TRUE, call = call)
     args <- snowflake_args(
       account = account,
       driver = driver,
@@ -189,7 +189,6 @@ setMethod(
       schema = schema,
       uid = uid,
       pwd = pwd,
-      session = session,
       ...
     )
     # Perform some sanity checks on MacOS
@@ -229,7 +228,11 @@ snowflake_args <- function(account = Sys.getenv("SNOWFLAKE_ACCOUNT"),
     )
     if (running_on_connect()) {
       msg <- c(
-        msg, "i" = "Or pass {.arg session} for viewer-based credentials."
+        msg,
+        "i" = "Or consider enabling Posit Connect's Snowflake integration \
+              for viewer-based credentials. See {.url \
+              https://docs.posit.co/connect/user/oauth-integrations/#adding-oauth-integrations-to-deployed-content}
+              for details."
       )
     }
     cli::cli_abort(msg, call = quote(DBI::dbConnect()))
@@ -310,18 +313,13 @@ snowflake_auth_args <- function(account,
                                 uid = NULL,
                                 pwd = NULL,
                                 authenticator = NULL,
-                                session = NULL,
                                 ...) {
   check_string(authenticator, allow_null = TRUE)
-  # If a session is supplied, any viewer-based auth takes precedence.
-  if (!is.null(session)) {
-    check_installed("httr2", "for viewer-based authentication")
-    access_token <- connect_viewer_token(
-      session, paste0("https://", account, ".snowflakecomputing.com")
-    )
-    if (!is.null(access_token)) {
-      return(list(authenticator = "oauth", token = access_token))
-    }
+  # Detect viewer-based credentials from Posit Connect.
+  url <- paste0("https://", account, ".snowflakecomputing.com")
+  if (is_installed("connectcreds") && connectcreds::has_viewer_token(url)) {
+    token <- connectcreds::connect_viewer_token(url)
+    return(list(authenticator = "oauth", token = token$access_token))
   }
 
   if (!is.null(uid) &&

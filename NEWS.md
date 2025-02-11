@@ -48,9 +48,8 @@
 
 * SQL Server: Fix issue related to writing when using SIMBA drivers (#816).
 
-* `snowflake()` and `databricks()` now accept a `session` argument for passing
-  viewer-based OAuth credentials from Shiny sessions on Posit Connect
-  (@atheriel, #853).
+* `snowflake()` and `databricks()` now detect viewer-based credentials when
+  running on Posit Connect (@atheriel, #853 and #894).
 
 * A new `redshift()` helper greatly simplifies connecting to Amazon Redshift
   clusters, particularly when using IAM credentials (@atheriel, #879).
