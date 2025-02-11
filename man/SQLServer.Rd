@@ -12,6 +12,8 @@
 \alias{dbExistsTable,Microsoft SQL Server,SQL-method}
 \alias{odbcConnectionSchemas,Microsoft SQL Server-method}
 \alias{sqlCreateTable,Microsoft SQL Server-method}
+\alias{odbcConnectionColumns_,Microsoft SQL Server,character-method}
+\alias{odbcConnectionColumns_,Microsoft SQL Server,SQL-method}
 \title{SQL Server}
 \description{
 Details of SQL Server methods for odbc and DBI generics.
@@ -57,6 +59,17 @@ sure we list the schemas in the appropriate database/catalog.
 
 Warns if \code{temporary = TRUE} but the \code{name} does not conform to temp table
 naming conventions (i.e. it doesn't start with \verb{#}).
+}
+
+\subsection{\code{odbcConnectionColumns_()}}{
+
+If temp table, query the database for the
+actual table name.
+}
+
+\subsection{\code{odbcConnectionColumns_()}}{
+
+Copied over from odbc-connection to avoid S4 dispatch NOTEs.
 }
 }
 \keyword{internal}
