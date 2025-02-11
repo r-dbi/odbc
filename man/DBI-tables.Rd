@@ -68,7 +68,7 @@
 )
 }
 \arguments{
-\item{conn}{a \code{\linkS4class{OdbcConnection}} object, produced by
+\item{conn}{an \link{OdbcConnection} object, produced by
 \code{\link[DBI:dbConnect]{DBI::dbConnect()}}}
 
 \item{name}{a character string specifying a table name. Names will be

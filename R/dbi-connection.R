@@ -50,6 +50,8 @@ setMethod("show", "OdbcConnection",
 
 
 #' @rdname OdbcConnection
+#' @param dbObj An object inheriting from `DBIObject`, i.e. `DBIDriver`,
+#' `DBIConnection`, or a `DBIResult`.
 #' @inheritParams DBI::dbIsValid
 #' @export
 setMethod("dbIsValid", "OdbcConnection",

@@ -90,9 +90,8 @@
 \arguments{
 \item{object}{Any R object}
 
-\item{dbObj}{An object inheriting from \linkS4class{DBIObject},
-i.e. \linkS4class{DBIDriver}, \linkS4class{DBIConnection},
-or a \linkS4class{DBIResult}}
+\item{dbObj}{An object inheriting from \code{DBIObject}, i.e. \code{DBIDriver},
+\code{DBIConnection}, or a \code{DBIResult}.}
 
 \item{...}{Other arguments to methods.}
 
