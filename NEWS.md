@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* `snowflake()` now allows passing `uid` without `pwd` when 
+  using `authenticator = "SNOWFLAKE_JWT"` (@simonpcouch, #889).
+
 * Enable automatic discovery of SQL Server drivers installed with homebrew 
   on ARM macOS (@stevecondylios, #893).
 
