@@ -4,10 +4,11 @@ In particular, the custom dbConnect() method for the Databricks ODBC driver
 implements a subset of the Databricks client unified authentication
 model, with support for personal access tokens, OAuth machine-to-machine
 credentials, and OAuth user-to-machine credentials supplied via Posit
-Workbench or the Databricks CLI on desktop.
-All of these credentials are detected automatically if present using
-standard environment variables.
-In addition, on macOS platforms, the dbConnect method will check
+Workbench or the Databricks CLI on desktop. It can also detect viewer-based
+credentials on Posit Connect if the connectcreds package is
+installed. All of these credentials are detected automatically if present
+using standard environment variables.
+In addition, on macOS platforms, the dbConnect() method will check
 for irregularities with how the driver is configured,
 and attempt to fix in-situ, unless the odbc.no_config_override
 environment variable is set."><meta property="og:description" content="Connect to Databricks clusters and SQL warehouses via the Databricks ODBC driver.
@@ -15,10 +16,11 @@ In particular, the custom dbConnect() method for the Databricks ODBC driver
 implements a subset of the Databricks client unified authentication
 model, with support for personal access tokens, OAuth machine-to-machine
 credentials, and OAuth user-to-machine credentials supplied via Posit
-Workbench or the Databricks CLI on desktop.
-All of these credentials are detected automatically if present using
-standard environment variables.
-In addition, on macOS platforms, the dbConnect method will check
+Workbench or the Databricks CLI on desktop. It can also detect viewer-based
+credentials on Posit Connect if the connectcreds package is
+installed. All of these credentials are detected automatically if present
+using standard environment variables.
+In addition, on macOS platforms, the dbConnect() method will check
 for irregularities with how the driver is configured,
 and attempt to fix in-situ, unless the odbc.no_config_override
 environment variable is set."><meta property="og:image" content="https://odbc.r-dbi.org/logo.png"><meta name="robots" content="noindex"></head><body>
@@ -66,10 +68,11 @@ environment variable is set."><meta property="og:image" content="https://odbc.r-
 implements a subset of the <a href="https://docs.databricks.com/en/dev-tools/auth.html#databricks-client-unified-authentication" class="external-link">Databricks client unified authentication</a>
 model, with support for personal access tokens, OAuth machine-to-machine
 credentials, and OAuth user-to-machine credentials supplied via Posit
-Workbench or the Databricks CLI on desktop.
-All of these credentials are detected automatically if present using
-<a href="https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication" class="external-link">standard environment variables</a>.
-In addition, on macOS platforms, the <code>dbConnect</code> method will check
+Workbench or the Databricks CLI on desktop. It can also detect viewer-based
+credentials on Posit Connect if the <span class="pkg">connectcreds</span> package is
+installed. All of these credentials are detected automatically if present
+using <a href="https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication" class="external-link">standard environment variables</a>.</p>
+<p>In addition, on macOS platforms, the <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code> method will check
 for irregularities with how the driver is configured,
 and attempt to fix in-situ, unless the <code>odbc.no_config_override</code>
 environment variable is set.</p>
@@ -89,7 +92,6 @@ environment variable is set.</p>
 <span>  <span class="va">HTTPPath</span>,</span>
 <span>  uid <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pwd <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  session <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -131,11 +133,6 @@ default name.</p></dd>
 Specifying these options will disable automated credential discovery.</p></dd>
 
 
-<dt id="arg-session">session<a class="anchor" aria-label="anchor" href="#arg-session"></a></dt>
-<dd><p>A Shiny session object, when using viewer-based credentials on
-Posit Connect.</p></dd>
-
-
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Further arguments passed on to <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code>.</p></dd>
 
@@ -156,11 +153,11 @@ cluster or SQL warehouse.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Use credentials from the viewer (when possible) in a Shiny app</span></span></span>
 <span class="r-in"><span><span class="co"># deployed to Posit Connect.</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/posit-dev/connectcreds" class="external-link">connectcreds</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">output</span>, <span class="va">session</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="fu">odbc</span><span class="fu">::</span><span class="fu">databricks</span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    httpPath <span class="op">=</span> <span class="st">"sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"</span>,</span></span>
-<span class="r-in"><span>    session <span class="op">=</span> <span class="va">session</span></span></span>
+<span class="r-in"><span>    httpPath <span class="op">=</span> <span class="st">"sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
