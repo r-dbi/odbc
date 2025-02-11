@@ -25,5 +25,5 @@ odbcSetTransactionIsolationLevel(con, "SQL_TXN_READ_UNCOMMITTED")
 }
 }
 \seealso{
-\url{https://docs.microsoft.com/en-us/sql/odbc/reference/develop-app/setting-the-transaction-isolation-level}
+\url{https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/setting-the-transaction-isolation-level}
 }

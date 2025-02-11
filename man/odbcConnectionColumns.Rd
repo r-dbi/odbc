@@ -67,7 +67,7 @@ identifiers do not make sense, so we unquote identifiers prior to the call.
 }
 \seealso{
 The ODBC documentation on
-\href{https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function}{SQLColumns}
+\href{https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function}{SQLColumns}
 for further details.
 }
 \keyword{internal}
