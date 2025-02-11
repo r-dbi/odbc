@@ -68,7 +68,7 @@ setMethod("show", "OdbcDriver",
 #'   the driver does not return a valid value, it can be set manually with this
 #'   parameter.
 #' @param attributes A list of connection attributes that are passed
-#'   prior to the connection being established. See \link{ConnectionAttributes}.
+#'   prior to the connection being established. See [ConnectionAttributes].
 #' @param interruptible Logical.  If `TRUE` calls to `SQLExecute` and
 #'   `SQLExecuteDirect` can be interrupted when the user sends SIGINT ( ctrl-c ).
 #'   Otherwise, they block.  Defaults to `TRUE` in interactive sessions, and

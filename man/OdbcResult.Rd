@@ -34,7 +34,7 @@
 \S4method{dbBind}{OdbcResult}(res, params, ..., batch_rows = getOption("odbc.batch_rows", NA))
 }
 \arguments{
-\item{res}{An object inheriting from \linkS4class{DBIResult}.}
+\item{res}{An object inheriting from \link[DBI:DBIResult-class]{DBI::DBIResult}.}
 
 \item{...}{Other arguments passed on to methods.}
 
