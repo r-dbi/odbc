@@ -14,8 +14,8 @@
 )
 }
 \arguments{
-\item{conn}{A \linkS4class{DBIConnection} object, as returned by
-\code{\link[DBI:dbConnect]{dbConnect()}}.}
+\item{conn}{A \link[DBI:DBIConnection-class]{DBI::DBIConnection} object,
+as returned by \code{\link[DBI:dbConnect]{dbConnect()}}.}
 
 \item{catalog_name, schema_name, table_name}{Catalog, schema, and table names.
 

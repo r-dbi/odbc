@@ -20,7 +20,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Hadley Wickham \email{hadley@posit.co}
+\strong{Maintainer}: Hadley Wickham \email{simon.couch@posit.co}
 
 Authors:
 \itemize{

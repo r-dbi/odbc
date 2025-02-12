@@ -161,8 +161,9 @@ first argument odbc(), connects to a database using the specified ODBC
 driver to create a connection object.
 \item \emph{Interface with connections}: The resulting connection object can be
 passed to various functions to retrieve information on database
-structure (\code{\link[=dbListTables]{dbListTables()}}), iteratively develop queries (\code{\link[=dbSendQuery]{dbSendQuery()}},
-\code{\link[=dbColumnInfo]{dbColumnInfo()}}), and query data objects (\code{\link[=dbFetch]{dbFetch()}}).
+structure ([DBI::dbListTables()][]), iteratively develop queries
+(\code{\link[DBI:dbSendQuery]{DBI::dbSendQuery()}}, \code{\link[DBI:dbColumnInfo]{DBI::dbColumnInfo()}}), and query data objects
+(\code{\link[DBI:dbFetch]{DBI::dbFetch()}}).
 }
 }
 

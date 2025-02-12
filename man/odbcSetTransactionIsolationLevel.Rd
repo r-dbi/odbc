@@ -7,8 +7,8 @@
 odbcSetTransactionIsolationLevel(conn, levels)
 }
 \arguments{
-\item{conn}{A \linkS4class{DBIConnection} object, as returned by
-\code{\link[DBI:dbConnect]{dbConnect()}}.}
+\item{conn}{A \link[DBI:DBIConnection-class]{DBI::DBIConnection} object,
+as returned by \code{\link[DBI:dbConnect]{dbConnect()}}.}
 
 \item{levels}{One or more of 'read_uncommitted', 'read_committed', 'repeatable_read', 'serializable'.}
 }
@@ -25,5 +25,5 @@ odbcSetTransactionIsolationLevel(con, "SQL_TXN_READ_UNCOMMITTED")
 }
 }
 \seealso{
-\url{https://docs.microsoft.com/en-us/sql/odbc/reference/develop-app/setting-the-transaction-isolation-level}
+\url{https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/setting-the-transaction-isolation-level}
 }

@@ -79,6 +79,8 @@ setMethod("dbHasCompleted", "OdbcResult",
 )
 
 #' @rdname OdbcResult
+#' @param dbObj An object inheriting from `DBIObject`, i.e. `DBIDriver`,
+#' `DBIConnection`, or a `DBIResult`.
 #' @inheritParams DBI::dbIsValid
 #' @export
 setMethod("dbIsValid", "OdbcResult",

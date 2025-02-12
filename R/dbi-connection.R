@@ -50,6 +50,8 @@ setMethod("show", "OdbcConnection",
 
 
 #' @rdname OdbcConnection
+#' @param dbObj An object inheriting from `DBIObject`, i.e. `DBIDriver`,
+#' `DBIConnection`, or a `DBIResult`.
 #' @inheritParams DBI::dbIsValid
 #' @export
 setMethod("dbIsValid", "OdbcConnection",
@@ -107,8 +109,8 @@ setMethod("dbExecute", c("OdbcConnection", "character"),
 
 #' @rdname OdbcConnection
 #' @inheritParams DBI::dbSendStatement
-#' @param params Query parameters to pass to [dbBind()].
-#'   See [dbBind()] for details.
+#' @param params Query parameters to pass to [DBI::dbBind()].
+#'   See [DBI::dbBind()] for details.
 #' @export
 setMethod("dbSendStatement", c("OdbcConnection", "character"),
   function(conn, statement, params = NULL, ..., immediate = FALSE) {

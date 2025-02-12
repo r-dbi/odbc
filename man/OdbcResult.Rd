@@ -34,7 +34,7 @@
 \S4method{dbBind}{OdbcResult}(res, params, ..., batch_rows = getOption("odbc.batch_rows", NA))
 }
 \arguments{
-\item{res}{An object inheriting from \linkS4class{DBIResult}.}
+\item{res}{An object inheriting from \link[DBI:DBIResult-class]{DBI::DBIResult}.}
 
 \item{...}{Other arguments passed on to methods.}
 
@@ -43,9 +43,8 @@ or \code{n = Inf}
 to retrieve all pending records.  Some implementations may recognize other
 special values.}
 
-\item{dbObj}{An object inheriting from \linkS4class{DBIObject},
-i.e. \linkS4class{DBIDriver}, \linkS4class{DBIConnection},
-or a \linkS4class{DBIResult}}
+\item{dbObj}{An object inheriting from \code{DBIObject}, i.e. \code{DBIDriver},
+\code{DBIConnection}, or a \code{DBIResult}.}
 
 \item{params}{For \code{dbBind()}, a list of values, named or unnamed,
 or a data frame, with one element/column per query parameter.

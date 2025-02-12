@@ -68,7 +68,7 @@ setMethod("show", "OdbcDriver",
 #'   the driver does not return a valid value, it can be set manually with this
 #'   parameter.
 #' @param attributes A list of connection attributes that are passed
-#'   prior to the connection being established. See \link{ConnectionAttributes}.
+#'   prior to the connection being established. See [ConnectionAttributes].
 #' @param interruptible Logical.  If `TRUE` calls to `SQLExecute` and
 #'   `SQLExecuteDirect` can be interrupted when the user sends SIGINT ( ctrl-c ).
 #'   Otherwise, they block.  Defaults to `TRUE` in interactive sessions, and
@@ -142,8 +142,9 @@ setMethod("show", "OdbcDriver",
 #'   driver to create a connection object.
 #' 3) *Interface with connections*: The resulting connection object can be
 #'   passed to various functions to retrieve information on database
-#'   structure ([dbListTables()]), iteratively develop queries ([dbSendQuery()],
-#'   [dbColumnInfo()]), and query data objects ([dbFetch()]).
+#'   structure ([DBI::dbListTables()][]), iteratively develop queries
+#'   ([DBI::dbSendQuery()], [DBI::dbColumnInfo()]), and query data objects
+#'   ([DBI::dbFetch()]).
 #'
 #' @aliases dbConnect odbc
 #'

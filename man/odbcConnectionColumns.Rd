@@ -45,7 +45,7 @@ data.frame with columns
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
-This function has been deprecated in favor of \code{\link[=dbListFields]{dbListFields()}}.
+This function has been deprecated in favor of \code{\link[DBI:dbListFields]{DBI::dbListFields()}}.
 
 For a given table this function returns detailed information on
 all fields / columns.  The expectation is that this is a relatively thin
@@ -53,10 +53,10 @@ wrapper around the ODBC \code{SQLColumns} function call, with some of the field
 names renamed / re-ordered according to the return specifications below.
 }
 \details{
-In \code{\link[=dbWriteTable]{dbWriteTable()}} we make a call to this method
+In \code{\link[DBI:dbWriteTable]{DBI::dbWriteTable()}} we make a call to this method
 to get details on the fields of the table we are writing to.  In particular
 the columns \code{data_type}, \code{column_size}, and \code{decimal_digits} are used.  An
-implementation is not necessary for \code{\link[=dbWriteTable]{dbWriteTable()}} to work.
+implementation is not necessary for \code{\link[DBI:dbWriteTable]{DBI::dbWriteTable()}} to work.
 
 \code{odbcConnectionColumns} is routed through the \code{SQLColumns} ODBC
 method.  This function, together with remaining catalog functions
@@ -67,7 +67,7 @@ identifiers do not make sense, so we unquote identifiers prior to the call.
 }
 \seealso{
 The ODBC documentation on
-\href{https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function}{SQLColumns}
+\href{https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function}{SQLColumns}
 for further details.
 }
 \keyword{internal}
