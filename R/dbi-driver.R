@@ -142,8 +142,9 @@ setMethod("show", "OdbcDriver",
 #'   driver to create a connection object.
 #' 3) *Interface with connections*: The resulting connection object can be
 #'   passed to various functions to retrieve information on database
-#'   structure ([dbListTables()]), iteratively develop queries ([dbSendQuery()],
-#'   [dbColumnInfo()]), and query data objects ([dbFetch()]).
+#'   structure ([DBI::dbListTables()][]), iteratively develop queries
+#'   ([DBI::dbSendQuery()], [DBI::dbColumnInfo()]), and query data objects
+#'   ([DBI::dbFetch()]).
 #'
 #' @aliases dbConnect odbc
 #'
