@@ -94,6 +94,43 @@
 #define SQL_SS_UDT (-151) // from sqlncli.h
 #endif
 
+#ifndef SQL_SOPT_SS_BASE
+#define SQL_SOPT_SS_BASE 1225
+#endif
+#ifndef SQL_SOPT_SS_PARAM_FOCUS
+#define SQL_SOPT_SS_PARAM_FOCUS (SQL_SOPT_SS_BASE + 11)
+#endif
+#ifndef SQL_SOPT_SS_NAME_SCOPE
+#define SQL_SOPT_SS_NAME_SCOPE (SQL_SOPT_SS_BASE + 12)
+#endif
+#ifndef SQL_SS_NAME_SCOPE_TABLE
+#define SQL_SS_NAME_SCOPE_TABLE 0
+#endif
+#ifndef SQL_SS_NAME_SCOPE_TABLE_TYPE
+#define SQL_SS_NAME_SCOPE_TABLE_TYPE 1
+#endif
+#ifndef SQL_SS_NAME_SCOPE_EXTENDED
+#define SQL_SS_NAME_SCOPE_EXTENDED 2
+#endif
+#ifndef SQL_SS_NAME_SCOPE_SPARSE_COLUMN_SET
+#define SQL_SS_NAME_SCOPE_SPARSE_COLUMN_SET 3
+#endif
+#ifndef SQL_SS_NAME_SCOPE_DEFAULT
+#define SQL_SS_NAME_SCOPE_DEFAULT SQL_SS_NAME_SCOPE_TABLE
+#endif
+#ifndef SQL_CA_SS_BASE
+#define SQL_CA_SS_BASE 1200
+#endif
+#ifndef SQL_CA_SS_TYPE_NAME
+#define SQL_CA_SS_TYPE_NAME (SQL_CA_SS_BASE + 27)
+#endif
+
+// SQL_SS_LENGTH_UNLIMITED is used to describe the max length of
+// VARCHAR(max), VARBINARY(max), NVARCHAR(max), and XML columns
+#ifndef SQL_SS_LENGTH_UNLIMITED
+#define SQL_SS_LENGTH_UNLIMITED (0)
+#endif
+
 // Default to ODBC version defined by NANODBC_ODBC_VERSION if provided.
 #ifndef NANODBC_ODBC_VERSION
 #ifdef SQL_OV_ODBC3_80
@@ -127,6 +164,10 @@
 // MARK: Unicode -
 // clang-format on
 
+// Import string types defined in header file, so we don't have to type nanodbc:: everywhere
+using nanodbc::wide_char_t;
+using nanodbc::wide_string_type;
+
 #ifdef NANODBC_USE_UNICODE
 #define NANODBC_FUNC(f) f##W
 #define NANODBC_SQLCHAR SQLWCHAR
@@ -134,20 +175,6 @@
 #define NANODBC_FUNC(f) f
 #define NANODBC_SQLCHAR SQLCHAR
 #endif
-
-#ifdef NANODBC_USE_IODBC_WIDE_STRINGS
-typedef std::u32string wide_string_type;
-#define NANODBC_CODECVT_TYPE std::codecvt_utf8
-#else
-#ifdef _MSC_VER
-typedef std::wstring wide_string_type;
-#define NANODBC_CODECVT_TYPE std::codecvt_utf8_utf16
-#else
-typedef std::u16string wide_string_type;
-#define NANODBC_CODECVT_TYPE std::codecvt_utf8_utf16
-#endif
-#endif
-typedef wide_string_type::value_type wide_char_t;
 
 #if defined(_MSC_VER)
 #ifndef NANODBC_USE_UNICODE
@@ -313,7 +340,6 @@ inline void convert(const wide_string_type& in, std::string& out)
 #endif
 }
 
-#ifdef NANODBC_USE_UNICODE
 inline void convert(const std::string& in, wide_string_type& out)
 {
 #ifdef NANODBC_USE_BOOST_CONVERT
@@ -353,12 +379,11 @@ inline void convert(const wide_string_type& in, wide_string_type& out)
 {
     out = in;
 }
-#else
+
 inline void convert(const std::string& in, std::string& out)
 {
     out = in;
 }
-#endif
 
 // Attempts to get the most recent ODBC error as a string.
 // Always returns std::string, even in unicode mode.
@@ -1424,6 +1449,10 @@ public:
         , async_enabled_(false)
         , async_event_(nullptr)
 #endif
+#ifndef NANODBC_DISABLE_MSSQL_TVP
+        , tvp_data_()
+        , open_tvp_(false)
+#endif
     {
     }
 
@@ -1438,6 +1467,10 @@ public:
         , async_(false)
         , async_enabled_(false)
         , async_event_(nullptr)
+#endif
+#ifndef NANODBC_DISABLE_MSSQL_TVP
+        , tvp_data_()
+        , open_tvp_(false)
 #endif
     {
         open(conn);
@@ -1454,6 +1487,10 @@ public:
         , async_(false)
         , async_enabled_(false)
         , async_event_(nullptr)
+#endif
+#ifndef NANODBC_DISABLE_MSSQL_TVP
+        , tvp_data_()
+        , open_tvp_(false)
 #endif
     {
         prepare(conn, query, timeout);
@@ -1492,6 +1529,9 @@ public:
 
     void close()
     {
+#ifndef NANODBC_DISABLE_MSSQL_TVP
+        tvp_data_.clear();
+#endif
         if (open() && connected())
         {
             RETCODE rc;
@@ -1506,6 +1546,33 @@ public:
         open_ = false;
         stmt_ = 0;
     }
+
+#ifndef NANODBC_DISABLE_MSSQL_TVP
+    void open_tvp(
+        table_valued_parameter& tvp,
+        short param_index,
+        bound_parameter& param,
+        std::vector<null_type>** bind_len_or_null)
+    {
+        if (open_tvp_)
+            throw programming_error("tvp already opened");
+
+        prepare_bind(param_index, 1, PARAM_IN, param);
+        if (param.type_ != SQL_SS_TABLE)
+            throw programming_error("invalid tvp param type");
+
+        tvp_data_.emplace(std::make_pair(param_index, tvp));
+        *bind_len_or_null = &bind_len_or_null_[param_index];
+        open_tvp_ = true;
+    }
+
+    void close_tvp()
+    {
+        if (!open_tvp_)
+            throw programming_error("tvp already closed");
+        open_tvp_ = false;
+    }
+#endif
 
     void cancel()
     {
@@ -1746,6 +1813,10 @@ public:
         statement& /*statement*/,
         void* event_handle = nullptr)
     {
+#ifndef NANODBC_DISABLE_MSSQL_TVP
+        if (!tvp_data_.empty() && 1 != batch_operations)
+            throw programming_error("cannot use batch operation when using tvp");
+#endif
         RETCODE rc;
 
         if (open())
@@ -1947,27 +2018,7 @@ public:
 
         if (!param_descr_data_.count(param_index))
         {
-            RETCODE rc;
-            SQLSMALLINT nullable; // unused
-            NANODBC_CALL_RC(
-                SQLDescribeParam,
-                rc,
-                stmt_,
-                param_index + 1,
-                &param_descr_data_[param_index].type_,
-                &param_descr_data_[param_index].size_,
-                &param_descr_data_[param_index].scale_,
-                &nullable);
-            if (!success(rc))
-            {
-                // Fallback to binding as a varchar if SQLDescribeParam fails, will
-                // truncate data if it is longer than 255 characters, and may not
-                // work for all data types, but is necessary to support drivers
-                // which do not support SQLDescribeParam.
-                param_descr_data_[param_index].type_ = SQL_VARCHAR;
-                param_descr_data_[param_index].size_ = 255;
-                param_descr_data_[param_index].scale_ = 0;
-            }
+            describe_parameters(param_index);
         }
         param.index_ = param_index;
         param.type_ = param_descr_data_[param_index].type_;
@@ -1992,6 +2043,10 @@ public:
     template <class T>
     void bind_parameter(bound_parameter const& param, bound_buffer<T>& buffer)
     {
+#ifndef NANODBC_DISABLE_MSSQL_TVP
+        if (open_tvp_)
+            throw programming_error("cannot bind parameter, close tvp first");
+#endif
         auto const buffer_size = buffer.value_size_ > 0 ? buffer.value_size_ : param.size_;
 
         RETCODE rc;
@@ -2131,8 +2186,17 @@ public:
             &param_descr_data_[param_index].size_,
             &param_descr_data_[param_index].scale_,
             &nullable);
+        //package:odbc
         if (!success(rc))
-            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        {
+            // Fallback to binding as a varchar if SQLDescribeParam fails, will
+            // truncate data if it is longer than 255 characters, and may not
+            // work for all data types, but is necessary to support drivers
+            // which do not support SQLDescribeParam.
+            param_descr_data_[param_index].type_ = SQL_VARCHAR;
+            param_descr_data_[param_index].size_ = 255;
+            param_descr_data_[param_index].scale_ = 0;
+        }
     }
 
     void describe_parameters(
@@ -2176,6 +2240,11 @@ private:
     mutable bool async_enabled_; // true if statement currently has SQL_ATTR_ASYNC_ENABLE =
                                  // SQL_ASYNC_ENABLE_ON
     void* async_event_;          // currently active event handle for async notifications
+#endif
+
+#ifndef NANODBC_DISABLE_MSSQL_TVP
+    std::map<short, table_valued_parameter> tvp_data_;
+    bool open_tvp_;
 #endif
 };
 
@@ -2352,6 +2421,673 @@ bool statement::statement_impl::equals(const timestamp& lhs, const timestamp& rh
 }
 
 } // namespace nanodbc
+
+#ifndef NANODBC_DISABLE_MSSQL_TVP
+namespace nanodbc
+{
+
+class table_valued_parameter::table_valued_parameter_impl
+{
+public:
+    table_valued_parameter_impl()
+        : row_count_(0)
+        , param_index_(0)
+        , open_(false)
+    {
+    }
+
+    ~table_valued_parameter_impl() noexcept
+    {
+        try
+        {
+            close();
+        }
+        catch (...)
+        {
+            // ignore exceptions
+        }
+    }
+
+    void
+    open(table_valued_parameter& tvp, statement& stmt, short param_index, std::size_t row_count)
+    {
+        bound_parameter param;
+        std::vector<null_type>* bind_len_or_null = nullptr;
+
+        close();
+        stmt.impl_->open_tvp(tvp, param_index, param, &bind_len_or_null);
+
+        // initialize variables
+        open_ = true;
+        stmt_ = stmt.impl_;
+        row_count_ = row_count;
+        param_index_ = param_index;
+
+        prepare_tvp_name();
+        prepare_tvp_param_all();
+
+        SQLRETURN rc;
+        auto hstmt = stmt.native_statement_handle();
+        *(SQLLEN*)bind_len_or_null->data() = 0 < row_count ? row_count : SQL_DEFAULT_PARAM;
+
+        // bind tvp. tvp_name should Unicode (UTF-16) string
+        // https://docs.microsoft.com/en-us/sql/relational-databases/native-client-odbc-table-valued-parameters/binding-and-data-transfer-of-table-valued-parameters-and-column-values
+        nanodbc::wide_string_type tvp_name;
+        convert(tvp_name_, tvp_name);
+
+        NANODBC_CALL_RC(
+            SQLBindParameter,
+            rc,
+            hstmt,
+            static_cast<SQLUSMALLINT>(param_index + 1),
+            SQL_PARAM_INPUT,
+            SQL_C_DEFAULT,
+            SQL_SS_TABLE,
+            row_count,
+            0,
+            (SQLPOINTER)tvp_name.data(),
+            SQL_NTS,
+            bind_len_or_null->data());
+        if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
+            NANODBC_THROW_DATABASE_ERROR(hstmt, SQL_HANDLE_STMT);
+
+        if (0 == row_count)
+        {
+            return;
+        }
+
+        // set param focus
+        NANODBC_CALL_RC(
+            NANODBC_FUNC(SQLSetStmtAttr),
+            rc,
+            hstmt,
+            SQL_SOPT_SS_PARAM_FOCUS,
+            (SQLPOINTER)(std::intptr_t)(param_index + 1),
+            SQL_IS_INTEGER);
+        if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
+            NANODBC_THROW_DATABASE_ERROR(hstmt, SQL_HANDLE_STMT);
+    }
+
+    void close()
+    {
+        SQLRETURN rc;
+
+        if (open_)
+        {
+            // if TVP is still open during statement destructor, stmt_ is not valid
+            auto stmt_impl = stmt_.lock();
+
+            if (0 < row_count_ && stmt_impl)
+            {
+                // reset param focus
+                NANODBC_CALL_RC(
+                    NANODBC_FUNC(SQLSetStmtAttr),
+                    rc,
+                    stmt_impl->native_statement_handle(),
+                    SQL_SOPT_SS_PARAM_FOCUS,
+                    (SQLPOINTER) nullptr,
+                    SQL_IS_INTEGER);
+                if (!success(rc))
+                    NANODBC_THROW_DATABASE_ERROR(
+                        stmt_impl->native_statement_handle(), SQL_HANDLE_STMT);
+            }
+
+            row_count_ = 0;
+            tvp_name_.clear();
+            param_index_ = 0;
+            open_ = false;
+            if (stmt_impl)
+                stmt_impl->close_tvp();
+        }
+    }
+
+    void prepare_tvp_name()
+    {
+        auto stmt_impl = stmt_.lock();
+        NANODBC_ASSERT(stmt_impl != nullptr);
+
+        SQLHANDLE hstmt = stmt_impl->native_statement_handle();
+        SQLRETURN rc;
+        SQLHANDLE hipd;
+        SQLINTEGER buf_len, str_len;
+
+        // get ipd handle
+        NANODBC_CALL_RC(
+            NANODBC_FUNC(SQLGetStmtAttr),
+            rc,
+            hstmt,
+            SQL_ATTR_IMP_PARAM_DESC,
+            &hipd,
+            SQL_IS_POINTER,
+            &str_len);
+        if (SQL_SUCCESS != rc && SQL_SUCCESS_WITH_INFO != rc)
+            NANODBC_THROW_DATABASE_ERROR(hstmt, SQL_HANDLE_STMT);
+
+        // get tvp name buffer length
+        NANODBC_CALL_RC(
+            NANODBC_FUNC(SQLGetDescField),
+            rc,
+            hipd,
+            param_index_ + 1,
+            SQL_CA_SS_TYPE_NAME,
+            nullptr,
+            0,
+            &buf_len);
+        if (SQL_SUCCESS != rc && SQL_SUCCESS_WITH_INFO != rc)
+            NANODBC_THROW_DATABASE_ERROR(hipd, SQL_HANDLE_DESC);
+
+        str_len = buf_len / sizeof(nanodbc::string_type::value_type);
+        tvp_name_.resize(str_len);
+        buf_len = (str_len + 1) * sizeof(nanodbc::string_type::value_type);
+
+        // get tvp name
+        NANODBC_CALL_RC(
+            NANODBC_FUNC(SQLGetDescField),
+            rc,
+            hipd,
+            param_index_ + 1,
+            SQL_CA_SS_TYPE_NAME,
+            &tvp_name_[0],
+            buf_len,
+            &buf_len);
+        if (SQL_SUCCESS != rc && SQL_SUCCESS_WITH_INFO != rc)
+            NANODBC_THROW_DATABASE_ERROR(hipd, SQL_HANDLE_DESC);
+    }
+
+    void prepare_tvp_param_all()
+    {
+        auto stmt_impl = stmt_.lock();
+        NANODBC_ASSERT(stmt_impl != nullptr);
+
+        auto stmt = nanodbc::statement(stmt_impl->connection());
+        auto hstmt = stmt.native_statement_handle();
+
+        SQLRETURN rc;
+
+        NANODBC_CALL_RC(
+            NANODBC_FUNC(SQLSetStmtAttr),
+            rc,
+            hstmt,
+            SQL_SOPT_SS_NAME_SCOPE,
+            (SQLPOINTER)SQL_SS_NAME_SCOPE_TABLE_TYPE,
+            SQL_IS_UINTEGER);
+        if (SQL_SUCCESS != rc && SQL_SUCCESS_WITH_INFO != rc)
+            NANODBC_THROW_DATABASE_ERROR(hstmt, SQL_HANDLE_STMT);
+
+        NANODBC_CALL_RC(
+            NANODBC_FUNC(SQLColumns),
+            rc,
+            hstmt,
+            nullptr,
+            0,
+            nullptr,
+            0,
+            (NANODBC_SQLCHAR*)tvp_name_.data(),
+            SQL_NTS,
+            nullptr,
+            0);
+        if (SQL_SUCCESS != rc && SQL_SUCCESS_WITH_INFO != rc)
+            NANODBC_THROW_DATABASE_ERROR(hstmt, SQL_HANDLE_STMT);
+
+        bound_parameter param;
+        SQLLEN len[3] = {0};
+        param.iotype_ = SQL_PARAM_INPUT;
+
+        NANODBC_CALL_RC(SQLBindCol, rc, hstmt, 5, SQL_C_SSHORT, &param.type_, 0, &len[0]);
+        if (SQL_SUCCESS != rc && SQL_SUCCESS_WITH_INFO != rc)
+            NANODBC_THROW_DATABASE_ERROR(hstmt, SQL_HANDLE_STMT);
+
+        NANODBC_CALL_RC(SQLBindCol, rc, hstmt, 7, SQL_C_SLONG, &param.size_, 0, &len[1]);
+        if (SQL_SUCCESS != rc && SQL_SUCCESS_WITH_INFO != rc)
+            NANODBC_THROW_DATABASE_ERROR(hstmt, SQL_HANDLE_STMT);
+
+        NANODBC_CALL_RC(SQLBindCol, rc, hstmt, 9, SQL_C_SSHORT, &param.scale_, 0, &len[2]);
+        if (SQL_SUCCESS != rc && SQL_SUCCESS_WITH_INFO != rc)
+            NANODBC_THROW_DATABASE_ERROR(hstmt, SQL_HANDLE_STMT);
+
+        SQLSMALLINT col_no = 0;
+        for (;;)
+        {
+            NANODBC_CALL_RC(SQLFetch, rc, hstmt);
+            if (rc != SQL_SUCCESS)
+                break;
+
+            param.index_ = col_no;
+            param_descr_data_[col_no] = param;
+            ++col_no;
+        }
+    }
+
+    // initializes bind_len_or_null_ and gets information for bind
+    void prepare_bind(short param_index, std::size_t batch_size, bound_parameter& param)
+    {
+        NANODBC_ASSERT(param_index >= 0);
+
+        if (!param_descr_data_.count(param_index))
+        {
+            throw programming_error("invalid param index");
+        }
+        else
+        {
+            param.type_ = param_descr_data_[param_index].type_;
+            param.size_ = param_descr_data_[param_index].size_;
+            param.scale_ = param_descr_data_[param_index].scale_;
+        }
+
+        param.index_ = param_index;
+        param.iotype_ = SQL_PARAM_INPUT;
+
+        if (!bind_len_or_null_.count(param_index))
+            bind_len_or_null_[param_index] = std::vector<null_type>();
+        std::vector<null_type>().swap(bind_len_or_null_[param_index]);
+
+        // ODBC weirdness: this must be at least 8 elements in size
+        const std::size_t indicator_size = batch_size > 8 ? batch_size : 8;
+        bind_len_or_null_[param_index].reserve(indicator_size);
+        bind_len_or_null_[param_index].assign(indicator_size, SQL_NULL_DATA);
+
+        NANODBC_ASSERT(param.index_ == param_index);
+        NANODBC_ASSERT(param.iotype_ > 0);
+    }
+
+    // calls actual ODBC bind parameter function
+    template <class T, typename std::enable_if<!is_character<T>::value, int>::type = 0>
+    void bind_parameter(bound_parameter const& param, bound_buffer<T>& buffer)
+    {
+        NANODBC_ASSERT(buffer.value_size_ > 0 || param.size_ > 0);
+
+        auto value_size{buffer.value_size_};
+        if (value_size == 0)
+            value_size = param.size_;
+
+        auto param_size{param.size_};
+        if (value_size > param_size)
+        {
+            // Parameter size reported by SQLDescribeParam for Large Objects:
+            // - For SQL VARBINARY(MAX), it is Zero which actually means SQL_SS_LENGTH_UNLIMITED.
+            // - For SQL UDT (eg. GEOMETRY), it may be driver-specific max limit (eg. SQL Server is
+            // DBMAXCHAR=8000 bytes).
+            // See MSDN for details
+            // https://docs.microsoft.com/en-us/sql/relational-databases/native-client/odbc/large-clr-user-defined-types-odbc
+            //
+            // If bound value is larger than parameter size, we force SQL_SS_LENGTH_UNLIMITED.
+            param_size = SQL_SS_LENGTH_UNLIMITED;
+        }
+
+        auto stmt_impl = stmt_.lock();
+        NANODBC_ASSERT(stmt_impl != nullptr);
+
+        RETCODE rc;
+        NANODBC_CALL_RC(
+            SQLBindParameter,
+            rc,
+            stmt_impl->native_statement_handle(), // handle
+            param.index_ + 1,                     // parameter number
+            param.iotype_,                        // input or output type
+            sql_ctype<T>::value,                  // value type
+            param.type_,                          // parameter type
+            param_size,   // column size ignored for many types, but needed for strings
+            param.scale_, // decimal digits
+            (SQLPOINTER)buffer.values_, // parameter value
+            value_size,                 // buffer length
+            bind_len_or_null_[param.index_].data());
+
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_impl->native_statement_handle(), SQL_HANDLE_STMT);
+    }
+
+    // Supports code like: query.bind(0, std_string.c_str())
+    // In this case, we need to pass nullptr to the final parameter of SQLBindParameter().
+    template <class T, typename std::enable_if<is_character<T>::value, int>::type = 0>
+    void bind_parameter(bound_parameter const& param, bound_buffer<T>& buffer)
+    {
+        auto const buffer_size = buffer.value_size_ > 0 ? buffer.value_size_ : param.size_;
+
+        auto stmt_impl = stmt_.lock();
+        NANODBC_ASSERT(stmt_impl != nullptr);
+
+        RETCODE rc;
+        NANODBC_CALL_RC(
+            SQLBindParameter,
+            rc,
+            stmt_impl->native_statement_handle(), // handle
+            param.index_ + 1,                     // parameter number
+            param.iotype_,                        // input or output type
+            sql_ctype<T>::value,                  // value type
+            param.type_,                          // parameter type
+            param.size_,  // column size ignored for many types, but needed for strings
+            param.scale_, // decimal digits
+            (SQLPOINTER)buffer.values_, // parameter value
+            buffer_size,                // buffer length
+            (buffer.size_ <= 1 ? nullptr : bind_len_or_null_[param.index_].data()));
+
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_impl->native_statement_handle(), SQL_HANDLE_STMT);
+    }
+
+    template <class T>
+    void bind(
+        short param_index,
+        T const* values,
+        std::size_t batch_size,
+        bool const* nulls = nullptr,
+        T const* null_sentry = nullptr);
+
+    void bind(
+        short param_index,
+        std::vector<std::vector<uint8_t>> const& values,
+        bool const* nulls = nullptr,
+        uint8_t const* null_sentry = nullptr)
+    {
+        if (values.size() < row_count_)
+            throw programming_error("invalid values.size()");
+
+        std::size_t batch_size = row_count_;
+        bound_parameter param;
+        prepare_bind(param_index, batch_size, param);
+
+        size_t max_length = 0;
+        for (std::size_t i = 0; i < batch_size; ++i)
+        {
+            max_length = std::max(values[i].size(), max_length);
+        }
+        binary_data_[param_index] = std::vector<uint8_t>(batch_size * max_length, 0);
+        for (std::size_t i = 0; i < batch_size; ++i)
+        {
+            std::copy(
+                values[i].begin(),
+                values[i].end(),
+                binary_data_[param_index].data() + (i * max_length));
+        }
+
+        if (null_sentry)
+        {
+            for (std::size_t i = 0; i < batch_size; ++i)
+                if (!std::equal(values[i].begin(), values[i].end(), null_sentry))
+                {
+                    bind_len_or_null_[param_index][i] = values[i].size();
+                }
+        }
+        else if (nulls)
+        {
+            for (std::size_t i = 0; i < batch_size; ++i)
+            {
+                if (!nulls[i])
+                    bind_len_or_null_[param_index][i] = values[i].size(); // null terminated
+            }
+        }
+        else
+        {
+            for (std::size_t i = 0; i < batch_size; ++i)
+            {
+                bind_len_or_null_[param_index][i] = values[i].size();
+            }
+        }
+        bound_buffer<uint8_t> buffer(binary_data_[param_index].data(), batch_size, max_length);
+        bind_parameter(param, buffer);
+    }
+
+    template <class T, typename = enable_if_character<T>>
+    void bind_strings(
+        short param_index,
+        T const* values,
+        std::size_t value_size,
+        std::size_t batch_size,
+        bool const* nulls = nullptr,
+        T const* null_sentry = nullptr);
+
+    template <class T, typename = enable_if_string<T>>
+    void bind_strings(
+        short param_index,
+        std::vector<T> const& values,
+        bool const* nulls = nullptr,
+        typename T::value_type const* null_sentry = nullptr);
+
+    void bind_null(short param_index)
+    {
+        bound_parameter param;
+        prepare_bind(param_index, row_count_, param);
+
+        auto stmt_impl = stmt_.lock();
+        NANODBC_ASSERT(stmt_impl != nullptr);
+
+        RETCODE rc;
+        NANODBC_CALL_RC(
+            SQLBindParameter,
+            rc,
+            stmt_impl->native_statement_handle(),
+            param.index_ + 1, // parameter number
+            param.iotype_,    // input or output typ,
+            SQL_C_CHAR,
+            param.type_, // parameter type
+            param.size_, // column size ignored for many types, but needed for string,
+            0,           // decimal digits
+            nullptr,     // null value
+            0,           // buffer length
+            bind_len_or_null_[param.index_].data());
+        if (!success(rc))
+            NANODBC_THROW_DATABASE_ERROR(stmt_impl->native_statement_handle(), SQL_HANDLE_STMT);
+    }
+
+    void describe_parameters(
+        const std::vector<short>& idx,
+        const std::vector<short>& type,
+        const std::vector<unsigned long>& size,
+        const std::vector<short>& scale)
+    {
+        if (idx.size() != type.size() || idx.size() != size.size() || idx.size() != scale.size())
+            throw programming_error("parameter description arrays are of different size");
+
+        for (std::size_t i = 0; i < idx.size(); ++i)
+        {
+            param_descr_data_[idx[i]].type_ = static_cast<SQLSMALLINT>(type[i]);
+            param_descr_data_[idx[i]].size_ = static_cast<SQLULEN>(size[i]);
+            param_descr_data_[idx[i]].scale_ = static_cast<SQLSMALLINT>(scale[i]);
+            param_descr_data_[idx[i]].index_ = static_cast<SQLUSMALLINT>(i);
+            param_descr_data_[idx[i]].iotype_ = SQL_PARAM_INPUT;
+        }
+    }
+
+    // comparator for null sentry values
+    template <class T>
+    bool equals(T const& lhs, T const& rhs)
+    {
+        return lhs == rhs;
+    }
+
+    template <class T>
+    std::vector<T>& get_bound_string_data(short param_index);
+
+private:
+    std::weak_ptr<nanodbc::statement::statement_impl> stmt_;
+    std::size_t row_count_;
+    nanodbc::string_type tvp_name_;
+    short param_index_;
+    bool open_;
+    std::map<short, std::vector<null_type>> bind_len_or_null_;
+    std::map<short, std::vector<wide_string_type::value_type>> wide_string_data_;
+    std::map<short, std::vector<std::string::value_type>> string_data_;
+    std::map<short, std::vector<uint8_t>> binary_data_;
+    std::map<short, bound_parameter> param_descr_data_;
+};
+
+template <class T>
+void table_valued_parameter::table_valued_parameter_impl::bind(
+    short param_index,
+    T const* values,
+    std::size_t batch_size,
+    bool const* nulls /*= nullptr*/,
+    T const* null_sentry /*= nullptr*/)
+{
+    if (batch_size < row_count_)
+        throw programming_error("invalid batch_size");
+    batch_size = row_count_;
+
+    bound_parameter param;
+    prepare_bind(param_index, batch_size, param);
+
+    if (nulls || null_sentry)
+    {
+        for (std::size_t i = 0; i < batch_size; ++i)
+            if ((null_sentry && !equals(values[i], *null_sentry)) || (nulls && !nulls[i]) || !nulls)
+                bind_len_or_null_[param_index][i] = param.size_;
+    }
+    else
+    {
+        for (std::size_t i = 0; i < batch_size; ++i)
+            bind_len_or_null_[param_index][i] = param.size_;
+    }
+
+    bound_buffer<T> buffer(values, batch_size);
+    bind_parameter(param, buffer);
+}
+
+template <class T, typename>
+void table_valued_parameter::table_valued_parameter_impl::bind_strings(
+    short param_index,
+    std::vector<T> const& values,
+    bool const* nulls /*= nullptr*/,
+    typename T::value_type const* null_sentry /*= nullptr*/)
+{
+    if (values.size() < row_count_)
+        throw programming_error("invalid values.size()");
+
+    using string_vector = std::vector<typename T::value_type>;
+    string_vector& string_data = get_bound_string_data<typename T::value_type>(param_index);
+
+    size_t const batch_size = row_count_;
+    bound_parameter param;
+    prepare_bind(param_index, batch_size, param);
+
+    size_t max_length = 0;
+    for (std::size_t i = 0; i < batch_size; ++i)
+    {
+        max_length = std::max(values[i].length(), max_length);
+    }
+    // add space for null terminator
+    ++max_length;
+
+    string_data = string_vector(batch_size * max_length, 0);
+    for (std::size_t i = 0; i < batch_size; ++i)
+    {
+        std::copy(values[i].begin(), values[i].end(), string_data.data() + (i * max_length));
+    }
+    bind_strings(param_index, string_data.data(), max_length, batch_size, nulls, null_sentry);
+}
+
+template <class T, typename>
+void table_valued_parameter::table_valued_parameter_impl::bind_strings(
+    short param_index,
+    T const* values,
+    std::size_t value_size,
+    std::size_t batch_size,
+    bool const* nulls /*= nullptr*/,
+    T const* null_sentry /*= nullptr*/)
+{
+    if (batch_size < row_count_)
+        throw programming_error("invalid batch_size");
+    batch_size = row_count_;
+
+    bound_parameter param;
+    prepare_bind(param_index, batch_size, param);
+
+    if (null_sentry)
+    {
+        for (std::size_t i = 0; i < batch_size; ++i)
+        {
+            const std::basic_string<T> s_lhs(
+                values + i * value_size, values + (i + 1) * value_size);
+            const std::basic_string<T> s_rhs(null_sentry);
+            if (!equals(s_lhs, s_rhs))
+                bind_len_or_null_[param_index][i] = SQL_NTS;
+        }
+    }
+    else if (nulls)
+    {
+        for (std::size_t i = 0; i < batch_size; ++i)
+        {
+            if (!nulls[i])
+                bind_len_or_null_[param_index][i] = SQL_NTS; // null terminated
+        }
+    }
+    else
+    {
+        for (std::size_t i = 0; i < batch_size; ++i)
+        {
+            bind_len_or_null_[param_index][i] = SQL_NTS;
+        }
+    }
+
+    auto const buffer_length = value_size * sizeof(T);
+    bound_buffer<T> buffer(values, batch_size, buffer_length);
+    bind_parameter(param, buffer);
+}
+
+template <>
+bool table_valued_parameter::table_valued_parameter_impl::equals(
+    std::string const& lhs,
+    std::string const& rhs)
+{
+    return std::strncmp(lhs.c_str(), rhs.c_str(), lhs.size()) == 0;
+}
+
+template <>
+bool table_valued_parameter::table_valued_parameter_impl::equals(
+    const wide_string_type& lhs,
+    const wide_string_type& rhs)
+{
+    // e6059ff3a79062f83256b9d1d3c9c8368798781e
+    // Functions like `swprintf()`, `wcsftime()`, `wcsncmp()` can not be used
+    // with `u16string` types. Instead, prefers to narrow unicode string to
+    // work with them, and then widen them after work has been completed.
+    std::string narrow_lhs;
+    narrow_lhs.reserve(lhs.size());
+    convert(lhs, narrow_lhs);
+    std::string narrow_rhs;
+    narrow_rhs.reserve(rhs.size());
+    convert(rhs, narrow_rhs);
+    return equals(narrow_lhs, narrow_rhs);
+}
+
+template <>
+bool table_valued_parameter::table_valued_parameter_impl::equals(const date& lhs, const date& rhs)
+{
+    return lhs.year == rhs.year && lhs.month == rhs.month && lhs.day == rhs.day;
+}
+
+template <>
+bool table_valued_parameter::table_valued_parameter_impl::equals(const time& lhs, const time& rhs)
+{
+    return lhs.hour == rhs.hour && lhs.min == rhs.min && lhs.sec == rhs.sec;
+}
+
+template <>
+bool table_valued_parameter::table_valued_parameter_impl::equals(
+    const timestamp& lhs,
+    const timestamp& rhs)
+{
+    return lhs.year == rhs.year && lhs.month == rhs.month && lhs.day == rhs.day &&
+           lhs.hour == rhs.hour && lhs.min == rhs.min && lhs.sec == rhs.sec &&
+           lhs.fract == rhs.fract;
+}
+
+template <>
+std::vector<wide_string_type::value_type>&
+table_valued_parameter::table_valued_parameter_impl::get_bound_string_data(short param_index)
+{
+    return wide_string_data_[param_index];
+}
+
+template <>
+std::vector<std::string::value_type>&
+table_valued_parameter::table_valued_parameter_impl::get_bound_string_data(short param_index)
+{
+    return string_data_[param_index];
+}
+
+} // namespace nanodbc
+
+#endif // NANODBC_DISABLE_MSSQL_TVP
 
 // clang-format off
 // 8888888b.                            888 888              8888888                        888
@@ -4373,6 +5109,228 @@ void statement::describe_parameters(
 }
 
 } // namespace nanodbc
+
+// clang-format off
+// 888b     d888  .d8888b.   .d8888b.   .d88888b.  888                       88888888888 888     888 8888888b.
+// 8888b   d8888 d88P  Y88b d88P  Y88b d88P" "Y88b 888                           888     888     888 888   Y88b
+// 88888b.d88888 Y88b.      Y88b.      888     888 888                           888     888     888 888    888
+// 888Y88888P888  "Y888b.    "Y888b.   888     888 888                           888     Y88b   d88P 888   d88P
+// 888 Y888P 888     "Y88b.     "Y88b. 888     888 888                           888      Y88b d88P  8888888P"
+// 888  Y8P  888       "888       "888 888 Y8b 888 888           888888          888       Y88o88P   888
+// 888   "   888 Y88b  d88P Y88b  d88P Y88b.Y8b88P 888                           888        Y888P    888
+// 888       888  "Y8888P"   "Y8888P"   "Y888888"  88888888                      888         Y8P     888
+//                                            Y8b
+// MARK: MSSQL - TVP (Table Valued Parameters) -
+// clang-format on
+#ifndef NANODBC_DISABLE_MSSQL_TVP
+namespace nanodbc
+{
+
+table_valued_parameter::table_valued_parameter()
+    : impl_(new table_valued_parameter_impl())
+{
+}
+
+table_valued_parameter::table_valued_parameter(const table_valued_parameter& rhs)
+    : impl_(rhs.impl_)
+{
+}
+
+table_valued_parameter::table_valued_parameter(table_valued_parameter&& rhs) noexcept
+    : impl_(std::move(rhs.impl_))
+{
+}
+
+table_valued_parameter::table_valued_parameter(statement& stmt, short param_index, size_t row_count)
+    : impl_(new table_valued_parameter_impl())
+{
+    impl_->open(*this, stmt, param_index, row_count);
+}
+
+table_valued_parameter::~table_valued_parameter() noexcept {}
+
+void table_valued_parameter::open(statement& stmt, short param_index, size_t row_count)
+{
+    impl_->open(*this, stmt, param_index, row_count);
+}
+
+void table_valued_parameter::close()
+{
+    impl_->close();
+}
+
+// We need to instantiate each form of bind() for each of our supported data types.
+#define NANODBC_INSTANTIATE_TVP_BINDS(type)                                                        \
+    template void table_valued_parameter::bind(short, const type*, std::size_t); /* n-ary */       \
+    template void table_valued_parameter::bind(                                                    \
+        short, const type*, std::size_t, const type*); /* n-ary, sentry */                         \
+    template void table_valued_parameter::bind(                                                    \
+        short, const type*, std::size_t, const bool*) /* n-ary, flags */
+
+#define NANODBC_INSTANTIATE_TVP_BIND_VECTOR_STRINGS(type)                                          \
+    template void table_valued_parameter::bind_strings(short, std::vector<type> const&);           \
+    template void table_valued_parameter::bind_strings(                                            \
+        short, std::vector<type> const&, type::value_type const*);                                 \
+    template void table_valued_parameter::bind_strings(                                            \
+        short, std::vector<type> const&, bool const*);
+
+#define NANODBC_INSTANTIATE_TVP_BIND_STRINGS(type)                                                 \
+    template void table_valued_parameter::bind_strings(                                            \
+        short, const type::value_type*, std::size_t, std::size_t);                                 \
+    template void table_valued_parameter::bind_strings(                                            \
+        short, type::value_type const*, std::size_t, std::size_t, type::value_type const*);        \
+    template void table_valued_parameter::bind_strings(                                            \
+        short, type::value_type const*, std::size_t, std::size_t, bool const*)
+// The following are the only supported instantiations of statement::bind().
+NANODBC_INSTANTIATE_TVP_BINDS(std::string::value_type);
+NANODBC_INSTANTIATE_TVP_BINDS(wide_string_type::value_type);
+NANODBC_INSTANTIATE_TVP_BINDS(short);
+NANODBC_INSTANTIATE_TVP_BINDS(unsigned short);
+NANODBC_INSTANTIATE_TVP_BINDS(int);
+NANODBC_INSTANTIATE_TVP_BINDS(unsigned int);
+NANODBC_INSTANTIATE_TVP_BINDS(long int);
+NANODBC_INSTANTIATE_TVP_BINDS(unsigned long int);
+NANODBC_INSTANTIATE_TVP_BINDS(long long);
+NANODBC_INSTANTIATE_TVP_BINDS(unsigned long long);
+NANODBC_INSTANTIATE_TVP_BINDS(float);
+NANODBC_INSTANTIATE_TVP_BINDS(double);
+NANODBC_INSTANTIATE_TVP_BINDS(date);
+NANODBC_INSTANTIATE_TVP_BINDS(time);
+NANODBC_INSTANTIATE_TVP_BINDS(timestamp);
+
+NANODBC_INSTANTIATE_TVP_BIND_STRINGS(std::string);
+NANODBC_INSTANTIATE_TVP_BIND_STRINGS(wide_string_type);
+//package:odbc
+NANODBC_INSTANTIATE_TVP_BIND_VECTOR_STRINGS(string_type);
+
+#ifdef NANODBC_HAS_STD_STRING_VIEW
+/NANODBC_INSTANTIATE_TVP_BIND_VECTOR_STRINGS(std::string_view);
+/NANODBC_INSTANTIATE_TVP_BIND_VECTOR_STRINGS(wide_string_view);
+#endif
+
+#undef NANODBC_INSTANTIATE_TVP_BINDS
+#undef NANODBC_INSTANTIATE_TVP_BIND_STRINGS
+
+template <class T>
+void table_valued_parameter::bind(short param_index, T const* values, std::size_t batch_size)
+{
+    impl_->bind(param_index, values, batch_size);
+}
+
+template <class T>
+void table_valued_parameter::bind(
+    short param_index,
+    T const* values,
+    std::size_t batch_size,
+    T const* null_sentry)
+{
+    impl_->bind(param_index, values, batch_size, nullptr, null_sentry);
+}
+
+template <class T>
+void table_valued_parameter::bind(
+    short param_index,
+    T const* values,
+    std::size_t batch_size,
+    bool const* nulls)
+{
+    impl_->bind(param_index, values, batch_size, nulls);
+}
+
+void table_valued_parameter::bind(
+    short param_index,
+    std::vector<std::vector<uint8_t>> const& values)
+{
+    impl_->bind(param_index, values);
+}
+
+void table_valued_parameter::bind(
+    short param_index,
+    std::vector<std::vector<uint8_t>> const& values,
+    bool const* nulls)
+{
+    impl_->bind(param_index, values, nulls);
+}
+
+void table_valued_parameter::bind(
+    short param_index,
+    std::vector<std::vector<uint8_t>> const& values,
+    uint8_t const* null_sentry)
+{
+    impl_->bind(param_index, values, nullptr, null_sentry);
+}
+
+template <class T, typename>
+void table_valued_parameter::bind_strings(short param_index, std::vector<T> const& values)
+{
+    impl_->bind_strings(param_index, values);
+}
+
+template <class T, typename>
+void table_valued_parameter::bind_strings(
+    short param_index,
+    T const* values,
+    std::size_t value_size,
+    std::size_t batch_size)
+{
+    impl_->bind_strings(param_index, values, value_size, batch_size);
+}
+
+template <class T, typename>
+void table_valued_parameter::bind_strings(
+    short param_index,
+    T const* values,
+    std::size_t value_size,
+    std::size_t batch_size,
+    T const* null_sentry)
+{
+    impl_->bind_strings(param_index, values, value_size, batch_size, nullptr, null_sentry);
+}
+
+template <class T, typename>
+void table_valued_parameter::bind_strings(
+    short param_index,
+    T const* values,
+    std::size_t value_size,
+    std::size_t batch_size,
+    bool const* nulls)
+{
+    impl_->bind_strings(param_index, values, value_size, batch_size, nulls);
+}
+
+template <class T, typename>
+void table_valued_parameter::bind_strings(
+    short param_index,
+    std::vector<T> const& values,
+    typename T::value_type const* null_sentry)
+{
+    impl_->bind_strings(param_index, values, nullptr, null_sentry);
+}
+
+template <class T, typename>
+void table_valued_parameter::bind_strings(
+    short param_index,
+    std::vector<T> const& values,
+    bool const* nulls)
+{
+    impl_->bind_strings(param_index, values, nulls);
+}
+
+void table_valued_parameter::bind_null(short param_index)
+{
+    impl_->bind_null(param_index);
+}
+
+void table_valued_parameter::describe_parameters(
+    const std::vector<short>& idx,
+    const std::vector<short>& type,
+    const std::vector<unsigned long>& size,
+    const std::vector<short>& scale)
+{
+    impl_->describe_parameters(idx, type, size, scale);
+}
+} // namespace nanodbc
+#endif // NANODBC_DISABLE_MSSQL_TVP
 
 namespace nanodbc
 {
