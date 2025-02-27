@@ -1,4 +1,4 @@
-# odbc (development version)
+# odbc 1.6.0
 
 ## New features
 
