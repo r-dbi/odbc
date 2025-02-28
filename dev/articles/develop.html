@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.5.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.6.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -285,8 +285,9 @@ Once you’ve finished building the image, run it with:</p>
 <p>Note that the <code>run</code> command here is a bit different than
 the one in the linked blog post.</p>
 <p>Next, you’ll install the Basic, ODBC, and SQLPlus Instant Client
-libraries from the <a href="https://www.oracle.com/database/technologies/instant-client/macos-arm64-downloads.html" class="external-link">Oracle
-website</a> by doing the following:</p>
+libraries from the Oracle website
+(<code>https://www.oracle.com/database/technologies/instant-client/macos-arm64-downloads.html</code>)
+by doing the following:</p>
 <ul>
 <li>Download the Basic, ODBC, and SQLPlus <code>.dmg</code>s.</li>
 <li>Create a folder for the instant client to live in. I made mine at
@@ -390,9 +391,10 @@ unixODBC, and <code>libaio1</code>. You can get the last with:</p>
 driver, the PRs <a href="https://github.com/r-dbi/odbc/commit/257f041a3aec8348000a89208da5ed0eb059fe81" class="external-link">implementing
 support for unit testing Oracle</a> and <a href="https://github.com/r-dbi/odbc/commit/4090f0a7916db7ab22e4088040aa2492751140dd" class="external-link">adding
 support for the Oracle Pro Driver</a> for odbc are a great guide here.
-The “Installation Instructions” at the bottom of <a href="https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html" class="external-link">Oracle’s
-Instant Client docs</a> are thorough–you shouldn’t need them here, but a
-good backup.</p>
+The “Installation Instructions” at the bottom of Oracle’s Instant Client
+docs
+(<code>https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html</code>)
+are thorough–you shouldn’t need them here, but a good backup.</p>
 <p>I ultimately wasn’t able to make a connection with the driver that
 Oracle ships, but was able to do so with the Posit Pro Drivers.</p>
 <p>Run the lines in <code>.github/odbc/install-oracle-driver.sh</code>
@@ -414,7 +416,8 @@ following inside of it:</p>
 code from the linked PR</a> (see the repository secret for the driver
 URL or contact Simon Couch or Hadley Wickham if you don’t have access)
 or through RStudio Pro (if you have credentials, you can generate
-yourself a license key <a href="https://connect.posit.it/support/license_management/" class="external-link">here</a>).</p>
+yourself a license key here:
+<code>https://connect.posit.it/support/license_management/</code>).</p>
 <p>Add the following lines to your <code>.Renviron</code> (with
 <code>usethis::edit_r_environ()</code>). Adjust the value for
 <code>ODBCSYSINI</code> to the directory prefixing <code>.ini</code>

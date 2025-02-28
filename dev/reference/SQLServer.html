@@ -54,6 +54,21 @@ sqlCreateTable()
 Warns if temporary = TRUE but the name does not conform to temp table
 naming conventions (i.e. it doesn't start with #).
 
+
+
+odbcConnectionColumns_()
+
+
+If temp table, query the database for the
+actual table name.
+
+
+
+odbcConnectionColumns_()
+
+
+Copied over from odbc-connection to avoid S4 dispatch NOTEs.
+
 "><meta property="og:description" content="Details of SQL Server methods for odbc and DBI generics.
 
 dbUnquoteIdentifier()
@@ -109,6 +124,21 @@ sqlCreateTable()
 Warns if temporary = TRUE but the name does not conform to temp table
 naming conventions (i.e. it doesn't start with #).
 
+
+
+odbcConnectionColumns_()
+
+
+If temp table, query the database for the
+actual table name.
+
+
+
+odbcConnectionColumns_()
+
+
+Copied over from odbc-connection to avoid S4 dispatch NOTEs.
+
 "><meta property="og:image" content="https://odbc.r-dbi.org/logo.png"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
@@ -117,7 +147,7 @@ naming conventions (i.e. it doesn't start with #).
 
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.5.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.6.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -203,6 +233,21 @@ sure we list the schemas in the appropriate database/catalog.</p>
 
 <p>Warns if <code>temporary = TRUE</code> but the <code>name</code> does not conform to temp table
 naming conventions (i.e. it doesn't start with <code>#</code>).</p>
+</div>
+
+<div class="section">
+<h3 id="odbcconnectioncolumns-"><code>odbcConnectionColumns_()</code><a class="anchor" aria-label="anchor" href="#odbcconnectioncolumns-"></a></h3>
+
+
+<p>If temp table, query the database for the
+actual table name.</p>
+</div>
+
+<div class="section">
+<h3 id="odbcconnectioncolumns--1"><code>odbcConnectionColumns_()</code><a class="anchor" aria-label="anchor" href="#odbcconnectioncolumns--1"></a></h3>
+
+
+<p>Copied over from odbc-connection to avoid S4 dispatch NOTEs.</p>
 </div>
 
     </div>
