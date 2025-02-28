@@ -232,7 +232,7 @@ docker run -d --name oracle -p 1521:1521 -e ORACLE_PWD=odbcTest321 oracle/databa
 
 Note that the `run` command here is a bit different than the one in the linked blog post.
 
-Next, you'll install the Basic, ODBC, and SQLPlus Instant Client libraries from the [Oracle website](https://www.oracle.com/database/technologies/instant-client/macos-arm64-downloads.html) by doing the following:
+Next, you'll install the Basic, ODBC, and SQLPlus Instant Client libraries from the Oracle website (`https://www.oracle.com/database/technologies/instant-client/macos-arm64-downloads.html`) by doing the following:
 
 * Download the Basic, ODBC, and SQLPlus `.dmg`s.
 * Create a folder for the instant client to live in. I made mine at `/Users/simoncouch/instantclient_23_3`. (This folder will show up many times in the rest of these instructions--always substitute it with your own from here on out.)
@@ -338,7 +338,7 @@ docker run -d \
 
 Some documentation on this Docker image [here](https://hub.docker.com/r/gvenzl/oracle-xe).
 
-Now, as for installing and configuring the Oracle Instant Client and driver, the PRs [implementing support for unit testing Oracle](https://github.com/r-dbi/odbc/commit/257f041a3aec8348000a89208da5ed0eb059fe81) and [adding support for the Oracle Pro Driver](https://github.com/r-dbi/odbc/commit/4090f0a7916db7ab22e4088040aa2492751140dd) for odbc are a great guide here. The "Installation Instructions" at the bottom of [Oracle's Instant Client docs](https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html) are thorough--you shouldn't need them here, but a good backup.
+Now, as for installing and configuring the Oracle Instant Client and driver, the PRs [implementing support for unit testing Oracle](https://github.com/r-dbi/odbc/commit/257f041a3aec8348000a89208da5ed0eb059fe81) and [adding support for the Oracle Pro Driver](https://github.com/r-dbi/odbc/commit/4090f0a7916db7ab22e4088040aa2492751140dd) for odbc are a great guide here. The "Installation Instructions" at the bottom of Oracle's Instant Client docs (`https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html`) are thorough--you shouldn't need them here, but a good backup.
 
 I ultimately wasn't able to make a connection with the driver that Oracle ships, but was able to do so with the Posit Pro Drivers.
 
@@ -360,7 +360,7 @@ TEST=
     (CONNECT_DATA=(SERVICE_NAME=test)))
 ```
 
-Install the RStudio Pro Oracle driver, either using the [installation code from the linked PR](https://github.com/r-dbi/odbc/commit/4090f0a7916db7ab22e4088040aa2492751140dd#diff-bc1733bfd46bbe6f651eee14b11879e4b7e0428af876e0322768bdbf138ef238R84-R87) (see the repository secret for the driver URL or contact Simon Couch or Hadley Wickham if you don't have access) or through RStudio Pro (if you have credentials, you can generate yourself a license key [here](https://connect.posit.it/support/license_management/)).
+Install the RStudio Pro Oracle driver, either using the [installation code from the linked PR](https://github.com/r-dbi/odbc/commit/4090f0a7916db7ab22e4088040aa2492751140dd#diff-bc1733bfd46bbe6f651eee14b11879e4b7e0428af876e0322768bdbf138ef238R84-R87) (see the repository secret for the driver URL or contact Simon Couch or Hadley Wickham if you don't have access) or through RStudio Pro (if you have credentials, you can generate yourself a license key here: `https://connect.posit.it/support/license_management/`).
 
 Add the following lines to your `.Renviron` (with `usethis::edit_r_environ()`). Adjust the value for `ODBCSYSINI` to the directory prefixing `.ini` files in `odbcinst -j`.
 

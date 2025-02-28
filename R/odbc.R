@@ -2,7 +2,7 @@
 #'
 #' @param levels One or more of `r odbc:::choices_rd(names(odbc:::transactionLevels()))`.
 #' @inheritParams DBI::dbDisconnect
-#' @seealso <https://docs.microsoft.com/en-us/sql/odbc/reference/develop-app/setting-the-transaction-isolation-level>
+#' @seealso <https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/setting-the-transaction-isolation-level>
 #' @export
 #' @examples
 #' \dontrun{

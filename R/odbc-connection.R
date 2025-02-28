@@ -225,7 +225,7 @@ NULL
 #' @description
 #' `r lifecycle::badge("deprecated")`
 #'
-#' This function has been deprecated in favor of [dbListFields()].
+#' This function has been deprecated in favor of [DBI::dbListFields()].
 #'
 #' For a given table this function returns detailed information on
 #' all fields / columns.  The expectation is that this is a relatively thin
@@ -233,10 +233,10 @@ NULL
 #' names renamed / re-ordered according to the return specifications below.
 #'
 #' @details
-#' In [dbWriteTable()] we make a call to this method
+#' In [DBI::dbWriteTable()] we make a call to this method
 #' to get details on the fields of the table we are writing to.  In particular
 #' the columns `data_type`, `column_size`, and `decimal_digits` are used.  An
-#' implementation is not necessary for [dbWriteTable()] to work.
+#' implementation is not necessary for [DBI::dbWriteTable()] to work.
 #'
 #' `odbcConnectionColumns` is routed through the `SQLColumns` ODBC
 #' method.  This function, together with remaining catalog functions
@@ -256,7 +256,7 @@ NULL
 #'   table name.
 #'
 #' @seealso The ODBC documentation on
-#' [SQLColumns](https://docs.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
+#' [SQLColumns](https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlcolumns-function)
 #' for further details.
 #'
 #' @return data.frame with columns

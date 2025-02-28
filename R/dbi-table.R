@@ -3,8 +3,7 @@ NULL
 
 #' Convenience functions for reading/writing DBMS tables
 #'
-#' @param conn a \code{\linkS4class{OdbcConnection}} object, produced by
-#'   [DBI::dbConnect()]
+#' @param conn An [OdbcConnection] object, produced by [DBI::dbConnect()].
 #' @param name a character string specifying a table name. Names will be
 #'   automatically quoted so you can use any sequence of characters, not
 #'   just any valid bare table name.

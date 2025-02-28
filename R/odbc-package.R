@@ -12,3 +12,5 @@
 #' @useDynLib odbc, .registration = TRUE
 ## usethis namespace: end
 NULL
+
+utils::globalVariables(c("attribute", "name", "simba_config_dirs"))
