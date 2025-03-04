@@ -31,7 +31,13 @@
 
 \S4method{dbGetRowsAffected}{OdbcResult}(res, ...)
 
-\S4method{dbBind}{OdbcResult}(res, params, ..., batch_rows = getOption("odbc.batch_rows", NA))
+\S4method{dbBind}{OdbcResult}(
+  res,
+  params,
+  ...,
+  param_description = data.frame(),
+  batch_rows = getOption("odbc.batch_rows", NA)
+)
 }
 \arguments{
 \item{res}{An object inheriting from \link[DBI:DBIResult-class]{DBI::DBIResult}.}
@@ -51,6 +57,19 @@ or a data frame, with one element/column per query parameter.
 For \code{dbBindArrow()}, values as a nanoarrow stream,
 with one column per query parameter.}
 
+\item{param_description}{A data.frame with per-parameter attribute
+overrides.  Argument is optional; if used it must have columns:
+\itemize{
+\item param_index Index of parameter in query ( beginning with 1 ).
+\item data_type Integer corresponding to the parameter SQL Data Type.
+See \code{odbc::ODBC_TYPE}.
+\item column_size Size of parameter.
+\item decimal_digits Either precision or the scale of the parameter
+depending on type.
+}
+
+For more information see the \href{https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlbindparameter-function?view=sql-server-ver16}{ODBC SQLBindParam documentation}}
+
 \item{batch_rows}{The number of rows to retrieve. Defaults to \code{NA}, which
 is set dynamically to the minimum of 1024 and the size of the input.
 Depending on the database, driver, dataset and free memory, setting this
@@ -59,5 +78,20 @@ to a lower value may improve performance.}
 \description{
 Implementations of pure virtual functions defined in the \code{DBI} package
 for OdbcResult objects.
+}
+\examples{
+\dontrun{
+library(odbc)
+# Writing UNICODE into a VARCHAR
+# column with SQL server
+DBI::dbRemoveTable(conn, "#tmp")
+dbExecute(conn, "CREATE TABLE #tmp (col1 VARCHAR(50) COLLATE Latin1_General_100_CI_AI_SC_UTF8);")
+res <- dbSendQuery(conn, "INSERT INTO #tmp SELECT ? COLLATE Latin1_General_100_CI_AI_SC_UTF8")
+description <- data.frame(param_index = 1, data_type = ODBC_TYPE("WVARCHAR"),
+  column_size = 5, decimal_digits = NA_integer_)
+dbBind(res, params = list("\u2915"), param_description = description)
+dbClearResult(res)
+DBI::dbReadTable(conn, "#tmp")
+}
 }
 \keyword{internal}
