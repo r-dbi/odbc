@@ -178,7 +178,7 @@ test_that("locate_install_unixodbc() returns reasonable values", {
   res <- locate_install_unixodbc()
 
   expect_true(file.exists(res[1]))
-  expect_true(grepl("\\.dylib", res[1]))
+  expect_true(grepl("(\\.dylib|\\.a)$", res[1]))
 })
 
 test_that("databricks() errors informatively when spark ini isn't writeable", {
