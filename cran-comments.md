@@ -1,6 +1,6 @@
 ## R CMD check results
 
-Recent MacOS builds trigger the NOTE "installed size is 10.8Mb." MacOS builds include all debug symbols and CRAN policy doesn't permit building without them.
+Recent MacOS builds trigger the NOTE "installed size is 11.0Mb." MacOS builds include all debug symbols and CRAN policy doesn't permit building without them.
 
 ## revdepcheck results
 
