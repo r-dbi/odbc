@@ -175,6 +175,9 @@ test_that("locate_install_unixodbc() returns reasonable values", {
   skip_if(!is_macos())
   skip_if(!has_unixodbc(), "odbcinst not available.")
 
+  # odbc_config / pkg-config cflags point to nonexistent files on CRAN (#903)
+  skip_on_cran()
+
   res <- locate_install_unixodbc()
 
   expect_true(file.exists(res[1]))
