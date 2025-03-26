@@ -1,3 +1,5 @@
+skip_if_no_unixodbc()
+
 test_that("SQLite", {
   DBItest::make_context(
     odbc(),

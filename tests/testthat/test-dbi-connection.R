@@ -27,6 +27,7 @@ test_that("show method does not print server if it is not available", {
 })
 
 test_that("dbQuoteIdentifier() errors informatively", {
+  skip_if_no_unixodbc()
   con <- test_con("SQLITE")
 
   expect_snapshot(

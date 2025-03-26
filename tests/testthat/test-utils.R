@@ -117,6 +117,7 @@ test_that("set_odbcsysini() works (#791)", {
 })
 
 test_that("check_row.names()", {
+  skip_if_no_unixodbc()
   con <- test_con("SQLITE")
 
   expect_snapshot(
@@ -126,6 +127,7 @@ test_that("check_row.names()", {
 })
 
 test_that("check_field.types()", {
+  skip_if_no_unixodbc()
   con <- test_con("SQLITE")
 
   expect_snapshot(
@@ -135,6 +137,7 @@ test_that("check_field.types()", {
 })
 
 test_that("check_attributes()", {
+  skip_if_no_unixodbc()
   expect_snapshot(
     error = TRUE,
     con <- test_con("SQLITE", attributes = list(boop = "bop"))

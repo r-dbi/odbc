@@ -66,6 +66,7 @@ test_that("automatically picks correct quote type", {
 
 # connections pane -------------------------------------------------------------
 test_that("validateObjectName() errors informatively", {
+  skip_if_no_unixodbc()
   con <- test_con("SQLITE")
 
   expect_snapshot(
@@ -82,6 +83,7 @@ test_that("validateObjectName() errors informatively", {
 # odbcConnectionColumns deprecation --------------------------------------
 
 test_that("odbcConnectionColumns warns on usage (#699)", {
+  skip_if_no_unixodbc()
   con <- test_con("SQLITE")
   lifecycle::expect_deprecated(odbcConnectionColumns(con, "test"))
 })
