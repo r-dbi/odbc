@@ -30,6 +30,12 @@ skip_if_no_drivers <- function() {
   }
 }
 
+skip_if_no_unixodbc <- function() {
+  if (!is_windows() && length(locate_install_unixodbc()) == 0) {
+    skip("No unixodbc installation found.")
+  }
+}
+
 #' Test round tripping a simple table
 #'
 #' This tests all the supported data types, including missing values. It first

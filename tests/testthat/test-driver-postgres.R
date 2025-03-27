@@ -1,3 +1,5 @@
+skip_if_no_unixodbc()
+
 test_that("PostgreSQL", {
   DBItest::make_context(
     odbc(),
@@ -164,4 +166,3 @@ test_that("odbcPreviewObject", {
   })
   expect_equal(nrow(res), 3)
 })
-
