@@ -335,8 +335,8 @@ setMethod("odbcConnectionColumns_", c("OdbcConnection", "character"),
 )
 
 setMethod("odbcConnectionColumns_", c("OdbcConnection", "SQL"),
-  function(conn, name, ...) {
-    odbcConnectionColumns_(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+  function(conn, name, ..., exact = FALSE) {
+    odbcConnectionColumns_(conn, dbUnquoteIdentifier(conn, name)[[1]], ..., exact = exact)
   }
 )
 
