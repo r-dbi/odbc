@@ -343,8 +343,9 @@ workbench_databricks_token <- function(host, cfg_file) {
 # p. 44 https://downloads.datastax.com/odbc/2.6.5.1005/Simba%20Spark%20ODBC%20Install%20and%20Configuration%20Guide.pdf
 spark_simba_config <- function(driver) {
   spark_env <- Sys.getenv("SIMBASPARKINI")
+  URL <- "https://www.databricks.com/spark/odbc-drivers-download"
   if (!identical(spark_env, "")) {
-    return(spark_env)
+    return(list(path = spark_env, url = URL))
   }
   common_dirs <- c(
     driver_dir(driver),
@@ -358,6 +359,6 @@ spark_simba_config <- function(driver) {
       common_dirs,
       pattern = "simba\\.sparkodbc\\.ini$",
       full.names = TRUE),
-    url = "https://www.databricks.com/spark/odbc-drivers-download"
+    url = URL
   ))
 }
