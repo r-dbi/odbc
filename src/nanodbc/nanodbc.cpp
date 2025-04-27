@@ -2132,7 +2132,10 @@ public:
             &param_descr_data_[param_index].scale_,
             &nullable);
         if (!success(rc))
+        {
+            param_descr_data_.erase(param_index);
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
+        }
     }
 
     void describe_parameters(

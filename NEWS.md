@@ -3,6 +3,8 @@
 * SQL Server: Fix issues with argument propagation in bespoke
   S4 methods (#906).
 
+* Databricks: Fix repeated calls to `dbConnect` (#901).
+
 # odbc 1.6.1
 
 * odbc will now automatically find statically built installations of
