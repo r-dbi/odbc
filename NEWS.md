@@ -1,3 +1,7 @@
+# odbc (development version)
+
+* Databricks: Fix repeated calls to `dbConnect` (#901).
+
 # odbc 1.6.1
 
 * odbc will now automatically find statically built installations of
