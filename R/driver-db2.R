@@ -68,7 +68,7 @@ setMethod("odbcConnectionTables", c("DB2/AIX64", "character"),
       tryCatch({
         dfTempTables <- dbGetQuery(conn, query)
         # NULL as colname is not well liked by DB2 it seems. Hack here. (#905).
-        if (nrow(dfTempTables)) {
+        if (nrow(dfTempTables)  > 0) {
           dfTempTables$table_remarks <- NA_character_
         }
       }, odbc_database_error = function(e) {
