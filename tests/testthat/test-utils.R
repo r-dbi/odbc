@@ -208,7 +208,7 @@ test_that("driver_dir(...) returns reasonable values", {
 test_that("spark_simba_config() returns reasonable values", {
   simba_spark_ini <- "some/folder/simba.sparkodbc.ini"
   withr::local_envvar(SIMBASPARKINI = simba_spark_ini)
-  expect_equal(spark_simba_config(""), simba_spark_ini)
+  expect_equal(spark_simba_config("")$path, simba_spark_ini)
 })
 
 test_that("configure_unixodbc_simba() writes reasonable entries", {
