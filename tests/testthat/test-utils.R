@@ -88,6 +88,31 @@ test_that("parse_database_error() works with messages from the wild", {
           <SQL> 'SELECT DISTINCT \"po_id\", ***CENSORED***'"
   expect_snapshot(error = TRUE, rethrow_database_error(msg, call = NULL))
 
+  # Really long error message can cause rethrow_database_error to take a really long time.
+  # This is due to cli::cli_abort, current version is 3.6.5 at the time of this writing. (#914)
+  err_msg_w_really_long_query <- paste(
+    c(
+      "nanodbc/nanodbc.cpp:1544",
+      "[Snowflake] SQL compilation error: error line 1 at position 92",
+      paste0(
+        "<SQL> 'SELECT STATECODE FROM AIR_QUALITY_DATA_UNITED_STATES.PUBLIC.AIR_QUALITY WHERE COUNTYCODE IN (",
+        paste(rep('1', 35000), collapse = ", "),
+        "'"
+      )
+    ),
+    collapse = "\n"
+  ) # Even if this really long error message gets passed to cli::cli_abort it should only take 10 - 20 sec to fail
+  expect_no_condition(parse_database_error(err_msg_w_really_long_query))
+  timing <- system.time({
+    expect_error(rethrow_database_error(err_msg_w_really_long_query, call = NULL))
+  })
+  expect_lt(
+    object = timing["elapsed"],
+    expected = 5,
+    label = "Runtime of `rethrow_database_error(err_msg_w_really_long_query)`",
+    expected.label = "5 seconds"
+  )
+  
   msg <- "`parse_database_error()` will not {be able to parse this}, but it should still be successfully rethrown as-is."
   expect_snapshot(error = TRUE, rethrow_database_error(msg, call = NULL))
 })
