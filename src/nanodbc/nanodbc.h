@@ -321,6 +321,14 @@ struct timestamp
     std::int32_t fract; ///< Fractional seconds.
 };
 
+/// \brief A type for representing timestamp data.
+struct timestampoffset
+{
+    timestamp    stamp;
+    std::int16_t offset_hour;     ///< Whole hour part of time zone offset
+    std::int16_t offset_minute;   ///< Minutes part of time zome offset
+};
+
 /// \brief A type trait for testing if a type is a std::basic_string compatible with the current
 /// nanodbc configuration
 template <typename T>

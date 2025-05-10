@@ -162,6 +162,8 @@ private:
       size_t size);
   std::vector<std::string> column_names(nanodbc::result const& r);
 
+  double as_double(nanodbc::timestampoffset const& ts);
+
   double as_double(nanodbc::timestamp const& ts);
 
   double as_double(nanodbc::date const& dt);

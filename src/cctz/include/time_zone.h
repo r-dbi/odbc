@@ -32,6 +32,7 @@ template <typename D>
 using time_point = std::chrono::time_point<std::chrono::system_clock, D>;
 using sys_seconds = std::chrono::duration<std::chrono::system_clock::rep,
                                           std::chrono::seconds::period>;
+using seconds = sys_seconds;
 
 // cctz::time_zone is an opaque, small, value-type class representing a
 // geo-political region within which particular rules are used for mapping
@@ -146,6 +147,12 @@ bool load_time_zone(const std::string& name, time_zone* tz);
 
 // Returns a time_zone representing UTC. Cannot fail.
 time_zone utc_time_zone();
+
+// Returns a time zone that is a fixed offset (seconds east) from UTC.
+// Note: If the absolute value of the offset is greater than 24 hours
+// you'll get UTC (i.e., zero offset) instead.
+time_zone fixed_time_zone(const seconds& offset);
+bool fixed_time_zone(const seconds& offset, time_zone* tz);
 
 // Returns a time zone representing the local time zone. Falls back to UTC.
 time_zone local_time_zone();
