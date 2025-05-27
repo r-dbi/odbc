@@ -88,6 +88,8 @@ test_that("parse_database_error() works with messages from the wild", {
           <SQL> 'SELECT DISTINCT \"po_id\", ***CENSORED***'"
   expect_snapshot(error = TRUE, rethrow_database_error(msg, call = NULL))
 
+  skip_on_cran()
+  
   # Really long error message can cause rethrow_database_error to take a really long time.
   # This is due to cli::cli_abort, current version is 3.6.5 at the time of this writing. (#914)
   err_msg_w_really_long_query <- paste(
