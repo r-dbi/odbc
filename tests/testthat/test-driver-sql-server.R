@@ -384,7 +384,7 @@ test_that("DATETIMEOFFSET", {
   tbl <- local_table(con, "test_datetimeoffset", df,
     field.types = list("tz_char" = "VARCHAR(50)", "tz" = "DATETIMEOFFSET"), overwrite = TRUE)
   res <- DBI::dbReadTable(con, tbl)
-  expect_true("POSIXct" %in% class(res[[2]]))
+  expect_s3_class(res[[2]], "POSIXct")
   expect_equal(as.double(res[[2]][1] - as.POSIXct(res[[1]][1]), units="hours"), 2);
 })
 
