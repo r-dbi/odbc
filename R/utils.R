@@ -198,6 +198,15 @@ parse_database_error <- function(msg) {
     cnd_msg[-1],
     right = TRUE
   )
+  # Limit error message length to something sane (#914)
+  max_len <- 5000
+  cnd_body <- sapply(cnd_body, FUN = function(x) {
+    if (nchar(x) > max_len) {
+      x <- substr(x, 0, max_len)
+      x <- paste0(x, "...")
+    }
+    x
+  }, USE.NAMES = FALSE)
 
   cnd_body <- contextualize_database_error(cnd_body)
 
