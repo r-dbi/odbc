@@ -125,8 +125,11 @@ std::string FixedOffsetToName(const seconds& offset) {
     ep = Format02d(ep, offset_seconds, false);
   }
   *ep++ = '\0';
-  // package:odbc: Less strict assert
-  assert(ep - buf <= (long int)sizeof(buf));
+  // package:odbc: Less strict
+  // package:odbc: throw rather than assert
+  if (ep - buf > (long int)sizeof(buf)) {
+    throw std::runtime_error("Unexpected buffer overflow");
+  }
   return buf;
 }
 
