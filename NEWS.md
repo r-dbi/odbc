@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* SQL Server: Support for `DATETIMEOFFSET` data type (#918). 
+
 * SQL Server: Fix issues with argument propagation in bespoke
   S4 methods (#906).
 
