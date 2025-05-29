@@ -5,7 +5,7 @@ articles:
   benchmarks: benchmarks.html
   develop: develop.html
   setup: setup.html
-last_built: 2025-05-28T01:09Z
+last_built: 2025-05-29T21:26Z
 urls:
   reference: https://odbc.r-dbi.org/reference
   article: https://odbc.r-dbi.org/articles
