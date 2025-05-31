@@ -28,7 +28,7 @@
       ! ODBC failed with error 00000 from [unixODBC][Driver Manager].
       x Data source name not found and no default driver specified
       i See `?odbc::odbcListDataSources()` to learn more.
-      i From 'nanodbc/nanodbc.cpp:1156'.
+      i From 'nanodbc/nanodbc.cpp:1159'.
 
 ---
 
