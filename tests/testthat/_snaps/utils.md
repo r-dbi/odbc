@@ -39,7 +39,7 @@
       ! ODBC failed with error 00000 from [SQLite].
       x no such table: boopbopbopbeep (1)
       * <SQL> 'SELECT * FROM boopbopbopbeep'
-      i From 'nanodbc/nanodbc.cpp:1732'.
+      i From 'nanodbc/nanodbc.cpp:1735'.
 
 # rethrow_database_error() errors well when parse_database_error() fails
 
