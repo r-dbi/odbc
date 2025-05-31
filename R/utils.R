@@ -375,23 +375,33 @@ locate_install_unixodbc <- function() {
     "/opt/R/x86_64/lib"
   )
 
-  list.files(
-    common_dirs,
-    pattern = libodbcinst_filename(),
-    full.names = TRUE
-  )
+  file_names <- libodbcinst_filename()
+  for (file_name in file_names) {
+    paths <- list.files(
+       common_dirs,
+       pattern = file_name,
+       full.names = TRUE
+    )
+    if (length(paths)) {
+      return(paths)
+    }
+  }
+  return(character())
 }
 
 system_safely <- function(x) {
   tryCatch(
     {
       unixodbc_prefix <- system(x, intern = TRUE, ignore.stderr = TRUE)
-      candidates <- list.files(unixodbc_prefix,
-        pattern = libodbcinst_filename(), full.names = TRUE)
-      if (!length(candidates)) {
-        stop("Unable to locate unixodbc using odbc_config")
+      file_names <- libodbcinst_filename()
+      for (file_name in file_names) {
+        candidates <- list.files(unixodbc_prefix,
+          pattern = file_name, full.names = TRUE)
+        if (length(candidates)) {
+          return(candidates[1])
+        }
       }
-      return(candidates[1])
+      stop("Unable to locate unixodbc using odbc_config")
     },
     error = function(e) {},
     warning = function(w) {}
@@ -399,13 +409,14 @@ system_safely <- function(x) {
   character()
 }
 
-# Returns a pattern to be used with
-# list.files( ..., pattern = ... ).
+# Returns a vector of possible lib filenames.
+# Vector is ordered and should be iterated over
+# in same order.
 libodbcinst_filename <- function() {
   if (is_macos()) {
-    "libodbcinst.dylib|libodbcinst.a"
+    return(c("libodbcinst.dylib", "libodbcinst.a"))
   } else {
-    "libodbcinst.so|libodbcinst.a"
+    return(c("libodbcinst.so", "libodbcinst.a"))
   }
 }
 
