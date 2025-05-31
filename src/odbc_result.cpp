@@ -10,6 +10,7 @@
 #endif
 #ifndef SQL_DB2_XML
 #define SQL_DB2_XML (-370)
+#endif
 #ifndef SQL_SS_TIMESTAMPOFFSET
 #define SQL_SS_TIMESTAMPOFFSET (-155)
 #endif
