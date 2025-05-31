@@ -65,6 +65,9 @@
 #include <sqlext.h>
 
 // Driver specific SQL data type defines.
+#ifndef SQL_DB2_XML
+#define SQL_DB2_XML (-370)
+#endif
 // Microsoft has -150 thru -199 reserved for Microsoft SQL Server Native Client driver usage.
 // Originally, defined in sqlncli.h (old SQL Server Native Client driver)
 // and msodbcsql.h (new Microsoft ODBC Driver for SQL Server)
@@ -2986,6 +2989,7 @@ private:
             case SQL_VARBINARY:
             case SQL_LONGVARBINARY:
             case SQL_SS_UDT: // MSDN: Essentially, UDT is a varbinary type with additional metadata.
+            case SQL_DB2_XML:
                 col.ctype_ = SQL_C_BINARY;
                 col.blob_ = true;
                 col.clen_ = 0;
