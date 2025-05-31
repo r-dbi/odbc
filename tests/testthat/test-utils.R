@@ -214,6 +214,59 @@ test_that("locate_install_unixodbc() returns reasonable values", {
   expect_true(grepl("(\\.dylib|\\.a)$", res[1]))
 })
 
+# https://github.com/r-dbi/odbc/issues/919
+test_that("locate_install_unixodbc() prefers shlib", {
+  # odbc_config / pkg-config cflags point to nonexistent files on CRAN (#903)
+  skip_on_cran()
+  {
+    local_mocked_bindings(
+      is_macos = function() {TRUE}
+    )
+    local_mocked_bindings(
+      list.files = function (path = ".", pattern = NULL, all.files = FALSE, full.names = FALSE, ...) {
+        # Mimic being able to find any pattern passed as argument
+        return(pattern)
+      },
+      .package = "base"
+    )
+    res <- locate_install_unixodbc()
+    expect_equal(length(res), 1)
+    expect_true(grepl("(\\.dylib)$", res[1]))
+  }
+  {
+    local_mocked_bindings(
+      is_macos = function() {TRUE}
+    )
+    local_mocked_bindings(
+      list.files = function (path = ".", pattern = NULL, all.files = FALSE, full.names = FALSE, ...) {
+        # Mimic being able to find .a only
+        if(pattern == "libodbcinst.a") return(pattern)
+        return(character())
+      },
+      .package = "base"
+    )
+    res <- locate_install_unixodbc()
+    expect_equal(length(res), 1)
+    expect_true(grepl("(\\.a)$", res[1]))
+  }
+  {
+    local_mocked_bindings(
+      is_macos = function() {TRUE}
+    )
+    local_mocked_bindings(
+      list.files = function (path = ".", pattern = NULL, all.files = FALSE, full.names = FALSE, ...) {
+        # Mimic being able to find shlib only
+        if(pattern == "libodbcinst.dylib") return(pattern)
+        return(character())
+      },
+      .package = "base"
+    )
+    res <- locate_install_unixodbc()
+    expect_equal(length(res), 1)
+    expect_true(grepl("(\\.dylib)$", res[1]))
+  }
+})
+
 test_that("databricks() errors informatively when spark ini isn't writeable", {
   local_mocked_bindings(is_writeable = function(path) {FALSE})
   expect_snapshot(
