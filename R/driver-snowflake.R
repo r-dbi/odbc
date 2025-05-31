@@ -216,7 +216,7 @@ snowflake_args <- function(account = Sys.getenv("SNOWFLAKE_ACCOUNT"),
     if (nchar(Sys.getenv("SF_PARTNER")) != 0 ){
       all$application <- Sys.getenv("SF_PARTNER")
     } else {
-      all$application <- paste0("r-odbc/", packageVersion("odbc"))
+      all$application <- "r-odbc"
     }
   }
 

@@ -16,6 +16,7 @@
 
 #include <cstdlib>
 
+#include "time_zone_fixed.h"
 #include "time_zone_impl.h"
 
 namespace cctz {
@@ -23,6 +24,16 @@ namespace cctz {
 time_zone utc_time_zone() {
   time_zone tz;
   load_time_zone("UTC", &tz);
+  return tz;
+}
+
+bool fixed_time_zone(const seconds& offset, time_zone* tz) {
+  return load_time_zone(FixedOffsetToName(offset), tz);
+}
+
+time_zone fixed_time_zone(const seconds& offset) {
+  time_zone tz;
+  load_time_zone(FixedOffsetToName(offset), &tz);
   return tz;
 }
 

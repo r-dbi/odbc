@@ -1,5 +1,11 @@
 # odbc (development version)
 
+* SQL Server: Support for `DATETIMEOFFSET` data type (#918). 
+
+* Fix hang when parsing exceptionally long database errors (#916).
+
+* DB2: Fix error when writing to temp tables (#910).
+
 * SQL Server: Fix issues with argument propagation in bespoke
   S4 methods (#906).
 

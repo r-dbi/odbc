@@ -42,6 +42,11 @@ setMethod("show", "OdbcDriver",
 #'   timezone that is _not_ 'UTC'. If the database is in your local timezone,
 #'   set this argument to [Sys.timezone()]. See [OlsonNames()] for a complete
 #'   list of available time zones on your system.
+#'   Note, if the datatype itself carries timezone information, as is the case,
+#'   for example, with SQL Server::DATETIMEOFFSET, `package:odbc` will make
+#'   an effort to respect the timezone declared therein.  In those cases,
+#'   this parameter is not used - the timezone that is part of the datatype
+#'   takes precedence.
 #' @param timezone_out The time zone returned to R. If you want to display
 #'   datetime values in the local timezone, set to [Sys.timezone()].
 #' @param encoding The text encoding used on the Database. If the database is
