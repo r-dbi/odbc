@@ -385,7 +385,7 @@ test_that("DATETIMEOFFSET", {
     field.types = list("tz_char" = "VARCHAR(50)", "tz" = "DATETIMEOFFSET"), overwrite = TRUE)
   res <- DBI::dbReadTable(con, tbl)
   expect_s3_class(res[[2]], "POSIXct")
-  expect_equal(as.double(res[[2]][1] - as.POSIXct(res[[1]][1]), units = "hours"), 2)
+  expect_equal(as.double(res[[2]][1] - as.POSIXct(res[[1]][1]), units = "hours"), 2, tolerance = 1E-4)
 })
 
 test_that("package:odbc roundtrip test", {

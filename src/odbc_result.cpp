@@ -8,6 +8,9 @@
 #ifndef SQL_SS_TIME2
 #define SQL_SS_TIME2 (-154)
 #endif
+#ifndef SQL_DB2_XML
+#define SQL_DB2_XML (-370)
+#endif
 #ifndef SQL_SS_TIMESTAMPOFFSET
 #define SQL_SS_TIMESTAMPOFFSET (-155)
 #endif
@@ -755,6 +758,7 @@ std::vector<r_type> odbc_result::column_types(nanodbc::result const& r) {
     case SQL_BINARY:
     case SQL_VARBINARY:
     case SQL_LONGVARBINARY:
+    case SQL_DB2_XML:
       types.push_back(raw_t);
       break;
     default:
