@@ -401,7 +401,6 @@ system_safely <- function(x) {
           return(candidates[1])
         }
       }
-      stop("Unable to locate unixodbc using odbc_config")
     },
     error = function(e) {},
     warning = function(w) {}
