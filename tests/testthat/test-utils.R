@@ -218,6 +218,7 @@ test_that("locate_install_unixodbc() returns reasonable values", {
 test_that("locate_install_unixodbc() prefers shlib", {
   # odbc_config / pkg-config cflags point to nonexistent files on CRAN (#903)
   skip_on_cran()
+  skip_if(is_windows())
   {
     local_mocked_bindings(
       is_macos = function() {TRUE}
