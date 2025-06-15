@@ -2018,7 +2018,7 @@ public:
 
         if (!param_descr_data_.count(param_index))
         {
-            describe_parameters(param_index);
+            describe_parameters(param_index, true /* fallback */);
         }
         param.index_ = param_index;
         param.type_ = param_descr_data_[param_index].type_;
@@ -2170,7 +2170,7 @@ public:
             NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
     }
 
-    void describe_parameters(const short param_index)
+    void describe_parameters(const short param_index, bool fallback = false)
     {
         RETCODE rc;
         SQLSMALLINT nullable; // unused
@@ -2186,9 +2186,9 @@ public:
             &param_descr_data_[param_index].size_,
             &param_descr_data_[param_index].scale_,
             &nullable);
-        //package:odbc
-        if (!success(rc))
+        if (!success(rc) && fallback)
         {
+            //package:odbc
             // Fallback to binding as a varchar if SQLDescribeParam fails, will
             // truncate data if it is longer than 255 characters, and may not
             // work for all data types, but is necessary to support drivers
@@ -2196,6 +2196,11 @@ public:
             param_descr_data_[param_index].type_ = SQL_VARCHAR;
             param_descr_data_[param_index].size_ = 255;
             param_descr_data_[param_index].scale_ = 0;
+        }
+        else if (!success(rc))
+        {
+            param_descr_data_.erase(param_index);
+            NANODBC_THROW_DATABASE_ERROR(stmt_, SQL_HANDLE_STMT);
         }
     }
 
