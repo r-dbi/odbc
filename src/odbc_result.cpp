@@ -8,6 +8,12 @@
 #ifndef SQL_SS_TIME2
 #define SQL_SS_TIME2 (-154)
 #endif
+#ifndef SQL_DB2_XML
+#define SQL_DB2_XML (-370)
+#endif
+#ifndef SQL_SS_TIMESTAMPOFFSET
+#define SQL_SS_TIMESTAMPOFFSET (-155)
+#endif
 namespace odbc {
 
 using odbc::utils::run_interruptible;
@@ -504,6 +510,42 @@ std::vector<std::string> odbc_result::column_names(nanodbc::result const& r) {
   return names;
 }
 
+double odbc_result::as_double(nanodbc::timestampoffset const& tso) {
+  using namespace cctz;
+  if (tso.offset_hour == 0 && tso.offset_minute == 0) {
+    return as_double(tso.stamp);
+  }
+  const sys_seconds offset(tso.offset_hour * 3600 + tso.offset_minute * 60);
+
+  // Make sure we can load timezone
+  // Capture any error that we can raise
+  // to [R] more gracefully.
+  //
+  // Note, when the TZ file can't be located on the FS,
+  // `fixed_time_zone` will return false (and fallback to utc).
+  // As we want to throw this warning ONCE, and not on *every*
+  // failed row value, we test to see whether `cctz` has thrown
+  // an error.  There, an error is thrown only *once* for each
+  // (failed) time-zone.
+  std::stringstream stream;
+  std::streambuf* oldClogStreamBuf = std::clog.rdbuf(stream.rdbuf());
+  cctz::time_zone tz = fixed_time_zone(offset);
+  std::clog.rdbuf(oldClogStreamBuf);
+  if (stream.rdbuf()->in_avail()) {
+    std::stringstream msg;
+    msg << "Unable to locate TZ corresponding to offset of " << offset.count() << " seconds.\n";
+    msg << "Falling back to the `timezone` connection argument if specified, or `UTC` if not.";
+    raise_warning(msg.str());
+    return as_double(tso.stamp);
+  }
+
+  // sec is time_point
+  auto sec = convert(
+      civil_second(tso.stamp.year, tso.stamp.month, tso.stamp.day, tso.stamp.hour, tso.stamp.min, tso.stamp.sec),
+      tz);
+  return sec.time_since_epoch().count() + (tso.stamp.fract / 1000000000.0);
+}
+
 double odbc_result::as_double(nanodbc::timestamp const& ts) {
   using namespace cctz;
   auto sec = convert(
@@ -700,6 +742,7 @@ std::vector<r_type> odbc_result::column_types(nanodbc::result const& r) {
       break;
     case SQL_TIMESTAMP:
     case SQL_TYPE_TIMESTAMP:
+    case SQL_SS_TIMESTAMPOFFSET:
       types.push_back(datetime_t);
       break;
     case SQL_CHAR:
@@ -715,6 +758,7 @@ std::vector<r_type> odbc_result::column_types(nanodbc::result const& r) {
     case SQL_BINARY:
     case SQL_VARBINARY:
     case SQL_LONGVARBINARY:
+    case SQL_DB2_XML:
       types.push_back(raw_t);
       break;
     default:
@@ -901,7 +945,7 @@ void odbc_result::assign_datetime(
   if (value.is_null(column)) {
     res = NA_REAL;
   } else {
-    auto ts = value.get<nanodbc::timestamp>(column);
+    auto ts = value.get<nanodbc::timestampoffset>(column);
     if (value.is_null(column)) {
       res = NA_REAL;
     } else {

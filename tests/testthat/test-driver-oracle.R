@@ -1,3 +1,5 @@
+skip_if_no_unixodbc()
+
 test_that("Oracle", {
   DBItest::make_context(
     odbc(),

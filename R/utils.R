@@ -198,6 +198,15 @@ parse_database_error <- function(msg) {
     cnd_msg[-1],
     right = TRUE
   )
+  # Limit error message length to something sane (#914)
+  max_len <- 5000
+  cnd_body <- sapply(cnd_body, FUN = function(x) {
+    if (nchar(x) > max_len) {
+      x <- substr(x, 0, max_len)
+      x <- paste0(x, "...")
+    }
+    x
+  }, USE.NAMES = FALSE)
 
   cnd_body <- contextualize_database_error(cnd_body)
 
@@ -361,7 +370,9 @@ locate_install_unixodbc <- function() {
     "/usr/lib/x86_64-linux-gnu",
     "/opt/homebrew/lib",
     "/opt/homebrew/etc",
-    "/opt/homebrew/opt/unixodbc/lib"
+    "/opt/homebrew/opt/unixodbc/lib",
+    "/opt/R/arm64/lib",
+    "/opt/R/x86_64/lib"
   )
 
   list.files(
@@ -375,7 +386,12 @@ system_safely <- function(x) {
   tryCatch(
     {
       unixodbc_prefix <- system(x, intern = TRUE, ignore.stderr = TRUE)
-      return(paste0(unixodbc_prefix, "/", libodbcinst_filename()))
+      candidates <- list.files(unixodbc_prefix,
+        pattern = libodbcinst_filename(), full.names = TRUE)
+      if (!length(candidates)) {
+        stop("Unable to locate unixodbc using odbc_config")
+      }
+      return(candidates[1])
     },
     error = function(e) {},
     warning = function(w) {}
@@ -383,11 +399,13 @@ system_safely <- function(x) {
   character()
 }
 
+# Returns a pattern to be used with
+# list.files( ..., pattern = ... ).
 libodbcinst_filename <- function() {
   if (is_macos()) {
-    "libodbcinst.dylib"
+    "libodbcinst.dylib|libodbcinst.a"
   } else {
-    "libodbcinst.so"
+    "libodbcinst.so|libodbcinst.a"
   }
 }
 

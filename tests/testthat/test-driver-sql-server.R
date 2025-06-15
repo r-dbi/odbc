@@ -1,3 +1,5 @@
+skip_if_no_unixodbc()
+
 test_that("SQLServer", {
   DBItest::make_context(
     odbc(),
@@ -372,6 +374,18 @@ test_that("DATETIME2 precision (#790)", {
     field.types = list("dtm" = "DATETIME", "dtm2" = "DATETIME2(6)"))
   res <- DBI::dbReadTable(con, tbl)
   expect_equal(as.POSIXlt(df[[2]])$sec, as.POSIXlt(res[[2]])$sec, tolerance = 1E-7)
+})
+
+test_that("DATETIMEOFFSET", {
+  con <- test_con("SQLSERVER")
+
+  df <- data.frame(tz_char = rep("2025-05-10 19:35:03.123 +02:00", 3), tz = rep("2025-05-10 19:35:03.123 +02:00", 3))
+
+  tbl <- local_table(con, "test_datetimeoffset", df,
+    field.types = list("tz_char" = "VARCHAR(50)", "tz" = "DATETIMEOFFSET"), overwrite = TRUE)
+  res <- DBI::dbReadTable(con, tbl)
+  expect_s3_class(res[[2]], "POSIXct")
+  expect_equal(as.double(res[[2]][1] - as.POSIXct(res[[1]][1]), units = "hours"), 2, tolerance = 1E-4)
 })
 
 test_that("package:odbc roundtrip test", {

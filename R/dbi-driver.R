@@ -42,6 +42,11 @@ setMethod("show", "OdbcDriver",
 #'   timezone that is _not_ 'UTC'. If the database is in your local timezone,
 #'   set this argument to [Sys.timezone()]. See [OlsonNames()] for a complete
 #'   list of available time zones on your system.
+#'   Note, if the datatype itself carries timezone information, as is the case,
+#'   for example, with SQL Server::DATETIMEOFFSET, `package:odbc` will make
+#'   an effort to respect the timezone declared therein.  In those cases,
+#'   this parameter is not used - the timezone that is part of the datatype
+#'   takes precedence.
 #' @param timezone_out The time zone returned to R. If you want to display
 #'   datetime values in the local timezone, set to [Sys.timezone()].
 #' @param encoding The text encoding used on the Database. If the database is
@@ -68,7 +73,7 @@ setMethod("show", "OdbcDriver",
 #'   the driver does not return a valid value, it can be set manually with this
 #'   parameter.
 #' @param attributes A list of connection attributes that are passed
-#'   prior to the connection being established. See \link{ConnectionAttributes}.
+#'   prior to the connection being established. See [ConnectionAttributes].
 #' @param interruptible Logical.  If `TRUE` calls to `SQLExecute` and
 #'   `SQLExecuteDirect` can be interrupted when the user sends SIGINT ( ctrl-c ).
 #'   Otherwise, they block.  Defaults to `TRUE` in interactive sessions, and
@@ -142,8 +147,9 @@ setMethod("show", "OdbcDriver",
 #'   driver to create a connection object.
 #' 3) *Interface with connections*: The resulting connection object can be
 #'   passed to various functions to retrieve information on database
-#'   structure ([dbListTables()]), iteratively develop queries ([dbSendQuery()],
-#'   [dbColumnInfo()]), and query data objects ([dbFetch()]).
+#'   structure ([DBI::dbListTables()][]), iteratively develop queries
+#'   ([DBI::dbSendQuery()], [DBI::dbColumnInfo()]), and query data objects
+#'   ([DBI::dbFetch()]).
 #'
 #' @aliases dbConnect odbc
 #'

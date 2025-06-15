@@ -258,7 +258,7 @@ setMethod("odbcConnectionColumns_", c("Microsoft SQL Server", "character"),
 #' @rdname SQLServer
 #' @usage NULL
 setMethod("odbcConnectionColumns_", c("Microsoft SQL Server", "SQL"),
-  function(conn, name, ...) {
-    odbcConnectionColumns_(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+  function(conn, name, ..., exact = FALSE) {
+    odbcConnectionColumns_(conn, dbUnquoteIdentifier(conn, name)[[1]], ..., exact = exact)
   }
 )

@@ -90,19 +90,18 @@
 \arguments{
 \item{object}{Any R object}
 
-\item{dbObj}{An object inheriting from \linkS4class{DBIObject},
-i.e. \linkS4class{DBIDriver}, \linkS4class{DBIConnection},
-or a \linkS4class{DBIResult}}
+\item{dbObj}{An object inheriting from \code{DBIObject}, i.e. \code{DBIDriver},
+\code{DBIConnection}, or a \code{DBIResult}.}
 
 \item{...}{Other arguments to methods.}
 
-\item{conn}{A \linkS4class{DBIConnection} object, as returned by
-\code{\link[DBI:dbConnect]{dbConnect()}}.}
+\item{conn}{A \link[DBI:DBIConnection-class]{DBI::DBIConnection} object,
+as returned by \code{\link[DBI:dbConnect]{dbConnect()}}.}
 
 \item{statement}{a character string containing SQL.}
 
-\item{params}{Query parameters to pass to \code{\link[=dbBind]{dbBind()}}.
-See \code{\link[=dbBind]{dbBind()}} for details.}
+\item{params}{Query parameters to pass to \code{\link[DBI:dbBind]{DBI::dbBind()}}.
+See \code{\link[DBI:dbBind]{DBI::dbBind()}} for details.}
 
 \item{immediate}{If \code{TRUE}, SQLExecDirect will be used instead of
 SQLPrepare, and the \code{params} argument is ignored}

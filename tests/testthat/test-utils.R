@@ -88,6 +88,33 @@ test_that("parse_database_error() works with messages from the wild", {
           <SQL> 'SELECT DISTINCT \"po_id\", ***CENSORED***'"
   expect_snapshot(error = TRUE, rethrow_database_error(msg, call = NULL))
 
+  skip_on_cran()
+  
+  # Really long error message can cause rethrow_database_error to take a really long time.
+  # This is due to cli::cli_abort, current version is 3.6.5 at the time of this writing. (#914)
+  err_msg_w_really_long_query <- paste(
+    c(
+      "nanodbc/nanodbc.cpp:1544",
+      "[Snowflake] SQL compilation error: error line 1 at position 92",
+      paste0(
+        "<SQL> 'SELECT STATECODE FROM AIR_QUALITY_DATA_UNITED_STATES.PUBLIC.AIR_QUALITY WHERE COUNTYCODE IN (",
+        paste(rep('1', 35000), collapse = ", "),
+        "'"
+      )
+    ),
+    collapse = "\n"
+  ) # Even if this really long error message gets passed to cli::cli_abort it should only take 10 - 20 sec to fail
+  expect_no_condition(parse_database_error(err_msg_w_really_long_query))
+  timing <- system.time({
+    expect_error(rethrow_database_error(err_msg_w_really_long_query, call = NULL))
+  })
+  expect_lt(
+    object = timing["elapsed"],
+    expected = 5,
+    label = "Runtime of `rethrow_database_error(err_msg_w_really_long_query)`",
+    expected.label = "5 seconds"
+  )
+  
   msg <- "`parse_database_error()` will not {be able to parse this}, but it should still be successfully rethrown as-is."
   expect_snapshot(error = TRUE, rethrow_database_error(msg, call = NULL))
 })
@@ -117,6 +144,7 @@ test_that("set_odbcsysini() works (#791)", {
 })
 
 test_that("check_row.names()", {
+  skip_if_no_unixodbc()
   con <- test_con("SQLITE")
 
   expect_snapshot(
@@ -126,6 +154,7 @@ test_that("check_row.names()", {
 })
 
 test_that("check_field.types()", {
+  skip_if_no_unixodbc()
   con <- test_con("SQLITE")
 
   expect_snapshot(
@@ -135,6 +164,7 @@ test_that("check_field.types()", {
 })
 
 test_that("check_attributes()", {
+  skip_if_no_unixodbc()
   expect_snapshot(
     error = TRUE,
     con <- test_con("SQLITE", attributes = list(boop = "bop"))
@@ -175,10 +205,13 @@ test_that("locate_install_unixodbc() returns reasonable values", {
   skip_if(!is_macos())
   skip_if(!has_unixodbc(), "odbcinst not available.")
 
+  # odbc_config / pkg-config cflags point to nonexistent files on CRAN (#903)
+  skip_on_cran()
+
   res <- locate_install_unixodbc()
 
   expect_true(file.exists(res[1]))
-  expect_true(grepl("\\.dylib", res[1]))
+  expect_true(grepl("(\\.dylib|\\.a)$", res[1]))
 })
 
 test_that("databricks() errors informatively when spark ini isn't writeable", {
@@ -202,7 +235,7 @@ test_that("driver_dir(...) returns reasonable values", {
 test_that("spark_simba_config() returns reasonable values", {
   simba_spark_ini <- "some/folder/simba.sparkodbc.ini"
   withr::local_envvar(SIMBASPARKINI = simba_spark_ini)
-  expect_equal(spark_simba_config(""), simba_spark_ini)
+  expect_equal(spark_simba_config("")$path, simba_spark_ini)
 })
 
 test_that("configure_unixodbc_simba() writes reasonable entries", {
