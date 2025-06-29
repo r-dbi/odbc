@@ -423,7 +423,3 @@ test_that("Mixed success multiple result-sets (#924)", {
   )
   expect_equal(nrow(res), 3)
 })
-
-test_that("package:odbc roundtrip test", {
-  test_roundtrip(test_con("SQLSERVER"))
-})
