@@ -391,3 +391,39 @@ test_that("DATETIMEOFFSET", {
 test_that("package:odbc roundtrip test", {
   test_roundtrip(test_con("SQLSERVER"))
 })
+
+test_that("Mixed success multiple result-sets (#924)", {
+  con <- test_con("SQLSERVER")
+
+  df <- data.frame(ID = LETTERS[1:10])
+
+  tbl <- local_table(con, "test_mixed_success_param_retrieval", df)
+  res <- DBI::dbGetQuery(
+      con,
+      "SELECT * FROM test_mixed_success_param_retrieval WHERE ID = ?",
+      params = list(c("A", "B", "C"))
+  )
+  expect_equal(nrow(res), 3)
+  res <- DBI::dbGetQuery(
+      con,
+      "SELECT * FROM test_mixed_success_param_retrieval WHERE ID = ?",
+      params = list(c("Z", "A", "B", "C"))
+  )
+  expect_equal(nrow(res), 3)
+  res <- DBI::dbGetQuery(
+      con,
+      "SELECT * FROM test_mixed_success_param_retrieval WHERE ID = ?",
+      params = list(c("A", "Z", "B", "C"))
+  )
+  expect_equal(nrow(res), 3)
+  res <- DBI::dbGetQuery(
+      con,
+      "SELECT * FROM test_mixed_success_param_retrieval WHERE ID = ?",
+      params = list(c("A", "B", "C", "Z"))
+  )
+  expect_equal(nrow(res), 3)
+})
+
+test_that("package:odbc roundtrip test", {
+  test_roundtrip(test_con("SQLSERVER"))
+})

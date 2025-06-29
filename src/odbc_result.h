@@ -179,6 +179,19 @@ private:
 
   std::vector<r_type> column_types(nanodbc::result const& r);
 
+  /// \brief Advance the `nanodbc::result` using `next_result`
+  /// until we encounter a non-trivial (sub-)result.
+  ///
+  /// This is a compound operation.  It will iterate through
+  /// all result sets in the `result`, via `next_result`, until we
+  /// encounted one that has both a non trivial set of
+  /// columns, as well as non trivial number of rows.  To establish the
+  /// second we call `result::next()`.  Therefore when returning to the
+  /// caller, the cursor has moved to the first row in the result
+  /// set.
+  /// \param r nanodbc::result Cursor is advanced in-situ.
+  bool nextResultSet(nanodbc::result& r);
+
   Rcpp::List result_to_dataframe(nanodbc::result& r, int n_max = -1);
 
   /// \brief Safely gets data from the given column of the current rowset.

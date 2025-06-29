@@ -770,6 +770,22 @@ std::vector<r_type> odbc_result::column_types(nanodbc::result const& r) {
   return types;
 }
 
+bool odbc_result::nextResultSet(nanodbc::result& r) {
+  while (r.next_result()) {
+    // MYSQL, when returning from a CALL [proc]
+    // returns a final result set containing a
+    // status flag.  Protect against trying to
+    // process/fetch this result set by checking
+    // the number of columns.  This is
+    // consistent with
+    // https://dev.mysql.com/doc/c-api/8.0/en/c-api-prepared-call-statements.html
+    if (r.columns() && r.next()) {
+      return true;
+    }
+  };
+  return false;
+}
+
 Rcpp::List odbc_result::result_to_dataframe(nanodbc::result& r, int n_max) {
 
   auto types = column_types(r);
@@ -780,7 +796,7 @@ Rcpp::List odbc_result::result_to_dataframe(nanodbc::result& r, int n_max) {
   int row = 0;
 
   if (rows_fetched_ == 0 && n > 0) {
-    complete_ = !r.next();
+    complete_ = !r.next() && !nextResultSet(r);
   }
 
   while (!complete_) {
@@ -836,22 +852,7 @@ Rcpp::List odbc_result::result_to_dataframe(nanodbc::result& r, int n_max) {
     if (rows_fetched_ % 16384 == 0) {
       Rcpp::checkUserInterrupt();
     }
-
-    if (complete_) {
-      while (r.next_result()) {
-        // MYSQL, when returning from a CALL [proc]
-        // returns a final result set containing a
-        // status flag.  Protect against trying to
-        // process/fetch this result set by checking
-        // the number of columns.  This is
-        // consistent with
-        // https://dev.mysql.com/doc/c-api/8.0/en/c-api-prepared-call-statements.html
-        if (r.columns() && r.next()) {
-          complete_ = false;
-          break;
-        }
-      };
-    }
+    complete_ = complete_ && !nextResultSet(r);
   } // while ( !complete_ )
 
   // Resize if needed
