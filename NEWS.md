@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Fix retrieving multiple result sets from parametrized queries
+  in cases when some parameters yield empty results (#927).
+
 * Fix hang when parsing exceptionally long database errors (#916).
 
 * DB2: Fix error when writing to temp tables (#910).
