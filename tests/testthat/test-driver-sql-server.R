@@ -458,7 +458,7 @@ test_that("Table-valued parameters", {
   expected <- cbind(data.frame("p0" = as.integer(100)), df.param,
     data.frame("p2" = "Lorem ipsum dolor sit amet", stringsAsFactors = FALSE))
   colnames(expected) <- c("p0", "col0", "col1", "col2", "col3", "col4", "p2")
-  expected$col1 <- as.integer64(expected$col1)
+  expected$col1 <- bit64::as.integer64(expected$col1)
   expect_identical(res, expected)
 
   res <- dbGetQuery(con, "{ CALL tvp_test2(?, ?, ?) }",
