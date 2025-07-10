@@ -453,7 +453,7 @@ test_that("Table-valued parameters", {
 
   df.param <- data.frame(int = 1:10, bigint=1:10, vrchr = rownames(mtcars)[1:10],
     vrchr2 = as.character(iris$Species[1:10]), vrchr3 = LETTERS[1:10], stringsAsFactors = FALSE)
-  res <- dbGetQuery(conn, "{ CALL tvp_test(?, ?, ?) }", params = list(100, df.param, "Lorem ipsum dolor sit amet"))
+  res <- dbGetQuery(con, "{ CALL tvp_test(?, ?, ?) }", params = list(100, df.param, "Lorem ipsum dolor sit amet"))
 
   expected <- cbind(data.frame("p0" = as.integer(100)), df.param,
     data.frame("p2" = "Lorem ipsum dolor sit amet", stringsAsFactors = FALSE))
@@ -461,7 +461,7 @@ test_that("Table-valued parameters", {
   expected$col1 <- as.integer64(expected$col1)
   expect_identical(res, expected)
 
-  res <- dbGetQuery(conn, "{ CALL tvp_test2(?, ?, ?) }",
+  res <- dbGetQuery(con, "{ CALL tvp_test2(?, ?, ?) }",
     params = list(df.param, 100, "Lorem ipsum dolor sit amet"))
   expect_identical(res, expected)
 })
