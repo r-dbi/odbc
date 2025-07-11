@@ -19,6 +19,9 @@
   multiple named connections (via the new `connection_name` argument), and
   generally improves compatibility with the Snowflake CLI and Python ecosystem.
 
+* `databricks()` now detects service principal credentials when running on Posit
+  Connect (@tnederlof, #930)
+
 # odbc 1.6.4
 
 * Fix writing of [R] date/time values that have integer storage. (#952)

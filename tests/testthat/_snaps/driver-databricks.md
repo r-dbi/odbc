@@ -58,7 +58,7 @@
       Error in `dbConnect()`:
       ! `httpPath` must be a single string or `NULL`, not the number 1.
 
-# we hint viewer-based credentials on Connect
+# we hint viewer-based and service principal credentials on Connect
 
     Code
       databricks_args(workspace = "workspace", httpPath = "path", driver = "driver")
@@ -66,5 +66,5 @@
       Error in `DBI::dbConnect()`:
       ! Failed to detect ambient Databricks credentials.
       i Supply `uid` and `pwd` to authenticate manually.
-      i Or consider enabling Posit Connect's Databricks integration for viewer-based credentials. See <https://docs.posit.co/connect/user/oauth-integrations/#adding-oauth-integrations-to-deployed-content> for details.
+      i Or consider enabling Posit Connect's Databricks integration.  For viewer-based credentials, see <https://docs.posit.co/connect/user/oauth-integrations/#viewer-oauth-integrations> for details.  For service principal credentials, see <https://docs.posit.co/connect/user/oauth-integrations/#service-account-oauth-integrations> for details.
 

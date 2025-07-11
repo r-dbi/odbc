@@ -57,9 +57,9 @@ implements a subset of the \href{https://docs.databricks.com/en/dev-tools/auth.h
 model, with support for personal access tokens, OAuth machine-to-machine
 credentials, and OAuth user-to-machine credentials supplied via Posit
 Workbench or the Databricks CLI on desktop. It can also detect viewer-based
-credentials on Posit Connect if the \pkg{connectcreds} package is
-installed. All of these credentials are detected automatically if present
-using \href{https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication}{standard environment variables}.
+and service principal credentials on Posit Connect if the \pkg{connectcreds}
+package is installed. All of these credentials are detected automatically if
+present using \href{https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication}{standard environment variables}.
 
 In addition, on macOS platforms, the \code{dbConnect()} method will check
 for irregularities with how the driver is configured,
@@ -73,12 +73,13 @@ DBI::dbConnect(
   httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
 )
 
-# Use credentials from the viewer (when possible) in a Shiny app
-# deployed to Posit Connect.
+# Use credentials from the viewer or a service principal (when possible) in
+# a Shiny app deployed to Posit Connect.
 library(connectcreds)
 server <- function(input, output, session) {
   conn <- DBI::dbConnect(
     odbc::databricks(),
+    workspace = "https://example.cloud.databricks.com",
     httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
   )
 }

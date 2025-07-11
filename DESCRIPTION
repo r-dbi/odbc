@@ -31,7 +31,7 @@ Imports:
     rlang (>= 1.1.0),
     vctrs
 Suggests:
-    connectcreds,
+    connectcreds (>= 0.2.0),
     covr,
     DBItest,
     httr2,
