@@ -149,7 +149,9 @@ databricks_args <- function(
               For viewer-based credentials. See {.url \
               https://docs.posit.co/connect/user/oauth-integrations/#viewer-oauth-integrations}
               for details. \
-              For service principal credentials, see {.url https://docs.posit.co/connect/user/oauth-integrations/#service-account-oauth-integrations} for details."
+              For service principal credentials, see {.url \
+              https://docs.posit.co/connect/user/oauth-integrations/#service-account-oauth-integrations}
+              for details."
       )
     }
     cli::cli_abort(msg, call = quote(DBI::dbConnect()))
