@@ -14,7 +14,7 @@ NULL
 #' implements a subset of the [Databricks client unified authentication](https://docs.databricks.com/en/dev-tools/auth.html#databricks-client-unified-authentication)
 #' model, with support for personal access tokens, OAuth machine-to-machine
 #' credentials, and OAuth user-to-machine credentials supplied via Posit
-#' Workbench or the Databricks CLI on desktop. It can also detect viewer-based
+#' Workbench or the Databricks CLI on desktop. It can also detect viewer-based and service principal
 #' credentials on Posit Connect if the \pkg{connectcreds} package is
 #' installed. All of these credentials are detected automatically if present
 #' using [standard environment variables](https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication).
@@ -49,12 +49,13 @@ NULL
 #'   httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
 #' )
 #'
-#' # Use credentials from the viewer (when possible) in a Shiny app
+#' # Use credentials from the viewer (when possible) or service principal (when possible) in a Shiny app
 #' # deployed to Posit Connect.
 #' library(connectcreds)
 #' server <- function(input, output, session) {
 #'   conn <- DBI::dbConnect(
 #'     odbc::databricks(),
+#'     workspace = "https://example.cloud.databricks.com",
 #'     httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
 #'   )
 #' }
@@ -70,20 +71,29 @@ setClass("DatabricksOdbcDriver", contains = "OdbcDriver")
 
 #' @rdname databricks
 #' @export
-setMethod("dbConnect", "DatabricksOdbcDriver",
-  function(drv,
-           httpPath,
-           workspace = Sys.getenv("DATABRICKS_HOST"),
-           useNativeQuery = TRUE,
-           driver = NULL,
-           HTTPPath,
-           uid = NULL,
-           pwd = NULL,
-           ...) {
+setMethod(
+  "dbConnect",
+  "DatabricksOdbcDriver",
+  function(
+    drv,
+    httpPath,
+    workspace = Sys.getenv("DATABRICKS_HOST"),
+    useNativeQuery = TRUE,
+    driver = NULL,
+    HTTPPath,
+    uid = NULL,
+    pwd = NULL,
+    ...
+  ) {
     call <- caller_env()
     # For backward compatibility with RStudio connection string
     http_path <- check_exclusive(httpPath, HTTPPath, .call = call)
-    check_string(get(http_path), allow_null = TRUE, arg = http_path, call = call)
+    check_string(
+      get(http_path),
+      allow_null = TRUE,
+      arg = http_path,
+      call = call
+    )
     check_string(workspace, allow_null = TRUE, call = call)
     check_bool(useNativeQuery, call = call)
     check_string(driver, allow_null = TRUE, call = call)
@@ -100,19 +110,20 @@ setMethod("dbConnect", "DatabricksOdbcDriver",
       ...
     )
     # Perform some sanity checks on MacOS
-    configure_simba(spark_simba_config(args$driver),
-      action = "modify")
+    configure_simba(spark_simba_config(args$driver), action = "modify")
     inject(dbConnect(odbc(), !!!args))
   }
 )
 
-databricks_args <- function(httpPath,
-                            workspace = Sys.getenv("DATABRICKS_HOST"),
-                            useNativeQuery = FALSE,
-                            driver = NULL,
-                            uid = NULL,
-                            pwd = NULL,
-                            ...) {
+databricks_args <- function(
+  httpPath,
+  workspace = Sys.getenv("DATABRICKS_HOST"),
+  useNativeQuery = FALSE,
+  driver = NULL,
+  uid = NULL,
+  pwd = NULL,
+  ...
+) {
   host <- databricks_host(workspace)
 
   args <- databricks_default_args(
@@ -134,9 +145,12 @@ databricks_args <- function(httpPath,
     if (running_on_connect()) {
       msg <- c(
         msg,
-        "i" = "Or consider enabling Posit Connect's Databricks integration \
-              for viewer-based credentials. See {.url \
-              https://docs.posit.co/connect/user/oauth-integrations/#adding-oauth-integrations-to-deployed-content}
+        "i" = "Or consider enabling Posit Connect's Databricks integration. \
+              For viewer-based credentials. See {.url \
+              https://docs.posit.co/connect/user/oauth-integrations/#viewer-oauth-integrations}
+              for details. \
+              For service principal credentials, see {.url \
+              https://docs.posit.co/connect/user/oauth-integrations/#service-account-oauth-integrations}
               for details."
       )
     }
@@ -160,7 +174,6 @@ databricks_default_args <- function(driver, host, httpPath, useNativeQuery) {
     ssl = 1
   )
 }
-
 
 
 # Returns a sensible driver name even if odbc.ini and odbcinst.ini do not
@@ -218,8 +231,22 @@ databricks_user_agent <- function() {
 databricks_auth_args <- function(host, uid = NULL, pwd = NULL) {
   # Detect viewer-based credentials from Posit Connect.
   workspace <- paste0("https://", host)
-  if (is_installed("connectcreds") && connectcreds::has_viewer_token(workspace)) {
+  if (
+    is_installed("connectcreds") && connectcreds::has_viewer_token(workspace)
+  ) {
     token <- connectcreds::connect_viewer_token(workspace)
+    return(list(
+      authMech = 11,
+      auth_flow = 0,
+      auth_accesstoken = token$access_token
+    ))
+  }
+
+  if (
+    is_installed("connectcreds") &&
+      connectcreds::has_service_account_token(workspace)
+  ) {
+    token <- connectcreds::connect_service_account_token(workspace)
     return(list(
       authMech = 11,
       auth_flow = 0,
@@ -358,7 +385,8 @@ spark_simba_config <- function(driver) {
     path = list.files(
       common_dirs,
       pattern = "simba\\.sparkodbc\\.ini$",
-      full.names = TRUE),
+      full.names = TRUE
+    ),
     url = URL
   ))
 }
