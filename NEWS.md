@@ -16,6 +16,8 @@
 
 * Databricks: Fix repeated calls to `dbConnect` (#901).
 
+* `databricks()` now detects service principal credentials when running on Posit Connect (@tnederlof, #930)
+
 # odbc 1.6.1
 
 * odbc will now automatically find statically built installations of

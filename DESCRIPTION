@@ -29,7 +29,7 @@ Imports:
     Rcpp (>= 0.12.11),
     rlang (>= 1.1.0)
 Suggests:
-    connectcreds,
+    connectcreds (>= 0.1.0.9000),
     covr,
     DBItest,
     httr2,
@@ -90,3 +90,5 @@ Collate:
     'utils.R'
     'zzz.R'
 VignetteBuilder: knitr
+Remotes:
+    posit-dev/connectcreds
