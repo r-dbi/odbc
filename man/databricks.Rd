@@ -22,8 +22,8 @@ databricks()
 )
 }
 \arguments{
-\item{drv}{An object that inherits from \link[DBI:DBIDriver-class]{DBI::DBIDriver},
-or an existing \link[DBI:DBIConnection-class]{DBI::DBIConnection}
+\item{drv}{an object that inherits from \linkS4class{DBIDriver},
+or an existing \linkS4class{DBIConnection}
 object (in order to clone an existing connection).}
 
 \item{httpPath, HTTPPath}{To query a cluster, use the HTTP Path value found
@@ -56,7 +56,7 @@ In particular, the custom \code{dbConnect()} method for the Databricks ODBC driv
 implements a subset of the \href{https://docs.databricks.com/en/dev-tools/auth.html#databricks-client-unified-authentication}{Databricks client unified authentication}
 model, with support for personal access tokens, OAuth machine-to-machine
 credentials, and OAuth user-to-machine credentials supplied via Posit
-Workbench or the Databricks CLI on desktop. It can also detect viewer-based
+Workbench or the Databricks CLI on desktop. It can also detect viewer-based and service principal
 credentials on Posit Connect if the \pkg{connectcreds} package is
 installed. All of these credentials are detected automatically if present
 using \href{https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication}{standard environment variables}.
@@ -73,12 +73,13 @@ DBI::dbConnect(
   httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
 )
 
-# Use credentials from the viewer (when possible) in a Shiny app
+# Use credentials from the viewer (when possible) or service principal (when possible) in a Shiny app
 # deployed to Posit Connect.
 library(connectcreds)
 server <- function(input, output, session) {
   conn <- DBI::dbConnect(
     odbc::databricks(),
+    workspace = "https://example.cloud.databricks.com",
     httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
   )
 }
