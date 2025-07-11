@@ -15,5 +15,6 @@ typedef enum {
   string_t,
   ustring_t,
   raw_t,
+  dataframe_t,
 } r_type;
 }

@@ -423,3 +423,45 @@ test_that("Mixed success multiple result-sets (#924)", {
   )
   expect_equal(nrow(res), 3)
 })
+
+test_that("Table-valued parameters", {
+  con <- test_con("SQLSERVER")
+  dbExecute(con, "CREATE TYPE tvp_param AS TABLE (col0 INT, col1 BIGINT, col2 VARCHAR(MAX), col3 VARCHAR(MAX), col4 VARCHAR(MAX));")
+  # tvp is second argument to sproc
+  dbExecute(con, "CREATE PROCEDURE tvp_test(@p0 INT, @p1 tvp_param READONLY, @p2 NVARCHAR(MAX)) AS
+                  BEGIN
+                    SET NOCOUNT ON;
+                    SELECT @p0 as p0, col0, col1, col2, col3, col4, @p2 as p2
+                    FROM @p1
+                    ORDER BY col0;
+                    RETURN 0;
+                  END")
+  # a second sproc that takes the tvp as the first argument
+  dbExecute(con, "CREATE PROCEDURE tvp_test2(@p0 tvp_param READONLY, @p1 INT, @p2 NVARCHAR(MAX)) AS
+                  BEGIN
+                    SET NOCOUNT ON;
+                    SELECT @p1 as p0, col0, col1, col2, col3, col4, @p2 as p2
+                    FROM @p0
+                    ORDER BY col0;
+                    RETURN 0;
+                  END")
+  on.exit({
+    dbExecute(con, "DROP PROCEDURE tvp_test")
+    dbExecute(con, "DROP PROCEDURE tvp_test2")
+    dbExecute(con, "DROP TYPE tvp_param")
+  })
+
+  df.param <- data.frame(int = 1:10, bigint=1:10, vrchr = rownames(mtcars)[1:10],
+    vrchr2 = as.character(iris$Species[1:10]), vrchr3 = LETTERS[1:10], stringsAsFactors = FALSE)
+  res <- dbGetQuery(con, "{ CALL tvp_test(?, ?, ?) }", params = list(100, df.param, "Lorem ipsum dolor sit amet"))
+
+  expected <- cbind(data.frame("p0" = as.integer(100)), df.param,
+    data.frame("p2" = "Lorem ipsum dolor sit amet", stringsAsFactors = FALSE))
+  colnames(expected) <- c("p0", "col0", "col1", "col2", "col3", "col4", "p2")
+  expected$col1 <- bit64::as.integer64(expected$col1)
+  expect_identical(res, expected)
+
+  res <- dbGetQuery(con, "{ CALL tvp_test2(?, ?, ?) }",
+    params = list(df.param, 100, "Lorem ipsum dolor sit amet"))
+  expect_identical(res, expected)
+})
