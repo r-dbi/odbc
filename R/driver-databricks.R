@@ -55,6 +55,7 @@ NULL
 #' server <- function(input, output, session) {
 #'   conn <- DBI::dbConnect(
 #'     odbc::databricks(),
+#'     workspace = "https://example.cloud.databricks.com",
 #'     httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
 #'   )
 #' }
