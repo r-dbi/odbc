@@ -648,6 +648,19 @@ public:
         const std::vector<unsigned long>& size,
         const std::vector<short>& scale);
 
+    /// \brief Returns the number of columns in the table valued parameter.
+    /// \throws database_error
+    short parameters() const;
+
+    /// \brief Returns parameter size for indicated column in the TVP.
+    unsigned long parameter_size(short param_index) const;
+
+    /// \brief Returns parameter scale for indicated column in the TVP.
+    short parameter_scale(short param_index) const;
+
+    /// \brief Returns parameter type for indicated column in the TVP.
+    short parameter_type(short param_index) const;
+
 private:
     class table_valued_parameter_impl;
     friend class statement;

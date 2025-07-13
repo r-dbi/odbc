@@ -42,6 +42,14 @@ private:
 
 class odbc_result {
 public:
+  struct param_data {
+    std::map<short, std::vector<std::string>> strings_;
+    std::map<short, std::vector<std::vector<uint8_t>>> raws_;
+    std::map<short, std::vector<nanodbc::time>> times_;
+    std::map<short, std::vector<nanodbc::timestamp>> timestamps_;
+    std::map<short, std::vector<nanodbc::date>> dates_;
+    std::map<short, std::vector<uint8_t>> nulls_;
+  };
   odbc_result(
       std::shared_ptr<odbc_connection> c, std::string sql, bool immediate);
   std::shared_ptr<odbc_connection> connection() const;
@@ -76,12 +84,8 @@ private:
   std::shared_ptr<Iconv> output_encoder_;
   std::shared_ptr<Iconv> column_name_encoder_;
 
-  std::map<short, std::vector<std::string>> strings_;
-  std::map<short, std::vector<std::vector<uint8_t>>> raws_;
-  std::map<short, std::vector<nanodbc::time>> times_;
-  std::map<short, std::vector<nanodbc::timestamp>> timestamps_;
-  std::map<short, std::vector<nanodbc::date>> dates_;
-  std::map<short, std::vector<uint8_t>> nulls_;
+  param_data buffers_;
+  std::map<short, param_data> tvp_buffers_;
 
   void clear_buffers();
   void unbind_if_needed();
@@ -91,49 +95,102 @@ private:
   // and call execute.
   void execute();
 
+  template<typename T>
   void bind_columns(
-      nanodbc::statement& statement,
+      T& obj,
       r_type type,
       Rcpp::List const& data,
       short column,
       size_t start,
-      size_t size);
+      size_t size,
+      param_data& buffers);
 
+  template<typename T>
   void bind_logical(
-      nanodbc::statement& statement,
+      T& obj,
       Rcpp::List const& data,
       short column,
       size_t start,
-      size_t size);
+      size_t size,
+      param_data& buffers);
 
+  template<typename T>
   void bind_integer(
-      nanodbc::statement& statement,
+      T& obj,
       Rcpp::List const& data,
       short column,
       size_t start,
-      size_t size);
+      size_t size,
+      param_data& buffers);
 
   // We cannot use a sentinel for doubles becuase NaN != NaN for all values
   // of NaN, even if the bits are the same.
+  template<typename T>
   void bind_double(
-      nanodbc::statement& statement,
+      T& obj,
       Rcpp::List const& data,
       short column,
       size_t start,
-      size_t size);
+      size_t size,
+      param_data& buffers);
 
+  template<typename T>
   void bind_string(
-      nanodbc::statement& statement,
+      T& obj,
       Rcpp::List const& data,
       short column,
       size_t start,
-      size_t size);
+      size_t size,
+      param_data& buffers);
+
+  template<typename T>
   void bind_raw(
-      nanodbc::statement& statement,
+      T& obj,
       Rcpp::List const& data,
       short column,
       size_t start,
-      size_t size);
+      size_t size,
+      param_data& buffers);
+
+  template<typename T>
+  void bind_datetime(
+      T& obj,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size,
+      param_data& buffers);
+
+  template<typename T>
+  void bind_date(
+      T& obj,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size,
+      param_data& buffers);
+
+  template<typename T>
+  void bind_time(
+      T& obj,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size,
+      param_data& buffers);
+
+  // When binding data.frames to
+  // table valued parameters the `start` and `size`
+  // arguments are ignored.  Instead, we bind each
+  // column in a single SQLBindParameter operation.
+  template<typename T>
+  void bind_df(
+      T& obj,
+      Rcpp::List const& data,
+      short column,
+      size_t start,
+      size_t size,
+      param_data& buffers);
 
   nanodbc::timestamp as_timestamp(double value, unsigned long long factor, unsigned long long pad);
 
@@ -141,25 +198,6 @@ private:
 
   nanodbc::time as_time(double value);
 
-  void bind_datetime(
-      nanodbc::statement& statement,
-      Rcpp::List const& data,
-      short column,
-      size_t start,
-      size_t size);
-  void bind_date(
-      nanodbc::statement& statement,
-      Rcpp::List const& data,
-      short column,
-      size_t start,
-      size_t size);
-
-  void bind_time(
-      nanodbc::statement& statement,
-      Rcpp::List const& data,
-      short column,
-      size_t start,
-      size_t size);
   std::vector<std::string> column_names(nanodbc::result const& r);
 
   double as_double(nanodbc::timestampoffset const& ts);
@@ -245,5 +283,19 @@ private:
 
   void
   assign_raw(Rcpp::List& out, size_t row, short column, nanodbc::result& value);
+
+  /// \brief Helper method to infer the parameter length from a list
+  /// of one or more parameters.
+  ///
+  /// Historically, we have used the length of the first parameter.  However
+  /// with the introduction of TVPs, we can no longer do this, as in the event
+  /// of a `data.frame` parameter, `Rf_length` is actually the number of columns.
+  /// In addition, when the list of parameters includes a `data.frame`/TVP, the
+  /// "number of rows" must be equal to one.
+  ///
+  /// To retain the historical behavior, we return the length of the first non
+  /// `data.frame` parameter.
+  /// \param x List of query parameters
+  size_t get_parameter_rows(Rcpp::List const& x);
 };
 } // namespace odbc
