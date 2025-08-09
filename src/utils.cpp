@@ -5,6 +5,14 @@
 #if !defined(_WIN32) && !defined(_WIN64)
 #include <signal.h>
 #endif
+
+#ifndef SQL_DRIVER_CONN_ATTR_BASE
+    #define SQL_DRIVER_CONN_ATTR_BASE   0x00004000
+#endif
+#define SQL_SF_CONN_ATTR_BASE (SQL_DRIVER_CONN_ATTR_BASE + 0x53)
+#define SQL_SF_CONN_ATTR_PRIV_KEY (SQL_SF_CONN_ATTR_BASE + 1)
+#define SQL_SF_CONN_ATTR_PRIV_KEY_CONTENT (SQL_SF_CONN_ATTR_BASE + 3)
+#define SQL_SF_CONN_ATTR_PRIV_KEY_PASSWORD (SQL_SF_CONN_ATTR_BASE + 4)
 namespace odbc {
 namespace utils {
 
@@ -34,19 +42,42 @@ namespace utils {
       attributes.push_back(nanodbc::connection::attribute(
           SQL_ATTR_LOGIN_TIMEOUT, SQL_IS_UINTEGER, (void*)(std::intptr_t)timeout));
     }
-    std::shared_ptr< void > buffer;
     if ( r_attributes_.isNotNull() )
     {
       Rcpp::List r_attributes( r_attributes_ );
-      if ( r_attributes.containsElementNamed( "azure_token" ) &&
-          !Rf_isNull(r_attributes["azure_token"]) )
+      if (r_attributes.containsElementNamed( "azure_token" ) &&
+          !Rf_isNull(r_attributes["azure_token"]))
       {
         std::string azure_token =
           Rcpp::as<std::string>(r_attributes["azure_token"]);
         std::shared_ptr< void > buffer = serialize_azure_token( azure_token );
         attributes.push_back(nanodbc::connection::attribute(
               SQL_COPT_SS_ACCESS_TOKEN, SQL_IS_POINTER, buffer.get()));
-        buffer_context.push_back( buffer );
+        buffer_context.push_back(buffer);
+      }
+      if (r_attributes.containsElementNamed( "sf_private_key" ) &&
+          !Rf_isNull(r_attributes["sf_private_key"]))
+      {
+        std::shared_ptr<std::string> priv_key =
+          std::make_shared<std::string>(Rcpp::as<std::string>(r_attributes["sf_private_key"]));
+        std::shared_ptr< void > buffer(malloc(priv_key->size()), std::free);
+        // Copy null terminator as well
+        std::memcpy(buffer.get(), priv_key->c_str(), priv_key->size() + 1);
+        attributes.push_back(nanodbc::connection::attribute(
+               SQL_SF_CONN_ATTR_PRIV_KEY_CONTENT, SQL_NTS, buffer.get()));
+        buffer_context.push_back(buffer);
+      }
+      if ( r_attributes.containsElementNamed( "sf_private_key_password" ) &&
+          !Rf_isNull(r_attributes["sf_private_key_password"]) )
+      {
+        std::shared_ptr<std::string> key_pass =
+          std::make_shared<std::string>(Rcpp::as<std::string>(r_attributes["sf_private_key_password"]));
+        std::shared_ptr< void > buffer(malloc(key_pass->size()), std::free);
+        // Copy null terminator as well
+        std::memcpy(buffer.get(), key_pass->c_str(), key_pass->size() + 1);
+        attributes.push_back(nanodbc::connection::attribute(
+               SQL_SF_CONN_ATTR_PRIV_KEY_PASSWORD, SQL_NTS, buffer.get()));
+        buffer_context.push_back(buffer);
       }
     }
   }
