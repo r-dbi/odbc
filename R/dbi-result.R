@@ -128,15 +128,52 @@ setMethod("dbGetRowsAffected", "OdbcResult",
   }
 )
 
+#' @param param_description A data.frame with per-parameter attribute
+#' overrides.  Argument is optional; if used it must have columns:
+#' * param_index Index of parameter in query ( beginning with 1 ).
+#' * data_type Integer corresponding to the parameter SQL Data Type.
+#'   See \code{\link{ODBC_TYPE}}.
+#' * column_size Size of parameter.
+#' * decimal_digits Either precision or the scale of the parameter
+#'   depending on type.
+#'
+#' For more information see the [ODBC SQLBindParam documentation](https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlbindparameter-function?view=sql-server-ver16)
+#'
+#' @examples
+#' \dontrun{
+#' library(odbc)
+#' # Writing UNICODE into a VARCHAR
+#' # column with SQL server
+#' DBI::dbRemoveTable(conn, "#tmp")
+#' dbExecute(conn, "CREATE TABLE #tmp (col1 VARCHAR(50) COLLATE Latin1_General_100_CI_AI_SC_UTF8);")
+#' res <- dbSendQuery(conn, "INSERT INTO #tmp SELECT ? COLLATE Latin1_General_100_CI_AI_SC_UTF8")
+#' description <- data.frame(param_index = 1, data_type = ODBC_TYPE("WVARCHAR"),
+#'   column_size = 5, decimal_digits = NA_integer_)
+#' dbBind(res, params = list("\u2915"), param_description = description)
+#' dbClearResult(res)
+#' DBI::dbReadTable(conn, "#tmp")
+#' }
 #' @rdname OdbcResult
 #' @inheritParams DBI::dbBind
 #' @inheritParams DBI-tables
 #' @export
 setMethod("dbBind", "OdbcResult",
-  function(res, params, ..., batch_rows = getOption("odbc.batch_rows", NA)) {
+  function(res, params, ...,
+           param_description = data.frame(),
+           batch_rows = getOption("odbc.batch_rows", NA)) {
     params <- as.list(params)
     if (length(params) == 0) {
       return(invisible(res))
+    }
+
+    if (nrow(param_description)) {
+      if (!all(c("param_index", "data_type", "column_size", "decimal_digits")
+        %in% colnames(param_description))) {
+        cli::cli_abort(
+          "param_description data.frame does not have necessary columns."
+        )
+      }
+      result_describe_parameters(res@ptr, param_description)
     }
 
     if (is.na(batch_rows)) {
