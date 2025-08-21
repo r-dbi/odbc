@@ -144,7 +144,7 @@
     Condition
       Error in `dbConnect()`:
       ! `attributes` does not support the connection attribute "boop".
-      i Allowed connection attribute is "azure_token".
+      i Allowed connection attributes are "azure_token", "sf_private_key", and "sf_private_key_password".
 
 ---
 
@@ -153,7 +153,7 @@
     Condition
       Error in `dbConnect()`:
       ! `attributes` does not support the connection attributes "boop" and "beep".
-      i Allowed connection attribute is "azure_token".
+      i Allowed connection attributes are "azure_token", "sf_private_key", and "sf_private_key_password".
 
 # configure_simba() errors informatively on failure to install unixODBC
 
