@@ -199,9 +199,8 @@ needs_quoting <- function(x) {
 #'   with limited support away from the OEM Microsoft driver.
 #' * `sf_private_key`: This parameter is specific to establishing a connection
 #'   to `snowflake` and is understood by both OEM, as well as `Posit`
-#'   pro drivers.  Argument hould be a string (scalar); in particular the
-#'   contents of your BASE64 encoded private key (file).  String should
-#'   include newline characters as well as key header and footer.  Note,
+#'   pro drivers.  Argument should be a string (scalar); in particular a
+#'   PEM-encoded private key.  Note,
 #'   if using private key authentication, the `authenticator` connection
 #'   string attribute must be set to `SNOWFLAKE_JWT`.
 #'   Using this *connection* attribute is an alternative to using the

@@ -55,7 +55,7 @@ namespace utils {
               SQL_COPT_SS_ACCESS_TOKEN, SQL_IS_POINTER, buffer.get()));
         buffer_context.push_back(buffer);
       }
-      if (r_attributes.containsElementNamed( "sf_private_key" ) &&
+      if (r_attributes.containsElementNamed("sf_private_key") &&
           !Rf_isNull(r_attributes["sf_private_key"]))
       {
         std::shared_ptr<std::string> priv_key =
@@ -67,8 +67,8 @@ namespace utils {
                SQL_SF_CONN_ATTR_PRIV_KEY_CONTENT, SQL_NTS, buffer.get()));
         buffer_context.push_back(buffer);
       }
-      if ( r_attributes.containsElementNamed( "sf_private_key_password" ) &&
-          !Rf_isNull(r_attributes["sf_private_key_password"]) )
+      if (r_attributes.containsElementNamed("sf_private_key_password") &&
+          !Rf_isNull(r_attributes["sf_private_key_password"]))
       {
         std::shared_ptr<std::string> key_pass =
           std::make_shared<std::string>(Rcpp::as<std::string>(r_attributes["sf_private_key_password"]));
