@@ -451,7 +451,7 @@ test_that("Table-valued parameters", {
     dbExecute(con, "DROP TYPE tvp_param")
   })
 
-  df.param <- data.frame(int = 1:10, bigint=1:10, vrchr = rownames(mtcars)[1:10],
+  df.param <- data.frame(int = 1:10, bigint = 1:10, vrchr = rownames(mtcars)[1:10],
     vrchr2 = as.character(iris$Species[1:10]), vrchr3 = LETTERS[1:10], stringsAsFactors = FALSE)
   res <- dbGetQuery(con, "{ CALL tvp_test(?, ?, ?) }", params = list(100, df.param, "Lorem ipsum dolor sit amet"))
 

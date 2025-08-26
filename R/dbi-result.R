@@ -145,8 +145,8 @@ setMethod("dbBind", "OdbcResult",
       # * The `batch_rows` parameter is either unset or equal to one.
       # * All non-tvp parameters are of length 1.
       if (!is.na(batch_rows) && batch_rows > 1) {
-        cli::cli_warn("When passing data.frame(s) as query parameters,
-                      the `batch_rows` parameter must be set to 1")
+        cli::cli_warn(c("Since some parameters are data frames, {.arg batch_rows} will be overwritten to `1`.", 
+                       "Set {.code batch_rows = 1} to quiet this warning."))
       }
       batch_rows <- 1
       paramLengths <- sapply(params[!paramDfs], length)
