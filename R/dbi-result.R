@@ -155,9 +155,7 @@ setMethod("dbBind", "OdbcResult",
         cli::cli_abort("When mixing data.frame(s) with other parameter types,
                        all non-df parameters must be of length one")
       }
-    }
-
-    if (is.na(batch_rows)) {
+    } else if (is.na(batch_rows)) {
       batch_rows <- length(params[[1]])
     }
 
