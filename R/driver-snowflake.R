@@ -290,7 +290,7 @@ snowflake_simba_config <- function(driver) {
   )
   return(list(
     path = list.files(
-      simba_config_dirs(driver),
+      common_dirs,
       pattern = "snowflake(odbc)?\\.ini$",
       full.names = TRUE),
     url = URL
