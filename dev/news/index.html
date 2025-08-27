@@ -39,7 +39,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="odbc-development-version">odbc (development version)<a class="anchor" aria-label="anchor" href="#odbc-development-version"></a></h2>
-<ul><li><p>Fix retrieving multiple result sets from parametrized queries in cases when some parameters yield empty results (<a href="https://github.com/r-dbi/odbc/issues/927" class="external-link">#927</a>).</p></li>
+<ul><li><p>SQL Server: You can now bind <code>data.frames</code> to table valued parameters of stored procedures (<a href="https://github.com/r-dbi/odbc/issues/928" class="external-link">#928</a>).</p></li>
+<li><p>Snowflake: Add <code>sf_private_key</code> and <code>sf_private_key_password</code> connection attributes to allow users to pass the contents of the PEM formatted private key to the driver directly from memory (<a href="https://github.com/r-dbi/odbc/issues/933" class="external-link">#933</a>).</p></li>
+<li><p>Fix retrieving multiple result sets from parametrized queries in cases when some parameters yield empty results (<a href="https://github.com/r-dbi/odbc/issues/927" class="external-link">#927</a>).</p></li>
 <li><p>Fix hang when parsing exceptionally long database errors (<a href="https://github.com/r-dbi/odbc/issues/916" class="external-link">#916</a>).</p></li>
 <li><p>DB2: Fix error when writing to temp tables (<a href="https://github.com/r-dbi/odbc/issues/910" class="external-link">#910</a>).</p></li>
 <li><p>DB2: Add support for <code>DB2_XML</code> (<a href="https://github.com/r-dbi/odbc/issues/913" class="external-link">#913</a>).</p></li>
