@@ -73,7 +73,7 @@ Copied over from odbc-connection to avoid S4 dispatch NOTEs.
 }
 }
 \details{
-Note on binding \ref{https://learn.microsoft.com/en-us/sql/relational-databases/tables/use-table-valued-parameters-database-engine}{TVPs}:
+Note on binding \href{https://learn.microsoft.com/en-us/sql/relational-databases/tables/use-table-valued-parameters-database-engine}{TVPs}:
 You can bind \code{data.frame}s to SQL Server TVPs when executing stored procedures with the following caveats:
 \itemize{
 \item All non-df parameters must be of length 1; and
