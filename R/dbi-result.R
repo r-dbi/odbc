@@ -139,7 +139,23 @@ setMethod("dbBind", "OdbcResult",
       return(invisible(res))
     }
 
-    if (is.na(batch_rows)) {
+    paramDfs <- sapply(params, is.data.frame)
+    if (any(paramDfs)) {
+      # When binding table-valued-parameters verify that:
+      # * The `batch_rows` parameter is either unset or equal to one.
+      # * All non-tvp parameters are of length 1.
+      if (!is.na(batch_rows) && batch_rows > 1) {
+        cli::cli_warn(c("Since some parameters are data frames, {.arg batch_rows} will be overwritten to `1`.", 
+                       "Set {.code batch_rows = 1} to quiet this warning."))
+      }
+      batch_rows <- 1
+      paramLengths <- sapply(params[!paramDfs], length)
+      if (any(paramLengths > 1))
+      {
+        cli::cli_abort("When mixing data.frame(s) with other parameter types,
+                       all non-df parameters must be of length one")
+      }
+    } else if (is.na(batch_rows)) {
       batch_rows <- length(params[[1]])
     }
 

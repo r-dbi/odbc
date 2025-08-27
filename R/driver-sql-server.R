@@ -5,6 +5,18 @@
 #'
 #' Details of SQL Server methods for odbc and DBI generics.
 #'
+#' Note on binding \href{https://learn.microsoft.com/en-us/sql/relational-databases/tables/use-table-valued-parameters-database-engine}{TVPs}:
+#' You can bind `data.frame`s to SQL Server TVPs when executing stored procedures with the following caveats:
+#' * All non-df parameters must be of length 1; and
+#' * The `batch_rows` parameter (to `dbBind`, for example) should be set to 1.
+#' @examples
+#' \dontrun{
+#' # Bind `data.frame` to a TVP when executing a
+#' # stored procedure that takes three parameters:
+#' # a TVP, an INT and a VARCHAR(max).
+#' res <- dbGetQuery(conn, "{ CALL example_sproc(?, ?, ?) }",
+#'   params = list(df.data, 100, "Lorem ipsum dolor sit amet"))
+#' }
 #' @rdname SQLServer
 #' @export
 setClass("Microsoft SQL Server", contains = "OdbcConnection")

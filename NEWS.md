@@ -1,5 +1,13 @@
 # odbc (development version)
 
+* SQL Server: You can now bind `data.frames` to table
+  valued parameters of stored procedures (#928).
+
+* Snowflake: Add `sf_private_key` and `sf_private_key_password`
+  connection attributes to allow users to pass the contents
+  of the PEM formatted private key to the driver directly from
+  memory (#933).
+
 * Fix retrieving multiple result sets from parametrized queries
   in cases when some parameters yield empty results (#927).
 
