@@ -1,4 +1,4 @@
-# odbc (development version)
+# odbc 1.6.2
 
 * Fix hang when parsing exceptionally long database errors (#916).
 * Fix retrieving multiple result sets from parametrized queries in cases when some parameters yield empty results (#927).
