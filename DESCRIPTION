@@ -1,10 +1,11 @@
 Package: odbc
 Title: Connect to ODBC Compatible Databases (using the DBI Interface)
-Version: 1.6.1.9000
+Version: 1.6.2
 Authors@R: c(
     person("Jim", "Hester", role = "aut"),
     person("Hadley", "Wickham", , "hadley@posit.co", role = c("aut", "cre")),
     person("Oliver", "Gjoneski", role = "aut"),
+    person("Simon", "Couch", email = "simon.couch@posit.co", role = "aut"),
     person("lexicalunit", role = "cph",
            comment = "nanodbc library"),
     person("Google Inc.", role = "cph",
