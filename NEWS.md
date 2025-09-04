@@ -1,5 +1,7 @@
 # odbc (development version)
 
+Addressed a compiler warning on `r-devel-linux-x86_64-fedora-clang` (#941).
+
 # odbc 1.6.2
 
 * Fix hang when parsing exceptionally long database errors (#916).
