@@ -1,3 +1,5 @@
+# odbc (development version)
+
 # odbc 1.6.2
 
 * Fix hang when parsing exceptionally long database errors (#916).
