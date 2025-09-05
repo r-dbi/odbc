@@ -1,4 +1,4 @@
-# odbc (development version)
+# odbc 1.6.3
 
 Addressed a compiler warning on `r-devel-linux-x86_64-fedora-clang` (#941).
 
