@@ -540,7 +540,15 @@ double odbc_result::as_double(nanodbc::timestampoffset const& tso) {
   // (failed) time-zone.
   std::stringstream stream;
   std::streambuf* oldClogStreamBuf = std::clog.rdbuf(stream.rdbuf());
-  cctz::time_zone tz = fixed_time_zone(offset);
+  // We are looking up fixed offsets
+  // using "Etc/GMT" as the prefix.  The convention
+  // for those zones/offsets is opposite directionally
+  // from the ISO 8061 database convention.  See:
+  // https://github.com/eggert/tz/blob/main/etcetera#L37
+  // https://en.wikipedia.org/wiki/ISO_8601#Time_offsets_from_UTC
+  // As a result, look up the time-zone using the
+  // *negative* offset.
+  cctz::time_zone tz = fixed_time_zone(-offset);
   std::clog.rdbuf(oldClogStreamBuf);
   if (stream.rdbuf()->in_avail()) {
     std::stringstream msg;
