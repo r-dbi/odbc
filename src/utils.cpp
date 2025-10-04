@@ -120,7 +120,7 @@ namespace utils {
     } while (status != std::future_status::ready);
     if (eptr) {
       // An exception was thrown in the thread
-      try { std::rethrow_exception(eptr); }
+      try { cleanup_fn(); std::rethrow_exception(eptr); }
       catch (const odbc_error& e) { raise_error(e); }
       catch (...) { raise_message("Unknown exception while executing"); throw; };
     }
