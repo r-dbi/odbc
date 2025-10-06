@@ -2,7 +2,7 @@
 
 * SQL Server:
      - Fix time zone interpretation in `DATETIMEOFFSET` data; now follows
-       ISO 8061 convention.  (#946)
+       ISO 8061 convention where positive offset denotes time zone east of Greenwich. (#946)
 
 # odbc 1.6.3
 
