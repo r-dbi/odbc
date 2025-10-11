@@ -39,11 +39,14 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="odbc-development-version">odbc (development version)<a class="anchor" aria-label="anchor" href="#odbc-development-version"></a></h2>
-</div>
+<ul><li>SQL Server:
+<ul><li>Fix time zone interpretation in <code>DATETIMEOFFSET</code> data; now follows ISO 8061 convention where positive offset denotes time zone east of Greenwich. (<a href="https://github.com/r-dbi/odbc/issues/946" class="external-link">#946</a>)</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.6.3" id="odbc-163">odbc 1.6.3<a class="anchor" aria-label="anchor" href="#odbc-163"></a></h2><p class="text-muted">CRAN release: 2025-09-05</p>
-<p>Addressed a compiler warning on <code>r-devel-linux-x86_64-fedora-clang</code> (<a href="https://github.com/r-dbi/odbc/issues/941" class="external-link">#941</a>).</p>
-</div>
+<ul><li>Addressed a compiler warning on <code>r-devel-linux-x86_64-fedora-clang</code> (<a href="https://github.com/r-dbi/odbc/issues/941" class="external-link">#941</a>).</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.6.2" id="odbc-162">odbc 1.6.2<a class="anchor" aria-label="anchor" href="#odbc-162"></a></h2><p class="text-muted">CRAN release: 2025-08-28</p>
 <ul><li><p>Fix hang when parsing exceptionally long database errors (<a href="https://github.com/r-dbi/odbc/issues/916" class="external-link">#916</a>).</p></li>
