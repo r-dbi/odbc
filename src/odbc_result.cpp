@@ -91,7 +91,7 @@ void odbc_result::execute() {
       raise_error(odbc_error(e, sql_, *output_encoder_));
     }
   } catch (...) {
-    if (c_->interruptible_execution_) {
+    if (!c_->interruptible_execution_) {
       c_->set_current_result(nullptr);
     }
     throw;
