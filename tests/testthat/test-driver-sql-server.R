@@ -379,7 +379,7 @@ test_that("DATETIME2 precision (#790)", {
 test_that("DATETIMEOFFSET", {
   con <- test_con("SQLSERVER")
 
-  df <- data.frame(tz_char = rep("2025-05-10 19:35:03.123 +02:00", 3), tz = rep("2025-05-10 19:35:03.123 +02:00", 3))
+  df <- data.frame(tz_char = rep("2025-05-10 19:35:03.123 -02:00", 3), tz = rep("2025-05-10 19:35:03.123 -02:00", 3))
 
   tbl <- local_table(con, "test_datetimeoffset", df,
     field.types = list("tz_char" = "VARCHAR(50)", "tz" = "DATETIMEOFFSET"), overwrite = TRUE)
