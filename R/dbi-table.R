@@ -196,6 +196,10 @@ setMethod("sqlData", "OdbcConnection",
     is_IDate <- vapply(value, function(x) is.object(x) && (is(x, "IDate")), logical(1))
     value[is_IDate] <- lapply(value[is_IDate], as.Date)
 
+    # Convert integer (INTSXP) Date to numeric (REALSXP) Date
+    is_INTSXP_Date <- vapply(value, function(x) is.object(x) && (is(x, "Date") && is.integer(x)), logical(1))
+    value[is_INTSXP_Date] <- lapply(value[is_INTSXP_Date], function(x) as.Date(as.numeric(x)))
+
     # C code takes care of atomic vectors, dates, date times, and blobs just need to coerce other objects
     is_object <- vapply(value, function(x) is.object(x) && !(is(x, "POSIXct") || is(x, "Date") || is_blob(x) || is(x, "difftime")), logical(1))
     value[is_object] <- lapply(value[is_object], as.character)
