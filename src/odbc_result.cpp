@@ -106,11 +106,18 @@ void odbc_result::bind_columns(
   case logical_t:
     bind_logical(obj, data, column, start, size, buffers);
     break;
-  case date_t:
-    bind_date(obj, data, column, start, size, buffers);
+  case date_int_t:
+    bind_date<T, int>(obj, data, column, start, size, buffers);
+  case date_double_t:
+    bind_date<T, double>(obj, data, column, start, size, buffers);
     break;
-  case datetime_t:
-    bind_datetime(obj, data, column, start, size, buffers);
+  case datetime_int_t:
+    Rcpp::Rcout << "bindings int datetime";
+    bind_datetime<T, int>(obj, data, column, start, size, buffers);
+    break;
+  case datetime_double_t:
+    Rcpp::Rcout << "bindings double datetime";
+    bind_datetime<T, double>(obj, data, column, start, size, buffers);
     break;
   case double_t:
     bind_double(obj, data, column, start, size, buffers);
@@ -385,7 +392,7 @@ void odbc_result::bind_raw(
       column, buffers.raws_[column], reinterpret_cast<bool*>(buffers.nulls_[column].data()));
 }
 
-template<typename T>
+template<typename T, typename SourceType>
 void odbc_result::bind_datetime(
     T& obj,
     Rcpp::List const& data,
@@ -395,7 +402,7 @@ void odbc_result::bind_datetime(
     param_data& buffers) {
 
   buffers.nulls_[column] = std::vector<uint8_t>(size, false);
-  auto d = REAL(data[column]);
+  auto d = (SourceType*)DATAPTR(data[column]);
 
   nanodbc::timestamp ts;
   short precision = 3;
@@ -426,7 +433,7 @@ void odbc_result::bind_datetime(
       reinterpret_cast<bool*>(buffers.nulls_[column].data()));
 }
 
-template<typename T>
+template<typename T, typename SourceType>
 void odbc_result::bind_date(
     T& obj,
     Rcpp::List const& data,
@@ -436,11 +443,11 @@ void odbc_result::bind_date(
     param_data& buffers) {
 
   buffers.nulls_[column] = std::vector<uint8_t>(size, false);
-  auto d = REAL(data[column]);
+  auto d = (SourceType*)DATAPTR(data[column]);
 
   nanodbc::date dt;
   for (size_t i = 0; i < size; ++i) {
-    auto value = d[start + i] * seconds_in_day_;
+    auto value = (double)d[start + i] * seconds_in_day_;
     if (ISNA(value)) {
       buffers.nulls_[column][i] = true;
     } else {
@@ -635,8 +642,10 @@ Rcpp::List odbc_result::create_dataframe(
       out[j] = Rf_allocVector(INTSXP, n);
       break;
     case integer64_t:
-    case date_t:
-    case datetime_t:
+    case date_int_t:
+    case date_double_t:
+    case datetime_int_t:
+    case datetime_double_t:
     case odbc::time_t:
     case odbc::double_t:
       out[j] = Rf_allocVector(REALSXP, n);
@@ -681,10 +690,12 @@ void odbc_result::add_classes(
     case integer64_t:
       x.attr("class") = Rcpp::CharacterVector::create("integer64");
       break;
-    case date_t:
+    case date_int_t:
+    case date_double_t:
       x.attr("class") = Rcpp::CharacterVector::create("Date");
       break;
-    case datetime_t:
+    case datetime_int_t:
+    case datetime_double_t:
       x.attr("class") = Rcpp::CharacterVector::create("POSIXct", "POSIXt");
       x.attr("tzone") = Rcpp::CharacterVector::create(c_->timezone_out_str());
       break;
@@ -712,19 +723,29 @@ std::vector<r_type> odbc_result::column_types(Rcpp::List const& list) {
       types.push_back(dataframe_t);
       continue;
     }
-    switch (TYPEOF(list[i])) {
+    auto r_type = TYPEOF(list[i]);
+    switch (r_type) {
     case LGLSXP:
       types.push_back(logical_t);
       break;
-    case INTSXP:
-      types.push_back(integer_t);
+    case INTSXP: {
+      Rcpp::RObject x = list[i];
+      if (x.inherits("Date")) {
+        types.push_back(date_int_t);
+      } else if (x.inherits("POSIXct")) {
+        Rcpp::Rcout << "Pushing datetime_int_t";
+        types.push_back(datetime_int_t);
+      } else {
+        types.push_back(integer_t);
+      }
       break;
+    }
     case REALSXP: {
       Rcpp::RObject x = list[i];
       if (x.inherits("Date")) {
-        types.push_back(date_t);
+        types.push_back(date_double_t);
       } else if (x.inherits("POSIXct")) {
-        types.push_back(datetime_t);
+        types.push_back(datetime_double_t);
       } else if (x.inherits("difftime")) {
         types.push_back(odbc::time_t);
       } else {
@@ -797,7 +818,7 @@ std::vector<r_type> odbc_result::column_types(nanodbc::result const& r) {
     // Date
     case SQL_DATE:
     case SQL_TYPE_DATE:
-      types.push_back(date_t);
+      types.push_back(date_double_t);
       break;
     // Time
     case SQL_TIME:
@@ -808,7 +829,7 @@ std::vector<r_type> odbc_result::column_types(nanodbc::result const& r) {
     case SQL_TIMESTAMP:
     case SQL_TYPE_TIMESTAMP:
     case SQL_SS_TIMESTAMPOFFSET:
-      types.push_back(datetime_t);
+      types.push_back(datetime_double_t);
       break;
     case SQL_CHAR:
     case SQL_VARCHAR:
@@ -875,10 +896,12 @@ Rcpp::List odbc_result::result_to_dataframe(nanodbc::result& r, int n_max) {
     }
     for (size_t col = 0; col < types.size(); ++col) {
       switch (types[col]) {
-      case date_t:
+      case date_int_t:
+      case date_double_t:
         assign_date(out, row, col, r);
         break;
-      case datetime_t:
+      case datetime_double_t:
+      case datetime_int_t:
         assign_datetime(out, row, col, r);
         break;
       case odbc::double_t:
@@ -1099,24 +1122,6 @@ size_t odbc_result::get_parameter_rows(Rcpp::List const& x) {
 
 # define R_ODBC_INSTANTIATE_BINDS(type)                                   \
   template void odbc_result::bind_columns(type& obj, r_type,              \
-      Rcpp::List const&, short, size_t, size_t, param_data&);             \
-  template void odbc_result::bind_logical(type& obj,                      \
-      Rcpp::List const&, short, size_t, size_t, param_data&);             \
-  template void odbc_result::bind_integer(type& obj,                      \
-      Rcpp::List const&, short, size_t, size_t, param_data&);             \
-  template void odbc_result::bind_double(type& obj,                       \
-      Rcpp::List const&, short, size_t, size_t, param_data&);             \
-  template void odbc_result::bind_string(type& obj,                       \
-      Rcpp::List const&, short, size_t, size_t, param_data&);             \
-  template void odbc_result::bind_raw(type& obj,                          \
-      Rcpp::List const&, short, size_t, size_t, param_data&);             \
-  template void odbc_result::bind_datetime(type& obj,                     \
-      Rcpp::List const&, short, size_t, size_t, param_data&);             \
-  template void odbc_result::bind_date(type& obj,                         \
-      Rcpp::List const&, short, size_t, size_t, param_data&);             \
-  template void odbc_result::bind_time(type& obj,                         \
-      Rcpp::List const&, short, size_t, size_t, param_data&);             \
-  template void odbc_result::bind_df(type& obj,                           \
       Rcpp::List const&, short, size_t, size_t, param_data&);
 R_ODBC_INSTANTIATE_BINDS(nanodbc::statement);
 R_ODBC_INSTANTIATE_BINDS(nanodbc::table_valued_parameter);
