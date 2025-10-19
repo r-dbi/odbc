@@ -152,7 +152,7 @@ private:
       size_t size,
       param_data& buffers);
 
-  template<typename T>
+  template<typename T, typename SourceType>
   void bind_datetime(
       T& obj,
       Rcpp::List const& data,
@@ -161,7 +161,7 @@ private:
       size_t size,
       param_data& buffers);
 
-  template<typename T>
+  template<typename T, typename SourceType>
   void bind_date(
       T& obj,
       Rcpp::List const& data,
