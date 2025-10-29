@@ -4,6 +4,8 @@
      - Fix time zone interpretation in `DATETIMEOFFSET` data; now follows
        ISO 8061 convention where positive offset denotes time zone east of Greenwich. (#946)
 
+* `varchar()` helper now returns number of bytes not characters (#960)
+
 # odbc 1.6.3
 
 * Addressed a compiler warning on `r-devel-linux-x86_64-fedora-clang` (#941).
