@@ -2318,7 +2318,7 @@ void statement::statement_impl::bind(
             bind_len_or_null_[param_index][i] = param.size_;
     }
 
-    bound_buffer<T> buffer(values, batch_size);
+    bound_buffer<T> buffer(values, batch_size, sizeof(T));
     bind_parameter(param, buffer);
 }
 
