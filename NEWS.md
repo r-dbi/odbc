@@ -1,5 +1,10 @@
 # odbc (development version)
 
+* Fix writing of [R] date/time values that have integer storage. (#952)
+
+* Oracle:
+    - Fix writing values to `DATE` targets. (#959)
+
 * SQL Server:
      - Fix time zone interpretation in `DATETIMEOFFSET` data; now follows
        ISO 8061 convention where positive offset denotes time zone east of Greenwich. (#946)
