@@ -65,7 +65,7 @@ char* StrError(int errnum, char* buf, std::size_t buflen) {
 // Returns a string describing the error number.
 std::string StrError(int errnum) {
   char buf[128];
-#if defined(_MSC_VER)
+#if defined(_WIN32) || defined(_WIN64)
   if (int e = strerror_s(buf, errnum))
     strerror_s(buf, e);
   return buf;
