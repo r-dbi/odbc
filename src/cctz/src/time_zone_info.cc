@@ -66,7 +66,7 @@ char* StrError(int errnum, char* buf, std::size_t buflen) {
 std::string StrError(int errnum) {
   char buf[128];
 #if defined(_WIN32) || defined(_WIN64)
-  if (int e = strerror_s(buf, errnum))
+  if (int e = strerror_s(buf, sizeof buf, errnum))
     strerror_s(buf, e);
   return buf;
 #else
