@@ -40,14 +40,19 @@ odbc_result::odbc_result(
 
   if (c_->interruptible_execution_) {
     auto exec_fn = std::mem_fn(&odbc_result::execute);
+    auto cancel_fn = [this]() {
+      this->c_->set_current_result(nullptr);
+    };
     auto cleanup_fn = [this]() {
+      // set_current_result(nullptr) is safe to call
+      // multiple times.
       this->c_->set_current_result(nullptr);
       if (this->s_) {
         this->s_->close();
         this->s_.reset();
       }
     };
-    run_interruptible(std::bind(exec_fn, this), cleanup_fn);
+    run_interruptible(std::bind(exec_fn, this), cancel_fn, cleanup_fn);
   } else {
     this->execute();
   }
