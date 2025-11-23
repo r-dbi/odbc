@@ -50,7 +50,12 @@ standard approach or see your driver documentation for specifics.}
 \item{timezone}{The server time zone. Useful if the database has an internal
 timezone that is \emph{not} 'UTC'. If the database is in your local timezone,
 set this argument to \code{\link[=Sys.timezone]{Sys.timezone()}}. See \code{\link[=OlsonNames]{OlsonNames()}} for a complete
-list of available time zones on your system.}
+list of available time zones on your system.
+Note, if the datatype itself carries timezone information, as is the case,
+for example, with SQL Server::DATETIMEOFFSET, \code{package:odbc} will make
+an effort to respect the timezone declared therein.  In those cases,
+this parameter is not used - the timezone that is part of the datatype
+takes precedence.}
 
 \item{timezone_out}{The time zone returned to R. If you want to display
 datetime values in the local timezone, set to \code{\link[=Sys.timezone]{Sys.timezone()}}.}
@@ -134,7 +139,7 @@ databases.
 The odbc package is one piece of the R interface to databases with support
 for ODBC:
 
-\figure{whole-game.png}{options: width=95\%}
+\figure{whole-game.png}{options: style="width: 95\%;"}
 
 The package supports any \strong{Database Management System (DBMS)} with ODBC
 support. Support for a given DBMS is provided by an \strong{ODBC driver}, which
