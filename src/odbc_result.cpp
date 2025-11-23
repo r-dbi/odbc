@@ -402,7 +402,7 @@ void odbc_result::bind_datetime(
     param_data& buffers) {
 
   buffers.nulls_[column] = std::vector<uint8_t>(size, false);
-  auto d = (SourceType*)DATAPTR(data[column]);
+  auto d = (SourceType*)DATAPTR_RO(data[column]);
 
   nanodbc::timestamp ts;
   short precision = 3;
@@ -443,7 +443,7 @@ void odbc_result::bind_date(
     param_data& buffers) {
 
   buffers.nulls_[column] = std::vector<uint8_t>(size, false);
-  auto d = (SourceType*)DATAPTR(data[column]);
+  auto d = (SourceType*)DATAPTR_RO(data[column]);
 
   nanodbc::date dt;
   for (size_t i = 0; i < size; ++i) {
