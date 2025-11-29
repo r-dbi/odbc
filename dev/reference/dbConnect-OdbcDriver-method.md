@@ -71,7 +71,12 @@ dbConnect(
   this argument to
   [`Sys.timezone()`](https://rdrr.io/r/base/timezones.html). See
   [`OlsonNames()`](https://rdrr.io/r/base/timezones.html) for a complete
-  list of available time zones on your system.
+  list of available time zones on your system. Note, if the datatype
+  itself carries timezone information, as is the case, for example, with
+  SQL Server::DATETIMEOFFSET, `package:odbc` will make an effort to
+  respect the timezone declared therein. In those cases, this parameter
+  is not used - the timezone that is part of the datatype takes
+  precedence.
 
 - timezone_out:
 

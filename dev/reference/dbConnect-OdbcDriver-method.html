@@ -110,7 +110,12 @@ standard approach or see your driver documentation for specifics.</p></dd>
 <dd><p>The server time zone. Useful if the database has an internal
 timezone that is <em>not</em> 'UTC'. If the database is in your local timezone,
 set this argument to <code><a href="https://rdrr.io/r/base/timezones.html" class="external-link">Sys.timezone()</a></code>. See <code><a href="https://rdrr.io/r/base/timezones.html" class="external-link">OlsonNames()</a></code> for a complete
-list of available time zones on your system.</p></dd>
+list of available time zones on your system.
+Note, if the datatype itself carries timezone information, as is the case,
+for example, with SQL Server::DATETIMEOFFSET, <code>package:odbc</code> will make
+an effort to respect the timezone declared therein.  In those cases,
+this parameter is not used - the timezone that is part of the datatype
+takes precedence.</p></dd>
 
 
 <dt id="arg-timezone-out">timezone_out<a class="anchor" aria-label="anchor" href="#arg-timezone-out"></a></dt>
@@ -217,7 +222,7 @@ databases.</p>
 
 <p>The odbc package is one piece of the R interface to databases with support
 for ODBC:</p>
-<p><img src="figures/whole-game.png" width="95%"></p>
+<p><img src="figures/whole-game.png" style="width: 95%;"></p>
 <p>The package supports any <strong>Database Management System (DBMS)</strong> with ODBC
 support. Support for a given DBMS is provided by an <strong>ODBC driver</strong>, which
 defines how to interact with that DBMS using the standardized syntax of ODBC
