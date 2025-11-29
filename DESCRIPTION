@@ -36,7 +36,7 @@ Suggests:
     httr2,
     knitr,
     magrittr,
-    paws.common (>= 0.7.1),
+    paws.common,
     rmarkdown,
     RSQLite,
     testthat (>= 3.0.0),
