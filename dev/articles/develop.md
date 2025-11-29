@@ -1,0 +1,563 @@
+# Developing odbc
+
+This vignette is intended to help developers of the R package install
+needed dependencies.
+
+While the odbc package contains some documentation on how to install and
+configure database drivers in
+[`vignette("setup")`](https://odbc.r-dbi.org/dev/articles/setup.md), the
+documentation assumes that users are connecting to databases that have
+already been set up. In order to test package functionality, though,
+odbc sets up small example database deployments.
+
+For the most part, this vignette assumes a MacOS system with aarch64
+(e.g. M1 or M2) architecture. For Linux example code, see
+[`.github/workflows/db.yaml`](https://github.com/r-dbi/odbc/blob/main/.github/workflows/db.yaml),
+and for Windows, see
+[`.github/workflows/db-windows.yml`](https://github.com/r-dbi/odbc/blob/main/.github/workflows/db-windows.yml).
+
+## Posit Professional Drivers
+
+Posit employees have access to the [Posit Professional
+drivers](https://docs.posit.co/pro-drivers/) and the infrastructure used
+to build and test them in the rstudio/pro-drivers GitHub repository. The
+Posit Professional drivers are a set of drivers vendored from Magnitude
+Simba that support many of the most popular DBMS, including SQL Server,
+Oracle, Redshift, Databricks, Snowflake, etc. The repository they’re
+developed in contains tooling to spin up a number of databases in docker
+containers to test against.
+
+Note that Athena, Hive, Impala, MongoDB, and Oracle drivers are [not
+available for macOS
+aarch64](https://github.com/oracle/python-cx_Oracle/issues/617) (M1, M2,
+etc) at the time of writing.
+
+### Drivers
+
+The only documented installation method for these drivers on MacOS is
+via RStudio Desktop Pro. The Posit confluence page titled “$$INTERNAL$$
+Posit License Files for Employee Use” contains instructions for
+installing RStudio Desktop Pro. Once RStudio Pro is installed, install
+individual drivers as documented
+[here](https://docs.posit.co/ide/desktop-pro/database_drivers/install_database_drivers.html).
+
+### Databases
+
+Among other things, the rstudio/pro-drivers GitHub repository defines a
+`MAKE` tool for setting up and tearing down databases in docker
+containers. Ensure that you have a docker daemon running (i.e. Docker
+Desktop open) and, if you’re on macOS aarch64, have
+`Settings > Use Rosetta for x86_64/amd64 emulation on Apple Silicon`
+enabled. To start a container for a given `dbms`, run
+`MAKE dist=none DB=dbms up`, and **tear it down** with
+`MAKE dist=none DB=db down`. To see available `dbms` options, see the
+names of `.yml` files in the `docker-compose` directory. Find connection
+details for each database in `docker/shared/odbc.ini`.
+
+DBMS-specific notes:
+
+- `sqlserver`: Be sure to pass `uid` and `pwd` as arguments to
+  [`dbConnect()`](https://odbc.r-dbi.org/dev/reference/dbConnect-OdbcDriver-method.md)
+  explicitly, even though they’re in the `odbc.ini` as well.
+
+On macOS aarch64, you will see a
+`requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8)`
+warning when you start any of these containers. Feel free to ignore. :)
+
+## PostgreSQL
+
+On MacOS, install PostgreSQL with:
+
+``` shell
+brew install postgresql@14
+```
+
+You’ll also need to install and configure the PostgreSQL driver
+`psqlodbc`; see
+[`vignette("setup")`](https://odbc.r-dbi.org/dev/articles/setup.md) to
+learn more.
+
+To launch a PostgreSQL server locally, run:
+
+    brew services start postgresql@14
+
+Next, create a database called “test” (or by whatever name is in the
+entry `Database` in your `odbc.ini` file):
+
+``` shell
+createdb test
+```
+
+At this point, you should be able to connect to PostgreSQL through the R
+interface. Connect with:
+
+``` r
+postgres <- dbConnect(odbc(), "PostgreSQL")
+```
+
+where `"PostgreSQL"` is replaced with whatever DSN you’ve configured.
+
+## MySQL
+
+First, installing MySQL with Homebrew:
+
+``` shell
+brew install mysql@8.2
+```
+
+MariaDB drivers are compatible with MySQL and are more easily installed
+than MySQL drivers themselves in most cases. To install the MariaDB
+driver:
+
+``` shell
+brew install mariadb-connector-odbc
+```
+
+Then, link the MariaDB driver with your MySQL data source name. That is,
+with the driver name `[MariaDB]` configuring your MariaDB install in
+`odbcinst.ini`, the first lines of your `odbc.ini` entry should look
+something like:
+
+``` ini
+[MySQL]
+Driver = MariaDB
+```
+
+After running `brew services start mysql` if needed, and confirming that
+the database is running with `brew services info mysql`, you should be
+able to:
+
+    library(odbc)
+    dbConnect(odbc(), "MySQL")
+
+The second argument `"MySQL"` refers to the data source name configured
+above.
+
+## SQL Server test setup
+
+To run Microsoft SQL Server on **aarch64 (e.g. M1 or M2) MacOS**, you
+will need:
+
+- Docker 4.16 or higher
+- MacOS 13 Ventura (or higher)
+
+If needed, install Docker with:
+
+``` shell
+brew install --cask docker
+```
+
+The Docker Desktop app provides a GUI to monitor deployed Docker
+containers and lives in
+`Docker.app > Show Package Contents > Contents > MacOS > Docker Desktop.app`.
+
+To [install the SQL Server ODBC driver and (optional) command line
+tool](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/install-microsoft-odbc-driver-sql-server-macos?view=sql-server-ver15),
+use:
+
+``` shell
+brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
+brew install microsoft/mssql-release/msodbcsql18 microsoft/mssql-release/mssql-tools18
+```
+
+The `odbc.ini` entry should look something like:
+
+``` ini
+[MicrosoftSQLServer]
+driver = ODBC Driver 18 for SQL Server
+Server = 127.0.0.1
+port = 1433
+Encrypt = no
+```
+
+With the driver name in `odbcinst.ini` being
+`[ODBC Driver 18 for SQL Server]`.
+
+With docker and the needed driver installed, deploy the container with:
+
+``` shell
+sudo docker run \
+  --platform linux/amd64 \
+  -e "ACCEPT_EULA=Y" \
+  -e 'MSSQL_SA_PASSWORD=BoopBop123!' \
+  -p 1433:1433 \
+   --name sql1 \
+   --hostname sql1 \
+   -d mcr.microsoft.com/mssql/server:2022-latest
+```
+
+The `--platform` tag is correct for M1; if you see `Status: Exited (1)`
+in Docker Desktop or a warning about incompatible architectures,
+navigate to `Settings > General` and ensure that
+`Use Rosetta for x86/amd64 emulation on Apple Silicon` is checked.
+
+To connect via odbc, we need to pass the UID and PWD via the connection
+string; configuring those arguments via `odbc.ini` is [not
+permitted](https://stackoverflow.com/questions/42387084/sql-server-odbc-driver-linux-username).
+With the container deployed as above, the connection arguments would be:
+
+``` r
+con <- dbConnect(
+  odbc::odbc(), 
+  dsn = "MicrosoftSQLServer", 
+  uid = "SA", 
+  pwd = "BoopBop123!"
+)
+```
+
+Then do some configuration of the server to add a testuser and create
+the test database
+
+To configure a server to add a testing user and create a test database:
+
+``` r
+# Add a test user, but currently unused
+dbExecute(con, "USE test")
+dbExecute(con, "EXEC sp_configure 'contained database authentication', 1")
+dbExecute(con, "RECONFIGURE")
+dbExecute(con, "alter database test set containment = partial")
+dbExecute(con, "CREATE USER testuser with password = 'BoopBop123!'")
+dbExecute(con, "GRANT CONTROL TO testuser")
+dbExecute(con, "DROP USER testuser")
+
+# Create a test database
+dbExecute(con, "CREATE DATABASE test")
+```
+
+On **Linux**, create a docker container with:
+
+``` shell
+docker run -v "$(pwd)":"/opt/$(basename $(pwd))":delegated --security-opt=seccomp:unconfined --link sql1 -it rstudio/r-base:3.6.1-bionic /bin/bash
+```
+
+Then run:
+
+``` shell
+curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+#Ubuntu 18.04
+curl https://packages.microsoft.com/config/ubuntu/18.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
+
+apt-get update
+ACCEPT_EULA=Y apt-get install -y msodbcsql17
+apt-get install -y unixodbc-dev
+```
+
+The resulting `odbc.ini` file will look something like:
+
+``` ini
+[MicrosoftSQLServer]
+driver = ODBC Driver 17 for SQL Server
+Server = sql1
+port = 1433
+Database = test
+```
+
+## SQLite
+
+MacOS provides SQLite natively. With the SQLite odbc driver installed
+(see [`vignette("setup")`](https://odbc.r-dbi.org/dev/articles/setup.md)
+if needed), run:
+
+    library(odbc)
+    dbConnect(odbc(), "SQLite")
+
+The above example assumes the configured SQLite DSN is called
+`"SQLite"`.
+
+## Oracle
+
+A huge pain.
+
+### On MacOS
+
+Getting an Oracle database booted up in a Docker container on MacOS is a
+bit challenging. First, you’ll build the container image yourself from
+the official Oracle source using the instructions
+[here](https://www.simonpcouch.com/blog/2024-03-14-oracle/). Once you’ve
+finished building the image, run it with:
+
+``` shell
+docker run -d --name oracle -p 1521:1521 -e ORACLE_PWD=odbcTest321 oracle/database:19.3.0-ee
+```
+
+Note that the `run` command here is a bit different than the one in the
+linked blog post.
+
+Next, you’ll install the Basic, ODBC, and SQLPlus Instant Client
+libraries from the Oracle website
+(`https://www.oracle.com/database/technologies/instant-client/macos-arm64-downloads.html`)
+by doing the following:
+
+- Download the Basic, ODBC, and SQLPlus `.dmg`s.
+- Create a folder for the instant client to live in. I made mine at
+  `/Users/simoncouch/instantclient_23_3`. (This folder will show up many
+  times in the rest of these instructions–always substitute it with your
+  own from here on out.)
+- For each of the `dmg`s, open up the image and copy and paste its
+  contents into the folder you made in the previous step.
+- Symlink your `libodbcinst.2.dylib` (unixODBC library) into the folder.
+  I used
+  `ln -s /opt/homebrew/Cellar/unixodbc/2.3.12/lib/libodbcinst.2.dylib /Users/simoncouch/instantclient_23_3/libodbcinst.2.dylib`
+  to do so for myself; use `odbc_config --lib-prefix` to help locate
+  yours.
+
+Make a text file at
+`/Users/simoncouch/instantclient_23_3/network/admin/tnsnames.ora`. Open
+that file (maybe with
+`file.edit("/Users/simoncouch/instantclient_23_3/network/admin/tnsnames.ora")`)
+and add the following:
+
+``` ora
+db=
+   (DESCRIPTION=
+    (ADDRESS=(PROTOCOL=tcp)(HOST=0.0.0.0)(PORT=1521))
+    (CONNECT_DATA=(SERVICE_NAME=orclpdb1)))
+```
+
+Now, set some paths to help R and the Instant Client communicate. In
+`usethis::edit_r_profile()`, add:
+
+``` r
+Sys.setenv(PATH = paste0("/Users/simoncouch/instantclient_23_3:", Sys.getenv("PATH")))
+Sys.setenv(LD_LIBRARY_PATH = "/Users/simoncouch/instantclient_23_3")
+Sys.setenv(ORACLE_HOME = "/Users/simoncouch/instantclient_23_3")
+# this one is the default, but just to prevent gotchas:
+Sys.setenv(TNS_ADMIN = "/Users/simoncouch/instantclient_23_3/network/admin")
+```
+
+(These are indeed all environmental variables that could be set in
+`.Renviron`. Be sure to substitute `<$PATH>` carefully if you choose to
+do so there.)
+
+Note that there’s a [MacOS-specific
+bug](https://github.com/rstudio/rstudio/issues/9815) where RStudio
+overwrites `PATH` when set in Rprofile/Renviron before the 2024.04.0
+“Chocolate Cosmos” release, so be sure to update your RStudio if needed.
+
+In the terminal, test your Instant Client installation and database
+connection with:
+
+``` shell
+sqlplus sys/odbcTest321@//localhost:1521/ORCLPDB1 as sysdba
+```
+
+If you’re able to connect, make a test user with:
+
+``` sql
+CREATE USER test IDENTIFIED BY odbc;
+GRANT DBA TO test;
+exit;
+```
+
+Test connecting with that new user with:
+
+    sqlplus test/odbc@//localhost:1521/ORCLPDB1
+
+If that succeeds, configure a DSN in your `odbc.ini` file with:
+
+``` ini
+[Oracle]
+Driver = /Users/simoncouch/instantclient_23_3/libsqora.dylib.23.1
+Port = 1521
+Host = 0.0.0.0
+```
+
+Then, connect in R with:
+
+``` r
+library(odbc)
+
+con <- dbConnect(
+  odbc(), 
+  dsn = "Oracle", 
+  DBQ = "db", 
+  UID = "test", 
+  PWD = "odbc"
+)
+```
+
+Potential gotchas:
+
+- Setting those DBQ, UID, and PWD parameters in my `.ini` file instead
+  of the call to
+  [`dbConnect()`](https://odbc.r-dbi.org/dev/reference/dbConnect-OdbcDriver-method.md)
+  introduces errors for me.
+- Note that, as of July 2024, there are no Posit Pro Drivers for Oracle
+  on ARM Macs.
+- If you see a “file not found” error for a driver that does exist, it’s
+  because some dependency for the driver doesn’t exist; use
+  `otool -L /yada/yada/drivername.dylib` to find the dependencies and
+  then symlink them from elsewhere on your computer into where the
+  driver looks for them.
+
+### On Linux
+
+The process looks a bit different on Linux. These instructions are for a
+machine running Ubuntu 22.04.
+
+Two steps here–1) booting up an Oracle database in a docker container
+and 2) installing and configuring the Oracle Instant Client and driver
+to connect to that database.
+
+If you haven’t already, you’ll need to install Docker Desktop, unixODBC,
+and `libaio1`. You can get the last with:
+
+``` shell
+sudo apt-get install libaio1
+```
+
+First, to boot up an Oracle database in a Docker container, run:
+
+``` shell
+docker run -d \
+  --name oracle2 \
+  -p 1521:1521 \
+  -e ORACLE_RANDOM_PASSWORD=true \
+  -e ORACLE_DATABASE=test \
+  -e APP_USER=RodbcR \
+  -e APP_USER_PASSWORD=Password12 \
+  gvenzl/oracle-xe:21.3.0
+```
+
+Some documentation on this Docker image
+[here](https://hub.docker.com/r/gvenzl/oracle-xe).
+
+Now, as for installing and configuring the Oracle Instant Client and
+driver, the PRs [implementing support for unit testing
+Oracle](https://github.com/r-dbi/odbc/commit/257f041a3aec8348000a89208da5ed0eb059fe81)
+and [adding support for the Oracle Pro
+Driver](https://github.com/r-dbi/odbc/commit/4090f0a7916db7ab22e4088040aa2492751140dd)
+for odbc are a great guide here. The “Installation Instructions” at the
+bottom of Oracle’s Instant Client docs
+(`https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html`)
+are thorough–you shouldn’t need them here, but a good backup.
+
+I ultimately wasn’t able to make a connection with the driver that
+Oracle ships, but was able to do so with the Posit Pro Drivers.
+
+Run the lines in `.github/odbc/install-oracle-driver.sh` from the first
+linked PR, which installs both the Instant Client and Oracle’s driver.
+
+Add the following lines to your .Rprofile (with
+`usethis::edit_r_profile()`):
+
+``` r
+Sys.setenv(LD_LIBRARY_PATH = paste0("/opt/oracle/instantclient_21_12:", Sys.getenv("LD_LIBRARY_PATH")))
+Sys.setenv(PATH = paste0("/opt/oracle/instantclient_21_12:", Sys.getenv("PATH")))
+```
+
+Create a text file called
+`/opt/oracle/instant_client_21_12/tnsnames.ora` and paste the following
+inside of it:
+
+    TEST=
+       (DESCRIPTION=
+        (ADDRESS=(PROTOCOL=tcp)(HOST=0.0.0.0)(PORT=1521))
+        (CONNECT_DATA=(SERVICE_NAME=test)))
+
+Install the RStudio Pro Oracle driver, either using the [installation
+code from the linked
+PR](https://github.com/r-dbi/odbc/commit/4090f0a7916db7ab22e4088040aa2492751140dd#diff-bc1733bfd46bbe6f651eee14b11879e4b7e0428af876e0322768bdbf138ef238R84-R87)
+(see the repository secret for the driver URL or contact Simon Couch or
+Hadley Wickham if you don’t have access) or through RStudio Pro (if you
+have credentials, you can generate yourself a license key here:
+`https://connect.posit.it/support/license_management/`).
+
+Add the following lines to your `.Renviron` (with
+`usethis::edit_r_environ()`). Adjust the value for `ODBCSYSINI` to the
+directory prefixing `.ini` files in `odbcinst -j`.
+
+    TNS_ADMIN=/opt/oracle/instantclient_21_12
+    ODBCSYSINI=/etc
+    ORACLE_HOME=/opt/oracle
+
+Symlink your Instant Client install into the Pro Driver install
+directory with
+`sudo ln -s /opt/oracle/instantclient_21_12/* /etc/pro_drivers/oracle/bin/lib/`.
+
+Add the following to your `odbc.ini`:
+
+``` ini
+[ProOracle]
+Driver = /etc/pro_drivers/oracle/bin/lib/liboracleodbc_sb64.so
+Port = 1521
+Host = localhost
+SVC = FREEPDB1
+UID = RodbcR
+PWD = Password12
+DBQ = test
+```
+
+Now, putting the pieces together, connect to the Oracle Database docker
+container from R with:
+
+``` r
+library(odbc)
+dbConnect(odbc(), dsn = "ProOracle")
+```
+
+## Snowflake
+
+To obtain a Snowflake account:
+
+- If you’re a Posit employee, reach out to James Blair.
+- If you’re not affiliated with Posit, sign up for a [free
+  trial](https://signup.snowflake.com/).
+
+Install drivers using the [instructions on the Snowflake
+documentation](https://docs.snowflake.com/en/developer-guide/odbc/odbc).
+For MacOS, feel free to ignore sections noting that iODBC is required.
+
+On MacOS and Linux:
+
+- Locate your `simba.snowflake.ini` file, likely in `opt/snowflake/`.
+  You will need `sudo` access to edit it.
+  - Change `DriverManagerEncoding` to `UTF-16`.
+  - Change the uncommented `ODBCInstLib` entry to the [path of your
+    unixODBC
+    install](https://community.snowflake.com/s/article/R-Studio-to-Snowflake-fails-with-error-Unable-to-locate-SQLGetPrivateProfileString-function).
+- In the Snowflake UI, navigate to Worksheets, make a new worksheet
+  using the blue “+” button in the top right-hand corner, and run the
+  line `SELECT SYSTEM$ALLOWLIST()`. In the output, copy the URL
+  corresponding to `"type":"SNOWFLAKE_DEPLOYMENT"`. This Deployment URL
+  should look like a random string, an AWS region, and the snowflake API
+  URL, e.g. `wmc39401.us-east-1.snowflakecomputing.com`.
+
+The `odbc.ini` file should look like:
+
+``` ini
+[Snowflake]
+Driver      = Snowflake
+Description =
+uid         = <uid>
+server      = <deployment-url>
+```
+
+The above assumes `Driver = Snowflake` is configured in `odbcinst.ini`.
+Then, connect by supplying the password as an argument:
+
+    con <- dbConnect(odbc(), dsn = "Snowflake", pwd = Sys.getenv("snowflakePass"))
+
+In the above, the password has been set as
+`Sys.setenv(snowflakePass = "actualPass")`.
+
+## Amazon Redshift
+
+If you’re a Posit employee, you should have access to the
+rstudio/warehouse GitHub repository. Follow the instructions there to
+get access to the internal Redshift cluster. Access to the cluster is
+only enabled through Posit’s internal Workbench instance, where the
+professional drivers will already be installed.
+
+Note that Redshift is based on a modified version of PostgreSQL.
+
+## RODBC
+
+We need to install the RODBC package for benchmarking in the vignette
+[`vignette("benchmarks")`](https://odbc.r-dbi.org/dev/articles/benchmarks.md).
+The CRAN version of RODBC uses iODBC, so to use unixODBC we need to
+recompile it from source, specifying the odbc manager explicitly:
+
+``` r
+install.packages("RODBC", type = "source", INSTALL_opts="--configure-args='--with-odbc-manager=odbc'")
+```
