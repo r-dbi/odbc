@@ -30,7 +30,7 @@ Windows does not use \code{.ini} configuration files; on Windows,
 will raise an error.
 }
 \examples{
-\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
 configs <- odbcListConfig()
 
 configs

@@ -81,7 +81,7 @@ it is also possible to provide a path to a driver directly to \code{\link[=dbCon
 }
 
 \examples{
-\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (FALSE) withAutoprint(\{ # examplesIf}
 odbcListDrivers()
 \dontshow{\}) # examplesIf}
 }
