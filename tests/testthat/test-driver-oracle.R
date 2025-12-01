@@ -96,6 +96,7 @@ test_that("can detect existence of table", {
 test_that("Writing date/datetime with batch size > 1", {
   # See #349, #350, #391
   con <- test_con("ORACLE")
+  tbl <- "test_batched_write_w_dates"
 
   values <- data.frame(
     datetime = as.POSIXct(as.numeric(iris$Petal.Length * 10), origin = "2024-01-01", tz = "UTC"),
@@ -103,7 +104,29 @@ test_that("Writing date/datetime with batch size > 1", {
     integer = as.integer(iris$Petal.Width * 100),
     double = iris$Sepal.Length,
     varchar = iris$Species)
-  tbl <- local_table(con, "test_batched_write_w_dates", values)
-  res <- dbReadTable(con, "test_batched_write_w_dates")
+  tbl <- local_table(con, tbl, values)
+  res <- dbReadTable(con, tbl)
   expect_true(nrow(res) == nrow(values))
+  # Now write character dates and datetimes to these targets
+  # Issue #959
+  valuesMod <- values
+  valuesMod$date <- as.character(values$date)
+  dbAppendTable(con, tbl, valuesMod)
+  res <- dbReadTable(con, tbl)
+  expect_true(nrow(res) == 2 * nrow(values))
+  valuesMod$date <- as.character(values$datetime)
+  dbAppendTable(con, tbl, valuesMod)
+  res <- dbReadTable(con, tbl)
+  expect_true(nrow(res) == 3 * nrow(values))
+  valuesMod$datetime <- as.character(values$datetime)
+  dbAppendTable(con, tbl, valuesMod)
+  res <- dbReadTable(con, tbl)
+  expect_true(nrow(res) == 4 * nrow(values))
+  # Finally write dates to datetime targets
+  # Issue #959, continued
+  valuesMod$datetime <- values$date
+  dbAppendTable(con, tbl, valuesMod)
+  res <- dbReadTable(con, tbl)
+  expect_true(nrow(res) == 5 * nrow(values))
+
 })
