@@ -40,10 +40,12 @@ odbc_result::odbc_result(
 
   if (c_->interruptible_execution_) {
     auto exec_fn = std::mem_fn(&odbc_result::execute);
-    auto cleanup_fn = [this]() {
-      this->c_->set_current_result(nullptr);
-      this->s_->close();
-      this->s_.reset();
+    auto cleanup_fn = [this]() noexcept {
+      // Only signal cancel and detach from the connection.
+      // Do NOT close/reset the statement here; the worker thread may still be
+      // executing driver code using this handle.
+      // this->c_->set_current_result(nullptr);
+      try { this->c_->set_current_result(nullptr); } catch (...) {}
     };
     run_interruptible(std::bind(exec_fn, this), cleanup_fn);
   } else {
