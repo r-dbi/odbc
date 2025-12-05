@@ -117,7 +117,7 @@ setMethod("show", "OdbcDriver",
 #' The odbc package is one piece of the R interface to databases with support
 #' for ODBC:
 #'
-#' \figure{whole-game.png}{options: width='600'}
+#' \figure{whole-game.png}
 #'
 #' The package supports any **Database Management System (DBMS)** with ODBC
 #' support. Support for a given DBMS is provided by an **ODBC driver**, which
