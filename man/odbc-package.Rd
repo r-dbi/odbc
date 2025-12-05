@@ -20,12 +20,13 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Hadley Wickham \email{simon.couch@posit.co}
+\strong{Maintainer}: Hadley Wickham \email{hadley@posit.co}
 
 Authors:
 \itemize{
   \item Jim Hester
   \item Oliver Gjoneski
+  \item Simon Couch \email{simon.couch@posit.co}
 }
 
 Other contributors:

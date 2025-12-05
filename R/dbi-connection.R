@@ -61,6 +61,8 @@ setMethod("dbIsValid", "OdbcConnection",
 )
 
 #' @rdname OdbcConnection
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbDisconnect
 #' @export
 setMethod("dbDisconnect", "OdbcConnection",
@@ -76,6 +78,8 @@ setMethod("dbDisconnect", "OdbcConnection",
 )
 
 #' @rdname OdbcConnection
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbSendQuery
 #' @param params Optional query parameters, passed on to [dbBind()]
 #' @param immediate If `TRUE`, SQLExecDirect will be used instead of
@@ -96,6 +100,8 @@ setMethod("dbSendQuery", c("OdbcConnection", "character"),
 )
 
 #' @rdname OdbcConnection
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbExecute
 #' @export
 setMethod("dbExecute", c("OdbcConnection", "character"),
@@ -108,6 +114,8 @@ setMethod("dbExecute", c("OdbcConnection", "character"),
 )
 
 #' @rdname OdbcConnection
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbSendStatement
 #' @param params Query parameters to pass to [DBI::dbBind()].
 #'   See [DBI::dbBind()] for details.
@@ -148,6 +156,8 @@ setMethod("dbDataType", c("OdbcConnection", "data.frame"),
 NULL
 
 #' @rdname OdbcConnection
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbQuoteIdentifier
 #' @export
 setMethod("dbQuoteIdentifier", c("OdbcConnection", "character"),
@@ -169,6 +179,8 @@ setMethod("dbQuoteIdentifier", c("OdbcConnection", "character"),
 )
 
 #' @rdname OdbcConnection
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbQuoteIdentifier
 #' @export
 setMethod("dbQuoteIdentifier", c("OdbcConnection", "SQL"),
@@ -180,6 +192,8 @@ setMethod("dbQuoteIdentifier", c("OdbcConnection", "SQL"),
 #' `dbListTables()` provides names of remote tables accessible through this
 #' connection; `dbListFields()` provides names of columns within a table.
 #'
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbListTables
 #' @param catalog_name,schema_name,table_name Catalog, schema, and table names.
 #'
@@ -226,6 +240,8 @@ setMethod("dbGetInfo", "OdbcConnection",
 )
 
 #' @rdname OdbcConnection
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbGetQuery
 #' @inheritParams DBI::dbFetch
 #' @export
@@ -256,6 +272,8 @@ setMethod("dbGetQuery", c("OdbcConnection", "character"),
 )
 
 #' @rdname OdbcConnection
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbBegin
 #' @export
 setMethod("dbBegin", "OdbcConnection",
@@ -266,6 +284,8 @@ setMethod("dbBegin", "OdbcConnection",
 )
 
 #' @rdname OdbcConnection
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbCommit
 #' @export
 setMethod("dbCommit", "OdbcConnection",
@@ -276,6 +296,8 @@ setMethod("dbCommit", "OdbcConnection",
 )
 
 #' @rdname OdbcConnection
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbRollback
 #' @export
 setMethod("dbRollback", "OdbcConnection",

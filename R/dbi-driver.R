@@ -117,10 +117,7 @@ setMethod("show", "OdbcDriver",
 #' The odbc package is one piece of the R interface to databases with support
 #' for ODBC:
 #'
-#' ![A diagram containing four boxes with arrows linking each pointing left to
-#' right. The boxes read, in order, R interface, driver manager, ODBC driver,
-#' and database. The left-most box, R interface, contains three smaller
-#' components, labeled dbplyr, DBI, and odbc.](whole-game.png){options: style="width: 95%;"}
+#' \figure{whole-game.png}
 #'
 #' The package supports any **Database Management System (DBMS)** with ODBC
 #' support. Support for a given DBMS is provided by an **ODBC driver**, which
@@ -256,6 +253,8 @@ setMethod("dbConnect", "OdbcDriver",
 )
 
 #' @rdname OdbcDriver
+#' @param dbObj A object inheriting from [DBI::DBIDriver-class]
+#' or [DBI::DBIConnection-class]
 #' @inheritParams DBI::dbDataType
 #' @export
 setMethod("dbDataType", "OdbcDriver",
@@ -265,6 +264,8 @@ setMethod("dbDataType", "OdbcDriver",
 )
 
 #' @rdname OdbcDriver
+#' @param dbObj A object inheriting from [DBI::DBIDriver-class]
+#' or [DBI::DBIConnection-class]
 #' @inheritParams DBI::dbDataType
 #' @export
 setMethod("dbDataType", c("OdbcDriver", "list"),
@@ -289,11 +290,15 @@ odbc_data_type_df <- function(dbObj, obj, ...) {
 }
 
 #' @rdname OdbcDriver
+#' @param dbObj A object inheriting from [DBI::DBIDriver-class]
+#' or [DBI::DBIConnection-class]
 #' @inheritParams DBI::dbDataType
 #' @export
 setMethod("dbDataType", c("OdbcDriver", "data.frame"), odbc_data_type_df)
 
 #' @rdname OdbcDriver
+#' @param dbObj A object inheriting from [DBI::DBIDriver-class]
+#' or [DBI::DBIConnection-class]
 #' @inheritParams DBI::dbIsValid
 #' @export
 setMethod("dbIsValid", "OdbcDriver",
@@ -303,6 +308,8 @@ setMethod("dbIsValid", "OdbcDriver",
 )
 
 #' @rdname OdbcDriver
+#' @param dbObj A object inheriting from [DBI::DBIDriver-class]
+#' or [DBI::DBIConnection-class]
 #' @inheritParams DBI::dbGetInfo
 #' @export
 setMethod("dbGetInfo", "OdbcDriver",

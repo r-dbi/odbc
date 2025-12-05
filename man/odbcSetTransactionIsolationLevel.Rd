@@ -7,8 +7,8 @@
 odbcSetTransactionIsolationLevel(conn, levels)
 }
 \arguments{
-\item{conn}{A \link[DBI:DBIConnection-class]{DBI::DBIConnection} object,
-as returned by \code{\link[DBI:dbConnect]{dbConnect()}}.}
+\item{conn}{A \link[DBI:DBIConnection-class]{DBI::DBIConnection} object, as returned by
+\code{dbConnect()}.}
 
 \item{levels}{One or more of 'read_uncommitted', 'read_committed', 'repeatable_read', 'serializable'.}
 }

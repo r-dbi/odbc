@@ -262,6 +262,8 @@ createFields <- function(con, fields, field.types, row.names) {
 }
 
 #' @rdname OdbcConnection
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbListFields
 #' @export
 setMethod("dbListFields", c("OdbcConnection", "Id"),
@@ -276,6 +278,8 @@ setMethod("dbListFields", c("OdbcConnection", "Id"),
 )
 
 #' @rdname OdbcConnection
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbListFields
 #' @export
 setMethod("dbListFields", c("OdbcConnection", "SQL"),
@@ -285,6 +289,8 @@ setMethod("dbListFields", c("OdbcConnection", "SQL"),
 )
 
 #' @rdname OdbcConnection
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbListFields
 #' @param catalog_name Catalog where table is located.
 #' @param schema_name Schema where table is located.
@@ -315,6 +321,8 @@ setMethod("dbListFields", c("OdbcConnection", "character"),
 )
 
 #' @rdname OdbcConnection
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbExistsTable
 #' @export
 setMethod("dbExistsTable", c("OdbcConnection", "Id"),
@@ -329,6 +337,8 @@ setMethod("dbExistsTable", c("OdbcConnection", "Id"),
 )
 
 #' @rdname OdbcConnection
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbExistsTable
 #' @export
 setMethod("dbExistsTable", c("OdbcConnection", "SQL"),
@@ -338,6 +348,8 @@ setMethod("dbExistsTable", c("OdbcConnection", "SQL"),
 )
 
 #' @rdname OdbcConnection
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbExistsTable
 #' @export
 setMethod("dbExistsTable", c("OdbcConnection", "character"),
@@ -350,6 +362,8 @@ setMethod("dbExistsTable", c("OdbcConnection", "character"),
 
 
 #' @rdname OdbcConnection
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbRemoveTable
 #' @export
 setMethod("dbRemoveTable", c("OdbcConnection", "character"),

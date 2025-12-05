@@ -33,7 +33,9 @@ setMethod("odbcDataType", "Redshift", function(con, obj, ...) {
 #' automatically determines whether IAM-based credentials are available, much
 #' like other AWS SDKs and tools. This requires the \pkg{paws.common} package.
 #'
-#' @inheritParams DBI::dbConnect
+#' @param drv an object that inherits from [DBI::DBIDriver-class],
+#' or an existing [DBI::DBIConnection-class]
+#' object (in order to clone an existing connection).
 #' @param clusterId The Redshift cluster identifier. Only one of `clusterId` or
 #'   the more verbose `server` is required.
 #' @param region The AWS region the Redshift cluster runs in. Ignored when

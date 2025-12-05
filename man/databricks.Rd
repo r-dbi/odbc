@@ -22,7 +22,7 @@ databricks()
 )
 }
 \arguments{
-\item{drv}{An object that inherits from \link[DBI:DBIDriver-class]{DBI::DBIDriver},
+\item{drv}{an object that inherits from \link[DBI:DBIDriver-class]{DBI::DBIDriver},
 or an existing \link[DBI:DBIConnection-class]{DBI::DBIConnection}
 object (in order to clone an existing connection).}
 

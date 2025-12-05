@@ -46,6 +46,7 @@ setClass(
 )
 
 #' @rdname OdbcResult
+#' @param res An object inheriting from [DBI::DBIResult-class].
 #' @inheritParams DBI::dbClearResult
 #' @export
 setMethod("dbClearResult", "OdbcResult",
@@ -59,6 +60,7 @@ setMethod("dbClearResult", "OdbcResult",
 )
 
 #' @rdname OdbcResult
+#' @param res An object inheriting from [DBI::DBIResult-class].
 #' @inheritParams DBI::dbFetch
 #' @export
 setMethod("dbFetch", "OdbcResult",
@@ -70,6 +72,7 @@ setMethod("dbFetch", "OdbcResult",
 )
 
 #' @rdname OdbcResult
+#' @param res An object inheriting from [DBI::DBIResult-class].
 #' @inheritParams DBI::dbHasCompleted
 #' @export
 setMethod("dbHasCompleted", "OdbcResult",
@@ -90,6 +93,7 @@ setMethod("dbIsValid", "OdbcResult",
 )
 
 #' @rdname OdbcResult
+#' @param res An object inheriting from [DBI::DBIResult-class].
 #' @inheritParams DBI::dbGetStatement
 #' @export
 setMethod("dbGetStatement", "OdbcResult",
@@ -102,6 +106,7 @@ setMethod("dbGetStatement", "OdbcResult",
 )
 
 #' @rdname OdbcResult
+#' @param res An object inheriting from [DBI::DBIResult-class].
 #' @inheritParams DBI::dbColumnInfo
 #' @export
 setMethod("dbColumnInfo", "OdbcResult",
@@ -111,6 +116,7 @@ setMethod("dbColumnInfo", "OdbcResult",
 )
 
 #' @rdname OdbcResult
+#' @param res An object inheriting from [DBI::DBIResult-class].
 #' @inheritParams DBI::dbGetRowCount
 #' @export
 setMethod("dbGetRowCount", "OdbcResult",
@@ -120,6 +126,7 @@ setMethod("dbGetRowCount", "OdbcResult",
 )
 
 #' @rdname OdbcResult
+#' @param res An object inheriting from [DBI::DBIResult-class].
 #' @inheritParams DBI::dbGetRowsAffected
 #' @export
 setMethod("dbGetRowsAffected", "OdbcResult",
@@ -129,6 +136,7 @@ setMethod("dbGetRowsAffected", "OdbcResult",
 )
 
 #' @rdname OdbcResult
+#' @param res An object inheriting from [DBI::DBIResult-class].
 #' @inheritParams DBI::dbBind
 #' @inheritParams DBI-tables
 #' @export

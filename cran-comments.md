@@ -1,7 +1,3 @@
-## R CMD check results
-
-Recent MacOS builds trigger the NOTE "installed size is 11.0Mb." MacOS builds include all debug symbols and CRAN policy doesn't permit building without them.
-
 ## revdepcheck results
 
 We checked 39 reverse dependencies, comparing R CMD check results across CRAN and dev versions of this package.

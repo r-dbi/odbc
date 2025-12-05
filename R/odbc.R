@@ -1,7 +1,8 @@
 #' Set the Transaction Isolation Level for a Connection
 #'
 #' @param levels One or more of `r odbc:::choices_rd(names(odbc:::transactionLevels()))`.
-#' @inheritParams DBI::dbDisconnect
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @seealso <https://learn.microsoft.com/en-us/sql/odbc/reference/develop-app/setting-the-transaction-isolation-level>
 #' @export
 #' @examples
