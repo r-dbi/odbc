@@ -256,6 +256,8 @@ setMethod("dbConnect", "OdbcDriver",
 )
 
 #' @rdname OdbcDriver
+#' @param dbObj A object inheriting from [DBI::DBIDriver-class]
+#' or [DBI::DBIConnection-class]
 #' @inheritParams DBI::dbDataType
 #' @export
 setMethod("dbDataType", "OdbcDriver",
@@ -265,6 +267,8 @@ setMethod("dbDataType", "OdbcDriver",
 )
 
 #' @rdname OdbcDriver
+#' @param dbObj A object inheriting from [DBI::DBIDriver-class]
+#' or [DBI::DBIConnection-class]
 #' @inheritParams DBI::dbDataType
 #' @export
 setMethod("dbDataType", c("OdbcDriver", "list"),
@@ -289,11 +293,15 @@ odbc_data_type_df <- function(dbObj, obj, ...) {
 }
 
 #' @rdname OdbcDriver
+#' @param dbObj A object inheriting from [DBI::DBIDriver-class]
+#' or [DBI::DBIConnection-class]
 #' @inheritParams DBI::dbDataType
 #' @export
 setMethod("dbDataType", c("OdbcDriver", "data.frame"), odbc_data_type_df)
 
 #' @rdname OdbcDriver
+#' @param dbObj A object inheriting from [DBI::DBIDriver-class]
+#' or [DBI::DBIConnection-class]
 #' @inheritParams DBI::dbIsValid
 #' @export
 setMethod("dbIsValid", "OdbcDriver",
@@ -303,6 +311,8 @@ setMethod("dbIsValid", "OdbcDriver",
 )
 
 #' @rdname OdbcDriver
+#' @param dbObj A object inheriting from [DBI::DBIDriver-class]
+#' or [DBI::DBIConnection-class]
 #' @inheritParams DBI::dbGetInfo
 #' @export
 setMethod("dbGetInfo", "OdbcDriver",

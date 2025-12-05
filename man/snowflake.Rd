@@ -22,8 +22,8 @@ snowflake()
 )
 }
 \arguments{
-\item{drv}{an object that inherits from \linkS4class{DBIDriver},
-or an existing \linkS4class{DBIConnection}
+\item{drv}{an object that inherits from \link[DBI:DBIDriver-class]{DBI::DBIDriver},
+or an existing \link[DBI:DBIConnection-class]{DBI::DBIConnection}
 object (in order to clone an existing connection).}
 
 \item{account}{A Snowflake \href{https://docs.snowflake.com/en/user-guide/admin-account-identifier}{account identifier},

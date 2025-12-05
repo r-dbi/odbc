@@ -1,5 +1,3 @@
-#' @aliases NULL
-#' @aliases odbc-package
 #' @keywords internal
 "_PACKAGE"
 
