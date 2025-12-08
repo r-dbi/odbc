@@ -139,7 +139,7 @@ databases.
 The odbc package is one piece of the R interface to databases with support
 for ODBC:
 
-\figure{whole-game.png}{options: style="width: 95\%;"}
+\figure{whole-game.png}
 
 The package supports any \strong{Database Management System (DBMS)} with ODBC
 support. Support for a given DBMS is provided by an \strong{ODBC driver}, which

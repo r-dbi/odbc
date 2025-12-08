@@ -95,8 +95,8 @@
 
 \item{...}{Other arguments to methods.}
 
-\item{conn}{A \link[DBI:DBIConnection-class]{DBI::DBIConnection} object,
-as returned by \code{\link[DBI:dbConnect]{dbConnect()}}.}
+\item{conn}{A \link[DBI:DBIConnection-class]{DBI::DBIConnection} object, as returned by
+\code{dbConnect()}.}
 
 \item{statement}{a character string containing SQL.}
 
