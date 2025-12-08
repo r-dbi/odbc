@@ -16,13 +16,15 @@ Useful links:
 
 ## Author
 
-**Maintainer**: Hadley Wickham <simon.couch@posit.co>
+**Maintainer**: Hadley Wickham <hadley@posit.co>
 
 Authors:
 
 - Jim Hester
 
 - Oliver Gjoneski
+
+- Simon Couch <simon.couch@posit.co>
 
 Other contributors:
 

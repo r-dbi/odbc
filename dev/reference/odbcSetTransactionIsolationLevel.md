@@ -15,7 +15,7 @@ odbcSetTransactionIsolationLevel(conn, levels)
   A
   [DBI::DBIConnection](https://dbi.r-dbi.org/reference/DBIConnection-class.html)
   object, as returned by
-  [`dbConnect()`](https://dbi.r-dbi.org/reference/dbConnect.html).
+  [`dbConnect()`](https://odbc.r-dbi.org/dev/reference/dbConnect-OdbcDriver-method.md).
 
 - levels:
 

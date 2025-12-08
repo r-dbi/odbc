@@ -2,19 +2,17 @@
 
 ## odbc (development version)
 
+## odbc 1.6.4
+
 - Fix writing of \[R\] date/time values that have integer storage.
   ([\#952](https://github.com/r-dbi/odbc/issues/952))
 
-- Oracle:
+- Oracle: Fix writing values to `DATE` targets.
+  ([\#959](https://github.com/r-dbi/odbc/issues/959))
 
-  - Fix writing values to `DATE` targets.
-    ([\#959](https://github.com/r-dbi/odbc/issues/959))
-
-- SQL Server:
-
-  - Fix time zone interpretation in `DATETIMEOFFSET` data; now follows
-    ISO 8061 convention where positive offset denotes time zone east of
-    Greenwich. ([\#946](https://github.com/r-dbi/odbc/issues/946))
+- SQL Server: Fix time zone interpretation in `DATETIMEOFFSET` data; now
+  follows ISO 8061 convention where positive offset denotes time zone
+  east of Greenwich. ([\#946](https://github.com/r-dbi/odbc/issues/946))
 
 ## odbc 1.6.3
 

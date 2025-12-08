@@ -9,7 +9,7 @@ part of the dbConnect call in the named list attributes parameter:"><meta proper
 
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.6.3.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.6.4.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,19 +52,21 @@ part of the <code>dbConnect</code> call in the named list <code>attributes</code
 <ul><li><p><code>azure_token</code>: This should be a string scalar; in particular Azure Active
 Directory authentication token.  Only for use with Microsoft SQL Server and
 with limited support away from the OEM Microsoft driver.</p></li>
+<li><p><code>sf_private_key</code>: This parameter is specific to establishing a connection
+to <code>snowflake</code> and is understood by both OEM, as well as <code>Posit</code>
+pro drivers.  Argument should be a string (scalar); in particular a
+PEM-encoded private key.  Note,
+if using private key authentication, the <code>authenticator</code> connection
+string attribute must be set to <code>SNOWFLAKE_JWT</code>.
+Using this <em>connection</em> attribute is an alternative to using the
+<code>PRIV_KEY_FILE</code> connection string attribute.</p></li>
+<li><p><code>sf_private_key_password</code>: If key passed using <code>sf_private_key</code> is
+encrypted, you can use this attribute to communicate the password.</p></li>
 </ul></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="dbConnect-OdbcDriver-method.html">dbConnect</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu">odbc</span><span class="fu">::</span><span class="fu"><a href="dbConnect-OdbcDriver-method.html">odbc</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  dsn <span class="op">=</span> <span class="st">"my_azure_mssql_db"</span>,</span></span>
-<span class="r-in"><span>  Encrypt <span class="op">=</span> <span class="st">"yes"</span>,</span></span>
-<span class="r-in"><span>  attributes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"azure_token"</span> <span class="op">=</span> <span class="va">.token</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-</code></pre></div>
+
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

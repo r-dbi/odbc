@@ -45,7 +45,7 @@ dbConnect(
 
 - drv:
 
-  An object that inherits from
+  an object that inherits from
   [DBI::DBIDriver](https://dbi.r-dbi.org/reference/DBIDriver-class.html),
   or an existing
   [DBI::DBIConnection](https://dbi.r-dbi.org/reference/DBIConnection-class.html)

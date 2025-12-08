@@ -25,12 +25,12 @@ Source:
 
 Hester J, Wickham H, Gjoneski O, Couch S (2025). *odbc: Connect to ODBC
 Compatible Databases (using the DBI Interface)*. R package version
-1.6.3.9000, <https://odbc.r-dbi.org>.
+1.6.4.9000, <https://odbc.r-dbi.org>.
 
     @Manual{,
       title = {odbc: Connect to ODBC Compatible Databases (using the DBI Interface)},
       author = {Jim Hester and Hadley Wickham and Oliver Gjoneski and Simon Couch},
       year = {2025},
-      note = {R package version 1.6.3.9000},
+      note = {R package version 1.6.4.9000},
       url = {https://odbc.r-dbi.org},
     }
