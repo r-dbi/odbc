@@ -412,6 +412,69 @@ test_that("Case 1: Named connection loads and merges with kwargs", {
   expect_equal(args$warehouse, "OVERRIDE_WH")  # programmatic override
 })
 
+test_that("Config file with user and authenticator (no password) works", {
+  skip_if_not_installed("toml")
+
+  config_dir <- tempfile()
+  dir.create(config_dir)
+
+  withr::defer(unlink(config_dir, recursive = TRUE))
+
+  # This mirrors a typical externalbrowser config - user + authenticator, no password
+  writeLines(
+    c(
+      '[default]',
+      'account = "testaccount"',
+      'user = "user@example.com"',
+      'authenticator = "externalbrowser"'
+    ),
+    file.path(config_dir, "connections.toml")
+  )
+
+  withr::local_envvar(
+    SNOWFLAKE_HOME = config_dir,
+    SF_SKIP_WARNING_FOR_READ_PERMISSIONS_ON_CONFIG_FILE = "true"
+  )
+
+  # This should not error with "matched by multiple actual arguments"
+  args <- snowflake_args(driver = "driver")
+
+  expect_equal(args$account, "testaccount")
+  expect_equal(args$uid, "user@example.com")
+  expect_equal(args$authenticator, "externalbrowser")
+  # pwd should be NULL (not required with externalbrowser)
+  expect_null(args$pwd)
+})
+
+test_that("Config file authenticator is preserved in final args", {
+  skip_if_not_installed("toml")
+
+  config_dir <- tempfile()
+  dir.create(config_dir)
+  withr::defer(unlink(config_dir, recursive = TRUE))
+
+  writeLines(
+    c(
+      '[default]',
+      'account = "testaccount"',
+      'user = "testuser"',
+      'authenticator = "SNOWFLAKE_JWT"'
+    ),
+    file.path(config_dir, "connections.toml")
+  )
+
+  withr::local_envvar(
+    SNOWFLAKE_HOME = config_dir,
+    SF_SKIP_WARNING_FOR_READ_PERMISSIONS_ON_CONFIG_FILE = "true"
+  )
+
+  args <- snowflake_args(driver = "driver")
+
+  # Authenticator from config should be in final args
+  expect_equal(args$authenticator, "SNOWFLAKE_JWT")
+  expect_equal(args$uid, "testuser")
+})
+
 test_that("Case 2: Default connection loads when no args provided", {
   skip_if_not_installed("toml")
 

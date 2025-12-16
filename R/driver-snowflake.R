@@ -340,7 +340,12 @@ snowflake_args <- function(connection_name = NULL,
   )
 
   # 8. Merge auth into args, then apply final programmatic overrides
-  all <- utils::modifyList(c(args, auth), list(...))
+  # Remove uid/pwd/authenticator from args before merging with auth to avoid duplicates
+  # (auth may return these, and args already has them from resolved_params)
+  args$uid <- NULL
+  args$pwd <- NULL
+  args$authenticator <- NULL
+  all <- utils::modifyList(utils::modifyList(args, auth), list(...))
 
   # Set application value and respect the Snowflake Partner environment variable, if present.
   if (is.null(all$application)) {
@@ -458,7 +463,7 @@ snowflake_auth_args <- function(account,
       # allow for uid without pwd for alt auth (#817, #889)
       (!is.null(pwd) ||
        isTRUE(authenticator %in% c("externalbrowser", "SNOWFLAKE_JWT")))) {
-    return(list(uid = uid, pwd = pwd))
+    return(list(uid = uid, pwd = pwd, authenticator = authenticator))
   } else if (xor(is.null(uid), is.null(pwd))) {
     abort(
       c(
