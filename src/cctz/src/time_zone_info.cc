@@ -48,20 +48,29 @@ namespace cctz {
 
 namespace {
 
-// Convert errnum to a message, using buf[buflen] if necessary.
-// buf must be non-null, and buflen non-zero.
-char* errmsg(int errnum, char* buf, size_t buflen) {
+// GNU strerror_r() adapter.
+template <char* (*strerror_r)(int, char*, std::size_t)>
+char* StrError(int errnum, char* buf, std::size_t buflen) {
+  return strerror_r(errnum, buf, buflen);
+}
+
+// XSI strerror_r() adapter.
+template <int (*strerror_r)(int, char*, std::size_t)>
+char* StrError(int errnum, char* buf, std::size_t buflen) {
+  if (int e = strerror_r(errnum, buf, buflen))
+    strerror_r(e < 0 ? EINVAL : e, buf, buflen);
+  return buf;
+}
+
+// Returns a string describing the error number.
+std::string StrError(int errnum) {
+  char buf[128];
 #if defined(_WIN32) || defined(_WIN64)
-  strerror_s(buf, buflen, errnum);
-  return buf;
-#elif defined(__APPLE__)
-  strerror_r(errnum, buf, buflen);
-  return buf;
-#elif ((_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && !_GNU_SOURCE) || __MUSL__
-  strerror_r(errnum, buf, buflen);
+  if (int e = strerror_s(buf, sizeof buf, errnum))
+    strerror_s(buf, sizeof buf, e);
   return buf;
 #else
-  return strerror_r(errnum, buf, buflen);
+  return StrError<strerror_r>(errnum, buf, sizeof buf);
 #endif
 }
 
@@ -684,8 +693,7 @@ bool TimeZoneInfo::Load(const std::string& name) {
     loaded = Load(name, fp);
     fclose(fp);
   } else {
-    char ebuf[64];
-    std::clog << path << ": " << errmsg(errno, ebuf, sizeof ebuf) << "\n";
+    std::clog << path << ": " << StrError(errno) << "\n";
   }
   return loaded;
 }

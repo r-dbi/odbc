@@ -134,8 +134,8 @@ setMethod("odbcConnectionColumns_", c("Oracle", "character"),
     # (#349, #350, #391).
     res$data_type <- as.numeric(res$data_type)
     isDate <- res$field.type == "DATE"
-    res$data_type[isDate] <- 91
-    res$column_size[isDate] <- 6
+    res$data_type[isDate] <- 93
+    res$column_size[isDate] <- 16
     isTimestamp <- grepl("TIMESTAMP", res$field.type)
     res$data_type[isTimestamp] <- 93
     res$column_size[isTimestamp] <- 16

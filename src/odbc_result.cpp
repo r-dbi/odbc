@@ -112,11 +112,9 @@ void odbc_result::bind_columns(
     bind_date<T, double>(obj, data, column, start, size, buffers);
     break;
   case datetime_int_t:
-    Rcpp::Rcout << "bindings int datetime";
     bind_datetime<T, int>(obj, data, column, start, size, buffers);
     break;
   case datetime_double_t:
-    Rcpp::Rcout << "bindings double datetime";
     bind_datetime<T, double>(obj, data, column, start, size, buffers);
     break;
   case double_t:
@@ -402,7 +400,7 @@ void odbc_result::bind_datetime(
     param_data& buffers) {
 
   buffers.nulls_[column] = std::vector<uint8_t>(size, false);
-  auto d = (SourceType*)DATAPTR(data[column]);
+  auto d = (SourceType*)DATAPTR_RO(data[column]);
 
   nanodbc::timestamp ts;
   short precision = 3;
@@ -443,7 +441,7 @@ void odbc_result::bind_date(
     param_data& buffers) {
 
   buffers.nulls_[column] = std::vector<uint8_t>(size, false);
-  auto d = (SourceType*)DATAPTR(data[column]);
+  auto d = (SourceType*)DATAPTR_RO(data[column]);
 
   nanodbc::date dt;
   for (size_t i = 0; i < size; ++i) {
@@ -733,7 +731,6 @@ std::vector<r_type> odbc_result::column_types(Rcpp::List const& list) {
       if (x.inherits("Date")) {
         types.push_back(date_int_t);
       } else if (x.inherits("POSIXct")) {
-        Rcpp::Rcout << "Pushing datetime_int_t";
         types.push_back(datetime_int_t);
       } else {
         types.push_back(integer_t);
