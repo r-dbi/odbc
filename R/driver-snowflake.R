@@ -104,6 +104,29 @@ setMethod("odbcDataType", "Snowflake",
 #' credentials on Posit Connect if the \pkg{connectcreds} package is
 #' installed.
 #'
+#' ## Configuration Files
+#'
+#' Connection parameters can be loaded from Snowflake configuration files
+#' (`~/.snowflake/connections.toml` or `~/.snowflake/config.toml`), following
+#' the same conventions as the Snowflake Python connector. This requires the
+#' \pkg{toml} package to be installed.
+#'
+#' Configuration files are loaded from `SNOWFLAKE_HOME` environment variable,
+#' `~/.snowflake/` if it exists, or platform-specific defaults
+#' (`~/Library/Application Support/snowflake/` on macOS,
+#' `~/.config/snowflake/` on Linux).
+#'
+#' The `SNOWFLAKE_CONNECTIONS` environment variable can contain a full TOML
+#' document that overrides file-based connections. The
+#' `SNOWFLAKE_DEFAULT_CONNECTION_NAME` environment variable overrides the
+#' default connection name.
+#'
+#' On non-Windows platforms, configuration files are checked for secure
+#' permissions. Files writable by group or others will cause an error; files
+#' readable by others will generate a warning. Set
+#' `SF_SKIP_WARNING_FOR_READ_PERMISSIONS_ON_CONFIG_FILE=true` to suppress
+#' these checks.
+#'
 #' In addition, on macOS platforms, the `dbConnect` method will check and warn
 #' if it detects irregularities with how the driver is configured, unless the
 #' `odbc.no_config_override` environment variable is set.
@@ -111,9 +134,17 @@ setMethod("odbcDataType", "Snowflake",
 #' @param drv an object that inherits from [DBI::DBIDriver-class],
 #' or an existing [DBI::DBIConnection-class]
 #' object (in order to clone an existing connection).
+#' @param connection_name The name of a connection profile to load from
+#'   configuration files. If provided, connection parameters are loaded from
+#'   `~/.snowflake/connections.toml` (or the location specified by
+#'   `SNOWFLAKE_HOME`) and merged with any explicitly provided arguments.
+#'   Requires the \pkg{toml} package.
+#' @param connections_file_path Optional custom path to a `connections.toml`
+#'   file. If `NULL`, uses the default location within `SNOWFLAKE_HOME`.
 #' @param account A Snowflake [account
 #'   identifier](https://docs.snowflake.com/en/user-guide/admin-account-identifier),
-#'   e.g. `"testorg-test_account"`.
+#'   e.g. `"testorg-test_account"`. If not provided and no `connection_name`
+#'   is specified, the `SNOWFLAKE_ACCOUNT` environment variable will be used.
 #' @param driver The name of the Snowflake ODBC driver, or `NULL` to use the
 #'   default name.
 #' @param warehouse The name of a Snowflake compute warehouse, or `NULL` to use
@@ -123,7 +154,8 @@ setMethod("odbcDataType", "Snowflake",
 #' @param schema The name of a Snowflake database schema, or `NULL` to use the
 #'   default.
 #' @param uid,pwd Manually specify a username and password for authentication.
-#'   Specifying these options will disable ambient credential discovery.
+#'   Specifying these options will disable ambient credential discovery and
+#'   config file loading (unless `connection_name` is also specified).
 #' @param ... Further arguments passed on to [`dbConnect()`].
 #'
 #' @returns An `OdbcConnection` object with an active connection to a Snowflake
@@ -133,6 +165,17 @@ setMethod("odbcDataType", "Snowflake",
 #' \dontrun{
 #' # Use ambient credentials.
 #' DBI::dbConnect(odbc::snowflake())
+#'
+#' # Load connection from config file (~/.snowflake/connections.toml)
+#' # Requires the toml package to be installed.
+#' DBI::dbConnect(odbc::snowflake(), connection_name = "prod")
+#'
+#' # Load connection and override specific parameters
+#' DBI::dbConnect(
+#'   odbc::snowflake(),
+#'   connection_name = "prod",
+#'   warehouse = "ADHOC_WH"
+#' )
 #'
 #' # Use browser-based SSO (if configured). Only works on desktop.
 #' DBI::dbConnect(
@@ -170,7 +213,9 @@ setClass("SnowflakeOdbcDriver", contains = "OdbcDriver")
 setMethod(
   "dbConnect", "SnowflakeOdbcDriver",
   function(drv,
-           account = Sys.getenv("SNOWFLAKE_ACCOUNT"),
+           connection_name = NULL,
+           connections_file_path = NULL,
+           account = NULL,
            driver = NULL,
            warehouse = NULL,
            database = NULL,
@@ -179,13 +224,17 @@ setMethod(
            pwd = NULL,
            ...) {
     call <- caller_env()
-    check_string(account, call = call)
+    check_string(connection_name, allow_null = TRUE, call = call)
+    check_string(connections_file_path, allow_null = TRUE, call = call)
+    check_string(account, allow_null = TRUE, call = call)
     check_string(driver, allow_null = TRUE, call = call)
     check_string(warehouse, allow_null = TRUE, call = call)
     check_string(database, allow_null = TRUE, call = call)
     check_string(uid, allow_null = TRUE, call = call)
     check_string(pwd, allow_null = TRUE, call = call)
     args <- snowflake_args(
+      connection_name = connection_name,
+      connections_file_path = connections_file_path,
       account = account,
       driver = driver,
       warehouse = warehouse,
@@ -202,17 +251,95 @@ setMethod(
   }
 )
 
-snowflake_args <- function(account = Sys.getenv("SNOWFLAKE_ACCOUNT"),
+snowflake_args <- function(connection_name = NULL,
+                           connections_file_path = NULL,
+                           account = NULL,
                            driver = NULL,
+                           warehouse = NULL,
+                           database = NULL,
+                           schema = NULL,
+                           uid = NULL,
+                           pwd = NULL,
                            ...) {
+  # Check for Workbench mode early - skip config loading if SNOWFLAKE_HOME
+  # contains "posit-workbench" (Workbench handles credentials differently)
+  sf_home <- Sys.getenv("SNOWFLAKE_HOME")
+  is_workbench_mode <- grepl("posit-workbench", sf_home, fixed = TRUE)
+
+  # 1. Collect programmatic parameters (only non-NULL values)
+  programmatic_params <- list()
+  if (!is.null(account)) programmatic_params$account <- account
+  if (!is.null(warehouse)) programmatic_params$warehouse <- warehouse
+  if (!is.null(database)) programmatic_params$database <- database
+  if (!is.null(schema)) programmatic_params$schema <- schema
+  if (!is.null(uid)) programmatic_params$uid <- uid
+  if (!is.null(pwd)) programmatic_params$pwd <- pwd
+
+  # Add any additional params from ...
+  dots <- list(...)
+  programmatic_params <- c(programmatic_params, dots)
+
+  # 2. Resolve connection parameters (handles all 3 cases)
+  # Skip config file loading in Workbench mode (Workbench handles credentials separately)
+  if (is_workbench_mode && is.null(connection_name)) {
+    # Treat Workbench mode like programmatic mode (skip config loading)
+    resolved <- list(params = programmatic_params, mode = "programmatic")
+  } else {
+    resolved <- resolve_connection_params(
+      connection_name = connection_name,
+      connections_file_path = connections_file_path,
+      programmatic_params = programmatic_params
+    )
+  }
+  resolved_params <- resolved$params
+  is_programmatic_mode <- resolved$mode == "programmatic"
+
+  # 3. Apply SNOWFLAKE_ACCOUNT env var only in Case 3 (programmatic mode)
+  if (is_programmatic_mode) {
+    resolved_params$account <- resolved_params$account %||%
+      Sys.getenv("SNOWFLAKE_ACCOUNT", unset = NA_character_)
+    if (is.na(resolved_params$account)) {
+      resolved_params$account <- NULL
+    }
+  }
+
+  # 4. Extract key values with fallbacks
+  account <- resolved_params$account
+  driver <- driver %||% resolved_params$driver %||% snowflake_default_driver()
+
+  # 5. Build base args
   args <- list(
-    driver = driver %||% snowflake_default_driver(),
+    driver = driver,
     account = account,
     server = snowflake_server(account),
     # Connections to Snowflake are always over HTTPS.
     port = 443
   )
-  auth <- snowflake_auth_args(account, ...)
+
+  # 6. Merge resolved params into args
+  args <- utils::modifyList(args, resolved_params)
+
+  # 7. Get authentication args
+  # Filter out params that are already handled to avoid "matched by multiple actual arguments"
+  dots_filtered <- list(...)
+  dots_filtered$uid <- NULL
+  dots_filtered$pwd <- NULL
+  dots_filtered$authenticator <- NULL
+
+  auth <- do.call(
+    snowflake_auth_args,
+    c(
+      list(
+        account = account,
+        uid = resolved_params$uid,
+        pwd = resolved_params$pwd,
+        authenticator = resolved_params$authenticator
+      ),
+      dots_filtered
+    )
+  )
+
+  # 8. Merge auth into args, then apply final programmatic overrides
   all <- utils::modifyList(c(args, auth), list(...))
 
   # Set application value and respect the Snowflake Partner environment variable, if present.
@@ -391,4 +518,359 @@ workbench_snowflake_token <- function(account, sf_home) {
   }
   # Drop enclosing quotes.
   gsub("\"", "", token)
+}
+
+# --- Snowflake Configuration File Support ---
+# These functions implement loading connection parameters from TOML config files
+# following the Python Snowflake connector behavior.
+
+#' Get the Snowflake configuration directory path
+#'
+#' Resolves the configuration directory with the following precedence:
+#' 1. SNOWFLAKE_HOME environment variable (with ~ expansion)
+#' 2. ~/.snowflake/ if it exists
+#' 3. Platform-specific defaults
+#'
+#' @return Character string path to config directory
+#' @noRd
+snowflake_config_dir <- function() {
+  # 1. Check SNOWFLAKE_HOME env var with ~ expansion
+  snowflake_home <- Sys.getenv("SNOWFLAKE_HOME", "")
+  if (nchar(snowflake_home) > 0) {
+    return(path.expand(snowflake_home))
+  }
+
+  # 2. Check if ~/.snowflake/ exists
+  default_path <- path.expand("~/.snowflake")
+  if (dir.exists(default_path)) {
+    return(default_path)
+
+  }
+
+  # 3. Platform-specific fallback
+  if (is_windows()) {
+    # Windows: %LOCALAPPDATA%/snowflake/
+    return(file.path(Sys.getenv("LOCALAPPDATA"), "snowflake"))
+  } else if (Sys.info()["sysname"] == "Darwin") {
+    # macOS: ~/Library/Application Support/snowflake/
+    return(path.expand("~/Library/Application Support/snowflake"))
+  } else {
+    # Linux: respect XDG_CONFIG_HOME or default to ~/.config/snowflake/
+    xdg_config <- Sys.getenv("XDG_CONFIG_HOME", "")
+    if (nchar(xdg_config) > 0) {
+      return(file.path(xdg_config, "snowflake"))
+    } else {
+      return(path.expand("~/.config/snowflake"))
+    }
+  }
+}
+
+#' Check file permissions for security (non-Windows only)
+#'
+#' @param file_path Path to TOML config file
+#' @return NULL invisibly; throws error or warning on bad permissions
+#' @noRd
+check_toml_file_permissions <- function(file_path) {
+  # Skip on Windows
+  if (is_windows()) {
+    return(invisible())
+  }
+
+  # Check env var bypass
+  if (nchar(Sys.getenv("SF_SKIP_WARNING_FOR_READ_PERMISSIONS_ON_CONFIG_FILE")) > 0) {
+    return(invisible())
+  }
+
+  # Get file info
+  file_info <- file.info(file_path)
+  mode <- file_info$mode
+
+  if (is.na(mode)) {
+    return(invisible())
+  }
+
+  # Convert mode to integer for bit manipulation
+  # mode is an "octmode" object, need explicit conversion
+  mode_int <- as.integer(mode)
+
+  # Check permission bits:
+  # Group write = 020 (octal) = 16 (decimal)
+  # Other write = 002 (octal) = 2 (decimal)
+  # Other read = 004 (octal) = 4 (decimal)
+
+  # Check if writable by group (bit for group write)
+  group_write <- bitwAnd(mode_int, 16L) > 0  # 020 octal = 16 decimal
+  # Check if writable by others (bit for other write)
+  other_write <- bitwAnd(mode_int, 2L) > 0   # 002 octal = 2 decimal
+  # Check if readable by others (bit for other read)
+  other_read <- bitwAnd(mode_int, 4L) > 0    # 004 octal = 4 decimal
+
+  # ERROR if writable by group or others
+  if (group_write || other_write) {
+    perms <- format(as.octmode(mode), width = 3)
+    abort(
+      c(
+        sprintf("file '%s' is writable by group or others \u2014 this poses a security", file_path),
+        "!" = "risk because it allows unauthorized users to modify sensitive settings.",
+        "i" = sprintf("Your Permission: %s", perms),
+        "i" = sprintf("To restrict permissions, run `chmod 0600 \"%s\"`.", file_path)
+      ),
+      call = quote(DBI::dbConnect())
+    )
+  }
+
+  # WARNING if readable by others
+  if (other_read) {
+    cli::cli_warn(c(
+      sprintf("Bad owner or permissions on %s.", file_path),
+      "i" = sprintf("To change owner, run `chown $USER \"%s\"`.", file_path),
+      "i" = sprintf("To restrict permissions, run `chmod 0600 \"%s\"`.", file_path),
+      "i" = "To skip this warning, set environment variable",
+      " " = "SF_SKIP_WARNING_FOR_READ_PERMISSIONS_ON_CONFIG_FILE=true."
+    ))
+  }
+
+  invisible()
+}
+
+#' Parse a TOML file with proper error handling
+#'
+#' @param file_path Path to TOML file
+#' @return Named list with parsed TOML content
+#' @noRd
+parse_toml_file <- function(file_path) {
+  check_toml_installed()
+
+  tryCatch(
+    toml::read_toml(file_path),
+    error = function(e) {
+      abort(
+        sprintf("An unknown error happened while loading '%s'", file_path),
+        parent = e,
+        call = quote(DBI::dbConnect())
+      )
+    }
+  )
+}
+
+#' Parse a TOML string (from env var) with proper error handling
+#'
+#' @param toml_string TOML content as a string
+#' @return Named list with parsed TOML content
+#' @noRd
+parse_toml_string <- function(toml_string) {
+  check_toml_installed()
+
+  tryCatch(
+    toml::parse_toml(toml_string),
+    error = function(e) {
+      abort(
+        "Failed to parse SNOWFLAKE_CONNECTIONS environment variable as TOML",
+        parent = e,
+        call = quote(DBI::dbConnect())
+      )
+    }
+  )
+}
+
+#' Check if toml package is installed
+#' @noRd
+check_toml_installed <- function() {
+  if (!rlang::is_installed("toml")) {
+    abort(
+      c(
+        "The {.pkg toml} package is required to load Snowflake configuration files.",
+        "i" = "Install it with: install.packages(\"toml\")"
+      ),
+      call = quote(DBI::dbConnect())
+    )
+  }
+}
+
+#' Load and merge Snowflake configuration from files and environment variables
+#'
+#' @param config_dir Path to Snowflake config directory
+#' @param connections_file_path Optional custom path to connections.toml
+#' @param require_toml If TRUE, error if toml package not installed when files exist
+#' @return Named list with 'default_connection_name' and 'connections'
+#' @noRd
+load_snowflake_config <- function(config_dir, connections_file_path = NULL,
+                                  require_toml = FALSE) {
+  result <- list(
+    default_connection_name = "default",
+    connections = list()
+  )
+
+  # Priority 1: Check SNOWFLAKE_CONNECTIONS env var (highest precedence)
+  env_connections <- Sys.getenv("SNOWFLAKE_CONNECTIONS", "")
+  if (nchar(env_connections) > 0) {
+    result$connections <- parse_toml_string(env_connections)
+    # Also check for default connection name override
+    env_default <- Sys.getenv("SNOWFLAKE_DEFAULT_CONNECTION_NAME", "")
+    if (nchar(env_default) > 0) {
+      result$default_connection_name <- env_default
+    }
+    return(result)
+  }
+
+  # Check if toml package is installed
+  toml_available <- rlang::is_installed("toml")
+
+  # Priority 2: Load from files
+  # Step 1: Load config.toml (if exists)
+  config_file <- file.path(config_dir, "config.toml")
+  if (file.exists(config_file)) {
+    if (!toml_available) {
+      if (require_toml) {
+        check_toml_installed()  # Will error with helpful message
+      }
+      # If not required, skip file loading silently
+    } else {
+      check_toml_file_permissions(config_file)
+      config_data <- parse_toml_file(config_file)
+
+      # Extract default_connection_name
+      if (!is.null(config_data$default_connection_name)) {
+        result$default_connection_name <- config_data$default_connection_name
+      }
+
+      # Extract connections from [connections.*] sections
+      if (!is.null(config_data$connections)) {
+        result$connections <- config_data$connections
+      }
+    }
+  }
+
+  # Step 2: Load connections.toml (overwrites config.toml connections)
+  conn_file <- connections_file_path %||% file.path(config_dir, "connections.toml")
+  if (file.exists(conn_file)) {
+    if (!toml_available) {
+      if (require_toml) {
+        check_toml_installed()  # Will error with helpful message
+      }
+      # If not required, skip file loading silently
+    } else {
+      check_toml_file_permissions(conn_file)
+      # This completely replaces connections from config.toml
+      result$connections <- parse_toml_file(conn_file)
+    }
+  }
+
+  # Priority 3: Check env var override for default_connection_name (highest precedence)
+  env_default <- Sys.getenv("SNOWFLAKE_DEFAULT_CONNECTION_NAME", "")
+  if (nchar(env_default) > 0) {
+    result$default_connection_name <- env_default
+  }
+
+  result
+}
+
+#' Map Python-style parameter names to ODBC parameter names
+#'
+#' @param params Named list of connection parameters
+#' @return Named list with mapped parameter names
+#' @noRd
+map_param_names <- function(params) {
+  # Map Python-style names to ODBC names
+  mapping <- list(
+    user = "uid",
+    password = "pwd"
+  )
+
+  for (old_name in names(mapping)) {
+    if (!is.null(params[[old_name]])) {
+      new_name <- mapping[[old_name]]
+      params[[new_name]] <- params[[old_name]]
+      params[[old_name]] <- NULL
+    }
+  }
+
+  params
+}
+
+#' Resolve connection parameters based on the three resolution cases
+#'
+#' @param connection_name Optional connection name to load
+#' @param connections_file_path Optional custom path to connections.toml
+#' @param programmatic_params List of parameters passed programmatically
+#' @return Named list with 'params' (connection parameters) and 'mode' ("config" or "programmatic")
+#' @noRd
+resolve_connection_params <- function(connection_name = NULL,
+                                      connections_file_path = NULL,
+                                      programmatic_params = list()) {
+  # Determine if we have meaningful programmatic params (not including driver)
+  meaningful_params <- c("account", "uid", "pwd", "authenticator", "warehouse",
+                         "database", "schema", "role", "host", "port")
+  has_programmatic_params <- any(names(programmatic_params) %in% meaningful_params)
+
+  # Case 3: Only programmatic parameters (no connection_name, has meaningful params)
+  if (is.null(connection_name) && has_programmatic_params) {
+    # Use only programmatic params, don't load from files
+    return(list(params = programmatic_params, mode = "programmatic"))
+  }
+
+  # Cases 1 & 2: Need to load configuration
+  config_dir <- snowflake_config_dir()
+  # Require toml if connection_name is explicitly provided (user expects config loading)
+  config <- load_snowflake_config(config_dir, connections_file_path,
+                                  require_toml = !is.null(connection_name))
+
+  # Case 2: No connection_name, no meaningful params -> use default connection
+  if (is.null(connection_name)) {
+    connection_name <- config$default_connection_name
+
+    if (!connection_name %in% names(config$connections)) {
+      known_names <- names(config$connections)
+      if (length(known_names) == 0) {
+        abort(
+          c(
+            sprintf("Default connection with name '%s' cannot be found.", connection_name),
+            "i" = "No connections defined in configuration files."
+          ),
+          call = quote(DBI::dbConnect())
+        )
+      } else {
+        abort(
+          sprintf(
+            "Default connection with name '%s' cannot be found, known ones are [%s]",
+            connection_name,
+            paste0("'", known_names, "'", collapse = ", ")
+          ),
+          call = quote(DBI::dbConnect())
+        )
+      }
+    }
+
+    # Use default connection params, map names
+    file_params <- map_param_names(config$connections[[connection_name]])
+    return(list(params = file_params, mode = "config"))
+  }
+
+  # Case 1: Explicit connection_name provided
+  if (!connection_name %in% names(config$connections)) {
+    known_names <- names(config$connections)
+    if (length(known_names) == 0) {
+      abort(
+        c(
+          sprintf("Invalid connection_name '%s'.", connection_name),
+          "i" = "No connections defined in configuration files."
+        ),
+        call = quote(DBI::dbConnect())
+      )
+    } else {
+      abort(
+        sprintf(
+          "Invalid connection_name '%s', known ones are [%s]",
+          connection_name,
+          paste0("'", known_names, "'", collapse = ", ")
+        ),
+        call = quote(DBI::dbConnect())
+      )
+    }
+  }
+
+  # Merge: file params as base, programmatic params override
+  file_params <- map_param_names(config$connections[[connection_name]])
+  merged_params <- utils::modifyList(file_params, programmatic_params)
+  list(params = merged_params, mode = "config")
 }
