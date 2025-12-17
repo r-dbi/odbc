@@ -251,6 +251,38 @@ setMethod(
   }
 )
 
+# Build connection arguments for Snowflake ODBC connections
+#
+# This function resolves and merges connection parameters from three sources
+# (in order of precedence, highest to lowest):
+# 1. Programmatic arguments passed directly to dbConnect()
+# 2. Connection parameters from Snowflake config files (connections.toml)
+# 3. Environment variables (SNOWFLAKE_ACCOUNT, only in programmatic mode)
+#
+# The function handles three connection resolution cases:
+# - Case 1: Named connection (connection_name specified) - loads from config,
+#   merges with programmatic args
+# - Case 2: Default connection (no programmatic params) - loads "default"
+#   connection from config, or uses default_connection_name from config.toml
+# - Case 3: Programmatic only (programmatic params provided, no connection_name) -
+#   skips config files entirely
+#
+# Authentication is delegated to snowflake_auth_args(), which handles various
+# auth methods including uid/pwd, externalbrowser, SNOWFLAKE_JWT, OAuth tokens
+# from Posit Connect, and Workbench-managed credentials.
+#
+# @param connection_name Name of connection to load from connections.toml
+# @param connections_file_path Optional path to connections.toml file
+# @param account Snowflake account identifier
+# @param driver ODBC driver name or path
+# @param warehouse Snowflake warehouse name
+# @param database Snowflake database name
+# @param schema Snowflake schema name
+# @param uid User ID for authentication
+# @param pwd Password for authentication
+# @param ... Additional connection parameters
+# @return Named list of connection arguments suitable for dbConnect(odbc(), ...)
+# @noRd
 snowflake_args <- function(connection_name = NULL,
                            connections_file_path = NULL,
                            account = NULL,
