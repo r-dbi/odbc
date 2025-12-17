@@ -745,3 +745,138 @@ test_that("check_toml_installed() errors when toml not installed", {
     "toml.*required"
   )
 })
+
+test_that("SNOWFLAKE_CONNECTIONS can use default_connection_name from config.toml", {
+  skip_if_not_installed("toml")
+
+  config_dir <- tempfile()
+  dir.create(config_dir)
+  withr::defer(unlink(config_dir, recursive = TRUE))
+
+  # config.toml sets default_connection_name to "myconn"
+  writeLines(
+    'default_connection_name = "myconn"',
+    file.path(config_dir, "config.toml")
+  )
+
+  withr::local_envvar(
+    SNOWFLAKE_HOME = config_dir,
+    # SNOWFLAKE_CONNECTIONS provides the connections (overrides files)
+    SNOWFLAKE_CONNECTIONS = '[myconn]\naccount = "envaccount"\nuser = "envuser"\npassword = "envpwd"',
+    SF_SKIP_WARNING_FOR_READ_PERMISSIONS_ON_CONFIG_FILE = "true"
+  )
+
+  # Should use default_connection_name from config.toml with connections from env var
+  args <- snowflake_args(driver = "driver")
+
+  expect_equal(args$account, "envaccount")
+  expect_equal(args$uid, "envuser")
+})
+
+test_that("Missing toml errors when config files exist (Case 2)", {
+  config_dir <- tempfile()
+  dir.create(config_dir)
+  withr::defer(unlink(config_dir, recursive = TRUE))
+
+  # Create a connections.toml file
+  writeLines(
+    c('[default]', 'account = "test"', 'user = "user"', 'password = "pwd"'),
+    file.path(config_dir, "connections.toml")
+  )
+
+  withr::local_envvar(
+    SNOWFLAKE_HOME = config_dir,
+    SF_SKIP_WARNING_FOR_READ_PERMISSIONS_ON_CONFIG_FILE = "true"
+  )
+
+  # Mock toml as not installed
+  local_mocked_bindings(
+    is_installed = function(pkg) pkg != "toml",
+    .package = "rlang"
+  )
+
+  # Case 2: no programmatic params, should try to load config and error
+  expect_error(
+    snowflake_args(driver = "driver"),
+    "toml.*required"
+  )
+})
+
+test_that("Missing toml errors when SNOWFLAKE_CONNECTIONS is set", {
+  withr::local_envvar(
+    SNOWFLAKE_CONNECTIONS = '[default]\naccount = "test"',
+    SF_SKIP_WARNING_FOR_READ_PERMISSIONS_ON_CONFIG_FILE = "true"
+  )
+
+  # Mock toml as not installed
+  local_mocked_bindings(
+    is_installed = function(pkg) pkg != "toml",
+    .package = "rlang"
+  )
+
+  # Should error because we need toml to parse SNOWFLAKE_CONNECTIONS
+  expect_error(
+    snowflake_args(driver = "driver"),
+    "toml.*required"
+  )
+})
+
+test_that("Missing toml does NOT error when programmatic params provided (Case 3)", {
+  config_dir <- tempfile()
+  dir.create(config_dir)
+  withr::defer(unlink(config_dir, recursive = TRUE))
+
+  # Create a connections.toml file (should be ignored in Case 3)
+  writeLines(
+    c('[default]', 'account = "fileaccount"', 'user = "fileuser"', 'password = "filepwd"'),
+    file.path(config_dir, "connections.toml")
+  )
+
+  withr::local_envvar(
+    SNOWFLAKE_HOME = config_dir,
+    SF_SKIP_WARNING_FOR_READ_PERMISSIONS_ON_CONFIG_FILE = "true"
+  )
+
+  # Mock toml as not installed
+  local_mocked_bindings(
+    is_installed = function(pkg) pkg != "toml",
+    .package = "rlang"
+  )
+
+  # Case 3: has programmatic params, should NOT try to load config
+  args <- snowflake_args(
+    account = "programmatic",
+    driver = "driver",
+    uid = "user",
+    pwd = "password"
+  )
+
+  expect_equal(args$account, "programmatic")
+  expect_equal(args$uid, "user")
+})
+
+test_that("Missing toml does NOT error when no config files and no env var", {
+  config_dir <- tempfile()
+  dir.create(config_dir)
+  withr::defer(unlink(config_dir, recursive = TRUE))
+
+  # Empty config dir - no toml files
+
+  withr::local_envvar(
+    SNOWFLAKE_HOME = config_dir,
+    SNOWFLAKE_CONNECTIONS = "",
+    SF_SKIP_WARNING_FOR_READ_PERMISSIONS_ON_CONFIG_FILE = "true"
+  )
+
+  # Mock toml as not installed
+  local_mocked_bindings(
+    is_installed = function(pkg) pkg != "toml",
+    .package = "rlang"
+  )
+
+  # Should error about missing credentials, not about missing toml
+  expect_error(
+    snowflake_args(driver = "driver"),
+    "cannot be found"
+  )
+})

@@ -726,80 +726,89 @@ check_toml_installed <- function() {
 
 #' Load and merge Snowflake configuration from files and environment variables
 #'
+#' Uses lazy evaluation via delayedAssign to only parse TOML when needed.
+#' Errors about missing toml package only occur if we actually need to parse TOML.
+#'
 #' @param config_dir Path to Snowflake config directory
 #' @param connections_file_path Optional custom path to connections.toml
-#' @param require_toml If TRUE, error if toml package not installed when files exist
 #' @return Named list with 'default_connection_name' and 'connections'
 #' @noRd
-load_snowflake_config <- function(config_dir, connections_file_path = NULL,
-                                  require_toml = FALSE) {
-  result <- list(
-    default_connection_name = "default",
-    connections = list()
-  )
+load_snowflake_config <- function(config_dir, connections_file_path = NULL) {
+  # This function uses delayedAssign() to create lazy promises for each config
+  # source (env vars, connections.toml, config.toml). Benefits of this approach:
+  #
+  # 1. Only parses TOML that's actually needed. If SNOWFLAKE_CONNECTIONS is set,
+  #    we never read connections.toml. If both env vars are set, we skip files.
+  #
+  # 2. The "toml package required" error only triggers when we actually need to
+  #    parse TOML. Programmatic params (Case 3) or missing config files don't
+  #    require toml.
+  #
+  # 3. Easier to reason about than imperative code with nested conditionals.
+  #    Each promise is self-contained: it checks if its source exists, handles
+  #    errors, and returns NULL or a value. The precedence logic is expressed
+  #    clearly at the end with %||% chains, which short-circuit evaluation.
+  #    No complex state tracking or edge cases to handle.
 
-  # Priority 1: Check SNOWFLAKE_CONNECTIONS env var (highest precedence)
-  env_connections <- Sys.getenv("SNOWFLAKE_CONNECTIONS", "")
-  if (nchar(env_connections) > 0) {
-    result$connections <- parse_toml_string(env_connections)
-    # Also check for default connection name override
-    env_default <- Sys.getenv("SNOWFLAKE_DEFAULT_CONNECTION_NAME", "")
-    if (nchar(env_default) > 0) {
-      result$default_connection_name <- env_default
-    }
-    return(result)
-  }
+  # Promise: toml check - errors if not installed, invisible() if installed
+  delayedAssign("toml_check", {
+    check_toml_installed()
+    invisible()
+  })
 
-  # Check if toml package is installed
-  toml_available <- rlang::is_installed("toml")
-
-  # Priority 2: Load from files
-  # Step 1: Load config.toml (if exists)
-  config_file <- file.path(config_dir, "config.toml")
-  if (file.exists(config_file)) {
-    if (!toml_available) {
-      if (require_toml) {
-        check_toml_installed()  # Will error with helpful message
-      }
-      # If not required, skip file loading silently
+  # Promise: parsed connections.toml (or NULL if doesn't exist)
+  delayedAssign("connections_toml", {
+    conn_file <- connections_file_path %||% file.path(config_dir, "connections.toml")
+    if (!file.exists(conn_file)) {
+      NULL
     } else {
-      check_toml_file_permissions(config_file)
-      config_data <- parse_toml_file(config_file)
-
-      # Extract default_connection_name
-      if (!is.null(config_data$default_connection_name)) {
-        result$default_connection_name <- config_data$default_connection_name
-      }
-
-      # Extract connections from [connections.*] sections
-      if (!is.null(config_data$connections)) {
-        result$connections <- config_data$connections
-      }
-    }
-  }
-
-  # Step 2: Load connections.toml (overwrites config.toml connections)
-  conn_file <- connections_file_path %||% file.path(config_dir, "connections.toml")
-  if (file.exists(conn_file)) {
-    if (!toml_available) {
-      if (require_toml) {
-        check_toml_installed()  # Will error with helpful message
-      }
-      # If not required, skip file loading silently
-    } else {
+      force(toml_check)
       check_toml_file_permissions(conn_file)
-      # This completely replaces connections from config.toml
-      result$connections <- parse_toml_file(conn_file)
+      parse_toml_file(conn_file)
     }
-  }
+  })
 
-  # Priority 3: Check env var override for default_connection_name (highest precedence)
-  env_default <- Sys.getenv("SNOWFLAKE_DEFAULT_CONNECTION_NAME", "")
-  if (nchar(env_default) > 0) {
-    result$default_connection_name <- env_default
-  }
+  # Promise: parsed config.toml (or NULL if doesn't exist)
+  delayedAssign("config_toml", {
+    config_file <- file.path(config_dir, "config.toml")
+    if (!file.exists(config_file)) {
+      NULL
+    } else {
+      force(toml_check)
+      check_toml_file_permissions(config_file)
+      parse_toml_file(config_file)
+    }
+  })
 
-  result
+  # Promise: parsed SNOWFLAKE_CONNECTIONS env var (or NULL if not set)
+  delayedAssign("env_connections", {
+    val <- Sys.getenv("SNOWFLAKE_CONNECTIONS", "")
+    if (nchar(val) == 0) {
+      NULL
+    } else {
+      force(toml_check)
+      parse_toml_string(val)
+    }
+  })
+
+  # Promise: SNOWFLAKE_DEFAULT_CONNECTION_NAME env var (or NULL if not set)
+  delayedAssign("env_default_connection_name", {
+    val <- Sys.getenv("SNOWFLAKE_DEFAULT_CONNECTION_NAME", "")
+    if (nchar(val) == 0) NULL else val
+  })
+
+  # Chain together with precedence rules:
+  # - connections: SNOWFLAKE_CONNECTIONS > connections.toml > config.toml[connections]
+  # - default_connection_name: SNOWFLAKE_DEFAULT_CONNECTION_NAME > config.toml > "default"
+  list(
+    default_connection_name = env_default_connection_name %||%
+                              config_toml$default_connection_name %||%
+                              "default",
+    connections = env_connections %||%
+                  connections_toml %||%
+                  config_toml$connections %||%
+                  list()
+  )
 }
 
 #' Map Python-style parameter names to ODBC parameter names
@@ -848,9 +857,7 @@ resolve_connection_params <- function(connection_name = NULL,
 
   # Cases 1 & 2: Need to load configuration
   config_dir <- snowflake_config_dir()
-  # Require toml if connection_name is explicitly provided (user expects config loading)
-  config <- load_snowflake_config(config_dir, connections_file_path,
-                                  require_toml = !is.null(connection_name))
+  config <- load_snowflake_config(config_dir, connections_file_path)
 
   # Case 2: No connection_name, no meaningful params -> use default connection
   if (is.null(connection_name)) {
