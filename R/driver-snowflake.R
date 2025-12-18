@@ -270,19 +270,6 @@ setMethod(
 # Authentication is delegated to snowflake_auth_args(), which handles various
 # auth methods including uid/pwd, externalbrowser, SNOWFLAKE_JWT, OAuth tokens
 # from Posit Connect, and Workbench-managed credentials.
-#
-# @param connection_name Name of connection to load from connections.toml
-# @param connections_file_path Optional path to connections.toml file
-# @param account Snowflake account identifier
-# @param driver ODBC driver name or path
-# @param warehouse Snowflake warehouse name
-# @param database Snowflake database name
-# @param schema Snowflake schema name
-# @param uid User ID for authentication
-# @param pwd Password for authentication
-# @param ... Additional connection parameters
-# @return Named list of connection arguments suitable for dbConnect(odbc(), ...)
-# @noRd
 snowflake_args <- function(connection_name = NULL,
                            connections_file_path = NULL,
                            account = NULL,
@@ -298,7 +285,7 @@ snowflake_args <- function(connection_name = NULL,
   sf_home <- Sys.getenv("SNOWFLAKE_HOME")
   is_workbench_mode <- grepl("posit-workbench", sf_home, fixed = TRUE)
 
-  # 1. Collect programmatic parameters (only non-NULL values)
+  # Collect programmatic parameters (only non-NULL values)
   programmatic_params <- list()
   if (!is.null(account)) programmatic_params$account <- account
   if (!is.null(warehouse)) programmatic_params$warehouse <- warehouse
@@ -311,7 +298,7 @@ snowflake_args <- function(connection_name = NULL,
   dots <- list(...)
   programmatic_params <- c(programmatic_params, dots)
 
-  # 2. Resolve connection parameters (handles all 3 cases)
+  # Resolve connection parameters (handles all 3 cases)
   # Skip config file loading in Workbench mode (Workbench handles credentials separately)
   if (is_workbench_mode && is.null(connection_name)) {
     # Treat Workbench mode like programmatic mode (skip config loading)
@@ -326,7 +313,7 @@ snowflake_args <- function(connection_name = NULL,
   resolved_params <- resolved$params
   is_programmatic_mode <- resolved$mode == "programmatic"
 
-  # 3. Apply SNOWFLAKE_ACCOUNT env var only in Case 3 (programmatic mode)
+  # Apply SNOWFLAKE_ACCOUNT env var only in Case 3 (programmatic mode)
   if (is_programmatic_mode) {
     resolved_params$account <- resolved_params$account %||%
       Sys.getenv("SNOWFLAKE_ACCOUNT", unset = NA_character_)
@@ -335,11 +322,11 @@ snowflake_args <- function(connection_name = NULL,
     }
   }
 
-  # 4. Extract key values with fallbacks
+  # Extract key values with fallbacks
   account <- resolved_params$account
   driver <- driver %||% resolved_params$driver %||% snowflake_default_driver()
 
-  # 5. Build base args
+  # Build base args
   args <- list(
     driver = driver,
     account = account,
@@ -348,10 +335,10 @@ snowflake_args <- function(connection_name = NULL,
     port = 443
   )
 
-  # 6. Merge resolved params into args
+  # Merge resolved params into args
   args <- utils::modifyList(args, resolved_params)
 
-  # 7. Get authentication args
+  # Get authentication args
   # Filter out params that are already handled to avoid "matched by multiple actual arguments"
   dots_filtered <- list(...)
   dots_filtered$uid <- NULL
@@ -371,7 +358,7 @@ snowflake_args <- function(connection_name = NULL,
     )
   )
 
-  # 8. Merge auth into args, then apply final programmatic overrides
+  # Merge auth into args, then apply final programmatic overrides
   # Remove uid/pwd/authenticator from args before merging with auth to avoid duplicates
   # (auth may return these, and args already has them from resolved_params)
   args$uid <- NULL
@@ -564,27 +551,27 @@ workbench_snowflake_token <- function(account, sf_home) {
 #' Get the Snowflake configuration directory path
 #'
 #' Resolves the configuration directory with the following precedence:
-#' 1. SNOWFLAKE_HOME environment variable (with ~ expansion)
-#' 2. ~/.snowflake/ if it exists
-#' 3. Platform-specific defaults
+#' - SNOWFLAKE_HOME environment variable (with ~ expansion)
+#' - ~/.snowflake/ if it exists
+#' - Platform-specific defaults
 #'
 #' @return Character string path to config directory
 #' @noRd
 snowflake_config_dir <- function() {
-  # 1. Check SNOWFLAKE_HOME env var with ~ expansion
+  # Check SNOWFLAKE_HOME env var with ~ expansion
   snowflake_home <- Sys.getenv("SNOWFLAKE_HOME", "")
   if (nchar(snowflake_home) > 0) {
     return(path.expand(snowflake_home))
   }
 
-  # 2. Check if ~/.snowflake/ exists
+  # Check if ~/.snowflake/ exists
   default_path <- path.expand("~/.snowflake")
   if (dir.exists(default_path)) {
     return(default_path)
 
   }
 
-  # 3. Platform-specific fallback
+  # Platform-specific fallback
   if (is_windows()) {
     # Windows: %LOCALAPPDATA%/snowflake/
     return(file.path(Sys.getenv("LOCALAPPDATA"), "snowflake"))
@@ -737,18 +724,18 @@ load_snowflake_config <- function(config_dir, connections_file_path = NULL) {
   # This function uses delayedAssign() to create lazy promises for each config
   # source (env vars, connections.toml, config.toml). Benefits of this approach:
   #
-  # 1. Only parses TOML that's actually needed. If SNOWFLAKE_CONNECTIONS is set,
-  #    we never read connections.toml. If both env vars are set, we skip files.
+  # - Only parses TOML that's actually needed. If SNOWFLAKE_CONNECTIONS is set,
+  #   we never read connections.toml. If both env vars are set, we skip files.
   #
-  # 2. The "toml package required" error only triggers when we actually need to
-  #    parse TOML. Programmatic params (Case 3) or missing config files don't
-  #    require toml.
+  # - The "toml package required" error only triggers when we actually need to
+  #   parse TOML. Programmatic params (Case 3) or missing config files don't
+  #   require toml.
   #
-  # 3. Easier to reason about than imperative code with nested conditionals.
-  #    Each promise is self-contained: it checks if its source exists, handles
-  #    errors, and returns NULL or a value. The precedence logic is expressed
-  #    clearly at the end with %||% chains, which short-circuit evaluation.
-  #    No complex state tracking or edge cases to handle.
+  # - Easier to reason about than imperative code with nested conditionals.
+  #   Each promise is self-contained: it checks if its source exists, handles
+  #   errors, and returns NULL or a value. The precedence logic is expressed
+  #   clearly at the end with %||% chains, which short-circuit evaluation.
+  #   No complex state tracking or edge cases to handle.
 
   # Promise: toml check - errors if not installed, invisible() if installed
   delayedAssign("toml_check", {
