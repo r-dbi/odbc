@@ -11,14 +11,16 @@ snowflake()
 
 \S4method{dbConnect}{SnowflakeOdbcDriver}(
   drv,
-  account = Sys.getenv("SNOWFLAKE_ACCOUNT"),
+  account = NULL,
   driver = NULL,
   warehouse = NULL,
   database = NULL,
   schema = NULL,
   uid = NULL,
   pwd = NULL,
-  ...
+  ...,
+  connection_name = NULL,
+  connections_file_path = NULL
 )
 }
 \arguments{
@@ -27,7 +29,8 @@ or an existing \link[DBI:DBIConnection-class]{DBI::DBIConnection}
 object (in order to clone an existing connection).}
 
 \item{account}{A Snowflake \href{https://docs.snowflake.com/en/user-guide/admin-account-identifier}{account identifier},
-e.g. \code{"testorg-test_account"}.}
+e.g. \code{"testorg-test_account"}. If not provided and no \code{connection_name}
+is specified, the \code{SNOWFLAKE_ACCOUNT} environment variable will be used.}
 
 \item{driver}{The name of the Snowflake ODBC driver, or \code{NULL} to use the
 default name.}
@@ -42,9 +45,19 @@ default.}
 default.}
 
 \item{uid, pwd}{Manually specify a username and password for authentication.
-Specifying these options will disable ambient credential discovery.}
+Specifying these options will disable ambient credential discovery and
+config file loading (unless \code{connection_name} is also specified).}
 
 \item{...}{Further arguments passed on to \code{\link[=dbConnect]{dbConnect()}}.}
+
+\item{connection_name}{The name of a connection profile to load from
+configuration files. If provided, connection parameters are loaded from
+\verb{~/.snowflake/connections.toml} (or the location specified by
+\code{SNOWFLAKE_HOME}) and merged with any explicitly provided arguments.
+Requires the \pkg{toml} package.}
+
+\item{connections_file_path}{Optional custom path to a \code{connections.toml}
+file. If \code{NULL}, uses the default location within \code{SNOWFLAKE_HOME}.}
 }
 \value{
 An \code{OdbcConnection} object with an active connection to a Snowflake
@@ -58,15 +71,49 @@ detects ambient OAuth credentials on platforms like Snowpark Container
 Services or Posit Workbench. It can also detect viewer-based
 credentials on Posit Connect if the \pkg{connectcreds} package is
 installed.
+\subsection{Configuration Files}{
+
+Connection parameters can be loaded from Snowflake configuration files
+(\verb{~/.snowflake/connections.toml} or \verb{~/.snowflake/config.toml}), following
+the same conventions as the Snowflake Python connector. This requires the
+\pkg{toml} package to be installed.
+
+Configuration files are loaded from \code{SNOWFLAKE_HOME} environment variable,
+\verb{~/.snowflake/} if it exists, or platform-specific defaults
+(\verb{~/Library/Application Support/snowflake/} on macOS,
+\verb{~/.config/snowflake/} on Linux).
+
+The \code{SNOWFLAKE_CONNECTIONS} environment variable can contain a full TOML
+document that overrides file-based connections. The
+\code{SNOWFLAKE_DEFAULT_CONNECTION_NAME} environment variable overrides the
+default connection name.
+
+On non-Windows platforms, configuration files are checked for secure
+permissions. Files writable by group or others will cause an error; files
+readable by others will generate a warning. Set
+\code{SF_SKIP_WARNING_FOR_READ_PERMISSIONS_ON_CONFIG_FILE=true} to suppress
+these checks.
 
 In addition, on macOS platforms, the \code{dbConnect} method will check and warn
 if it detects irregularities with how the driver is configured, unless the
 \code{odbc.no_config_override} environment variable is set.
 }
+}
 \examples{
 \dontrun{
 # Use ambient credentials.
 DBI::dbConnect(odbc::snowflake())
+
+# Load connection from config file (~/.snowflake/connections.toml)
+# Requires the toml package to be installed.
+DBI::dbConnect(odbc::snowflake(), connection_name = "prod")
+
+# Load connection and override specific parameters
+DBI::dbConnect(
+  odbc::snowflake(),
+  connection_name = "prod",
+  warehouse = "ADHOC_WH"
+)
 
 # Use browser-based SSO (if configured). Only works on desktop.
 DBI::dbConnect(

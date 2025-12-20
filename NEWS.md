@@ -1,5 +1,10 @@
 # odbc (development version)
 
+* Snowflake: Connection parameters can now be loaded from configuration files
+  (`~/.snowflake/connections.toml` or `~/.snowflake/config.toml`), following
+  the same conventions as the Snowflake Python connector. Requires the toml
+  package (#975).
+
 # odbc 1.6.4
 
 * Fix writing of [R] date/time values that have integer storage. (#952)
