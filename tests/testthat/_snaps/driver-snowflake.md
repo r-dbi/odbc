@@ -4,7 +4,7 @@
       snowflake_args(driver = "driver")
     Condition
       Error in `DBI::dbConnect()`:
-      ! Default connection with name 'default' cannot be found.
+      ! Default connection "default" cannot be found.
       i No connections defined in configuration files.
 
 # both 'uid' and 'pwd' are required when present
@@ -60,7 +60,8 @@
       snowflake_args(connection_name = "staging", driver = "driver")
     Condition
       Error in `DBI::dbConnect()`:
-      ! Invalid connection_name 'staging', known ones are ['prod', 'dev']
+      ! Invalid `connection_name` "staging".
+      i Known connections: "prod" and "dev".
 
 # Missing default connection errors with known names
 
@@ -68,5 +69,6 @@
       snowflake_args(driver = "driver")
     Condition
       Error in `DBI::dbConnect()`:
-      ! Default connection with name 'default' cannot be found, known ones are ['prod']
+      ! Default connection "default" cannot be found.
+      i Known connection: "prod".
 

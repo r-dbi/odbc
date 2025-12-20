@@ -686,15 +686,7 @@ parse_toml_string <- function(toml_string) {
 #' Check if toml package is installed
 #' @noRd
 check_toml_installed <- function() {
-  if (!rlang::is_installed("toml")) {
-    cli::cli_abort(
-      c(
-        "The {.pkg toml} package is required to load Snowflake configuration files.",
-        "i" = "Install it with {.code install.packages(\"toml\")}."
-      ),
-      call = quote(DBI::dbConnect())
-    )
-  }
+  rlang::check_installed("toml", "to load Snowflake configuration files")
 }
 
 #' Load and merge Snowflake configuration from files and environment variables
