@@ -294,11 +294,9 @@ snowflake_args <- function(connection_name = NULL,
   if (!is.null(uid)) programmatic_params$uid <- uid
   if (!is.null(pwd)) programmatic_params$pwd <- pwd
 
-  # Add any additional params from ...
   dots <- list(...)
   programmatic_params <- c(programmatic_params, dots)
 
-  # Resolve connection parameters (handles all 3 cases)
   # Skip config file loading in Workbench mode (Workbench handles credentials separately)
   if (is_workbench_mode && is.null(connection_name)) {
     # Treat Workbench mode like programmatic mode (skip config loading)
@@ -322,11 +320,9 @@ snowflake_args <- function(connection_name = NULL,
     }
   }
 
-  # Extract key values with fallbacks
   account <- resolved_params$account
   driver <- driver %||% resolved_params$driver %||% snowflake_default_driver()
 
-  # Build base args
   args <- list(
     driver = driver,
     account = account,
@@ -335,10 +331,8 @@ snowflake_args <- function(connection_name = NULL,
     port = 443
   )
 
-  # Merge resolved params into args
   args <- utils::modifyList(args, resolved_params)
 
-  # Get authentication args
   # Filter out params that are already handled to avoid "matched by multiple actual arguments"
   dots_filtered <- list(...)
   dots_filtered$uid <- NULL
@@ -358,7 +352,6 @@ snowflake_args <- function(connection_name = NULL,
     )
   )
 
-  # Merge auth into args, then apply final programmatic overrides
   # Remove uid/pwd/authenticator from args before merging with auth to avoid duplicates
   # (auth may return these, and args already has them from resolved_params)
   args$uid <- NULL
@@ -595,17 +588,14 @@ snowflake_config_dir <- function() {
 #' @return NULL invisibly; throws error or warning on bad permissions
 #' @noRd
 check_toml_file_permissions <- function(file_path) {
-  # Skip on Windows
   if (is_windows()) {
     return(invisible())
   }
 
-  # Check env var bypass
   if (nchar(Sys.getenv("SF_SKIP_WARNING_FOR_READ_PERMISSIONS_ON_CONFIG_FILE")) > 0) {
     return(invisible())
   }
 
-  # Get file info
   file_info <- file.info(file_path)
   mode <- file_info$mode
 
@@ -613,7 +603,6 @@ check_toml_file_permissions <- function(file_path) {
     return(invisible())
   }
 
-  # Convert mode to integer for bit manipulation
   # mode is an "octmode" object, need explicit conversion
   mode_int <- as.integer(mode)
 
@@ -622,14 +611,10 @@ check_toml_file_permissions <- function(file_path) {
   # Other write = 002 (octal) = 2 (decimal)
   # Other read = 004 (octal) = 4 (decimal)
 
-  # Check if writable by group (bit for group write)
   group_write <- bitwAnd(mode_int, 16L) > 0  # 020 octal = 16 decimal
-  # Check if writable by others (bit for other write)
   other_write <- bitwAnd(mode_int, 2L) > 0   # 002 octal = 2 decimal
-  # Check if readable by others (bit for other read)
   other_read <- bitwAnd(mode_int, 4L) > 0    # 004 octal = 4 decimal
 
-  # ERROR if writable by group or others
   if (group_write || other_write) {
     perms <- format(as.octmode(mode), width = 3)
     abort(
@@ -643,7 +628,6 @@ check_toml_file_permissions <- function(file_path) {
     )
   }
 
-  # WARNING if readable by others
   if (other_read) {
     cli::cli_warn(c(
       sprintf("Bad owner or permissions on %s.", file_path),
@@ -784,9 +768,7 @@ load_snowflake_config <- function(config_dir, connections_file_path = NULL) {
     if (nchar(val) == 0) NULL else val
   })
 
-  # Chain together with precedence rules:
-  # - connections: SNOWFLAKE_CONNECTIONS > connections.toml > config.toml[connections]
-  # - default_connection_name: SNOWFLAKE_DEFAULT_CONNECTION_NAME > config.toml > "default"
+  # Precedence: env vars > connections.toml > config.toml > defaults
   list(
     default_connection_name = env_default_connection_name %||%
                               config_toml$default_connection_name %||%
@@ -804,7 +786,6 @@ load_snowflake_config <- function(config_dir, connections_file_path = NULL) {
 #' @return Named list with mapped parameter names
 #' @noRd
 map_param_names <- function(params) {
-  # Map Python-style names to ODBC names
   mapping <- list(
     user = "uid",
     password = "pwd"
@@ -831,18 +812,15 @@ map_param_names <- function(params) {
 resolve_connection_params <- function(connection_name = NULL,
                                       connections_file_path = NULL,
                                       programmatic_params = list()) {
-  # Determine if we have meaningful programmatic params (not including driver)
   meaningful_params <- c("account", "uid", "pwd", "authenticator", "warehouse",
                          "database", "schema", "role", "host", "port")
   has_programmatic_params <- any(names(programmatic_params) %in% meaningful_params)
 
   # Case 3: Only programmatic parameters (no connection_name, has meaningful params)
   if (is.null(connection_name) && has_programmatic_params) {
-    # Use only programmatic params, don't load from files
     return(list(params = programmatic_params, mode = "programmatic"))
   }
 
-  # Cases 1 & 2: Need to load configuration
   config_dir <- snowflake_config_dir()
   config <- load_snowflake_config(config_dir, connections_file_path)
 
@@ -872,7 +850,6 @@ resolve_connection_params <- function(connection_name = NULL,
       }
     }
 
-    # Use default connection params, map names
     file_params <- map_param_names(config$connections[[connection_name]])
     return(list(params = file_params, mode = "config"))
   }
@@ -900,7 +877,6 @@ resolve_connection_params <- function(connection_name = NULL,
     }
   }
 
-  # Merge: file params as base, programmatic params override
   file_params <- map_param_names(config$connections[[connection_name]])
   merged_params <- utils::modifyList(file_params, programmatic_params)
   list(params = merged_params, mode = "config")
