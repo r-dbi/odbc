@@ -134,13 +134,6 @@ setMethod("odbcDataType", "Snowflake",
 #' @param drv an object that inherits from [DBI::DBIDriver-class],
 #' or an existing [DBI::DBIConnection-class]
 #' object (in order to clone an existing connection).
-#' @param connection_name The name of a connection profile to load from
-#'   configuration files. If provided, connection parameters are loaded from
-#'   `~/.snowflake/connections.toml` (or the location specified by
-#'   `SNOWFLAKE_HOME`) and merged with any explicitly provided arguments.
-#'   Requires the \pkg{toml} package.
-#' @param connections_file_path Optional custom path to a `connections.toml`
-#'   file. If `NULL`, uses the default location within `SNOWFLAKE_HOME`.
 #' @param account A Snowflake [account
 #'   identifier](https://docs.snowflake.com/en/user-guide/admin-account-identifier),
 #'   e.g. `"testorg-test_account"`. If not provided and no `connection_name`
@@ -157,6 +150,13 @@ setMethod("odbcDataType", "Snowflake",
 #'   Specifying these options will disable ambient credential discovery and
 #'   config file loading (unless `connection_name` is also specified).
 #' @param ... Further arguments passed on to [`dbConnect()`].
+#' @param connection_name The name of a connection profile to load from
+#'   configuration files. If provided, connection parameters are loaded from
+#'   `~/.snowflake/connections.toml` (or the location specified by
+#'   `SNOWFLAKE_HOME`) and merged with any explicitly provided arguments.
+#'   Requires the \pkg{toml} package.
+#' @param connections_file_path Optional custom path to a `connections.toml`
+#'   file. If `NULL`, uses the default location within `SNOWFLAKE_HOME`.
 #'
 #' @returns An `OdbcConnection` object with an active connection to a Snowflake
 #'   account.
@@ -213,8 +213,6 @@ setClass("SnowflakeOdbcDriver", contains = "OdbcDriver")
 setMethod(
   "dbConnect", "SnowflakeOdbcDriver",
   function(drv,
-           connection_name = NULL,
-           connections_file_path = NULL,
            account = NULL,
            driver = NULL,
            warehouse = NULL,
@@ -222,7 +220,9 @@ setMethod(
            schema = NULL,
            uid = NULL,
            pwd = NULL,
-           ...) {
+           ...,
+           connection_name = NULL,
+           connections_file_path = NULL) {
     call <- caller_env()
     check_string(connection_name, allow_null = TRUE, call = call)
     check_string(connections_file_path, allow_null = TRUE, call = call)

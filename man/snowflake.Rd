@@ -11,8 +11,6 @@ snowflake()
 
 \S4method{dbConnect}{SnowflakeOdbcDriver}(
   drv,
-  connection_name = NULL,
-  connections_file_path = NULL,
   account = NULL,
   driver = NULL,
   warehouse = NULL,
@@ -20,22 +18,15 @@ snowflake()
   schema = NULL,
   uid = NULL,
   pwd = NULL,
-  ...
+  ...,
+  connection_name = NULL,
+  connections_file_path = NULL
 )
 }
 \arguments{
 \item{drv}{an object that inherits from \link[DBI:DBIDriver-class]{DBI::DBIDriver},
 or an existing \link[DBI:DBIConnection-class]{DBI::DBIConnection}
 object (in order to clone an existing connection).}
-
-\item{connection_name}{The name of a connection profile to load from
-configuration files. If provided, connection parameters are loaded from
-\verb{~/.snowflake/connections.toml} (or the location specified by
-\code{SNOWFLAKE_HOME}) and merged with any explicitly provided arguments.
-Requires the \pkg{toml} package.}
-
-\item{connections_file_path}{Optional custom path to a \code{connections.toml}
-file. If \code{NULL}, uses the default location within \code{SNOWFLAKE_HOME}.}
 
 \item{account}{A Snowflake \href{https://docs.snowflake.com/en/user-guide/admin-account-identifier}{account identifier},
 e.g. \code{"testorg-test_account"}. If not provided and no \code{connection_name}
@@ -58,6 +49,15 @@ Specifying these options will disable ambient credential discovery and
 config file loading (unless \code{connection_name} is also specified).}
 
 \item{...}{Further arguments passed on to \code{\link[=dbConnect]{dbConnect()}}.}
+
+\item{connection_name}{The name of a connection profile to load from
+configuration files. If provided, connection parameters are loaded from
+\verb{~/.snowflake/connections.toml} (or the location specified by
+\code{SNOWFLAKE_HOME}) and merged with any explicitly provided arguments.
+Requires the \pkg{toml} package.}
+
+\item{connections_file_path}{Optional custom path to a \code{connections.toml}
+file. If \code{NULL}, uses the default location within \code{SNOWFLAKE_HOME}.}
 }
 \value{
 An \code{OdbcConnection} object with an active connection to a Snowflake
