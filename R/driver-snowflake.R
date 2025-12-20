@@ -86,7 +86,7 @@ setMethod("odbcDataType", "Snowflake",
       character = "VARCHAR",
       logical = "BOOLEAN",
       list = "VARCHAR",
-      stop("Unsupported type", call. = FALSE)
+      cli::cli_abort("Unsupported type.", call = NULL)
     )
   }
 )
@@ -447,10 +447,10 @@ snowflake_simba_config <- function(driver) {
 
 snowflake_server <- function(account) {
   if (nchar(account) == 0) {
-    abort(
+    cli::cli_abort(
       c(
         "No Snowflake account ID provided.",
-        i = "Either supply `account` argument or set env var `SNOWFLAKE_ACCOUNT`."
+        "i" = "Either supply {.arg account} argument or set env var {.envvar SNOWFLAKE_ACCOUNT}."
       ),
       call = quote(DBI::dbConnect())
     )
@@ -477,10 +477,10 @@ snowflake_auth_args <- function(account,
        isTRUE(authenticator %in% c("externalbrowser", "SNOWFLAKE_JWT")))) {
     return(list(uid = uid, pwd = pwd, authenticator = authenticator))
   } else if (xor(is.null(uid), is.null(pwd))) {
-    abort(
+    cli::cli_abort(
       c(
-        "Both `uid` and `pwd` must be specified to authenticate.",
-        i = "Or leave both unset to use ambient Snowflake credentials."
+        "Both {.arg uid} and {.arg pwd} must be specified to authenticate.",
+        "i" = "Or leave both unset to use ambient Snowflake credentials."
       ),
       call = quote(DBI::dbConnect())
     )
@@ -617,12 +617,13 @@ check_toml_file_permissions <- function(file_path) {
 
   if (group_write || other_write) {
     perms <- format(as.octmode(mode), width = 3)
-    abort(
+    cli::cli_abort(
       c(
-        sprintf("file '%s' is writable by group or others \u2014 this poses a security", file_path),
-        "!" = "risk because it allows unauthorized users to modify sensitive settings.",
-        "i" = sprintf("Your Permission: %s", perms),
-        "i" = sprintf("To restrict permissions, run `chmod 0600 \"%s\"`.", file_path)
+        "File {.file {file_path}} is writable by group or others---this poses a
+         security risk because it allows unauthorized users to modify sensitive
+         settings.",
+        "i" = "Your Permission: {perms}",
+        "i" = "To restrict permissions, run {.code chmod 0600 \"{file_path}\"}."
       ),
       call = quote(DBI::dbConnect())
     )
@@ -630,11 +631,12 @@ check_toml_file_permissions <- function(file_path) {
 
   if (other_read) {
     cli::cli_warn(c(
-      sprintf("Bad owner or permissions on %s.", file_path),
-      "i" = sprintf("To change owner, run `chown $USER \"%s\"`.", file_path),
-      "i" = sprintf("To restrict permissions, run `chmod 0600 \"%s\"`.", file_path),
-      "i" = "To skip this warning, set environment variable",
-      " " = "SF_SKIP_WARNING_FOR_READ_PERMISSIONS_ON_CONFIG_FILE=true."
+      "Bad owner or permissions on {.file {file_path}}.",
+      "i" = "To change owner, run {.code chown $USER \"{file_path}\"}.",
+      "i" = "To restrict permissions, run {.code chmod 0600 \"{file_path}\"}.",
+      "i" = "To skip this warning, set environment variable
+             {.envvar SF_SKIP_WARNING_FOR_READ_PERMISSIONS_ON_CONFIG_FILE} to
+             {.val true}."
     ))
   }
 
@@ -652,8 +654,8 @@ parse_toml_file <- function(file_path) {
   tryCatch(
     toml::read_toml(file_path),
     error = function(e) {
-      abort(
-        sprintf("An unknown error happened while loading '%s'", file_path),
+      cli::cli_abort(
+        "An unknown error happened while loading {.file {file_path}}.",
         parent = e,
         call = quote(DBI::dbConnect())
       )
@@ -672,8 +674,8 @@ parse_toml_string <- function(toml_string) {
   tryCatch(
     toml::parse_toml(toml_string),
     error = function(e) {
-      abort(
-        "Failed to parse SNOWFLAKE_CONNECTIONS environment variable as TOML",
+      cli::cli_abort(
+        "Failed to parse {.envvar SNOWFLAKE_CONNECTIONS} environment variable as TOML.",
         parent = e,
         call = quote(DBI::dbConnect())
       )
@@ -685,10 +687,10 @@ parse_toml_string <- function(toml_string) {
 #' @noRd
 check_toml_installed <- function() {
   if (!rlang::is_installed("toml")) {
-    abort(
+    cli::cli_abort(
       c(
         "The {.pkg toml} package is required to load Snowflake configuration files.",
-        "i" = "Install it with: install.packages(\"toml\")"
+        "i" = "Install it with {.code install.packages(\"toml\")}."
       ),
       call = quote(DBI::dbConnect())
     )
@@ -831,19 +833,18 @@ resolve_connection_params <- function(connection_name = NULL,
     if (!connection_name %in% names(config$connections)) {
       known_names <- names(config$connections)
       if (length(known_names) == 0) {
-        abort(
+        cli::cli_abort(
           c(
-            sprintf("Default connection with name '%s' cannot be found.", connection_name),
+            "Default connection {.val {connection_name}} cannot be found.",
             "i" = "No connections defined in configuration files."
           ),
           call = quote(DBI::dbConnect())
         )
       } else {
-        abort(
-          sprintf(
-            "Default connection with name '%s' cannot be found, known ones are [%s]",
-            connection_name,
-            paste0("'", known_names, "'", collapse = ", ")
+        cli::cli_abort(
+          c(
+            "Default connection {.val {connection_name}} cannot be found.",
+            "i" = "Known connection{?s}: {.val {known_names}}."
           ),
           call = quote(DBI::dbConnect())
         )
@@ -858,19 +859,18 @@ resolve_connection_params <- function(connection_name = NULL,
   if (!connection_name %in% names(config$connections)) {
     known_names <- names(config$connections)
     if (length(known_names) == 0) {
-      abort(
+      cli::cli_abort(
         c(
-          sprintf("Invalid connection_name '%s'.", connection_name),
+          "Invalid {.arg connection_name} {.val {connection_name}}.",
           "i" = "No connections defined in configuration files."
         ),
         call = quote(DBI::dbConnect())
       )
     } else {
-      abort(
-        sprintf(
-          "Invalid connection_name '%s', known ones are [%s]",
-          connection_name,
-          paste0("'", known_names, "'", collapse = ", ")
+      cli::cli_abort(
+        c(
+          "Invalid {.arg connection_name} {.val {connection_name}}.",
+          "i" = "Known connection{?s}: {.val {known_names}}."
         ),
         call = quote(DBI::dbConnect())
       )
