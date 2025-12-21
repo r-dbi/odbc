@@ -368,6 +368,7 @@ locate_install_unixodbc <- function() {
     "/lib",
     "/usr/local/lib",
     "/usr/lib/x86_64-linux-gnu",
+    "/usr/lib/aarch64-linux-gnu",
     "/opt/homebrew/lib",
     "/opt/homebrew/etc",
     "/opt/homebrew/opt/unixodbc/lib",
