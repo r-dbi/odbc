@@ -54,9 +54,14 @@ namespace utils {
   ///
   /// \param exec_fn Function executed on a separate thread.  Exceptions
   /// are caught and re-thrown on the main thread.
-  /// \param cleanup_fn Function executed on main thread in the event a
-  /// user interrupt is caught.
-  void run_interruptible(const std::function<void()>& exec_fn, const std::function<void()>& cleanup_fn);
+  /// \param cancel_fn Function executed on main thread in the event a
+  /// user interrupt is caught.  This function should cause failure on
+  /// thread.
+  /// \param cleanup_fn Function executed on main thread to cleanup
+  /// resources.  When executing, caller can assume thread execution
+  /// has stopped.
+  void run_interruptible(const std::function<void()>& exec_fn, const std::function<void()>& cancel_fn,
+                         const std::function<void()>& cleanup_fn);
 
   /// \brief Entry point for package::cli::cli_inform
   ///
