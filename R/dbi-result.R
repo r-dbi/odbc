@@ -139,7 +139,6 @@ setMethod("dbGetRowsAffected", "OdbcResult",
 #' @param res An object inheriting from [DBI::DBIResult-class].
 #' @inheritParams DBI::dbBind
 #' @inheritParams DBI-tables
-#' @importFrom vctrs vec_recycle_common
 #' @export
 setMethod("dbBind", "OdbcResult",
   function(res, params, ..., batch_rows = getOption("odbc.batch_rows", NA)) {
