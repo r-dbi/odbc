@@ -507,15 +507,13 @@ test_that("Recycling in dbBind works (#491)", {
   expect_silent( ret <- dbFetch(res) )
   dbClearResult(res)
   attr(ret$timestamp, "tzone") <- attr(dat_expect$timestamp, "tzone")
-
   expect_equal(ret, dat_expect)
 
   res <- dbSendStatement(con, paste("select * from ", tbl_name, " where id = ? and timestamp > ? order by id"))
   expect_error(
     # different lengths: 3 and 2
     dbBind(res, list(1003:1005, rep("2022-04-01 12:00:02.000000 +00:00", 2))),
-    "When sending multiple parameters, all must be the same length or length 1"
+    "Can't recycle .*"
   )
   dbClearResult(res)
-
 })
