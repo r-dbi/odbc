@@ -490,3 +490,32 @@ test_that("Variable date type storage", {
   res <- dbReadTable(con, tbl_name)
   expect_identical(data_real, res)
 })
+
+test_that("Recycling in dbBind works (#491)", {
+  con <- test_con("SQLSERVER")
+  dat <- data.frame(id = 1000:1004, timestamp = sprintf("2022-04-01 12:00:%02d -04:00", 1:5))
+  tbl_name <- "recyclingtemptable"
+  dbWriteTable(con, tbl_name, dat, field.types = c(id = "int", timestamp = "DATETIMEOFFSET"))
+  defer(dbExecute(con, paste("drop table", tbl_name)))
+
+  res <- dbSendStatement(con, paste("select * from ", tbl_name, " where id = ? and timestamp > ? order by id"))
+  expect_silent( dbBind(res, list(1003:1004, "2022-04-01 12:00:02.000000 +00:00")) )
+  expect_silent( ret <- dbFetch(res) )
+  dbClearResult(res)
+
+  expect_equal(
+    transform(dat, timestamp = as.POSIXct(timestamp, tz = "America/New_York")) |>
+      subset(id %in% 1003:1004),
+    transform(ret, timestamp = `attr<-`(timestamp, "tzone", "America/New_York")),
+    check.attributes = FALSE
+  )
+
+  res <- dbSendStatement(con, paste("select * from ", tbl_name, " where id = ? and timestamp > ? order by id"))
+  expect_error(
+    # different lengths: 3 and 2
+    dbBind(res, list(1003:1005, rep("2022-04-01 12:00:02.000000 +00:00", 2))),
+    "When sending multiple parameters, all must be the same length or length 1"
+  )
+  dbClearResult(res)
+
+})

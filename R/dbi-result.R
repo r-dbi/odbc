@@ -163,8 +163,18 @@ setMethod("dbBind", "OdbcResult",
         cli::cli_abort("When mixing data.frame(s) with other parameter types,
                        all non-df parameters must be of length one")
       }
-    } else if (is.na(batch_rows)) {
-      batch_rows <- length(params[[1]])
+    } else {
+      lens <- lengths(params[!paramDfs])
+      maxlen <- max(lens)
+      if (!all(lens %in% c(maxlen, 1L))) {
+        cli::cli_abort("When sending multiple parameters, all must be the same length or length 1")
+      } else if (maxlen > 1L) {
+        params[!paramDfs][lens == 1L] <-
+          lapply(params[!paramDfs][lens == 1L], function(val) rep(val, maxlen))
+      }
+      if (is.na(batch_rows)) {
+        batch_rows <- length(params[[1]])
+      }
     }
 
     batch_rows <- parse_size(batch_rows)
