@@ -492,23 +492,23 @@ test_that("Variable date type storage", {
 })
 
 test_that("Recycling in dbBind works (#491)", {
+  dat_in <- data.frame(id = 1000:1004, timestamp = sprintf("2022-04-01 12:00:%02d -04:00", 1:5))
+  dat_expect <- subset(dat_in, id %in% 1003:1004) |>
+    transform(timestamp = as.POSIXct(timestamp, tz = "America/New_York"))
+  rownames(dat_expect) <- NULL
+
   con <- test_con("SQLSERVER")
-  dat <- data.frame(id = 1000:1004, timestamp = sprintf("2022-04-01 12:00:%02d -04:00", 1:5))
   tbl_name <- "recyclingtemptable"
-  dbWriteTable(con, tbl_name, dat, field.types = c(id = "int", timestamp = "DATETIMEOFFSET"))
+  dbWriteTable(con, tbl_name, dat_in, field.types = c(id = "int", timestamp = "DATETIMEOFFSET"))
   defer(dbExecute(con, paste("drop table", tbl_name)))
 
   res <- dbSendStatement(con, paste("select * from ", tbl_name, " where id = ? and timestamp > ? order by id"))
   expect_silent( dbBind(res, list(1003:1004, "2022-04-01 12:00:02.000000 +00:00")) )
   expect_silent( ret <- dbFetch(res) )
   dbClearResult(res)
+  attr(ret$timestamp, "tzone") <- attr(dat_expect$timestamp, "tzone")
 
-  expect_equal(
-    transform(dat, timestamp = as.POSIXct(timestamp, tz = "America/New_York")) |>
-      subset(id %in% 1003:1004),
-    transform(ret, timestamp = `attr<-`(timestamp, "tzone", "America/New_York")),
-    check.attributes = FALSE
-  )
+  expect_equal(ret, dat_expect)
 
   res <- dbSendStatement(con, paste("select * from ", tbl_name, " where id = ? and timestamp > ? order by id"))
   expect_error(
