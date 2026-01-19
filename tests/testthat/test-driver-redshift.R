@@ -6,6 +6,13 @@ test_that("the 'uid' and 'pwd' arguments suppress IAM auth", {
 })
 
 test_that("IAM credentials in environment variables are handled correctly", {
+  if(is_windows()) {
+    # paws.common binary tarball for windows 4.1
+    # is 0.5.x which does not have paws::locate_credentials
+    # exported.
+    # For exmaple, https://cran.rstudio.com/bin/windows/contrib/4.1/
+    skip_unless_r(">= 4.2")
+  }
   withr::local_envvar(
     AWS_ACCESS_KEY_ID = "access-key-id",
     AWS_SECRET_ACCESS_KEY = "secret-access-key",
