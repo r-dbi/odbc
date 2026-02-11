@@ -47,8 +47,16 @@ public:
     std::map<short, std::vector<std::vector<uint8_t>>> raws_;
     std::map<short, std::vector<nanodbc::time>> times_;
     std::map<short, std::vector<nanodbc::timestamp>> timestamps_;
+    std::map<short, std::vector<nanodbc::timestampoffset>> timestampoffsets_;
     std::map<short, std::vector<nanodbc::date>> dates_;
     std::map<short, std::vector<uint8_t>> nulls_;
+
+    void push_back(short i, const nanodbc::timestamp& ts) {
+      timestamps_[i].push_back(ts);
+    };
+    void push_back(short i, const nanodbc::timestampoffset& tso) {
+      timestampoffsets_[i].push_back(tso);
+    };
   };
   odbc_result(
       std::shared_ptr<odbc_connection> c, std::string sql, bool immediate);
@@ -192,7 +200,7 @@ private:
       size_t size,
       param_data& buffers);
 
-  nanodbc::timestamp as_timestamp(double value, unsigned long long factor, unsigned long long pad);
+  void as_timestamp(double value, unsigned long long factor, unsigned long long pad, const cctz::time_zone& tz, nanodbc::timestamp& ts);
 
   nanodbc::date as_date(double value);
 
@@ -297,5 +305,36 @@ private:
   /// `data.frame` parameter.
   /// \param x List of query parameters
   size_t get_parameter_rows(Rcpp::List const& x);
+
+  class TzOffsetInfo {
+    public:
+    TzOffsetInfo(const cctz::time_zone& tz, bool use_offset, int offset_sec = 0) :
+      bind_with_offset(use_offset), timezone(tz) {
+        if (bind_with_offset) {
+          tso.offset_hour = std::floor(offset_sec / 3600.);
+          tso.offset_minute = 0;
+        }
+      };
+    nanodbc::timestamp& getTimestamp() {
+      return tso.stamp;
+    };
+    void push_back(short i, param_data& buffers) {
+      if (bind_with_offset) {
+        buffers.push_back(i, tso);
+      } else {
+        buffers.push_back(i, tso.stamp);
+      }
+    }
+    bool bind_with_offset{false};
+    cctz::time_zone timezone;
+    private:
+    nanodbc::timestampoffset tso;
+  };
+
+  template<typename T>
+  TzOffsetInfo get_date_tz_offset_info(
+      T& obj,
+      Rcpp::List const& data,
+      short column);
 };
 } // namespace odbc
