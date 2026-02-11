@@ -87,9 +87,6 @@
 #ifndef SQL_SS_TIMESTAMPOFFSET
 #define SQL_SS_TIMESTAMPOFFSET (-155)
 #endif
-#ifndef SQL_C_SS_TIMESTAMPOFFSET
-#define SQL_C_SS_TIMESTAMPOFFSET 0x04001L
-#endif
 // Large CLR User-Defined Types (ODBC)
 // https://msdn.microsoft.com/en-us/library/bb677316.aspx
 // Essentially, UDT is a varbinary type with additional metadata.
@@ -699,7 +696,7 @@ struct sql_ctype<nanodbc::timestamp>
 template <>
 struct sql_ctype<nanodbc::timestampoffset>
 {
-    static const SQLSMALLINT value = SQL_C_SS_TIMESTAMPOFFSET;
+    static const SQLSMALLINT value = SQL_C_BINARY;
 };
 
 // Encapsulates resources needed for column binding.
@@ -2313,12 +2310,12 @@ void statement::statement_impl::bind(
     {
         for (std::size_t i = 0; i < batch_size; ++i)
             if ((null_sentry && !equals(values[i], *null_sentry)) || (nulls && !nulls[i]) || !nulls)
-                bind_len_or_null_[param_index][i] = param.size_;
+                bind_len_or_null_[param_index][i] = sizeof(T);
     }
     else
     {
         for (std::size_t i = 0; i < batch_size; ++i)
-            bind_len_or_null_[param_index][i] = param.size_;
+            bind_len_or_null_[param_index][i] = sizeof(T);
     }
 
     bound_buffer<T> buffer(values, batch_size, sizeof(T));
