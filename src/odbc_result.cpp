@@ -402,10 +402,13 @@ void odbc_result::bind_datetime(
 
   auto tz_offset_bind_data =
     get_date_tz_offset_info(obj, data, column);
+  const bool bind_timestampoffset = tz_offset_bind_data.first;
+  const cctz::time_zone& tz = tz_offset_bind_data.second;
   buffers.nulls_[column] = std::vector<uint8_t>(size, false);
   auto d = (SourceType*)DATAPTR_RO(data[column]);
 
-  nanodbc::timestamp& ts = tz_offset_bind_data.getTimestamp();
+  nanodbc::timestampoffset tso;
+  nanodbc::timestamp& ts = tso.stamp;
   short precision = 3;
   try {
     precision = obj.parameter_scale(column);
@@ -423,11 +426,17 @@ void odbc_result::bind_datetime(
     if (ISNA(value)) {
       buffers.nulls_[column][i] = true;
     } else {
-      as_timestamp(value, prec_adj, pad, tz_offset_bind_data.timezone, ts);
+      int offset_sec = as_timestamp(value, prec_adj, pad, tz, ts);
+      tso.offset_hour = std::floor(offset_sec / 3600.);
+      tso.offset_minute = 0;
     }
-    tz_offset_bind_data.push_back(column, buffers);
+    if (bind_timestampoffset) {
+      buffers.timestampoffsets_[column].push_back(tso);
+    } else {
+      buffers.timestampoffsets_[column].push_back(tso);
+    }
   }
-  if (tz_offset_bind_data.bind_with_offset) {
+  if (bind_timestampoffset) {
     obj.bind(
         column,
         buffers.timestampoffsets_[column].data(),
@@ -581,13 +590,14 @@ double odbc_result::as_double(nanodbc::timestampoffset const& tso) {
   return sec.time_since_epoch().count() + (tso.stamp.fract / 1000000000.0);
 }
 
-void odbc_result::as_timestamp(double value, unsigned long long factor, unsigned long long pad, const cctz::time_zone& tz, nanodbc::timestamp& ts) {
+int odbc_result::as_timestamp(double value, unsigned long long factor, unsigned long long pad, const cctz::time_zone& tz, nanodbc::timestamp& ts) {
   auto frac = modf(value, &value);
 
   using namespace std::chrono;
   auto utc_time = system_clock::from_time_t(static_cast<std::time_t>(value));
 
-  auto civil_time = cctz::convert(utc_time, tz);
+  auto res = tz.lookup(utc_time);
+  auto civil_time = res.cs;
   ts.fract = (std::int32_t)(frac * factor) * pad;
 
   ts.sec = civil_time.second();
@@ -596,6 +606,7 @@ void odbc_result::as_timestamp(double value, unsigned long long factor, unsigned
   ts.day = civil_time.day();
   ts.month = civil_time.month();
   ts.year = civil_time.year();
+  return res.offset;
 }
 
 nanodbc::date odbc_result::as_date(double value) {
@@ -1127,7 +1138,7 @@ size_t odbc_result::get_parameter_rows(Rcpp::List const& x) {
 }
 
 template<typename T>
-odbc_result::TzOffsetInfo odbc_result::get_date_tz_offset_info(
+std::pair<bool, cctz::time_zone> odbc_result::get_date_tz_offset_info(
     T& obj,
     Rcpp::List const& data,
     short column) {
@@ -1140,15 +1151,15 @@ odbc_result::TzOffsetInfo odbc_result::get_date_tz_offset_info(
       cctz::time_zone tz;
       if (!cctz::load_time_zone(tzonestr.data(), &tz)) {
         std::cerr << "Failed to load time zone" << std::endl;
-        return TzOffsetInfo(c_->timezone(), false);
+        return {false, c_->timezone()};
       }
       const auto now = std::chrono::system_clock::now();
       const cctz::time_zone::absolute_lookup lookup = tz.lookup(now);
       const int offset_seconds = lookup.offset;
-      return TzOffsetInfo(tz, true, offset_seconds);
+      return {true, tz};
     }
   }
-  return TzOffsetInfo(c_->timezone(), false);
+  return {false, c_->timezone()};
 }
 
 # define R_ODBC_INSTANTIATE_BINDS(type)                                   \

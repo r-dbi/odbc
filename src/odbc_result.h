@@ -200,7 +200,7 @@ private:
       size_t size,
       param_data& buffers);
 
-  void as_timestamp(double value, unsigned long long factor, unsigned long long pad, const cctz::time_zone& tz, nanodbc::timestamp& ts);
+  int as_timestamp(double value, unsigned long long factor, unsigned long long pad, const cctz::time_zone& tz, nanodbc::timestamp& ts);
 
   nanodbc::date as_date(double value);
 
@@ -306,33 +306,8 @@ private:
   /// \param x List of query parameters
   size_t get_parameter_rows(Rcpp::List const& x);
 
-  class TzOffsetInfo {
-    public:
-    TzOffsetInfo(const cctz::time_zone& tz, bool use_offset, int offset_sec = 0) :
-      bind_with_offset(use_offset), timezone(tz) {
-        if (bind_with_offset) {
-          tso.offset_hour = std::floor(offset_sec / 3600.);
-          tso.offset_minute = 0;
-        }
-      };
-    nanodbc::timestamp& getTimestamp() {
-      return tso.stamp;
-    };
-    void push_back(short i, param_data& buffers) {
-      if (bind_with_offset) {
-        buffers.push_back(i, tso);
-      } else {
-        buffers.push_back(i, tso.stamp);
-      }
-    }
-    bool bind_with_offset{false};
-    cctz::time_zone timezone;
-    private:
-    nanodbc::timestampoffset tso;
-  };
-
   template<typename T>
-  TzOffsetInfo get_date_tz_offset_info(
+  std::pair<bool, cctz::time_zone> get_date_tz_offset_info(
       T& obj,
       Rcpp::List const& data,
       short column);
