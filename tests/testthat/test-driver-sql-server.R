@@ -379,13 +379,26 @@ test_that("DATETIME2 precision (#790)", {
 test_that("DATETIMEOFFSET", {
   con <- test_con("SQLSERVER")
 
+  # Test writing strings to a `DATETIMEOFFSET` target and reading it back as
+  # POSIXct with properly recorded offset.
   df <- data.frame(tz_char = rep("2025-05-10 19:35:03.123 -02:00", 3), tz = rep("2025-05-10 19:35:03.123 -02:00", 3))
 
-  tbl <- local_table(con, "test_datetimeoffset", df,
+  tbl_name <- "test_datetimeoffset"
+  tbl <- local_table(con, tbl_name, df,
     field.types = list("tz_char" = "VARCHAR(50)", "tz" = "DATETIMEOFFSET"), overwrite = TRUE)
   res <- DBI::dbReadTable(con, tbl)
   expect_s3_class(res[[2]], "POSIXct")
   expect_equal(as.double(res[[2]][1] - as.POSIXct(res[[1]][1]), units = "hours"), 2, tolerance = 1E-4)
+
+  # Test writing POSIXct to a `DATETIMEOFFSET` target
+  tbl_name <- "test_datetimeoffset2"
+  df <- data.frame(tz = c(as.POSIXct("2022-04-01 12:00:00", tz = "Europe/Stockholm"), as.POSIXct("2022-04-01 13:00:00", tz = "Europe/Stockholm")))
+  tbl <- local_table(con, tbl_name, df,
+    field.types = list("tz" = "DATETIMEOFFSET"), overwrite = TRUE)
+  # This result comes back as POSIXct in the timezone of the connection --- UTC in this case
+  # However difftime can handle subtracting POSIXct with different timezones.
+  res <- DBI::dbReadTable(con, tbl)
+  expect_true(all(df$tz - res$tz == 0))
 })
 
 test_that("package:odbc roundtrip test", {

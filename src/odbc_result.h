@@ -306,8 +306,24 @@ private:
   /// \param x List of query parameters
   size_t get_parameter_rows(Rcpp::List const& x);
 
+  /// \brief Interogate a (datetime) input column for time-zone and
+  /// information.
+  ///
+  /// Method is used to determine if the data should be bound as
+  /// `nanodbc::timestampoffset` (This is a SQL Server extended datatype), or
+  /// `nanodbc::timestamp` (ODBC datatype).
+  ///
+  /// To be bound as the former, the target must be of SQL type `DATETIMEOFFSET`,
+  /// and the input data must carry an accessible time-zone.
+  /// \param obj This is a nanodbc object (statement or TVP) that carries
+  ///            information about the target for the bound buffer.
+  /// \param data This is [R] data.frame
+  /// \param column The column number in the data frame that is to be bound
+  /// \return A pair with the first element a boolean signifying if buffer
+  ///         should be bound as `timestampoffset` and the second element the
+  ///         timezone to be used.
   template<typename T>
-  std::pair<bool, cctz::time_zone> get_date_tz_offset_info(
+  std::pair<bool, cctz::time_zone> get_tz_bind_info(
       T& obj,
       Rcpp::List const& data,
       short column);

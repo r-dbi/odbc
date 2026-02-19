@@ -401,8 +401,8 @@ void odbc_result::bind_datetime(
     param_data& buffers) {
 
   auto tz_offset_bind_data =
-    get_date_tz_offset_info(obj, data, column);
-  const bool bind_timestampoffset = tz_offset_bind_data.first;
+    get_tz_bind_info(obj, data, column);
+  const bool bind_tso = tz_offset_bind_data.first;
   const cctz::time_zone& tz = tz_offset_bind_data.second;
   buffers.nulls_[column] = std::vector<uint8_t>(size, false);
   auto d = (SourceType*)DATAPTR_RO(data[column]);
@@ -428,15 +428,15 @@ void odbc_result::bind_datetime(
     } else {
       int offset_sec = as_timestamp(value, prec_adj, pad, tz, ts);
       tso.offset_hour = std::floor(offset_sec / 3600.);
-      tso.offset_minute = 0;
+      tso.offset_minute = std::floor((offset_sec - tso.offset_hour * 3600) / 60.);
     }
-    if (bind_timestampoffset) {
-      buffers.timestampoffsets_[column].push_back(tso);
+    if (bind_tso) {
+      buffers.push_back(column, tso);
     } else {
-      buffers.timestampoffsets_[column].push_back(tso);
+      buffers.push_back(column, ts);
     }
   }
-  if (bind_timestampoffset) {
+  if (bind_tso) {
     obj.bind(
         column,
         buffers.timestampoffsets_[column].data(),
@@ -1138,7 +1138,7 @@ size_t odbc_result::get_parameter_rows(Rcpp::List const& x) {
 }
 
 template<typename T>
-std::pair<bool, cctz::time_zone> odbc_result::get_date_tz_offset_info(
+std::pair<bool, cctz::time_zone> odbc_result::get_tz_bind_info(
     T& obj,
     Rcpp::List const& data,
     short column) {
@@ -1153,9 +1153,6 @@ std::pair<bool, cctz::time_zone> odbc_result::get_date_tz_offset_info(
         std::cerr << "Failed to load time zone" << std::endl;
         return {false, c_->timezone()};
       }
-      const auto now = std::chrono::system_clock::now();
-      const cctz::time_zone::absolute_lookup lookup = tz.lookup(now);
-      const int offset_seconds = lookup.offset;
       return {true, tz};
     }
   }
