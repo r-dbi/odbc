@@ -136,7 +136,7 @@ setMethod("dbAppendTable", "OdbcConnection",
     }
 
     fieldDetails <- tryCatch({
-      details <- odbcConnectionColumns_(conn, name, exact = TRUE)
+      details <- odbcConnectionColumns(conn, name, exact = TRUE)
       details$param_index <- match(details$name, colnames(value))
       details[!is.na(details$param_index) & !is.na(details$data_type), ]
     },
@@ -308,7 +308,7 @@ setMethod("dbListFields", c("OdbcConnection", "character"),
     check_string(schema_name, allow_null = TRUE)
     check_string(column_name, allow_null = TRUE)
 
-    cols <- odbcConnectionColumns_(
+    cols <- odbcConnectionColumns(
       conn,
       name = name,
       catalog_name = catalog_name,
