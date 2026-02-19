@@ -200,6 +200,14 @@ private:
       size_t size,
       param_data& buffers);
 
+  // Convert the `double` value [R] timestamp into
+  // a `nanodbc::timestamp` struct.  Will use
+  // `cctz` library to make the conversion to
+  // civil time.
+  //
+  // Returns the offset of the target timezone in
+  // seconds *that is relevant at the time of the
+  // converted value* (think daylight savings, etc).
   int as_timestamp(double value, unsigned long long factor, unsigned long long pad, const cctz::time_zone& tz, nanodbc::timestamp& ts);
 
   nanodbc::date as_date(double value);
