@@ -13,7 +13,6 @@ odbcConnectionIcon(connection)
 The path to an icon file on disk.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 Return the path on disk to an icon representing a connection.
 }
 \details{
