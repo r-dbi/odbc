@@ -228,13 +228,13 @@ setMethod("odbcDataType", "Microsoft SQL Server",
 )
 
 #' @description
-#' ## `odbcConnectionColumns_()`
+#' ## `odbcConnectionColumns()`
 #'
 #' If temp table, query the database for the
 #' actual table name.
 #' @rdname SQLServer
 #' @usage NULL
-setMethod("odbcConnectionColumns_", c("Microsoft SQL Server", "character"),
+setMethod("odbcConnectionColumns", c("Microsoft SQL Server", "character"),
   function(conn,
            name,
            ...,
@@ -264,13 +264,13 @@ setMethod("odbcConnectionColumns_", c("Microsoft SQL Server", "character"),
 )
 
 #' @description
-#' ## `odbcConnectionColumns_()`
+#' ## `odbcConnectionColumns()`
 #'
 #' Copied over from odbc-connection to avoid S4 dispatch NOTEs.
 #' @rdname SQLServer
 #' @usage NULL
-setMethod("odbcConnectionColumns_", c("Microsoft SQL Server", "SQL"),
+setMethod("odbcConnectionColumns", c("Microsoft SQL Server", "SQL"),
   function(conn, name, ..., exact = FALSE) {
-    odbcConnectionColumns_(conn, dbUnquoteIdentifier(conn, name)[[1]], ..., exact = exact)
+    odbcConnectionColumns(conn, dbUnquoteIdentifier(conn, name)[[1]], ..., exact = exact)
   }
 )

@@ -40,7 +40,7 @@ getCatalogSchema <- function(conn, catalog_name = NULL, schema_name = NULL) {
 #' @param catalog_name,schema_name Catalog and schema names.
 #' @rdname driver-Snowflake
 #' @usage NULL
-setMethod("odbcConnectionColumns_", c("Snowflake", "character"),
+setMethod("odbcConnectionColumns", c("Snowflake", "character"),
   function(conn,
            name,
            ...,
