@@ -2,9 +2,10 @@
 
 ## odbc (development version)
 
-## odbc 1.6.4
-
-CRAN release: 2025-12-06
+- odbcConnectionColumns(), odbcConnectionIcon(), and
+  odbcConnectionActions() are now fully deprecated. Use
+  DBI::dbListFields() instead of odbcConnectionColumns()
+  ([\#699](https://github.com/r-dbi/odbc/issues/699)). \# odbc 1.6.4
 
 - Fix writing of \[R\] date/time values that have integer storage.
   ([\#952](https://github.com/r-dbi/odbc/issues/952))

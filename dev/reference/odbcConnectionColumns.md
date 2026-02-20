@@ -1,10 +1,5 @@
 # odbcConnectionColumns
 
-**\[deprecated\]**
-
-This function has been deprecated in favor of
-[`DBI::dbListFields()`](https://dbi.r-dbi.org/reference/dbListFields.html).
-
 For a given table this function returns detailed information on all
 fields / columns. The expectation is that this is a relatively thin
 wrapper around the ODBC `SQLColumns` function call, with some of the

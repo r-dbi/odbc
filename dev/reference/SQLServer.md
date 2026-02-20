@@ -41,11 +41,11 @@ make sure we list the schemas in the appropriate database/catalog.
 Warns if `temporary = TRUE` but the `name` does not conform to temp
 table naming conventions (i.e. it doesn't start with `#`).
 
-### `odbcConnectionColumns_()`
+### [`odbcConnectionColumns()`](https://odbc.r-dbi.org/dev/reference/odbcConnectionColumns.md)
 
 If temp table, query the database for the actual table name.
 
-### `odbcConnectionColumns_()`
+### [`odbcConnectionColumns()`](https://odbc.r-dbi.org/dev/reference/odbcConnectionColumns.md)
 
 Copied over from odbc-connection to avoid S4 dispatch NOTEs.
 

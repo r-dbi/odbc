@@ -39,10 +39,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="odbc-development-version">odbc (development version)<a class="anchor" aria-label="anchor" href="#odbc-development-version"></a></h2>
-</div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.6.4" id="odbc-164">odbc 1.6.4<a class="anchor" aria-label="anchor" href="#odbc-164"></a></h2><p class="text-muted">CRAN release: 2025-12-06</p>
-<ul><li><p>Fix writing of [R] date/time values that have integer storage. (<a href="https://github.com/r-dbi/odbc/issues/952" class="external-link">#952</a>)</p></li>
+<ul><li><p>odbcConnectionColumns(), odbcConnectionIcon(), and odbcConnectionActions() are now fully deprecated. Use DBI::dbListFields() instead of odbcConnectionColumns() (<a href="https://github.com/r-dbi/odbc/issues/699" class="external-link">#699</a>). # odbc 1.6.4</p></li>
+<li><p>Fix writing of [R] date/time values that have integer storage. (<a href="https://github.com/r-dbi/odbc/issues/952" class="external-link">#952</a>)</p></li>
 <li><p>Oracle: Fix writing values to <code>DATE</code> targets. (<a href="https://github.com/r-dbi/odbc/issues/959" class="external-link">#959</a>)</p></li>
 <li><p>SQL Server: Fix time zone interpretation in <code>DATETIMEOFFSET</code> data; now follows ISO 8061 convention where positive offset denotes time zone east of Greenwich. (<a href="https://github.com/r-dbi/odbc/issues/946" class="external-link">#946</a>)</p></li>
 </ul></div>

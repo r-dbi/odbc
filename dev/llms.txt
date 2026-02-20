@@ -167,8 +167,8 @@ over results that would otherwise be too large to fit in memory.
   [`dbExistsTable,Microsoft SQL Server,SQL-method`](https://odbc.r-dbi.org/dev/reference/SQLServer.md)
   [`odbcConnectionSchemas,Microsoft SQL Server-method`](https://odbc.r-dbi.org/dev/reference/SQLServer.md)
   [`sqlCreateTable,Microsoft SQL Server-method`](https://odbc.r-dbi.org/dev/reference/SQLServer.md)
-  [`odbcConnectionColumns_,Microsoft SQL Server,character-method`](https://odbc.r-dbi.org/dev/reference/SQLServer.md)
-  [`odbcConnectionColumns_,Microsoft SQL Server,SQL-method`](https://odbc.r-dbi.org/dev/reference/SQLServer.md)
+  [`odbcConnectionColumns,Microsoft SQL Server,character-method`](https://odbc.r-dbi.org/dev/reference/SQLServer.md)
+  [`odbcConnectionColumns,Microsoft SQL Server,SQL-method`](https://odbc.r-dbi.org/dev/reference/SQLServer.md)
   : SQL Server
 - [`sqlCreateTable(`*`<Oracle>`*`)`](https://odbc.r-dbi.org/dev/reference/Oracle.md)
   [`odbcConnectionTables(`*`<Oracle>`*`,`*`<character>`*`)`](https://odbc.r-dbi.org/dev/reference/Oracle.md)
