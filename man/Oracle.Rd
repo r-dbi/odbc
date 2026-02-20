@@ -5,7 +5,7 @@
 \alias{Oracle-class}
 \alias{sqlCreateTable,Oracle-method}
 \alias{odbcConnectionTables,Oracle,character-method}
-\alias{odbcConnectionColumns_,Oracle,character-method}
+\alias{odbcConnectionColumns,Oracle,character-method}
 \title{Oracle}
 \usage{
 \S4method{sqlCreateTable}{Oracle}(
