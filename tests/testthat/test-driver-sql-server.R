@@ -379,7 +379,7 @@ test_that("DATETIME2 precision (#790)", {
 test_that("DATETIMEOFFSET", {
   con <- test_con("SQLSERVER")
 
-  df <- data.frame(tz_char = rep("2025-05-10 19:35:03.123 +02:00", 3), tz = rep("2025-05-10 19:35:03.123 +02:00", 3))
+  df <- data.frame(tz_char = rep("2025-05-10 19:35:03.123 -02:00", 3), tz = rep("2025-05-10 19:35:03.123 -02:00", 3))
 
   tbl <- local_table(con, "test_datetimeoffset", df,
     field.types = list("tz_char" = "VARCHAR(50)", "tz" = "DATETIMEOFFSET"), overwrite = TRUE)
@@ -425,6 +425,11 @@ test_that("Mixed success multiple result-sets (#924)", {
 })
 
 test_that("Table-valued parameters", {
+  # PRO Driver does not, at this time, handle TVPs.
+  # In particular, `SQLDescribeParam`
+  # applied to the TVP param does *not* return
+  # SQL_SS_TABLE
+  skip_if(Sys.getenv("ODBC_DRIVERS_VINTAGE") != "OEM")
   con <- test_con("SQLSERVER")
   dbExecute(con, "CREATE TYPE tvp_param AS TABLE (col0 INT, col1 BIGINT, col2 VARCHAR(MAX), col3 VARCHAR(MAX), col4 VARCHAR(MAX));")
   # tvp is second argument to sproc
@@ -464,4 +469,29 @@ test_that("Table-valued parameters", {
   res <- dbGetQuery(con, "{ CALL tvp_test2(?, ?, ?) }",
     params = list(df.param, 100, "Lorem ipsum dolor sit amet"))
   expect_identical(res, expected)
+})
+
+# #952: Binding date types that may have INTSXP OR REALSXP storage
+test_that("Variable date type storage", {
+  con <- test_con("SQLSERVER")
+  tbl_name <- "datevariablestoragetest"
+  # INTSXP storage
+  data <- data.frame(
+       "dates" = seq.Date(from = as.Date("2020-01-01"), to = as.Date("2020-01-02"), by = "1 day"),
+       "dtms" = seq.POSIXt(from = as.POSIXct("2020-01-01", tz = "UTC"), to = as.POSIXct("2020-01-02", tz = "UTC"), length.out = 2L)
+  )
+  # REALSXP storage
+  data_real <- data.frame(
+       "dates" = c(as.Date("2020-01-01"), as.Date("2020-01-02")),
+       "dtms" = c(as.POSIXct("2020-01-01", tz = "UTC"), as.POSIXct("2020-01-02", tz = "UTC"))
+  )
+  # 1. Writing both should succeed
+  # 2. They should both come back with REALSXP storage
+  local_table(con, tbl_name, data)
+  res <- dbReadTable(con, tbl_name)
+  expect_identical(data_real, res)
+
+  DBI::dbWriteTable(con, tbl_name, data_real, overwrite = TRUE)
+  res <- dbReadTable(con, tbl_name)
+  expect_identical(data_real, res)
 })

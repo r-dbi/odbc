@@ -24,7 +24,9 @@ NULL
 #' and attempt to fix in-situ, unless the `odbc.no_config_override`
 #' environment variable is set.
 #'
-#' @inheritParams DBI::dbConnect
+#' @param drv an object that inherits from [DBI::DBIDriver-class],
+#' or an existing [DBI::DBIConnection-class]
+#' object (in order to clone an existing connection).
 #' @param httpPath,HTTPPath To query a cluster, use the HTTP Path value found
 #'   under `Advanced Options > JDBC/ODBC` in the Databricks UI. For SQL
 #'   warehouses, this is found under `Connection Details` instead.

@@ -226,7 +226,7 @@ odbcListColumns.OdbcConnection <- function(connection,
 
   name <- validateObjectName(table, view, ...)
   # specify schema or catalog if given
-  cols <- odbcConnectionColumns_(connection,
+  cols <- odbcConnectionColumns(connection,
     name = name,
     catalog_name = catalog,
     schema_name = schema
@@ -333,7 +333,6 @@ odbcPreviewQuery.Oracle <- function(connection, rowLimit, name) {
 #' Get an icon representing a connection.
 #'
 #' @description
-#' `r lifecycle::badge("deprecated")`
 #' Return the path on disk to an icon representing a connection.
 #'
 #' @details
@@ -342,17 +341,7 @@ odbcPreviewQuery.Oracle <- function(connection, rowLimit, name) {
 #' @param connection A connection object, as returned by `dbConnect()`.
 #' @return The path to an icon file on disk.
 #' @keywords internal
-#' @export
 odbcConnectionIcon <- function(connection) {
-  lifecycle::deprecate_warn(
-    "1.4.2",
-    "odbcConnectionIcon()"
-  )
-
-  odbcConnectionIcon_(connection)
-}
-
-odbcConnectionIcon_ <- function(connection) {
   # no icon is returned by default
   ""
 }
@@ -360,11 +349,9 @@ odbcConnectionIcon_ <- function(connection) {
 #' List the actions supported for the connection
 #'
 #' @description
-#' `r lifecycle::badge("deprecated")`
-#'
 #' Return a list of actions that can be performed on the connection.
-#' @details
 #'
+#' @details
 #' The list returned is a named list of actions, where each action has the
 #' following properties:
 #'
@@ -376,17 +363,7 @@ odbcConnectionIcon_ <- function(connection) {
 #' @param connection A connection object, as returned by `dbConnect()`.
 #' @return A named list of actions that can be performed on the connection.
 #' @keywords internal
-#' @export
 odbcConnectionActions <- function(connection) {
-  lifecycle::deprecate_warn(
-    "1.4.2",
-    "odbcConnectionActions()"
-  )
-
-  odbcConnectionActions_(connection)
-}
-
-odbcConnectionActions_ <- function(connection) {
   actions <- list()
 
   if (exists(".rs.api.documentNew")) {
@@ -491,7 +468,7 @@ on_connection_opened <- function(connection, code) {
   }
 
   # find an icon for this DBMS
-  icon <- odbcConnectionIcon_(connection)
+  icon <- odbcConnectionIcon(connection)
 
   # let observer know that connection has opened
   observer$connectionOpened(
@@ -534,7 +511,7 @@ on_connection_opened <- function(connection, code) {
     },
 
     # other actions that can be executed on this connection
-    actions = odbcConnectionActions_(connection),
+    actions = odbcConnectionActions(connection),
 
     # raw connection object
     connectionObject = connection

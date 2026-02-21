@@ -34,11 +34,13 @@ getCatalogSchema <- function(conn, catalog_name = NULL, schema_name = NULL) {
 #' by querying for CURRENT_DATABASE() and CURRENT_SCHEMA().  We do this
 #' to aid with performance, as the SQLColumns method is more performant
 #' when restricted to a particular DB/schema.
+#' @param conn A [DBI::DBIConnection-class] object, as returned by
+#' `dbConnect()`.
 #' @inheritParams DBI::dbListFields
 #' @param catalog_name,schema_name Catalog and schema names.
 #' @rdname driver-Snowflake
 #' @usage NULL
-setMethod("odbcConnectionColumns_", c("Snowflake", "character"),
+setMethod("odbcConnectionColumns", c("Snowflake", "character"),
   function(conn,
            name,
            ...,
@@ -106,7 +108,9 @@ setMethod("odbcDataType", "Snowflake",
 #' if it detects irregularities with how the driver is configured, unless the
 #' `odbc.no_config_override` environment variable is set.
 #'
-#' @inheritParams DBI::dbConnect
+#' @param drv an object that inherits from [DBI::DBIDriver-class],
+#' or an existing [DBI::DBIConnection-class]
+#' object (in order to clone an existing connection).
 #' @param account A Snowflake [account
 #'   identifier](https://docs.snowflake.com/en/user-guide/admin-account-identifier),
 #'   e.g. `"testorg-test_account"`.
