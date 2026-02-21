@@ -118,7 +118,7 @@ is_blob <- function(obj) {
 
 varchar <- function(x, type = "varchar") {
   # at least 255 characters, use max if more than 8000:
-  max_length <- max(c(255, nchar(as.character(x))), na.rm = TRUE)
+  max_length <- max(c(255, nchar(as.character(x), type = "bytes")), na.rm = TRUE)
 
   if (max_length > 8000) {
     max_length <- "max"
