@@ -47,8 +47,16 @@ public:
     std::map<short, std::vector<std::vector<uint8_t>>> raws_;
     std::map<short, std::vector<nanodbc::time>> times_;
     std::map<short, std::vector<nanodbc::timestamp>> timestamps_;
+    std::map<short, std::vector<nanodbc::timestampoffset>> timestampoffsets_;
     std::map<short, std::vector<nanodbc::date>> dates_;
     std::map<short, std::vector<uint8_t>> nulls_;
+
+    void push_back(short i, const nanodbc::timestamp& ts) {
+      timestamps_[i].push_back(ts);
+    };
+    void push_back(short i, const nanodbc::timestampoffset& tso) {
+      timestampoffsets_[i].push_back(tso);
+    };
   };
   odbc_result(
       std::shared_ptr<odbc_connection> c, std::string sql, bool immediate);
@@ -192,7 +200,15 @@ private:
       size_t size,
       param_data& buffers);
 
-  nanodbc::timestamp as_timestamp(double value, unsigned long long factor, unsigned long long pad);
+  // Convert the `double` value [R] timestamp into
+  // a `nanodbc::timestamp` struct.  Will use
+  // `cctz` library to make the conversion to
+  // civil time.
+  //
+  // Returns the offset of the target timezone in
+  // seconds *that is relevant at the time of the
+  // converted value* (think daylight savings, etc).
+  int as_timestamp(double value, unsigned long long factor, unsigned long long pad, const cctz::time_zone& tz, nanodbc::timestamp& ts);
 
   nanodbc::date as_date(double value);
 
@@ -297,5 +313,27 @@ private:
   /// `data.frame` parameter.
   /// \param x List of query parameters
   size_t get_parameter_rows(Rcpp::List const& x);
+
+  /// \brief Interogate a (datetime) input column for time-zone and
+  /// information.
+  ///
+  /// Method is used to determine if the data should be bound as
+  /// `nanodbc::timestampoffset` (This is a SQL Server extended datatype), or
+  /// `nanodbc::timestamp` (ODBC datatype).
+  ///
+  /// To be bound as the former, the target must be of SQL type `DATETIMEOFFSET`,
+  /// and the input data must carry an accessible time-zone.
+  /// \param obj This is a nanodbc object (statement or TVP) that carries
+  ///            information about the target for the bound buffer.
+  /// \param data This is [R] data.frame
+  /// \param column The column number in the data frame that is to be bound
+  /// \return A pair with the first element a boolean signifying if buffer
+  ///         should be bound as `timestampoffset` and the second element the
+  ///         timezone to be used.
+  template<typename T>
+  std::pair<bool, cctz::time_zone> get_tz_bind_info(
+      T& obj,
+      Rcpp::List const& data,
+      short column);
 };
 } // namespace odbc

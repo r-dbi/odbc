@@ -2310,12 +2310,12 @@ void statement::statement_impl::bind(
     {
         for (std::size_t i = 0; i < batch_size; ++i)
             if ((null_sentry && !equals(values[i], *null_sentry)) || (nulls && !nulls[i]) || !nulls)
-                bind_len_or_null_[param_index][i] = param.size_;
+                bind_len_or_null_[param_index][i] = sizeof(T);
     }
     else
     {
         for (std::size_t i = 0; i < batch_size; ++i)
-            bind_len_or_null_[param_index][i] = param.size_;
+            bind_len_or_null_[param_index][i] = sizeof(T);
     }
 
     bound_buffer<T> buffer(values, batch_size, sizeof(T));
@@ -2432,6 +2432,13 @@ bool statement::statement_impl::equals(const timestamp& lhs, const timestamp& rh
     return lhs.year == rhs.year && lhs.month == rhs.month && lhs.day == rhs.day &&
            lhs.hour == rhs.hour && lhs.min == rhs.min && lhs.sec == rhs.sec &&
            lhs.fract == rhs.fract;
+}
+
+template <>
+bool statement::statement_impl::equals(const timestampoffset& lhs, const timestampoffset& rhs)
+{
+    return equals(lhs.stamp, rhs.stamp) && lhs.offset_hour == rhs.offset_hour &&
+           lhs.offset_minute == rhs.offset_minute;
 }
 
 } // namespace nanodbc
@@ -3125,6 +3132,15 @@ bool table_valued_parameter::table_valued_parameter_impl::equals(
     return lhs.year == rhs.year && lhs.month == rhs.month && lhs.day == rhs.day &&
            lhs.hour == rhs.hour && lhs.min == rhs.min && lhs.sec == rhs.sec &&
            lhs.fract == rhs.fract;
+}
+
+template <>
+bool table_valued_parameter::table_valued_parameter_impl::equals(
+    const timestampoffset& lhs,
+    const timestampoffset& rhs)
+{
+    return equals(lhs.stamp, rhs.stamp) && lhs.offset_hour == rhs.offset_hour &&
+           lhs.offset_minute == rhs.offset_minute;
 }
 
 template <>
@@ -5078,6 +5094,7 @@ NANODBC_INSTANTIATE_BINDS(double);
 NANODBC_INSTANTIATE_BINDS(date);
 NANODBC_INSTANTIATE_BINDS(time);
 NANODBC_INSTANTIATE_BINDS(timestamp);
+NANODBC_INSTANTIATE_BINDS(timestampoffset);
 
 #undef NANODBC_INSTANTIATE_BINDS
 
@@ -5307,6 +5324,7 @@ NANODBC_INSTANTIATE_TVP_BINDS(double);
 NANODBC_INSTANTIATE_TVP_BINDS(date);
 NANODBC_INSTANTIATE_TVP_BINDS(time);
 NANODBC_INSTANTIATE_TVP_BINDS(timestamp);
+NANODBC_INSTANTIATE_TVP_BINDS(timestampoffset);
 
 NANODBC_INSTANTIATE_TVP_BIND_STRINGS(std::string);
 NANODBC_INSTANTIATE_TVP_BIND_STRINGS(wide_string_type);
