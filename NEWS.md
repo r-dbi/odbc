@@ -38,6 +38,8 @@
      - `DATETIMEOFFSET` data type support added (#918).
      - `data.frames` can now bind to table valued parameters of stored procedures (#928).
 
+* `databricks()` now detects service principal credentials when running on Posit Connect (@tnederlof, #930)
+
 # odbc 1.6.1
 
 * odbc will now automatically find statically built installations of
