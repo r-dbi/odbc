@@ -239,9 +239,6 @@ NULL
 #' odbcConnectionColumns
 #'
 #' @description
-#' `r lifecycle::badge("deprecated")`
-#'
-#' This function has been deprecated in favor of [DBI::dbListFields()].
 #'
 #' For a given table this function returns detailed information on
 #' all fields / columns.  The expectation is that this is a relatively thin
@@ -296,28 +293,17 @@ NULL
 #'
 #' @rdname odbcConnectionColumns
 #' @keywords internal
-#' @export
-odbcConnectionColumns <- function(conn, name, ..., exact = FALSE) {
-  lifecycle::deprecate_warn(
-    "1.4.2",
-    "odbcConnectionColumns()",
-    "dbListFields()"
-  )
-
-  odbcConnectionColumns_(conn = conn, name = name, ..., exact = exact)
-}
-
 setGeneric(
-  "odbcConnectionColumns_",
+  "odbcConnectionColumns",
   valueClass = "data.frame",
   function(conn, name, ..., exact = FALSE) {
-    standardGeneric("odbcConnectionColumns_")
+    standardGeneric("odbcConnectionColumns")
   }
 )
 
-setMethod("odbcConnectionColumns_", c("OdbcConnection", "Id"),
+setMethod("odbcConnectionColumns", c("OdbcConnection", "Id"),
   function(conn, name, ..., column_name = NULL, exact = FALSE) {
-    odbcConnectionColumns_(conn,
+    odbcConnectionColumns(conn,
       name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
       schema_name = id_field(name, "schema"),
@@ -327,7 +313,7 @@ setMethod("odbcConnectionColumns_", c("OdbcConnection", "Id"),
   }
 )
 
-setMethod("odbcConnectionColumns_", c("OdbcConnection", "character"),
+setMethod("odbcConnectionColumns", c("OdbcConnection", "character"),
   function(conn,
            name,
            ...,
@@ -350,9 +336,9 @@ setMethod("odbcConnectionColumns_", c("OdbcConnection", "character"),
   }
 )
 
-setMethod("odbcConnectionColumns_", c("OdbcConnection", "SQL"),
+setMethod("odbcConnectionColumns", c("OdbcConnection", "SQL"),
   function(conn, name, ..., exact = FALSE) {
-    odbcConnectionColumns_(conn, dbUnquoteIdentifier(conn, name)[[1]], ..., exact = exact)
+    odbcConnectionColumns(conn, dbUnquoteIdentifier(conn, name)[[1]], ..., exact = exact)
   }
 )
 

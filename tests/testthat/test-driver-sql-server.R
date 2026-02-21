@@ -425,6 +425,11 @@ test_that("Mixed success multiple result-sets (#924)", {
 })
 
 test_that("Table-valued parameters", {
+  # PRO Driver does not, at this time, handle TVPs.
+  # In particular, `SQLDescribeParam`
+  # applied to the TVP param does *not* return
+  # SQL_SS_TABLE
+  skip_if(Sys.getenv("ODBC_DRIVERS_VINTAGE") != "OEM")
   con <- test_con("SQLSERVER")
   dbExecute(con, "CREATE TYPE tvp_param AS TABLE (col0 INT, col1 BIGINT, col2 VARCHAR(MAX), col3 VARCHAR(MAX), col4 VARCHAR(MAX));")
   # tvp is second argument to sproc

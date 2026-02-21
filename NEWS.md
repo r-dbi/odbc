@@ -4,6 +4,9 @@
   and one is `POSIXt` (#491). This forces all bound-parameters to be
   length 1 or the same length (i.e., tidyverse recycling rules).
 
+* odbcConnectionColumns(), odbcConnectionIcon(), and odbcConnectionActions() are now fully deprecated.
+  Use DBI::dbListFields() instead of odbcConnectionColumns() (#699).
+
 # odbc 1.6.4
 
 * Fix writing of [R] date/time values that have integer storage. (#952)
