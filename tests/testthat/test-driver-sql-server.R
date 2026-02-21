@@ -503,9 +503,8 @@ test_that("Recycling in dbBind works (#491)", {
   rownames(dat_expect) <- NULL
 
   con <- test_con("SQLSERVER")
-  tbl_name <- "recyclingtemptable"
-  dbWriteTable(con, tbl_name, dat_in, field.types = c(id = "int", timestamp = "DATETIMEOFFSET"))
-  defer(dbExecute(con, paste("drop table", tbl_name)))
+  tbl_name <- local_table(con, "recyclingtemptable", dat_in,
+                          field.types = c(id = "int", timestamp = "DATETIMEOFFSET"))
 
   res <- dbSendStatement(con, paste("select * from ", tbl_name, " where id = ? and timestamp > ? order by id"))
   expect_silent( dbBind(res, list(1003:1004, "2022-04-01 12:00:02.000000 +00:00")) )
