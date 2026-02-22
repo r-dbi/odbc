@@ -163,8 +163,11 @@ setMethod("dbBind", "OdbcResult",
         cli::cli_abort("When mixing data.frame(s) with other parameter types,
                        all non-df parameters must be of length one")
       }
-    } else if (is.na(batch_rows)) {
-      batch_rows <- length(params[[1]])
+    } else {
+      params[!paramDfs] <- vctrs::vec_recycle_common(!!!params[!paramDfs], .arg = "params")
+      if (is.na(batch_rows)) {
+        batch_rows <- length(params[[1]])
+      }
     }
 
     batch_rows <- parse_size(batch_rows)
