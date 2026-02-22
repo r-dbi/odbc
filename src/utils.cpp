@@ -82,7 +82,8 @@ namespace utils {
     }
   }
 
-  void run_interruptible(const std::function<void()>& exec_fn, const std::function<void()>& cleanup_fn)
+  void run_interruptible(const std::function<void()>& exec_fn, const std::function<void()>& cancel_fn,
+                         const std::function<void()>& cleanup_fn)
   {
     std::exception_ptr eptr;
 #if !defined(_WIN32) && !defined(_WIN64)
@@ -114,13 +115,13 @@ namespace utils {
         try { Rcpp::checkUserInterrupt(); }
         catch (const Rcpp::internal::InterruptedException& e) {
           raise_message("Caught user interrupt, attempting a clean exit...");
-          cleanup_fn();
+          cancel_fn();
         } catch (...) { throw; }
       }
     } while (status != std::future_status::ready);
     if (eptr) {
       // An exception was thrown in the thread
-      try { std::rethrow_exception(eptr); }
+      try { cleanup_fn(); std::rethrow_exception(eptr); }
       catch (const odbc_error& e) { raise_error(e); }
       catch (...) { raise_message("Unknown exception while executing"); throw; };
     }

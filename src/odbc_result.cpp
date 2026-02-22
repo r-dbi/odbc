@@ -40,12 +40,19 @@ odbc_result::odbc_result(
 
   if (c_->interruptible_execution_) {
     auto exec_fn = std::mem_fn(&odbc_result::execute);
-    auto cleanup_fn = [this]() {
+    auto cancel_fn = [this]() {
       this->c_->set_current_result(nullptr);
-      this->s_->close();
-      this->s_.reset();
     };
-    run_interruptible(std::bind(exec_fn, this), cleanup_fn);
+    auto cleanup_fn = [this]() {
+      // set_current_result(nullptr) is safe to call
+      // multiple times.
+      this->c_->set_current_result(nullptr);
+      if (this->s_) {
+        this->s_->close();
+        this->s_.reset();
+      }
+    };
+    run_interruptible(std::bind(exec_fn, this), cancel_fn, cleanup_fn);
   } else {
     this->execute();
   }
@@ -75,19 +82,23 @@ void odbc_result::execute() {
       num_columns_ = r_->columns();
     }
   } catch (const nanodbc::database_error& e) {
-    c_->set_current_result(nullptr);
     if (c_->interruptible_execution_) {
       // Executing in a thread away from main.  Signal
       // that we have encountered an error using an exception.
-      // Main thread will raise the formatted [R] error.
+      // Main thread will do resource cleanup, and
+      // raise the formatted [R] error.
       throw odbc_error(e, sql_, *output_encoder_);
     } else {
       // Executing on the main thread.  Raise the
-      // formatted [R] errpr ourselves.
+      // formatted [R] errpr ourselves, and
+      // do resource cleanup.
+      c_->set_current_result(nullptr);
       raise_error(odbc_error(e, sql_, *output_encoder_));
     }
   } catch (...) {
-    c_->set_current_result(nullptr);
+    if (!c_->interruptible_execution_) {
+      c_->set_current_result(nullptr);
+    }
     throw;
   }
 }
