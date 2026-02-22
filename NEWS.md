@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* Fix crash when interrupting execution using Ctrl-c (#977).
+
 * Fix R error/crash when the `params=` arguments are different lengths
   and one is `POSIXt` (#491). This forces all bound-parameters to be
   length 1 or the same length (i.e., tidyverse recycling rules).
