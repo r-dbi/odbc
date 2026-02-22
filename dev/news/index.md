@@ -2,6 +2,9 @@
 
 ## odbc (development version)
 
+- Fix crash when interrupting execution using Ctrl-c
+  ([\#977](https://github.com/r-dbi/odbc/issues/977)).
+
 - Fix R error/crash when the `params=` arguments are different lengths
   and one is `POSIXt`
   ([\#491](https://github.com/r-dbi/odbc/issues/491)). This forces all

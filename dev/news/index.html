@@ -39,7 +39,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="odbc-development-version">odbc (development version)<a class="anchor" aria-label="anchor" href="#odbc-development-version"></a></h2>
-<ul><li><p>Fix R error/crash when the <code>params=</code> arguments are different lengths and one is <code>POSIXt</code> (<a href="https://github.com/r-dbi/odbc/issues/491" class="external-link">#491</a>). This forces all bound-parameters to be length 1 or the same length (i.e., tidyverse recycling rules).</p></li>
+<ul><li><p>Fix crash when interrupting execution using Ctrl-c (<a href="https://github.com/r-dbi/odbc/issues/977" class="external-link">#977</a>).</p></li>
+<li><p>Fix R error/crash when the <code>params=</code> arguments are different lengths and one is <code>POSIXt</code> (<a href="https://github.com/r-dbi/odbc/issues/491" class="external-link">#491</a>). This forces all bound-parameters to be length 1 or the same length (i.e., tidyverse recycling rules).</p></li>
 <li><p>odbcConnectionColumns(), odbcConnectionIcon(), and odbcConnectionActions() are now fully deprecated. Use DBI::dbListFields() instead of odbcConnectionColumns() (<a href="https://github.com/r-dbi/odbc/issues/699" class="external-link">#699</a>).</p></li>
 </ul></div>
     <div class="section level2">
