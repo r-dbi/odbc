@@ -28,7 +28,8 @@ Imports:
     lifecycle,
     methods,
     Rcpp (>= 0.12.11),
-    rlang (>= 1.1.0)
+    rlang (>= 1.1.0),
+    vctrs
 Suggests:
     connectcreds,
     covr,
