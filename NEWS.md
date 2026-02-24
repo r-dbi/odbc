@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* SQL Server: Make it possible to write `POSIXct` data
+  to `DATETIMEOFFSET` targets (#985).
+
 * Fix crash when interrupting execution using Ctrl-c (#977).
 
 * Fix R error/crash when the `params=` arguments are different lengths
