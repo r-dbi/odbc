@@ -60,7 +60,7 @@ namespace utils {
       {
         std::shared_ptr<std::string> priv_key =
           std::make_shared<std::string>(Rcpp::as<std::string>(r_attributes["sf_private_key"]));
-        std::shared_ptr< void > buffer(malloc(priv_key->size()), std::free);
+        std::shared_ptr< void > buffer(malloc(priv_key->size() + 1), std::free);
         // Copy null terminator as well
         std::memcpy(buffer.get(), priv_key->c_str(), priv_key->size() + 1);
         attributes.push_back(nanodbc::connection::attribute(
