@@ -31,8 +31,10 @@ NULL
 #'   under `Advanced Options > JDBC/ODBC` in the Databricks UI. For SQL
 #'   warehouses, this is found under `Connection Details` instead.
 #' @param useNativeQuery Suppress the driver's conversion from ANSI SQL 92 to
-#'   HiveSQL? The default (`TRUE`), gives greater performance but means that
-#'   paramterised queries (and hence `dbWriteTable()`) do not work.
+#'   HiveSQL.  When set to true, we also set the following related flags:
+#'   `EnableNativeParameterizedQuery`, and `PopulateParametersForNativeQuery`.
+#'   The default (`TRUE`), gives greater performance but could cause issues
+#'   with paramterised queries (and hence `dbWriteTable()`).
 #' @param workspace The URL of a Databricks workspace, e.g.
 #'   `"https://example.cloud.databricks.com"`.
 #' @param driver The name of the Databricks ODBC driver, or `NULL` to use the
@@ -149,18 +151,27 @@ databricks_args <- function(httpPath,
 }
 
 databricks_default_args <- function(driver, host, httpPath, useNativeQuery) {
-  list(
+  ret <- list(
     driver = driver %||% databricks_default_driver(),
     host = host,
     httpPath = httpPath,
     thriftTransport = 2,
     userAgentEntry = databricks_user_agent(),
-    useNativeQuery = as.integer(useNativeQuery),
     # Connections to Databricks are always over HTTPS.
     port = 443,
     protocol = "https",
     ssl = 1
   )
+
+  nativeQueryArgs <- list(useNativeQuery = as.integer(useNativeQuery))
+  if (useNativeQuery) {
+    # Per driver documentation, when native query is enabled, the additional two flags help
+    # with properly handling parametrized queries
+    nativeQueryArgs <- c(nativeQueryArgs, EnableNativeParameterizedQuery = 1, PopulateParametersForNativeQuery = 1)
+  }
+
+  ret <- c(ret, nativeQueryArgs)
+  ret
 }
 
 
