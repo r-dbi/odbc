@@ -383,3 +383,34 @@ test_that("configure_unixodbc_simba() writes reasonable entries", {
     action = "warn"
   ))
 })
+
+# Connection string helpers: build_connection_string,
+# decompose_connection_string, sanitize_connection_string
+
+test_that("handles simple inputs", {
+  expect_equal(build_connection_string(), "")
+  expect_equal(build_connection_string(list(foo = "1")), "foo=1")
+  expect_equal(build_connection_string(list(foo = "1", bar = "2")), "foo=1;bar=2")
+})
+
+test_that("combines with existing .connection string", {
+  expect_equal(build_connection_string(string = "x=1"), "x=1")
+  expect_equal(build_connection_string(list(foo = "1"), "x=1"), "x=1;foo=1")
+  expect_equal(build_connection_string(list(foo = "1"), "x=1;"), "x=1;foo=1")
+})
+
+test_that("Handles connection string as expected", {
+  conn_string <- build_connection_string(list(dsn = "abc",
+    k1 = quote_value("Quoted Value"),
+    k2 = quote_value("Quated value with a ' character")))
+  expect_equal(decompose_connection_string(conn_string), list(dsn = "abc",
+    k1 = "Quoted Value", k2 = "Quated value with a ' character"))
+})
+
+test_that("Sanitize filters out auth keys", {
+  lst <- list(dsn = "abc", useNativeQuery = "def", pwd = "p", PWD = "P",
+    password = "pass", PASSWORD = "PASSWORD", token = "token", TOKEN = "TOKEN",
+    MYPWD = "mywd")
+  expect_equal(sanitize_connection_string(lst), list(dsn = "abc",
+    useNativeQuery = "def"))
+})

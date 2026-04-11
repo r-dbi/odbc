@@ -570,3 +570,70 @@ find_default_driver <- function(paths, fallbacks, label, call = caller_env()) {
     call = call
   )
 }
+
+#' Finalize a connection string by appending a list of arguments to an optional
+#' starting connection string.
+#'
+#' @description
+#' Arguments are expected in the formed of a named list (k1 = v1, k2 = v2),
+#' and are appended as key-value pairs:
+#' starting_string;k1=v1;k2=v2
+#'
+#' @param args A named list of arguments to append to connection string
+#' @param string An initial / starting connection string
+#' @return string A finalized connection string
+build_connection_string <- function(args = list(), string = NULL) {
+
+  args_string <- paste(names(args), args, sep = "=", collapse = ";")
+
+  if (!is.null(string) && !grepl(";$", string) && length(args) > 0) {
+    string <- paste0(string, ";")
+  }
+
+  paste0(string, args_string)
+}
+
+#' Decompose a connection string into a named list.
+#'
+#' @description
+#' This method essentially reverses `build_connection_string`,
+#' with the addition that we attempt to scrub out any
+#' sensitive key/value pairs when we return to the caller.
+#'
+#' @param string A connection string.  Expected format is
+#'               `k1=v1;k2=v2;k3=v3`
+#' @return list A named list (k1 = v1, k2 = v2, ...)
+decompose_connection_string <- function(string) {
+
+  res_pairs <- strsplit(string, ";", fixed = TRUE)[[1]]
+  res_key_value <- strsplit(res_pairs, "=", fixed = TRUE)
+  values <- lapply(res_key_value, FUN = function(x) trimws(x[2]) )
+  # Remove enclosing quotation marks around value
+  # we may have put them there using odbc::quote_value
+  values <- lapply(values, FUN = function(x) {
+      x <-gsub("(^')(.*)('$)", "\\2", x)
+      gsub("(^\")(.*)(\"$)", "\\2", x)
+  })
+  nms <- sapply(res_key_value, FUN = function(x) x[1])
+  names(values) <- trimws(nms)
+  return(sanitize_connection_string(values))
+}
+
+#' Sanitize a named list representing a connection string
+#' (see `decompose_connection_string`) by scrubbing out
+#' values belonging to keys we identify as potentially
+#' carrying authentication information.
+#'
+#' @description
+#' Scrubs out pre-set vector of key patterns.
+#'
+#' @param lst A named list representing contents of
+#'            connection string.
+#' @return A named list (k1 = v1, k2 = v2, ...), much like
+#'         input argument, with some values potentially filtered out.
+sanitize_connection_string <- function(lst) {
+  EXCLUDE_PATTERNS <- c("*PWD*", "*PASS*", "*TOKEN*")
+
+  regex <- paste(EXCLUDE_PATTERNS, tolower(EXCLUDE_PATTERNS), collapse = "|", sep = "|")
+  return(lst[!grepl(regex, names(lst), fixed = FALSE)])
+}
