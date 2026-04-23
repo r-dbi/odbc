@@ -3,9 +3,9 @@
     Code
       snowflake_args(driver = "driver")
     Condition
-      Error in `DBI::dbConnect()`:
-      ! No Snowflake account ID provided.
-      i Either supply `account` argument or set env var `SNOWFLAKE_ACCOUNT`.
+      Error in `snowflakeauth::snowflake_connection()`:
+      ! An `account` parameter is required when '<tmp>/connections.toml' is missing or empty.
+      i Pass `account` or define a [default] section with an account field in '<tmp>/connections.toml'.
 
 # both 'uid' and 'pwd' are required when present
 
@@ -45,12 +45,12 @@
       ! Failed to automatically find the Snowflake ODBC driver.
       i Set `driver` to known driver name or path.
 
-# Workbench-managed credentials are ignored for other accounts
+# Workbench-managed credentials are rejected for other accounts
 
     Code
       snowflake_args(account = "testorg-test_account", driver = "driver")
     Condition
       Error in `DBI::dbConnect()`:
-      ! Failed to detect ambient Snowflake credentials.
-      i Supply `uid` and `pwd` to authenticate manually.
+      ! Snowflake account mismatch: requested "testorg-test_account" but connection "workbench" resolved "nonmatching".
+      i Check your 'connections.toml' or pass the correct `account`.
 
