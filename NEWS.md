@@ -12,6 +12,13 @@
 * odbcConnectionColumns(), odbcConnectionIcon(), and odbcConnectionActions() are now fully deprecated.
   Use DBI::dbListFields() instead of odbcConnectionColumns() (#699).
 
+* `odbc::snowflake()` now uses the `snowflakeauth` package to resolve connection
+  parameters from Snowflake `connections.toml` and `config.toml` files under the
+  hood, which improves support for non-OAuth authenticators (including
+  "externalbrowser" authentication), adds support for the `host` field, allows
+  multiple named connections (via the new `connection_name` argument), and
+  generally improves compatibility with the Snowflake CLI and Python ecosystem.
+
 # odbc 1.6.4
 
 * Fix writing of [R] date/time values that have integer storage. (#952)
