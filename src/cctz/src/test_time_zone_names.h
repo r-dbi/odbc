@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All Rights Reserved.
+// Copyright 2025 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,22 +12,14 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-#include <iostream>
-#include <string>
+#ifndef CCTZ_TEST_TIME_ZONE_NAMES_H_
+#define CCTZ_TEST_TIME_ZONE_NAMES_H_
 
-#include "cctz/civil_time.h"
-#include "cctz/time_zone.h"
+namespace cctz {
 
-int main() {
-  cctz::time_zone lax;
-  load_time_zone("America/Los_Angeles", &lax);
+// A list of known time-zone names.
+extern const char* const kTimeZoneNames[];
 
-  // Time Programming Fundamentals @cppcon
-  const auto tp = cctz::convert(cctz::civil_second(2015, 9, 22, 9, 0, 0), lax);
+}  // namespace cctz
 
-  cctz::time_zone nyc;
-  load_time_zone("America/New_York", &nyc);
-
-  std::cout << cctz::format("Talk starts at %H:%M:%S %z (%Z)\n", tp, lax);
-  std::cout << cctz::format("Talk starts at %H:%M:%S %z (%Z)\n", tp, nyc);
-}
+#endif  // CCTZ_TEST_TIME_ZONE_NAMES_H_

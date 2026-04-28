@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//   http://www.apache.org/licenses/LICENSE-2.0
+//   https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,6 +14,7 @@
 
 #include "time_zone_posix.h"
 
+#include <cstddef>
 #include <cstring>
 #include <limits>
 #include <string>
@@ -48,7 +49,7 @@ const char* ParseAbbr(const char* p, std::string* abbr) {
     while (*++p != '>') {
       if (*p == '\0') return nullptr;
     }
-    abbr->assign(op + 1, p - op - 1);
+    abbr->assign(op + 1, static_cast<std::size_t>(p - op) - 1);
     return ++p;
   }
   while (*p != '\0') {
@@ -57,13 +58,13 @@ const char* ParseAbbr(const char* p, std::string* abbr) {
     ++p;
   }
   if (p - op < 3) return nullptr;
-  abbr->assign(op, p - op);
+  abbr->assign(op, static_cast<std::size_t>(p - op));
   return p;
 }
 
 // offset = [+|-]hh[:mm[:ss]] (aggregated into single seconds value)
 const char* ParseOffset(const char* p, int min_hour, int max_hour, int sign,
-                        int* offset) {
+                        std::int_fast32_t* offset) {
   if (p == nullptr) return nullptr;
   if (*p == '+' || *p == '-') {
     if (*p++ == '-') sign = -sign;
@@ -71,6 +72,7 @@ const char* ParseOffset(const char* p, int min_hour, int max_hour, int sign,
   int hours = 0;
   int minutes = 0;
   int seconds = 0;
+
   p = ParseInt(p, min_hour, max_hour, &hours);
   if (p == nullptr) return nullptr;
   if (*p == ':') {
@@ -96,9 +98,9 @@ const char* ParseDateTime(const char* p, PosixTransition* res) {
           int weekday = 0;
           if ((p = ParseInt(p + 1, 0, 6, &weekday)) != nullptr) {
             res->date.fmt = PosixTransition::M;
-            res->date.data.m.month = month;
-            res->date.data.m.week = week;
-            res->date.data.m.weekday = weekday;
+            res->date.m.month = static_cast<std::int_fast8_t>(month);
+            res->date.m.week = static_cast<std::int_fast8_t>(week);
+            res->date.m.weekday = static_cast<std::int_fast8_t>(weekday);
           }
         }
       }
@@ -106,13 +108,13 @@ const char* ParseDateTime(const char* p, PosixTransition* res) {
       int day = 0;
       if ((p = ParseInt(p + 1, 1, 365, &day)) != nullptr) {
         res->date.fmt = PosixTransition::J;
-        res->date.data.j.day = day;
+        res->date.j.day = static_cast<std::int_fast16_t>(day);
       }
     } else {
       int day = 0;
       if ((p = ParseInt(p, 0, 365, &day)) != nullptr) {
         res->date.fmt = PosixTransition::N;
-        res->date.data.j.day = day;
+        res->date.n.day = static_cast<std::int_fast16_t>(day);
       }
     }
   }

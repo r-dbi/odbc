@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#   http://www.apache.org/licenses/LICENSE-2.0
+#   https://www.apache.org/licenses/LICENSE-2.0
 #
 #   Unless required by applicable law or agreed to in writing, software
 #   distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,21 +12,38 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_cc//cc:cc_test.bzl", "cc_test")
+
+package(
+    features = [
+        "header_modules",
+        "layering_check",
+        "parse_headers",
+    ],
+)
+
+licenses(["notice"])
+
 ### libraries
 
 cc_library(
     name = "civil_time",
+    srcs = ["src/civil_time_detail.cc"],
     hdrs = [
-        "include/civil_time.h",
+        "include/cctz/civil_time.h",
     ],
     includes = ["include"],
-    textual_hdrs = ["include/civil_time_detail.h"],
+    textual_hdrs = ["include/cctz/civil_time_detail.h"],
     visibility = ["//visibility:public"],
 )
 
 cc_library(
     name = "time_zone",
     srcs = [
+        "src/time_zone_fixed.cc",
+        "src/time_zone_fixed.h",
         "src/time_zone_format.cc",
         "src/time_zone_if.cc",
         "src/time_zone_if.h",
@@ -40,56 +57,36 @@ cc_library(
         "src/time_zone_posix.cc",
         "src/time_zone_posix.h",
         "src/tzfile.h",
-    ],
+        "src/zone_info_source.cc",
+    ] + select({
+        "@platforms//os:windows": [
+            "src/time_zone_name_win.cc",
+            "src/time_zone_name_win.h",
+        ],
+        "//conditions:default": [],
+    }),
     hdrs = [
-        "include/time_zone.h",
+        "include/cctz/time_zone.h",
+        "include/cctz/zone_info_source.h",
     ],
     includes = ["include"],
-    linkopts = [
-        "-lm",
-        "-lpthread",
-    ],
+    linkopts = select({
+        "@platforms//os:osx": ["-Wl,-framework,CoreFoundation"],
+        "@platforms//os:ios": ["-Wl,-framework,CoreFoundation"],
+        "//conditions:default": [],
+    }),
     visibility = ["//visibility:public"],
     deps = [":civil_time"],
 )
 
-cc_library(
-    name = "cctz_v1",
-    hdrs = [
-        "src/cctz.h",
-    ],
-    includes = ["include"],
-    visibility = ["//visibility:public"],
-    deps = [
-        ":civil_time",
-        ":time_zone",
-    ],
-)
-
 ### tests
 
-# Builds the Google Test source that was fetched from another repository.
 cc_library(
-    name = "gtest",
-    srcs = glob(
-        [
-            "google*/src/*.cc",
-        ],
-        exclude = glob([
-            "google*/src/*-all.cc",
-            "googlemock/src/gmock_main.cc",
-        ]),
-    ),
-    hdrs = glob(["*/include/**/*.h"]),
-    includes = [
-        "googlemock/",
-        "googlemock/include",
-        "googletest/",
-        "googletest/include",
-    ],
-    linkopts = ["-pthread"],
-    textual_hdrs = ["googletest/src/gtest-internal-inl.h"],
-    visibility = ["//visibility:public"],
+    name = "test_time_zone_names",
+    testonly = True,
+    srcs = ["src/test_time_zone_names.cc"],
+    hdrs = ["src/test_time_zone_names.h"],
+    visibility = ["//visibility:private"],
 )
 
 cc_test(
@@ -97,8 +94,9 @@ cc_test(
     size = "small",
     srcs = ["src/civil_time_test.cc"],
     deps = [
-        "@gtest//:gtest",
         ":civil_time",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
     ],
 )
 
@@ -107,9 +105,10 @@ cc_test(
     size = "small",
     srcs = ["src/time_zone_format_test.cc"],
     deps = [
-        "@gtest//:gtest",
         ":civil_time",
         ":time_zone",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
     ],
 )
 
@@ -118,20 +117,54 @@ cc_test(
     size = "small",
     srcs = ["src/time_zone_lookup_test.cc"],
     deps = [
-        "@gtest//:gtest",
         ":civil_time",
+        ":test_time_zone_names",
         ":time_zone",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
     ],
 )
 
 cc_test(
-    name = "cctz_v1_test",
-    size = "small",
-    srcs = ["src/cctz_v1_test.cc"],
-    defines = ["CCTZ_ACK_V1_DEPRECATION=1"],
+    name = "time_zone_fuzz_test",
+    srcs = [
+        "src/time_zone_fuzz_test.cc",
+        "src/time_zone_if.h",
+        "src/time_zone_impl.h",
+        "src/time_zone_info.h",
+        "src/tzfile.h",
+    ],
+    tags = [
+        "fuzztest",
+    ],
     deps = [
-        "@gtest//:gtest",
-        ":cctz_v1",
+        ":civil_time",
+        ":test_time_zone_names",
+        ":time_zone",
+        "@fuzztest//fuzztest",
+        "@fuzztest//fuzztest:fuzztest_gtest_main",
+        "@googletest//:gtest",
+    ],
+)
+
+### benchmarks
+
+cc_test(
+    name = "cctz_benchmark",
+    srcs = [
+        "src/cctz_benchmark.cc",
+        "src/time_zone_if.h",
+        "src/time_zone_impl.h",
+        "src/time_zone_info.h",
+        "src/tzfile.h",
+    ],
+    linkstatic = 1,
+    tags = ["benchmark"],
+    deps = [
+        ":civil_time",
+        ":test_time_zone_names",
+        ":time_zone",
+        "@google_benchmark//:benchmark_main",
     ],
 )
 
@@ -145,10 +178,6 @@ cc_binary(
 cc_binary(
     name = "epoch_shift",
     srcs = ["examples/epoch_shift.cc"],
-    deps = [
-        ":civil_time",
-        ":time_zone",
-    ],
 )
 
 cc_binary(
@@ -163,10 +192,7 @@ cc_binary(
 cc_binary(
     name = "example2",
     srcs = ["examples/example2.cc"],
-    deps = [
-        ":civil_time",
-        ":time_zone",
-    ],
+    deps = [":time_zone"],
 )
 
 cc_binary(
@@ -200,7 +226,13 @@ cc_binary(
 
 cc_binary(
     name = "time_tool",
-    srcs = ["src/time_tool.cc"],
+    srcs = [
+        "src/time_tool.cc",
+        "src/time_zone_if.h",
+        "src/time_zone_impl.h",
+        "src/time_zone_info.h",
+        "src/tzfile.h",
+    ],
     deps = [
         ":civil_time",
         ":time_zone",

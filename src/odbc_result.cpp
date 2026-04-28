@@ -1,6 +1,6 @@
 #include "odbc_result.h"
 #include "integer64.h"
-#include "time_zone.h"
+#include "cctz/time_zone.h"
 #include "utils.h"
 #include <chrono>
 #include <memory>
@@ -1161,7 +1161,7 @@ std::pair<bool, cctz::time_zone> odbc_result::get_tz_bind_info(
       std::string tzonestr = Rcpp::as<std::string>(tzone);
       cctz::time_zone tz;
       if (!cctz::load_time_zone(tzonestr.data(), &tz)) {
-        std::cerr << "Failed to load time zone" << std::endl;
+        raise_warning("Failed to load time zone");
         return {false, c_->timezone()};
       }
       return {true, tz};
