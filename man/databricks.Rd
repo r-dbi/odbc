@@ -53,13 +53,21 @@ cluster or SQL warehouse.
 Connect to Databricks clusters and SQL warehouses via the \href{https://www.databricks.com/spark/odbc-drivers-download}{Databricks ODBC driver}.
 
 In particular, the custom \code{dbConnect()} method for the Databricks ODBC driver
-implements a subset of the \href{https://docs.databricks.com/en/dev-tools/auth.html#databricks-client-unified-authentication}{Databricks client unified authentication}
-model, with support for personal access tokens, OAuth machine-to-machine
-credentials, and OAuth user-to-machine credentials supplied via Posit
-Workbench or the Databricks CLI on desktop. It can also detect viewer-based
-and service principal credentials on Posit Connect if the \pkg{connectcreds}
-package is installed. All of these credentials are detected automatically if
-present using \href{https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication}{standard environment variables}.
+implements a variant of Databricks's \href{https://docs.databricks.com/aws/en/dev-tools/auth/unified-auth}{unified authentication}
+model when no \code{uid} or \code{pwd} is supplied, checking for ambient credentials in
+the following order:
+\itemize{
+\item Viewer-based or service principal credentials supplied by Posit Connect
+(requires the \pkg{connectcreds} package).
+\item Personal access tokens.
+\item Workload identity federation.
+\item OAuth machine-to-machine credentials.
+\item OAuth user-to-machine credentials suplied via Posit Workbench or the
+Databricks CLI on desktop.
+}
+
+This aims to provide broad compatibility between \pkg{odbc} and the standard
+environment variables used by Databricks SDKs in R and other languages.
 
 In addition, on macOS platforms, the \code{dbConnect()} method will check
 for irregularities with how the driver is configured,
