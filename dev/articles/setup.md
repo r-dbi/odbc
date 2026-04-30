@@ -123,6 +123,7 @@ file. The driver name is what you pass to
 when you connect, e,g:
 
 ``` r
+
 library(DBI)
 con1 <- dbConnect(odbc::odbc(), driver = "PostgreSQL Driver")
 con2 <- dbConnect(odbc::odbc(), driver = "SQLite Driver")
@@ -139,6 +140,7 @@ It’s also possible to configure named data sources, so instead of typing
 this:
 
 ``` r
+
 library(DBI)
 con <- dbConnect(
   odbc::odbc(),
@@ -154,6 +156,7 @@ con <- dbConnect(
 You can type:
 
 ``` r
+
 con <- dbConnect(odbc::odbc(), dsn = "test_db")
 ```
 

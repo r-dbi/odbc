@@ -29,6 +29,11 @@
   argument), and generally improves compatibility with the Snowflake CLI
   and Python ecosystem.
 
+- [`databricks()`](https://odbc.r-dbi.org/dev/reference/databricks.md)
+  now detects service principal credentials when running on Posit
+  Connect ([@tnederlof](https://github.com/tnederlof),
+  [\#930](https://github.com/r-dbi/odbc/issues/930))
+
 ## odbc 1.6.4
 
 CRAN release: 2025-12-06
