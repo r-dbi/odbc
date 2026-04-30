@@ -356,7 +356,8 @@ spark_simba_config <- function(driver) {
   res <- list.files(
     driver_dir(driver),
     pattern = "simba\\.sparkodbc\\.ini$|databricks\\.databricksodbc\\.ini$",
-    full.names = TRUE)
+    full.names = TRUE
+  )
   if (!length(res)) {
     common_dirs <- unique(c(
       "/Library/simba/spark/lib",
@@ -366,9 +367,10 @@ spark_simba_config <- function(driver) {
       Sys.getenv("HOME")
     ))
     res <- list.files(
-        common_dirs,
-        pattern = "simba\\.sparkodbc\\.ini$|databricks\\.databricksodbc\\.ini$",
-        full.names = TRUE)
+      common_dirs,
+      pattern = "simba\\.sparkodbc\\.ini$|databricks\\.databricksodbc\\.ini$",
+      full.names = TRUE
+    )
   }
   return(list(path = res, url = URL))
 }
