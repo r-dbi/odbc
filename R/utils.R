@@ -342,7 +342,7 @@ configure_simba <- function(driver_config,
   if (length(simba_config) == 0) {
     func <- cli::cli_warn
     if (action == "modify") {
-      fun <- cli::cli_abort
+      func <- cli::cli_abort
     }
     func(
       c(i = "Please install the needed driver from {driver_config$url}"),
