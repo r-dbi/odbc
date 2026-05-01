@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Databricks: Update driver location discovery to handle
+  new OEM driver for MacOS (#983).
+
 * Snowflake: Make `sf_private_key` input robust to
   newline character ending (#982).
 

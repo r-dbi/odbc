@@ -189,7 +189,10 @@ databricks_default_driver_paths <- function() {
       "/opt/simba/spark/lib/64/libsparkodbc_sb*.so"
     ))
   } else if (Sys.info()["sysname"] == "Darwin") {
-    paths <- Sys.glob("/Library/simba/spark/lib/libsparkodbc_sb*.dylib")
+    paths <- Sys.glob(c(
+      "/Library/simba/spark/lib/libsparkodbc_sb*.dylib",
+      "/Library/databricks/databricksodbc/lib/libdatabricks*.dylib"
+    ))
   } else {
     paths <- character()
   }
@@ -362,18 +365,25 @@ spark_simba_config <- function(driver) {
   if (!identical(spark_env, "")) {
     return(list(path = spark_env, url = URL))
   }
-  common_dirs <- c(
+  # Attempt first the exact driver directory
+  res <- list.files(
     driver_dir(driver),
-    "/Library/simba/spark/lib",
-    "/etc",
-    getwd(),
-    Sys.getenv("HOME")
+    pattern = "simba\\.sparkodbc\\.ini$|databricks\\.databricksodbc\\.ini$",
+    full.names = TRUE
   )
-  return(list(
-    path = list.files(
+  if (!length(res)) {
+    common_dirs <- unique(c(
+      "/Library/simba/spark/lib",
+      "/Library/databricks/databricksodbc/lib",
+      "/etc",
+      getwd(),
+      Sys.getenv("HOME")
+    ))
+    res <- list.files(
       common_dirs,
-      pattern = "simba\\.sparkodbc\\.ini$",
-      full.names = TRUE),
-    url = URL
-  ))
+      pattern = "simba\\.sparkodbc\\.ini$|databricks\\.databricksodbc\\.ini$",
+      full.names = TRUE
+    )
+  }
+  return(list(path = res, url = URL))
 }
