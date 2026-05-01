@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Databricks: Update driver location discovery to handle
+  new OEM driver for MacOS (#983).
+
 * SQL Server: Make it possible to write `POSIXct` data
   to `DATETIMEOFFSET` targets (#985).
 
