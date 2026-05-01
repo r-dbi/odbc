@@ -2,6 +2,9 @@
 
 ## odbc (development version)
 
+- Snowflake: Make `sf_private_key` input robust to newline character
+  ending ([\#982](https://github.com/r-dbi/odbc/issues/982)).
+
 - SQL Server: Make it possible to write `POSIXct` data to
   `DATETIMEOFFSET` targets
   ([\#985](https://github.com/r-dbi/odbc/issues/985)).
