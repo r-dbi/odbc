@@ -153,7 +153,7 @@ test_that("Workbench-managed credentials are ignored for other hosts", {
   expect_equal(databricks_auth_args(host = "some-host"), NULL)
 })
 
-test_that("we hint viewer-based credentials on Connect", {
+test_that("we hint viewer-based and service principal credentials on Connect", {
   local_mocked_bindings(
     running_on_connect = function() TRUE
   )
