@@ -383,3 +383,9 @@ test_that("configure_unixodbc_simba() writes reasonable entries", {
     action = "warn"
   ))
 })
+
+test_that("varchar() uses byte length (avoids truncation with multibyte)", {
+  # U+2019 RIGHT SINGLE QUOTATION MARK in UTF-8 is 3 bytes
+  string <- paste0("\xe2\x80\x99", paste(rep("a", 255), collapse = ""))
+  expect_equal(varchar(string, type = "varchar"), "varchar(258)")
+})
