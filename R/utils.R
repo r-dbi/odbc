@@ -582,6 +582,7 @@ find_default_driver <- function(paths, fallbacks, label, call = caller_env()) {
 #' @param args A named list of arguments to append to connection string
 #' @param string An initial / starting connection string
 #' @return string A finalized connection string
+#' @noRd
 build_connection_string <- function(args = list(), string = NULL) {
 
   args_string <- paste(names(args), args, sep = "=", collapse = ";")
@@ -603,11 +604,14 @@ build_connection_string <- function(args = list(), string = NULL) {
 #' @param string A connection string.  Expected format is
 #'               `k1=v1;k2=v2;k3=v3`
 #' @return list A named list (k1 = v1, k2 = v2, ...)
+#' @noRd
 decompose_connection_string <- function(string) {
 
   res_pairs <- strsplit(string, ";", fixed = TRUE)[[1]]
   res_key_value <- strsplit(res_pairs, "=", fixed = TRUE)
-  values <- lapply(res_key_value, FUN = function(x) trimws(x[2]) )
+  res_key_value <- Filter(function(x) length(x) == 2 && nchar(x[1]),
+                          res_key_value)
+  values <- lapply(res_key_value, FUN = function(x) trimws(x[2]))
   # Remove enclosing quotation marks around value
   # we may have put them there using odbc::quote_value
   values <- lapply(values, FUN = function(x) {
@@ -631,6 +635,7 @@ decompose_connection_string <- function(string) {
 #'            connection string.
 #' @return A named list (k1 = v1, k2 = v2, ...), much like
 #'         input argument, with some values potentially filtered out.
+#' @noRd
 sanitize_connection_string <- function(lst) {
   EXCLUDE_PATTERNS <- c("*PWD*", "*PASS*", "*TOKEN*")
 

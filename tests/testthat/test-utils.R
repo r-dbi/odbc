@@ -405,6 +405,25 @@ test_that("Handles connection string as expected", {
     k2 = quote_value("Quated value with a ' character")))
   expect_equal(decompose_connection_string(conn_string), list(dsn = "abc",
     k1 = "Quoted Value", k2 = "Quated value with a ' character"))
+  # Robust to ending with semi-column
+  expect_equal(decompose_connection_string("abc=1;def=2;"), list(abc = "1",
+    def = "2"))
+  # Robust to starting with semi-column
+  expect_equal(decompose_connection_string(";abc=1;def=2"), list(abc = "1",
+    def = "2"))
+  # Robust to double semi-column
+  expect_equal(decompose_connection_string("abc=1;;def=2"), list(abc = "1",
+    def = "2"))
+  # Key-value entries with missing key are filtered out
+  expect_equal(decompose_connection_string("abc=1;def=2;=3"), list(abc = "1",
+    def = "2"))
+  # Key-value entries with missing value are filtered out
+  expect_equal(decompose_connection_string("abc=1;def=2;ghi="), list(abc = "1",
+    def = "2"))
+  # Connection string segments that are not formatted as key-value
+  # pairs are filtered out
+  expect_equal(decompose_connection_string("abc=1;def=2;ghi"), list(abc = "1",
+    def = "2"))
 })
 
 test_that("Sanitize filters out auth keys", {
