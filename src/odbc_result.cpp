@@ -1161,7 +1161,7 @@ std::pair<bool, cctz::time_zone> odbc_result::get_tz_bind_info(
       std::string tzonestr = Rcpp::as<std::string>(tzone);
       cctz::time_zone tz;
       if (!cctz::load_time_zone(tzonestr.data(), &tz)) {
-        std::cerr << "Failed to load time zone" << std::endl;
+        Rcpp::Rcerr << "Failed to load time zone" << std::endl;
         return {false, c_->timezone()};
       }
       return {true, tz};
