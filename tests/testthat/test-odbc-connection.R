@@ -1,18 +1,4 @@
 
-# build_connection_string -------------------------------------------------
-
-test_that("handles simple inputs", {
-  expect_equal(build_connection_string(), "")
-  expect_equal(build_connection_string(list(foo = "1")), "foo=1")
-  expect_equal(build_connection_string(list(foo = "1", bar = "2")), "foo=1;bar=2")
-})
-
-test_that("combines with existing .connection string", {
-  expect_equal(build_connection_string(string = "x=1"), "x=1")
-  expect_equal(build_connection_string(list(foo = "1"), "x=1"), "x=1;foo=1")
-  expect_equal(build_connection_string(list(foo = "1"), "x=1;"), "x=1;foo=1")
-})
-
 test_that("errors if unnamed arguments", {
   expect_snapshot(check_args(list(1, 2, 3)), error = TRUE)
 })

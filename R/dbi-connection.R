@@ -8,7 +8,8 @@ setClass(
     ptr = "externalptr",
     quote = "character",
     info = "ANY",
-    encoding = "character"
+    encoding = "character",
+    connectionString = "list"
   )
 )
 
