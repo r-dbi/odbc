@@ -31,6 +31,8 @@
 * `databricks()` now detects service principal credentials when running on Posit
   Connect (@tnederlof, #930)
 
+* `databricks()` now supports workload identity federation.
+
 # odbc 1.6.4
 
 * Fix writing of [R] date/time values that have integer storage. (#952)
