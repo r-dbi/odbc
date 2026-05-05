@@ -3,6 +3,12 @@
 * Databricks: Improve performance when `useNativeQuery`
   connection attribute is set to `true` (#998).
 
+* Databricks: Update driver location discovery to handle
+  new OEM driver for MacOS (#983).
+
+* Snowflake: Make `sf_private_key` input robust to
+  newline character ending (#982).
+
 * SQL Server: Make it possible to write `POSIXct` data
   to `DATETIMEOFFSET` targets (#985).
 
@@ -14,6 +20,16 @@
 
 * odbcConnectionColumns(), odbcConnectionIcon(), and odbcConnectionActions() are now fully deprecated.
   Use DBI::dbListFields() instead of odbcConnectionColumns() (#699).
+
+* `odbc::snowflake()` now uses the `snowflakeauth` package to resolve connection
+  parameters from Snowflake `connections.toml` and `config.toml` files under the
+  hood, which improves support for non-OAuth authenticators (including
+  "externalbrowser" authentication), adds support for the `host` field, allows
+  multiple named connections (via the new `connection_name` argument), and
+  generally improves compatibility with the Snowflake CLI and Python ecosystem.
+
+* `databricks()` now detects service principal credentials when running on Posit
+  Connect (@tnederlof, #930)
 
 # odbc 1.6.4
 
