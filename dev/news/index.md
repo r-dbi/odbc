@@ -44,6 +44,9 @@
   Connect ([@tnederlof](https://github.com/tnederlof),
   [\#930](https://github.com/r-dbi/odbc/issues/930))
 
+- [`databricks()`](https://odbc.r-dbi.org/dev/reference/databricks.md)
+  now supports workload identity federation.
+
 ## odbc 1.6.4
 
 CRAN release: 2025-12-06

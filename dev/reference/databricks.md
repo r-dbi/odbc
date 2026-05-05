@@ -5,16 +5,26 @@ ODBC driver](https://www.databricks.com/spark/odbc-drivers-download).
 
 In particular, the custom
 [`dbConnect()`](https://odbc.r-dbi.org/dev/reference/dbConnect-OdbcDriver-method.md)
-method for the Databricks ODBC driver implements a subset of the
-[Databricks client unified
-authentication](https://docs.databricks.com/en/dev-tools/auth.html#databricks-client-unified-authentication)
-model, with support for personal access tokens, OAuth machine-to-machine
-credentials, and OAuth user-to-machine credentials supplied via Posit
-Workbench or the Databricks CLI on desktop. It can also detect
-viewer-based and service principal credentials on Posit Connect if the
-connectcreds package is installed. All of these credentials are detected
-automatically if present using [standard environment
-variables](https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication).
+method for the Databricks ODBC driver implements a variant of
+Databricks's [unified
+authentication](https://docs.databricks.com/aws/en/dev-tools/auth/unified-auth)
+model when no `uid` or `pwd` is supplied, checking for ambient
+credentials in the following order:
+
+- Viewer-based or service principal credentials supplied by Posit
+  Connect (requires the connectcreds package).
+
+- Personal access tokens.
+
+- Workload identity federation.
+
+- OAuth machine-to-machine credentials.
+
+- OAuth user-to-machine credentials suplied via Posit Workbench or the
+  Databricks CLI on desktop.
+
+This aims to provide broad compatibility between odbc and the standard
+environment variables used by Databricks SDKs in R and other languages.
 
 In addition, on macOS platforms, the
 [`dbConnect()`](https://odbc.r-dbi.org/dev/reference/dbConnect-OdbcDriver-method.md)

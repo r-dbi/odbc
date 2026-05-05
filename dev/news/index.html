@@ -48,6 +48,7 @@
 <li><p>odbcConnectionColumns(), odbcConnectionIcon(), and odbcConnectionActions() are now fully deprecated. Use DBI::dbListFields() instead of odbcConnectionColumns() (<a href="https://github.com/r-dbi/odbc/issues/699" class="external-link">#699</a>).</p></li>
 <li><p><code><a href="../reference/snowflake.html">odbc::snowflake()</a></code> now uses the <code>snowflakeauth</code> package to resolve connection parameters from Snowflake <code>connections.toml</code> and <code>config.toml</code> files under the hood, which improves support for non-OAuth authenticators (including “externalbrowser” authentication), adds support for the <code>host</code> field, allows multiple named connections (via the new <code>connection_name</code> argument), and generally improves compatibility with the Snowflake CLI and Python ecosystem.</p></li>
 <li><p><code><a href="../reference/databricks.html">databricks()</a></code> now detects service principal credentials when running on Posit Connect (<a href="https://github.com/tnederlof" class="external-link">@tnederlof</a>, <a href="https://github.com/r-dbi/odbc/issues/930" class="external-link">#930</a>)</p></li>
+<li><p><code><a href="../reference/databricks.html">databricks()</a></code> now supports workload identity federation.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.6.4" id="odbc-164">odbc 1.6.4<a class="anchor" aria-label="anchor" href="#odbc-164"></a></h2><p class="text-muted">CRAN release: 2025-12-06</p>
