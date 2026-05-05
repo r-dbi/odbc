@@ -2,6 +2,10 @@
 
 ## odbc (development version)
 
+- Databricks: Improve performance when `useNativeQuery` connection
+  attribute is set to `true`
+  ([\#998](https://github.com/r-dbi/odbc/issues/998)).
+
 - Databricks: Update driver location discovery to handle new OEM driver
   for MacOS ([\#983](https://github.com/r-dbi/odbc/issues/983)).
 
