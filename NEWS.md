@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Databricks: Improve performance when `useNativeQuery`
+  connection attribute is set to `true` (#998).
+
 * SQL Server: Make it possible to write `POSIXct` data
   to `DATETIMEOFFSET` targets (#985).
 
