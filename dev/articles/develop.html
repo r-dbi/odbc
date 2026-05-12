@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.6.4.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -280,8 +280,8 @@ like:</p>
 </h3>
 <p>Getting an Oracle database booted up in a Docker container on MacOS
 is a bit challenging. First, you’ll build the container image yourself
-from the official Oracle source using the instructions <a href="https://www.simonpcouch.com/blog/2024-03-14-oracle/" class="external-link">here</a>.
-Once you’ve finished building the image, run it with:</p>
+from the official Oracle source using the instructions <a href="https://simonpcouch.com/blog/2024-03-14-oracle/" class="external-link">here</a>. Once
+you’ve finished building the image, run it with:</p>
 <pre class="shell"><code>docker run -d --name oracle -p 1521:1521 -e ORACLE_PWD=odbcTest321 oracle/database:19.3.0-ee</code></pre>
 <p>Note that the <code>run</code> command here is a bit different than
 the one in the linked blog post.</p>

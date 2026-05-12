@@ -279,7 +279,7 @@ A huge pain.
 Getting an Oracle database booted up in a Docker container on MacOS is a
 bit challenging. First, you’ll build the container image yourself from
 the official Oracle source using the instructions
-[here](https://www.simonpcouch.com/blog/2024-03-14-oracle/). Once you’ve
+[here](https://simonpcouch.com/blog/2024-03-14-oracle/). Once you’ve
 finished building the image, run it with:
 
 ``` shell
