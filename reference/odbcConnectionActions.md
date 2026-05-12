@@ -1,7 +1,5 @@
 # List the actions supported for the connection
 
-**\[deprecated\]**
-
 Return a list of actions that can be performed on the connection.
 
 ## Usage

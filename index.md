@@ -64,6 +64,7 @@ to automatically generate SQL from your dplyr code.
 Install the latest release of odbc from CRAN with the following code:
 
 ``` r
+
 install.packages("odbc")
 ```
 
@@ -71,6 +72,7 @@ To get a bug fix or to use a feature from the development version, you
 can install the development version of odbc from GitHub:
 
 ``` r
+
 # install.packages("pak")
 pak::pak("r-dbi/odbc")
 ```
@@ -81,6 +83,7 @@ To use odbc, begin by creating a database connection, which might look
 something like this:
 
 ``` r
+
 library(DBI)
 
 con <- dbConnect(
@@ -100,6 +103,7 @@ examples of connecting to a variety of databases.)
 used for listing all existing tables in a database.
 
 ``` r
+
 dbListTables(con)
 ```
 
@@ -108,6 +112,7 @@ read a full table into an R
 [`data.frame()`](https://rdrr.io/r/base/data.frame.html).
 
 ``` r
+
 data <- dbReadTable(con, "flights")
 ```
 
@@ -116,6 +121,7 @@ will write an R [`data.frame()`](https://rdrr.io/r/base/data.frame.html)
 to an SQL table.
 
 ``` r
+
 dbWriteTable(con, "iris", iris)
 ```
 
@@ -123,6 +129,7 @@ dbWriteTable(con, "iris", iris)
 submit a SQL query and fetch the results:
 
 ``` r
+
 df <- dbGetQuery(
   con,
   "SELECT flight, tailnum, origin FROM flights ORDER BY origin"

@@ -102,7 +102,7 @@ dbConnect(
 - bigint:
 
   The R type that `SQL_BIGINT` types should be mapped to. Default is
-  [bit64::integer64](https://rdrr.io/pkg/bit64/man/bit64-package.html),
+  [bit64::integer64](https://bit64.r-lib.org/reference/bit64-package.html),
   which allows the full range of 64 bit integers.
 
 - timeout:

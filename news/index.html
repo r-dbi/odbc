@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.6.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,30 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.6.4" id="odbc-164">odbc 1.6.4<a class="anchor" aria-label="anchor" href="#odbc-164"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.7.0" id="odbc-170">odbc 1.7.0<a class="anchor" aria-label="anchor" href="#odbc-170"></a></h2><p class="text-muted">CRAN release: 2026-05-09</p>
+<div class="section level3">
+<h3 id="databricks-1-7-0">Databricks<a class="anchor" aria-label="anchor" href="#databricks-1-7-0"></a></h3>
+<ul><li><p><code><a href="../reference/databricks.html">databricks()</a></code> now supports workload identity federation (<a href="https://github.com/r-dbi/odbc/issues/1002" class="external-link">#1002</a>).</p></li>
+<li><p><code><a href="../reference/databricks.html">databricks()</a></code> now detects service principal credentials when running on Posit Connect (<a href="https://github.com/tnederlof" class="external-link">@tnederlof</a>, <a href="https://github.com/r-dbi/odbc/issues/931" class="external-link">#931</a>).</p></li>
+<li><p><code><a href="../reference/databricks.html">databricks()</a></code> now has improved performance when the <code>useNativeQuery</code> connection attribute is set to <code>true</code> (<a href="https://github.com/r-dbi/odbc/issues/998" class="external-link">#998</a>).</p></li>
+<li><p><code><a href="../reference/databricks.html">databricks()</a></code> driver location discovery now handles the new OEM driver for macOS (<a href="https://github.com/r-dbi/odbc/issues/994" class="external-link">#994</a>).</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="snowflake-1-7-0">Snowflake<a class="anchor" aria-label="anchor" href="#snowflake-1-7-0"></a></h3>
+<ul><li><p><code><a href="../reference/snowflake.html">odbc::snowflake()</a></code> now uses the <code>snowflakeauth</code> package to resolve connection parameters from Snowflake <code>connections.toml</code> and <code>config.toml</code> files under the hood, which improves support for non-OAuth authenticators (including “externalbrowser” authentication), adds support for the <code>host</code> field, allows multiple named connections (via the new <code>connection_name</code> argument), and generally improves compatibility with the Snowflake CLI and Python ecosystem (<a href="https://github.com/r-dbi/odbc/issues/1000" class="external-link">#1000</a>).</p></li>
+<li><p><code>sf_private_key</code> is now robust to newline character ending (<a href="https://github.com/r-dbi/odbc/issues/997" class="external-link">#997</a>).</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="miscellaneous-1-7-0">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-1-7-0"></a></h3>
+<ul><li><p>SQL Server: <code>POSIXct</code> data can now be written to <code>DATETIMEOFFSET</code> targets (<a href="https://github.com/r-dbi/odbc/issues/985" class="external-link">#985</a>).</p></li>
+<li><p><code><a href="../reference/odbcConnectionColumns.html">odbcConnectionColumns()</a></code>, <code><a href="../reference/odbcConnectionIcon.html">odbcConnectionIcon()</a></code>, and <code><a href="../reference/odbcConnectionActions.html">odbcConnectionActions()</a></code> are now fully deprecated. Use <code><a href="https://dbi.r-dbi.org/reference/dbListFields.html" class="external-link">DBI::dbListFields()</a></code> instead of <code><a href="../reference/odbcConnectionColumns.html">odbcConnectionColumns()</a></code> (<a href="https://github.com/r-dbi/odbc/issues/986" class="external-link">#986</a>).</p></li>
+<li><p>Fix crash when interrupting execution using Ctrl-c (<a href="https://github.com/r-dbi/odbc/issues/977" class="external-link">#977</a>).</p></li>
+<li><p>Fix R error/crash when the <code>params</code> arguments are different lengths and one is <code>POSIXt</code> (<a href="https://github.com/r-dbi/odbc/issues/984" class="external-link">#984</a>). This forces all bound-parameters to be length 1 or the same length (i.e., tidyverse recycling rules).</p></li>
+<li><p><code><a href="../reference/databricks.html">databricks()</a></code> and <code><a href="../reference/snowflake.html">snowflake()</a></code> now correctly error (instead of warning) when the driver configuration file is not found (<a href="https://github.com/r-dbi/odbc/issues/1001" class="external-link">#1001</a>).</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.6.4" id="odbc-164">odbc 1.6.4<a class="anchor" aria-label="anchor" href="#odbc-164"></a></h2><p class="text-muted">CRAN release: 2025-12-06</p>
 <ul><li><p>Fix writing of [R] date/time values that have integer storage. (<a href="https://github.com/r-dbi/odbc/issues/952" class="external-link">#952</a>)</p></li>
 <li><p>Oracle: Fix writing values to <code>DATE</code> targets. (<a href="https://github.com/r-dbi/odbc/issues/959" class="external-link">#959</a>)</p></li>
 <li><p>SQL Server: Fix time zone interpretation in <code>DATETIMEOFFSET</code> data; now follows ISO 8061 convention where positive offset denotes time zone east of Greenwich. (<a href="https://github.com/r-dbi/odbc/issues/946" class="external-link">#946</a>)</p></li>

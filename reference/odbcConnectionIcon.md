@@ -1,7 +1,6 @@
 # Get an icon representing a connection.
 
-**\[deprecated\]** Return the path on disk to an icon representing a
-connection.
+Return the path on disk to an icon representing a connection.
 
 ## Usage
 

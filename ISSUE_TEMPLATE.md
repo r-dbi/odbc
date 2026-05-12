@@ -3,6 +3,7 @@
 Database
 
 ``` r
+
 DBI::dbGetInfo(con)
 #> output
 ```
@@ -10,6 +11,7 @@ DBI::dbGetInfo(con)
 Session Info
 
 ``` r
+
 devtools::session_info()
 #> output
 ```
