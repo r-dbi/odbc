@@ -378,6 +378,16 @@ test_that("DATETIME2 precision (#790)", {
 
 test_that("DATETIMEOFFSET", {
   con <- test_con("SQLSERVER")
+  # Relies on DATETIMEOFFSET handling present in the PRO engineering build
+  # (1.5.44.0044) where issue related to `DATETIMEOFFSET` handling was
+  # specifically addressed
+  drv <- DBI::dbGetInfo(con)$driver.version
+  skip_if(
+    identical(Sys.getenv("ODBC_DRIVERS_VINTAGE"), "PRO") &&
+      length(drv) == 1 && nzchar(drv) &&
+      numeric_version(drv) < numeric_version("1.5.44.0044"),
+    sprintf("PRO driver %s is older than engineering build 1.5.44.0044", drv)
+  )
 
   # Test writing strings to a `DATETIMEOFFSET` target and reading it back as
   # POSIXct with properly recorded offset.
