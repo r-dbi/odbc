@@ -183,6 +183,43 @@ Rcpp::DataFrame connection_sql_tables(
 }
 
 // [[Rcpp::export]]
+Rcpp::DataFrame connection_sql_procedures(
+    connection_ptr const& p,
+    SEXP catalog_name = R_NilValue,
+    SEXP schema_name = R_NilValue,
+    SEXP procedure_name = R_NilValue) {
+  auto c = nanodbc::catalog(*(*p)->connection());
+  // Empty string matches everything
+  nanodbc::catalog::procedures procedures = c.find_procedures(
+      procedure_name == R_NilValue ? std::string()
+                                   : Rcpp::as<std::string>(procedure_name),
+      schema_name == R_NilValue ? std::string()
+                                : Rcpp::as<std::string>(schema_name),
+      catalog_name == R_NilValue ? std::string()
+                                 : Rcpp::as<std::string>(catalog_name));
+  std::vector<std::string> catalog;
+  std::vector<std::string> schemas;
+  std::vector<std::string> names;
+  std::vector<std::string> remarks;
+  std::vector<short> types;
+
+  while (procedures.next()) {
+    catalog.push_back(procedures.procedure_catalog());
+    schemas.push_back(procedures.procedure_schema());
+    names.push_back(procedures.procedure_name());
+    remarks.push_back(procedures.procedure_remarks());
+    types.push_back(procedures.procedure_type());
+  }
+  return Rcpp::DataFrame::create(
+      Rcpp::_["procedure_catalog"] = catalog,
+      Rcpp::_["procedure_schema"] = schemas,
+      Rcpp::_["procedure_name"] = names,
+      Rcpp::_["procedure_remarks"] = remarks,
+      Rcpp::_["procedure_type"] = types,
+      Rcpp::_["stringsAsFactors"] = false);
+}
+
+// [[Rcpp::export]]
 Rcpp::StringVector connection_sql_catalogs(
     connection_ptr const& p ) {
   auto c = nanodbc::catalog(*(*p)->connection());

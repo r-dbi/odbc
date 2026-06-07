@@ -454,6 +454,73 @@ setMethod(
   }
 )
 
+# Wraps SQLProcedures; arguments are search patterns.
+setGeneric(
+  "odbcConnectionProcedures",
+  valueClass = "data.frame",
+  function(conn, name, ...) {
+    standardGeneric("odbcConnectionProcedures")
+  }
+)
+
+setMethod("odbcConnectionProcedures", c("OdbcConnection", "Id"),
+  function(conn, name, exact = FALSE) {
+    odbcConnectionProcedures(
+      conn,
+      name = id_field(name, "table"),
+      catalog_name = id_field(name, "catalog"),
+      schema_name = id_field(name, "schema"),
+      exact = exact
+    )
+  }
+)
+
+setMethod("odbcConnectionProcedures", c("OdbcConnection", "character"),
+  function(conn,
+           name,
+           catalog_name = NULL,
+           schema_name = NULL,
+           exact = FALSE) {
+    if (exact) {
+      catalog_name <- escapePattern(catalog_name)
+      schema_name <- escapePattern(schema_name)
+      name <- escapePattern(name)
+    }
+    connection_sql_procedures(
+      conn@ptr,
+      catalog_name = catalog_name,
+      schema_name = schema_name,
+      procedure_name = name
+    )
+  }
+)
+
+setMethod("odbcConnectionProcedures", "OdbcConnection",
+  function(conn,
+           name = NULL,
+           catalog_name = NULL,
+           schema_name = NULL,
+           exact = FALSE) {
+    odbcConnectionProcedures(
+      conn,
+      name = "%",
+      catalog_name = catalog_name,
+      schema_name = schema_name,
+      exact = exact
+    )
+  }
+)
+
+setMethod("odbcConnectionProcedures", c("OdbcConnection", "SQL"),
+  function(conn, name, exact = FALSE) {
+    odbcConnectionProcedures(
+      conn,
+      dbUnquoteIdentifier(conn, name)[[1]],
+      exact = exact
+    )
+  }
+)
+
 setGeneric(
   "odbcConnectionCatalogs",
   valueClass = "character",

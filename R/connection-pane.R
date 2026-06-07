@@ -54,6 +54,8 @@ odbcListObjectTypes.default <- function(connection) {
   )
   obj_types <- c(obj_types, viewlike_types)
 
+  obj_types <- c(obj_types, list(procedure = list(contains = "data")))
+
   # check for schema support
   if (connection@info$supports.schema) {
     obj_types <- list(schema = list(contains = obj_types))
@@ -135,12 +137,30 @@ odbcListObjects.OdbcConnection <- function(
     odbcConnectionTables(connection, name, catalog, schema, table_type = type),
     error = \(e) NULL
   )
-  # just return a list of the objects and their types, possibly filtered by the
+  # a list of the table-like objects and their types, possibly filtered by the
   # options above
-  data.frame(
+  result <- data.frame(
     name = objs[["table_name"]],
     type = tolower(objs[["table_type"]])
   )
+
+  if (is.null(type) || identical(tolower(type), "procedure")) {
+    procs <- tryCatch(
+      odbcConnectionProcedures(connection, name, catalog, schema),
+      error = function(e) NULL
+    )
+    if (!is.null(procs) && nrow(procs) > 0) {
+      result <- rbind(
+        result,
+        data.frame(
+          name = procs[["procedure_name"]],
+          type = rep("procedure", times = nrow(procs)),
+          stringsAsFactors = FALSE
+        )
+      )
+    }
+  }
+  result
 }
 
 #' List columns in an object.

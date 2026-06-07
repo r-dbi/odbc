@@ -121,6 +121,26 @@ test_that("works with schemas (#197)", {
   expect_false("testSchema" %in% res)
 })
 
+test_that("can enumerate stored procedures", {
+  con <- test_con("SQLSERVER")
+  proc <- "odbc_test_proc"
+  dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc))
+  dbExecute(con, paste0(
+    "CREATE PROCEDURE dbo.", proc, " @x int AS SELECT @x AS val"))
+  on.exit(dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc)))
+
+  procs <- odbcConnectionProcedures(con, paste0(proc, "%"), schema_name = "dbo")
+  expect_s3_class(procs, "data.frame")
+  expect_true(proc %in% procs$procedure_name)
+  expect_false(any(grepl(";", procs$procedure_name)))
+
+  objs <- odbcListObjects(con, catalog = "master", schema = "dbo")
+  expect_true(proc %in% objs$name[objs$type == "procedure"])
+
+  tbls <- odbcListObjects(con, catalog = "master", schema = "dbo", type = "table")
+  expect_false(any(tbls$type == "procedure"))
+})
+
 test_that("works with dbAppendTable (#215)", {
   con <- test_con("SQLSERVER")
 

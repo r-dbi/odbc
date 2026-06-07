@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* The RStudio/Posit Connections Pane now lists stored procedures alongside
+  tables and views, enumerated via the ODBC `SQLProcedures` call.
+
 # odbc 1.7.2
 
 * odbc now requires R 4.2.0.
