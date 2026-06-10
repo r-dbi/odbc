@@ -141,6 +141,28 @@ test_that("can enumerate stored procedures", {
   expect_false(any(tbls$type == "procedure"))
 })
 
+test_that("can enumerate stored procedure parameters", {
+  con <- test_con("SQLSERVER")
+  proc <- "odbc_param_proc"
+  dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc))
+  dbExecute(con, paste0(
+    "CREATE PROCEDURE dbo.", proc,
+    " @x int, @label varchar(50), @y int OUTPUT AS SET @y = @x"))
+  on.exit(dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc)))
+
+  params <- odbcConnectionProcedureColumns(con, proc, schema_name = "dbo")
+  expect_s3_class(params, "data.frame")
+  expect_true(all(c("@x", "@label", "@y") %in% params$column_name))
+  expect_true(is.numeric(params$ordinal_position))
+
+  flds <- odbcListColumns(con, procedure = proc, schema = "dbo", catalog = "master")
+  expect_named(flds, c("name", "type"))
+  expect_true("@x" %in% flds$name)
+  expect_match(flds$type[flds$name == "@x"], "(in)", fixed = TRUE)
+  # SQL Server reports OUTPUT parameters as inout
+  expect_match(flds$type[flds$name == "@y"], "(inout)", fixed = TRUE)
+})
+
 test_that("works with dbAppendTable (#215)", {
   con <- test_con("SQLSERVER")
 

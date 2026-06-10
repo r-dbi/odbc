@@ -240,14 +240,20 @@ odbcListColumns.OdbcConnection <- function(
   connection,
   table = NULL,
   view = NULL,
+  procedure = NULL,
   catalog = NULL,
   schema = NULL,
   ...
 ) {
   check_string(table, allow_null = TRUE)
   check_string(view, allow_null = TRUE)
+  check_string(procedure, allow_null = TRUE)
   check_string(catalog, allow_null = TRUE)
   check_string(schema, allow_null = TRUE)
+
+  if (!is.null(procedure)) {
+    return(procedureColumnsAsFields(connection, procedure, catalog, schema))
+  }
 
   name <- validateObjectName(table, view, ...)
   # specify schema or catalog if given
@@ -262,6 +268,41 @@ odbcListColumns.OdbcConnection <- function(
   data.frame(
     name = cols[["name"]],
     type = cols[["field.type"]]
+  )
+}
+
+# Pane fields: name, and type with direction, e.g. "int (in)".
+procedureColumnsAsFields <- function(connection, procedure, catalog, schema) {
+  params <- odbcConnectionProcedureColumns(
+    connection,
+    name = procedure,
+    catalog_name = catalog,
+    schema_name = schema
+  )
+  if (is.null(params) || nrow(params) == 0) {
+    return(data.frame(name = character(), type = character(),
+                      stringsAsFactors = FALSE))
+  }
+
+  # ODBC COLUMN_TYPE codes
+  direction <- c(
+    "0" = "unknown",
+    "1" = "in",      # SQL_PARAM_INPUT
+    "2" = "inout",   # SQL_PARAM_INPUT_OUTPUT
+    "3" = "result",  # SQL_RESULT_COL
+    "4" = "out",     # SQL_PARAM_OUTPUT
+    "5" = "return"   # SQL_RETURN_VALUE
+  )[as.character(params[["column_type"]])]
+  direction[is.na(direction)] <- "unknown"
+
+  # Return values may be unnamed
+  nm <- params[["column_name"]]
+  nm[!nzchar(nm)] <- "<return value>"
+
+  data.frame(
+    name = nm,
+    type = paste0(params[["type_name"]], " (", direction, ")"),
+    stringsAsFactors = FALSE
   )
 }
 

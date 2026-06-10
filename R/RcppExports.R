@@ -53,6 +53,10 @@ connection_sql_procedures <- function(p, catalog_name = NULL, schema_name = NULL
     .Call(`_odbc_connection_sql_procedures`, p, catalog_name, schema_name, procedure_name)
 }
 
+connection_sql_procedure_columns <- function(p, column_name = NULL, catalog_name = NULL, schema_name = NULL, procedure_name = NULL) {
+    .Call(`_odbc_connection_sql_procedure_columns`, p, column_name, catalog_name, schema_name, procedure_name)
+}
+
 connection_sql_catalogs <- function(p) {
     .Call(`_odbc_connection_sql_catalogs`, p)
 }

@@ -163,6 +163,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// connection_sql_procedure_columns
+Rcpp::DataFrame connection_sql_procedure_columns(connection_ptr const& p, SEXP column_name, SEXP catalog_name, SEXP schema_name, SEXP procedure_name);
+RcppExport SEXP _odbc_connection_sql_procedure_columns(SEXP pSEXP, SEXP column_nameSEXP, SEXP catalog_nameSEXP, SEXP schema_nameSEXP, SEXP procedure_nameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< connection_ptr const& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type column_name(column_nameSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type catalog_name(catalog_nameSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type schema_name(schema_nameSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type procedure_name(procedure_nameSEXP);
+    rcpp_result_gen = Rcpp::wrap(connection_sql_procedure_columns(p, column_name, catalog_name, schema_name, procedure_name));
+    return rcpp_result_gen;
+END_RCPP
+}
 // connection_sql_catalogs
 Rcpp::StringVector connection_sql_catalogs(connection_ptr const& p);
 RcppExport SEXP _odbc_connection_sql_catalogs(SEXP pSEXP) {
@@ -392,6 +407,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_odbc_connection_valid", (DL_FUNC) &_odbc_connection_valid, 1},
     {"_odbc_connection_sql_tables", (DL_FUNC) &_odbc_connection_sql_tables, 5},
     {"_odbc_connection_sql_procedures", (DL_FUNC) &_odbc_connection_sql_procedures, 4},
+    {"_odbc_connection_sql_procedure_columns", (DL_FUNC) &_odbc_connection_sql_procedure_columns, 5},
     {"_odbc_connection_sql_catalogs", (DL_FUNC) &_odbc_connection_sql_catalogs, 1},
     {"_odbc_connection_sql_schemas", (DL_FUNC) &_odbc_connection_sql_schemas, 1},
     {"_odbc_connection_sql_table_types", (DL_FUNC) &_odbc_connection_sql_table_types, 1},

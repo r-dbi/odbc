@@ -220,6 +220,64 @@ Rcpp::DataFrame connection_sql_procedures(
 }
 
 // [[Rcpp::export]]
+Rcpp::DataFrame connection_sql_procedure_columns(
+    connection_ptr const& p,
+    SEXP column_name = R_NilValue,
+    SEXP catalog_name = R_NilValue,
+    SEXP schema_name = R_NilValue,
+    SEXP procedure_name = R_NilValue) {
+  auto c = nanodbc::catalog(*(*p)->connection());
+  // Empty string matches everything
+  nanodbc::catalog::procedure_columns cols = c.find_procedure_columns(
+      column_name == R_NilValue ? std::string()
+                                : Rcpp::as<std::string>(column_name),
+      procedure_name == R_NilValue ? std::string()
+                                   : Rcpp::as<std::string>(procedure_name),
+      schema_name == R_NilValue ? std::string()
+                                : Rcpp::as<std::string>(schema_name),
+      catalog_name == R_NilValue ? std::string()
+                                 : Rcpp::as<std::string>(catalog_name));
+  std::vector<std::string> catalog_names;
+  std::vector<std::string> schema_names;
+  std::vector<std::string> procedure_names;
+  std::vector<std::string> column_names;
+  std::vector<short> column_type;
+  std::vector<short> data_type;
+  std::vector<std::string> type_name;
+  std::vector<long> column_size;
+  std::vector<short> decimal_digits;
+  std::vector<short> nullable;
+  std::vector<long> ordinal_position;
+
+  while (cols.next()) {
+    catalog_names.push_back(cols.procedure_catalog());
+    schema_names.push_back(cols.procedure_schema());
+    procedure_names.push_back(cols.procedure_name());
+    column_names.push_back(cols.column_name());
+    column_type.push_back(cols.column_type());
+    data_type.push_back(cols.data_type());
+    type_name.push_back(cols.type_name());
+    column_size.push_back(cols.column_size());
+    decimal_digits.push_back(cols.decimal_digits());
+    nullable.push_back(cols.nullable());
+    ordinal_position.push_back(cols.ordinal_position());
+  }
+  return Rcpp::DataFrame::create(
+      Rcpp::_["procedure_catalog"] = catalog_names,
+      Rcpp::_["procedure_schema"] = schema_names,
+      Rcpp::_["procedure_name"] = procedure_names,
+      Rcpp::_["column_name"] = column_names,
+      Rcpp::_["column_type"] = column_type,
+      Rcpp::_["data_type"] = data_type,
+      Rcpp::_["type_name"] = type_name,
+      Rcpp::_["column_size"] = column_size,
+      Rcpp::_["decimal_digits"] = decimal_digits,
+      Rcpp::_["nullable"] = nullable,
+      Rcpp::_["ordinal_position"] = ordinal_position,
+      Rcpp::_["stringsAsFactors"] = false);
+}
+
+// [[Rcpp::export]]
 Rcpp::StringVector connection_sql_catalogs(
     connection_ptr const& p ) {
   auto c = nanodbc::catalog(*(*p)->connection());

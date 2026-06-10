@@ -2042,6 +2042,41 @@ public:
         result result_;
     };
 
+    /// \brief Result set for a list of parameters and result columns of stored procedures.
+    class procedure_columns
+    {
+    public:
+        bool next();                           ///< Move to the next result in the result set.
+        string_type procedure_catalog() const; ///< Fetch procedure catalog.
+        string_type procedure_schema() const;  ///< Fetch procedure schema.
+        string_type procedure_name() const;    ///< Fetch procedure name.
+        string_type column_name() const;       ///< Fetch column/parameter name.
+        short column_type() const;             ///< Fetch column type (parameter direction).
+        short data_type() const;               ///< Fetch column data type.
+        string_type type_name() const;         ///< Fetch column type name.
+        long column_size() const;              ///< Fetch column size.
+        long buffer_length() const;            ///< Fetch buffer length.
+        short decimal_digits() const;          ///< Fetch decimal digits.
+        short numeric_precision_radix() const; ///< Fetch numeric precission.
+        short nullable() const;                ///< True iff column is nullable.
+        string_type remarks() const;           ///< Fetch column remarks.
+        string_type column_default() const;    ///< Fetch column's default.
+        short sql_data_type() const;           ///< Fetch column's SQL data type.
+        short sql_datetime_subtype() const;    ///< Fetch datetime subtype of column.
+        long char_octet_length() const;        ///< Fetch char octet length.
+
+        /// \brief Ordinal position of the column/parameter, starting at 1.
+        long ordinal_position() const;
+
+        /// \brief Fetch column is-nullable information.
+        string_type is_nullable() const;
+
+    private:
+        friend class nanodbc::catalog;
+        explicit procedure_columns(result& find_result);
+        result result_;
+    };
+
     /// \brief Creates catalog operating on database accessible through the specified connection.
     catalog(connection& conn);
 
@@ -2086,6 +2121,20 @@ public:
     /// All arguments are treated as the Pattern Value Arguments.
     /// Empty string argument is equivalent to passing the search pattern '%'.
     catalog::procedures find_procedures(
+        const string_type& procedure = string_type(),
+        const string_type& schema = string_type(),
+        const string_type& catalog = string_type());
+
+    /// \brief Creates result set with parameters and result columns of stored procedures.
+    ///
+    /// Procedure column information is obtained by executing `SQLProcedureColumns`
+    /// function within scope of the connected database accessible with the
+    /// specified connection.
+    ///
+    /// All arguments are treated as the Pattern Value Arguments.
+    /// Empty string argument is equivalent to passing the search pattern '%'.
+    catalog::procedure_columns find_procedure_columns(
+        const string_type& column = string_type(),
         const string_type& procedure = string_type(),
         const string_type& schema = string_type(),
         const string_type& catalog = string_type());
