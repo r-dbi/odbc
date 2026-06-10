@@ -62,7 +62,13 @@ jobs:
       - name: Install PostgreSQL
         if: matrix.database == 'PostgreSQL'
         uses: ankane/setup-postgres@v1
+        # The windows-latest image (windows-2025-vs2026) ships PostgreSQL 17,
+        # but ankane/setup-postgres only targets the postgresql-x64-17 service
+        # when ImageOS == "win25" -- which that image does not set.
+        env:
+          ImageOS: win25
         with:
+          postgres-version: 17
           database: test
 
       - name: Install PostgreSQL Driver
