@@ -143,6 +143,18 @@ setMethod("odbcConnectionColumns", c("Oracle", "character"),
   }
 )
 
+#' @description
+#' ## `odbcConnectionColumns()`
+#'
+#' Defined explicitly (rather than inherited) to avoid an ambiguous S4 dispatch
+#' @rdname Oracle
+#' @usage NULL
+setMethod("odbcConnectionColumns", c("Oracle", "SQL"),
+  function(conn, name, ..., exact = FALSE) {
+    odbcConnectionColumns(conn, dbUnquoteIdentifier(conn, name)[[1]], ..., exact = exact)
+  }
+)
+
 #' @export
 #' @rdname odbcDataType
 #' @usage NULL
