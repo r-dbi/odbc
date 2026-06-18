@@ -4082,8 +4082,11 @@ inline void result::result_impl::get_ref_impl<string_type>(short column, string_
             // Type is unicode in the database, convert if necessary
             const SQLWCHAR* s =
                 reinterpret_cast<SQLWCHAR*>(col.pdata_ + rowset_position_ * col.clen_);
-            const string_type::size_type str_size =
-                col.cbdata_[rowset_position_] / sizeof(SQLWCHAR);
+            // Defensive programming: clamp so we never read past pdata_.
+            // See #1011 / Snowflake for SQLTables REMARKS
+            const string_type::size_type str_size = std::min<string_type::size_type>(
+                col.cbdata_[rowset_position_] / sizeof(SQLWCHAR),
+                col.clen_ / sizeof(SQLWCHAR));
             wide_string_type temp(s, s + str_size);
             convert(temp, result);
         }
