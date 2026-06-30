@@ -399,6 +399,17 @@ test_that("combines with existing .connection string", {
   expect_equal(build_connection_string(list(foo = "1"), "x=1;"), "x=1;foo=1")
 })
 
+test_that("formats numeric connection string values without scientific notation", {
+  expect_equal(
+    build_connection_string(list(DefaultStringColumnLength = 100000)),
+    "DefaultStringColumnLength=100000"
+  )
+  expect_equal(
+    build_connection_string(list(foo = 0.00001, bar = 1.23)),
+    "foo=0.00001;bar=1.23"
+  )
+})
+
 test_that("Handles connection string as expected", {
   conn_string <- build_connection_string(list(dsn = "abc",
     k1 = quote_value("Quoted Value"),
