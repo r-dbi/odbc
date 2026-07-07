@@ -368,7 +368,11 @@ inline void convert(const std::string& in, wide_string_type& out)
     auto size_needed =
         MultiByteToWideChar(CP_UTF8, 0, &in[0], static_cast<int>(in.size()), nullptr, 0);
     out.resize(size_needed);
-    MultiByteToWideChar(CP_UTF8, 0, &in[0], static_cast<int>(in.size()), &out[0], size_needed);
+    // package:odbc — out is std::u16string (char16_t*); cast to wchar_t* since
+    // MinGW treats char16_t and wchar_t as distinct 16-bit types.
+    MultiByteToWideChar(
+        CP_UTF8, 0, &in[0], static_cast<int>(in.size()),
+        reinterpret_cast<wchar_t*>(&out[0]), size_needed);
 #else
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -655,24 +659,33 @@ struct sql_ctype<double>
     static const SQLSMALLINT value = SQL_C_DOUBLE;
 };
 
+// package:odbc — mirror upstream nanodbc: specialize sql_ctype on the concrete
+// std::string / wide_string_type character types. This is flag-independent: the
+// four types are always distinct, so it compiles both with and without
+// NANODBC_USE_UNICODE and also covers the narrow `char` bind/instantiation paths
+// that string_type alone would leave unspecialized in the unicode build.
 template <>
-struct sql_ctype<nanodbc::string_type::value_type>
+struct sql_ctype<nanodbc::wide_string_type::value_type>
 {
-#ifdef NANODBC_USE_UNICODE
     static const SQLSMALLINT value = SQL_C_WCHAR;
-#else
-    static const SQLSMALLINT value = SQL_C_CHAR;
-#endif
 };
 
 template <>
-struct sql_ctype<nanodbc::string_type>
+struct sql_ctype<nanodbc::wide_string_type>
 {
-#ifdef NANODBC_USE_UNICODE
     static const SQLSMALLINT value = SQL_C_WCHAR;
-#else
+};
+
+template <>
+struct sql_ctype<std::string::value_type>
+{
     static const SQLSMALLINT value = SQL_C_CHAR;
-#endif
+};
+
+template <>
+struct sql_ctype<std::string>
+{
+    static const SQLSMALLINT value = SQL_C_CHAR;
 };
 
 template <>
@@ -932,7 +945,7 @@ public:
         }
     }
 
-    connection_impl(string const& connection_string, std::list<attribute> attributes)
+    connection_impl(string_type const& connection_string, std::list<attribute> attributes)
         : env_(nullptr)
         , dbc_(nullptr)
         , connected_(false)
@@ -1116,7 +1129,7 @@ public:
     }
 
     RETCODE
-    connect(string const& connection_string, long timeout, void* event_handle = nullptr)
+    connect(string_type const& connection_string, long timeout, void* event_handle = nullptr)
     {
         std::list<attribute> attributes;
         // Avoid to set the timeout to 0 (no timeout).
@@ -3749,8 +3762,16 @@ private:
                 break;
             case SQL_CHAR:
             case SQL_VARCHAR:
+                // package:odbc — with NANODBC_USE_UNICODE fetch narrow CHAR/VARCHAR
+                // through the Unicode (W) API so the driver transcodes to UTF-16;
+                // without the flag keep upstream behavior (SQL_C_CHAR).
+#ifdef NANODBC_USE_UNICODE
+                col.ctype_ = SQL_C_WCHAR;
+                col.clen_ = NBYTES(col.sqlsize_, SQLWCHAR);
+#else
                 col.ctype_ = SQL_C_CHAR;
                 col.clen_ = NBYTES(col.sqlsize_, SQLCHAR);
+#endif
                 if (col.sqlsize_ == 0)
                 {
                     col.clen_ = 0;
@@ -3772,7 +3793,13 @@ private:
                 col.clen_ = sizeof(timestampoffset);
                 break;
             case SQL_LONGVARCHAR:
+                // package:odbc — see SQL_VARCHAR; long narrow text is fetched via the
+                // W API only when NANODBC_USE_UNICODE is set, else upstream SQL_C_CHAR.
+#ifdef NANODBC_USE_UNICODE
+                col.ctype_ = SQL_C_WCHAR;
+#else
                 col.ctype_ = SQL_C_CHAR;
+#endif
                 col.blob_ = true;
                 col.clen_ = 0;
                 break;
@@ -6100,7 +6127,7 @@ bool result::is_bound(short column) const
     return impl_->is_bound(column);
 }
 
-bool result::is_bound(const string& column_name) const
+bool result::is_bound(const string_type& column_name) const
 {
     return impl_->is_bound(column_name);
 }

@@ -9,6 +9,7 @@ OdbcConnection <- function(
     ...,
     timezone = "UTC",
     timezone_out = "UTC",
+    # `encoding` and `name_encoding` are deprecated and ignored.
     encoding = "",
     name_encoding = "",
     bigint = c("integer64", "integer", "numeric", "character"),
@@ -24,6 +25,10 @@ OdbcConnection <- function(
   args <- compact(list(...))
   check_args(args)
   connection_string <- build_connection_string(args, .connection_string)
+  # The connection string is sent to the driver via the Unicode ("W") ODBC API,
+  # so ensure it is UTF-8 encoded; the C++ layer transcodes it to the driver's
+  # wide string type.
+  connection_string <- enc2utf8(connection_string)
 
   bigint <- bigint_mappings()[match.arg(bigint, names(bigint_mappings()))]
 
@@ -36,8 +41,6 @@ OdbcConnection <- function(
       connection_string,
       timezone = timezone,
       timezone_out = timezone_out,
-      encoding = encoding,
-      name_encoding = name_encoding,
       bigint = bigint,
       timeout = timeout,
       r_attributes = attributes,

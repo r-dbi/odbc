@@ -1,9 +1,12 @@
 #include "odbc_result.h"
 #include "odbc_types.h"
 #include "sql_types.h"
+#include "utils.h"
 
 using namespace Rcpp;
 using namespace nanodbc;
+
+using odbc::utils::from_nanodbc_string;
 
 // [[Rcpp::export]]
 void result_release(result_ptr r) { r.release(); }
@@ -34,7 +37,7 @@ Rcpp::DataFrame result_column_info(result_ptr const& r) {
   std::vector<std::string> names;
   std::vector<std::string> field_type;
   for (short i = 0; i < result->columns(); ++i) {
-    names.push_back(result->column_name(i));
+    names.push_back(from_nanodbc_string(result->column_name(i)));
     field_type.push_back(std::to_string(result->column_datatype(i)));
   }
 

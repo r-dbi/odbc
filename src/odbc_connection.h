@@ -4,8 +4,6 @@
 #include "sql_types.h"
 #include "time_zone.h"
 #include <Rcpp.h>
-// Important that this header is included after Rcpp.h
-#include "Iconv.h"
 
 namespace odbc {
 
@@ -48,8 +46,6 @@ public:
 
   cctz::time_zone timezone() const;
   std::string timezone_out_str() const;
-  const std::shared_ptr<Iconv> output_encoder() const;
-  const std::shared_ptr<Iconv> column_name_encoder() const;
 
   bigint_map_t get_bigint_mapping() const;
 
@@ -61,8 +57,6 @@ private:
   cctz::time_zone timezone_out_;
   std::string timezone_out_str_;
   bigint_map_t bigint_mapping_;
-  std::shared_ptr<Iconv> output_encoder_;
-  std::shared_ptr<Iconv> column_name_encoder_;
   bool interruptible_execution_;
 };
 } // namespace odbc

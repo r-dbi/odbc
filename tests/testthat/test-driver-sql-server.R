@@ -330,13 +330,8 @@ test_that("can create / write to temp table", {
   expect_no_warning(sqlCreateTable(con, notTempTblName, values, temporary = FALSE))
 })
 
-test_that("independent encoding of column entries and names (#834)", {
+test_that("varchar and column names round-trip as UTF-8 (#834)", {
   skip_on_os("windows")
-  # PRO Driver does not present "AutoTranslate" option.
-  # Cursory investigation seems to indicate behavior is equivalent
-  # to AutoTranslate being set to "yes" ( character data is returned
-  # as UTF encoded, rather than in the code page corresponding to the
-  # collation ).
   skip_if(Sys.getenv("ODBC_DRIVERS_VINTAGE") != "OEM")
   rawVal1 <- as.raw(c(0x72, 0xc3, 0xa6, 0x76, 0x65, 0x6e))
   rawVal2 <- as.raw(c(0xc3, 0xa5, 0x6c, 0x65, 0x6e, 0x73))
@@ -347,7 +342,9 @@ test_that("independent encoding of column entries and names (#834)", {
     col = 1
   )
   colnames(df)[2] <- rawToChar(rawCol)
-  conn <- test_con("SQLSERVER", encoding = "latin1", AutoTranslate = "no")
+  # Character data is always exchanged with the driver as UTF-8; no `encoding`
+  # argument is required.
+  conn <- test_con("SQLSERVER")
   on.exit({
     dbExecute(conn, "DROP TABLE deleteme_Danish_Norwegian_CI_AS.testschema.deleteme")
     dbExecute(conn, "DROP SCHEMA IF EXISTS testschema")

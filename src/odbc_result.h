@@ -2,7 +2,6 @@
 
 #include <Rcpp.h>
 
-#include "Iconv.h"
 #include "condition.h"
 #include "nanodbc.h"
 #include "odbc_connection.h"
@@ -21,17 +20,15 @@ class odbc_error : public Rcpp::exception {
 public:
   odbc_error(
       const nanodbc::database_error& e,
-      const std::string& sql,
-      Iconv& output_encoder)
+      const std::string& sql)
       : Rcpp::exception("", false) {
     std::string m = std::string(e.what());
     if (sql != "") {
       m += "\n<SQL> '" + sql + "'";
     }
-    // #432: [R] expects UTF-8 encoded strings but both nanodbc and sql are
-    // encoded in the database encoding, which may differ from UTF-8
-    message = Rf_translateChar(
-        output_encoder.makeSEXP(m.c_str(), m.c_str() + m.length()));
+    // nanodbc returns diagnostic messages from the wide ("W") ODBC API as
+    // UTF-8, so we only mark the encoding and translate to native for R.
+    message = Rf_translateChar(Rf_mkCharCE(m.c_str(), CE_UTF8));
   }
   const char* what() const NANODBC_NOEXCEPT { return message.c_str(); }
 
@@ -89,8 +86,6 @@ private:
   bool complete_;
   bool bound_;
   bool immediate_;
-  std::shared_ptr<Iconv> output_encoder_;
-  std::shared_ptr<Iconv> column_name_encoder_;
 
   param_data buffers_;
   std::map<short, param_data> tvp_buffers_;
@@ -277,14 +272,11 @@ private:
   void assign_double(
       Rcpp::List& out, size_t row, short column, nanodbc::result& value);
 
-  // Strings may be in the server's internal code page, so we need to re-encode
-  // in UTF-8 if necessary.
+  // Character columns are always retrieved through the Unicode ("W") API, so
+  // nanodbc hands them back as the wide string_type (UTF-16). We transcode to
+  // UTF-8 and tag the [R] string CE_UTF8 uniformly, regardless of whether the
+  // server-side type was CHAR/VARCHAR or NCHAR/NVARCHAR.
   void assign_string(
-      Rcpp::List& out, size_t row, short column, nanodbc::result& value);
-
-  // unicode strings are converted to UTF-8 by nanodbc, so we just need to
-  // mark the encoding.
-  void assign_ustring(
       Rcpp::List& out, size_t row, short column, nanodbc::result& value);
 
   void assign_datetime(
