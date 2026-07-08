@@ -75,7 +75,7 @@ jobs:
         if: matrix.database == 'PostgreSQL'
         run: |
           choco install psqlodbc
-          echo "ODBC_CS_POSTGRES=Driver={PostgreSQL ANSI(x64)};Server=localhost;Port=5432;BoolsAsChar=0;LFConversion=0;Database=test;UID=postgres;PWD=" >> $env:GITHUB_ENV
+          echo "ODBC_CS_POSTGRES=Driver={PostgreSQL Unicode(x64)};Server=localhost;Port=5432;BoolsAsChar=0;LFConversion=0;Database=test;UID=postgres;PWD=" >> $env:GITHUB_ENV
 
       - name: Install SQLite
         if: matrix.database == 'SQLite'
