@@ -253,7 +253,7 @@ test_that("UTF in VARCHAR is not truncated", {
 
 test_that("UTF in NVARCHAR is not truncated", {
   con <- test_con("SQLSERVER")
-  values <- c("gr\u00F8nn", "\u00C5lesund")
+  values <- c("gr\u00F8nn", "\u00C5lesund", "\U1F415")
   for (value in values) {
     res <- dbGetQuery(
       con,
@@ -269,16 +269,18 @@ test_that("VARCHAR and NVARCHAR handle special characters correctly", {
   df <- data.frame(
     varchar_col = "\u20ac",  # €
     nvarchar_col = "\u00c5",  # Å
+    emoji_col = "\U1F415",  # 🐕
     stringsAsFactors = FALSE
   )
 
   tbl <- local_table(con, "test_varchar_nvarchar_special",
                      df,
-                     field.types = c(varchar_col = "VARCHAR(10)", nvarchar_col = "NVARCHAR(10)")
+                     field.types = c(varchar_col = "VARCHAR(10)", nvarchar_col = "NVARCHAR(10)", emoji_col = "NVARCHAR(10)")
   )
   res <- DBI::dbReadTable(con, tbl)
   expect_equal(res$varchar_col, df$varchar_col)
   expect_equal(res$nvarchar_col, df$nvarchar_col)
+  expect_equal(res$emoji_col, df$emoji_col)
 })
 
 # Same test but use dbExecute and dbGetQuery to verify that the special characters are handled correctly in both cases.
@@ -288,16 +290,17 @@ test_that("VARCHAR and NVARCHAR handle special characters correctly with dbExecu
   df <- data.frame(
     varchar_col = character(),
     nvarchar_col = character(),
+    emoji_col = character(),
     stringsAsFactors = FALSE
   )
 
   tbl <- local_table(con, "test_varchar_nvarchar_special_execute",
                      df,
-                     field.types = c(varchar_col = "VARCHAR(10)", nvarchar_col = "NVARCHAR(10)")
+                     field.types = c(varchar_col = "VARCHAR(10)", nvarchar_col = "NVARCHAR(10)", emoji_col = "NVARCHAR(10)")
   )
 
   # Use dbExecute to insert data into the table
-  dbExecute(con, paste("INSERT INTO", tbl, "(varchar_col, nvarchar_col) VALUES (N'\u20ac', N'\u00c5')"))
+  dbExecute(con, paste("INSERT INTO", tbl, "(varchar_col, nvarchar_col) VALUES (N'\u20ac', N'\u00c5', N'\U1F415')"))
 
   # Use dbGetQuery to retrieve data from the table
   res <- dbGetQuery(con, paste0("SELECT * FROM ", tbl))
