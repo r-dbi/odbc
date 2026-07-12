@@ -300,12 +300,13 @@ test_that("VARCHAR and NVARCHAR handle special characters correctly with dbExecu
   )
 
   # Use dbExecute to insert data into the table
-  dbExecute(con, paste("INSERT INTO", tbl, "(varchar_col, nvarchar_col) VALUES (N'\u20ac', N'\u00c5', N'\U1F415')"))
+  dbExecute(con, paste("INSERT INTO", tbl, "(varchar_col, nvarchar_col, emoji_col) VALUES (N'\u20ac', N'\u00c5', N'\U1F415')"))
 
   # Use dbGetQuery to retrieve data from the table
   res <- dbGetQuery(con, paste0("SELECT * FROM ", tbl))
   expect_equal(res$varchar_col, '\u20ac')
   expect_equal(res$nvarchar_col, '\u00c5')
+  expect_equal(res$emoji_col, '\U1F415')
 })
 
 test_that("Zero-row-fetch does not move cursor", {
