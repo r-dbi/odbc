@@ -10,9 +10,10 @@ NULL
 NULL
 
 OdbcResult <- function(connection, statement, params = NULL, immediate = FALSE) {
-  if (nzchar(connection@encoding)) {
-    statement <- enc2iconv(statement, connection@encoding)
-  }
+  # The statement is sent to the driver via the Unicode ("W") ODBC API, so we
+  # only need to ensure it is UTF-8 encoded; the C++ layer transcodes it to the
+  # driver's wide string type.
+  statement <- enc2utf8(statement)
   ptr <- new_result(
     p = connection@ptr,
     sql = statement, immediate = immediate

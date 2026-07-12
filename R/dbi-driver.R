@@ -49,14 +49,11 @@ setMethod("show", "OdbcDriver",
 #'   takes precedence.
 #' @param timezone_out The time zone returned to R. If you want to display
 #'   datetime values in the local timezone, set to [Sys.timezone()].
-#' @param encoding The text encoding used on the Database. If the database is
-#'   not using UTF-8 you will need to set the encoding to get accurate
-#'   re-encoding. See [iconvlist()] for a complete list of available encodings
-#'   on your system. Note strings are always returned `UTF-8` encoded.
-#' @param name_encoding The text encoding for column names used on the
-#'   Database.  May be different than the `encoding` argument.  Defaults to
-#'   empty string which is equivalent to returning the column names without
-#'   performing any conversion.
+#' @param encoding This argument is deprecated and ignored. All character
+#'   data is always exchanged with the database as UTF-8, so no re-encoding
+#'   is necessary. Strings are always returned `UTF-8` encoded.
+#' @param name_encoding This argument is deprecated and ignored. Column names
+#' are always returned `UTF-8` encoded.
 #' @param driver The ODBC driver name or a path to a driver. For currently
 #'   available options, see the `name` column of [odbcListDrivers()] output.
 #' @param server The server hostname. Some drivers use `Servername` as the name
@@ -186,8 +183,6 @@ setMethod("dbConnect", "OdbcDriver",
     check_string(dsn, allow_null = TRUE)
     check_string(timezone)
     check_string(timezone_out)
-    check_string(encoding)
-    check_string(name_encoding)
     arg_match(bigint)
     check_number_decimal(timeout, allow_na = TRUE)
     check_string(driver, allow_null = TRUE)
@@ -207,8 +202,6 @@ setMethod("dbConnect", "OdbcDriver",
       ...,
       timezone = timezone,
       timezone_out = timezone_out,
-      encoding = encoding,
-      name_encoding = name_encoding,
       bigint = bigint,
       timeout = timeout,
       driver = driver,

@@ -166,8 +166,8 @@ test_that("blobs can be retrieved out of order", {
 
   # Also test retrival using a prepared statement
   received2 <- dbGetQuery(con,
-    paste0("SELECT * FROM ", tbl, "  WHERE c1 = ?"),
-    params = list(1L)
+                          paste0("SELECT * FROM ", tbl, "  WHERE c1 = ?"),
+                          params = list(1L)
   )
   expect_equal(received2, values)
 })
@@ -241,17 +241,77 @@ test_that("dates should always be interpreted in the system time zone (#398)", {
 
 test_that("UTF in VARCHAR is not truncated", {
   con <- test_con("SQLSERVER")
-  value <- "grün"
-  res <- dbGetQuery(
-    con,
-    paste0("SELECT '", value, "' AS colone")
+  values <- c("gr\u00FCn", "100\u20ac")
+  for (value in values) {
+    res <- dbGetQuery(
+      con,
+      paste0("SELECT '", value, "' AS colone")
+    )
+    expect_equal(value, res[[1]])
+  }
+})
+
+test_that("UTF in NVARCHAR is not truncated", {
+  con <- test_con("SQLSERVER")
+  values <- c("gr\u00F8nn", "\u00C5lesund", "\U1F415")
+  for (value in values) {
+    res <- dbGetQuery(
+      con,
+      paste0("SELECT N'", value, "' AS colone")
+    )
+    expect_equal(value, res[[1]])
+  }
+})
+
+test_that("VARCHAR and NVARCHAR handle special characters correctly", {
+  con <- test_con("SQLSERVER")
+
+  df <- data.frame(
+    varchar_col = "\u20ac",  # €
+    nvarchar_col = "\u00c5",  # Å
+    emoji_col = "\U1F415",  # 🐕
+    stringsAsFactors = FALSE
   )
-  expect_equal(value, res[[1]])
+
+  tbl <- local_table(con, "test_varchar_nvarchar_special",
+                     df,
+                     field.types = c(varchar_col = "VARCHAR(10)", nvarchar_col = "NVARCHAR(10)", emoji_col = "NVARCHAR(10)")
+  )
+  res <- DBI::dbReadTable(con, tbl)
+  expect_equal(res$varchar_col, df$varchar_col)
+  expect_equal(res$nvarchar_col, df$nvarchar_col)
+  expect_equal(res$emoji_col, df$emoji_col)
+})
+
+# Same test but use dbExecute and dbGetQuery to verify that the special characters are handled correctly in both cases.
+test_that("VARCHAR and NVARCHAR handle special characters correctly with dbExecute and dbGetQuery", {
+  con <- test_con("SQLSERVER")
+
+  df <- data.frame(
+    varchar_col = character(),
+    nvarchar_col = character(),
+    emoji_col = character(),
+    stringsAsFactors = FALSE
+  )
+
+  tbl <- local_table(con, "test_varchar_nvarchar_special_execute",
+                     df,
+                     field.types = c(varchar_col = "VARCHAR(10)", nvarchar_col = "NVARCHAR(10)", emoji_col = "NVARCHAR(10)")
+  )
+
+  # Use dbExecute to insert data into the table
+  dbExecute(con, paste("INSERT INTO", tbl, "(varchar_col, nvarchar_col, emoji_col) VALUES (N'\u20ac', N'\u00c5', N'\U1F415')"))
+
+  # Use dbGetQuery to retrieve data from the table
+  res <- dbGetQuery(con, paste0("SELECT * FROM ", tbl))
+  expect_equal(res$varchar_col, '\u20ac')
+  expect_equal(res$nvarchar_col, '\u00c5')
+  expect_equal(res$emoji_col, '\U1F415')
 })
 
 test_that("Zero-row-fetch does not move cursor", {
   con <- test_con("SQLSERVER")
-  tbl <- local_table(con, "test_zero_row_fetch", mtcars[1:2, ])
+  tbl <- local_table(con, "test_zero_row_fetch", mtcars[1:2,])
 
   rs <- dbSendStatement(con, paste0("SELECT * FROM ", tbl))
   expect_equal(nrow(dbFetch(rs, n = 0)), 0)
@@ -330,24 +390,21 @@ test_that("can create / write to temp table", {
   expect_no_warning(sqlCreateTable(con, notTempTblName, values, temporary = FALSE))
 })
 
-test_that("independent encoding of column entries and names (#834)", {
+test_that("varchar and column names round-trip as UTF-8 (#834)", {
   skip_on_os("windows")
-  # PRO Driver does not present "AutoTranslate" option.
-  # Cursory investigation seems to indicate behavior is equivalent
-  # to AutoTranslate being set to "yes" ( character data is returned
-  # as UTF encoded, rather than in the code page corresponding to the
-  # collation ).
   skip_if(Sys.getenv("ODBC_DRIVERS_VINTAGE") != "OEM")
   rawVal1 <- as.raw(c(0x72, 0xc3, 0xa6, 0x76, 0x65, 0x6e))
   rawVal2 <- as.raw(c(0xc3, 0xa5, 0x6c, 0x65, 0x6e, 0x73))
   rawVal3 <- as.raw(c(0xc3, 0xb8, 0x72, 0x72, 0x65, 0x64))
-  rawCol <-  as.raw(c(0x62, 0xc3, 0xb8, 0x76, 0x73))
+  rawCol <- as.raw(c(0x62, 0xc3, 0xb8, 0x76, 0x73))
   df <- data.frame(
     var_char_col = c('kanin', rawToChar(rawVal1), rawToChar(rawVal2), rawToChar(rawVal3)),
     col = 1
   )
   colnames(df)[2] <- rawToChar(rawCol)
-  conn <- test_con("SQLSERVER", encoding = "latin1", AutoTranslate = "no")
+  # Character data is always exchanged with the driver as UTF-8; no `encoding`
+  # argument is required.
+  conn <- test_con("SQLSERVER")
   on.exit({
     dbExecute(conn, "DROP TABLE deleteme_Danish_Norwegian_CI_AS.testschema.deleteme")
     dbExecute(conn, "DROP SCHEMA IF EXISTS testschema")
@@ -371,7 +428,7 @@ test_that("DATETIME2 precision (#790)", {
   df <- data.frame(dtm = val, dtm2 = val)
 
   tbl <- local_table(con, "test_datetime2_precision", df,
-    field.types = list("dtm" = "DATETIME", "dtm2" = "DATETIME2(6)"))
+                     field.types = list("dtm" = "DATETIME", "dtm2" = "DATETIME2(6)"))
   res <- DBI::dbReadTable(con, tbl)
   expect_equal(as.POSIXlt(df[[2]])$sec, as.POSIXlt(res[[2]])$sec, tolerance = 1E-7)
 })
@@ -384,7 +441,8 @@ test_that("DATETIMEOFFSET", {
   drv <- DBI::dbGetInfo(con)$driver.version
   skip_if(
     identical(Sys.getenv("ODBC_DRIVERS_VINTAGE"), "PRO") &&
-      length(drv) == 1 && nzchar(drv) &&
+      length(drv) == 1 &&
+      nzchar(drv) &&
       numeric_version(drv) < numeric_version("1.5.44.0044"),
     sprintf("PRO driver %s is older than engineering build 1.5.44.0044", drv)
   )
@@ -395,7 +453,7 @@ test_that("DATETIMEOFFSET", {
 
   tbl_name <- "test_datetimeoffset"
   tbl <- local_table(con, tbl_name, df,
-    field.types = list("tz_char" = "VARCHAR(50)", "tz" = "DATETIMEOFFSET"), overwrite = TRUE)
+                     field.types = list("tz_char" = "VARCHAR(50)", "tz" = "DATETIMEOFFSET"), overwrite = TRUE)
   res <- DBI::dbReadTable(con, tbl)
   expect_s3_class(res[[2]], "POSIXct")
   expect_equal(as.double(res[[2]][1] - as.POSIXct(res[[1]][1]), units = "hours"), 2, tolerance = 1E-4)
@@ -404,7 +462,7 @@ test_that("DATETIMEOFFSET", {
   tbl_name <- "test_datetimeoffset2"
   df <- data.frame(tz = c(as.POSIXct("2022-04-01 12:00:00", tz = "Europe/Stockholm"), as.POSIXct("2022-04-01 13:00:00", tz = "Europe/Stockholm")))
   tbl <- local_table(con, tbl_name, df,
-    field.types = list("tz" = "DATETIMEOFFSET"), overwrite = TRUE)
+                     field.types = list("tz" = "DATETIMEOFFSET"), overwrite = TRUE)
   # This result comes back as POSIXct in the timezone of the connection --- UTC in this case
   # However difftime can handle subtracting POSIXct with different timezones.
   res <- DBI::dbReadTable(con, tbl)
@@ -422,27 +480,27 @@ test_that("Mixed success multiple result-sets (#924)", {
 
   tbl <- local_table(con, "test_mixed_success_param_retrieval", df)
   res <- DBI::dbGetQuery(
-      con,
-      "SELECT * FROM test_mixed_success_param_retrieval WHERE ID = ?",
-      params = list(c("A", "B", "C"))
+    con,
+    "SELECT * FROM test_mixed_success_param_retrieval WHERE ID = ?",
+    params = list(c("A", "B", "C"))
   )
   expect_equal(nrow(res), 3)
   res <- DBI::dbGetQuery(
-      con,
-      "SELECT * FROM test_mixed_success_param_retrieval WHERE ID = ?",
-      params = list(c("Z", "A", "B", "C"))
+    con,
+    "SELECT * FROM test_mixed_success_param_retrieval WHERE ID = ?",
+    params = list(c("Z", "A", "B", "C"))
   )
   expect_equal(nrow(res), 3)
   res <- DBI::dbGetQuery(
-      con,
-      "SELECT * FROM test_mixed_success_param_retrieval WHERE ID = ?",
-      params = list(c("A", "Z", "B", "C"))
+    con,
+    "SELECT * FROM test_mixed_success_param_retrieval WHERE ID = ?",
+    params = list(c("A", "Z", "B", "C"))
   )
   expect_equal(nrow(res), 3)
   res <- DBI::dbGetQuery(
-      con,
-      "SELECT * FROM test_mixed_success_param_retrieval WHERE ID = ?",
-      params = list(c("A", "B", "C", "Z"))
+    con,
+    "SELECT * FROM test_mixed_success_param_retrieval WHERE ID = ?",
+    params = list(c("A", "B", "C", "Z"))
   )
   expect_equal(nrow(res), 3)
 })
@@ -480,17 +538,17 @@ test_that("Table-valued parameters", {
   })
 
   df.param <- data.frame(int = 1:10, bigint = 1:10, vrchr = rownames(mtcars)[1:10],
-    vrchr2 = as.character(iris$Species[1:10]), vrchr3 = LETTERS[1:10], stringsAsFactors = FALSE)
+                         vrchr2 = as.character(iris$Species[1:10]), vrchr3 = LETTERS[1:10], stringsAsFactors = FALSE)
   res <- dbGetQuery(con, "{ CALL tvp_test(?, ?, ?) }", params = list(100, df.param, "Lorem ipsum dolor sit amet"))
 
   expected <- cbind(data.frame("p0" = as.integer(100)), df.param,
-    data.frame("p2" = "Lorem ipsum dolor sit amet", stringsAsFactors = FALSE))
+                    data.frame("p2" = "Lorem ipsum dolor sit amet", stringsAsFactors = FALSE))
   colnames(expected) <- c("p0", "col0", "col1", "col2", "col3", "col4", "p2")
   expected$col1 <- bit64::as.integer64(expected$col1)
   expect_identical(res, expected)
 
   res <- dbGetQuery(con, "{ CALL tvp_test2(?, ?, ?) }",
-    params = list(df.param, 100, "Lorem ipsum dolor sit amet"))
+                    params = list(df.param, 100, "Lorem ipsum dolor sit amet"))
   expect_identical(res, expected)
 })
 
@@ -500,13 +558,13 @@ test_that("Variable date type storage", {
   tbl_name <- "datevariablestoragetest"
   # INTSXP storage
   data <- data.frame(
-       "dates" = seq.Date(from = as.Date("2020-01-01"), to = as.Date("2020-01-02"), by = "1 day"),
-       "dtms" = seq.POSIXt(from = as.POSIXct("2020-01-01", tz = "UTC"), to = as.POSIXct("2020-01-02", tz = "UTC"), length.out = 2L)
+    "dates" = seq.Date(from = as.Date("2020-01-01"), to = as.Date("2020-01-02"), by = "1 day"),
+    "dtms" = seq.POSIXt(from = as.POSIXct("2020-01-01", tz = "UTC"), to = as.POSIXct("2020-01-02", tz = "UTC"), length.out = 2L)
   )
   # REALSXP storage
   data_real <- data.frame(
-       "dates" = c(as.Date("2020-01-01"), as.Date("2020-01-02")),
-       "dtms" = c(as.POSIXct("2020-01-01", tz = "UTC"), as.POSIXct("2020-01-02", tz = "UTC"))
+    "dates" = c(as.Date("2020-01-01"), as.Date("2020-01-02")),
+    "dtms" = c(as.POSIXct("2020-01-01", tz = "UTC"), as.POSIXct("2020-01-02", tz = "UTC"))
   )
   # 1. Writing both should succeed
   # 2. They should both come back with REALSXP storage
@@ -531,7 +589,8 @@ test_that("Recycling in dbBind works (#491)", {
   drv <- DBI::dbGetInfo(con)$driver.version
   skip_if(
     identical(Sys.getenv("ODBC_DRIVERS_VINTAGE"), "PRO") &&
-      length(drv) == 1 && nzchar(drv) &&
+      length(drv) == 1 &&
+      nzchar(drv) &&
       numeric_version(drv) < numeric_version("1.5.49.0049"),
     sprintf("PRO driver %s is older than engineering build 1.5.49.0049", drv)
   )
@@ -539,8 +598,8 @@ test_that("Recycling in dbBind works (#491)", {
                           field.types = c(id = "int", timestamp = "DATETIMEOFFSET"))
 
   res <- dbSendStatement(con, paste("select * from ", tbl_name, " where id = ? and timestamp > ? order by id"))
-  expect_silent( dbBind(res, list(1003:1004, "2022-04-01 12:00:02.000000 +00:00")) )
-  expect_silent( ret <- dbFetch(res) )
+  expect_silent(dbBind(res, list(1003:1004, "2022-04-01 12:00:02.000000 +00:00")))
+  expect_silent(ret <- dbFetch(res))
   dbClearResult(res)
   attr(ret$timestamp, "tzone") <- attr(dat_expect$timestamp, "tzone")
   expect_equal(ret, dat_expect)

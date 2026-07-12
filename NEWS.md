@@ -1,5 +1,21 @@
 # odbc (development version)
 
+## Breaking changes
+* Communication with ODBC drivers is now always done using the Unicode ("W") ODBC API. 
+  Thus it is no longer necessary to set the `encoding` argument of `dbConnect()` 
+  to the encoding of the database server or even to know the encoding of the database server.
+  Due to this change for some database systems (e.g. PostgreSQL) you need to switch 
+  from an ASCII driver to a driver that supports the Unicode API.
+  Thanks to this change, several encoding-related problems could be resolved.
+
+## Bug fixes and minor improvements
+
+* All character data is now always converted to and marked as UTF-8 when retrieved from the database.
+
+* Queries containing non-ASCII characters are now working correctly on all platforms, including Windows.
+
+* Writing non-ASCII characters to the database is now working correctly on all platforms, including Windows.
+
 # odbc 1.7.0
 
 ## Databricks

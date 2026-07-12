@@ -60,15 +60,13 @@ takes precedence.}
 \item{timezone_out}{The time zone returned to R. If you want to display
 datetime values in the local timezone, set to \code{\link[=Sys.timezone]{Sys.timezone()}}.}
 
-\item{encoding}{The text encoding used on the Database. If the database is
-not using UTF-8 you will need to set the encoding to get accurate
-re-encoding. See \code{\link[=iconvlist]{iconvlist()}} for a complete list of available encodings
-on your system. Note strings are always returned \code{UTF-8} encoded.}
+\item{encoding}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This argument is
+deprecated and ignored. All character data is always exchanged with the
+database as UTF-8, so no re-encoding is necessary. Strings are always
+returned \code{UTF-8} encoded.}
 
-\item{name_encoding}{The text encoding for column names used on the
-Database.  May be different than the \code{encoding} argument.  Defaults to
-empty string which is equivalent to returning the column names without
-performing any conversion.}
+\item{name_encoding}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This argument is
+deprecated and ignored. Column names are always returned \code{UTF-8} encoded.}
 
 \item{bigint}{The R type that \code{SQL_BIGINT} types should be mapped to.
 Default is \link[bit64:bit64-package]{bit64::integer64}, which allows the full range of 64 bit
