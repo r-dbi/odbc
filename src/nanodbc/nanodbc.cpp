@@ -368,7 +368,7 @@ inline void convert(const std::string& in, wide_string_type& out)
     auto size_needed =
         MultiByteToWideChar(CP_UTF8, 0, &in[0], static_cast<int>(in.size()), nullptr, 0);
     out.resize(size_needed);
-    MultiByteToWideChar(CP_UTF8, 0, &in[0], static_cast<int>(in.size()), &out[0], size_needed);
+    MultiByteToWideChar(CP_UTF8, 0, &in[0], static_cast<int>(in.size()), reinterpret_cast<wchar_t*>(&out[0]), size_needed);
 #else
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wdeprecated-declarations"
