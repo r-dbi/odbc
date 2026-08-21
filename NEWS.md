@@ -1,5 +1,10 @@
 # odbc (development version)
 
+* Fixed silent truncation of `BINARY`/`VARBINARY` data larger than 1024 bytes
+  when the driver does not report the remaining data length (`SQL_NO_TOTAL`)
+  during chunked retrieval, as seen with the Databricks/Simba Spark
+  driver (#1024).
+
 * Numeric connection string arguments no longer fall back to scientific
   notation in `build_connection_string()`, which avoids malformed driver
   attributes such as `DefaultStringColumnLength` (#934).
