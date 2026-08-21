@@ -31,6 +31,15 @@ NULL
 #' and attempt to fix in-situ, unless the `odbc.no_config_override`
 #' environment variable is set.
 #'
+#' ## String truncation
+#'
+#' The Databricks ODBC driver reports `STRING` columns to clients as
+#' `VARCHAR(n)`, where `n` is the value of its `DefaultStringColumnLength`
+#' connection attribute, and values longer than `n` are truncated silently.
+#' Because the driver's own default of 255 is easy to hit in practice,
+#' `dbConnect()` sets this attribute to 65535 by default. Pass
+#' `DefaultStringColumnLength` to `dbConnect()` to choose another limit.
+#'
 #' @param drv an object that inherits from [DBI::DBIDriver-class],
 #' or an existing [DBI::DBIConnection-class]
 #' object (in order to clone an existing connection).
@@ -135,7 +144,13 @@ databricks_args <- function(httpPath,
   )
 
   auth <- databricks_auth_args(host, uid = uid, pwd = pwd)
-  all <- utils::modifyList(c(args, auth), list(...))
+  dots <- list(...)
+  # Connection string keys are case-insensitive to the driver, so drop any
+  # default that the caller respells (e.g. DefaultStringColumnLength) rather
+  # than emitting the key twice.
+  defaults <- c(args, auth)
+  defaults <- defaults[!tolower(names(defaults)) %in% tolower(names(dots))]
+  all <- utils::modifyList(defaults, dots)
 
   arg_names <- tolower(names(all))
   if (!"authmech" %in% arg_names && !all(c("uid", "pwd") %in% arg_names)) {
@@ -168,6 +183,10 @@ databricks_default_args <- function(driver, host, httpPath, useNativeQuery) {
     httpPath = httpPath,
     thriftTransport = 2,
     userAgentEntry = databricks_user_agent(),
+    # The driver reports STRING columns as VARCHAR(DefaultStringColumnLength)
+    # and truncates longer values without warning; its default of 255 is far
+    # too small for real-world STRING data (#1023).
+    defaultStringColumnLength = 65535,
     # Connections to Databricks are always over HTTPS.
     port = 443,
     protocol = "https",

@@ -1,5 +1,14 @@
 # odbc (development version)
 
+* `databricks()` now sets `DefaultStringColumnLength` to 65535 by default.
+  The driver reports `STRING` columns as `VARCHAR(DefaultStringColumnLength)`
+  and silently truncates longer values; its own default of 255 caused string
+  data to be cut off after roughly 1000 characters. Pass
+  `DefaultStringColumnLength` to `dbConnect()` to override (#1023).
+
+* `databricks()` connection arguments now override built-in defaults
+  case-insensitively, matching how drivers treat connection string keys.
+
 * Numeric connection string arguments no longer fall back to scientific
   notation in `build_connection_string()`, which avoids malformed driver
   attributes such as `DefaultStringColumnLength` (#934).
