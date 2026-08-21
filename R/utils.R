@@ -584,7 +584,25 @@ find_default_driver <- function(paths, fallbacks, label, call = caller_env()) {
 #' @return string A finalized connection string
 #' @noRd
 build_connection_string <- function(args = list(), string = NULL) {
+  format_connection_value <- function(x) {
+    if (length(x) != 1) {
+      return(paste(deparse(x), collapse = " "))
+    }
 
+    if (is.numeric(x) && length(x) == 1 && !is.na(x)) {
+      return(format(
+        x,
+        scientific = FALSE,
+        trim = TRUE,
+        digits = 15,
+        decimal.mark = "."
+      ))
+    }
+
+    as.character(x)
+  }
+
+  args <- vapply(args, format_connection_value, character(1))
   args_string <- paste(names(args), args, sep = "=", collapse = ";")
 
   if (!is.null(string) && !grepl(";$", string) && length(args) > 0) {

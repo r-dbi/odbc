@@ -1,5 +1,9 @@
 # odbc (development version)
 
+* Numeric connection string arguments no longer fall back to scientific
+  notation in `build_connection_string()`, which avoids malformed driver
+  attributes such as `DefaultStringColumnLength` (#934).
+
 # odbc 1.7.0
 
 ## Databricks
