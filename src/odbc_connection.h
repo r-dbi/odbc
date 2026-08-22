@@ -2,7 +2,7 @@
 
 #include "nanodbc.h"
 #include "sql_types.h"
-#include "time_zone.h"
+#include "cctz/time_zone.h"
 #include <Rcpp.h>
 // Important that this header is included after Rcpp.h
 #include "Iconv.h"

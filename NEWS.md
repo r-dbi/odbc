@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* Update vendored cctz to current upstream, including local build compatibility
+  fixes retained for R package and Windows builds.
+
 * Numeric connection string arguments no longer fall back to scientific
   notation in `build_connection_string()`, which avoids malformed driver
   attributes such as `DefaultStringColumnLength` (#934).

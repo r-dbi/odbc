@@ -1,4 +1,4 @@
-// Copyright 2016 Google Inc. All Rights Reserved.
+// Copyright 2025 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,22 +12,18 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-#include <iostream>
+#ifndef CCTZ_TIME_ZONE_NAME_WIN_H_
+#define CCTZ_TIME_ZONE_NAME_WIN_H_
+
 #include <string>
 
-#include "cctz/civil_time.h"
-#include "cctz/time_zone.h"
+namespace cctz {
 
-int main() {
-  cctz::time_zone lax;
-  load_time_zone("America/Los_Angeles", &lax);
+// Returns the local time zone ID in IANA format (e.g. "America/Los_Angeles"),
+// or the empty string on failure. Not supported on Windows 10 1809 and earlier,
+// where "icu.dll" is not available in the System32 directory.
+std::string GetWindowsLocalTimeZone();
 
-  // Time Programming Fundamentals @cppcon
-  const auto tp = cctz::convert(cctz::civil_second(2015, 9, 22, 9, 0, 0), lax);
+}  // namespace cctz
 
-  cctz::time_zone nyc;
-  load_time_zone("America/New_York", &nyc);
-
-  std::cout << cctz::format("Talk starts at %H:%M:%S %z (%Z)\n", tp, lax);
-  std::cout << cctz::format("Talk starts at %H:%M:%S %z (%Z)\n", tp, nyc);
-}
+#endif  // CCTZ_TIME_ZONE_NAME_WIN_H_

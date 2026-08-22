@@ -1,3 +1,5 @@
+/* Layout and location of TZif files.  */
+
 #ifndef TZFILE_H
 
 #define TZFILE_H
@@ -15,33 +17,20 @@
 ** Thank you!
 */
 
-/*
-** Information about time zone files.
-*/
-
-#ifndef TZDIR
-#define TZDIR	"/usr/local/etc/zoneinfo" /* Time zone object file directory */
-#endif /* !defined TZDIR */
-
-#ifndef TZDEFAULT
-#define TZDEFAULT	"localtime"
-#endif /* !defined TZDEFAULT */
-
-#ifndef TZDEFRULES
-#define TZDEFRULES	"posixrules"
-#endif /* !defined TZDEFRULES */
+/* Information about time zone files.
+   See Internet RFC 9636 for more details about the following format.  */
 
 /*
 ** Each file begins with. . .
 */
 
-#define	TZ_MAGIC	"TZif"
+#define TZ_MAGIC "TZif"
 
 struct tzhead {
 	char	tzh_magic[4];		/* TZ_MAGIC */
-	char	tzh_version[1];		/* '\0' or '2' or '3' as of 2013 */
+	char	tzh_version[1];		/* '\0' or '2'-'4' as of 2021 */
 	char	tzh_reserved[15];	/* reserved; must be zero */
-	char	tzh_ttisgmtcnt[4];	/* coded number of trans. time flags */
+	char	tzh_ttisutcnt[4];	/* coded number of trans. time flags */
 	char	tzh_ttisstdcnt[4];	/* coded number of trans. time flags */
 	char	tzh_leapcnt[4];		/* coded number of leap seconds */
 	char	tzh_timecnt[4];		/* coded number of transition times */
@@ -64,28 +53,31 @@ struct tzhead {
 **		one (char [4])		total correction after above
 **	tzh_ttisstdcnt (char)s		indexed by type; if 1, transition
 **					time is standard time, if 0,
-**					transition time is wall clock time
-**					if absent, transition times are
-**					assumed to be wall clock time
-**	tzh_ttisgmtcnt (char)s		indexed by type; if 1, transition
-**					time is UT, if 0,
-**					transition time is local time
-**					if absent, transition times are
+**					transition time is local (wall clock)
+**					time; if absent, transition times are
 **					assumed to be local time
+**	tzh_ttisutcnt (char)s		indexed by type; if 1, transition
+**					time is UT, if 0, transition time is
+**					local time; if absent, transition
+**					times are assumed to be local time.
+**					When this is 1, the corresponding
+**					std/wall indicator must also be 1.
 */
 
 /*
 ** If tzh_version is '2' or greater, the above is followed by a second instance
 ** of tzhead and a second instance of the data in which each coded transition
 ** time uses 8 rather than 4 chars,
-** then a POSIX-TZ-environment-variable-style string for use in handling
+** then a POSIX.1-2017 proleptic TZ string for use in handling
 ** instants after the last transition time stored in the file
-** (with nothing between the newlines if there is no POSIX representation for
-** such instants).
+** (with nothing between the newlines if there is no POSIX.1-2017
+** representation for such instants).
 **
-** If tz_version is '3' or greater, the above is extended as follows.
-** First, the POSIX TZ string's hour offset may range from -167
-** through 167 as compared to the POSIX-required 0 through 24.
+** If tz_version is '3' or greater, the TZ string can be any POSIX.1-2024
+** proleptic TZ string, which means the above is extended as follows.
+** First, the TZ string's hour offset may range from -167
+** through 167 as compared to the range 0 through 24 required
+** by POSIX.1-2017 and earlier.
 ** Second, its DST start time may be January 1 at 00:00 and its stop
 ** time December 31 at 24:00 plus the difference between DST and
 ** standard time, indicating DST all year.
@@ -97,73 +89,27 @@ struct tzhead {
 */
 
 #ifndef TZ_MAX_TIMES
-#define TZ_MAX_TIMES	2000
+/* The following limit applies to localtime.c; zic has no such limit.
+   The limit must be at least 310 for Asia/Hebron with 'zic -b fat'.  */
+# define TZ_MAX_TIMES 2000
 #endif /* !defined TZ_MAX_TIMES */
 
 #ifndef TZ_MAX_TYPES
-/* This must be at least 17 for Europe/Samara and Europe/Vilnius.  */
-#define TZ_MAX_TYPES	256 /* Limited by what (unsigned char)'s can hold */
+/* This must be at least 18 for Europe/Vilnius with 'zic -b fat'.  */
+# define TZ_MAX_TYPES 256 /* Limited to 256 by Internet RFC 9636.  */
 #endif /* !defined TZ_MAX_TYPES */
 
 #ifndef TZ_MAX_CHARS
-#define TZ_MAX_CHARS	50	/* Maximum number of abbreviation characters */
-				/* (limited by what unsigned chars can hold) */
+/* This must be at least 40 for America/Anchorage.  */
+# define TZ_MAX_CHARS 256	/* Maximum number of abbreviation characters */
+				/* (limited to 256 by Internet RFC 9636) */
 #endif /* !defined TZ_MAX_CHARS */
 
 #ifndef TZ_MAX_LEAPS
-#define TZ_MAX_LEAPS	50	/* Maximum number of leap second corrections */
+/* The following limit applies to localtime.c; zic has no such limit.
+   The limit must be at least 27 for leap seconds from 1972 through mid-2023.
+   There's a plan to discontinue leap seconds by 2035.  */
+# define TZ_MAX_LEAPS 50	/* Maximum number of leap second corrections */
 #endif /* !defined TZ_MAX_LEAPS */
-
-#define SECSPERMIN	60
-#define MINSPERHOUR	60
-#define HOURSPERDAY	24
-#define DAYSPERWEEK	7
-#define DAYSPERNYEAR	365
-#define DAYSPERLYEAR	366
-#define SECSPERHOUR	(SECSPERMIN * MINSPERHOUR)
-#define SECSPERDAY	((int_fast32_t) SECSPERHOUR * HOURSPERDAY)
-#define MONSPERYEAR	12
-
-#define TM_SUNDAY	0
-#define TM_MONDAY	1
-#define TM_TUESDAY	2
-#define TM_WEDNESDAY	3
-#define TM_THURSDAY	4
-#define TM_FRIDAY	5
-#define TM_SATURDAY	6
-
-#define TM_JANUARY	0
-#define TM_FEBRUARY	1
-#define TM_MARCH	2
-#define TM_APRIL	3
-#define TM_MAY		4
-#define TM_JUNE		5
-#define TM_JULY		6
-#define TM_AUGUST	7
-#define TM_SEPTEMBER	8
-#define TM_OCTOBER	9
-#define TM_NOVEMBER	10
-#define TM_DECEMBER	11
-
-#define TM_YEAR_BASE	1900
-
-#define EPOCH_YEAR	1970
-#define EPOCH_WDAY	TM_THURSDAY
-
-#define isleap(y) (((y) % 4) == 0 && (((y) % 100) != 0 || ((y) % 400) == 0))
-
-/*
-** Since everything in isleap is modulo 400 (or a factor of 400), we know that
-**	isleap(y) == isleap(y % 400)
-** and so
-**	isleap(a + b) == isleap((a + b) % 400)
-** or
-**	isleap(a + b) == isleap(a % 400 + b % 400)
-** This is true even if % means modulo rather than Fortran remainder
-** (which is allowed by C89 but not C99).
-** We use this to avoid addition overflow problems.
-*/
-
-#define isleap_sum(a, b)	isleap((a) % 400 + (b) % 400)
 
 #endif /* !defined TZFILE_H */
