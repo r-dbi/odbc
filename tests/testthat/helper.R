@@ -9,12 +9,29 @@ test_connection_string <- function(db) {
   list(.connection_string = cs)
 }
 
+# Tracks which backends have already had their dbGetInfo() logged, so we
+# emit it only once per backend per test run.
+.logged_dbinfo <- new.env(parent = emptyenv())
+
 test_con <- function(db, ...) {
-  dbConnect(
+  con <- dbConnect(
     odbc::odbc(),
     .connection_string = test_connection_string(db),
     ...
   )
+  # In CI (GitHub Actions sets CI=true), log driver/DBMS info once per backend
+  # to help diagnose driver-specific behavior. Routed through message() so it
+  # lands on stderr and shows in the CI log regardless of testthat's output
+  # capture. Kept quiet locally.
+  if (nzchar(Sys.getenv("CI")) && is.null(.logged_dbinfo[[db]])) {
+    info <- paste(
+      utils::capture.output(utils::str(DBI::dbGetInfo(con))),
+      collapse = "\n"
+    )
+    message("==== dbGetInfo(", db, ") ====\n", info)
+    .logged_dbinfo[[db]] <- TRUE
+  }
+  con
 }
 
 local_table <- function(con, name, df, ..., envir = parent.frame()) {

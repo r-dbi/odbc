@@ -18,6 +18,7 @@ snowflake()
   schema = NULL,
   uid = NULL,
   pwd = NULL,
+  connection_name = NULL,
   ...
 )
 }
@@ -44,6 +45,9 @@ default.}
 \item{uid, pwd}{Manually specify a username and password for authentication.
 Specifying these options will disable ambient credential discovery.}
 
+\item{connection_name}{The name of a connection defined in your Snowflake
+\code{connections.toml} file, or \code{NULL} to use the default connection.}
+
 \item{...}{Further arguments passed on to \code{\link[=dbConnect]{dbConnect()}}.}
 }
 \value{
@@ -54,10 +58,11 @@ account.
 Connect to a Snowflake account via the \href{https://docs.snowflake.com/en/developer-guide/odbc/odbc}{Snowflake ODBC driver}.
 
 In particular, the custom \code{dbConnect()} method for the Snowflake ODBC driver
-detects ambient OAuth credentials on platforms like Snowpark Container
-Services or Posit Workbench. It can also detect viewer-based
-credentials on Posit Connect if the \pkg{connectcreds} package is
-installed.
+supports the \code{connections.toml} and \code{config.toml} files used by the Snowflake
+Connector for Python and the Snowflake CLI via the \pkg{snowflakeauth}
+package. It also detects ambient OAuth credentials on platforms like Snowpark
+Container Services or Posit Workbench. Finally, it can detect viewer-based
+credentials on Posit Connect if the \pkg{connectcreds} package is installed.
 
 In addition, on macOS platforms, the \code{dbConnect} method will check and warn
 if it detects irregularities with how the driver is configured, unless the
@@ -82,6 +87,9 @@ DBI::dbConnect(
   uid = "me",
   pwd = rstudioapi::askForPassword()
 )
+
+# Use a named connection from a connections.toml file.
+DBI::dbConnect(odbc::snowflake(), connection_name = "test")
 
 # Use credentials from the viewer (when possible) in a Shiny app
 # deployed to Posit Connect.

@@ -365,6 +365,7 @@ void odbc_result::bind_string(
     size_t size,
     param_data& buffers) {
   buffers.nulls_[column] = std::vector<uint8_t>(size, false);
+  buffers.strings_[column].reserve(size);
   for (size_t i = 0; i < size; ++i) {
     auto value = STRING_ELT(data[column], start + i);
     if (value == NA_STRING) {
@@ -387,6 +388,7 @@ void odbc_result::bind_raw(
     size_t size,
     param_data& buffers) {
   buffers.nulls_[column] = std::vector<uint8_t>(size, false);
+  buffers.raws_[column].reserve(size);
   for (size_t i = 0; i < size; ++i) {
     SEXP value = VECTOR_ELT(data[column], start + i);
     if (TYPEOF(value) == NILSXP) {
@@ -432,6 +434,11 @@ void odbc_result::bind_datetime(
   // The fraction field is expressed in billionths of
   // a second.
   unsigned long long pad = std::pow(10, 9 - precision);
+  if (bind_tso) {
+    buffers.timestampoffsets_[column].reserve(size);
+  } else {
+    buffers.timestamps_[column].reserve(size);
+  }
   for (size_t i = 0; i < size; ++i) {
     auto value = d[start + i];
     if (ISNA(value)) {
@@ -475,6 +482,7 @@ void odbc_result::bind_date(
   auto d = (SourceType*)DATAPTR_RO(data[column]);
 
   nanodbc::date dt;
+  buffers.dates_[column].reserve(size);
   for (size_t i = 0; i < size; ++i) {
     auto value = (double)d[start + i] * seconds_in_day_;
     if (ISNA(value)) {
@@ -504,6 +512,7 @@ void odbc_result::bind_time(
   auto d = REAL(data[column]);
 
   nanodbc::time ts;
+  buffers.times_[column].reserve(size);
   for (size_t i = 0; i < size; ++i) {
     auto value = d[start + i];
     if (ISNA(value)) {

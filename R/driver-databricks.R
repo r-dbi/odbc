@@ -11,13 +11,20 @@ NULL
 #' driver](https://www.databricks.com/spark/odbc-drivers-download).
 #'
 #' In particular, the custom `dbConnect()` method for the Databricks ODBC driver
-#' implements a subset of the [Databricks client unified authentication](https://docs.databricks.com/en/dev-tools/auth.html#databricks-client-unified-authentication)
-#' model, with support for personal access tokens, OAuth machine-to-machine
-#' credentials, and OAuth user-to-machine credentials supplied via Posit
-#' Workbench or the Databricks CLI on desktop. It can also detect viewer-based
-#' credentials on Posit Connect if the \pkg{connectcreds} package is
-#' installed. All of these credentials are detected automatically if present
-#' using [standard environment variables](https://docs.databricks.com/en/dev-tools/auth.html#environment-variables-and-fields-for-client-unified-authentication).
+#' implements a variant of Databricks's [unified authentication](https://docs.databricks.com/aws/en/dev-tools/auth/unified-auth)
+#' model when no `uid` or `pwd` is supplied, checking for ambient credentials in
+#' the following order:
+#'
+#' * Viewer-based or service principal credentials supplied by Posit Connect
+#'   (requires the \pkg{connectcreds} package).
+#' * Personal access tokens.
+#' * Workload identity federation.
+#' * OAuth machine-to-machine credentials.
+#' * OAuth user-to-machine credentials suplied via Posit Workbench or the
+#'   Databricks CLI on desktop.
+#'
+#' This aims to provide broad compatibility between \pkg{odbc} and the standard
+#' environment variables used by Databricks SDKs in R and other languages.
 #'
 #' In addition, on macOS platforms, the `dbConnect()` method will check
 #' for irregularities with how the driver is configured,
@@ -31,8 +38,10 @@ NULL
 #'   under `Advanced Options > JDBC/ODBC` in the Databricks UI. For SQL
 #'   warehouses, this is found under `Connection Details` instead.
 #' @param useNativeQuery Suppress the driver's conversion from ANSI SQL 92 to
-#'   HiveSQL? The default (`TRUE`), gives greater performance but means that
-#'   paramterised queries (and hence `dbWriteTable()`) do not work.
+#'   HiveSQL.  When set to true, we also set the following related flags:
+#'   `EnableNativeParameterizedQuery`, and `PopulateParametersForNativeQuery`.
+#'   The default (`TRUE`), gives greater performance but could cause issues
+#'   with paramterised queries (and hence `dbWriteTable()`).
 #' @param workspace The URL of a Databricks workspace, e.g.
 #'   `"https://example.cloud.databricks.com"`.
 #' @param driver The name of the Databricks ODBC driver, or `NULL` to use the
@@ -51,12 +60,13 @@ NULL
 #'   httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
 #' )
 #'
-#' # Use credentials from the viewer (when possible) in a Shiny app
-#' # deployed to Posit Connect.
+#' # Use credentials from the viewer or a service principal (when possible) in
+#' # a Shiny app deployed to Posit Connect.
 #' library(connectcreds)
 #' server <- function(input, output, session) {
 #'   conn <- DBI::dbConnect(
 #'     odbc::databricks(),
+#'     workspace = "https://example.cloud.databricks.com",
 #'     httpPath = "sql/protocolv1/o/4425955464597947/1026-023828-vn51jugj"
 #'   )
 #' }
@@ -136,9 +146,12 @@ databricks_args <- function(httpPath,
     if (running_on_connect()) {
       msg <- c(
         msg,
-        "i" = "Or consider enabling Posit Connect's Databricks integration \
-              for viewer-based credentials. See {.url \
-              https://docs.posit.co/connect/user/oauth-integrations/#adding-oauth-integrations-to-deployed-content}
+        "i" = "Or consider enabling Posit Connect's Databricks integration. \
+              For viewer-based credentials, see {.url \
+              https://docs.posit.co/connect/user/oauth-integrations/#viewer-oauth-integrations}
+              for details. \
+              For service principal credentials, see {.url \
+              https://docs.posit.co/connect/user/oauth-integrations/#service-account-oauth-integrations}
               for details."
       )
     }
@@ -149,18 +162,27 @@ databricks_args <- function(httpPath,
 }
 
 databricks_default_args <- function(driver, host, httpPath, useNativeQuery) {
-  list(
+  ret <- list(
     driver = driver %||% databricks_default_driver(),
     host = host,
     httpPath = httpPath,
     thriftTransport = 2,
     userAgentEntry = databricks_user_agent(),
-    useNativeQuery = as.integer(useNativeQuery),
     # Connections to Databricks are always over HTTPS.
     port = 443,
     protocol = "https",
     ssl = 1
   )
+
+  nativeQueryArgs <- list(useNativeQuery = as.integer(useNativeQuery))
+  if (useNativeQuery) {
+    # Per driver documentation, when native query is enabled, the additional two flags help
+    # with properly handling parametrized queries
+    nativeQueryArgs <- c(nativeQueryArgs, EnableNativeParameterizedQuery = 1, PopulateParametersForNativeQuery = 1)
+  }
+
+  ret <- c(ret, nativeQueryArgs)
+  ret
 }
 
 
@@ -185,7 +207,10 @@ databricks_default_driver_paths <- function() {
       "/opt/simba/spark/lib/64/libsparkodbc_sb*.so"
     ))
   } else if (Sys.info()["sysname"] == "Darwin") {
-    paths <- Sys.glob("/Library/simba/spark/lib/libsparkodbc_sb*.dylib")
+    paths <- Sys.glob(c(
+      "/Library/simba/spark/lib/libsparkodbc_sb*.dylib",
+      "/Library/databricks/databricksodbc/lib/libdatabricks*.dylib"
+    ))
   } else {
     paths <- character()
   }
@@ -229,6 +254,15 @@ databricks_auth_args <- function(host, uid = NULL, pwd = NULL) {
     ))
   }
 
+  if (is_installed("connectcreds") && connectcreds::has_service_account_token(workspace)) {
+    token <- connectcreds::connect_service_account_token(workspace)
+    return(list(
+      authMech = 11,
+      auth_flow = 0,
+      auth_accesstoken = token$access_token
+    ))
+  }
+
   if (!is.null(uid) && !is.null(pwd)) {
     return(list(uid = uid, pwd = pwd, authMech = 3))
   } else if (xor(is.null(uid), is.null(pwd))) {
@@ -244,6 +278,7 @@ databricks_auth_args <- function(host, uid = NULL, pwd = NULL) {
   # Check some standard Databricks environment variables. This is used to
   # implement a subset of the "Databricks client unified authentication" model.
   token <- Sys.getenv("DATABRICKS_TOKEN")
+  auth_type <- Sys.getenv("DATABRICKS_AUTH_TYPE")
   client_id <- Sys.getenv("DATABRICKS_CLIENT_ID")
   client_secret <- Sys.getenv("DATABRICKS_CLIENT_SECRET")
   cli_path <- Sys.getenv("DATABRICKS_CLI_PATH", "databricks")
@@ -261,6 +296,25 @@ databricks_auth_args <- function(host, uid = NULL, pwd = NULL) {
       authMech = 3,
       uid = "token",
       pwd = token
+    )
+  } else if (auth_type %in% c("env-oidc", "file-oidc")) {
+    # Next up is workload identity federation.
+    if (nchar(client_id) == 0) {
+      cli::cli_abort(
+        c(
+          "Workload identity federation requires a service principal.",
+          "i" = "Set the {.envvar DATABRICKS_CLIENT_ID} environment variable to
+                 the service principal's UUID."
+        ),
+        call = quote(DBI::dbConnect())
+      )
+    }
+    id_token <- databricks_read_id_token(auth_type)
+    access_token <- databricks_token_exchange(host, id_token, client_id)
+    list(
+      authMech = 11,
+      auth_flow = 0,
+      auth_accesstoken = access_token
     )
   } else if (nchar(client_id) != 0) {
     # Next up are explicit OAuth2 M2M credentials.
@@ -299,6 +353,121 @@ databricks_auth_args <- function(host, uid = NULL, pwd = NULL) {
       )
     }
   }
+}
+
+databricks_read_id_token <- function(auth_type) {
+  if (auth_type == "env-oidc") {
+    token_env_name <- Sys.getenv("DATABRICKS_OIDC_TOKEN_ENV")
+    if (nchar(token_env_name) == 0) {
+      token_env_name <- "DATABRICKS_OIDC_TOKEN"
+    }
+    token <- Sys.getenv(token_env_name)
+    if (nchar(token) == 0) {
+      cli::cli_abort(
+        c(
+          "Workload identity federation is enabled
+           ({.code DATABRICKS_AUTH_TYPE=env-oidc}) but no OIDC token was found.",
+          "i" = "Set the {.envvar {token_env_name}} environment variable to the
+                 IdP JWT."
+        ),
+        call = quote(DBI::dbConnect())
+      )
+    }
+    token
+  } else {
+    path <- Sys.getenv("DATABRICKS_OIDC_TOKEN_FILEPATH")
+    if (nchar(path) == 0) {
+      cli::cli_abort(
+        c(
+          "Workload identity federation is enabled
+           ({.code DATABRICKS_AUTH_TYPE=file-oidc}) but
+           {.envvar DATABRICKS_OIDC_TOKEN_FILEPATH} is not set.",
+          "i" = "Set {.envvar DATABRICKS_OIDC_TOKEN_FILEPATH} to the path of the
+                 file containing the IdP JWT."
+        ),
+        call = quote(DBI::dbConnect())
+      )
+    }
+    if (!file.exists(path)) {
+      cli::cli_abort(
+        c(
+          "OIDC token file {.file {path}} does not exist.",
+          "i" = "Verify {.envvar DATABRICKS_OIDC_TOKEN_FILEPATH} points to a
+                 readable file."
+        ),
+        call = quote(DBI::dbConnect())
+      )
+    }
+    token <- trimws(paste(readLines(path, warn = FALSE), collapse = ""))
+    if (nchar(token) == 0) {
+      cli::cli_abort(
+        "OIDC token file {.file {path}} is empty.",
+        call = quote(DBI::dbConnect())
+      )
+    }
+    token
+  }
+}
+
+databricks_token_exchange <- function(host, id_token, client_id) {
+  check_installed("httr2", "for Databricks workload identity federation")
+
+  url <- paste0("https://", host, "/oidc/v1/token")
+  body <- list(
+    grant_type = "urn:ietf:params:oauth:grant-type:token-exchange",
+    subject_token_type = "urn:ietf:params:oauth:token-type:jwt",
+    subject_token = id_token,
+    scope = "all-apis",
+    client_id = client_id
+  )
+
+  req <- httr2::request(url)
+  req <- httr2::req_body_form(req, !!!body)
+  req <- httr2::req_error(req, is_error = function(resp) FALSE)
+
+  resp <- try_fetch(
+    httr2::req_perform(req),
+    error = function(cnd) {
+      cli::cli_abort(
+        c(
+          "Failed to reach the Databricks OIDC token endpoint at {.url {url}}.",
+          "i" = "Check network connectivity and that {.arg workspace} is correct."
+        ),
+        parent = cnd,
+        call = quote(DBI::dbConnect())
+      )
+    }
+  )
+
+  if (httr2::resp_is_error(resp)) {
+    status <- httr2::resp_status(resp)
+    resp_body <- tryCatch(
+      httr2::resp_body_string(resp),
+      error = function(e) "(unreadable)"
+    )
+    cli::cli_abort(
+      c(
+        "Databricks OIDC token exchange failed with HTTP {status}.",
+        "i" = "Response: {resp_body}"
+      ),
+      call = quote(DBI::dbConnect())
+    )
+  }
+
+  parsed <- httr2::resp_body_json(resp)
+  access_token <- parsed$access_token
+  if (is.null(access_token) || !nzchar(access_token)) {
+    cli::cli_abort(
+      c(
+        "Databricks OIDC token exchange response did not contain an access
+         token.",
+        "i" = "Verify the federation policy is configured correctly in
+               Databricks."
+      ),
+      call = quote(DBI::dbConnect())
+    )
+  }
+  access_token
 }
 
 # Try to determine whether we can redirect the user's browser to a server on
@@ -349,18 +518,25 @@ spark_simba_config <- function(driver) {
   if (!identical(spark_env, "")) {
     return(list(path = spark_env, url = URL))
   }
-  common_dirs <- c(
+  # Attempt first the exact driver directory
+  res <- list.files(
     driver_dir(driver),
-    "/Library/simba/spark/lib",
-    "/etc",
-    getwd(),
-    Sys.getenv("HOME")
+    pattern = "simba\\.sparkodbc\\.ini$|databricks\\.databricksodbc\\.ini$",
+    full.names = TRUE
   )
-  return(list(
-    path = list.files(
+  if (!length(res)) {
+    common_dirs <- unique(c(
+      "/Library/simba/spark/lib",
+      "/Library/databricks/databricksodbc/lib",
+      "/etc",
+      getwd(),
+      Sys.getenv("HOME")
+    ))
+    res <- list.files(
       common_dirs,
-      pattern = "simba\\.sparkodbc\\.ini$",
-      full.names = TRUE),
-    url = URL
-  ))
+      pattern = "simba\\.sparkodbc\\.ini$|databricks\\.databricksodbc\\.ini$",
+      full.names = TRUE
+    )
+  }
+  return(list(path = res, url = URL))
 }

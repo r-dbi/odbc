@@ -75,19 +75,9 @@ OdbcConnection <- function(
     ptr = ptr,
     quote = quote,
     info = info,
-    encoding = encoding
+    encoding = encoding,
+    connectionString = decompose_connection_string(connection_string)
   )
-}
-
-build_connection_string <- function(args = list(), string = NULL) {
-
-  args_string <- paste(names(args), args, sep = "=", collapse = ";")
-
-  if (!is.null(string) && !grepl(";$", string) && length(args) > 0) {
-    string <- paste0(string, ";")
-  }
-
-  paste0(string, args_string)
 }
 
 #' Quote special character when connecting
