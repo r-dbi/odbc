@@ -76,6 +76,8 @@ CCTZ_OBJS =			\
 ifeq ($(OS),Windows_NT)
 # package:odbc Include the upstream Windows source added after prior vendoring.
 CCTZ_OBJS += time_zone_name_win.o
+# package:odbc See notes in MAINTENANCE.md
+CPPFLAGS += -D_WIN32_WINNT=0x0601 -DWINVER=0x0601
 endif
 
 TOOLS = time_tool

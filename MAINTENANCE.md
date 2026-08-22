@@ -23,6 +23,11 @@ following deltas for R package inclusion:
 - `src/cctz/Makefile` adds `time_zone_name_win.o` on Windows because upstream
   now ships `src/time_zone_name_win.cc`, and omitting it breaks Windows
   linking.
+- `src/cctz/Makefile` sets `_WIN32_WINNT`/`WINVER` to `0x0601` on Windows.
+  `src/time_zone_name_win.cc` uses `WC_ERR_INVALID_CHARS` and
+  `GetDynamicTimeZoneInformation`, which the mingw-w64 headers declare only at
+  API level `0x0600`+. Rtools40 (R 4.1) defaults to `0x502`, so without this the
+  file does not compile there.
 - `src/cctz/Makefile` add `-DNDEBUG` to `CPPFLAGS`.
 - `src/cctz/src/time_zone_fixed.cc` keeps odbc-specific fixed-offset zone names
   based on `Etc/GMT` rather than upstream `Fixed/UTC`, matching odbc timestamp
