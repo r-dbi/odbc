@@ -137,6 +137,23 @@ test_that("tokens can be requested from a Connect server", {
   )
 })
 
+test_that("service account tokens can be requested from a Connect server", {
+  skip_if_not_installed("connectcreds")
+
+  # `local_mocked_connect_responses()` makes both viewer-based and service
+  # account credentials available, and viewer-based credentials take
+  # precedence, so disable them to exercise the service account path.
+  local_mocked_bindings(
+    has_viewer_token = function(...) FALSE,
+    .package = "connectcreds"
+  )
+  connectcreds::local_mocked_connect_responses(token = "token")
+  expect_equal(
+    snowflake_auth_args("testorg-test_account"),
+    list(authenticator = "oauth", token = "token")
+  )
+})
+
 test_that("the default driver falls back to a known driver name", {
   local_mocked_bindings(
     snowflake_default_driver_paths = function() character(),
