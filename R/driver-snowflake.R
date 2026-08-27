@@ -55,6 +55,15 @@ setMethod("odbcConnectionColumns", c("Snowflake", "character"),
   }
 )
 
+# Defined explicitly (rather than inherited) to avoid an ambiguous S4 dispatch
+#' @rdname driver-Snowflake
+#' @usage NULL
+setMethod("odbcConnectionColumns", c("Snowflake", "SQL"),
+  function(conn, name, ..., exact = FALSE) {
+    odbcConnectionColumns(conn, dbUnquoteIdentifier(conn, name)[[1]], ..., exact = exact)
+  }
+)
+
 #' @rdname driver-Snowflake
 setMethod("dbExistsTableForWrite", c("Snowflake", "character"),
   function(conn, name, ...,
