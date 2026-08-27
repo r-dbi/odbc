@@ -308,24 +308,28 @@ odbcPreviewQuery <- function(connection, rowLimit, name) {
 
 #' Common top-N syntax ( MYSQL, PSQL, DB2, SNOWFLAKE, etc )
 #' @rdname odbcPreviewQuery
+#' @export
 odbcPreviewQuery.OdbcConnection <- function(connection, rowLimit, name) {
   paste0("SELECT * FROM ", name, " LIMIT ", rowLimit)
 }
 
 #' SQL Server specific top-N syntax
 #' @rdname odbcPreviewQuery
+#' @export
 `odbcPreviewQuery.Microsoft SQL Server` <- function(connection, rowLimit, name) {
   paste0("SELECT TOP ", rowLimit, " * FROM ", name)
 }
 
 #' Teradata specific top-N syntax
 #' @rdname odbcPreviewQuery
+#' @export
 `odbcPreviewQuery.Teradata` <- function(connection, rowLimit, name) {
   paste0("SELECT TOP ", rowLimit, " * FROM ", name)
 }
 
 #' Oracle specific top-N syntax
 #' @rdname odbcPreviewQuery
+#' @export
 odbcPreviewQuery.Oracle <- function(connection, rowLimit, name) {
   paste0("SELECT * FROM ", name, " WHERE ROWNUM <= ", rowLimit)
 }
