@@ -8,9 +8,8 @@ on:
   push:
     branches: [main, master]
   pull_request:
-    branches: [main, master]
 
-name: R-CMD-check
+name: R-CMD-check.yaml
 
 permissions: read-all
 
@@ -25,11 +24,7 @@ jobs:
       matrix:
         config:
           - {os: macos-latest,   r: 'release'}
-
           - {os: windows-latest, r: 'release'}
-          # use 4.1 to check with rtools40's older compiler
-          - {os: windows-latest, r: '4.1'}
-          - {os: windows-11-arm, r: 'release'}
           - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release'}
           - {os: ubuntu-latest,  r: 'release'}
           - {os: ubuntu-latest,  r: 'oldrel-1'}
@@ -40,10 +35,9 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
-      ODBCSYSINI: ${{ github.workspace }}/.github/odbc
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -51,22 +45,11 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
-          use-public-rspm: true
-
-      - name: Install Driver Manager (Ubuntu)
-        if: matrix.config.os == 'ubuntu-latest'
-        run: sudo apt-get install -y unixodbc-dev
-
-      - name: Install Driver Manager (MacOS)
-        if: matrix.config.os == 'macOS-latest'
-        # unixODBC is not pre-installed on macos-14-arm64 runner (#794)
-        run: brew install unixodbc
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
-
 
       - uses: r-lib/actions/check-r-package@v2
         with:
