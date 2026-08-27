@@ -34,8 +34,10 @@ warehouses, this is found under \verb{Connection Details} instead.}
 \code{"https://example.cloud.databricks.com"}.}
 
 \item{useNativeQuery}{Suppress the driver's conversion from ANSI SQL 92 to
-HiveSQL? The default (\code{TRUE}), gives greater performance but means that
-paramterised queries (and hence \code{dbWriteTable()}) do not work.}
+HiveSQL.  When set to true, we also set the following related flags:
+\code{EnableNativeParameterizedQuery}, and \code{PopulateParametersForNativeQuery}.
+The default (\code{TRUE}), gives greater performance but could cause issues
+with paramterised queries (and hence \code{dbWriteTable()}).}
 
 \item{driver}{The name of the Databricks ODBC driver, or \code{NULL} to use the
 default name.}

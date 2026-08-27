@@ -2,6 +2,7 @@
 % Please edit documentation in R/driver-snowflake.R
 \name{odbcConnectionColumns,Snowflake,character-method}
 \alias{odbcConnectionColumns,Snowflake,character-method}
+\alias{odbcConnectionColumns,Snowflake,SQL-method}
 \alias{dbExistsTableForWrite,Snowflake,character-method}
 \title{Connecting to Snowflake via ODBC}
 \usage{
