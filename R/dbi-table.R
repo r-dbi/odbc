@@ -223,7 +223,7 @@ setMethod(
     # Convert POSIXlt to POSIXct
     is_POSIXlt <- vapply(
       value,
-      function(x) is.object(x) && (is(x, "POSIXlt")),
+      \(x) is.object(x) && (is(x, "POSIXlt")),
       logical(1)
     )
     value[is_POSIXlt] <- lapply(value[is_POSIXlt], as.POSIXct)
@@ -231,7 +231,7 @@ setMethod(
     # C code takes care of atomic vectors, dates, date times, and blobs just need to coerce other objects
     is_object <- vapply(
       value,
-      function(x) {
+      \(x) {
         is.object(x) &&
           !(is(x, "POSIXct") ||
             is(x, "Date") ||

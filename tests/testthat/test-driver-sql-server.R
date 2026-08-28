@@ -157,8 +157,7 @@ test_that("blobs can be retrieved out of order", {
     c1 = 1,
     c2 = "this is varchar max",
     c3 = 11,
-    c4 = "this is text",
-    stringsAsFactors = FALSE
+    c4 = "this is text"
   )
   tbl <- local_table(con, "test_out_of_order_blob", values)
 
@@ -185,8 +184,7 @@ test_that("can bind NA values", {
     c3 = c(1.0, NA_real_),
     c4 = c(TRUE, NA),
     c5 = c(Sys.Date(), NA),
-    c6 = c(Sys.time(), NA),
-    stringsAsFactors = FALSE
+    c6 = c(Sys.time(), NA)
   )
   tbl <- local_table(con, "test_na", values)
 
@@ -581,8 +579,7 @@ test_that("Table-valued parameters", {
     bigint = 1:10,
     vrchr = rownames(mtcars)[1:10],
     vrchr2 = as.character(iris$Species[1:10]),
-    vrchr3 = LETTERS[1:10],
-    stringsAsFactors = FALSE
+    vrchr3 = LETTERS[1:10]
   )
   res <- dbGetQuery(
     con,
@@ -593,7 +590,7 @@ test_that("Table-valued parameters", {
   expected <- cbind(
     data.frame("p0" = as.integer(100)),
     df.param,
-    data.frame("p2" = "Lorem ipsum dolor sit amet", stringsAsFactors = FALSE)
+    data.frame("p2" = "Lorem ipsum dolor sit amet")
   )
   colnames(expected) <- c("p0", "col0", "col1", "col2", "col3", "col4", "p2")
   expected$col1 <- bit64::as.integer64(expected$col1)

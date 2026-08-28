@@ -127,6 +127,6 @@ test_that("sproc result retrieval", {
   })
   expect_identical(
     res,
-    data.frame("TestCol" = "abc", stringsAsFactors = FALSE)
+    data.frame("TestCol" = "abc")
   )
 })
