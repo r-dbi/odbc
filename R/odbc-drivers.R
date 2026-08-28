@@ -76,7 +76,10 @@
 #' odbcListDrivers()
 #'
 #' @export
-odbcListDrivers <- function(keep = getOption("odbc.drivers_keep"), filter = getOption("odbc.drivers_filter")) {
+odbcListDrivers <- function(
+  keep = getOption("odbc.drivers_keep"),
+  filter = getOption("odbc.drivers_filter")
+) {
   res <- list_drivers_()
 
   if (nrow(res) > 0) {

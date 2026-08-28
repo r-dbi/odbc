@@ -1,4 +1,3 @@
-
 test_that("errors if unnamed arguments", {
   expect_snapshot(check_args(list(1, 2, 3)), error = TRUE)
 })

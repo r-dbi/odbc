@@ -3,8 +3,14 @@ test_that("parse_size works", {
 
   expect_identical(parse_size(1L), 1)
   expect_identical(parse_size(1), 1)
-  expect_identical(parse_size(.Machine$integer.max), as.numeric(.Machine$integer.max))
-  expect_identical(parse_size(.Machine$integer.max + 1), .Machine$integer.max + 1)
+  expect_identical(
+    parse_size(.Machine$integer.max),
+    as.numeric(.Machine$integer.max)
+  )
+  expect_identical(
+    parse_size(.Machine$integer.max + 1),
+    .Machine$integer.max + 1
+  )
 })
 
 test_that("id_field extracts correct elements", {
@@ -27,15 +33,33 @@ test_that("id_field checks inputs", {
 
 test_that("getSelector", {
   # If no wild cards are detected always use exact comparison / ignore `exact` argument
-  expect_equal(getSelector("mykey", "myvalue", exact = TRUE), " AND mykey = 'myvalue'")
-  expect_equal(getSelector("mykey", "myvalue", exact = FALSE), " AND mykey = 'myvalue'")
+  expect_equal(
+    getSelector("mykey", "myvalue", exact = TRUE),
+    " AND mykey = 'myvalue'"
+  )
+  expect_equal(
+    getSelector("mykey", "myvalue", exact = FALSE),
+    " AND mykey = 'myvalue'"
+  )
 
   # If `value` contains wild cards, respect `exact`argument
-  expect_equal(getSelector("mykey", "myvalu_", exact = TRUE), " AND mykey = 'myvalu_'")
-  expect_equal(getSelector("mykey", "myvalu_", exact = FALSE), " AND mykey LIKE 'myvalu_'")
+  expect_equal(
+    getSelector("mykey", "myvalu_", exact = TRUE),
+    " AND mykey = 'myvalu_'"
+  )
+  expect_equal(
+    getSelector("mykey", "myvalu_", exact = FALSE),
+    " AND mykey LIKE 'myvalu_'"
+  )
 
-  expect_equal(getSelector("mykey", "myvalu%", exact = TRUE), " AND mykey = 'myvalu%'")
-  expect_equal(getSelector("mykey", "myvalu%", exact = FALSE), " AND mykey LIKE 'myvalu%'")
+  expect_equal(
+    getSelector("mykey", "myvalu%", exact = TRUE),
+    " AND mykey = 'myvalu%'"
+  )
+  expect_equal(
+    getSelector("mykey", "myvalu%", exact = FALSE),
+    " AND mykey LIKE 'myvalu%'"
+  )
 
   # ... unless argument is '%' - always use 'LIKE' since this is most likely the
   # desired comparison / ignore `exact` argument
@@ -89,7 +113,7 @@ test_that("parse_database_error() works with messages from the wild", {
   expect_snapshot(error = TRUE, rethrow_database_error(msg, call = NULL))
 
   skip_on_cran()
-  
+
   # Really long error message can cause rethrow_database_error to take a really long time.
   # This is due to cli::cli_abort, current version is 3.6.5 at the time of this writing. (#914)
   err_msg_w_really_long_query <- paste(
@@ -106,7 +130,10 @@ test_that("parse_database_error() works with messages from the wild", {
   ) # Even if this really long error message gets passed to cli::cli_abort it should only take 10 - 20 sec to fail
   expect_no_condition(parse_database_error(err_msg_w_really_long_query))
   timing <- system.time({
-    expect_error(rethrow_database_error(err_msg_w_really_long_query, call = NULL))
+    expect_error(rethrow_database_error(
+      err_msg_w_really_long_query,
+      call = NULL
+    ))
   })
   expect_lt(
     object = timing["elapsed"],
@@ -114,7 +141,7 @@ test_that("parse_database_error() works with messages from the wild", {
     label = "Runtime of `rethrow_database_error(err_msg_w_really_long_query)`",
     expected.label = "5 seconds"
   )
-  
+
   msg <- "`parse_database_error()` will not {be able to parse this}, but it should still be successfully rethrown as-is."
   expect_snapshot(error = TRUE, rethrow_database_error(msg, call = NULL))
 })
@@ -124,7 +151,10 @@ test_that("set_database_error_names() works (#840)", {
     set_database_error_names(c("unnamed", "vector")),
     c(x = "unnamed", `*` = "vector")
   )
-  expect_equal(set_database_error_names("unnamed scalar"), c(x = "unnamed scalar"))
+  expect_equal(
+    set_database_error_names("unnamed scalar"),
+    c(x = "unnamed scalar")
+  )
   expect_equal(
     set_database_error_names(c("i" = "partially", "named")),
     c(i = "partially", `*` = "named")
@@ -149,7 +179,12 @@ test_that("check_row.names()", {
 
   expect_snapshot(
     error = TRUE,
-    dbWriteTable(con, "boopery", data.frame(bop = 1), row.names = c("no", "way"))
+    dbWriteTable(
+      con,
+      "boopery",
+      data.frame(bop = 1),
+      row.names = c("no", "way")
+    )
   )
 })
 
@@ -177,15 +212,21 @@ test_that("check_attributes()", {
 })
 
 test_that("configure_simba() returns early on windows", {
-  local_mocked_bindings(is_macos = function() {FALSE})
+  local_mocked_bindings(is_macos = function() {
+    FALSE
+  })
 
   expect_equal(configure_simba(), NULL)
 })
 
 test_that("configure_simba() errors informatively on failure to install unixODBC", {
   local_mocked_bindings(
-    is_macos = function() {TRUE},
-    locate_install_unixodbc = function() {character(0)}
+    is_macos = function() {
+      TRUE
+    },
+    locate_install_unixodbc = function() {
+      character(0)
+    }
   )
 
   expect_snapshot(configure_simba(), error = TRUE)
@@ -215,7 +256,9 @@ test_that("locate_install_unixodbc() returns reasonable values", {
 })
 
 test_that("databricks() errors informatively when spark ini isn't writeable", {
-  local_mocked_bindings(is_writeable = function(path) {FALSE})
+  local_mocked_bindings(is_writeable = function(path) {
+    FALSE
+  })
   expect_snapshot(
     write_simba_lines("", ".", ".", call2("databricks")),
     error = TRUE
@@ -225,8 +268,12 @@ test_that("databricks() errors informatively when spark ini isn't writeable", {
 test_that("driver_dir(...) returns reasonable values", {
   path <- "/some/path/driver.so"
   local_mocked_bindings(odbcListDrivers = function() {
-    data.frame(name = "OG Driver", attribute = "Driver",
-      value = path, drop = FALSE)
+    data.frame(
+      name = "OG Driver",
+      attribute = "Driver",
+      value = path,
+      drop = FALSE
+    )
   })
   expect_equal(driver_dir("OG Driver"), "/some/path")
   expect_equal(driver_dir(path), "/some/path")
@@ -274,10 +321,12 @@ test_that("configure_unixodbc_simba() writes reasonable entries", {
   # both of the relevant fields are already there
   # but point to incorrect values
   writeLines(
-    c("some=entries",
+    c(
+      "some=entries",
       "not=relevant",
       "ODBCInstLib=somewhere.dylib",
-      "DriverManagerEncoding=UTF-8"),
+      "DriverManagerEncoding=UTF-8"
+    ),
     con = spark_config_path
   )
 
@@ -307,10 +356,12 @@ test_that("configure_unixodbc_simba() writes reasonable entries", {
   # expect warning with single suggestion
   # when action is "warn"
   writeLines(
-    c("some=entries",
+    c(
+      "some=entries",
       "not=relevant",
       "ODBCInstLib=libodbcinst.dylib",
-      "DriverManagerEncoding=UTF-32"),
+      "DriverManagerEncoding=UTF-32"
+    ),
     con = spark_config_path
   )
 
@@ -338,10 +389,12 @@ test_that("configure_unixodbc_simba() writes reasonable entries", {
 
   # an entry is there but commented out
   writeLines(
-    c("some=entries",
+    c(
+      "some=entries",
       "not=relevant",
       ";ODBCInstLib=somewhere.dylib",
-      ";DriverManagerEncoding=UTF-8"),
+      ";DriverManagerEncoding=UTF-8"
+    ),
     con = spark_config_path
   )
 
@@ -370,10 +423,12 @@ test_that("configure_unixodbc_simba() writes reasonable entries", {
 
   # Finally, a good config
   writeLines(
-    c("some=entries",
+    c(
+      "some=entries",
       "not=relevant",
       "ODBCInstLib=libodbcinst.dylib",
-      "DriverManagerEncoding=UTF-16"),
+      "DriverManagerEncoding=UTF-16"
+    ),
     con = spark_config_path
   )
 
@@ -390,7 +445,10 @@ test_that("configure_unixodbc_simba() writes reasonable entries", {
 test_that("handles simple inputs", {
   expect_equal(build_connection_string(), "")
   expect_equal(build_connection_string(list(foo = "1")), "foo=1")
-  expect_equal(build_connection_string(list(foo = "1", bar = "2")), "foo=1;bar=2")
+  expect_equal(
+    build_connection_string(list(foo = "1", bar = "2")),
+    "foo=1;bar=2"
+  )
 })
 
 test_that("combines with existing .connection string", {
@@ -411,36 +469,66 @@ test_that("formats numeric connection string values without scientific notation"
 })
 
 test_that("Handles connection string as expected", {
-  conn_string <- build_connection_string(list(dsn = "abc",
+  conn_string <- build_connection_string(list(
+    dsn = "abc",
     k1 = quote_value("Quoted Value"),
-    k2 = quote_value("Quated value with a ' character")))
-  expect_equal(decompose_connection_string(conn_string), list(dsn = "abc",
-    k1 = "Quoted Value", k2 = "Quated value with a ' character"))
+    k2 = quote_value("Quated value with a ' character")
+  ))
+  expect_equal(
+    decompose_connection_string(conn_string),
+    list(
+      dsn = "abc",
+      k1 = "Quoted Value",
+      k2 = "Quated value with a ' character"
+    )
+  )
   # Robust to ending with semi-column
-  expect_equal(decompose_connection_string("abc=1;def=2;"), list(abc = "1",
-    def = "2"))
+  expect_equal(
+    decompose_connection_string("abc=1;def=2;"),
+    list(abc = "1", def = "2")
+  )
   # Robust to starting with semi-column
-  expect_equal(decompose_connection_string(";abc=1;def=2"), list(abc = "1",
-    def = "2"))
+  expect_equal(
+    decompose_connection_string(";abc=1;def=2"),
+    list(abc = "1", def = "2")
+  )
   # Robust to double semi-column
-  expect_equal(decompose_connection_string("abc=1;;def=2"), list(abc = "1",
-    def = "2"))
+  expect_equal(
+    decompose_connection_string("abc=1;;def=2"),
+    list(abc = "1", def = "2")
+  )
   # Key-value entries with missing key are filtered out
-  expect_equal(decompose_connection_string("abc=1;def=2;=3"), list(abc = "1",
-    def = "2"))
+  expect_equal(
+    decompose_connection_string("abc=1;def=2;=3"),
+    list(abc = "1", def = "2")
+  )
   # Key-value entries with missing value are filtered out
-  expect_equal(decompose_connection_string("abc=1;def=2;ghi="), list(abc = "1",
-    def = "2"))
+  expect_equal(
+    decompose_connection_string("abc=1;def=2;ghi="),
+    list(abc = "1", def = "2")
+  )
   # Connection string segments that are not formatted as key-value
   # pairs are filtered out
-  expect_equal(decompose_connection_string("abc=1;def=2;ghi"), list(abc = "1",
-    def = "2"))
+  expect_equal(
+    decompose_connection_string("abc=1;def=2;ghi"),
+    list(abc = "1", def = "2")
+  )
 })
 
 test_that("Sanitize filters out auth keys", {
-  lst <- list(dsn = "abc", useNativeQuery = "def", pwd = "p", PWD = "P",
-    password = "pass", PASSWORD = "PASSWORD", token = "token", TOKEN = "TOKEN",
-    MYPWD = "mywd")
-  expect_equal(sanitize_connection_string(lst), list(dsn = "abc",
-    useNativeQuery = "def"))
+  lst <- list(
+    dsn = "abc",
+    useNativeQuery = "def",
+    pwd = "p",
+    PWD = "P",
+    password = "pass",
+    PASSWORD = "PASSWORD",
+    token = "token",
+    TOKEN = "TOKEN",
+    MYPWD = "mywd"
+  )
+  expect_equal(
+    sanitize_connection_string(lst),
+    list(dsn = "abc", useNativeQuery = "def")
+  )
 })

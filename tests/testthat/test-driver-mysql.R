@@ -106,12 +106,19 @@ test_that("sproc result retrieval", {
   con <- test_con("MYSQL")
 
   # TODO: resolve the issue requiring this skip
-  skip_if(grepl("libmysqlodbc_sb64", dbGetInfo(con)$drivername), "Pro Drivers fail this test.")
+  skip_if(
+    grepl("libmysqlodbc_sb64", dbGetInfo(con)$drivername),
+    "Pro Drivers fail this test."
+  )
 
   sprocName <- "testSproc"
   DBI::dbExecute(
     con,
-    paste0("CREATE PROCEDURE ", sprocName, "(IN arg INT) BEGIN SELECT 'abc' as TestCol; END")
+    paste0(
+      "CREATE PROCEDURE ",
+      sprocName,
+      "(IN arg INT) BEGIN SELECT 'abc' as TestCol; END"
+    )
   )
   on.exit(DBI::dbExecute(con, paste0("DROP PROCEDURE ", sprocName)))
 

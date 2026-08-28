@@ -1,4 +1,3 @@
-
 # Microsoft SQL Server ---------------------------------------------------------
 
 #' SQL Server
@@ -33,7 +32,9 @@ setClass("Microsoft SQL Server", contains = "OdbcConnection")
 #' @docType methods
 #' @usage NULL
 #' @keywords internal
-setMethod("dbUnquoteIdentifier", c("Microsoft SQL Server", "SQL"),
+setMethod(
+  "dbUnquoteIdentifier",
+  c("Microsoft SQL Server", "SQL"),
   function(conn, x, ...) {
     x <- gsub("(\\[)([^\\.]+?)(\\])", "\\2", x)
     callNextMethod(conn, x, ...)
@@ -50,12 +51,16 @@ setMethod("dbUnquoteIdentifier", c("Microsoft SQL Server", "SQL"),
 #' name starts with `"#"`.
 #' @rdname SQLServer
 #' @usage NULL
-setMethod("isTempTable", c("Microsoft SQL Server", "character"),
+setMethod(
+  "isTempTable",
+  c("Microsoft SQL Server", "character"),
   function(conn, name, catalog_name = NULL, schema_name = NULL, ...) {
-    if (!is.null(catalog_name) &&
-      catalog_name != "%" &&
-      length(catalog_name) > 0 &&
-      catalog_name != "tempdb") {
+    if (
+      !is.null(catalog_name) &&
+        catalog_name != "%" &&
+        length(catalog_name) > 0 &&
+        catalog_name != "tempdb"
+    ) {
       return(FALSE)
     }
 
@@ -65,7 +70,9 @@ setMethod("isTempTable", c("Microsoft SQL Server", "character"),
 
 #' @rdname SQLServer
 #' @usage NULL
-setMethod("isTempTable", c("Microsoft SQL Server", "SQL"),
+setMethod(
+  "isTempTable",
+  c("Microsoft SQL Server", "SQL"),
   function(conn, name, ...) {
     isTempTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   }
@@ -80,7 +87,9 @@ setMethod("isTempTable", c("Microsoft SQL Server", "SQL"),
 #' @rdname SQLServer
 #' @docType methods
 #' @usage NULL
-setMethod("dbExistsTable", c("Microsoft SQL Server", "character"),
+setMethod(
+  "dbExistsTable",
+  c("Microsoft SQL Server", "character"),
   function(conn, name, ...) {
     check_string(name)
     if (isTempTable(conn, name, ...)) {
@@ -100,13 +109,17 @@ setMethod("dbExistsTable", c("Microsoft SQL Server", "character"),
 #' This method provides a special case for temporary tables.
 #' @rdname SQLServer
 #' @usage NULL
-setMethod("dbListTables", "Microsoft SQL Server",
-  function(conn,
-           catalog_name = NULL,
-           schema_name = NULL,
-           table_name = NULL,
-           table_type = NULL,
-           ...) {
+setMethod(
+  "dbListTables",
+  "Microsoft SQL Server",
+  function(
+    conn,
+    catalog_name = NULL,
+    schema_name = NULL,
+    table_name = NULL,
+    table_type = NULL,
+    ...
+  ) {
     check_string(catalog_name, allow_null = TRUE)
     check_string(schema_name, allow_null = TRUE)
     check_string(table_name, allow_null = TRUE)
@@ -130,7 +143,9 @@ setMethod("dbListTables", "Microsoft SQL Server",
 
 #' @rdname SQLServer
 #' @usage NULL
-setMethod("dbExistsTable", c("Microsoft SQL Server", "Id"),
+setMethod(
+  "dbExistsTable",
+  c("Microsoft SQL Server", "Id"),
   function(conn, name, ...) {
     dbExistsTable(
       conn,
@@ -143,7 +158,9 @@ setMethod("dbExistsTable", c("Microsoft SQL Server", "Id"),
 
 #' @rdname SQLServer
 #' @usage NULL
-setMethod("dbExistsTable", c("Microsoft SQL Server", "SQL"),
+setMethod(
+  "dbExistsTable",
+  c("Microsoft SQL Server", "SQL"),
   function(conn, name, ...) {
     dbExistsTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   }
@@ -157,21 +174,29 @@ setMethod("dbExistsTable", c("Microsoft SQL Server", "SQL"),
 #' @rdname SQLServer
 #' @usage NULL
 setMethod(
-  "odbcConnectionSchemas", "Microsoft SQL Server",
+  "odbcConnectionSchemas",
+  "Microsoft SQL Server",
   function(conn, catalog_name = NULL) {
-
     if (is.null(catalog_name) || !nchar(catalog_name)) {
       return(callNextMethod())
     }
     sproc <- paste(
-      dbQuoteIdentifier(conn, catalog_name), "dbo.sp_tables", sep = ".")
+      dbQuoteIdentifier(conn, catalog_name),
+      "dbo.sp_tables",
+      sep = "."
+    )
 
-    res <- dbGetQuery(conn, paste0(
-        "EXEC ", sproc, " ",
+    res <- dbGetQuery(
+      conn,
+      paste0(
+        "EXEC ",
+        sproc,
+        " ",
         "@table_name = '', ",
         "@table_owner = '%', ",
         "@table_qualifier = ''"
-    ))
+      )
+    )
     res$TABLE_OWNER
   }
 )
@@ -183,14 +208,18 @@ setMethod(
 #' Warns if `temporary = TRUE` but the `name` does not conform to temp table
 #' naming conventions (i.e. it doesn't start with `#`).
 #' @usage NULL
-setMethod("sqlCreateTable", "Microsoft SQL Server",
-  function(con,
-           table,
-           fields,
-           row.names = NA,
-           temporary = FALSE,
-           ...,
-           field.types = NULL) {
+setMethod(
+  "sqlCreateTable",
+  "Microsoft SQL Server",
+  function(
+    con,
+    table,
+    fields,
+    row.names = NA,
+    temporary = FALSE,
+    ...,
+    field.types = NULL
+  ) {
     check_bool(temporary)
     check_row.names(row.names)
     check_field.types(field.types)
@@ -207,25 +236,23 @@ setMethod("sqlCreateTable", "Microsoft SQL Server",
 #' @export
 #' @rdname odbcDataType
 #' @usage NULL
-setMethod("odbcDataType", "Microsoft SQL Server",
-  function(con, obj, ...) {
-    switch_type(
-      obj,
-      factor = varchar(obj),
-      datetime = "DATETIME",
-      date = "DATE",
-      time = "TIME",
-      binary = varbinary(obj),
-      integer = "INT",
-      int64 = "BIGINT",
-      double = "FLOAT",
-      character = varchar(obj),
-      logical = "BIT",
-      list = varchar(obj),
-      stop("Unsupported type", call. = FALSE)
-    )
-  }
-)
+setMethod("odbcDataType", "Microsoft SQL Server", function(con, obj, ...) {
+  switch_type(
+    obj,
+    factor = varchar(obj),
+    datetime = "DATETIME",
+    date = "DATE",
+    time = "TIME",
+    binary = varbinary(obj),
+    integer = "INT",
+    int64 = "BIGINT",
+    double = "FLOAT",
+    character = varchar(obj),
+    logical = "BIT",
+    list = varchar(obj),
+    stop("Unsupported type", call. = FALSE)
+  )
+})
 
 #' @description
 #' ## `odbcConnectionColumns()`
@@ -234,20 +261,30 @@ setMethod("odbcDataType", "Microsoft SQL Server",
 #' actual table name.
 #' @rdname SQLServer
 #' @usage NULL
-setMethod("odbcConnectionColumns", c("Microsoft SQL Server", "character"),
-  function(conn,
-           name,
-           ...,
-           catalog_name = NULL,
-           schema_name = NULL,
-           column_name = NULL,
-           exact = FALSE) {
-    if (exact &&
-      isTempTable(conn, name, catalog_name, schema_name, column_name, exact)) {
+setMethod(
+  "odbcConnectionColumns",
+  c("Microsoft SQL Server", "character"),
+  function(
+    conn,
+    name,
+    ...,
+    catalog_name = NULL,
+    schema_name = NULL,
+    column_name = NULL,
+    exact = FALSE
+  ) {
+    if (
+      exact &&
+        isTempTable(conn, name, catalog_name, schema_name, column_name, exact)
+    ) {
       catalog_name <- "tempdb"
       schema_name <- "dbo"
-      query <- paste0("SELECT name FROM tempdb.sys.tables WHERE ",
-        "object_id = OBJECT_ID('tempdb..", name, "')")
+      query <- paste0(
+        "SELECT name FROM tempdb.sys.tables WHERE ",
+        "object_id = OBJECT_ID('tempdb..",
+        name,
+        "')"
+      )
       name <- dbGetQuery(conn, query)[[1]]
     }
 
@@ -269,8 +306,15 @@ setMethod("odbcConnectionColumns", c("Microsoft SQL Server", "character"),
 #' Copied over from odbc-connection to avoid S4 dispatch NOTEs.
 #' @rdname SQLServer
 #' @usage NULL
-setMethod("odbcConnectionColumns", c("Microsoft SQL Server", "SQL"),
+setMethod(
+  "odbcConnectionColumns",
+  c("Microsoft SQL Server", "SQL"),
   function(conn, name, ..., exact = FALSE) {
-    odbcConnectionColumns(conn, dbUnquoteIdentifier(conn, name)[[1]], ..., exact = exact)
+    odbcConnectionColumns(
+      conn,
+      dbUnquoteIdentifier(conn, name)[[1]],
+      ...,
+      exact = exact
+    )
   }
 )

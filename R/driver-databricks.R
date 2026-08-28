@@ -82,20 +82,29 @@ setClass("DatabricksOdbcDriver", contains = "OdbcDriver")
 
 #' @rdname databricks
 #' @export
-setMethod("dbConnect", "DatabricksOdbcDriver",
-  function(drv,
-           httpPath,
-           workspace = Sys.getenv("DATABRICKS_HOST"),
-           useNativeQuery = TRUE,
-           driver = NULL,
-           HTTPPath,
-           uid = NULL,
-           pwd = NULL,
-           ...) {
+setMethod(
+  "dbConnect",
+  "DatabricksOdbcDriver",
+  function(
+    drv,
+    httpPath,
+    workspace = Sys.getenv("DATABRICKS_HOST"),
+    useNativeQuery = TRUE,
+    driver = NULL,
+    HTTPPath,
+    uid = NULL,
+    pwd = NULL,
+    ...
+  ) {
     call <- caller_env()
     # For backward compatibility with RStudio connection string
     http_path <- check_exclusive(httpPath, HTTPPath, .call = call)
-    check_string(get(http_path), allow_null = TRUE, arg = http_path, call = call)
+    check_string(
+      get(http_path),
+      allow_null = TRUE,
+      arg = http_path,
+      call = call
+    )
     check_string(workspace, allow_null = TRUE, call = call)
     check_bool(useNativeQuery, call = call)
     check_string(driver, allow_null = TRUE, call = call)
@@ -112,19 +121,20 @@ setMethod("dbConnect", "DatabricksOdbcDriver",
       ...
     )
     # Perform some sanity checks on MacOS
-    configure_simba(spark_simba_config(args$driver),
-      action = "modify")
+    configure_simba(spark_simba_config(args$driver), action = "modify")
     inject(dbConnect(odbc(), !!!args))
   }
 )
 
-databricks_args <- function(httpPath,
-                            workspace = Sys.getenv("DATABRICKS_HOST"),
-                            useNativeQuery = FALSE,
-                            driver = NULL,
-                            uid = NULL,
-                            pwd = NULL,
-                            ...) {
+databricks_args <- function(
+  httpPath,
+  workspace = Sys.getenv("DATABRICKS_HOST"),
+  useNativeQuery = FALSE,
+  driver = NULL,
+  uid = NULL,
+  pwd = NULL,
+  ...
+) {
   host <- databricks_host(workspace)
 
   args <- databricks_default_args(
@@ -178,13 +188,16 @@ databricks_default_args <- function(driver, host, httpPath, useNativeQuery) {
   if (useNativeQuery) {
     # Per driver documentation, when native query is enabled, the additional two flags help
     # with properly handling parametrized queries
-    nativeQueryArgs <- c(nativeQueryArgs, EnableNativeParameterizedQuery = 1, PopulateParametersForNativeQuery = 1)
+    nativeQueryArgs <- c(
+      nativeQueryArgs,
+      EnableNativeParameterizedQuery = 1,
+      PopulateParametersForNativeQuery = 1
+    )
   }
 
   ret <- c(ret, nativeQueryArgs)
   ret
 }
-
 
 
 # Returns a sensible driver name even if odbc.ini and odbcinst.ini do not
@@ -245,7 +258,9 @@ databricks_user_agent <- function() {
 databricks_auth_args <- function(host, uid = NULL, pwd = NULL) {
   # Detect viewer-based credentials from Posit Connect.
   workspace <- paste0("https://", host)
-  if (is_installed("connectcreds") && connectcreds::has_viewer_token(workspace)) {
+  if (
+    is_installed("connectcreds") && connectcreds::has_viewer_token(workspace)
+  ) {
     token <- connectcreds::connect_viewer_token(workspace)
     return(list(
       authMech = 11,
@@ -254,7 +269,10 @@ databricks_auth_args <- function(host, uid = NULL, pwd = NULL) {
     ))
   }
 
-  if (is_installed("connectcreds") && connectcreds::has_service_account_token(workspace)) {
+  if (
+    is_installed("connectcreds") &&
+      connectcreds::has_service_account_token(workspace)
+  ) {
     token <- connectcreds::connect_service_account_token(workspace)
     return(list(
       authMech = 11,

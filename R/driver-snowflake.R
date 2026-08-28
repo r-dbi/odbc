@@ -13,12 +13,15 @@ setClass("Snowflake", contains = "OdbcConnection")
 #' database ( or schema, respectively ).
 #' @noRd
 getCatalogSchema <- function(conn, catalog_name = NULL, schema_name = NULL) {
-  if(is.null(catalog_name) || is.null(schema_name)) {
-    res <- dbGetQuery(conn, "SELECT CURRENT_DATABASE() AS CAT, CURRENT_SCHEMA() AS SCH")
-    if(is.null(catalog_name) && !is.na(res$CAT)) {
+  if (is.null(catalog_name) || is.null(schema_name)) {
+    res <- dbGetQuery(
+      conn,
+      "SELECT CURRENT_DATABASE() AS CAT, CURRENT_SCHEMA() AS SCH"
+    )
+    if (is.null(catalog_name) && !is.na(res$CAT)) {
       catalog_name <- res$CAT
     }
-    if(is.null(schema_name) && !is.na(res$SCH)) {
+    if (is.null(schema_name) && !is.na(res$SCH)) {
       schema_name <- res$SCH
     }
   }
@@ -40,65 +43,87 @@ getCatalogSchema <- function(conn, catalog_name = NULL, schema_name = NULL) {
 #' @param catalog_name,schema_name Catalog and schema names.
 #' @rdname driver-Snowflake
 #' @usage NULL
-setMethod("odbcConnectionColumns", c("Snowflake", "character"),
-  function(conn,
-           name,
-           ...,
-           catalog_name = NULL,
-           schema_name = NULL,
-           column_name = NULL,
-           exact = FALSE) {
+setMethod(
+  "odbcConnectionColumns",
+  c("Snowflake", "character"),
+  function(
+    conn,
+    name,
+    ...,
+    catalog_name = NULL,
+    schema_name = NULL,
+    column_name = NULL,
+    exact = FALSE
+  ) {
     catSchema <- getCatalogSchema(conn, catalog_name, schema_name)
 
-    callNextMethod(conn = conn, name = name, ..., catalog_name = catSchema$catalog_name,
-      schema_name = catSchema$schema_name, column_name = column_name, exact = exact)
+    callNextMethod(
+      conn = conn,
+      name = name,
+      ...,
+      catalog_name = catSchema$catalog_name,
+      schema_name = catSchema$schema_name,
+      column_name = column_name,
+      exact = exact
+    )
   }
 )
 
 # Defined explicitly (rather than inherited) to avoid an ambiguous S4 dispatch
 #' @rdname driver-Snowflake
 #' @usage NULL
-setMethod("odbcConnectionColumns", c("Snowflake", "SQL"),
+setMethod(
+  "odbcConnectionColumns",
+  c("Snowflake", "SQL"),
   function(conn, name, ..., exact = FALSE) {
-    odbcConnectionColumns(conn, dbUnquoteIdentifier(conn, name)[[1]], ..., exact = exact)
+    odbcConnectionColumns(
+      conn,
+      dbUnquoteIdentifier(conn, name)[[1]],
+      ...,
+      exact = exact
+    )
   }
 )
 
 #' @rdname driver-Snowflake
-setMethod("dbExistsTableForWrite", c("Snowflake", "character"),
-  function(conn, name, ...,
-           catalog_name = NULL, schema_name = NULL) {
+setMethod(
+  "dbExistsTableForWrite",
+  c("Snowflake", "character"),
+  function(conn, name, ..., catalog_name = NULL, schema_name = NULL) {
     catSchema <- getCatalogSchema(conn, catalog_name, schema_name)
     catalog_name <- catSchema$catalog_name
     schema_name <- catSchema$schema_name
 
-    callNextMethod(conn = conn, name = name, ...,
-      catalog_name = catalog_name, schema_name = schema_name)
+    callNextMethod(
+      conn = conn,
+      name = name,
+      ...,
+      catalog_name = catalog_name,
+      schema_name = schema_name
+    )
   }
 )
 
 #' @export
 #' @rdname odbcDataType
 #' @usage NULL
-setMethod("odbcDataType", "Snowflake",
-  function(con, obj, ...) {
-    switch_type(
-      obj,
-      factor = "VARCHAR",
-      datetime = "TIMESTAMP",
-      date = "DATE",
-      time = "TIME",
-      binary = "BINARY",
-      integer = "INTEGER",
-      int64 = "INTEGER",
-      double = "FLOAT",
-      character = "VARCHAR",
-      logical = "BOOLEAN",
-      list = "VARCHAR",
-      stop("Unsupported type", call. = FALSE)
-    )
-  }
-)
+setMethod("odbcDataType", "Snowflake", function(con, obj, ...) {
+  switch_type(
+    obj,
+    factor = "VARCHAR",
+    datetime = "TIMESTAMP",
+    date = "DATE",
+    time = "TIME",
+    binary = "BINARY",
+    integer = "INTEGER",
+    int64 = "INTEGER",
+    double = "FLOAT",
+    character = "VARCHAR",
+    logical = "BOOLEAN",
+    list = "VARCHAR",
+    stop("Unsupported type", call. = FALSE)
+  )
+})
 
 #' Helper for connecting to Snowflake via ODBC
 #'
@@ -184,17 +209,20 @@ setClass("SnowflakeOdbcDriver", contains = "OdbcDriver")
 #' @rdname snowflake
 #' @export
 setMethod(
-  "dbConnect", "SnowflakeOdbcDriver",
-  function(drv,
-           account = Sys.getenv("SNOWFLAKE_ACCOUNT"),
-           driver = NULL,
-           warehouse = NULL,
-           database = NULL,
-           schema = NULL,
-           uid = NULL,
-           pwd = NULL,
-           connection_name = NULL,
-           ...) {
+  "dbConnect",
+  "SnowflakeOdbcDriver",
+  function(
+    drv,
+    account = Sys.getenv("SNOWFLAKE_ACCOUNT"),
+    driver = NULL,
+    warehouse = NULL,
+    database = NULL,
+    schema = NULL,
+    uid = NULL,
+    pwd = NULL,
+    connection_name = NULL,
+    ...
+  ) {
     call <- caller_env()
     check_string(account, call = call)
     check_string(driver, allow_null = TRUE, call = call)
@@ -215,15 +243,16 @@ setMethod(
       ...
     )
     # Perform some sanity checks on MacOS
-    configure_simba(snowflake_simba_config(args$driver),
-      action = "modify")
+    configure_simba(snowflake_simba_config(args$driver), action = "modify")
     inject(dbConnect(odbc(), !!!args))
   }
 )
 
-snowflake_args <- function(account = Sys.getenv("SNOWFLAKE_ACCOUNT"),
-                           driver = NULL,
-                           ...) {
+snowflake_args <- function(
+  account = Sys.getenv("SNOWFLAKE_ACCOUNT"),
+  driver = NULL,
+  ...
+) {
   auth <- snowflake_auth_args(account, ...)
   host <- auth$.host
   auth$.host <- NULL
@@ -246,7 +275,7 @@ snowflake_args <- function(account = Sys.getenv("SNOWFLAKE_ACCOUNT"),
 
   # Set application value and respect the Snowflake Partner environment variable, if present.
   if (is.null(all$application)) {
-    if (nchar(Sys.getenv("SF_PARTNER")) != 0 ){
+    if (nchar(Sys.getenv("SF_PARTNER")) != 0) {
       all$application <- Sys.getenv("SF_PARTNER")
     } else {
       all$application <- "r-odbc"
@@ -325,7 +354,8 @@ snowflake_simba_config <- function(driver) {
     path = list.files(
       common_dirs,
       pattern = "snowflake(odbc)?\\.ini$",
-      full.names = TRUE),
+      full.names = TRUE
+    ),
     url = URL
   ))
 }
@@ -346,12 +376,14 @@ snowflake_server <- function(account, host = NULL) {
   paste0(account, ".snowflakecomputing.com")
 }
 
-snowflake_auth_args <- function(account,
-                                uid = NULL,
-                                pwd = NULL,
-                                authenticator = NULL,
-                                connection_name = NULL,
-                                ...) {
+snowflake_auth_args <- function(
+  account,
+  uid = NULL,
+  pwd = NULL,
+  authenticator = NULL,
+  connection_name = NULL,
+  ...
+) {
   check_string(authenticator, allow_null = TRUE)
   # Detect viewer-based credentials from Posit Connect.
   url <- paste0("https://", account, ".snowflakecomputing.com")
@@ -360,15 +392,19 @@ snowflake_auth_args <- function(account,
     return(list(authenticator = "oauth", token = token$access_token))
   }
 
-  if (is_installed("connectcreds") && connectcreds::has_service_account_token(url)) {
+  if (
+    is_installed("connectcreds") && connectcreds::has_service_account_token(url)
+  ) {
     token <- connectcreds::connect_service_account_token(url)
     return(list(authenticator = "oauth", token = token$access_token))
   }
 
-  if (!is.null(uid) &&
+  if (
+    !is.null(uid) &&
       # allow for uid without pwd for alt auth (#817, #889)
       (!is.null(pwd) ||
-       isTRUE(authenticator %in% c("externalbrowser", "SNOWFLAKE_JWT")))) {
+        isTRUE(authenticator %in% c("externalbrowser", "SNOWFLAKE_JWT")))
+  ) {
     return(list(uid = uid, pwd = pwd))
   } else if (xor(is.null(uid), is.null(pwd))) {
     abort(
@@ -389,22 +425,38 @@ snowflake_auth_args <- function(account,
   sf_args <- list(name = connection_name)
   dots <- list(...)
   sf_params <- c(
-    "user", "role", "schema", "database", "warehouse", "authenticator",
-    "private_key", "private_key_file", "private_key_path",
-    "private_key_file_pwd", "token", "token_file_path", "password", "host"
+    "user",
+    "role",
+    "schema",
+    "database",
+    "warehouse",
+    "authenticator",
+    "private_key",
+    "private_key_file",
+    "private_key_path",
+    "private_key_file_pwd",
+    "token",
+    "token_file_path",
+    "password",
+    "host"
   )
   dots <- compact(dots)
   sf_args <- c(sf_args, dots[intersect(names(dots), sf_params)])
-  if (file.exists("/snowflake/session/token") &&
+  if (
+    file.exists("/snowflake/session/token") &&
       is.null(sf_args$token_file_path) &&
-      is.null(sf_args$token)) {
+      is.null(sf_args$token)
+  ) {
     sf_args$token_file_path <- "/snowflake/session/token"
   }
   # Don't pass `account` so we can compare it to what snowflakeauth resolves.
   conn <- inject(snowflakeauth::snowflake_connection(!!!sf_args))
-  if (is.null(connection_name) &&
-      nzchar(account) && !is.null(conn$account) &&
-      !identical(account, conn$account)) {
+  if (
+    is.null(connection_name) &&
+      nzchar(account) &&
+      !is.null(conn$account) &&
+      !identical(account, conn$account)
+  ) {
     cli::cli_abort(
       c(
         "Snowflake account mismatch: requested {.val {account}} but
@@ -448,10 +500,18 @@ snowflake_connection_to_odbc_args <- function(conn) {
     args$priv_key_file_pwd <- unclass(conn$private_key_file_pwd)
   }
 
-  if (!is.null(conn$warehouse)) args$warehouse <- conn$warehouse
-  if (!is.null(conn$database)) args$database <- conn$database
-  if (!is.null(conn$schema)) args$schema <- conn$schema
-  if (!is.null(conn$role)) args$role <- conn$role
+  if (!is.null(conn$warehouse)) {
+    args$warehouse <- conn$warehouse
+  }
+  if (!is.null(conn$database)) {
+    args$database <- conn$database
+  }
+  if (!is.null(conn$schema)) {
+    args$schema <- conn$schema
+  }
+  if (!is.null(conn$role)) {
+    args$role <- conn$role
+  }
   if (!is.null(conn$workload_identity_provider)) {
     args$workload_identity_provider <- conn$workload_identity_provider
   }

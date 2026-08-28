@@ -44,30 +44,26 @@ setGeneric(
 #' @export
 #' @rdname odbcDataType
 #' @usage NULL
-setMethod("odbcDataType", "ANY",
-  function(con, obj, ...) {
-    switch_type(
-      obj,
-      factor = "VARCHAR(255)",
-      datetime = "TIMESTAMP",
-      date = "DATE",
-      time = "TIME",
-      binary = "VARBINARY(255)",
-      integer = "INTEGER",
-      int64 = "INTEGER",
-      double = "DOUBLE PRECISION",
-      character = "VARCHAR(255)",
-      logical = "BIT", # only valid if DB supports Null fields
-      list = "VARCHAR(255)",
-      stop("Unsupported type", call. = FALSE)
-    )
-  }
-)
+setMethod("odbcDataType", "ANY", function(con, obj, ...) {
+  switch_type(
+    obj,
+    factor = "VARCHAR(255)",
+    datetime = "TIMESTAMP",
+    date = "DATE",
+    time = "TIME",
+    binary = "VARBINARY(255)",
+    integer = "INTEGER",
+    int64 = "INTEGER",
+    double = "DOUBLE PRECISION",
+    character = "VARCHAR(255)",
+    logical = "BIT", # only valid if DB supports Null fields
+    list = "VARCHAR(255)",
+    stop("Unsupported type", call. = FALSE)
+  )
+})
 
 switch_type <- function(obj, ...) {
-  switch(object_type(obj),
-    ...
-  )
+  switch(object_type(obj), ...)
 }
 
 object_type <- function(obj) {

@@ -12,14 +12,18 @@ NULL
 setClass("Oracle", contains = "OdbcConnection")
 
 #' @rdname Oracle
-setMethod("sqlCreateTable", "Oracle",
-  function(con,
-           table,
-           fields,
-           row.names = NA,
-           temporary = FALSE,
-           ...,
-           field.types = NULL) {
+setMethod(
+  "sqlCreateTable",
+  "Oracle",
+  function(
+    con,
+    table,
+    fields,
+    row.names = NA,
+    temporary = FALSE,
+    ...,
+    field.types = NULL
+  ) {
     check_bool(temporary)
     check_row.names(row.names)
     check_field.types(field.types)
@@ -27,8 +31,14 @@ setMethod("sqlCreateTable", "Oracle",
     fields <- createFields(con, fields, field.types, row.names)
 
     SQL(paste0(
-      "CREATE ", if (temporary) " GLOBAL TEMPORARY ", "TABLE ", table, " (\n",
-      "  ", paste(fields, collapse = ",\n  "), "\n)\n",
+      "CREATE ",
+      if (temporary) " GLOBAL TEMPORARY ",
+      "TABLE ",
+      table,
+      " (\n",
+      "  ",
+      paste(fields, collapse = ",\n  "),
+      "\n)\n",
       if (temporary) " ON COMMIT PRESERVE ROWS"
     ))
   }
@@ -41,19 +51,24 @@ setMethod("sqlCreateTable", "Oracle",
 #' Method for an internal function that otherwise relies on the `SQLTables`
 #' ODBC API. While this method is much faster than the OEM implementation, it
 #' does not look through synonyms.
-setMethod("odbcConnectionTables", c("Oracle", "character"),
-  function(conn,
-           name,
-           catalog_name = NULL,
-           schema_name = NULL,
-           table_type = NULL,
-           exact = FALSE) {
+setMethod(
+  "odbcConnectionTables",
+  c("Oracle", "character"),
+  function(
+    conn,
+    name,
+    catalog_name = NULL,
+    schema_name = NULL,
+    table_type = NULL,
+    exact = FALSE
+  ) {
     qTable <- getSelector("object_name", name, exact)
     if (is.null(schema_name)) {
       query <- paste0(
         " SELECT null AS \"table_catalog\", USER AS \"table_schema\", object_name AS \"table_name\", object_type AS \"table_type\", null AS \"table_remarks\"",
         " FROM user_objects ",
-        " WHERE 1 = 1 ", qTable,
+        " WHERE 1 = 1 ",
+        qTable,
         " AND ( object_type = 'TABLE' OR object_type = 'VIEW' ) "
       )
     } else {
@@ -61,7 +76,9 @@ setMethod("odbcConnectionTables", c("Oracle", "character"),
       query <- paste0(
         " SELECT null AS \"table_catalog\", owner AS \"table_schema\", object_name AS \"table_name\", object_type AS \"table_type\", null AS \"table_remarks\"",
         " FROM all_objects ",
-        " WHERE 1 = 1 ", qSchema, qTable,
+        " WHERE 1 = 1 ",
+        qSchema,
+        qTable,
         " AND ( object_type = 'TABLE' OR object_type = 'VIEW' ) "
       )
     }
@@ -77,13 +94,17 @@ setMethod("odbcConnectionTables", c("Oracle", "character"),
 #' Query, rather than use `SQLColumns` ODBC API, since we bind a `BIGINT` to
 #' one of the column results and Oracle's OEM driver can't handle it.
 #' @usage NULL
-setMethod("odbcConnectionColumns", c("Oracle", "character"),
-  function(conn,
-           name,
-           catalog_name = NULL,
-           schema_name = NULL,
-           column_name = NULL,
-           exact = FALSE) {
+setMethod(
+  "odbcConnectionColumns",
+  c("Oracle", "character"),
+  function(
+    conn,
+    name,
+    catalog_name = NULL,
+    schema_name = NULL,
+    column_name = NULL,
+    exact = FALSE
+  ) {
     query <- ""
     baseSelect <- paste0(
       "SELECT
@@ -107,18 +128,25 @@ setMethod("odbcConnectionColumns", c("Oracle", "character"),
     )
     qTable <- getSelector("table_name", name, exact)
     if (is.null(schema_name)) {
-      baseSelect <- gsub("owner AS \"schema_name\"", paste0("'", conn@info$username, "' AS \"schema_name\""), baseSelect)
+      baseSelect <- gsub(
+        "owner AS \"schema_name\"",
+        paste0("'", conn@info$username, "' AS \"schema_name\""),
+        baseSelect
+      )
       query <- paste0(
         baseSelect,
         " FROM user_tab_columns ",
-        " WHERE 1 = 1 ", qTable
+        " WHERE 1 = 1 ",
+        qTable
       )
     } else {
       qSchema <- getSelector("owner", schema_name, exact)
       query <- paste0(
         baseSelect,
         " FROM all_tab_columns ",
-        " WHERE 1 = 1 ", qSchema, qTable
+        " WHERE 1 = 1 ",
+        qSchema,
+        qTable
       )
     }
 
@@ -149,34 +177,38 @@ setMethod("odbcConnectionColumns", c("Oracle", "character"),
 #' Defined explicitly (rather than inherited) to avoid an ambiguous S4 dispatch
 #' @rdname Oracle
 #' @usage NULL
-setMethod("odbcConnectionColumns", c("Oracle", "SQL"),
+setMethod(
+  "odbcConnectionColumns",
+  c("Oracle", "SQL"),
   function(conn, name, ..., exact = FALSE) {
-    odbcConnectionColumns(conn, dbUnquoteIdentifier(conn, name)[[1]], ..., exact = exact)
+    odbcConnectionColumns(
+      conn,
+      dbUnquoteIdentifier(conn, name)[[1]],
+      ...,
+      exact = exact
+    )
   }
 )
 
 #' @export
 #' @rdname odbcDataType
 #' @usage NULL
-setMethod("odbcDataType", "Oracle",
-  function(con, obj, ...) {
-    switch_type(
-      obj,
-      factor = "VARCHAR2(255)",
+setMethod("odbcDataType", "Oracle", function(con, obj, ...) {
+  switch_type(
+    obj,
+    factor = "VARCHAR2(255)",
 
-      # No native oracle type for time
-      time = "VARCHAR2(255)",
-      date = "DATE",
-      datetime = "TIMESTAMP",
-      binary = "BLOB",
-      integer = "INTEGER",
-      int64 = "INTEGER",
-      double = "BINARY_DOUBLE",
-      character = "VARCHAR2(255)",
-      logical = "DECIMAL",
-      list = "VARCHAR2(255)",
-      stop("Unsupported type", call. = FALSE)
-    )
-  }
-)
-
+    # No native oracle type for time
+    time = "VARCHAR2(255)",
+    date = "DATE",
+    datetime = "TIMESTAMP",
+    binary = "BLOB",
+    integer = "INTEGER",
+    int64 = "INTEGER",
+    double = "BINARY_DOUBLE",
+    character = "VARCHAR2(255)",
+    logical = "DECIMAL",
+    list = "VARCHAR2(255)",
+    stop("Unsupported type", call. = FALSE)
+  )
+})
