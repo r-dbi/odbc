@@ -20,18 +20,6 @@ test_that("manually supplied arguments override automatic", {
   expect_equal(args$authMech, 123)
 })
 
-test_that("manually supplied arguments override defaults case-insensitively", {
-  withr::local_envvar(DATABRICKS_TOKEN = "abc")
-  args <- databricks_args(
-    "x",
-    "y",
-    driver = "driver",
-    DefaultStringColumnLength = 1024
-  )
-  expect_equal(args$DefaultStringColumnLength, 1024)
-  expect_false("defaultStringColumnLength" %in% names(args))
-})
-
 test_that("string columns are not limited to the driver default length", {
   withr::local_envvar(DATABRICKS_TOKEN = "abc")
   args <- databricks_args("x", "y", driver = "driver")

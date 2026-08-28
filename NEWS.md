@@ -6,9 +6,6 @@
   data to be cut off after roughly 1000 characters. Pass
   `DefaultStringColumnLength` to `dbConnect()` to override (#1023).
 
-* `databricks()` connection arguments now override built-in defaults
-  case-insensitively, matching how drivers treat connection string keys.
-
 * Numeric connection string arguments no longer fall back to scientific
   notation in `build_connection_string()`, which avoids malformed driver
   attributes such as `DefaultStringColumnLength` (#934).

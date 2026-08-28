@@ -144,13 +144,7 @@ databricks_args <- function(httpPath,
   )
 
   auth <- databricks_auth_args(host, uid = uid, pwd = pwd)
-  dots <- list(...)
-  # Connection string keys are case-insensitive to the driver, so drop any
-  # default that the caller respells (e.g. DefaultStringColumnLength) rather
-  # than emitting the key twice.
-  defaults <- c(args, auth)
-  defaults <- defaults[!tolower(names(defaults)) %in% tolower(names(dots))]
-  all <- utils::modifyList(defaults, dots)
+  all <- utils::modifyList(c(args, auth), list(...))
 
   arg_names <- tolower(names(all))
   if (!"authmech" %in% arg_names && !all(c("uid", "pwd") %in% arg_names)) {
