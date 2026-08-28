@@ -18,7 +18,19 @@ environment variables used by Databricks SDKs in R and other languages.
 In addition, on macOS platforms, the dbConnect() method will check
 for irregularities with how the driver is configured,
 and attempt to fix in-situ, unless the odbc.no_config_override
-environment variable is set."><meta property="og:description" content="Connect to Databricks clusters and SQL warehouses via the Databricks ODBC driver.
+environment variable is set.
+String truncation
+
+
+The Databricks ODBC driver reports STRING columns to clients as
+VARCHAR(n), where n is the value of its DefaultStringColumnLength
+connection attribute. This reported size determines the allocated string
+buffer, and the driver can silently truncate values that do not fit.
+Because the driver's own default of 255 is easy to hit in practice,
+dbConnect() sets this attribute to 65535 by default. Pass
+defaultStringColumnLength to dbConnect() to choose another limit.
+
+"><meta property="og:description" content="Connect to Databricks clusters and SQL warehouses via the Databricks ODBC driver.
 In particular, the custom dbConnect() method for the Databricks ODBC driver
 implements a variant of Databricks's unified authentication
 model when no uid or pwd is supplied, checking for ambient credentials in
@@ -37,7 +49,19 @@ environment variables used by Databricks SDKs in R and other languages.
 In addition, on macOS platforms, the dbConnect() method will check
 for irregularities with how the driver is configured,
 and attempt to fix in-situ, unless the odbc.no_config_override
-environment variable is set."><meta property="og:image" content="https://odbc.r-dbi.org/logo.png"><meta name="robots" content="noindex"><script src="https://cdn.jsdelivr.net/gh/posit-dev/supported-by-posit/js/badge.min.js" data-max-height="43" data-light-bg="#666f76" data-light-fg="#f9f9f9"></script></head><body>
+environment variable is set.
+String truncation
+
+
+The Databricks ODBC driver reports STRING columns to clients as
+VARCHAR(n), where n is the value of its DefaultStringColumnLength
+connection attribute. This reported size determines the allocated string
+buffer, and the driver can silently truncate values that do not fit.
+Because the driver's own default of 255 is easy to hit in practice,
+dbConnect() sets this attribute to 65535 by default. Pass
+defaultStringColumnLength to dbConnect() to choose another limit.
+
+"><meta property="og:image" content="https://odbc.r-dbi.org/logo.png"><meta name="robots" content="noindex"><script src="https://cdn.jsdelivr.net/gh/posit-dev/supported-by-posit/js/badge.min.js" data-max-height="43" data-light-bg="#666f76" data-light-fg="#f9f9f9"></script></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -93,7 +117,19 @@ environment variables used by Databricks SDKs in R and other languages.</p>
 <p>In addition, on macOS platforms, the <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code> method will check
 for irregularities with how the driver is configured,
 and attempt to fix in-situ, unless the <code>odbc.no_config_override</code>
-environment variable is set.</p>
+environment variable is set.</p><div class="section">
+<h3 id="string-truncation">String truncation<a class="anchor" aria-label="anchor" href="#string-truncation"></a></h3>
+
+
+<p>The Databricks ODBC driver reports <code>STRING</code> columns to clients as
+<code>VARCHAR(n)</code>, where <code>n</code> is the value of its <code>DefaultStringColumnLength</code>
+connection attribute. This reported size determines the allocated string
+buffer, and the driver can silently truncate values that do not fit.
+Because the driver's own default of 255 is easy to hit in practice,
+<code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code> sets this attribute to 65535 by default. Pass
+<code>defaultStringColumnLength</code> to <code><a href="dbConnect-OdbcDriver-method.html">dbConnect()</a></code> to choose another limit.</p>
+</div>
+
     </div>
 
     <div class="section level2">

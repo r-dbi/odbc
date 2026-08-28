@@ -39,7 +39,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="odbc-development-version">odbc (development version)<a class="anchor" aria-label="anchor" href="#odbc-development-version"></a></h2>
-<ul><li><p>Update vendored cctz to current upstream, including local build compatibility fixes retained for R package and Windows builds.</p></li>
+<ul><li><p><code><a href="../reference/databricks.html">databricks()</a></code> now sets <code>DefaultStringColumnLength</code> to 65535 by default. The driver reports <code>STRING</code> columns as <code>VARCHAR(DefaultStringColumnLength)</code> and silently truncates longer values; its own default of 255 caused string data to be cut off after roughly 1000 characters. Pass <code>defaultStringColumnLength</code> to <code><a href="../reference/dbConnect-OdbcDriver-method.html">dbConnect()</a></code> to override (<a href="https://github.com/r-dbi/odbc/issues/1023" class="external-link">#1023</a>).</p></li>
+<li><p>Update vendored cctz to current upstream, including local build compatibility fixes retained for R package and Windows builds.</p></li>
 <li><p>Numeric connection string arguments no longer fall back to scientific notation in <code>build_connection_string()</code>, which avoids malformed driver attributes such as <code>DefaultStringColumnLength</code> (<a href="https://github.com/r-dbi/odbc/issues/934" class="external-link">#934</a>).</p></li>
 </ul></div>
     <div class="section level2">
