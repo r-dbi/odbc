@@ -38,7 +38,7 @@ NULL
 #' connection attribute, and values longer than `n` are truncated silently.
 #' Because the driver's own default of 255 is easy to hit in practice,
 #' `dbConnect()` sets this attribute to 65535 by default. Pass
-#' `DefaultStringColumnLength` to `dbConnect()` to choose another limit.
+#' `defaultStringColumnLength` to `dbConnect()` to choose another limit.
 #'
 #' @param drv an object that inherits from [DBI::DBIDriver-class],
 #' or an existing [DBI::DBIConnection-class]

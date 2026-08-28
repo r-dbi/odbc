@@ -80,7 +80,7 @@ The Databricks ODBC driver reports \code{STRING} columns to clients as
 connection attribute, and values longer than \code{n} are truncated silently.
 Because the driver's own default of 255 is easy to hit in practice,
 \code{dbConnect()} sets this attribute to 65535 by default. Pass
-\code{DefaultStringColumnLength} to \code{dbConnect()} to choose another limit.
+\code{defaultStringColumnLength} to \code{dbConnect()} to choose another limit.
 }
 }
 \examples{
