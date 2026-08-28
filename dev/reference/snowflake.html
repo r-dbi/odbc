@@ -4,8 +4,9 @@ In particular, the custom dbConnect() method for the Snowflake ODBC driver
 supports the connections.toml and config.toml files used by the Snowflake
 Connector for Python and the Snowflake CLI via the snowflakeauth
 package. It also detects ambient OAuth credentials on platforms like Snowpark
-Container Services or Posit Workbench. Finally, it can detect viewer-based
-credentials on Posit Connect if the connectcreds package is installed.
+Container Services or Posit Workbench. Finally, it can detect viewer-based or
+service account credentials on Posit Connect if the connectcreds
+package is installed.
 In addition, on macOS platforms, the dbConnect method will check and warn
 if it detects irregularities with how the driver is configured, unless the
 odbc.no_config_override environment variable is set."><meta property="og:description" content="Connect to a Snowflake account via the Snowflake ODBC driver.
@@ -13,8 +14,9 @@ In particular, the custom dbConnect() method for the Snowflake ODBC driver
 supports the connections.toml and config.toml files used by the Snowflake
 Connector for Python and the Snowflake CLI via the snowflakeauth
 package. It also detects ambient OAuth credentials on platforms like Snowpark
-Container Services or Posit Workbench. Finally, it can detect viewer-based
-credentials on Posit Connect if the connectcreds package is installed.
+Container Services or Posit Workbench. Finally, it can detect viewer-based or
+service account credentials on Posit Connect if the connectcreds
+package is installed.
 In addition, on macOS platforms, the dbConnect method will check and warn
 if it detects irregularities with how the driver is configured, unless the
 odbc.no_config_override environment variable is set."><meta property="og:image" content="https://odbc.r-dbi.org/logo.png"><meta name="robots" content="noindex"><script src="https://cdn.jsdelivr.net/gh/posit-dev/supported-by-posit/js/badge.min.js" data-max-height="43" data-light-bg="#666f76" data-light-fg="#f9f9f9"></script></head><body>
@@ -62,8 +64,9 @@ odbc.no_config_override environment variable is set."><meta property="og:image" 
 supports the <code>connections.toml</code> and <code>config.toml</code> files used by the Snowflake
 Connector for Python and the Snowflake CLI via the <span class="pkg">snowflakeauth</span>
 package. It also detects ambient OAuth credentials on platforms like Snowpark
-Container Services or Posit Workbench. Finally, it can detect viewer-based
-credentials on Posit Connect if the <span class="pkg">connectcreds</span> package is installed.</p>
+Container Services or Posit Workbench. Finally, it can detect viewer-based or
+service account credentials on Posit Connect if the <span class="pkg">connectcreds</span>
+package is installed.</p>
 <p>In addition, on macOS platforms, the <code>dbConnect</code> method will check and warn
 if it detects irregularities with how the driver is configured, unless the
 <code>odbc.no_config_override</code> environment variable is set.</p>
@@ -167,8 +170,8 @@ account.</p>
 <span class="r-in"><span><span class="co"># Use a named connection from a connections.toml file.</span></span></span>
 <span class="r-in"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">odbc</span><span class="fu">::</span><span class="fu">snowflake</span><span class="op">(</span><span class="op">)</span>, connection_name <span class="op">=</span> <span class="st">"test"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Use credentials from the viewer (when possible) in a Shiny app</span></span></span>
-<span class="r-in"><span><span class="co"># deployed to Posit Connect.</span></span></span>
+<span class="r-in"><span><span class="co"># Use credentials from the viewer or a service account (when possible) in</span></span></span>
+<span class="r-in"><span><span class="co"># content deployed to Posit Connect.</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/posit-dev/connectcreds" class="external-link">connectcreds</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">output</span>, <span class="va">session</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">odbc</span><span class="fu">::</span><span class="fu">snowflake</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>

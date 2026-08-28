@@ -137,8 +137,10 @@ warehouses, this is found under <code>Connection Details</code> instead.</p></dd
 
 <dt id="arg-usenativequery">useNativeQuery<a class="anchor" aria-label="anchor" href="#arg-usenativequery"></a></dt>
 <dd><p>Suppress the driver's conversion from ANSI SQL 92 to
-HiveSQL? The default (<code>TRUE</code>), gives greater performance but means that
-paramterised queries (and hence <code><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable()</a></code>) do not work.</p></dd>
+HiveSQL.  When set to true, we also set the following related flags:
+<code>EnableNativeParameterizedQuery</code>, and <code>PopulateParametersForNativeQuery</code>.
+The default (<code>TRUE</code>), gives greater performance but could cause issues
+with paramterised queries (and hence <code><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable()</a></code>).</p></dd>
 
 
 <dt id="arg-driver">driver<a class="anchor" aria-label="anchor" href="#arg-driver"></a></dt>

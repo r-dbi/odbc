@@ -74,11 +74,13 @@ dbConnect(
 
 - useNativeQuery:
 
-  Suppress the driver's conversion from ANSI SQL 92 to HiveSQL? The
-  default (`TRUE`), gives greater performance but means that
-  paramterised queries (and hence
-  [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html))
-  do not work.
+  Suppress the driver's conversion from ANSI SQL 92 to HiveSQL. When set
+  to true, we also set the following related flags:
+  `EnableNativeParameterizedQuery`, and
+  `PopulateParametersForNativeQuery`. The default (`TRUE`), gives
+  greater performance but could cause issues with paramterised queries
+  (and hence
+  [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html)).
 
 - driver:
 
