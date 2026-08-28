@@ -18,7 +18,6 @@ knitr::opts_chunk$set(
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/odbc)](https://cran.r-project.org/package=odbc)
 [![R-CMD-check](https://github.com/r-dbi/odbc/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-dbi/odbc/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/r-dbi/odbc/branch/main/graph/badge.svg)](https://app.codecov.io/gh/r-dbi/odbc?branch=main)
 [![Codecov test coverage](https://codecov.io/gh/r-dbi/odbc/graph/badge.svg)](https://app.codecov.io/gh/r-dbi/odbc)
 <!-- badges: end -->
 
@@ -130,4 +129,3 @@ df <- dbGetQuery(
 ```
 
 It is also possible to submit the query and fetch separately with `dbSendQuery()` and `dbFetch()`. This allows you to use the `n` argument to `dbFetch()` to iterate over results that would otherwise be too large to fit in memory.
-
