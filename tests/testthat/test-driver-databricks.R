@@ -133,7 +133,10 @@ test_that("Workbench-managed credentials are detected correctly", {
     DATABRICKS_CONFIG_FILE = file.path(db_home, "databricks.cfg")
   )
   args <- databricks_auth_args(host = "some-host")
-  expect_equal(args, list(authMech = 11, auth_flow = 0, auth_accesstoken = "token"))
+  expect_equal(
+    args,
+    list(authMech = 11, auth_flow = 0, auth_accesstoken = "token")
+  )
 })
 
 test_that("Workbench-managed credentials are ignored for other hosts", {

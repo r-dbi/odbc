@@ -6,14 +6,18 @@ NULL
 setClass("HDB", contains = "OdbcConnection")
 
 #' @rdname DBI-methods
-setMethod("sqlCreateTable", "HDB",
-  function(con,
-           table,
-           fields,
-           row.names = NA,
-           temporary = FALSE,
-           ...,
-           field.types = NULL) {
+setMethod(
+  "sqlCreateTable",
+  "HDB",
+  function(
+    con,
+    table,
+    fields,
+    row.names = NA,
+    temporary = FALSE,
+    ...,
+    field.types = NULL
+  ) {
     check_bool(temporary)
     check_row.names(row.names)
     check_field.types(field.types)
@@ -21,9 +25,13 @@ setMethod("sqlCreateTable", "HDB",
     fields <- createFields(con, fields, field.types, row.names)
 
     SQL(paste0(
-      "CREATE ", if (temporary) "LOCAL TEMPORARY COLUMN ",
-      "TABLE ", table, " (\n",
-      "  ", paste(fields, collapse = ",\n  "),
+      "CREATE ",
+      if (temporary) "LOCAL TEMPORARY COLUMN ",
+      "TABLE ",
+      table,
+      " (\n",
+      "  ",
+      paste(fields, collapse = ",\n  "),
       "\n)\n"
     ))
   }

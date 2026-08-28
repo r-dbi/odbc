@@ -224,7 +224,10 @@ test_that("snowflake_connection_to_odbc_args maps fields correctly", {
       account = "testorg-test_account",
       user = "myuser",
       authenticator = "oauth",
-      token = structure("mytoken", class = c("snowflake_redacted", "character")),
+      token = structure(
+        "mytoken",
+        class = c("snowflake_redacted", "character")
+      ),
       warehouse = "mywh",
       database = "mydb",
       schema = "myschema",
@@ -253,7 +256,10 @@ test_that("snowflake_connection_to_odbc_args maps private key fields", {
       user = "myuser",
       authenticator = "SNOWFLAKE_JWT",
       private_key_file = "/path/to/rsa_key.p8",
-      private_key_file_pwd = structure("secret", class = c("snowflake_redacted", "character"))
+      private_key_file_pwd = structure(
+        "secret",
+        class = c("snowflake_redacted", "character")
+      )
     ),
     class = c("snowflake_connection", "list")
   )
@@ -270,7 +276,10 @@ test_that("snowflake_connection_to_odbc_args omits default authenticator", {
       name = "test",
       account = "testorg-test_account",
       user = "myuser",
-      password = structure("mypwd", class = c("snowflake_redacted", "character")),
+      password = structure(
+        "mypwd",
+        class = c("snowflake_redacted", "character")
+      ),
       authenticator = "snowflake"
     ),
     class = c("snowflake_connection", "list")

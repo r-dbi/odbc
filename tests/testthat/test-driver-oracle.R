@@ -99,11 +99,20 @@ test_that("Writing date/datetime with batch size > 1", {
   tbl <- "test_batched_write_w_dates"
 
   values <- data.frame(
-    datetime = as.POSIXct(as.numeric(iris$Petal.Length * 10), origin = "2024-01-01", tz = "UTC"),
-    date    = as.Date(as.numeric(iris$Petal.Length * 10), origin = "2024-01-01", tz = "UTC"),
+    datetime = as.POSIXct(
+      as.numeric(iris$Petal.Length * 10),
+      origin = "2024-01-01",
+      tz = "UTC"
+    ),
+    date = as.Date(
+      as.numeric(iris$Petal.Length * 10),
+      origin = "2024-01-01",
+      tz = "UTC"
+    ),
     integer = as.integer(iris$Petal.Width * 100),
     double = iris$Sepal.Length,
-    varchar = iris$Species)
+    varchar = iris$Species
+  )
   tbl <- local_table(con, tbl, values)
   res <- dbReadTable(con, tbl)
   expect_true(nrow(res) == nrow(values))
@@ -128,5 +137,4 @@ test_that("Writing date/datetime with batch size > 1", {
   dbAppendTable(con, tbl, valuesMod)
   res <- dbReadTable(con, tbl)
   expect_true(nrow(res) == 5 * nrow(values))
-
 })

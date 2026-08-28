@@ -21,20 +21,17 @@ setGeneric(
 )
 
 #' @rdname isTempTable
-setMethod("isTempTable", c("OdbcConnection", "Id"),
-  function(conn, name, ...) {
-    isTempTable(conn,
-      name = id_field(name, "table"),
-      catalog_name = id_field(name, "catalog"),
-      schema_name = id_field(name, "schema"),
-      ...
-    )
-  }
-)
+setMethod("isTempTable", c("OdbcConnection", "Id"), function(conn, name, ...) {
+  isTempTable(
+    conn,
+    name = id_field(name, "table"),
+    catalog_name = id_field(name, "catalog"),
+    schema_name = id_field(name, "schema"),
+    ...
+  )
+})
 
 #' @rdname isTempTable
-setMethod("isTempTable", c("OdbcConnection", "SQL"),
-  function(conn, name, ...) {
-    isTempTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
-  }
-)
+setMethod("isTempTable", c("OdbcConnection", "SQL"), function(conn, name, ...) {
+  isTempTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
+})
