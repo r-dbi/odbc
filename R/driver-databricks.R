@@ -423,7 +423,7 @@ databricks_token_exchange <- function(host, id_token, client_id) {
 
   req <- httr2::request(url)
   req <- httr2::req_body_form(req, !!!body)
-  req <- httr2::req_error(req, is_error = function(resp) FALSE)
+  req <- httr2::req_error(req, is_error = \(resp) FALSE)
 
   resp <- try_fetch(
     httr2::req_perform(req),
@@ -443,7 +443,7 @@ databricks_token_exchange <- function(host, id_token, client_id) {
     status <- httr2::resp_status(resp)
     resp_body <- tryCatch(
       httr2::resp_body_string(resp),
-      error = function(e) "(unreadable)"
+      error = \(e) "(unreadable)"
     )
     cli::cli_abort(
       c(

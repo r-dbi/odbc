@@ -189,11 +189,11 @@ setMethod("sqlData", "OdbcConnection",
     value <- sqlRownamesToColumn(value, row.names)
 
     # Convert POSIXlt to POSIXct
-    is_POSIXlt <- vapply(value, function(x) is.object(x) && (is(x, "POSIXlt")), logical(1))
+    is_POSIXlt <- vapply(value, \(x) is.object(x) && (is(x, "POSIXlt")), logical(1))
     value[is_POSIXlt] <- lapply(value[is_POSIXlt], as.POSIXct)
 
     # C code takes care of atomic vectors, dates, date times, and blobs just need to coerce other objects
-    is_object <- vapply(value, function(x) is.object(x) && !(is(x, "POSIXct") || is(x, "Date") || is_blob(x) || is(x, "difftime")), logical(1))
+    is_object <- vapply(value, \(x) is.object(x) && !(is(x, "POSIXct") || is(x, "Date") || is_blob(x) || is(x, "difftime")), logical(1))
     value[is_object] <- lapply(value[is_object], as.character)
 
     if (nzchar(con@encoding)) {

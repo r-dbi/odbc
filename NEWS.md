@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* odbc now requires R 4.2.0.
+
 * Update vendored cctz to current upstream, including local build compatibility
   fixes retained for R package and Windows builds.
 

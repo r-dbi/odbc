@@ -11,7 +11,7 @@ has_names <- function(x) {
 
 string_values <- function(x) {
   # TODO: Throw a condition object that can be caught for debugging purposes
-  x <- tryCatch(x, error = function(x) "")
+  x <- tryCatch(x, error = \(x) "")
   unique(x[nzchar(x)])
 }
 
@@ -142,7 +142,7 @@ set_odbcsysini <- function() {
       path <- dirname(odbcListConfig()[["drivers"]])
       Sys.setenv(ODBCSYSINI = path)
     },
-    error = function(err) NULL
+    error = \(err) NULL
   )
 
   invisible()
@@ -162,7 +162,7 @@ random_name <- function(prefix = "") {
 rethrow_database_error <- function(msg, call = trace_back()$call[[1]]) {
   tryCatch(
     res <- parse_database_error(msg),
-    error = function(e) cli::cli_abort("{msg}", call = call)
+    error = \(e) cli::cli_abort("{msg}", call = call)
   )
 
   cli::cli_abort(
@@ -193,7 +193,7 @@ parse_database_error <- function(msg) {
 
   # Remove the square-bracketed context from the database error
   cnd_body <- Reduce(
-    function(p, x) gsub(p, "", x, fixed = TRUE),
+    \(p, x) gsub(p, "", x, fixed = TRUE),
     cnd_context_driver,
     cnd_msg[-1],
     right = TRUE
@@ -510,7 +510,7 @@ driver_dir <- function(driver) {
 }
 
 is_writeable <- function(path) {
-  tryCatch(file.access(path, mode = 2)[[1]] == 0, error = function(e) FALSE)
+  tryCatch(file.access(path, mode = 2)[[1]] == 0, error = \(e) FALSE)
 }
 
 # Given a vector of lines in an ini file, look for a given key pattern.
@@ -627,16 +627,15 @@ decompose_connection_string <- function(string) {
 
   res_pairs <- strsplit(string, ";", fixed = TRUE)[[1]]
   res_key_value <- strsplit(res_pairs, "=", fixed = TRUE)
-  res_key_value <- Filter(function(x) length(x) == 2 && nchar(x[1]),
-                          res_key_value)
-  values <- lapply(res_key_value, FUN = function(x) trimws(x[2]))
+  res_key_value <- Filter(\(x) length(x) == 2 && nchar(x[1]), res_key_value)
+  values <- lapply(res_key_value, FUN = \(x) trimws(x[2]))
   # Remove enclosing quotation marks around value
   # we may have put them there using odbc::quote_value
   values <- lapply(values, FUN = function(x) {
       x <-gsub("(^')(.*)('$)", "\\2", x)
       gsub("(^\")(.*)(\"$)", "\\2", x)
   })
-  nms <- sapply(res_key_value, FUN = function(x) x[1])
+  nms <- sapply(res_key_value, FUN = \(x) x[1])
   names(values) <- trimws(nms)
   return(sanitize_connection_string(values))
 }
