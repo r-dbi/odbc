@@ -35,7 +35,8 @@ NULL
 #'
 #' The Databricks ODBC driver reports `STRING` columns to clients as
 #' `VARCHAR(n)`, where `n` is the value of its `DefaultStringColumnLength`
-#' connection attribute, and values longer than `n` are truncated silently.
+#' connection attribute. This reported size determines the allocated string
+#' buffer, and the driver can silently truncate values that do not fit.
 #' Because the driver's own default of 255 is easy to hit in practice,
 #' `dbConnect()` sets this attribute to 65535 by default. Pass
 #' `defaultStringColumnLength` to `dbConnect()` to choose another limit.
@@ -177,9 +178,8 @@ databricks_default_args <- function(driver, host, httpPath, useNativeQuery) {
     httpPath = httpPath,
     thriftTransport = 2,
     userAgentEntry = databricks_user_agent(),
-    # The driver reports STRING columns as VARCHAR(DefaultStringColumnLength)
-    # and truncates longer values without warning; its default of 255 is far
-    # too small for real-world STRING data (#1023).
+    # DefaultStringColumnLength determines the allocated string buffer; the
+    # driver's default of 255 can silently truncate real-world data (#1023).
     defaultStringColumnLength = 65535,
     # Connections to Databricks are always over HTTPS.
     port = 443,

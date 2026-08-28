@@ -77,7 +77,8 @@ environment variable is set.
 
 The Databricks ODBC driver reports \code{STRING} columns to clients as
 \code{VARCHAR(n)}, where \code{n} is the value of its \code{DefaultStringColumnLength}
-connection attribute, and values longer than \code{n} are truncated silently.
+connection attribute. This reported size determines the allocated string
+buffer, and the driver can silently truncate values that do not fit.
 Because the driver's own default of 255 is easy to hit in practice,
 \code{dbConnect()} sets this attribute to 65535 by default. Pass
 \code{defaultStringColumnLength} to \code{dbConnect()} to choose another limit.
