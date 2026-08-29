@@ -220,7 +220,7 @@ databricks_default_args <- function(driver, host, httpPath, useNativeQuery) {
 databricks_default_driver <- function() {
   find_default_driver(
     databricks_default_driver_paths(),
-    fallbacks = c("Databricks", "Simba Spark ODBC Driver"),
+    fallbacks = c("Databricks", "Databricks ODBC Driver", "Simba Spark ODBC Driver"),
     label = "Databricks/Spark",
     call = quote(DBI::dbConnect())
   )
