@@ -1,5 +1,8 @@
 # odbc (development version)
 
+* `databricks()` driver auto-detection now recognizes the Windows driver
+  name `Databricks ODBC Driver`.
+
 * `databricks()` now sets `DefaultStringColumnLength` to 65535 by default.
   The driver reports `STRING` columns as `VARCHAR(DefaultStringColumnLength)`
   and silently truncates longer values; its own default of 255 caused string
