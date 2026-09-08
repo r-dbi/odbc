@@ -34,6 +34,14 @@ test_that("fallbacks to driver name", {
   expect_equal(databricks_default_driver(), "Databricks")
 })
 
+test_that("fallbacks to updated Windows driver name (#1030)", {
+  local_mocked_bindings(
+    databricks_default_driver_paths = function() character(),
+    odbcListDrivers = function() list(name = c("bar", "Databricks ODBC Driver"))
+  )
+  expect_equal(databricks_default_driver(), "Databricks ODBC Driver")
+})
+
 test_that("errors if can't find driver", {
   local_mocked_bindings(
     databricks_default_driver_paths = function() character(),
