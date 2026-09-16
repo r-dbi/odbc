@@ -196,8 +196,8 @@ navigate to `Settings > General` and ensure that
 `Use Rosetta for x86/amd64 emulation on Apple Silicon` is checked.
 
 To connect via odbc, we need to pass the UID and PWD via the connection
-string; configuring those arguments via `odbc.ini` is [not
-permitted](https://stackoverflow.com/questions/42387084/sql-server-odbc-driver-linux-username).
+string; configuring those arguments via `odbc.ini` is not permitted
+(`https://stackoverflow.com/questions/42387084/sql-server-odbc-driver-linux-username`).
 With the container deployed as above, the connection arguments would be:
 
 ``` r

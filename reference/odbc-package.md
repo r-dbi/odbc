@@ -20,6 +20,8 @@ Useful links:
 
 Authors:
 
+- Hadley Wickham <hadley@posit.co>
+
 - Jim Hester
 
 - Oliver Gjoneski

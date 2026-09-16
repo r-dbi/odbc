@@ -32,6 +32,19 @@ method will check for irregularities with how the driver is configured,
 and attempt to fix in-situ, unless the `odbc.no_config_override`
 environment variable is set.
 
+### String truncation
+
+The Databricks ODBC driver reports `STRING` columns to clients as
+`VARCHAR(n)`, where `n` is the value of its `DefaultStringColumnLength`
+connection attribute. This reported size determines the allocated string
+buffer, and the driver can silently truncate values that do not fit.
+Because the driver's own default of 255 is easy to hit in practice,
+[`dbConnect()`](https://odbc.r-dbi.org/reference/dbConnect-OdbcDriver-method.md)
+sets this attribute to 65535 by default. Pass
+`defaultStringColumnLength` to
+[`dbConnect()`](https://odbc.r-dbi.org/reference/dbConnect-OdbcDriver-method.md)
+to choose another limit.
+
 ## Usage
 
 ``` r
@@ -74,11 +87,13 @@ dbConnect(
 
 - useNativeQuery:
 
-  Suppress the driver's conversion from ANSI SQL 92 to HiveSQL? The
-  default (`TRUE`), gives greater performance but means that
-  paramterised queries (and hence
-  [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html))
-  do not work.
+  Suppress the driver's conversion from ANSI SQL 92 to HiveSQL. When set
+  to true, we also set the following related flags:
+  `EnableNativeParameterizedQuery`, and
+  `PopulateParametersForNativeQuery`. The default (`TRUE`), gives
+  greater performance but could cause issues with paramterised queries
+  (and hence
+  [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html)).
 
 - driver:
 

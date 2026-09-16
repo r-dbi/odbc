@@ -1,5 +1,30 @@
 # Changelog
 
+## odbc 1.7.1
+
+CRAN release: 2026-09-16
+
+- [`databricks()`](https://odbc.r-dbi.org/reference/databricks.md)
+  driver auto-detection now recognizes the Windows driver name
+  `Databricks ODBC Driver`.
+
+- [`databricks()`](https://odbc.r-dbi.org/reference/databricks.md) now
+  sets `DefaultStringColumnLength` to 65535 by default. The driver
+  reports `STRING` columns as `VARCHAR(DefaultStringColumnLength)` and
+  silently truncates longer values; its own default of 255 caused string
+  data to be cut off after roughly 1000 characters. Pass
+  `defaultStringColumnLength` to
+  [`dbConnect()`](https://odbc.r-dbi.org/reference/dbConnect-OdbcDriver-method.md)
+  to override ([\#1023](https://github.com/r-dbi/odbc/issues/1023)).
+
+- Update vendored cctz to current upstream, including local build
+  compatibility fixes retained for R package and Windows builds.
+
+- Numeric connection string arguments no longer fall back to scientific
+  notation in `build_connection_string()`, which avoids malformed driver
+  attributes such as `DefaultStringColumnLength`
+  ([\#934](https://github.com/r-dbi/odbc/issues/934)).
+
 ## odbc 1.7.0
 
 CRAN release: 2026-05-09
