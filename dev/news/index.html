@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="odbc-development-version">odbc (development version)<a class="anchor" aria-label="anchor" href="#odbc-development-version"></a></h2>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.7.1" id="odbc-171">odbc 1.7.1<a class="anchor" aria-label="anchor" href="#odbc-171"></a></h2><p class="text-muted">CRAN release: 2026-09-16</p>
 <ul><li><p><code><a href="../reference/databricks.html">databricks()</a></code> driver auto-detection now recognizes the Windows driver name <code>Databricks ODBC Driver</code>.</p></li>
 <li><p><code><a href="../reference/databricks.html">databricks()</a></code> now sets <code>DefaultStringColumnLength</code> to 65535 by default. The driver reports <code>STRING</code> columns as <code>VARCHAR(DefaultStringColumnLength)</code> and silently truncates longer values; its own default of 255 caused string data to be cut off after roughly 1000 characters. Pass <code>defaultStringColumnLength</code> to <code><a href="../reference/dbConnect-OdbcDriver-method.html">dbConnect()</a></code> to override (<a href="https://github.com/r-dbi/odbc/issues/1023" class="external-link">#1023</a>).</p></li>
 <li><p>Update vendored cctz to current upstream, including local build compatibility fixes retained for R package and Windows builds.</p></li>

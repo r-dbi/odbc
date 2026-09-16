@@ -2,6 +2,10 @@
 
 ## odbc (development version)
 
+## odbc 1.7.1
+
+CRAN release: 2026-09-16
+
 - [`databricks()`](https://odbc.r-dbi.org/dev/reference/databricks.md)
   driver auto-detection now recognizes the Windows driver name
   `Databricks ODBC Driver`.

@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -217,9 +217,10 @@ incompatible architectures, navigate to
 checked.</p>
 <p>To connect via odbc, we need to pass the UID and PWD via the
 connection string; configuring those arguments via <code>odbc.ini</code>
-is <a href="https://stackoverflow.com/questions/42387084/sql-server-odbc-driver-linux-username" class="external-link">not
-permitted</a>. With the container deployed as above, the connection
-arguments would be:</p>
+is not permitted
+(<code>https://stackoverflow.com/questions/42387084/sql-server-odbc-driver-linux-username</code>).
+With the container deployed as above, the connection arguments would
+be:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">dbConnect</a></span><span class="op">(</span></span>
 <span>  <span class="fu">odbc</span><span class="fu">::</span><span class="fu"><a href="../reference/dbConnect-OdbcDriver-method.html">odbc</a></span><span class="op">(</span><span class="op">)</span>, </span>
