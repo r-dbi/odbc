@@ -9,13 +9,19 @@ NULL
 #' @docType methods
 NULL
 
-OdbcResult <- function(connection, statement, params = NULL, immediate = FALSE) {
+OdbcResult <- function(
+  connection,
+  statement,
+  params = NULL,
+  immediate = FALSE
+) {
   if (nzchar(connection@encoding)) {
     statement <- enc2iconv(statement, connection@encoding)
   }
   ptr <- new_result(
     p = connection@ptr,
-    sql = statement, immediate = immediate
+    sql = statement,
+    immediate = immediate
   )
   res <- new(
     "OdbcResult",
@@ -49,98 +55,86 @@ setClass(
 #' @param res An object inheriting from [DBI::DBIResult-class].
 #' @inheritParams DBI::dbClearResult
 #' @export
-setMethod("dbClearResult", "OdbcResult",
-  function(res, ...) {
-    if (!dbIsValid(res)) {
-      warning("Result already cleared")
-    }
-    result_release(res@ptr)
-    invisible(TRUE)
+setMethod("dbClearResult", "OdbcResult", function(res, ...) {
+  if (!dbIsValid(res)) {
+    warning("Result already cleared")
   }
-)
+  result_release(res@ptr)
+  invisible(TRUE)
+})
 
 #' @rdname OdbcResult
 #' @param res An object inheriting from [DBI::DBIResult-class].
 #' @inheritParams DBI::dbFetch
 #' @export
-setMethod("dbFetch", "OdbcResult",
-  function(res, n = -1, ...) {
-    check_number_whole(n, min = -1, allow_infinite = TRUE)
-    if (is.infinite(n)) n <- -1
-    result_fetch(res@ptr, n)
+setMethod("dbFetch", "OdbcResult", function(res, n = -1, ...) {
+  check_number_whole(n, min = -1, allow_infinite = TRUE)
+  if (is.infinite(n)) {
+    n <- -1
   }
-)
+  result_fetch(res@ptr, n)
+})
 
 #' @rdname OdbcResult
 #' @param res An object inheriting from [DBI::DBIResult-class].
 #' @inheritParams DBI::dbHasCompleted
 #' @export
-setMethod("dbHasCompleted", "OdbcResult",
-  function(res, ...) {
-    result_completed(res@ptr)
-  }
-)
+setMethod("dbHasCompleted", "OdbcResult", function(res, ...) {
+  result_completed(res@ptr)
+})
 
 #' @rdname OdbcResult
 #' @param dbObj An object inheriting from `DBIObject`, i.e. `DBIDriver`,
 #' `DBIConnection`, or a `DBIResult`.
 #' @inheritParams DBI::dbIsValid
 #' @export
-setMethod("dbIsValid", "OdbcResult",
-  function(dbObj, ...) {
-    result_active(dbObj@ptr)
-  }
-)
+setMethod("dbIsValid", "OdbcResult", function(dbObj, ...) {
+  result_active(dbObj@ptr)
+})
 
 #' @rdname OdbcResult
 #' @param res An object inheriting from [DBI::DBIResult-class].
 #' @inheritParams DBI::dbGetStatement
 #' @export
-setMethod("dbGetStatement", "OdbcResult",
-  function(res, ...) {
-    if (!dbIsValid(res)) {
-      cli::cli_abort("Result already cleared.")
-    }
-    res@statement
+setMethod("dbGetStatement", "OdbcResult", function(res, ...) {
+  if (!dbIsValid(res)) {
+    cli::cli_abort("Result already cleared.")
   }
-)
+  res@statement
+})
 
 #' @rdname OdbcResult
 #' @param res An object inheriting from [DBI::DBIResult-class].
 #' @inheritParams DBI::dbColumnInfo
 #' @export
-setMethod("dbColumnInfo", "OdbcResult",
-  function(res, ...) {
-    result_column_info(res@ptr)
-  }
-)
+setMethod("dbColumnInfo", "OdbcResult", function(res, ...) {
+  result_column_info(res@ptr)
+})
 
 #' @rdname OdbcResult
 #' @param res An object inheriting from [DBI::DBIResult-class].
 #' @inheritParams DBI::dbGetRowCount
 #' @export
-setMethod("dbGetRowCount", "OdbcResult",
-  function(res, ...) {
-    result_row_count(res@ptr)
-  }
-)
+setMethod("dbGetRowCount", "OdbcResult", function(res, ...) {
+  result_row_count(res@ptr)
+})
 
 #' @rdname OdbcResult
 #' @param res An object inheriting from [DBI::DBIResult-class].
 #' @inheritParams DBI::dbGetRowsAffected
 #' @export
-setMethod("dbGetRowsAffected", "OdbcResult",
-  function(res, ...) {
-    result_rows_affected(res@ptr)
-  }
-)
+setMethod("dbGetRowsAffected", "OdbcResult", function(res, ...) {
+  result_rows_affected(res@ptr)
+})
 
 #' @rdname OdbcResult
 #' @param res An object inheriting from [DBI::DBIResult-class].
 #' @inheritParams DBI::dbBind
 #' @inheritParams DBI-tables
 #' @export
-setMethod("dbBind", "OdbcResult",
+setMethod(
+  "dbBind",
+  "OdbcResult",
   function(res, params, ..., batch_rows = getOption("odbc.batch_rows", NA)) {
     params <- as.list(params)
     if (length(params) == 0) {
@@ -153,18 +147,24 @@ setMethod("dbBind", "OdbcResult",
       # * The `batch_rows` parameter is either unset or equal to one.
       # * All non-tvp parameters are of length 1.
       if (!is.na(batch_rows) && batch_rows > 1) {
-        cli::cli_warn(c("Since some parameters are data frames, {.arg batch_rows} will be overwritten to `1`.", 
-                       "Set {.code batch_rows = 1} to quiet this warning."))
+        cli::cli_warn(c(
+          "Since some parameters are data frames, {.arg batch_rows} will be overwritten to `1`.",
+          "Set {.code batch_rows = 1} to quiet this warning."
+        ))
       }
       batch_rows <- 1
       paramLengths <- sapply(params[!paramDfs], length)
-      if (any(paramLengths > 1))
-      {
-        cli::cli_abort("When mixing data.frame(s) with other parameter types,
-                       all non-df parameters must be of length one")
+      if (any(paramLengths > 1)) {
+        cli::cli_abort(
+          "When mixing data.frame(s) with other parameter types,
+                       all non-df parameters must be of length one"
+        )
       }
     } else {
-      params[!paramDfs] <- vctrs::vec_recycle_common(!!!params[!paramDfs], .arg = "params")
+      params[!paramDfs] <- vctrs::vec_recycle_common(
+        !!!params[!paramDfs],
+        .arg = "params"
+      )
       if (is.na(batch_rows)) {
         batch_rows <- length(params[[1]])
       }

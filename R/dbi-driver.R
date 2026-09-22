@@ -20,12 +20,10 @@ setClass("OdbcDriver", contains = "DBIDriver")
 #' @rdname OdbcDriver
 #' @inheritParams methods::show
 #' @export
-setMethod("show", "OdbcDriver",
-  function(object) {
-    cat("<OdbcDriver>\n")
-    # TODO: Print more details
-  }
-)
+setMethod("show", "OdbcDriver", function(object) {
+  cat("<OdbcDriver>\n")
+  # TODO: Print more details
+})
 
 #' Connect to a database via an ODBC driver
 #'
@@ -163,26 +161,29 @@ setMethod("show", "OdbcDriver",
 #'
 #' @import rlang
 #' @export
-setMethod("dbConnect", "OdbcDriver",
+setMethod(
+  "dbConnect",
+  "OdbcDriver",
   function(
-      drv,
-      dsn = NULL,
-      ...,
-      timezone = "UTC",
-      timezone_out = "UTC",
-      encoding = "",
-      name_encoding = "",
-      bigint = c("integer64", "integer", "numeric", "character"),
-      timeout = 10,
-      driver = NULL,
-      server = NULL,
-      database = NULL,
-      uid = NULL,
-      pwd = NULL,
-      dbms.name = NULL,
-      attributes = NULL,
-      interruptible = getOption("odbc.interruptible", interactive()),
-      .connection_string = NULL) {
+    drv,
+    dsn = NULL,
+    ...,
+    timezone = "UTC",
+    timezone_out = "UTC",
+    encoding = "",
+    name_encoding = "",
+    bigint = c("integer64", "integer", "numeric", "character"),
+    timeout = 10,
+    driver = NULL,
+    server = NULL,
+    database = NULL,
+    uid = NULL,
+    pwd = NULL,
+    dbms.name = NULL,
+    attributes = NULL,
+    interruptible = getOption("odbc.interruptible", interactive()),
+    .connection_string = NULL
+  ) {
     check_string(dsn, allow_null = TRUE)
     check_string(timezone)
     check_string(timezone_out)
@@ -225,21 +226,31 @@ setMethod("dbConnect", "OdbcDriver",
     # perform the connection notification at the top level, to ensure that it's had
     # a chance to get its external pointer connected, and so we can capture the
     # expression that created it
-    if (!is.null(getOption("connectionObserver"))) { # nocov start
+    if (!is.null(getOption("connectionObserver"))) {
+      # nocov start
       addTaskCallback(function(expr, ...) {
         tryCatch(
           {
-            if (rlang::is_call(x = expr, name = c("<-", "=")) &&
-              "dbConnect" %in% as.character(expr[[3]][[1]])) {
+            if (
+              rlang::is_call(x = expr, name = c("<-", "=")) &&
+                "dbConnect" %in% as.character(expr[[3]][[1]])
+            ) {
               # notify if this is an assignment we can replay
-              on_connection_opened(eval(expr[[2]]), paste(
-                c("library(DBI)", deparse(expr)),
-                collapse = "\n"
-              ))
+              on_connection_opened(
+                eval(expr[[2]]),
+                paste(
+                  c("library(DBI)", deparse(expr)),
+                  collapse = "\n"
+                )
+              )
             }
           },
           error = function(e) {
-            warning("Could not notify connection observer. ", e$message, call. = FALSE)
+            warning(
+              "Could not notify connection observer. ",
+              e$message,
+              call. = FALSE
+            )
           }
         )
 
@@ -257,22 +268,18 @@ setMethod("dbConnect", "OdbcDriver",
 #' or [DBI::DBIConnection-class]
 #' @inheritParams DBI::dbDataType
 #' @export
-setMethod("dbDataType", "OdbcDriver",
-  function(dbObj, obj, ...) {
-    odbcDataType(dbObj, obj, ...)
-  }
-)
+setMethod("dbDataType", "OdbcDriver", function(dbObj, obj, ...) {
+  odbcDataType(dbObj, obj, ...)
+})
 
 #' @rdname OdbcDriver
 #' @param dbObj A object inheriting from [DBI::DBIDriver-class]
 #' or [DBI::DBIConnection-class]
 #' @inheritParams DBI::dbDataType
 #' @export
-setMethod("dbDataType", c("OdbcDriver", "list"),
-  function(dbObj, obj, ...) {
-    odbcDataType(dbObj, obj, ...)
-  }
-)
+setMethod("dbDataType", c("OdbcDriver", "list"), function(dbObj, obj, ...) {
+  odbcDataType(dbObj, obj, ...)
+})
 
 odbc_data_type_df <- function(dbObj, obj, ...) {
   res <- character(NCOL(obj))
@@ -281,7 +288,11 @@ odbc_data_type_df <- function(dbObj, obj, ...) {
     withCallingHandlers(
       res[[i]] <- odbcDataType(con = dbObj, obj[[i]]),
       error = function(err) {
-        cli::cli_abort("Can't determine type for column {nms[[i]]}.", parent = err, call = quote(odbcDataType()))
+        cli::cli_abort(
+          "Can't determine type for column {nms[[i]]}.",
+          parent = err,
+          call = quote(odbcDataType())
+        )
       }
     )
   }
@@ -301,19 +312,15 @@ setMethod("dbDataType", c("OdbcDriver", "data.frame"), odbc_data_type_df)
 #' or [DBI::DBIConnection-class]
 #' @inheritParams DBI::dbIsValid
 #' @export
-setMethod("dbIsValid", "OdbcDriver",
-  function(dbObj, ...) {
-    TRUE
-  }
-)
+setMethod("dbIsValid", "OdbcDriver", function(dbObj, ...) {
+  TRUE
+})
 
 #' @rdname OdbcDriver
 #' @param dbObj A object inheriting from [DBI::DBIDriver-class]
 #' or [DBI::DBIConnection-class]
 #' @inheritParams DBI::dbGetInfo
 #' @export
-setMethod("dbGetInfo", "OdbcDriver",
-  function(dbObj, ...) {
-    list(max.connections = NULL, driver.version = NULL, client.version = NULL)
-  }
-)
+setMethod("dbGetInfo", "OdbcDriver", function(dbObj, ...) {
+  list(max.connections = NULL, driver.version = NULL, client.version = NULL)
+})

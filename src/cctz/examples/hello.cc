@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//   http://www.apache.org/licenses/LICENSE-2.0
+//   https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,12 +12,12 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-#include <iostream>
 #include <chrono>
+#include <iostream>
 #include <string>
 
-#include "civil_time.h"
-#include "time_zone.h"
+#include "cctz/civil_time.h"
+#include "cctz/time_zone.h"
 
 int main() {
   cctz::time_zone syd;
@@ -27,7 +27,7 @@ int main() {
   const auto tp1 =
       cctz::convert(cctz::civil_second(1969, 7, 21, 12, 56, 0), syd);
 
-  const std::string s = cctz::format("%F %T %z", tp1, syd);
+  const std::string s = cctz::format("%Y-%m-%d %H:%M:%S %z", tp1, syd);
   std::cout << s << "\n";
 
   cctz::time_zone nyc;

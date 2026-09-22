@@ -137,6 +137,23 @@ test_that("tokens can be requested from a Connect server", {
   )
 })
 
+test_that("service account tokens can be requested from a Connect server", {
+  skip_if_not_installed("connectcreds")
+
+  # `local_mocked_connect_responses()` makes both viewer-based and service
+  # account credentials available, and viewer-based credentials take
+  # precedence, so disable them to exercise the service account path.
+  local_mocked_bindings(
+    has_viewer_token = function(...) FALSE,
+    .package = "connectcreds"
+  )
+  connectcreds::local_mocked_connect_responses(token = "token")
+  expect_equal(
+    snowflake_auth_args("testorg-test_account"),
+    list(authenticator = "oauth", token = "token")
+  )
+})
+
 test_that("the default driver falls back to a known driver name", {
   local_mocked_bindings(
     snowflake_default_driver_paths = function() character(),
@@ -207,7 +224,10 @@ test_that("snowflake_connection_to_odbc_args maps fields correctly", {
       account = "testorg-test_account",
       user = "myuser",
       authenticator = "oauth",
-      token = structure("mytoken", class = c("snowflake_redacted", "character")),
+      token = structure(
+        "mytoken",
+        class = c("snowflake_redacted", "character")
+      ),
       warehouse = "mywh",
       database = "mydb",
       schema = "myschema",
@@ -236,7 +256,10 @@ test_that("snowflake_connection_to_odbc_args maps private key fields", {
       user = "myuser",
       authenticator = "SNOWFLAKE_JWT",
       private_key_file = "/path/to/rsa_key.p8",
-      private_key_file_pwd = structure("secret", class = c("snowflake_redacted", "character"))
+      private_key_file_pwd = structure(
+        "secret",
+        class = c("snowflake_redacted", "character")
+      )
     ),
     class = c("snowflake_connection", "list")
   )
@@ -253,7 +276,10 @@ test_that("snowflake_connection_to_odbc_args omits default authenticator", {
       name = "test",
       account = "testorg-test_account",
       user = "myuser",
-      password = structure("mypwd", class = c("snowflake_redacted", "character")),
+      password = structure(
+        "mypwd",
+        class = c("snowflake_redacted", "character")
+      ),
       authenticator = "snowflake"
     ),
     class = c("snowflake_connection", "list")

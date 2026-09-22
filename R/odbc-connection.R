@@ -2,22 +2,21 @@
 NULL
 
 
-
 class_cache <- new.env(parent = emptyenv())
 
 OdbcConnection <- function(
-    ...,
-    timezone = "UTC",
-    timezone_out = "UTC",
-    encoding = "",
-    name_encoding = "",
-    bigint = c("integer64", "integer", "numeric", "character"),
-    timeout = Inf,
-    dbms.name = NULL,
-    attributes = NULL,
-    interruptible = getOption("odbc.interruptible", interactive()),
-    .connection_string = NULL,
-    call = caller_env(2)
+  ...,
+  timezone = "UTC",
+  timezone_out = "UTC",
+  encoding = "",
+  name_encoding = "",
+  bigint = c("integer64", "integer", "numeric", "character"),
+  timeout = Inf,
+  dbms.name = NULL,
+  attributes = NULL,
+  interruptible = getOption("odbc.interruptible", interactive()),
+  .connection_string = NULL,
+  call = caller_env(2)
 ) {
   check_attributes(attributes, call = call)
 
@@ -116,7 +115,9 @@ quote_value <- function(x) {
   has_double <- grepl('"', x, fixed = TRUE)
 
   if (has_single && has_double) {
-    abort("Don't know how to escape a value with both single and double quotes.")
+    abort(
+      "Don't know how to escape a value with both single and double quotes."
+    )
   } else if (has_double) {
     quote <- "'"
   } else {
@@ -138,7 +139,12 @@ check_args <- function(args) {
   name_groups <- split(names(args), tolower(names(args)))
   bad_names <- name_groups[lengths(name_groups) > 1]
   if (length(bad_names) > 0) {
-    bullets <- vapply(bad_names, paste0, collapse = ", ", FUN.VALUE = character(1))
+    bullets <- vapply(
+      bad_names,
+      paste0,
+      collapse = ", ",
+      FUN.VALUE = character(1)
+    )
 
     abort(
       c(
@@ -217,7 +223,11 @@ needs_quoting <- function(x) {
 #'                    "sf_private_key_password" = "<optional-private-key-encryption-password>"),
 #'  authenticator = "SNOWFLAKE_JWT")
 #' }
-SUPPORTED_CONNECTION_ATTRIBUTES <- c("azure_token", "sf_private_key", "sf_private_key_password")
+SUPPORTED_CONNECTION_ATTRIBUTES <- c(
+  "azure_token",
+  "sf_private_key",
+  "sf_private_key_password"
+)
 
 #' Odbc Connection Methods
 #'
@@ -291,9 +301,12 @@ setGeneric(
   }
 )
 
-setMethod("odbcConnectionColumns", c("OdbcConnection", "Id"),
+setMethod(
+  "odbcConnectionColumns",
+  c("OdbcConnection", "Id"),
   function(conn, name, ..., column_name = NULL, exact = FALSE) {
-    odbcConnectionColumns(conn,
+    odbcConnectionColumns(
+      conn,
       name = id_field(name, "table"),
       catalog_name = id_field(name, "catalog"),
       schema_name = id_field(name, "schema"),
@@ -303,14 +316,18 @@ setMethod("odbcConnectionColumns", c("OdbcConnection", "Id"),
   }
 )
 
-setMethod("odbcConnectionColumns", c("OdbcConnection", "character"),
-  function(conn,
-           name,
-           ...,
-           catalog_name = NULL,
-           schema_name = NULL,
-           column_name = NULL,
-           exact = FALSE) {
+setMethod(
+  "odbcConnectionColumns",
+  c("OdbcConnection", "character"),
+  function(
+    conn,
+    name,
+    ...,
+    catalog_name = NULL,
+    schema_name = NULL,
+    column_name = NULL,
+    exact = FALSE
+  ) {
     if (exact) {
       schema_name <- escapePattern(schema_name)
       name <- escapePattern(name)
@@ -326,9 +343,16 @@ setMethod("odbcConnectionColumns", c("OdbcConnection", "character"),
   }
 )
 
-setMethod("odbcConnectionColumns", c("OdbcConnection", "SQL"),
+setMethod(
+  "odbcConnectionColumns",
+  c("OdbcConnection", "SQL"),
   function(conn, name, ..., exact = FALSE) {
-    odbcConnectionColumns(conn, dbUnquoteIdentifier(conn, name)[[1]], ..., exact = exact)
+    odbcConnectionColumns(
+      conn,
+      dbUnquoteIdentifier(conn, name)[[1]],
+      ...,
+      exact = exact
+    )
   }
 )
 
@@ -354,7 +378,9 @@ setGeneric(
   }
 )
 
-setMethod("odbcConnectionTables", c("OdbcConnection", "Id"),
+setMethod(
+  "odbcConnectionTables",
+  c("OdbcConnection", "Id"),
   function(conn, name, table_type = NULL, exact = FALSE) {
     odbcConnectionTables(
       conn,
@@ -367,13 +393,17 @@ setMethod("odbcConnectionTables", c("OdbcConnection", "Id"),
   }
 )
 
-setMethod("odbcConnectionTables", c("OdbcConnection", "character"),
-  function(conn,
-           name,
-           catalog_name = NULL,
-           schema_name = NULL,
-           table_type = NULL,
-           exact = FALSE) {
+setMethod(
+  "odbcConnectionTables",
+  c("OdbcConnection", "character"),
+  function(
+    conn,
+    name,
+    catalog_name = NULL,
+    schema_name = NULL,
+    table_type = NULL,
+    exact = FALSE
+  ) {
     if (exact) {
       catalog_name <- escapePattern(catalog_name)
       schema_name <- escapePattern(schema_name)
@@ -389,13 +419,17 @@ setMethod("odbcConnectionTables", c("OdbcConnection", "character"),
   }
 )
 
-setMethod("odbcConnectionTables", "OdbcConnection",
-  function(conn,
-           name = NULL,
-           catalog_name = NULL,
-           schema_name = NULL,
-           table_type = NULL,
-           exact = FALSE) {
+setMethod(
+  "odbcConnectionTables",
+  "OdbcConnection",
+  function(
+    conn,
+    name = NULL,
+    catalog_name = NULL,
+    schema_name = NULL,
+    table_type = NULL,
+    exact = FALSE
+  ) {
     odbcConnectionTables(
       conn,
       name = "%",
@@ -407,7 +441,9 @@ setMethod("odbcConnectionTables", "OdbcConnection",
   }
 )
 
-setMethod("odbcConnectionTables", c("OdbcConnection", "SQL"),
+setMethod(
+  "odbcConnectionTables",
+  c("OdbcConnection", "SQL"),
   function(conn, name, table_type = NULL, exact = FALSE) {
     odbcConnectionTables(
       conn,
@@ -426,11 +462,9 @@ setGeneric(
   }
 )
 
-setMethod("odbcConnectionCatalogs", "OdbcConnection",
-  function(conn) {
-    connection_sql_catalogs(conn@ptr)
-  }
-)
+setMethod("odbcConnectionCatalogs", "OdbcConnection", function(conn) {
+  connection_sql_catalogs(conn@ptr)
+})
 
 # Currently, for a generic connection the
 # catalog_name argument is ignored.
@@ -442,7 +476,9 @@ setGeneric(
   }
 )
 
-setMethod("odbcConnectionSchemas", "OdbcConnection",
+setMethod(
+  "odbcConnectionSchemas",
+  "OdbcConnection",
   function(conn, catalog_name = NULL) {
     connection_sql_schemas(conn@ptr)
   }
@@ -456,11 +492,9 @@ setGeneric(
   }
 )
 
-setMethod("odbcConnectionTableTypes", "OdbcConnection",
-  function(conn) {
-    connection_sql_table_types(conn@ptr)
-  }
-)
+setMethod("odbcConnectionTableTypes", "OdbcConnection", function(conn) {
+  connection_sql_table_types(conn@ptr)
+})
 
 
 # Internal method, used to check for target existence
@@ -486,7 +520,9 @@ setGeneric(
   }
 )
 
-setMethod("dbExistsTableForWrite", c("OdbcConnection", "Id"),
+setMethod(
+  "dbExistsTableForWrite",
+  c("OdbcConnection", "Id"),
   function(conn, name, ...) {
     dbExistsTableForWrite(
       conn,
@@ -497,13 +533,17 @@ setMethod("dbExistsTableForWrite", c("OdbcConnection", "Id"),
   }
 )
 
-setMethod("dbExistsTableForWrite", c("OdbcConnection", "SQL"),
+setMethod(
+  "dbExistsTableForWrite",
+  c("OdbcConnection", "SQL"),
   function(conn, name, ...) {
     dbExistsTableForWrite(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   }
 )
 
-setMethod("dbExistsTableForWrite", c("OdbcConnection", "character"),
+setMethod(
+  "dbExistsTableForWrite",
+  c("OdbcConnection", "character"),
   function(conn, name, ...) {
     dbExistsTable(conn = conn, name = name, ...)
   }

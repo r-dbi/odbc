@@ -45,6 +45,9 @@
 #define NANODBC_USE_NATIVE_CONVERT
 #else
 #include <codecvt>
+// wstring_convert is declared in <locale>, which libc++ 23 no longer
+// includes transitively via <codecvt>
+#include <locale>
 #endif
 #endif
 

@@ -1,11 +1,11 @@
 Package: odbc
 Title: Connect to ODBC Compatible Databases (using the DBI Interface)
-Version: 1.7.0.9000
+Version: 1.7.1.9000
 Authors@R: c(
     person("Jim", "Hester", role = "aut"),
     person("Hadley", "Wickham", , "hadley@posit.co", role = c("aut", "cre")),
     person("Oliver", "Gjoneski", role = "aut"),
-    person("Simon", "Couch", email = "simon.couch@posit.co", role = "aut"),
+    person("Simon", "Couch", , "simon.couch@posit.co", role = "aut"),
     person("lexicalunit", role = "cph",
            comment = "nanodbc library"),
     person("Google Inc.", role = "cph",
@@ -37,7 +37,7 @@ Suggests:
     httr2,
     knitr,
     magrittr,
-    paws.common,
+    paws.common (>= 0.7.1),
     rmarkdown,
     RSQLite,
     snowflakeauth,
@@ -46,13 +46,15 @@ Suggests:
     withr
 LinkingTo: 
     Rcpp
+VignetteBuilder: 
+    knitr
 ByteCompile: true
 Config/Needs/check: pkgbuild
 Config/Needs/website: tidyverse/tidytemplate
+Config/roxygen2/version: 8.1.0
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 SystemRequirements: GNU make, An ODBC3 driver manager and drivers.
 Collate: 
     'RcppExports.R'
@@ -92,4 +94,3 @@ Collate:
     'odbc.R'
     'utils.R'
     'zzz.R'
-VignetteBuilder: knitr

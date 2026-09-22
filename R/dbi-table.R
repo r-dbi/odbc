@@ -29,21 +29,28 @@ NULL
 #' @name DBI-tables
 NULL
 
-odbc_write_table <- function(conn,
-                             name,
-                             value,
-                             overwrite = FALSE,
-                             append = FALSE,
-                             temporary = FALSE,
-                             row.names = NULL,
-                             field.types = NULL,
-                             batch_rows = getOption("odbc.batch_rows", NA),
-                             ...) {
+odbc_write_table <- function(
+  conn,
+  name,
+  value,
+  overwrite = FALSE,
+  append = FALSE,
+  temporary = FALSE,
+  row.names = NULL,
+  field.types = NULL,
+  batch_rows = getOption("odbc.batch_rows", NA),
+  ...
+) {
   call <- caller_env()
   check_bool(overwrite, call = call)
   check_bool(append, call = call)
   check_bool(temporary, call = call)
-  check_number_whole(batch_rows, allow_na = TRUE, allow_null = TRUE, call = call)
+  check_number_whole(
+    batch_rows,
+    allow_na = TRUE,
+    allow_null = TRUE,
+    call = call
+  )
   check_row.names(row.names, call = call)
   check_field.types(field.types, call = call)
   if (append && !is.null(field.types)) {
@@ -71,7 +78,7 @@ odbc_write_table <- function(conn,
     dbRemoveTable(conn, name)
   }
 
-  values <- sqlData(conn, row.names = row.names, value[, , drop = FALSE])
+  values <- sqlData(conn, row.names = row.names, value[,, drop = FALSE])
   if (!found || overwrite) {
     dbCreateTable(
       conn = conn,
@@ -104,19 +111,25 @@ odbc_write_table <- function(conn,
 #'   Depending on the database, driver, dataset and free memory, setting this
 #'   to a lower value may improve performance.
 #' @export
-setMethod("dbWriteTable", c("OdbcConnection", "character", "data.frame"),
+setMethod(
+  "dbWriteTable",
+  c("OdbcConnection", "character", "data.frame"),
   odbc_write_table
 )
 
 #' @rdname DBI-tables
 #' @export
-setMethod("dbWriteTable", c("OdbcConnection", "Id", "data.frame"),
+setMethod(
+  "dbWriteTable",
+  c("OdbcConnection", "Id", "data.frame"),
   odbc_write_table
 )
 
 #' @rdname DBI-tables
 #' @export
-setMethod("dbWriteTable", c("OdbcConnection", "SQL", "data.frame"),
+setMethod(
+  "dbWriteTable",
+  c("OdbcConnection", "SQL", "data.frame"),
   odbc_write_table
 )
 
@@ -124,10 +137,17 @@ setMethod("dbWriteTable", c("OdbcConnection", "SQL", "data.frame"),
 #' @inheritParams DBI::dbAppendTable
 #' @inheritParams DBI::dbWriteTable
 #' @export
-setMethod("dbAppendTable", "OdbcConnection",
-  function(conn, name, value,
-           batch_rows = getOption("odbc.batch_rows", NA),
-           ..., row.names = NULL) {
+setMethod(
+  "dbAppendTable",
+  "OdbcConnection",
+  function(
+    conn,
+    name,
+    value,
+    batch_rows = getOption("odbc.batch_rows", NA),
+    ...,
+    row.names = NULL
+  ) {
     if (!is.null(row.names)) {
       cli::cli_abort(
         "{.arg row.names} must be {.code NULL}, not \\
@@ -135,14 +155,16 @@ setMethod("dbAppendTable", "OdbcConnection",
       )
     }
 
-    fieldDetails <- tryCatch({
-      details <- odbcConnectionColumns(conn, name, exact = TRUE)
-      details$param_index <- match(details$name, colnames(value))
-      details[!is.na(details$param_index) & !is.na(details$data_type), ]
-    },
-    error = function(e) {
-      return(NULL)
-    })
+    fieldDetails <- tryCatch(
+      {
+        details <- odbcConnectionColumns(conn, name, exact = TRUE)
+        details$param_index <- match(details$name, colnames(value))
+        details[!is.na(details$param_index) & !is.na(details$data_type), ]
+      },
+      error = function(e) {
+        return(NULL)
+      }
+    )
 
     if (nrow(value) > 0) {
       name <- dbQuoteIdentifier(conn, name)
@@ -151,8 +173,14 @@ setMethod("dbAppendTable", "OdbcConnection",
       params <- rep("?", nparam)
 
       sql <- paste0(
-        "INSERT INTO ", name, " (", paste0(fields, collapse = ", "), ")\n",
-        "VALUES (", paste0(params, collapse = ", "), ")"
+        "INSERT INTO ",
+        name,
+        " (",
+        paste0(fields, collapse = ", "),
+        ")\n",
+        "VALUES (",
+        paste0(params, collapse = ", "),
+        ")"
       )
       rs <- OdbcResult(conn, sql)
 
@@ -160,7 +188,7 @@ setMethod("dbAppendTable", "OdbcConnection",
         result_describe_parameters(rs@ptr, fieldDetails)
       }
 
-      values <- sqlData(conn, row.names = row.names, value[, , drop = FALSE])
+      values <- sqlData(conn, row.names = row.names, value[,, drop = FALSE])
       if (is.na(batch_rows)) {
         batch_rows <- NROW(value)
         if (batch_rows == 0) {
@@ -176,29 +204,51 @@ setMethod("dbAppendTable", "OdbcConnection",
     }
 
     invisible(NA_real_)
-  })
+  }
+)
 
 #' @rdname DBI-methods
 #' @export
-setMethod("sqlData", "OdbcConnection",
+setMethod(
+  "sqlData",
+  "OdbcConnection",
   function(con, value, row.names = NA, ...) {
-
     chk <- attr(value, ".odbc.transformed", exact = TRUE)
-    if (isTRUE(chk)) return(value)
+    if (isTRUE(chk)) {
+      return(value)
+    }
 
     value <- sqlRownamesToColumn(value, row.names)
 
     # Convert POSIXlt to POSIXct
-    is_POSIXlt <- vapply(value, function(x) is.object(x) && (is(x, "POSIXlt")), logical(1))
+    is_POSIXlt <- vapply(
+      value,
+      function(x) is.object(x) && (is(x, "POSIXlt")),
+      logical(1)
+    )
     value[is_POSIXlt] <- lapply(value[is_POSIXlt], as.POSIXct)
 
     # C code takes care of atomic vectors, dates, date times, and blobs just need to coerce other objects
-    is_object <- vapply(value, function(x) is.object(x) && !(is(x, "POSIXct") || is(x, "Date") || is_blob(x) || is(x, "difftime")), logical(1))
+    is_object <- vapply(
+      value,
+      function(x) {
+        is.object(x) &&
+          !(is(x, "POSIXct") ||
+            is(x, "Date") ||
+            is_blob(x) ||
+            is(x, "difftime"))
+      },
+      logical(1)
+    )
     value[is_object] <- lapply(value[is_object], as.character)
 
     if (nzchar(con@encoding)) {
       is_character <- vapply(value, is.character, logical(1))
-      value[is_character] <- lapply(value[is_character], enc2iconv, to = con@encoding)
+      value[is_character] <- lapply(
+        value[is_character],
+        enc2iconv,
+        to = con@encoding
+      )
     }
 
     attr(value, ".odbc.transformed") <- TRUE
@@ -210,14 +260,18 @@ setMethod("sqlData", "OdbcConnection",
 #' @inheritParams DBI::sqlCreateTable
 #' @param field.types Additional field types used to override derived types.
 #' @export
-setMethod("sqlCreateTable", "OdbcConnection",
-  function(con,
-           table,
-           fields,
-           row.names = NA,
-           temporary = FALSE,
-           ...,
-           field.types = NULL) {
+setMethod(
+  "sqlCreateTable",
+  "OdbcConnection",
+  function(
+    con,
+    table,
+    fields,
+    row.names = NA,
+    temporary = FALSE,
+    ...,
+    field.types = NULL
+  ) {
     check_bool(temporary)
     check_row.names(row.names)
     check_field.types(field.types)
@@ -225,8 +279,14 @@ setMethod("sqlCreateTable", "OdbcConnection",
     fields <- createFields(con, fields, field.types, row.names)
 
     SQL(paste0(
-      "CREATE ", if (temporary) "TEMPORARY ", "TABLE ", table, " (\n",
-      "  ", paste(fields, collapse = ",\n  "), "\n)\n"
+      "CREATE ",
+      if (temporary) "TEMPORARY ",
+      "TABLE ",
+      table,
+      " (\n",
+      "  ",
+      paste(fields, collapse = ",\n  "),
+      "\n)\n"
     ))
   }
 )
@@ -245,7 +305,8 @@ createFields <- function(con, fields, field.types, row.names) {
           "Some columns in `field.types` not in the input, missing columns:\n%s",
           paste0("  - '", names(field.types)[!is_field], "'", collapse = "\n")
         ),
-        call. = FALSE, immediate. = TRUE
+        call. = FALSE,
+        immediate. = TRUE
       )
     }
 
@@ -262,23 +323,23 @@ createFields <- function(con, fields, field.types, row.names) {
 #' `dbConnect()`.
 #' @inheritParams DBI::dbListFields
 #' @export
-setMethod("dbListFields", c("OdbcConnection", "Id"),
-  function(conn, name, ...) {
-    dbListFields(
-      conn,
-      name = id_field(name, "table"),
-      catalog_name = id_field(name, "catalog"),
-      schema_name = id_field(name, "schema")
-    )
-  }
-)
+setMethod("dbListFields", c("OdbcConnection", "Id"), function(conn, name, ...) {
+  dbListFields(
+    conn,
+    name = id_field(name, "table"),
+    catalog_name = id_field(name, "catalog"),
+    schema_name = id_field(name, "schema")
+  )
+})
 
 #' @rdname OdbcConnection
 #' @param conn A [DBI::DBIConnection-class] object, as returned by
 #' `dbConnect()`.
 #' @inheritParams DBI::dbListFields
 #' @export
-setMethod("dbListFields", c("OdbcConnection", "SQL"),
+setMethod(
+  "dbListFields",
+  c("OdbcConnection", "SQL"),
   function(conn, name, ...) {
     dbListFields(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   }
@@ -292,13 +353,17 @@ setMethod("dbListFields", c("OdbcConnection", "SQL"),
 #' @param schema_name Schema where table is located.
 #' @param column_name The name of the column to return, the default returns all columns.
 #' @export
-setMethod("dbListFields", c("OdbcConnection", "character"),
-  function(conn,
-           name,
-           catalog_name = NULL,
-           schema_name = NULL,
-           column_name = NULL,
-           ...) {
+setMethod(
+  "dbListFields",
+  c("OdbcConnection", "character"),
+  function(
+    conn,
+    name,
+    catalog_name = NULL,
+    schema_name = NULL,
+    column_name = NULL,
+    ...
+  ) {
     check_string(name)
     check_string(catalog_name, allow_null = TRUE)
     check_string(schema_name, allow_null = TRUE)
@@ -321,7 +386,9 @@ setMethod("dbListFields", c("OdbcConnection", "character"),
 #' `dbConnect()`.
 #' @inheritParams DBI::dbExistsTable
 #' @export
-setMethod("dbExistsTable", c("OdbcConnection", "Id"),
+setMethod(
+  "dbExistsTable",
+  c("OdbcConnection", "Id"),
   function(conn, name, ...) {
     dbExistsTable(
       conn,
@@ -337,7 +404,9 @@ setMethod("dbExistsTable", c("OdbcConnection", "Id"),
 #' `dbConnect()`.
 #' @inheritParams DBI::dbExistsTable
 #' @export
-setMethod("dbExistsTable", c("OdbcConnection", "SQL"),
+setMethod(
+  "dbExistsTable",
+  c("OdbcConnection", "SQL"),
   function(conn, name, ...) {
     dbExistsTable(conn, dbUnquoteIdentifier(conn, name)[[1]], ...)
   }
@@ -348,7 +417,9 @@ setMethod("dbExistsTable", c("OdbcConnection", "SQL"),
 #' `dbConnect()`.
 #' @inheritParams DBI::dbExistsTable
 #' @export
-setMethod("dbExistsTable", c("OdbcConnection", "character"),
+setMethod(
+  "dbExistsTable",
+  c("OdbcConnection", "character"),
   function(conn, name, ...) {
     check_string(name)
     df <- odbcConnectionTables(conn, name = name, ..., exact = TRUE)
@@ -362,7 +433,9 @@ setMethod("dbExistsTable", c("OdbcConnection", "character"),
 #' `dbConnect()`.
 #' @inheritParams DBI::dbRemoveTable
 #' @export
-setMethod("dbRemoveTable", c("OdbcConnection", "character"),
+setMethod(
+  "dbRemoveTable",
+  c("OdbcConnection", "character"),
   function(conn, name, ...) {
     name <- dbQuoteIdentifier(conn, name)
     dbExecute(conn, paste("DROP TABLE ", name))

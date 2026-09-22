@@ -1,5 +1,3 @@
-
-
 #' Unimportant DBI methods
 #'
 #' @name DBI-methods

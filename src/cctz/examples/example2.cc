@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//   http://www.apache.org/licenses/LICENSE-2.0
+//   https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 #include <iostream>
 #include <string>
 
-#include "time_zone.h"
+#include "cctz/time_zone.h"
 
 int main() {
   const std::string civil_string = "2015-09-22 09:35:00";

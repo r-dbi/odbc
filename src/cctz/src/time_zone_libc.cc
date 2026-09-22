@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//   http://www.apache.org/licenses/LICENSE-2.0
+//   https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,175 +12,318 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
+#if !defined(_CRT_SECURE_NO_WARNINGS) && defined(_WIN32)
+#define _CRT_SECURE_NO_WARNINGS 1
+#endif
+
 #include "time_zone_libc.h"
 
 #include <chrono>
-#include <cstdint>
 #include <ctime>
+#include <limits>
+#include <utility>
 
-// Define OFFSET(tm) and ABBR(tm) for your platform to return the UTC
-// offset and zone abbreviation after a call to localtime_r().
-#if defined(linux)
-# if defined(__USE_BSD)
-#  define OFFSET(tm) ((tm).tm_gmtoff)
-#  define ABBR(tm)   ((tm).tm_zone)
-# else
-#  define OFFSET(tm) ((tm).__tm_gmtoff)
-#  define ABBR(tm)   ((tm).__tm_zone)
-# endif
-#elif defined(__APPLE__)
-# define OFFSET(tm) ((tm).tm_gmtoff)
-# define ABBR(tm)   ((tm).tm_zone)
-#elif defined(__sun)
-# define OFFSET(tm) ((tm).tm_isdst > 0 ? altzone : timezone)
-# define ABBR(tm)   (tzname[(tm).tm_isdst > 0])
-#elif defined(_WIN32) || defined(_WIN64)
-# define OFFSET(tm) (_timezone + ((tm).tm_isdst > 0 ? 60 * 60 : 0))
-# define ABBR(tm)   (_tzname[(tm).tm_isdst > 0])
-#else
-# define OFFSET(tm) (timezone + ((tm).tm_isdst > 0 ? 60 * 60 : 0))
-# define ABBR(tm)   (tzname[(tm).tm_isdst > 0])
+#include "cctz/civil_time.h"
+#include "cctz/time_zone.h"
+
+#if defined(_AIX)
+extern "C" {
+  extern long altzone;
+}
 #endif
 
 namespace cctz {
 
-TimeZoneLibC::TimeZoneLibC(const std::string& name) {
-  local_ = (name == "localtime");
-  if (!local_) {
-    // TODO: Support "UTC-05:00", for example.
-    offset_ = 0;
-    abbr_ = "UTC";
-  }
-}
-
-Breakdown TimeZoneLibC::BreakTime(const time_point<sys_seconds>& tp) const {
-  Breakdown bd;
-  std::time_t t = ToUnixSeconds(tp);
-  std::tm tm;
-  if (local_) {
-#if defined(_WIN32) || defined(_WIN64)
-    localtime_s(&tm, &t);
-#else
-    localtime_r(&t, &tm);
-#endif
-    bd.offset = OFFSET(tm);
-    bd.abbr = ABBR(tm);
-  } else {
-#if defined(_WIN32) || defined(_WIN64)
-    gmtime_s(&tm, &t);
-#else
-    gmtime_r(&t, &tm);
-#endif
-    bd.offset = offset_;
-    bd.abbr = abbr_;
-  }
-  bd.year = tm.tm_year + 1900;
-  bd.month = tm.tm_mon + 1;
-  bd.day = tm.tm_mday;
-  bd.hour = tm.tm_hour;
-  bd.minute = tm.tm_min;
-  bd.second = tm.tm_sec;
-  bd.weekday = (tm.tm_wday ? tm.tm_wday : 7);
-  bd.yearday = tm.tm_yday + 1;
-  bd.is_dst = tm.tm_isdst > 0;
-  return bd;
-}
-
 namespace {
 
-// Normalize *val so that 0 <= *val < base, returning any carry.
-int NormalizeField(int base, int* val, bool* normalized) {
-  int carry = *val / base;
-  *val %= base;
-  if (*val < 0) {
-    carry -= 1;
-    *val += base;
+#if defined(_WIN32) || defined(_WIN64)
+// Uses the globals: '_timezone', '_dstbias' and '_tzname'.
+auto tm_gmtoff(const std::tm& tm) -> decltype(_timezone + _dstbias) {
+  const bool is_dst = tm.tm_isdst > 0;
+  return _timezone + (is_dst ? _dstbias : 0);
+}
+auto tm_zone(const std::tm& tm) -> decltype(_tzname[0]) {
+  const bool is_dst = tm.tm_isdst > 0;
+  return _tzname[is_dst];
+}
+#elif defined(__sun) || defined(_AIX)
+// Uses the globals: 'timezone', 'altzone' and 'tzname'.
+auto tm_gmtoff(const std::tm& tm) -> decltype(timezone) {
+  const bool is_dst = tm.tm_isdst > 0;
+  return is_dst ? altzone : timezone;
+}
+auto tm_zone(const std::tm& tm) -> decltype(tzname[0]) {
+  const bool is_dst = tm.tm_isdst > 0;
+  return tzname[is_dst];
+}
+#elif defined(__native_client__) || defined(__myriad2__) || \
+    defined(__EMSCRIPTEN__)
+// Uses the globals: '_timezone' and 'tzname'.
+auto tm_gmtoff(const std::tm& tm) -> decltype(_timezone + 0) {
+  const bool is_dst = tm.tm_isdst > 0;
+  return _timezone + (is_dst ? 60 * 60 : 0);
+}
+auto tm_zone(const std::tm& tm) -> decltype(tzname[0]) {
+  const bool is_dst = tm.tm_isdst > 0;
+  return tzname[is_dst];
+}
+#elif defined(__VXWORKS__)
+// Uses the globals: 'timezone' and 'tzname'.
+auto tm_gmtoff(const std::tm& tm) -> decltype(timezone + 0) {
+  const bool is_dst = tm.tm_isdst > 0;
+  return timezone + (is_dst ? 60 * 60 : 0);
+}
+auto tm_zone(const std::tm& tm) -> decltype(tzname[0]) {
+  const bool is_dst = tm.tm_isdst > 0;
+  return tzname[is_dst];
+}
+#else
+// Adapt to different spellings of the struct std::tm extension fields.
+#if defined(tm_gmtoff)
+auto tm_gmtoff(const std::tm& tm) -> decltype(tm.tm_gmtoff) {
+  return tm.tm_gmtoff;
+}
+#elif defined(__tm_gmtoff)
+auto tm_gmtoff(const std::tm& tm) -> decltype(tm.__tm_gmtoff) {
+  return tm.__tm_gmtoff;
+}
+#else
+template <typename T>
+auto tm_gmtoff(const T& tm) -> decltype(tm.tm_gmtoff) {
+  return tm.tm_gmtoff;
+}
+template <typename T>
+auto tm_gmtoff(const T& tm) -> decltype(tm.__tm_gmtoff) {
+  return tm.__tm_gmtoff;
+}
+#endif  // tm_gmtoff
+#if defined(tm_zone)
+auto tm_zone(const std::tm& tm) -> decltype(tm.tm_zone) {
+  return tm.tm_zone;
+}
+#elif defined(__tm_zone)
+auto tm_zone(const std::tm& tm) -> decltype(tm.__tm_zone) {
+  return tm.__tm_zone;
+}
+#else
+template <typename T>
+auto tm_zone(const T& tm) -> decltype(tm.tm_zone) {
+  return tm.tm_zone;
+}
+template <typename T>
+auto tm_zone(const T& tm) -> decltype(tm.__tm_zone) {
+  return tm.__tm_zone;
+}
+#endif  // tm_zone
+#endif
+using tm_gmtoff_t = decltype(tm_gmtoff(std::tm{}));
+
+inline std::tm* gm_time(const std::time_t *timep, std::tm *result) {
+#if defined(_WIN32) || defined(_WIN64)
+    return gmtime_s(result, timep) ? nullptr : result;
+#else
+    return gmtime_r(timep, result);
+#endif
+}
+
+inline std::tm* local_time(const std::time_t *timep, std::tm *result) {
+#if defined(_WIN32) || defined(_WIN64)
+    return localtime_s(result, timep) ? nullptr : result;
+#else
+    return localtime_r(timep, result);
+#endif
+}
+
+// Converts a civil second and "dst" flag into a time_t and a struct tm.
+// Returns false if time_t cannot represent the requested civil second.
+// Caller must have already checked that cs.year() will fit into a tm_year.
+bool make_time(const civil_second& cs, int is_dst, std::time_t* t,
+               std::tm* tm) {
+  tm->tm_year = static_cast<int>(cs.year() - year_t{1900});
+  tm->tm_mon = cs.month() - 1;
+  tm->tm_mday = cs.day();
+  tm->tm_hour = cs.hour();
+  tm->tm_min = cs.minute();
+  tm->tm_sec = cs.second();
+  tm->tm_isdst = is_dst;
+  *t = std::mktime(tm);
+  if (*t == std::time_t{-1}) {
+    std::tm tm2;
+    const std::tm* tmp = local_time(t, &tm2);
+    if (tmp == nullptr || tmp->tm_year != tm->tm_year ||
+        tmp->tm_mon != tm->tm_mon || tmp->tm_mday != tm->tm_mday ||
+        tmp->tm_hour != tm->tm_hour || tmp->tm_min != tm->tm_min ||
+        tmp->tm_sec != tm->tm_sec) {
+      // A true error (not just one second before the epoch).
+      return false;
+    }
   }
-  if (carry != 0) *normalized = true;
-  return carry;
+  return true;
 }
 
-bool IsLeap(int64_t year) {
-  return year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
-}
-
-// The month lengths in non-leap and leap years respectively.
-const int kDaysPerMonth[2][1+12] = {
-  {-1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
-  {-1, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
-};
-
-// The number of days in non-leap and leap years respectively.
-const int kDaysPerYear[2] = {365, 366};
-
-// Map a (normalized) Y/M/D to the number of days before/after 1970-01-01.
-// See http://howardhinnant.github.io/date_algorithms.html#days_from_civil.
-std::time_t DayOrdinal(int64_t year, int month, int day) {
-  year -= (month <= 2 ? 1 : 0);
-  const std::time_t era = (year >= 0 ? year : year - 399) / 400;
-  const int yoe = static_cast<int>(year - era * 400);
-  const int doy = (153 * (month + (month > 2 ? -3 : 9)) + 2) / 5 + day - 1;
-  const int doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
-  return era * 146097 + doe - 719468;  // shift epoch to 1970-01-01
+// Find the least time_t in [lo:hi] where local time matches offset, given:
+// (1) lo doesn't match, (2) hi does, and (3) there is only one transition.
+std::time_t find_trans(std::time_t lo, std::time_t hi, tm_gmtoff_t offset) {
+  std::tm tm;
+  while (lo + 1 != hi) {
+    const std::time_t mid = lo + (hi - lo) / 2;
+    std::tm* tmp = local_time(&mid, &tm);
+    if (tmp != nullptr) {
+      if (tm_gmtoff(*tmp) == offset) {
+        hi = mid;
+      } else {
+        lo = mid;
+      }
+    } else {
+      // If std::tm cannot hold some result we resort to a linear search,
+      // ignoring all failed conversions.  Slow, but never really happens.
+      while (++lo != hi) {
+        tmp = local_time(&lo, &tm);
+        if (tmp != nullptr) {
+          if (tm_gmtoff(*tmp) == offset) break;
+        }
+      }
+      return lo;
+    }
+  }
+  return hi;
 }
 
 }  // namespace
 
-TimeInfo TimeZoneLibC::MakeTimeInfo(int64_t year, int mon, int day,
-                                    int hour, int min, int sec) const {
-  bool normalized = false;
-  std::time_t t;
-  if (local_) {
-    // Does not handle SKIPPED/AMBIGUOUS or huge years.
-    std::tm tm;
-    tm.tm_year = static_cast<int>(year - 1900);
-    tm.tm_mon = mon - 1;
-    tm.tm_mday = day;
-    tm.tm_hour = hour;
-    tm.tm_min = min;
-    tm.tm_sec = sec;
-    tm.tm_isdst = -1;
-    t = std::mktime(&tm);
-    if (tm.tm_year != year - 1900 || tm.tm_mon != mon - 1 ||
-        tm.tm_mday != day || tm.tm_hour != hour ||
-        tm.tm_min != min || tm.tm_sec != sec) {
-      normalized = true;
+std::unique_ptr<TimeZoneLibC> TimeZoneLibC::Make(const std::string& name) {
+  return std::unique_ptr<TimeZoneLibC>(new TimeZoneLibC(name));
+}
+
+time_zone::absolute_lookup TimeZoneLibC::BreakTime(
+    const time_point<seconds>& tp) const {
+  time_zone::absolute_lookup al;
+  al.offset = 0;
+  al.is_dst = false;
+  al.abbr = "-00";
+
+  const std::int_fast64_t s = ToUnixSeconds(tp);
+
+  // If std::time_t cannot hold the input we saturate the output.
+  if (s < std::numeric_limits<std::time_t>::min()) {
+    al.cs = civil_second::min();
+    return al;
+  }
+  if (s > std::numeric_limits<std::time_t>::max()) {
+    al.cs = civil_second::max();
+    return al;
+  }
+
+  const std::time_t t = static_cast<std::time_t>(s);
+  std::tm tm;
+  std::tm* tmp = local_ ? local_time(&t, &tm) : gm_time(&t, &tm);
+
+  // If std::tm cannot hold the result we saturate the output.
+  if (tmp == nullptr) {
+    al.cs = (s < 0) ? civil_second::min() : civil_second::max();
+    return al;
+  }
+
+  const year_t year = tmp->tm_year + year_t{1900};
+  al.cs = civil_second(year, tmp->tm_mon + 1, tmp->tm_mday,
+                       tmp->tm_hour, tmp->tm_min, tmp->tm_sec);
+  al.offset = static_cast<int>(tm_gmtoff(*tmp));
+  al.abbr = local_ ? tm_zone(*tmp) : "UTC";  // as expected by cctz
+  al.is_dst = tmp->tm_isdst > 0;
+  return al;
+}
+
+time_zone::civil_lookup TimeZoneLibC::MakeTime(const civil_second& cs) const {
+  if (!local_) {
+    // If time_point<seconds> cannot hold the result we saturate.
+    static const civil_second min_tp_cs =
+        civil_second() + ToUnixSeconds(time_point<seconds>::min());
+    static const civil_second max_tp_cs =
+        civil_second() + ToUnixSeconds(time_point<seconds>::max());
+    const time_point<seconds> tp =
+        (cs < min_tp_cs)
+            ? time_point<seconds>::min()
+            : (cs > max_tp_cs) ? time_point<seconds>::max()
+                               : FromUnixSeconds(cs - civil_second());
+    return {time_zone::civil_lookup::UNIQUE, tp, tp, tp};
+  }
+
+  // If tm_year cannot hold the requested year we saturate the result.
+  if (cs.year() < 0) {
+    if (cs.year() < std::numeric_limits<int>::min() + year_t{1900}) {
+      const time_point<seconds> tp = time_point<seconds>::min();
+      return {time_zone::civil_lookup::UNIQUE, tp, tp, tp};
     }
   } else {
-    min += NormalizeField(60, &sec, &normalized);
-    hour += NormalizeField(60, &min, &normalized);
-    day += NormalizeField(24, &hour, &normalized);
-    mon -= 1;  // months are one-based
-    year += NormalizeField(12, &mon, &normalized);
-    mon += 1;  // restore [1:12]
-    year += (mon > 2 ? 1 : 0);
-    int year_len = kDaysPerYear[IsLeap(year)];
-    while (day > year_len) {
-      day -= year_len;
-      year += 1;
-      year_len = kDaysPerYear[IsLeap(year)];
+    if (cs.year() - year_t{1900} > std::numeric_limits<int>::max()) {
+      const time_point<seconds> tp = time_point<seconds>::max();
+      return {time_zone::civil_lookup::UNIQUE, tp, tp, tp};
     }
-    while (day <= 0) {
-      year -= 1;
-      day += kDaysPerYear[IsLeap(year)];
-    }
-    year -= (mon > 2 ? 1 : 0);
-    bool leap_year = IsLeap(year);
-    while (day > kDaysPerMonth[leap_year][mon]) {
-      day -= kDaysPerMonth[leap_year][mon];
-      if (++mon > 12) {
-        mon = 1;
-        year += 1;
-        leap_year = IsLeap(year);
-      }
-    }
-    t = ((((DayOrdinal(year, mon, day) * 24) + hour) * 60) + min) * 60 + sec;
   }
-  TimeInfo ti;
-  ti.kind = time_zone::civil_lookup::UNIQUE;
-  ti.pre = ti.trans = ti.post = FromUnixSeconds(t);
-  ti.normalized = normalized;
-  return ti;
+
+  // We probe with "is_dst" values of 0 and 1 to try to distinguish unique
+  // civil seconds from skipped or repeated ones.  This is not always possible
+  // however, as the "dst" flag does not change over some offset transitions.
+  // We are also subject to the vagaries of mktime() implementations. For
+  // example, some implementations treat "tm_isdst" as a demand (useless),
+  // and some as a disambiguator (useful).
+  std::time_t t0, t1;
+  std::tm tm0, tm1;
+  if (make_time(cs, 0, &t0, &tm0) && make_time(cs, 1, &t1, &tm1)) {
+    if (tm0.tm_isdst == tm1.tm_isdst) {
+      // The civil time was singular (pre == trans == post).
+      const time_point<seconds> tp = FromUnixSeconds(tm0.tm_isdst ? t1 : t0);
+      return {time_zone::civil_lookup::UNIQUE, tp, tp, tp};
+    }
+
+    tm_gmtoff_t offset = tm_gmtoff(tm0);
+    if (t0 < t1) {  // negative DST
+      std::swap(t0, t1);
+      offset = tm_gmtoff(tm1);
+    }
+
+    const std::time_t tt = find_trans(t1, t0, offset);
+    const time_point<seconds> trans = FromUnixSeconds(tt);
+
+    if (tm0.tm_isdst) {
+      // The civil time did not exist (pre >= trans > post).
+      const time_point<seconds> pre = FromUnixSeconds(t0);
+      const time_point<seconds> post = FromUnixSeconds(t1);
+      return {time_zone::civil_lookup::SKIPPED, pre, trans, post};
+    }
+
+    // The civil time was ambiguous (pre < trans <= post).
+    const time_point<seconds> pre = FromUnixSeconds(t1);
+    const time_point<seconds> post = FromUnixSeconds(t0);
+    return {time_zone::civil_lookup::REPEATED, pre, trans, post};
+  }
+
+  // make_time() failed somehow so we saturate the result.
+  const time_point<seconds> tp = (cs < civil_second())
+                                     ? time_point<seconds>::min()
+                                     : time_point<seconds>::max();
+  return {time_zone::civil_lookup::UNIQUE, tp, tp, tp};
 }
+
+bool TimeZoneLibC::NextTransition(const time_point<seconds>&,
+                                  time_zone::civil_transition*) const {
+  return false;
+}
+
+bool TimeZoneLibC::PrevTransition(const time_point<seconds>&,
+                                  time_zone::civil_transition*) const {
+  return false;
+}
+
+std::string TimeZoneLibC::Version() const {
+  return std::string();  // unknown
+}
+
+std::string TimeZoneLibC::Description() const {
+  return local_ ? "localtime" : "UTC";
+}
+
+TimeZoneLibC::TimeZoneLibC(const std::string& name)
+    : local_(name == "localtime") {}
 
 }  // namespace cctz

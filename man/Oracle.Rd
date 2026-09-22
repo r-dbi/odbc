@@ -6,6 +6,7 @@
 \alias{sqlCreateTable,Oracle-method}
 \alias{odbcConnectionTables,Oracle,character-method}
 \alias{odbcConnectionColumns,Oracle,character-method}
+\alias{odbcConnectionColumns,Oracle,SQL-method}
 \title{Oracle}
 \usage{
 \S4method{sqlCreateTable}{Oracle}(
@@ -41,6 +42,11 @@ does not look through synonyms.
 
 Query, rather than use \code{SQLColumns} ODBC API, since we bind a \code{BIGINT} to
 one of the column results and Oracle's OEM driver can't handle it.
+}
+
+\subsection{\code{odbcConnectionColumns()}}{
+
+Defined explicitly (rather than inherited) to avoid an ambiguous S4 dispatch
 }
 }
 \keyword{internal}

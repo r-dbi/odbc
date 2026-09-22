@@ -71,7 +71,7 @@ empty string which is equivalent to returning the column names without
 performing any conversion.}
 
 \item{bigint}{The R type that \code{SQL_BIGINT} types should be mapped to.
-Default is \link[bit64:bit64-package]{bit64::integer64}, which allows the full range of 64 bit
+Default is \link[bit64:integer64]{bit64::integer64}, which allows the full range of 64 bit
 integers.}
 
 \item{timeout}{Time in seconds to timeout the connection attempt. Setting a
