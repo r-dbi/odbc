@@ -20,12 +20,26 @@ test_that("manually supplied arguments override automatic", {
   expect_equal(args$authMech, 123)
 })
 
+test_that("string columns are not limited to the driver default length", {
+  withr::local_envvar(DATABRICKS_TOKEN = "abc")
+  args <- databricks_args("x", "y", driver = "driver")
+  expect_equal(args$defaultStringColumnLength, 65535)
+})
+
 test_that("fallbacks to driver name", {
   local_mocked_bindings(
     databricks_default_driver_paths = function() character(),
     odbcListDrivers = function() list(name = c("bar", "Databricks"))
   )
   expect_equal(databricks_default_driver(), "Databricks")
+})
+
+test_that("fallbacks to updated Windows driver name (#1030)", {
+  local_mocked_bindings(
+    databricks_default_driver_paths = function() character(),
+    odbcListDrivers = function() list(name = c("bar", "Databricks ODBC Driver"))
+  )
+  expect_equal(databricks_default_driver(), "Databricks ODBC Driver")
 })
 
 test_that("errors if can't find driver", {

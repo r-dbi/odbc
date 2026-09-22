@@ -2,6 +2,22 @@
 
 * odbc now requires R 4.2.0.
 
+* Fixed silent truncation of `BINARY`/`VARBINARY` data larger than 1024 bytes
+  when the driver does not report the remaining data length (`SQL_NO_TOTAL`)
+  during chunked retrieval, as seen with the Databricks/Simba Spark
+  driver (#1024).
+
+# odbc 1.7.1
+
+* `databricks()` driver auto-detection now recognizes the Windows driver
+  name `Databricks ODBC Driver`.
+
+* `databricks()` now sets `DefaultStringColumnLength` to 65535 by default.
+  The driver reports `STRING` columns as `VARCHAR(DefaultStringColumnLength)`
+  and silently truncates longer values; its own default of 255 caused string
+  data to be cut off after roughly 1000 characters. Pass
+  `defaultStringColumnLength` to `dbConnect()` to override (#1023).
+
 * Update vendored cctz to current upstream, including local build compatibility
   fixes retained for R package and Windows builds.
 
