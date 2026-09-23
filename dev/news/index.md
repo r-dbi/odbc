@@ -2,6 +2,8 @@
 
 ## odbc (development version)
 
+- odbc now requires R 4.2.0.
+
 - Fixed silent truncation of `BINARY`/`VARBINARY` data larger than 1024
   bytes when the driver does not report the remaining data length
   (`SQL_NO_TOTAL`) during chunked retrieval, as seen with the
