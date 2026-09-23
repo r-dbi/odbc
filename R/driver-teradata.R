@@ -79,8 +79,7 @@ setMethod(
         table_catalog = navec,
         table_schema = navec,
         table_name = tempTableNames,
-        table_remarks = navec,
-        stringsAsFactors = FALSE
+        table_remarks = navec
       )
     )
   }

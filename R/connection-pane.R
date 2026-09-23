@@ -49,7 +49,7 @@ odbcListObjectTypes.default <- function(connection) {
   viewlike <- grep("view", table_types, value = TRUE)
   viewlike_types <- sapply(
     viewlike,
-    function(i) list(contains = "data", icon = "connections/objects/view.png"),
+    \(i) list(contains = "data", icon = "connections/objects/view.png"),
     simplify = FALSE
   )
   obj_types <- c(obj_types, viewlike_types)
@@ -105,14 +105,13 @@ odbcListObjects.OdbcConnection <- function(
   if (is.null(catalog)) {
     catalogs <- tryCatch(
       string_values(odbcConnectionCatalogs(connection)),
-      error = function(err) character()
+      error = \(err) character()
     )
     if (length(catalogs) > 0) {
       return(
         data.frame(
           name = catalogs,
-          type = rep("catalog", times = length(catalogs)),
-          stringsAsFactors = FALSE
+          type = rep("catalog", times = length(catalogs))
         )
       )
     }
@@ -126,8 +125,7 @@ odbcListObjects.OdbcConnection <- function(
       return(
         data.frame(
           name = schemas,
-          type = rep("schema", times = length(schemas)),
-          stringsAsFactors = FALSE
+          type = rep("schema", times = length(schemas))
         )
       )
     }
@@ -135,14 +133,13 @@ odbcListObjects.OdbcConnection <- function(
 
   objs <- tryCatch(
     odbcConnectionTables(connection, name, catalog, schema, table_type = type),
-    error = function(e) NULL
+    error = \(e) NULL
   )
   # just return a list of the objects and their types, possibly filtered by the
   # options above
   data.frame(
     name = objs[["table_name"]],
-    type = tolower(objs[["table_type"]]),
-    stringsAsFactors = FALSE
+    type = tolower(objs[["table_type"]])
   )
 }
 
@@ -244,8 +241,7 @@ odbcListColumns.OdbcConnection <- function(
   # extract and name fields for observer
   data.frame(
     name = cols[["name"]],
-    type = cols[["field.type"]],
-    stringsAsFactors = FALSE
+    type = cols[["field.type"]]
   )
 }
 
@@ -397,7 +393,7 @@ odbcConnectionActions <- function(connection) {
           icon = system.file("icons/edit-sql.png", package = "odbc"),
           callback = function() {
             varname <- Filter(
-              function(e) identical(get(e, envir = .GlobalEnv), connection),
+              \(e) identical(get(e, envir = .GlobalEnv), connection),
               ls(envir = .GlobalEnv)
             )
 
