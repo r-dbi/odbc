@@ -12,9 +12,8 @@ odbc sets up small example database deployments.
 
 For the most part, this vignette assumes a MacOS system with aarch64
 (e.g. M1 or M2) architecture. For Linux example code, see
-[`.github/workflows/db.yaml`](https://github.com/r-dbi/odbc/blob/main/.github/workflows/db.yaml),
-and for Windows, see
-[`.github/workflows/db-windows.yml`](https://github.com/r-dbi/odbc/blob/main/.github/workflows/db-windows.yml).
+`.github/workflows/db.yaml`, and for Windows, see
+`.github/workflows/db-windows.yml`.
 
 ## Posit Professional Drivers
 

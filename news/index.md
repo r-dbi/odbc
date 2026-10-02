@@ -1,5 +1,15 @@
 # Changelog
 
+## odbc 1.7.2
+
+- odbc now requires R 4.2.0.
+
+- Fixed silent truncation of `BINARY`/`VARBINARY` data larger than 1024
+  bytes when the driver does not report the remaining data length
+  (`SQL_NO_TOTAL`) during chunked retrieval, as seen with the
+  Databricks/Simba Spark driver
+  ([\#1024](https://github.com/r-dbi/odbc/issues/1024)).
+
 ## odbc 1.7.1
 
 CRAN release: 2026-09-16
