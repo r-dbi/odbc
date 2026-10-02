@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">odbc</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.1.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.2.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="odbc-development-version">odbc (development version)<a class="anchor" aria-label="anchor" href="#odbc-development-version"></a></h2>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.7.2" id="odbc-172">odbc 1.7.2<a class="anchor" aria-label="anchor" href="#odbc-172"></a></h2>
 <ul><li><p>odbc now requires R 4.2.0.</p></li>
 <li><p>Fixed silent truncation of <code>BINARY</code>/<code>VARBINARY</code> data larger than 1024 bytes when the driver does not report the remaining data length (<code>SQL_NO_TOTAL</code>) during chunked retrieval, as seen with the Databricks/Simba Spark driver (<a href="https://github.com/r-dbi/odbc/issues/1024" class="external-link">#1024</a>).</p></li>
 </ul></div>
