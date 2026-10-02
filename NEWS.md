@@ -1,4 +1,4 @@
-# odbc (development version)
+# odbc 1.7.2
 
 * odbc now requires R 4.2.0.
 
