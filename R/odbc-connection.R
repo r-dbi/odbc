@@ -463,7 +463,9 @@ setGeneric(
   }
 )
 
-setMethod("odbcConnectionProcedures", c("OdbcConnection", "Id"),
+setMethod(
+  "odbcConnectionProcedures",
+  c("OdbcConnection", "Id"),
   function(conn, name, exact = FALSE) {
     odbcConnectionProcedures(
       conn,
@@ -475,12 +477,10 @@ setMethod("odbcConnectionProcedures", c("OdbcConnection", "Id"),
   }
 )
 
-setMethod("odbcConnectionProcedures", c("OdbcConnection", "character"),
-  function(conn,
-           name,
-           catalog_name = NULL,
-           schema_name = NULL,
-           exact = FALSE) {
+setMethod(
+  "odbcConnectionProcedures",
+  c("OdbcConnection", "character"),
+  function(conn, name, catalog_name = NULL, schema_name = NULL, exact = FALSE) {
     if (exact) {
       catalog_name <- escapePattern(catalog_name)
       schema_name <- escapePattern(schema_name)
@@ -495,12 +495,16 @@ setMethod("odbcConnectionProcedures", c("OdbcConnection", "character"),
   }
 )
 
-setMethod("odbcConnectionProcedures", "OdbcConnection",
-  function(conn,
-           name = NULL,
-           catalog_name = NULL,
-           schema_name = NULL,
-           exact = FALSE) {
+setMethod(
+  "odbcConnectionProcedures",
+  "OdbcConnection",
+  function(
+    conn,
+    name = NULL,
+    catalog_name = NULL,
+    schema_name = NULL,
+    exact = FALSE
+  ) {
     odbcConnectionProcedures(
       conn,
       name = "%",
@@ -511,7 +515,9 @@ setMethod("odbcConnectionProcedures", "OdbcConnection",
   }
 )
 
-setMethod("odbcConnectionProcedures", c("OdbcConnection", "SQL"),
+setMethod(
+  "odbcConnectionProcedures",
+  c("OdbcConnection", "SQL"),
   function(conn, name, exact = FALSE) {
     odbcConnectionProcedures(
       conn,
@@ -530,13 +536,17 @@ setGeneric(
   }
 )
 
-setMethod("odbcConnectionProcedureColumns", c("OdbcConnection", "character"),
-  function(conn,
-           name,
-           catalog_name = NULL,
-           schema_name = NULL,
-           column_name = NULL,
-           exact = FALSE) {
+setMethod(
+  "odbcConnectionProcedureColumns",
+  c("OdbcConnection", "character"),
+  function(
+    conn,
+    name,
+    catalog_name = NULL,
+    schema_name = NULL,
+    column_name = NULL,
+    exact = FALSE
+  ) {
     if (exact) {
       catalog_name <- escapePattern(catalog_name)
       schema_name <- escapePattern(schema_name)
@@ -553,7 +563,9 @@ setMethod("odbcConnectionProcedureColumns", c("OdbcConnection", "character"),
   }
 )
 
-setMethod("odbcConnectionProcedureColumns", c("OdbcConnection", "Id"),
+setMethod(
+  "odbcConnectionProcedureColumns",
+  c("OdbcConnection", "Id"),
   function(conn, name, ...) {
     odbcConnectionProcedureColumns(
       conn,
@@ -565,7 +577,9 @@ setMethod("odbcConnectionProcedureColumns", c("OdbcConnection", "Id"),
   }
 )
 
-setMethod("odbcConnectionProcedureColumns", c("OdbcConnection", "SQL"),
+setMethod(
+  "odbcConnectionProcedureColumns",
+  c("OdbcConnection", "SQL"),
   function(conn, name, ...) {
     odbcConnectionProcedureColumns(
       conn,

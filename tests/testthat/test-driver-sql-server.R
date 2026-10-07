@@ -125,8 +125,14 @@ test_that("can enumerate stored procedures", {
   con <- test_con("SQLSERVER")
   proc <- "odbc_test_proc"
   dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc))
-  dbExecute(con, paste0(
-    "CREATE PROCEDURE dbo.", proc, " @x int AS SELECT @x AS val"))
+  dbExecute(
+    con,
+    paste0(
+      "CREATE PROCEDURE dbo.",
+      proc,
+      " @x int AS SELECT @x AS val"
+    )
+  )
   on.exit(dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc)))
 
   procs <- odbcConnectionProcedures(con, paste0(proc, "%"), schema_name = "dbo")
@@ -137,7 +143,12 @@ test_that("can enumerate stored procedures", {
   objs <- odbcListObjects(con, catalog = "master", schema = "dbo")
   expect_true(proc %in% objs$name[objs$type == "procedure"])
 
-  tbls <- odbcListObjects(con, catalog = "master", schema = "dbo", type = "table")
+  tbls <- odbcListObjects(
+    con,
+    catalog = "master",
+    schema = "dbo",
+    type = "table"
+  )
   expect_false(any(tbls$type == "procedure"))
 })
 
@@ -145,9 +156,14 @@ test_that("can enumerate stored procedure parameters", {
   con <- test_con("SQLSERVER")
   proc <- "odbc_param_proc"
   dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc))
-  dbExecute(con, paste0(
-    "CREATE PROCEDURE dbo.", proc,
-    " @x int, @label varchar(50), @y int OUTPUT AS SET @y = @x"))
+  dbExecute(
+    con,
+    paste0(
+      "CREATE PROCEDURE dbo.",
+      proc,
+      " @x int, @label varchar(50), @y int OUTPUT AS SET @y = @x"
+    )
+  )
   on.exit(dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc)))
 
   params <- odbcConnectionProcedureColumns(con, proc, schema_name = "dbo")
@@ -155,7 +171,12 @@ test_that("can enumerate stored procedure parameters", {
   expect_true(all(c("@x", "@label", "@y") %in% params$column_name))
   expect_true(is.numeric(params$ordinal_position))
 
-  flds <- odbcListColumns(con, procedure = proc, schema = "dbo", catalog = "master")
+  flds <- odbcListColumns(
+    con,
+    procedure = proc,
+    schema = "dbo",
+    catalog = "master"
+  )
   expect_named(flds, c("name", "type"))
   expect_true("@x" %in% flds$name)
   expect_match(flds$type[flds$name == "@x"], "(in)", fixed = TRUE)

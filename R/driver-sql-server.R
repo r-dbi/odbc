@@ -202,11 +202,17 @@ setMethod(
 )
 
 # Strip the ';N' group suffix SQL Server appends to procedure names.
-setMethod("odbcConnectionProcedures", c("Microsoft SQL Server", "character"),
+setMethod(
+  "odbcConnectionProcedures",
+  c("Microsoft SQL Server", "character"),
   function(conn, name, ...) {
     procs <- callNextMethod()
     if (!is.null(procs[["procedure_name"]])) {
-      procs[["procedure_name"]] <- sub(";[0-9]+$", "", procs[["procedure_name"]])
+      procs[["procedure_name"]] <- sub(
+        ";[0-9]+$",
+        "",
+        procs[["procedure_name"]]
+      )
     }
     procs
   }

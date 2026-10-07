@@ -280,18 +280,21 @@ procedureColumnsAsFields <- function(connection, procedure, catalog, schema) {
     schema_name = schema
   )
   if (is.null(params) || nrow(params) == 0) {
-    return(data.frame(name = character(), type = character(),
-                      stringsAsFactors = FALSE))
+    return(data.frame(
+      name = character(),
+      type = character(),
+      stringsAsFactors = FALSE
+    ))
   }
 
   # ODBC COLUMN_TYPE codes
   direction <- c(
     "0" = "unknown",
-    "1" = "in",      # SQL_PARAM_INPUT
-    "2" = "inout",   # SQL_PARAM_INPUT_OUTPUT
-    "3" = "result",  # SQL_RESULT_COL
-    "4" = "out",     # SQL_PARAM_OUTPUT
-    "5" = "return"   # SQL_RETURN_VALUE
+    "1" = "in",
+    "2" = "inout",
+    "3" = "result",
+    "4" = "out",
+    "5" = "return"
   )[as.character(params[["column_type"]])]
   direction[is.na(direction)] <- "unknown"
 
