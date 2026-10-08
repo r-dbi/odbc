@@ -361,6 +361,55 @@ test_that("odbcPreviewObject doesn't warn about pending rows", {
   expect_equal(nrow(res), 3)
 })
 
+test_that("odbcPreviewObject() lists a routine's parameters", {
+  con <- test_con("SQLSERVER")
+  proc <- "odbc_preview_proc"
+  fn <- "odbc_preview_fn"
+  dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc))
+  dbExecute(con, paste0("DROP FUNCTION IF EXISTS dbo.", fn))
+  dbExecute(
+    con,
+    paste0(
+      "CREATE PROCEDURE dbo.",
+      proc,
+      " @x int, @y decimal(10, 2) OUTPUT AS SET @y = @x"
+    )
+  )
+  dbExecute(
+    con,
+    paste0(
+      "CREATE FUNCTION dbo.",
+      fn,
+      " (@x int) RETURNS int AS BEGIN RETURN @x END"
+    )
+  )
+  on.exit({
+    dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc))
+    dbExecute(con, paste0("DROP FUNCTION IF EXISTS dbo.", fn))
+  })
+
+  res <- odbcPreviewObject(
+    con,
+    rowLimit = 10,
+    procedure = proc,
+    schema = "dbo",
+    catalog = "master"
+  )
+  expect_equal(res$parameter, c("@RETURN_VALUE", "@x", "@y"))
+  expect_equal(res$direction, c("return", "in", "inout"))
+  expect_equal(res$type, c("int", "int", "decimal"))
+  expect_equal(res$digits[3], 2)
+
+  res <- odbcPreviewObject(
+    con,
+    rowLimit = 1,
+    `function` = fn,
+    schema = "dbo",
+    catalog = "master"
+  )
+  expect_equal(res$parameter, "@RETURN_VALUE")
+})
+
 test_that("dates should always be interpreted in the system time zone (#398)", {
   con <- test_con("SQLSERVER")
   # TODO: resolve the issue requiring this skip

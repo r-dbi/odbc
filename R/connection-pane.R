@@ -290,6 +290,15 @@ odbcListColumns.OdbcConnection <- function(
 
 # Pane fields: name, and type with direction, e.g. "int (in)".
 procedureColumnsAsFields <- function(connection, procedure, catalog, schema) {
+  params <- procedureParameters(connection, procedure, catalog, schema)
+  data.frame(
+    name = params[["parameter"]],
+    type = paste0(params[["type"]], " (", params[["direction"]], ")"),
+    stringsAsFactors = FALSE
+  )
+}
+
+procedureParameters <- function(connection, procedure, catalog, schema) {
   params <- odbcConnectionProcedureColumns(
     connection,
     name = procedure,
@@ -298,11 +307,16 @@ procedureColumnsAsFields <- function(connection, procedure, catalog, schema) {
   )
   if (is.null(params) || nrow(params) == 0) {
     return(data.frame(
-      name = character(),
+      parameter = character(),
+      direction = character(),
       type = character(),
+      size = integer(),
+      digits = integer(),
+      nullable = logical(),
       stringsAsFactors = FALSE
     ))
   }
+  params <- params[order(params[["ordinal_position"]]), , drop = FALSE]
 
   # ODBC COLUMN_TYPE codes
   direction <- c(
@@ -320,9 +334,15 @@ procedureColumnsAsFields <- function(connection, procedure, catalog, schema) {
   nm[!nzchar(nm)] <- "<return value>"
 
   data.frame(
-    name = nm,
-    type = paste0(params[["type_name"]], " (", direction, ")"),
-    stringsAsFactors = FALSE
+    parameter = nm,
+    direction = unname(direction),
+    type = params[["type_name"]],
+    size = params[["column_size"]],
+    digits = params[["decimal_digits"]],
+    # SQL_NO_NULLS (0), SQL_NULLABLE (1), SQL_NULLABLE_UNKNOWN (2)
+    nullable = c(FALSE, TRUE, NA)[params[["nullable"]] + 1],
+    stringsAsFactors = FALSE,
+    row.names = NULL
   )
 }
 
@@ -349,6 +369,7 @@ odbcPreviewObject.OdbcConnection <- function(
   rowLimit,
   table = NULL,
   view = NULL,
+  procedure = NULL,
   schema = NULL,
   catalog = NULL,
   ...
@@ -356,8 +377,16 @@ odbcPreviewObject.OdbcConnection <- function(
   check_number_whole(rowLimit)
   check_string(table, allow_null = TRUE)
   check_string(view, allow_null = TRUE)
+  check_string(procedure, allow_null = TRUE)
   check_string(schema, allow_null = TRUE)
   check_string(catalog, allow_null = TRUE)
+
+  # Routines have no rows; preview their parameters.
+  routine <- routineName(procedure, ...)
+  if (!is.null(routine)) {
+    params <- procedureParameters(connection, routine, catalog, schema)
+    return(params[seq_len(min(nrow(params), rowLimit)), , drop = FALSE])
+  }
 
   # extract object name from arguments
   name <- validateObjectName(table, view, ...)
