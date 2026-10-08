@@ -5666,8 +5666,8 @@ short catalog::procedure_columns::column_type() const
 
 short catalog::procedure_columns::data_type() const
 {
-    // DATA_TYPE is never NULL
-    return result_.get<short>(5);
+    // NULL for SQL Server table-valued function return values
+    return result_.get<short>(5, SQL_UNKNOWN_TYPE);
 }
 
 string_type catalog::procedure_columns::type_name() const

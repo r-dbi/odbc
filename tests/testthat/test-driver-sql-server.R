@@ -184,6 +184,31 @@ test_that("can enumerate stored procedure parameters", {
   expect_match(flds$type[flds$name == "@y"], "(inout)", fixed = TRUE)
 })
 
+test_that("can enumerate table-valued function parameters", {
+  con <- test_con("SQLSERVER")
+  fn <- "odbc_tvf_param_fn"
+  dbExecute(con, paste0("DROP FUNCTION IF EXISTS dbo.", fn))
+  dbExecute(
+    con,
+    paste0(
+      "CREATE FUNCTION dbo.",
+      fn,
+      " (@x int) RETURNS TABLE AS RETURN (SELECT @x AS x)"
+    )
+  )
+  on.exit(dbExecute(con, paste0("DROP FUNCTION IF EXISTS dbo.", fn)))
+
+  # SQL Server reports a NULL DATA_TYPE for the table return value.
+  flds <- odbcListColumns(
+    con,
+    procedure = fn,
+    schema = "dbo",
+    catalog = "master"
+  )
+  expect_equal(flds$name, c("@TABLE_RETURN_VALUE", "@x"))
+  expect_equal(flds$type, c("table (result)", "int (in)"))
+})
+
 test_that("works with dbAppendTable (#215)", {
   con <- test_con("SQLSERVER")
 
