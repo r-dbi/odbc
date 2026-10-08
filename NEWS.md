@@ -1,7 +1,7 @@
 # odbc (development version)
 
-* The RStudio/Posit Connections Pane now lists stored procedures alongside
-  tables and views, enumerated via the ODBC `SQLProcedures` call.
+* The RStudio/Posit Connections Pane now lists stored procedures and functions
+  alongside tables and views, enumerated via the ODBC `SQLProcedures` call.
   Stored procedures expand to show their parameters (with direction), via the
   ODBC `SQLProcedureColumns` call.
 

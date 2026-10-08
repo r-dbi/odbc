@@ -201,18 +201,19 @@ setMethod(
   }
 )
 
-# Strip the ';N' group suffix SQL Server appends to procedure names.
+# SQL Server reports every routine as SQL_PT_FUNCTION, but suffixes names
+# with ';0' (function) or ';N' (procedure). Derive the type, then strip.
 setMethod(
   "odbcConnectionProcedures",
   c("Microsoft SQL Server", "character"),
   function(conn, name, ...) {
     procs <- callNextMethod()
-    if (!is.null(procs[["procedure_name"]])) {
-      procs[["procedure_name"]] <- sub(
-        ";[0-9]+$",
-        "",
-        procs[["procedure_name"]]
-      )
+    nm <- procs[["procedure_name"]]
+    if (!is.null(nm)) {
+      group <- regmatches(nm, regexpr(";[0-9]+$", nm))
+      has_group <- grepl(";[0-9]+$", nm)
+      procs[["procedure_type"]][has_group] <- ifelse(group == ";0", 2L, 1L)
+      procs[["procedure_name"]] <- sub(";[0-9]+$", "", nm)
     }
     procs
   }

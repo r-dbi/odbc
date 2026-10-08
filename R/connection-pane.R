@@ -54,7 +54,13 @@ odbcListObjectTypes.default <- function(connection) {
   )
   obj_types <- c(obj_types, viewlike_types)
 
-  obj_types <- c(obj_types, list(procedure = list(contains = "data")))
+  obj_types <- c(
+    obj_types,
+    list(
+      procedure = list(contains = "data"),
+      `function` = list(contains = "data")
+    )
+  )
 
   # check for schema support
   if (connection@info$supports.schema) {
@@ -144,17 +150,20 @@ odbcListObjects.OdbcConnection <- function(
     type = tolower(objs[["table_type"]])
   )
 
-  if (is.null(type) || identical(tolower(type), "procedure")) {
+  if (is.null(type) || tolower(type) %in% c("procedure", "function")) {
     procs <- tryCatch(
       odbcConnectionProcedures(connection, name, catalog, schema),
       error = function(e) NULL
     )
     if (!is.null(procs) && nrow(procs) > 0) {
+      # SQL_PT_FUNCTION
+      kind <- ifelse(procs[["procedure_type"]] %in% 2L, "function", "procedure")
+      keep <- if (is.null(type)) TRUE else kind == tolower(type)
       result <- rbind(
         result,
         data.frame(
-          name = procs[["procedure_name"]],
-          type = rep("procedure", times = nrow(procs)),
+          name = procs[["procedure_name"]][keep],
+          type = kind[keep],
           stringsAsFactors = FALSE
         )
       )
@@ -235,6 +244,13 @@ validateObjectName <- function(table, view, ..., call = caller_env()) {
   table %||% view
 }
 
+# `function` is a reserved word, so it can only arrive via `...`.
+routineName <- function(procedure, ..., call = caller_env()) {
+  fn <- list(...)[["function"]]
+  check_string(fn, allow_null = TRUE, arg = "function", call = call)
+  procedure %||% fn
+}
+
 #' @export
 odbcListColumns.OdbcConnection <- function(
   connection,
@@ -251,8 +267,9 @@ odbcListColumns.OdbcConnection <- function(
   check_string(catalog, allow_null = TRUE)
   check_string(schema, allow_null = TRUE)
 
-  if (!is.null(procedure)) {
-    return(procedureColumnsAsFields(connection, procedure, catalog, schema))
+  routine <- routineName(procedure, ...)
+  if (!is.null(routine)) {
+    return(procedureColumnsAsFields(connection, routine, catalog, schema))
   }
 
   name <- validateObjectName(table, view, ...)

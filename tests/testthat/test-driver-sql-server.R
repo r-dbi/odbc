@@ -184,6 +184,48 @@ test_that("can enumerate stored procedure parameters", {
   expect_match(flds$type[flds$name == "@y"], "(inout)", fixed = TRUE)
 })
 
+test_that("functions are listed separately from stored procedures", {
+  con <- test_con("SQLSERVER")
+  proc <- "odbc_kind_proc"
+  fn <- "odbc_kind_fn"
+  dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc))
+  dbExecute(con, paste0("DROP FUNCTION IF EXISTS dbo.", fn))
+  dbExecute(con, paste0("CREATE PROCEDURE dbo.", proc, " AS SELECT 1 AS x"))
+  dbExecute(
+    con,
+    paste0(
+      "CREATE FUNCTION dbo.",
+      fn,
+      " (@x int) RETURNS int AS BEGIN RETURN @x END"
+    )
+  )
+  on.exit({
+    dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc))
+    dbExecute(con, paste0("DROP FUNCTION IF EXISTS dbo.", fn))
+  })
+
+  objs <- odbcListObjects(con, catalog = "master", schema = "dbo")
+  expect_equal(objs$type[objs$name == proc], "procedure")
+  expect_equal(objs$type[objs$name == fn], "function")
+
+  fns <- odbcListObjects(
+    con,
+    catalog = "master",
+    schema = "dbo",
+    type = "function"
+  )
+  expect_in(fn, fns$name)
+  expect_equal(unique(fns$type), "function")
+
+  flds <- odbcListColumns(
+    con,
+    `function` = fn,
+    schema = "dbo",
+    catalog = "master"
+  )
+  expect_equal(flds$type[flds$name == "@x"], "int (in)")
+})
+
 test_that("can enumerate table-valued function parameters", {
   con <- test_con("SQLSERVER")
   fn <- "odbc_tvf_param_fn"
