@@ -532,3 +532,10 @@ test_that("Sanitize filters out auth keys", {
     list(dsn = "abc", useNativeQuery = "def")
   )
 })
+
+test_that("base64_encode() pads to a multiple of four characters", {
+  expect_equal(base64_encode(charToRaw("Man")), "TWFu")
+  expect_equal(base64_encode(charToRaw("Ma")), "TWE=")
+  expect_equal(base64_encode(charToRaw("M")), "TQ==")
+  expect_equal(base64_encode(raw()), "")
+})

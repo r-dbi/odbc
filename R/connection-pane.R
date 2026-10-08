@@ -57,8 +57,8 @@ odbcListObjectTypes.default <- function(connection) {
   obj_types <- c(
     obj_types,
     list(
-      procedure = list(contains = "data"),
-      `function` = list(contains = "data")
+      procedure = list(contains = "data", icon = objectTypeIcon("procedure")),
+      `function` = list(contains = "data", icon = objectTypeIcon("function"))
     )
   )
 
@@ -73,6 +73,20 @@ odbcListObjectTypes.default <- function(connection) {
   }
 
   obj_types
+}
+
+# RStudio needs a PNG path; Positron a data URI, drawn unscaled (so 16px SVG).
+objectTypeIcon <- function(type) {
+  ext <- if (is_positron()) "svg" else "png"
+  path <- system.file("icons", paste0(type, ".", ext), package = "odbc")
+  if (!nzchar(path)) {
+    return(NULL)
+  }
+  if (is_positron()) {
+    svg <- readBin(path, "raw", file.size(path))
+    return(paste0("data:image/svg+xml;base64,", base64_encode(svg)))
+  }
+  path
 }
 
 #' List objects in a connection.
