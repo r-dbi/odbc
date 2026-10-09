@@ -34,6 +34,7 @@ Other contributors:
 \itemize{
   \item lexicalunit (nanodbc library) [copyright holder]
   \item Google Inc. (cctz library) [copyright holder]
+  \item Paweł Kuna (Tabler Icons) [copyright holder]
   \item Posit Software, PBC [copyright holder, funder]
 }
 

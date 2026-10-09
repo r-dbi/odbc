@@ -5583,6 +5583,171 @@ string_type catalog::table_privileges::is_grantable() const
     return result_.get<string_type>(6, string_type());
 }
 
+catalog::procedures::procedures(result& find_result)
+    : result_(find_result)
+{
+}
+
+bool catalog::procedures::next()
+{
+    return result_.next();
+}
+
+string_type catalog::procedures::procedure_catalog() const
+{
+    // PROCEDURE_CAT may be NULL
+    return result_.get<string_type>(0, string_type());
+}
+
+string_type catalog::procedures::procedure_schema() const
+{
+    // PROCEDURE_SCHEM may be NULL
+    return result_.get<string_type>(1, string_type());
+}
+
+string_type catalog::procedures::procedure_name() const
+{
+    // PROCEDURE_NAME is never NULL
+    return result_.get<string_type>(2);
+}
+
+string_type catalog::procedures::procedure_remarks() const
+{
+    // Column indicies 3, 4, 5 and "reserved for future use".
+    // REMARKS column may be NULL
+    return result_.get<string_type>(6, string_type());
+}
+
+short catalog::procedures::procedure_type() const
+{
+    // PROCEDURE_TYPE may be NULL
+    return result_.get<short>(7, SQL_PT_UNKNOWN);
+}
+
+catalog::procedure_columns::procedure_columns(result& find_result)
+    : result_(find_result)
+{
+}
+
+bool catalog::procedure_columns::next()
+{
+    return result_.next();
+}
+
+string_type catalog::procedure_columns::procedure_catalog() const
+{
+    // PROCEDURE_CAT might be NULL
+    return result_.get<string_type>(0, string_type());
+}
+
+string_type catalog::procedure_columns::procedure_schema() const
+{
+    // PROCEDURE_SCHEM might be NULL
+    return result_.get<string_type>(1, string_type());
+}
+
+string_type catalog::procedure_columns::procedure_name() const
+{
+    // PROCEDURE_NAME is never NULL
+    return result_.get<string_type>(2);
+}
+
+string_type catalog::procedure_columns::column_name() const
+{
+    // COLUMN_NAME is never NULL
+    return result_.get<string_type>(3);
+}
+
+short catalog::procedure_columns::column_type() const
+{
+    // COLUMN_TYPE (parameter direction) is never NULL
+    return result_.get<short>(4);
+}
+
+short catalog::procedure_columns::data_type() const
+{
+    // NULL for SQL Server table-valued function return values
+    return result_.get<short>(5, SQL_UNKNOWN_TYPE);
+}
+
+string_type catalog::procedure_columns::type_name() const
+{
+    // TYPE_NAME is never NULL
+    return result_.get<string_type>(6);
+}
+
+long catalog::procedure_columns::column_size() const
+{
+    // COLUMN_SIZE might be NULL
+    return result_.get<long>(7, 0);
+}
+
+long catalog::procedure_columns::buffer_length() const
+{
+    // BUFFER_LENGTH
+    return result_.get<long>(8);
+}
+
+short catalog::procedure_columns::decimal_digits() const
+{
+    // DECIMAL_DIGITS might be NULL
+    return result_.get<short>(9, 0);
+}
+
+short catalog::procedure_columns::numeric_precision_radix() const
+{
+    // NUM_PREC_RADIX might be NULL
+    return result_.get<short>(10, 0);
+}
+
+short catalog::procedure_columns::nullable() const
+{
+    // NULLABLE is never NULL
+    return result_.get<short>(11);
+}
+
+string_type catalog::procedure_columns::remarks() const
+{
+    // REMARKS might be NULL
+    return result_.get<string_type>(12, string_type());
+}
+
+string_type catalog::procedure_columns::column_default() const
+{
+    // COLUMN_DEF might be NULL, if no default value is specified
+    return result_.get<string_type>(13, string_type());
+}
+
+short catalog::procedure_columns::sql_data_type() const
+{
+    // SQL_DATA_TYPE is never NULL
+    return result_.get<short>(14);
+}
+
+short catalog::procedure_columns::sql_datetime_subtype() const
+{
+    // SQL_DATETIME_SUB might be NULL
+    return result_.get<short>(15, 0);
+}
+
+long catalog::procedure_columns::char_octet_length() const
+{
+    // CHAR_OCTET_LENGTH might be NULL
+    return result_.get<long>(16, 0);
+}
+
+long catalog::procedure_columns::ordinal_position() const
+{
+    // ORDINAL_POSITION is never NULL
+    return result_.get<long>(17);
+}
+
+string_type catalog::procedure_columns::is_nullable() const
+{
+    // IS_NULLABLE might be NULL.
+    return result_.get<string_type>(18, string_type());
+}
+
 catalog::primary_keys::primary_keys(result& find_result)
     : result_(find_result)
 {
@@ -5815,6 +5980,64 @@ catalog::table_privileges catalog::find_table_privileges(
 
     result find_result(stmt, 1);
     return catalog::table_privileges(find_result);
+}
+
+catalog::procedures catalog::find_procedures(
+    const string_type& procedure,
+    const string_type& schema,
+    const string_type& catalog)
+{
+    // Passing a null pointer to a search pattern argument does not
+    // constrain the search for that argument; that is, a null pointer and
+    // the search pattern % (any characters) are equivalent.
+    // However, a zero-length search pattern - that is, a valid pointer to
+    // a string of length zero - matches only the empty string ("").
+    // See https://msdn.microsoft.com/en-us/library/ms710171.aspx
+
+    statement stmt(conn_);
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLProcedures),
+        rc,
+        stmt.native_statement_handle(),
+        (NANODBC_SQLCHAR*)(catalog.empty() ? nullptr : catalog.c_str()),
+        (catalog.empty() ? 0 : SQL_NTS),
+        (NANODBC_SQLCHAR*)(schema.empty() ? nullptr : schema.c_str()),
+        (schema.empty() ? 0 : SQL_NTS),
+        (NANODBC_SQLCHAR*)(procedure.empty() ? nullptr : procedure.c_str()),
+        (procedure.empty() ? 0 : SQL_NTS));
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
+
+    result find_result(stmt, 1);
+    return catalog::procedures(find_result);
+}
+
+catalog::procedure_columns catalog::find_procedure_columns(
+    const string_type& column,
+    const string_type& procedure,
+    const string_type& schema,
+    const string_type& catalog)
+{
+    statement stmt(conn_);
+    RETCODE rc;
+    NANODBC_CALL_RC(
+        NANODBC_FUNC(SQLProcedureColumns),
+        rc,
+        stmt.native_statement_handle(),
+        (NANODBC_SQLCHAR*)(catalog.empty() ? nullptr : catalog.c_str()),
+        (catalog.empty() ? 0 : SQL_NTS),
+        (NANODBC_SQLCHAR*)(schema.empty() ? nullptr : schema.c_str()),
+        (schema.empty() ? 0 : SQL_NTS),
+        (NANODBC_SQLCHAR*)(procedure.empty() ? nullptr : procedure.c_str()),
+        (procedure.empty() ? 0 : SQL_NTS),
+        (NANODBC_SQLCHAR*)(column.empty() ? nullptr : column.c_str()),
+        (column.empty() ? 0 : SQL_NTS));
+    if (!success(rc))
+        NANODBC_THROW_DATABASE_ERROR(stmt.native_statement_handle(), SQL_HANDLE_STMT);
+
+    result find_result(stmt, 1);
+    return catalog::procedure_columns(find_result);
 }
 
 catalog::columns catalog::find_columns(

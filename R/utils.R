@@ -694,3 +694,7 @@ sanitize_connection_string <- function(lst) {
   )
   return(lst[!grepl(regex, names(lst), fixed = FALSE)])
 }
+
+is_positron <- function() {
+  identical(Sys.getenv("POSITRON"), "1")
+}

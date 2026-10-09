@@ -121,6 +121,136 @@ test_that("works with schemas (#197)", {
   expect_false("testSchema" %in% res)
 })
 
+test_that("can enumerate stored procedures", {
+  con <- test_con("SQLSERVER")
+  proc <- "odbc_test_proc"
+  dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc))
+  dbExecute(
+    con,
+    paste0(
+      "CREATE PROCEDURE dbo.",
+      proc,
+      " @x int AS SELECT @x AS val"
+    )
+  )
+  on.exit(dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc)))
+
+  procs <- odbcConnectionProcedures(con, paste0(proc, "%"), schema_name = "dbo")
+  expect_s3_class(procs, "data.frame")
+  expect_true(proc %in% procs$procedure_name)
+  expect_false(any(grepl(";", procs$procedure_name)))
+
+  objs <- odbcListObjects(con, catalog = "master", schema = "dbo")
+  expect_true(proc %in% objs$name[objs$type == "procedure"])
+
+  tbls <- odbcListObjects(
+    con,
+    catalog = "master",
+    schema = "dbo",
+    type = "table"
+  )
+  expect_false(any(tbls$type == "procedure"))
+})
+
+test_that("can enumerate stored procedure parameters", {
+  con <- test_con("SQLSERVER")
+  proc <- "odbc_param_proc"
+  dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc))
+  dbExecute(
+    con,
+    paste0(
+      "CREATE PROCEDURE dbo.",
+      proc,
+      " @x int, @label varchar(50), @y int OUTPUT AS SET @y = @x"
+    )
+  )
+  on.exit(dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc)))
+
+  params <- odbcConnectionProcedureColumns(con, proc, schema_name = "dbo")
+  expect_s3_class(params, "data.frame")
+  expect_true(all(c("@x", "@label", "@y") %in% params$column_name))
+  expect_true(is.numeric(params$ordinal_position))
+
+  flds <- odbcListColumns(
+    con,
+    procedure = proc,
+    schema = "dbo",
+    catalog = "master"
+  )
+  expect_named(flds, c("name", "type"))
+  expect_true("@x" %in% flds$name)
+  expect_match(flds$type[flds$name == "@x"], "(in)", fixed = TRUE)
+  # SQL Server reports OUTPUT parameters as inout
+  expect_match(flds$type[flds$name == "@y"], "(inout)", fixed = TRUE)
+})
+
+test_that("functions are listed separately from stored procedures", {
+  con <- test_con("SQLSERVER")
+  proc <- "odbc_kind_proc"
+  fn <- "odbc_kind_fn"
+  dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc))
+  dbExecute(con, paste0("DROP FUNCTION IF EXISTS dbo.", fn))
+  dbExecute(con, paste0("CREATE PROCEDURE dbo.", proc, " AS SELECT 1 AS x"))
+  dbExecute(
+    con,
+    paste0(
+      "CREATE FUNCTION dbo.",
+      fn,
+      " (@x int) RETURNS int AS BEGIN RETURN @x END"
+    )
+  )
+  on.exit({
+    dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc))
+    dbExecute(con, paste0("DROP FUNCTION IF EXISTS dbo.", fn))
+  })
+
+  objs <- odbcListObjects(con, catalog = "master", schema = "dbo")
+  expect_equal(objs$type[objs$name == proc], "procedure")
+  expect_equal(objs$type[objs$name == fn], "function")
+
+  fns <- odbcListObjects(
+    con,
+    catalog = "master",
+    schema = "dbo",
+    type = "function"
+  )
+  expect_in(fn, fns$name)
+  expect_equal(unique(fns$type), "function")
+
+  flds <- odbcListColumns(
+    con,
+    `function` = fn,
+    schema = "dbo",
+    catalog = "master"
+  )
+  expect_equal(flds$type[flds$name == "@x"], "int (in)")
+})
+
+test_that("can enumerate table-valued function parameters", {
+  con <- test_con("SQLSERVER")
+  fn <- "odbc_tvf_param_fn"
+  dbExecute(con, paste0("DROP FUNCTION IF EXISTS dbo.", fn))
+  dbExecute(
+    con,
+    paste0(
+      "CREATE FUNCTION dbo.",
+      fn,
+      " (@x int) RETURNS TABLE AS RETURN (SELECT @x AS x)"
+    )
+  )
+  on.exit(dbExecute(con, paste0("DROP FUNCTION IF EXISTS dbo.", fn)))
+
+  # SQL Server reports a NULL DATA_TYPE for the table return value.
+  flds <- odbcListColumns(
+    con,
+    procedure = fn,
+    schema = "dbo",
+    catalog = "master"
+  )
+  expect_equal(flds$name, c("@TABLE_RETURN_VALUE", "@x"))
+  expect_equal(flds$type, c("table (result)", "int (in)"))
+})
+
 test_that("works with dbAppendTable (#215)", {
   con <- test_con("SQLSERVER")
 
@@ -229,6 +359,55 @@ test_that("odbcPreviewObject doesn't warn about pending rows", {
     res <- odbcPreviewObject(con, rowLimit = 3, table = tbl)
   })
   expect_equal(nrow(res), 3)
+})
+
+test_that("odbcPreviewObject() lists a routine's parameters", {
+  con <- test_con("SQLSERVER")
+  proc <- "odbc_preview_proc"
+  fn <- "odbc_preview_fn"
+  dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc))
+  dbExecute(con, paste0("DROP FUNCTION IF EXISTS dbo.", fn))
+  dbExecute(
+    con,
+    paste0(
+      "CREATE PROCEDURE dbo.",
+      proc,
+      " @x int, @y decimal(10, 2) OUTPUT AS SET @y = @x"
+    )
+  )
+  dbExecute(
+    con,
+    paste0(
+      "CREATE FUNCTION dbo.",
+      fn,
+      " (@x int) RETURNS int AS BEGIN RETURN @x END"
+    )
+  )
+  on.exit({
+    dbExecute(con, paste0("DROP PROCEDURE IF EXISTS dbo.", proc))
+    dbExecute(con, paste0("DROP FUNCTION IF EXISTS dbo.", fn))
+  })
+
+  res <- odbcPreviewObject(
+    con,
+    rowLimit = 10,
+    procedure = proc,
+    schema = "dbo",
+    catalog = "master"
+  )
+  expect_equal(res$parameter, c("@RETURN_VALUE", "@x", "@y"))
+  expect_equal(res$direction, c("return", "in", "inout"))
+  expect_equal(res$type, c("int", "int", "decimal"))
+  expect_equal(res$digits[3], 2)
+
+  res <- odbcPreviewObject(
+    con,
+    rowLimit = 1,
+    `function` = fn,
+    schema = "dbo",
+    catalog = "master"
+  )
+  expect_equal(res$parameter, "@RETURN_VALUE")
 })
 
 test_that("dates should always be interpreted in the system time zone (#398)", {

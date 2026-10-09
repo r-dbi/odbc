@@ -10,6 +10,8 @@ Authors@R: c(
            comment = "nanodbc library"),
     person("Google Inc.", role = "cph",
            comment = "cctz library"),
+    person("Paweł Kuna", role = "cph",
+           comment = "Tabler Icons"),
     person("Posit Software, PBC", role = c("cph", "fnd"))
   )
 Description: A DBI-compatible interface to ODBC databases.
