@@ -4,10 +4,10 @@ test_that("objectTypeIcon() gives RStudio a PNG path", {
   expect_equal(basename(objectTypeIcon("function")), "function.png")
 })
 
-test_that("objectTypeIcon() gives Positron an SVG data URI", {
+test_that("objectTypeIcon() gives Positron an SVG path", {
   withr::local_envvar(POSITRON = "1")
-  expect_match(objectTypeIcon("procedure"), "^data:image/svg\\+xml;base64,")
-  expect_match(objectTypeIcon("function"), "^data:image/svg\\+xml;base64,")
+  expect_equal(basename(objectTypeIcon("procedure")), "procedure.svg")
+  expect_equal(basename(objectTypeIcon("function")), "function.svg")
 })
 
 test_that("objectTypeIcon() is NULL for types without a bundled icon", {

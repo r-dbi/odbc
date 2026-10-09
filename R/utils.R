@@ -698,20 +698,3 @@ sanitize_connection_string <- function(lst) {
 is_positron <- function() {
   identical(Sys.getenv("POSITRON"), "1")
 }
-
-# Base R has no base64 encoder.
-base64_encode <- function(x) {
-  alphabet <- c(LETTERS, letters, 0:9, "+", "/")
-  pad <- (3 - length(x) %% 3) %% 3
-  bytes <- matrix(c(as.integer(x), integer(pad)), nrow = 3)
-  n <- bytes[1, ] * 65536L + bytes[2, ] * 256L + bytes[3, ]
-  sextets <- rbind(
-    n %/% 262144L,
-    n %/% 4096L %% 64L,
-    n %/% 64L %% 64L,
-    n %% 64L
-  )
-  out <- alphabet[as.vector(sextets) + 1L]
-  out[length(out) - seq_len(pad) + 1L] <- "="
-  paste(out, collapse = "")
-}
