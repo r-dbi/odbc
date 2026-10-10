@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* `dbExistsTable()` no longer treats `_` as a wildcard on SQL Server.
+
 # odbc 1.7.2
 
 * odbc now requires R 4.2.0.

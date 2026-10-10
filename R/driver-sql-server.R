@@ -96,7 +96,7 @@ setMethod(
       query <- paste0("SELECT OBJECT_ID('tempdb..", name, "')")
       !is.na(dbGetQuery(conn, query)[[1]])
     } else {
-      df <- odbcConnectionTables(conn, name = name, ...)
+      df <- odbcConnectionTables(conn, name = name, ..., exact = TRUE)
       NROW(df) > 0
     }
   }
