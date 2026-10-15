@@ -300,17 +300,26 @@ procedureColumnsAsFields <- function(connection, procedure, catalog, schema) {
   params <- procedureParameters(connection, procedure, catalog, schema)
   data.frame(
     name = params[["parameter"]],
-    type = paste0(params[["type"]], " (", params[["direction"]], ")"),
+    type = paste0(
+      params[["type"]],
+      " (",
+      params[["direction"]],
+      ")",
+      recycle0 = TRUE
+    ),
     stringsAsFactors = FALSE
   )
 }
 
 procedureParameters <- function(connection, procedure, catalog, schema) {
-  params <- odbcConnectionProcedureColumns(
-    connection,
-    name = procedure,
-    catalog_name = catalog,
-    schema_name = schema
+  params <- tryCatch(
+    odbcConnectionProcedureColumns(
+      connection,
+      name = procedure,
+      catalog_name = catalog,
+      schema_name = schema
+    ),
+    error = \(e) NULL
   )
   if (is.null(params) || nrow(params) == 0) {
     return(data.frame(

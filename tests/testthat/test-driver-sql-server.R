@@ -410,6 +410,23 @@ test_that("odbcPreviewObject() lists a routine's parameters", {
   expect_equal(res$parameter, "@RETURN_VALUE")
 })
 
+test_that("a failing SQLProcedureColumns yields no parameters", {
+  con <- test_con("SQLSERVER")
+  # An unfetched result leaves the connection busy, so catalog calls fail.
+  res <- dbSendQuery(con, "SELECT * FROM sys.all_objects")
+  on.exit(suppressWarnings(dbClearResult(res)))
+
+  flds <- odbcListColumns(con, procedure = "x", schema = "dbo")
+  expect_equal(nrow(flds), 0)
+  preview <- odbcPreviewObject(
+    con,
+    rowLimit = 5,
+    procedure = "x",
+    schema = "dbo"
+  )
+  expect_equal(nrow(preview), 0)
+})
+
 test_that("dates should always be interpreted in the system time zone (#398)", {
   con <- test_con("SQLSERVER")
   # TODO: resolve the issue requiring this skip
