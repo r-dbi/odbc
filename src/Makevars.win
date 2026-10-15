@@ -1,7 +1,13 @@
-PKG_CXXFLAGS=-I. -Icctz/include -Inanodbc
+# NANODBC_USE_NATIVE_CONVERT: on Windows, make nanodbc perform its internal
+# UTF-16 <-> UTF-8 conversions via the Win32 API (WideCharToMultiByte /
+# MultiByteToWideChar) instead of std::wstring_convert<std::codecvt_utf8_utf16>.
+# The libstdc++ codecvt_utf8_utf16 facet shipped with Rtools/MinGW can corrupt
+# the heap (crash code 0xC0000374) on some inputs -- e.g. driver diagnostic
+# messages transcoded in nanodbc::recent_error() once NANODBC_USE_UNICODE is on.
+PKG_CXXFLAGS=-I. -Icctz/include -Inanodbc -DNANODBC_USE_UNICODE -DNANODBC_USE_NATIVE_CONVERT
 PKG_LIBS=-lodbc32 -Lcctz -lcctz
 
-OBJECTS = odbc_result.o connection.o nanodbc.o result.o odbc_connection.o RcppExports.o Iconv.o utils.o
+OBJECTS = odbc_result.o connection.o nanodbc.o result.o odbc_connection.o RcppExports.o utils.o
 
 all: $(SHLIB)
 

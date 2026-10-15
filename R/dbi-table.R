@@ -242,14 +242,11 @@ setMethod(
     )
     value[is_object] <- lapply(value[is_object], as.character)
 
-    if (nzchar(con@encoding)) {
-      is_character <- vapply(value, is.character, logical(1))
-      value[is_character] <- lapply(
-        value[is_character],
-        enc2iconv,
-        to = con@encoding
-      )
-    }
+    # The statement is sent to the driver via the Unicode ("W") ODBC API, we
+    # only need to ensure it is UTF-8 encoded; the C++ layer transcodes it to the
+    # driver's wide string type.
+    is_char <- vapply(value, is.character, logical(1))
+    value[is_char] <- lapply(value[is_char], enc2utf8)
 
     attr(value, ".odbc.transformed") <- TRUE
     value

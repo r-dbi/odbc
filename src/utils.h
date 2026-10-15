@@ -12,6 +12,26 @@
 
 namespace odbc {
 namespace utils {
+  /// \brief Convert a UTF-8 encoded [R] string into a `nanodbc::string_type`.
+  ///
+  /// The package is always built with `NANODBC_USE_UNICODE` (the ODBC "W" /
+  /// wide API), so `nanodbc::string_type` is a wide string and the UTF-8 input
+  /// is transcoded to UTF-16/UCS-4 accordingly.
+  ///
+  /// \param utf8 A UTF-8 encoded string (as produced by [R]).
+  /// \return The equivalent `nanodbc::string_type`.
+  nanodbc::string_type to_nanodbc_string(const std::string& utf8);
+
+  /// \brief Convert a `nanodbc::string_type` returned by nanodbc into a UTF-8
+  /// encoded `std::string` suitable for handing back to [R].
+  ///
+  /// Transcodes the wide string_type to UTF-8.
+  ///
+  /// \param str A `nanodbc::string_type` produced by nanodbc.
+  /// \return The equivalent UTF-8 encoded `std::string`.
+  std::string from_nanodbc_string(const nanodbc::string_type& str);
+
+
   /// \brief Prepare connection attributes
   ///
   /// Parse [R] named list of connection attributes and translate into

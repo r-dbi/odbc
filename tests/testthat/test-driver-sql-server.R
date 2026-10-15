@@ -248,12 +248,91 @@ test_that("dates should always be interpreted in the system time zone (#398)", {
 
 test_that("UTF in VARCHAR is not truncated", {
   con <- test_con("SQLSERVER")
-  value <- "grün"
-  res <- dbGetQuery(
-    con,
-    paste0("SELECT '", value, "' AS colone")
+  values <- c("gr\u00FCn", "100\u20ac")
+  for (value in values) {
+    res <- dbGetQuery(
+      con,
+      paste0("SELECT '", value, "' AS colone")
+    )
+    expect_equal(value, res[[1]])
+  }
+})
+
+test_that("UTF in NVARCHAR is not truncated", {
+  con <- test_con("SQLSERVER")
+  values <- c("gr\u00F8nn", "\u00C5lesund", "\U1F415")
+  for (value in values) {
+    res <- dbGetQuery(
+      con,
+      paste0("SELECT N'", value, "' AS colone")
+    )
+    expect_equal(value, res[[1]])
+  }
+})
+
+test_that("VARCHAR and NVARCHAR handle special characters correctly", {
+  con <- test_con("SQLSERVER")
+
+  df <- data.frame(
+    varchar_col = "\u20ac", # €
+    nvarchar_col = "\u00c5", # Å
+    emoji_col = "\U1F415", # 🐕
+    stringsAsFactors = FALSE
   )
-  expect_equal(value, res[[1]])
+
+  tbl <- local_table(
+    con,
+    "test_varchar_nvarchar_special",
+    df,
+    field.types = c(
+      varchar_col = "VARCHAR(10)",
+      nvarchar_col = "NVARCHAR(10)",
+      emoji_col = "NVARCHAR(10)"
+    )
+  )
+  res <- DBI::dbReadTable(con, tbl)
+  expect_equal(res$varchar_col, df$varchar_col)
+  expect_equal(res$nvarchar_col, df$nvarchar_col)
+  expect_equal(res$emoji_col, df$emoji_col)
+})
+
+# Same test but use dbExecute and dbGetQuery to verify that the special characters are handled correctly in both cases.
+test_that("VARCHAR and NVARCHAR handle special characters correctly with dbExecute and dbGetQuery", {
+  con <- test_con("SQLSERVER")
+
+  df <- data.frame(
+    varchar_col = character(),
+    nvarchar_col = character(),
+    emoji_col = character(),
+    stringsAsFactors = FALSE
+  )
+
+  tbl <- local_table(
+    con,
+    "test_varchar_nvarchar_special_execute",
+    df,
+    field.types = c(
+      varchar_col = "VARCHAR(10)",
+      nvarchar_col = "NVARCHAR(10)",
+      emoji_col = "NVARCHAR(10)"
+    )
+  )
+
+  # Use dbExecute to insert data into the table
+  dbExecute(
+    con,
+    paste(
+      "INSERT INTO",
+      tbl,
+      "(varchar_col, nvarchar_col, emoji_col) VALUES (N'\u20ac', N'\u00c5', N'\U1F415')"
+    )
+  )
+
+  # Use dbGetQuery to retrieve data from the table
+  res <- dbGetQuery(con, paste0("SELECT * FROM ", tbl))
+  expect_equal(res$varchar_col, '\u20ac')
+  expect_equal(res$nvarchar_col, '\u00c5')
+  expect_equal(res$emoji_col, '\U1F415')
 })
 
 test_that("Zero-row-fetch does not move cursor", {
@@ -364,13 +443,8 @@ test_that("can create / write to temp table", {
   ))
 })
 
-test_that("independent encoding of column entries and names (#834)", {
+test_that("varchar and column names round-trip as UTF-8 (#834)", {
   skip_on_os("windows")
-  # PRO Driver does not present "AutoTranslate" option.
-  # Cursory investigation seems to indicate behavior is equivalent
-  # to AutoTranslate being set to "yes" ( character data is returned
-  # as UTF encoded, rather than in the code page corresponding to the
-  # collation ).
   skip_if(Sys.getenv("ODBC_DRIVERS_VINTAGE") != "OEM")
   rawVal1 <- as.raw(c(0x72, 0xc3, 0xa6, 0x76, 0x65, 0x6e))
   rawVal2 <- as.raw(c(0xc3, 0xa5, 0x6c, 0x65, 0x6e, 0x73))
@@ -386,7 +460,9 @@ test_that("independent encoding of column entries and names (#834)", {
     col = 1
   )
   colnames(df)[2] <- rawToChar(rawCol)
-  conn <- test_con("SQLSERVER", encoding = "latin1", AutoTranslate = "no")
+  # Character data is always exchanged with the driver as UTF-8; no `encoding`
+  # argument is required.
+  conn <- test_con("SQLSERVER")
   on.exit({
     dbExecute(
       conn,
