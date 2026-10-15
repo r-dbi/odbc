@@ -1,0 +1,244 @@
+name: DBs (macOS)
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testthat-macOS:
+    # SQL Server needs an x86_64 Linux VM; hosted ARM Macs cannot run it.
+    runs-on: macos-15-intel
+    name: ${{ matrix.database }}
+    timeout-minutes: 45
+
+    strategy:
+      fail-fast: false
+      matrix:
+        database:
+          - SQLServer
+          - MySQL
+          - PostgreSQL
+          - SQLite
+
+    env:
+      ODBC_DRIVERS_VINTAGE: "OEM"
+      CRAN: "https://cloud.r-project.org"
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      NOT_CRAN: "true"
+      TEST_DATABASE: ${{ matrix.database }}
+      HOMEBREW_NO_INSTALL_CLEANUP: "1"
+      SQLSERVER_IMAGE: mcr.microsoft.com/mssql/server:2022-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure download caches
+        id: cache-config
+        run: |
+          echo "homebrew=$(brew --cache)" >> "$GITHUB_OUTPUT"
+          echo "image=$ImageVersion" >> "$GITHUB_OUTPUT"
+          # Refresh downloads weekly, including the mutable SQL Server tag.
+          echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore Homebrew downloads
+        id: homebrew-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ steps.cache-config.outputs.homebrew }}
+          key: macos-15-intel-${{ steps.cache-config.outputs.image }}-brew-${{ matrix.database }}-${{ steps.cache-config.outputs.week }}-${{ hashFiles('.github/workflows/db-macos.yml') }}
+          restore-keys: |
+            macos-15-intel-${{ steps.cache-config.outputs.image }}-brew-${{ matrix.database }}-
+
+      - name: Install Driver Manager
+        run: |
+          brew install unixodbc
+          mkdir -p "$RUNNER_TEMP/odbc"
+          echo "ODBCSYSINI=$RUNNER_TEMP/odbc" >> "$GITHUB_ENV"
+          echo "$(brew --prefix unixodbc)/bin" >> "$GITHUB_PATH"
+          echo "INCLUDE_DIR=$(brew --prefix unixodbc)/include" >> "$GITHUB_ENV"
+          echo "LIB_DIR=$(brew --prefix unixodbc)/lib" >> "$GITHUB_ENV"
+
+      - uses: r-lib/actions/setup-r@v2
+
+      - name: Install MySQL
+        if: matrix.database == 'MySQL'
+        uses: ankane/setup-mysql@v1
+        with:
+          mysql-version: '8.4'
+          database: test
+          user: root
+
+      - name: Install PostgreSQL
+        if: matrix.database == 'PostgreSQL'
+        uses: ankane/setup-postgres@v1
+        with:
+          postgres-version: 17
+          database: test
+          user: postgres
+
+      - name: Install and configure database driver
+        run: |
+          case "$TEST_DATABASE" in
+            SQLServer)
+              brew tap microsoft/mssql-release
+              brew trust microsoft/mssql-release
+              HOMEBREW_ACCEPT_EULA=Y brew install msodbcsql18
+              driver_name="ODBC Driver 18 for SQL Server"
+              driver_path="$(brew --prefix msodbcsql18)/lib/libmsodbcsql.18.dylib"
+              ;;
+            MySQL)
+              # Use the unixODBC-compatible MariaDB connector, as on Linux.
+              brew install mariadb-connector-odbc
+              driver_name="MySQL Driver"
+              driver_path="$(brew --prefix mariadb-connector-odbc)/lib/mariadb/libmaodbc.dylib"
+              echo "ODBC_CS_MYSQL=Driver={$driver_name};Server=127.0.0.1;Port=3306;Database=test;User=root;Password=;CHARSET=utf8mb4" >> "$GITHUB_ENV"
+              ;;
+            PostgreSQL)
+              brew install psqlodbc
+              driver_name="PostgreSQL Unicode"
+              driver_path="$(brew --prefix psqlodbc)/lib/psqlodbcw.so"
+              echo "ODBC_CS_POSTGRES=Driver={$driver_name};Server=localhost;Port=5432;BoolsAsChar=0;LFConversion=0;Database=test;UID=postgres;PWD=" >> "$GITHUB_ENV"
+              ;;
+            SQLite)
+              brew install sqliteodbc
+              driver_name="SQLite3 ODBC Driver"
+              driver_path="$(brew --prefix sqliteodbc)/lib/libsqlite3odbc.dylib"
+              echo "ODBC_CS_SQLITE=Driver={$driver_name};Database=$RUNNER_TEMP/test.sqlite;Timeout=2000" >> "$GITHUB_ENV"
+              ;;
+            *)
+              echo "Unknown database: $TEST_DATABASE" >&2
+              exit 1
+              ;;
+          esac
+          test -f "$driver_path"
+          cat > "$ODBCSYSINI/odbcinst.ini" <<EOF
+          [$driver_name]
+          Driver=$driver_path
+          UsageCount=1
+          EOF
+          odbcinst -j
+          odbcinst -q -d
+
+      # Keep downloads even if package tests subsequently fail.
+      - name: Save Homebrew downloads
+        if: steps.homebrew-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ steps.cache-config.outputs.homebrew }}
+          key: ${{ steps.homebrew-cache.outputs.cache-primary-key }}
+
+      - name: Set up Docker for SQL Server
+        if: matrix.database == 'SQLServer'
+        uses: docker/setup-docker-action@v5
+        env:
+          LIMA_START_ARGS: --cpus 3 --memory 8
+
+      - name: Restore SQL Server image
+        if: matrix.database == 'SQLServer'
+        id: sqlserver-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/sqlserver-image.tar
+          key: macos-15-intel-sqlserver-${{ steps.cache-config.outputs.week }}-${{ hashFiles('.github/workflows/db-macos.yml') }}
+
+      - name: Load or download SQL Server image
+        if: matrix.database == 'SQLServer'
+        env:
+          CACHE_HIT: ${{ steps.sqlserver-cache.outputs.cache-hit }}
+        run: |
+          if [ "$CACHE_HIT" = 'true' ]; then
+            docker image load --input "$RUNNER_TEMP/sqlserver-image.tar"
+          else
+            docker image pull "$SQLSERVER_IMAGE"
+            docker image save --output "$RUNNER_TEMP/sqlserver-image.tar" "$SQLSERVER_IMAGE"
+          fi
+
+      - name: Save SQL Server image
+        if: matrix.database == 'SQLServer' && steps.sqlserver-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/sqlserver-image.tar
+          key: ${{ steps.sqlserver-cache.outputs.cache-primary-key }}
+
+      - name: Start SQL Server
+        if: matrix.database == 'SQLServer'
+        run: |
+          password="Ci_$(openssl rand -hex 16)!9"
+          echo "::add-mask::$password"
+          docker run -d --name sqlserver \
+            -e ACCEPT_EULA=Y -e MSSQL_PID=Developer \
+            -e MSSQL_SA_PASSWORD="$password" \
+            -p 127.0.0.1:1433:1433 \
+            "$SQLSERVER_IMAGE"
+          echo "ODBC_CS_SQLSERVER=Driver={ODBC Driver 18 for SQL Server};Server=127.0.0.1,1433;UID=sa;PWD=$password;Encrypt=yes;TrustServerCertificate=yes" >> "$GITHUB_ENV"
+
+      - name: Install dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          needs: check
+          cache: always
+
+      - name: Install locally to avoid error with test_local()
+        run: R CMD INSTALL .
+
+      - name: Verify database connection before testing
+        shell: Rscript {0}
+        run: |
+          variable <- switch(
+            Sys.getenv("TEST_DATABASE"),
+            SQLServer = "ODBC_CS_SQLSERVER",
+            MySQL = "ODBC_CS_MYSQL",
+            PostgreSQL = "ODBC_CS_POSTGRES",
+            SQLite = "ODBC_CS_SQLITE",
+            stop("Unknown test database")
+          )
+          connection_string <- Sys.getenv(variable)
+          stopifnot(nzchar(connection_string))
+          con <- NULL
+          for (attempt in seq_len(30)) {
+            con <- tryCatch(
+              DBI::dbConnect(odbc::odbc(), .connection_string = connection_string,
+                             timeout = 3),
+              error = function(e) {
+                message("Connection attempt ", attempt, ": ", conditionMessage(e))
+                NULL
+              }
+            )
+            if (!is.null(con)) break
+            Sys.sleep(3)
+          }
+          if (is.null(con)) stop("Database did not become ready: ", variable)
+          print(DBI::dbGetInfo(con))
+          stopifnot(DBI::dbGetQuery(con, "SELECT 1 AS n")$n[[1]] == 1)
+          DBI::dbDisconnect(con)
+
+      - name: Test
+        run: |
+          options("odbc.interruptible"=TRUE);testthat::test_local(reporter = testthat::ProgressReporter$new(max_failures = Inf, update_interval = Inf))
+        shell: Rscript {0}
+
+      - name: Show SQL Server logs on failure
+        if: failure() && matrix.database == 'SQLServer'
+        run: docker logs sqlserver
+
+      - name: Upload failed snapshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-snapshots-${{ matrix.database }}
+          path: tests/testthat/_snaps
+          if-no-files-found: ignore
