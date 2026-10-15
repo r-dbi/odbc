@@ -49,7 +49,7 @@ odbcListObjectTypes.default <- function(connection) {
   viewlike <- grep("view", table_types, value = TRUE)
   viewlike_types <- sapply(
     viewlike,
-    function(i) list(contains = "data", icon = "connections/objects/view.png"),
+    \(i) list(contains = "data", icon = "connections/objects/view.png"),
     simplify = FALSE
   )
   obj_types <- c(obj_types, viewlike_types)
@@ -87,12 +87,14 @@ odbcListObjects <- function(connection, ...) {
 }
 
 #' @export
-odbcListObjects.OdbcConnection <- function(connection,
-                                           catalog = NULL,
-                                           schema = NULL,
-                                           name = NULL,
-                                           type = NULL,
-                                           ...) {
+odbcListObjects.OdbcConnection <- function(
+  connection,
+  catalog = NULL,
+  schema = NULL,
+  name = NULL,
+  type = NULL,
+  ...
+) {
   check_string(catalog, allow_null = TRUE)
   check_string(schema, allow_null = TRUE)
   check_string(name, allow_null = TRUE)
@@ -103,14 +105,13 @@ odbcListObjects.OdbcConnection <- function(connection,
   if (is.null(catalog)) {
     catalogs <- tryCatch(
       string_values(odbcConnectionCatalogs(connection)),
-      error = function(err) character()
+      error = \(err) character()
     )
     if (length(catalogs) > 0) {
       return(
         data.frame(
           name = catalogs,
-          type = rep("catalog", times = length(catalogs)),
-          stringsAsFactors = FALSE
+          type = rep("catalog", times = length(catalogs))
         )
       )
     }
@@ -124,8 +125,7 @@ odbcListObjects.OdbcConnection <- function(connection,
       return(
         data.frame(
           name = schemas,
-          type = rep("schema", times = length(schemas)),
-          stringsAsFactors = FALSE
+          type = rep("schema", times = length(schemas))
         )
       )
     }
@@ -133,14 +133,13 @@ odbcListObjects.OdbcConnection <- function(connection,
 
   objs <- tryCatch(
     odbcConnectionTables(connection, name, catalog, schema, table_type = type),
-    error = function(e) NULL
+    error = \(e) NULL
   )
   # just return a list of the objects and their types, possibly filtered by the
   # options above
   data.frame(
     name = objs[["table_name"]],
-    type = tolower(objs[["table_type"]]),
-    stringsAsFactors = FALSE
+    type = tolower(objs[["table_type"]])
   )
 }
 
@@ -168,7 +167,9 @@ computeHostName <- function(connection) {
     string_values(c(
       connection@info$username,
       connection@info$dbname,
-      if (!identical(connection@info$servername, connection@info$dbname)) connection@info$servername
+      if (!identical(connection@info$servername, connection@info$dbname)) {
+        connection@info$servername
+      }
     ))
   )
 }
@@ -191,14 +192,16 @@ computeDisplayName <- function(connection) {
   # add server name (if it isn't already the display name, which can be the case
   # for serverless DBMS)
   if (!identical(server_name, display_name)) {
-    display_name <- paste(collapse = " - ", string_values(c(display_name, server_name)))
+    display_name <- paste(
+      collapse = " - ",
+      string_values(c(display_name, server_name))
+    )
   }
 
   display_name
 }
 
 validateObjectName <- function(table, view, ..., call = caller_env()) {
-
   # Handle view look-alike object types
   # ( e.g. PostgreSQL/"matview" )
   args <- list(...)
@@ -213,12 +216,14 @@ validateObjectName <- function(table, view, ..., call = caller_env()) {
 }
 
 #' @export
-odbcListColumns.OdbcConnection <- function(connection,
-                                           table = NULL,
-                                           view = NULL,
-                                           catalog = NULL,
-                                           schema = NULL,
-                                           ...) {
+odbcListColumns.OdbcConnection <- function(
+  connection,
+  table = NULL,
+  view = NULL,
+  catalog = NULL,
+  schema = NULL,
+  ...
+) {
   check_string(table, allow_null = TRUE)
   check_string(view, allow_null = TRUE)
   check_string(catalog, allow_null = TRUE)
@@ -226,7 +231,8 @@ odbcListColumns.OdbcConnection <- function(connection,
 
   name <- validateObjectName(table, view, ...)
   # specify schema or catalog if given
-  cols <- odbcConnectionColumns(connection,
+  cols <- odbcConnectionColumns(
+    connection,
     name = name,
     catalog_name = catalog,
     schema_name = schema
@@ -235,8 +241,7 @@ odbcListColumns.OdbcConnection <- function(connection,
   # extract and name fields for observer
   data.frame(
     name = cols[["name"]],
-    type = cols[["field.type"]],
-    stringsAsFactors = FALSE
+    type = cols[["field.type"]]
   )
 }
 
@@ -258,13 +263,15 @@ odbcPreviewObject <- function(connection, rowLimit, ...) {
 }
 
 #' @export
-odbcPreviewObject.OdbcConnection <- function(connection,
-                                             rowLimit,
-                                             table = NULL,
-                                             view = NULL,
-                                             schema = NULL,
-                                             catalog = NULL,
-                                             ...) {
+odbcPreviewObject.OdbcConnection <- function(
+  connection,
+  rowLimit,
+  table = NULL,
+  view = NULL,
+  schema = NULL,
+  catalog = NULL,
+  ...
+) {
   check_number_whole(rowLimit)
   check_string(table, allow_null = TRUE)
   check_string(view, allow_null = TRUE)
@@ -276,7 +283,8 @@ odbcPreviewObject.OdbcConnection <- function(connection,
 
   # prepend schema if specified
   if (!is.null(schema)) {
-    name <- paste(dbQuoteIdentifier(connection, schema),
+    name <- paste(
+      dbQuoteIdentifier(connection, schema),
       dbQuoteIdentifier(connection, name),
       sep = "."
     )
@@ -287,7 +295,9 @@ odbcPreviewObject.OdbcConnection <- function(connection,
     name <- paste(dbQuoteIdentifier(connection, catalog), name, sep = ".")
   }
 
-  dbGetQuery(connection, odbcPreviewQuery(connection, rowLimit, name),
+  dbGetQuery(
+    connection,
+    odbcPreviewQuery(connection, rowLimit, name),
     n = rowLimit
   )
 }
@@ -308,24 +318,32 @@ odbcPreviewQuery <- function(connection, rowLimit, name) {
 
 #' Common top-N syntax ( MYSQL, PSQL, DB2, SNOWFLAKE, etc )
 #' @rdname odbcPreviewQuery
+#' @export
 odbcPreviewQuery.OdbcConnection <- function(connection, rowLimit, name) {
   paste0("SELECT * FROM ", name, " LIMIT ", rowLimit)
 }
 
 #' SQL Server specific top-N syntax
 #' @rdname odbcPreviewQuery
-`odbcPreviewQuery.Microsoft SQL Server` <- function(connection, rowLimit, name) {
+#' @export
+`odbcPreviewQuery.Microsoft SQL Server` <- function(
+  connection,
+  rowLimit,
+  name
+) {
   paste0("SELECT TOP ", rowLimit, " * FROM ", name)
 }
 
 #' Teradata specific top-N syntax
 #' @rdname odbcPreviewQuery
+#' @export
 `odbcPreviewQuery.Teradata` <- function(connection, rowLimit, name) {
   paste0("SELECT TOP ", rowLimit, " * FROM ", name)
 }
 
 #' Oracle specific top-N syntax
 #' @rdname odbcPreviewQuery
+#' @export
 odbcPreviewQuery.Oracle <- function(connection, rowLimit, name) {
   paste0("SELECT * FROM ", name, " WHERE ROWNUM <= ", rowLimit)
 }
@@ -375,7 +393,7 @@ odbcConnectionActions <- function(connection) {
           icon = system.file("icons/edit-sql.png", package = "odbc"),
           callback = function() {
             varname <- Filter(
-              function(e) identical(get(e, envir = .GlobalEnv), connection),
+              \(e) identical(get(e, envir = .GlobalEnv), connection),
               ls(envir = .GlobalEnv)
             )
 
@@ -383,7 +401,10 @@ odbcConnectionActions <- function(connection) {
             columnPos <- 6
             if (nrow(tables) == 0) {
               contents <- paste(
-                paste0("-- !preview conn=", ifelse(length(varname) > 0, varname[[1]], "")),
+                paste0(
+                  "-- !preview conn=",
+                  ifelse(length(varname) > 0, varname[[1]], "")
+                ),
                 "",
                 "SELECT 1",
                 "",
@@ -395,13 +416,27 @@ odbcConnectionActions <- function(connection) {
               tableName <- dbQuoteIdentifier(connection, firstTable$table_name)
 
               # add schema
-              if (!is.na(firstTable$table_schema) && nchar(firstTable$table_schema) > 0) {
-                tableName <- paste(dbQuoteIdentifier(connection, firstTable$table_schema), tableName, sep = ".")
+              if (
+                !is.na(firstTable$table_schema) &&
+                  nchar(firstTable$table_schema) > 0
+              ) {
+                tableName <- paste(
+                  dbQuoteIdentifier(connection, firstTable$table_schema),
+                  tableName,
+                  sep = "."
+                )
               }
 
               # add catalog
-              if (!is.na(firstTable$table_catalog) && nchar(firstTable$table_catalog) > 0) {
-                tableName <- paste(dbQuoteIdentifier(connection, firstTable$table_catalog), tableName, sep = ".")
+              if (
+                !is.na(firstTable$table_catalog) &&
+                  nchar(firstTable$table_catalog) > 0
+              ) {
+                tableName <- paste(
+                  dbQuoteIdentifier(connection, firstTable$table_catalog),
+                  tableName,
+                  sep = "."
+                )
               }
 
               contents <- paste(
@@ -415,23 +450,34 @@ odbcConnectionActions <- function(connection) {
               columnPos <- 14
             }
 
-            documentNew("sql", contents, row = 2, column = columnPos, execute = FALSE)
+            documentNew(
+              "sql",
+              contents,
+              row = 2,
+              column = columnPos,
+              execute = FALSE
+            )
           }
         )
       )
     )
   }
 
-  actions <- c(actions, list(
-    Help = list(
-      # show README for this package as the help; we will update to a more
-      # helpful (and/or more driver-specific) website once one exists
-      icon = "",
-      callback = function() {
-        utils::browseURL("https://github.com/rstats-db/odbc/blob/master/README.md")
-      }
+  actions <- c(
+    actions,
+    list(
+      Help = list(
+        # show README for this package as the help; we will update to a more
+        # helpful (and/or more driver-specific) website once one exists
+        icon = "",
+        callback = function() {
+          utils::browseURL(
+            "https://github.com/rstats-db/odbc/blob/master/README.md"
+          )
+        }
+      )
     )
-  ))
+  )
 
   actions
 }

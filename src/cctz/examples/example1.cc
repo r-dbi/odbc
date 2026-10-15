@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//   http://www.apache.org/licenses/LICENSE-2.0
+//   https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,8 @@
 #include <iostream>
 #include <string>
 
-#include "civil_time.h"
-#include "time_zone.h"
+#include "cctz/civil_time.h"
+#include "cctz/time_zone.h"
 
 int main() {
   cctz::time_zone lax;
@@ -28,6 +28,6 @@ int main() {
   cctz::time_zone nyc;
   load_time_zone("America/New_York", &nyc);
 
-  std::cout << cctz::format("Talk starts at %T %z (%Z)\n", tp, lax);
-  std::cout << cctz::format("Talk starts at %T %z (%Z)\n", tp, nyc);
+  std::cout << cctz::format("Talk starts at %H:%M:%S %z (%Z)\n", tp, lax);
+  std::cout << cctz::format("Talk starts at %H:%M:%S %z (%Z)\n", tp, nyc);
 }

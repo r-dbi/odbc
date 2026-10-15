@@ -39,3 +39,7 @@
 ^pkgdown$
 ^CRAN-SUBMISSION$
 ^LICENSE\.md$
+^AGENTS\.md$
+^\.claude$
+^[.]?air[.]toml$
+^\.vscode$

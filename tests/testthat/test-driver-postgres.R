@@ -4,7 +4,10 @@ test_that("PostgreSQL", {
   DBItest::make_context(
     odbc(),
     test_connection_string("POSTGRES"),
-    tweaks = DBItest::tweaks(temporary_tables = FALSE, placeholder_pattern = "?"),
+    tweaks = DBItest::tweaks(
+      temporary_tables = FALSE,
+      placeholder_pattern = "?"
+    ),
     name = "PostgreSQL"
   )
 
@@ -27,7 +30,8 @@ test_that("PostgreSQL", {
     "get_query_n_zero_rows", # todo
     "fetch_no_return_value", # TODO
     "data_raw.*", # cast(1 bytea) is not valid `cannot cast type integer to bytea`
-    "^data_time$", "^data_time_.*", # `time()` function is not valid syntax
+    "^data_time$",
+    "^data_time_.*", # `time()` function is not valid syntax
     "^data_timestamp.*", # We explicitly want to set tzone to UTC
     "data_64_bit_numeric_warning", # TODO
     "data_64_bit_lossless", # TODO
@@ -142,8 +146,7 @@ test_that("Writing data.frame with column ordering different than target table",
   values <- data.frame(
     datetime = as.POSIXct(c(14, 15), origin = "2016-01-01", tz = "UTC"),
     name = c("one", "two"),
-    num = 1:2,
-    stringsAsFactors = FALSE
+    num = 1:2
   )
   tbl <- "test_order_write"
   dbCreateTable(con, tbl, values)

@@ -45,6 +45,9 @@
 #define NANODBC_USE_NATIVE_CONVERT
 #else
 #include <codecvt>
+// wstring_convert is declared in <locale>, which libc++ 23 no longer
+// includes transitively via <codecvt>
+#include <locale>
 #endif
 #endif
 
@@ -4300,7 +4303,9 @@ inline void result::result_impl::get_ref_impl<std::vector<std::uint8_t>>(
                     buffer,          // TargetValuePtr
                     buffer_size,     // BufferLength
                     &ValueLenOrInd); // StrLen_or_IndPtr
-                if (ValueLenOrInd > 0)
+                if (ValueLenOrInd == SQL_NO_TOTAL)
+                    out.insert(std::end(out), buffer, buffer + buffer_size);
+                else if (ValueLenOrInd > 0)
                 {
                     auto const buffer_size_filled =
                         std::min<std::size_t>(ValueLenOrInd, buffer_size);

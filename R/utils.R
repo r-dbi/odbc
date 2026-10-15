@@ -11,7 +11,7 @@ has_names <- function(x) {
 
 string_values <- function(x) {
   # TODO: Throw a condition object that can be caught for debugging purposes
-  x <- tryCatch(x, error = function(x) "")
+  x <- tryCatch(x, error = \(x) "")
   unique(x[nzchar(x)])
 }
 
@@ -45,25 +45,20 @@ parse_size <- function(x, arg = caller_arg(x), call = caller_env()) {
   as.numeric(x)
 }
 
-id_field <- function(id,
-                     field = c("catalog", "schema", "table"),
-                     error_call = caller_env()) {
+id_field <- function(
+  id,
+  field = c("catalog", "schema", "table"),
+  error_call = caller_env()
+) {
   arg_match(field, error_call = error_call)
 
   if (length(id@name) == 1) {
-    switch(field,
-      catalog = NULL,
-      schema = NULL,
-      table = id@name[[1]],
-    )
+    switch(field, catalog = NULL, schema = NULL, table = id@name[[1]], )
   } else if (length(id@name) == 2) {
-    switch(field,
-      catalog = NULL,
-      schema = id@name[[1]],
-      table = id@name[[2]],
-    )
+    switch(field, catalog = NULL, schema = id@name[[1]], table = id@name[[2]], )
   } else if (length(id@name) == 3) {
-    switch(field,
+    switch(
+      field,
       catalog = id@name[[1]],
       schema = id@name[[2]],
       table = id@name[[3]],
@@ -99,8 +94,10 @@ getSelector <- function(key, value, exact) {
     return("")
   }
   comp <- " = "
-  if ((value == "%" || !exact) &&
-    isPatternValue(value)) {
+  if (
+    (value == "%" || !exact) &&
+      isPatternValue(value)
+  ) {
     comp <- " LIKE "
   }
   value <- paste0("'", value, "'")
@@ -142,7 +139,7 @@ set_odbcsysini <- function() {
       path <- dirname(odbcListConfig()[["drivers"]])
       Sys.setenv(ODBCSYSINI = path)
     },
-    error = function(err) NULL
+    error = \(err) NULL
   )
 
   invisible()
@@ -162,7 +159,7 @@ random_name <- function(prefix = "") {
 rethrow_database_error <- function(msg, call = trace_back()$call[[1]]) {
   tryCatch(
     res <- parse_database_error(msg),
-    error = function(e) cli::cli_abort("{msg}", call = call)
+    error = \(e) cli::cli_abort("{msg}", call = call)
   )
 
   cli::cli_abort(
@@ -193,20 +190,24 @@ parse_database_error <- function(msg) {
 
   # Remove the square-bracketed context from the database error
   cnd_body <- Reduce(
-    function(p, x) gsub(p, "", x, fixed = TRUE),
+    \(p, x) gsub(p, "", x, fixed = TRUE),
     cnd_context_driver,
     cnd_msg[-1],
     right = TRUE
   )
   # Limit error message length to something sane (#914)
   max_len <- 5000
-  cnd_body <- sapply(cnd_body, FUN = function(x) {
-    if (nchar(x) > max_len) {
-      x <- substr(x, 0, max_len)
-      x <- paste0(x, "...")
-    }
-    x
-  }, USE.NAMES = FALSE)
+  cnd_body <- sapply(
+    cnd_body,
+    FUN = function(x) {
+      if (nchar(x) > max_len) {
+        x <- substr(x, 0, max_len)
+        x <- paste0(x, "...")
+      }
+      x
+    },
+    USE.NAMES = FALSE
+  )
 
   cnd_body <- contextualize_database_error(cnd_body)
 
@@ -273,7 +274,9 @@ escape_curly_brackets <- function(cnd_body) {
 
 # check helpers for common odbc arguments --------------------------------------
 check_row.names <- function(row.names, call = caller_env()) {
-  if (is.null(row.names) || is_scalar_logical(row.names) || is_string(row.names)) {
+  if (
+    is.null(row.names) || is_scalar_logical(row.names) || is_string(row.names)
+  ) {
     return()
   }
 
@@ -296,16 +299,21 @@ check_field.types <- function(field.types, call = caller_env()) {
 
 check_attributes <- function(attributes, call = caller_env()) {
   if (!all(has_names(attributes))) {
-    cli::cli_abort("All elements of {.arg attributes} must be named.", call = call)
+    cli::cli_abort(
+      "All elements of {.arg attributes} must be named.",
+      call = call
+    )
   }
 
   attributes_supported <- names(attributes) %in% SUPPORTED_CONNECTION_ATTRIBUTES
   if (!all(attributes_supported)) {
     cli::cli_abort(
-      c("!" = "{.arg attributes} does not support the connection attribute{?s} \\
+      c(
+        "!" = "{.arg attributes} does not support the connection attribute{?s} \\
                {.val {names(attributes)[!attributes_supported]}}.",
         "i" = "Allowed connection attribute{?s} {?is/are} \\
-               {.val {SUPPORTED_CONNECTION_ATTRIBUTES}}."),
+               {.val {SUPPORTED_CONNECTION_ATTRIBUTES}}."
+      ),
       call = call
     )
   }
@@ -324,8 +332,11 @@ check_attributes <- function(attributes, call = caller_env()) {
 #    performs.
 # 4. If action == "modify" then we attempt to modify the config in-situ.
 # 5. Otherwise we throw a warning asking the user to revise.
-configure_simba <- function(driver_config,
-                            action = "modify", call = caller_env()) {
+configure_simba <- function(
+  driver_config,
+  action = "modify",
+  call = caller_env()
+) {
   if (!is_macos()) {
     return(invisible())
   }
@@ -402,8 +413,7 @@ libodbcinst_file <- function(dirs) {
   file_names <- ifelse(is_macos(), "libodbcinst.dylib", "libodbcinst.so")
   file_names <- c(file_names, "libodbcinst.a")
   for (file_name in file_names) {
-    candidates <- list.files(dirs,
-      pattern = file_name, full.names = TRUE)
+    candidates <- list.files(dirs, pattern = file_name, full.names = TRUE)
     if (length(candidates)) {
       return(candidates[1])
     }
@@ -415,15 +425,21 @@ error_install_unixodbc <- function(call) {
   abort(
     c(
       "Unable to locate the unixODBC driver manager.",
-      i = if (is_macos()) "Please install unixODBC using Homebrew with `brew install unixodbc`.",
+      i = if (is_macos()) {
+        "Please install unixODBC using Homebrew with `brew install unixodbc`."
+      },
       i = if (!is_macos()) "Please install unixODBC and retry."
     ),
     call = call
   )
 }
 
-configure_unixodbc_simba <- function(unixodbc_install, simba_config, action, call) {
-
+configure_unixodbc_simba <- function(
+  unixodbc_install,
+  simba_config,
+  action,
+  call
+) {
   # As shipped, the simba spark ini has an incomplete final line
   suppressWarnings(
     simba_lines <- readLines(simba_config)
@@ -436,8 +452,13 @@ configure_unixodbc_simba <- function(unixodbc_install, simba_config, action, cal
   )
   warnings <- character()
   if (action != "modify" && res$modified) {
-     warnings <- c(warnings, c("*" = "Please consider revising the {.arg ODBCInstLib}
-       field in {.file {simba_config}} and setting its value to {.val {unixodbc_install}}"))
+    warnings <- c(
+      warnings,
+      c(
+        "*" = "Please consider revising the {.arg ODBCInstLib}
+       field in {.file {simba_config}} and setting its value to {.val {unixodbc_install}}"
+      )
+    )
   }
   simba_lines_new <- res$new_lines
   res <- replace_or_append(
@@ -447,9 +468,14 @@ configure_unixodbc_simba <- function(unixodbc_install, simba_config, action, cal
     replacement = "DriverManagerEncoding=UTF-16"
   )
   if (action != "modify" && res$modified) {
-     warnings <- c(warnings, c("*" = "Please consider revising the
+    warnings <- c(
+      warnings,
+      c(
+        "*" = "Please consider revising the
        {.arg DriverManagerEncoding} field in {.file {simba_config}} and setting its
-       value to {.val UTF-16}."))
+       value to {.val UTF-16}."
+      )
+    )
   }
   if (length(warnings)) {
     cli::cli_warn(c(
@@ -466,7 +492,12 @@ configure_unixodbc_simba <- function(unixodbc_install, simba_config, action, cal
   invisible()
 }
 
-write_simba_lines <- function(spark_lines, spark_lines_new, spark_config, call) {
+write_simba_lines <- function(
+  spark_lines,
+  spark_lines_new,
+  spark_config,
+  call
+) {
   if (identical(spark_lines, spark_lines_new)) {
     return(invisible())
   }
@@ -510,7 +541,7 @@ driver_dir <- function(driver) {
 }
 
 is_writeable <- function(path) {
-  tryCatch(file.access(path, mode = 2)[[1]] == 0, error = function(e) FALSE)
+  tryCatch(file.access(path, mode = 2)[[1]] == 0, error = \(e) FALSE)
 }
 
 # Given a vector of lines in an ini file, look for a given key pattern.
@@ -584,7 +615,25 @@ find_default_driver <- function(paths, fallbacks, label, call = caller_env()) {
 #' @return string A finalized connection string
 #' @noRd
 build_connection_string <- function(args = list(), string = NULL) {
+  format_connection_value <- function(x) {
+    if (length(x) != 1) {
+      return(paste(deparse(x), collapse = " "))
+    }
 
+    if (is.numeric(x) && length(x) == 1 && !is.na(x)) {
+      return(format(
+        x,
+        scientific = FALSE,
+        trim = TRUE,
+        digits = 15,
+        decimal.mark = "."
+      ))
+    }
+
+    as.character(x)
+  }
+
+  args <- vapply(args, format_connection_value, character(1))
   args_string <- paste(names(args), args, sep = "=", collapse = ";")
 
   if (!is.null(string) && !grepl(";$", string) && length(args) > 0) {
@@ -606,19 +655,17 @@ build_connection_string <- function(args = list(), string = NULL) {
 #' @return list A named list (k1 = v1, k2 = v2, ...)
 #' @noRd
 decompose_connection_string <- function(string) {
-
   res_pairs <- strsplit(string, ";", fixed = TRUE)[[1]]
   res_key_value <- strsplit(res_pairs, "=", fixed = TRUE)
-  res_key_value <- Filter(function(x) length(x) == 2 && nchar(x[1]),
-                          res_key_value)
-  values <- lapply(res_key_value, FUN = function(x) trimws(x[2]))
+  res_key_value <- Filter(\(x) length(x) == 2 && nchar(x[1]), res_key_value)
+  values <- lapply(res_key_value, FUN = \(x) trimws(x[2]))
   # Remove enclosing quotation marks around value
   # we may have put them there using odbc::quote_value
   values <- lapply(values, FUN = function(x) {
-      x <-gsub("(^')(.*)('$)", "\\2", x)
-      gsub("(^\")(.*)(\"$)", "\\2", x)
+    x <- gsub("(^')(.*)('$)", "\\2", x)
+    gsub("(^\")(.*)(\"$)", "\\2", x)
   })
-  nms <- sapply(res_key_value, FUN = function(x) x[1])
+  nms <- sapply(res_key_value, FUN = \(x) x[1])
   names(values) <- trimws(nms)
   return(sanitize_connection_string(values))
 }
@@ -639,6 +686,11 @@ decompose_connection_string <- function(string) {
 sanitize_connection_string <- function(lst) {
   EXCLUDE_PATTERNS <- c("*PWD*", "*PASS*", "*TOKEN*")
 
-  regex <- paste(EXCLUDE_PATTERNS, tolower(EXCLUDE_PATTERNS), collapse = "|", sep = "|")
+  regex <- paste(
+    EXCLUDE_PATTERNS,
+    tolower(EXCLUDE_PATTERNS),
+    collapse = "|",
+    sep = "|"
+  )
   return(lst[!grepl(regex, names(lst), fixed = FALSE)])
 }

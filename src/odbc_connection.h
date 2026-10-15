@@ -2,7 +2,7 @@
 
 #include "nanodbc.h"
 #include "sql_types.h"
-#include "time_zone.h"
+#include "cctz/time_zone.h"
 #include <Rcpp.h>
 
 namespace odbc {

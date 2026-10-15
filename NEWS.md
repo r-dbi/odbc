@@ -1,10 +1,10 @@
 # odbc (development version)
 
 ## Breaking changes
-* Communication with ODBC drivers is now always done using the Unicode ("W") ODBC API. 
-  Thus it is no longer necessary to set the `encoding` argument of `dbConnect()` 
+* Communication with ODBC drivers is now always done using the Unicode ("W") ODBC API.
+  Thus it is no longer necessary to set the `encoding` argument of `dbConnect()`
   to the encoding of the database server or even to know the encoding of the database server.
-  Due to this change for some database systems (e.g. PostgreSQL) you need to switch 
+  Due to this change for some database systems (e.g. PostgreSQL) you need to switch
   from an ASCII driver to a driver that supports the Unicode API.
   Thanks to this change, several encoding-related problems could be resolved.
 
@@ -15,6 +15,35 @@
 * Queries containing non-ASCII characters are now working correctly on all platforms, including Windows.
 
 * Writing non-ASCII characters to the database is now working correctly on all platforms, including Windows.
+
+* `dbExistsTable()` no longer treats `_` as a wildcard on SQL Server.
+
+# odbc 1.7.2
+
+* odbc now requires R 4.2.0.
+
+* Fixed silent truncation of `BINARY`/`VARBINARY` data larger than 1024 bytes
+  when the driver does not report the remaining data length (`SQL_NO_TOTAL`)
+  during chunked retrieval, as seen with the Databricks/Simba Spark
+  driver (#1024).
+
+# odbc 1.7.1
+
+* `databricks()` driver auto-detection now recognizes the Windows driver
+  name `Databricks ODBC Driver`.
+
+* `databricks()` now sets `DefaultStringColumnLength` to 65535 by default.
+  The driver reports `STRING` columns as `VARCHAR(DefaultStringColumnLength)`
+  and silently truncates longer values; its own default of 255 caused string
+  data to be cut off after roughly 1000 characters. Pass
+  `defaultStringColumnLength` to `dbConnect()` to override (#1023).
+
+* Update vendored cctz to current upstream, including local build compatibility
+  fixes retained for R package and Windows builds.
+
+* Numeric connection string arguments no longer fall back to scientific
+  notation in `build_connection_string()`, which avoids malformed driver
+  attributes such as `DefaultStringColumnLength` (#934).
 
 # odbc 1.7.0
 

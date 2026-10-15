@@ -34,8 +34,10 @@ warehouses, this is found under \verb{Connection Details} instead.}
 \code{"https://example.cloud.databricks.com"}.}
 
 \item{useNativeQuery}{Suppress the driver's conversion from ANSI SQL 92 to
-HiveSQL? The default (\code{TRUE}), gives greater performance but means that
-paramterised queries (and hence \code{dbWriteTable()}) do not work.}
+HiveSQL.  When set to true, we also set the following related flags:
+\code{EnableNativeParameterizedQuery}, and \code{PopulateParametersForNativeQuery}.
+The default (\code{TRUE}), gives greater performance but could cause issues
+with paramterised queries (and hence \code{dbWriteTable()}).}
 
 \item{driver}{The name of the Databricks ODBC driver, or \code{NULL} to use the
 default name.}
@@ -73,6 +75,16 @@ In addition, on macOS platforms, the \code{dbConnect()} method will check
 for irregularities with how the driver is configured,
 and attempt to fix in-situ, unless the \code{odbc.no_config_override}
 environment variable is set.
+\subsection{String truncation}{
+
+The Databricks ODBC driver reports \code{STRING} columns to clients as
+\code{VARCHAR(n)}, where \code{n} is the value of its \code{DefaultStringColumnLength}
+connection attribute. This reported size determines the allocated string
+buffer, and the driver can silently truncate values that do not fit.
+Because the driver's own default of 255 is easy to hit in practice,
+\code{dbConnect()} sets this attribute to 65535 by default. Pass
+\code{defaultStringColumnLength} to \code{dbConnect()} to choose another limit.
+}
 }
 \examples{
 \dontrun{

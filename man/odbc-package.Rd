@@ -24,6 +24,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Hadley Wickham \email{hadley@posit.co}
   \item Jim Hester
   \item Oliver Gjoneski
   \item Simon Couch \email{simon.couch@posit.co}

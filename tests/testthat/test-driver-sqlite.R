@@ -4,7 +4,10 @@ test_that("SQLite", {
   DBItest::make_context(
     odbc(),
     test_connection_string("SQLITE"),
-    tweaks = DBItest::tweaks(placeholder_pattern = "?", strict_identifier = TRUE),
+    tweaks = DBItest::tweaks(
+      placeholder_pattern = "?",
+      strict_identifier = TRUE
+    ),
     name = "SQLite"
   )
 
@@ -28,7 +31,8 @@ test_that("SQLite", {
     "data_64_bit.*", # TODO
     "data_integer", # These tests are returned as strings by SQLite (bug?)
     "data_raw.*", # cast(1 bytea) is not valid `cannot cast type integer to bytea`
-    "^data_time$", "^data_time_.*", # time objects not supported
+    "^data_time$",
+    "^data_time_.*", # time objects not supported
     "^data_timestamp.*", # SQLite doesn't do timestamps
     "^data_date.*", # SQLite doesn't do dates
     "send_query_params", # TODO

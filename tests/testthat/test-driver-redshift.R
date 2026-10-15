@@ -16,4 +16,3 @@ test_that("IAM credentials in environment variables are handled correctly", {
   expect_equal(args$secretAccessKey, "secret-access-key")
   expect_equal(args$sessionToken, "session-token")
 })
-

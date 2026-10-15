@@ -1,4 +1,3 @@
-
 test_that("errors if unnamed arguments", {
   expect_snapshot(check_args(list(1, 2, 3)), error = TRUE)
 })
@@ -64,4 +63,30 @@ test_that("validateObjectName() errors informatively", {
     error = TRUE,
     odbcListColumns(con)
   )
+})
+
+# odbcConnectionColumns S4 dispatch ---------------------------------------
+
+test_that("odbcConnectionColumns has no ambiguous (Driver, SQL) dispatch", {
+  # `SQL` extends `character`, so a driver that defines only a
+  # `c(Driver, "character")` method leaves `(Driver, SQL)` ambiguous against the
+  # base `c("OdbcConnection", "SQL")` method, producing an S4 NOTE. Drivers that
+  # override the character method must also define the SQL method.
+  for (driver in c("Oracle", "Snowflake", "Microsoft SQL Server")) {
+    expect_true(
+      existsMethod("odbcConnectionColumns", c(driver, "SQL")),
+      info = driver
+    )
+    # The exact method must win, with no ambiguity message emitted.
+    msgs <- character()
+    m <- withCallingHandlers(
+      selectMethod("odbcConnectionColumns", signature(driver, "SQL")),
+      message = function(c) {
+        msgs <<- c(msgs, conditionMessage(c))
+        invokeRestart("muffleMessage")
+      }
+    )
+    expect_identical(as.character(m@target), c(driver, "SQL"), info = driver)
+    expect_false(any(grepl("would also be valid", msgs)), info = driver)
+  }
 })

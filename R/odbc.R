@@ -19,7 +19,11 @@ odbcSetTransactionIsolationLevel <- function(conn, levels) {
   levels <- tolower(levels)
   levels <- gsub(" ", "_", levels)
   levels <- sub("sql_txn_", "", levels)
-  levels <- match.arg(tolower(levels), names(transactionLevels()), several.ok = TRUE)
+  levels <- match.arg(
+    tolower(levels),
+    names(transactionLevels()),
+    several.ok = TRUE
+  )
 
   set_transaction_isolation(conn@ptr, transactionLevels()[levels])
 }

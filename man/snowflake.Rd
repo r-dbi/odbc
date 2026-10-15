@@ -61,8 +61,9 @@ In particular, the custom \code{dbConnect()} method for the Snowflake ODBC drive
 supports the \code{connections.toml} and \code{config.toml} files used by the Snowflake
 Connector for Python and the Snowflake CLI via the \pkg{snowflakeauth}
 package. It also detects ambient OAuth credentials on platforms like Snowpark
-Container Services or Posit Workbench. Finally, it can detect viewer-based
-credentials on Posit Connect if the \pkg{connectcreds} package is installed.
+Container Services or Posit Workbench. Finally, it can detect viewer-based or
+service account credentials on Posit Connect if the \pkg{connectcreds}
+package is installed.
 
 In addition, on macOS platforms, the \code{dbConnect} method will check and warn
 if it detects irregularities with how the driver is configured, unless the
@@ -91,8 +92,8 @@ DBI::dbConnect(
 # Use a named connection from a connections.toml file.
 DBI::dbConnect(odbc::snowflake(), connection_name = "test")
 
-# Use credentials from the viewer (when possible) in a Shiny app
-# deployed to Posit Connect.
+# Use credentials from the viewer or a service account (when possible) in
+# content deployed to Posit Connect.
 library(connectcreds)
 server <- function(input, output, session) {
   conn <- DBI::dbConnect(odbc::snowflake())
