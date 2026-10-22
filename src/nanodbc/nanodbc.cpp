@@ -1908,7 +1908,10 @@ public:
 
     long affected_rows() const
     {
-        SQLLEN rows;
+        // a driver may return success without writing the count for a statement
+        // that has none (psqlODBC on SET, BEGIN, DROP, ...); start from -1, the
+        // ODBC value for "not available", rather than whatever is on the stack
+        SQLLEN rows = -1;
         RETCODE rc;
         NANODBC_CALL_RC(SQLRowCount, rc, stmt_, &rows);
         if (!success(rc))
