@@ -169,3 +169,19 @@ test_that("odbcPreviewObject", {
   })
   expect_equal(nrow(res), 3)
 })
+
+test_that("dbGetRowsAffected() is 0 for statements without a row count", {
+  # psqlODBC returns success from SQLRowCount without writing the count for
+  # statements that have none, which used to surface as an uninitialized value
+  con <- test_con("POSTGRES")
+  withr::defer(try(dbExecute(con, "DROP TABLE IF EXISTS rows_affected"), silent = TRUE))
+
+  expect_equal(dbExecute(con, "SET lock_timeout = 0"), 0L)
+  expect_equal(dbExecute(con, "BEGIN"), 0L)
+  expect_equal(dbExecute(con, "ROLLBACK"), 0L)
+  expect_equal(dbExecute(con, "CREATE TEMP TABLE rows_affected (x int)"), 0L)
+  expect_equal(dbExecute(con, "INSERT INTO rows_affected VALUES (1), (2)"), 2L)
+  expect_equal(dbExecute(con, "UPDATE rows_affected SET x = x WHERE x > 0"), 2L)
+  expect_equal(dbExecute(con, "DELETE FROM rows_affected WHERE x = 1"), 1L)
+  expect_equal(dbExecute(con, "DROP TABLE rows_affected"), 0L)
+})

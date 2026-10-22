@@ -1,5 +1,9 @@
 # odbc (development version)
 
+* `dbGetRowsAffected()` (and so `dbExecute()`) no longer returns an
+  uninitialized value for statements that have no row count (`SET`, `BEGIN`,
+  `DROP`, ...) with drivers that do not write one, such as psqlODBC; it is now 0.
+
 * `dbExistsTable()` no longer treats `_` as a wildcard on SQL Server.
 
 # odbc 1.7.2
