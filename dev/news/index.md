@@ -2,6 +2,8 @@
 
 ## odbc (development version)
 
+- Views once again show their icon in the RStudio Connections Pane.
+
 - [`dbExistsTable()`](https://dbi.r-dbi.org/reference/dbExistsTable.html)
   no longer treats `_` as a wildcard on SQL Server.
 
