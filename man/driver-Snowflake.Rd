@@ -4,6 +4,7 @@
 \alias{odbcConnectionColumns,Snowflake,character-method}
 \alias{odbcConnectionColumns,Snowflake,SQL-method}
 \alias{dbExistsTableForWrite,Snowflake,character-method}
+\alias{odbcConnectionSchemas,Snowflake-method}
 \title{Connecting to Snowflake via ODBC}
 \usage{
 \S4method{dbExistsTableForWrite}{Snowflake,character}(conn, name, ..., catalog_name = NULL, schema_name = NULL)
@@ -33,5 +34,11 @@ If the catalog, or the schema arguments are NULL, attempt to infer
 by querying for CURRENT_DATABASE() and CURRENT_SCHEMA().  We do this
 to aid with performance, as the SQLColumns method is more performant
 when restricted to a particular DB/schema.
+}
+
+\subsection{\code{odbcConnectionSchemas()}}{
+
+Method for an internal function. Runs \verb{SHOW SCHEMAS IN DATABASE} to make
+sure we list the schemas in the appropriate database/catalog.
 }
 }

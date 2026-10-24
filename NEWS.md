@@ -1,5 +1,7 @@
 # odbc (development version)
 
+* Snowflake: expanding a database in the Connections Pane now lists only that database's schemas, rather than every schema visible to the connection.
+
 # odbc 1.7.2
 
 * odbc now requires R 4.2.0.

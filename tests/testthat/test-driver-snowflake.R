@@ -7,6 +7,22 @@ test_that("can connect to snowflake", {
   con <- test_con("SNOWFLAKE")
 })
 
+test_that("odbcConnectionSchemas lists only the given catalog's schemas", {
+  key_exists <- Sys.getenv("SNOWFLAKE_PRIVATE_KEY_EXISTS")
+  if (nchar(key_exists) == 0) {
+    skip("Secret SNOWFLAKE_PRIVATE_KEY not available.")
+  }
+
+  con <- test_con("SNOWFLAKE")
+  catalog <- dbGetQuery(con, "SELECT CURRENT_DATABASE()")[[1]]
+  expected <- dbGetQuery(
+    con,
+    "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA"
+  )[[1]]
+
+  expect_setequal(odbcConnectionSchemas(con, catalog_name = catalog), expected)
+})
+
 test_that("an account ID is required", {
   sf_home <- tempfile()
   withr::local_envvar(

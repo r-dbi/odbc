@@ -104,6 +104,31 @@ setMethod(
   }
 )
 
+#' @description
+#' ## `odbcConnectionSchemas()`
+#'
+#' Method for an internal function. Runs `SHOW SCHEMAS IN DATABASE` to make
+#' sure we list the schemas in the appropriate database/catalog.
+#' @rdname driver-Snowflake
+#' @usage NULL
+setMethod(
+  "odbcConnectionSchemas",
+  "Snowflake",
+  function(conn, catalog_name = NULL) {
+    if (is.null(catalog_name) || !nchar(catalog_name)) {
+      return(callNextMethod())
+    }
+    res <- dbGetQuery(
+      conn,
+      paste0(
+        "SHOW SCHEMAS IN DATABASE ",
+        dbQuoteIdentifier(conn, catalog_name)
+      )
+    )
+    res$name
+  }
+)
+
 #' @export
 #' @rdname odbcDataType
 #' @usage NULL
