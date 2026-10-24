@@ -41,15 +41,13 @@ odbcListObjectTypes.default <- function(connection) {
   # See if we have views too.  A little more elaborate than just
   # checking if any( table_types == "VIEW" ), because some back-ends
   # may contain VIEW "look-alikes".  For example PostgreSQL/"MATVIEW".
-  # The icon url is that of the default Rstudio IDE resource location.
-  # It gets automatically pulled in for an object type "view" ( but
-  # not for some of the other ones ).  Should we not want to encode that
-  # dependency, we can just bring that PNG into this package.
+  # Don't supply an icon: front end will fall back to its built-in icon
+  # (looked up by type name, so just "view") when none is given.
   table_types <- tolower(string_values(odbcConnectionTableTypes(connection)))
   viewlike <- grep("view", table_types, value = TRUE)
   viewlike_types <- sapply(
     viewlike,
-    \(i) list(contains = "data", icon = "connections/objects/view.png"),
+    \(i) list(contains = "data"),
     simplify = FALSE
   )
   obj_types <- c(obj_types, viewlike_types)
