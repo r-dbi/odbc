@@ -2,6 +2,9 @@
 
 ## odbc (development version)
 
+- Snowflake: expanding a database in the Connections Pane now lists only
+  that database’s schemas.
+
 - Views once again show their icon in the RStudio Connections Pane.
 
 - [`dbExistsTable()`](https://dbi.r-dbi.org/reference/dbExistsTable.html)
