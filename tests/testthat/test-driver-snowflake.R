@@ -14,10 +14,18 @@ test_that("odbcConnectionSchemas lists only the given catalog's schemas", {
   }
 
   con <- test_con("SNOWFLAKE")
+  # The session may not have a current database.
   catalog <- dbGetQuery(con, "SELECT CURRENT_DATABASE()")[[1]]
+  if (is.na(catalog)) {
+    catalog <- odbcConnectionCatalogs(con)[[1]]
+  }
   expected <- dbGetQuery(
     con,
-    "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA"
+    paste0(
+      "SELECT SCHEMA_NAME FROM ",
+      dbQuoteIdentifier(con, catalog),
+      ".INFORMATION_SCHEMA.SCHEMATA"
+    )
   )[[1]]
 
   expect_setequal(odbcConnectionSchemas(con, catalog_name = catalog), expected)
