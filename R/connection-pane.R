@@ -312,7 +312,8 @@ procedureParameters <- function(connection, procedure, catalog, schema) {
       connection,
       name = procedure,
       catalog_name = catalog,
-      schema_name = schema
+      schema_name = schema,
+      exact = TRUE
     ),
     error = \(e) NULL
   )
