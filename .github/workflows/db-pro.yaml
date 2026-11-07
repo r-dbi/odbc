@@ -60,6 +60,11 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v2
 
+      # Legacy time zone names (e.g. PST8PDT, used by DBItest) ship in
+      # tzdata-legacy, which ubuntu-26.04 runners do not install.
+      - name: Install legacy time zone data
+        run: sudo apt-get install -y tzdata-legacy
+
       - name: Install Driver Manager
         run: sudo apt-get install -y unixodbc-dev
 
