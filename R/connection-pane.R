@@ -251,19 +251,13 @@ validateObjectName <- function(table, view, ..., call = caller_env()) {
   table %||% view
 }
 
-# `function` is a reserved word, so it can only arrive via `...`.
-routineName <- function(procedure, ..., call = caller_env()) {
-  fn <- list(...)[["function"]]
-  check_string(fn, allow_null = TRUE, arg = "function", call = call)
-  procedure %||% fn
-}
-
 #' @export
 odbcListColumns.OdbcConnection <- function(
   connection,
   table = NULL,
   view = NULL,
   procedure = NULL,
+  `function` = NULL,
   catalog = NULL,
   schema = NULL,
   ...
@@ -271,10 +265,11 @@ odbcListColumns.OdbcConnection <- function(
   check_string(table, allow_null = TRUE)
   check_string(view, allow_null = TRUE)
   check_string(procedure, allow_null = TRUE)
+  check_string(`function`, allow_null = TRUE, arg = "function")
   check_string(catalog, allow_null = TRUE)
   check_string(schema, allow_null = TRUE)
 
-  routine <- routineName(procedure, ...)
+  routine <- procedure %||% `function`
   if (!is.null(routine)) {
     return(procedureColumnsAsFields(connection, routine, catalog, schema))
   }
@@ -386,6 +381,7 @@ odbcPreviewObject.OdbcConnection <- function(
   table = NULL,
   view = NULL,
   procedure = NULL,
+  `function` = NULL,
   schema = NULL,
   catalog = NULL,
   ...
@@ -394,11 +390,12 @@ odbcPreviewObject.OdbcConnection <- function(
   check_string(table, allow_null = TRUE)
   check_string(view, allow_null = TRUE)
   check_string(procedure, allow_null = TRUE)
+  check_string(`function`, allow_null = TRUE, arg = "function")
   check_string(schema, allow_null = TRUE)
   check_string(catalog, allow_null = TRUE)
 
   # Routines have no rows; preview their parameters.
-  routine <- routineName(procedure, ...)
+  routine <- procedure %||% `function`
   if (!is.null(routine)) {
     params <- procedureParameters(connection, routine, catalog, schema)
     return(params[seq_len(min(nrow(params), rowLimit)), , drop = FALSE])
