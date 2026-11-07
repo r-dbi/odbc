@@ -1,6 +1,10 @@
 # odbc (development version)
 
-* Snowflake: expanding a database in the Connections Pane now lists only that database's schemas, rather than every schema visible to the connection.
+* Snowflake: expanding a database in the Connections Pane now lists only that database's schemas.
+
+* Views once again show their icon in the RStudio Connections Pane.
+
+* `dbExistsTable()` no longer treats `_` as a wildcard on SQL Server.
 
 # odbc 1.7.2
 
