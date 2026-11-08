@@ -113,7 +113,11 @@ jobs:
         run: |
           echo "${{ secrets.SNOWFLAKE_PRIVATE_KEY }}" > $ODBCSYSINI/private_key.pem
           echo "PRIV_KEY_FILE=$ODBCSYSINI/private_key.pem" | tee -a $ODBCSYSINI/odbc.ini
-          export SNOWFLAKE_PRIVATE_KEY_EXISTS=TRUE
+          if [ -n "$SNOWFLAKE_PRIVATE_KEY" ]; then
+            echo "SNOWFLAKE_PRIVATE_KEY_EXISTS=TRUE" >> $GITHUB_ENV
+          fi
+        env:
+          SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
 
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
