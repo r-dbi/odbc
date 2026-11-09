@@ -1,5 +1,9 @@
 # odbc (development version)
 
+* The RStudio/Posit Connections Pane now lists stored procedures and functions
+  alongside tables and views, enumerated via the ODBC `SQLProcedures` call,
+  each with its own icon.
+
 * Snowflake: expanding a database in the Connections Pane now lists only that database's schemas.
 
 * Views once again show their icon in the RStudio Connections Pane.
